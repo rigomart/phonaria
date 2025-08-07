@@ -1,0 +1,410 @@
+import type { ConsonantPhoneme } from "./types";
+
+export const consonants: ConsonantPhoneme[] = [
+	{
+		symbol: "p",
+		category: "consonant",
+		type: "stop",
+		articulation: {
+			place: "bilabial",
+			manner: "stop",
+			voicing: "voiceless",
+		},
+		examples: [
+			{ word: "please", audioUrl: "/please.mp3", phonemic: "/pliz/" },
+			{ word: "help", audioUrl: "/help.mp3", phonemic: "/hɛlp/" },
+		],
+		description: "voiceless bilabial stop",
+		guide: "Lips together, release air without voice.",
+	},
+	{
+		symbol: "b",
+		category: "consonant",
+		type: "stop",
+		articulation: {
+			place: "bilabial",
+			manner: "stop",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "buy", audioUrl: "/buy.mp3", phonemic: "/baɪ/" },
+			{ word: "maybe", audioUrl: "/maybe.mp3", phonemic: "/ˈmeɪbi/" },
+		],
+		description: "voiced bilabial stop",
+		guide: "Lips together, release air with vocal cord vibration.",
+	},
+	{
+		symbol: "t",
+		category: "consonant",
+		type: "stop",
+		articulation: {
+			place: "alveolar",
+			manner: "stop",
+			voicing: "voiceless",
+		},
+		examples: [
+			{ word: "time", audioUrl: "/time.mp3", phonemic: "/taɪm/" },
+			{ word: "eat", audioUrl: "/eat.mp3", phonemic: "/it/" },
+		],
+		description: "voiceless alveolar stop",
+		guide: "Tongue taps roof of mouth behind teeth, release air.",
+		allophones: [
+			{
+				variant: "ɾ",
+				description: "Flapped between vowels in casual speech.",
+				examples: [{ word: "butter", audioUrl: "/butter.mp3", phonemic: "/bʌɾɚ/" }],
+				context: "Intervocalic position in casual American English",
+			},
+			{
+				variant: "ʔ",
+				description: "Glottal stop in informal words.",
+				examples: [{ word: "button", audioUrl: "/button.mp3", phonemic: "/bʌʔn̩/" }],
+				context: "Before syllabic /n/ in informal speech",
+			},
+		],
+	},
+	{
+		symbol: "d",
+		category: "consonant",
+		type: "stop",
+		articulation: {
+			place: "alveolar",
+			manner: "stop",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "day", audioUrl: "/day.mp3", phonemic: "/deɪ/" },
+			{ word: "good", audioUrl: "/good.mp3", phonemic: "/ɡʊd/" },
+		],
+		description: "voiced alveolar stop",
+		guide: "Tongue taps roof of mouth behind teeth, release air with vibration.",
+	},
+	{
+		symbol: "k",
+		category: "consonant",
+		type: "stop",
+		articulation: {
+			place: "velar",
+			manner: "stop",
+			voicing: "voiceless",
+		},
+		examples: [
+			{ word: "come", audioUrl: "/come.mp3", phonemic: "/kʌm/" },
+			{ word: "work", audioUrl: "/work.mp3", phonemic: "/wɝk/" },
+		],
+		description: "voiceless velar stop",
+		guide: "Back of tongue against soft palate, release air without voice.",
+	},
+	{
+		symbol: "ɡ",
+		category: "consonant",
+		type: "stop",
+		articulation: {
+			place: "velar",
+			manner: "stop",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "get", audioUrl: "/get.mp3", phonemic: "/ɡɛt/" },
+			{ word: "big", audioUrl: "/big.mp3", phonemic: "/bɪɡ/" },
+		],
+		description: "voiced velar stop",
+		guide: "Back of tongue against soft palate, release air with vibration.",
+	},
+	{
+		symbol: "ʃ",
+		category: "consonant",
+		type: "fricative",
+		articulation: {
+			place: "postalveolar",
+			manner: "fricative",
+			voicing: "voiceless",
+		},
+		examples: [
+			{ word: "sure", audioUrl: "/sure.mp3", phonemic: "/ʃʊɹ/" },
+			{ word: "finish", audioUrl: "/finish.mp3", phonemic: "/ˈfɪnɪʃ/" },
+		],
+		description: "voiceless postalveolar fricative",
+		guide: "Tongue near palate, blow air without voice.",
+	},
+	{
+		symbol: "tʃ",
+		category: "consonant",
+		type: "affricate",
+		articulation: {
+			place: "postalveolar",
+			manner: "affricate",
+			voicing: "voiceless",
+		},
+		examples: [
+			{ word: "check", audioUrl: "/check.mp3", phonemic: "/tʃɛk/" },
+			{ word: "watch", audioUrl: "/watch.mp3", phonemic: "/wɑtʃ/" },
+		],
+		description: "voiceless postalveolar affricate",
+		guide: "Tongue near palate, release to friction without voice.",
+	},
+	{
+		symbol: "ʒ",
+		category: "consonant",
+		type: "fricative",
+		articulation: {
+			place: "postalveolar",
+			manner: "fricative",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "usually", audioUrl: "/usually.mp3", phonemic: "/ˈjuʒəli/" },
+			{ word: "television", audioUrl: "/television.mp3", phonemic: "/ˈtɛləˌvɪʒən/" },
+		],
+		description: "voiced postalveolar fricative",
+		guide: "Tongue near palate, blow air with vibration.",
+	},
+	{
+		symbol: "dʒ",
+		category: "consonant",
+		type: "affricate",
+		articulation: {
+			place: "postalveolar",
+			manner: "affricate",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "just", audioUrl: "/just.mp3", phonemic: "/dʒʌst/" },
+			{ word: "change", audioUrl: "/change.mp3", phonemic: "/tʃeɪndʒ/" },
+		],
+		description: "voiced postalveolar affricate",
+		guide: "Tongue near palate, release to friction with vibration.",
+	},
+	{
+		symbol: "f",
+		category: "consonant",
+		type: "fricative",
+		articulation: {
+			place: "labiodental",
+			manner: "fricative",
+			voicing: "voiceless",
+		},
+		examples: [
+			{ word: "find", audioUrl: "/find.mp3", phonemic: "/faɪnd/" },
+			{ word: "if", audioUrl: "/if.mp3", phonemic: "/ɪf/" },
+		],
+		description: "voiceless labiodental fricative",
+		guide: "Lower lip against upper teeth, blow air without voice.",
+	},
+	{
+		symbol: "v",
+		category: "consonant",
+		type: "fricative",
+		articulation: {
+			place: "labiodental",
+			manner: "fricative",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "very", audioUrl: "/very.mp3", phonemic: "/ˈvɛri/" },
+			{ word: "have", audioUrl: "/have.mp3", phonemic: "/hæv/" },
+		],
+		description: "voiced labiodental fricative",
+		guide: "Lower lip against upper teeth, blow air with vibration.",
+	},
+	{
+		symbol: "θ",
+		category: "consonant",
+		type: "fricative",
+		articulation: {
+			place: "dental",
+			manner: "fricative",
+			voicing: "voiceless",
+		},
+		examples: [
+			{ word: "think", audioUrl: "/think.mp3", phonemic: "/θɪŋk/" },
+			{ word: "month", audioUrl: "/month.mp3", phonemic: "/mʌnθ/" },
+		],
+		description: "voiceless dental fricative",
+		guide: "Tongue between teeth, blow air without voice.",
+	},
+	{
+		symbol: "ð",
+		category: "consonant",
+		type: "fricative",
+		articulation: {
+			place: "dental",
+			manner: "fricative",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "the", audioUrl: "/the.mp3", phonemic: "/ðə/" },
+			{ word: "with", audioUrl: "/with.mp3", phonemic: "/wɪð/" },
+		],
+		description: "voiced dental fricative",
+		guide: "Tongue between teeth, blow air with vibration.",
+	},
+	{
+		symbol: "s",
+		category: "consonant",
+		type: "fricative",
+		articulation: {
+			place: "alveolar",
+			manner: "fricative",
+			voicing: "voiceless",
+		},
+		examples: [
+			{ word: "see", audioUrl: "/see.mp3", phonemic: "/si/" },
+			{ word: "yes", audioUrl: "/yes.mp3", phonemic: "/jɛs/" },
+		],
+		description: "voiceless alveolar fricative",
+		guide: "Tongue near alveolar ridge, blow air without voice.",
+	},
+	{
+		symbol: "z",
+		category: "consonant",
+		type: "fricative",
+		articulation: {
+			place: "alveolar",
+			manner: "fricative",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "zero", audioUrl: "/zero.mp3", phonemic: "/ˈzɪroʊ/" },
+			{ word: "easy", audioUrl: "/easy.mp3", phonemic: "/ˈizi/" },
+		],
+		description: "voiced alveolar fricative",
+		guide: "Tongue near alveolar ridge, blow air with vibration.",
+	},
+	{
+		symbol: "h",
+		category: "consonant",
+		type: "fricative",
+		articulation: {
+			place: "glottal",
+			manner: "fricative",
+			voicing: "voiceless",
+		},
+		examples: [
+			{ word: "how", audioUrl: "/how.mp3", phonemic: "/haʊ/" },
+			{ word: "here", audioUrl: "/here.mp3", phonemic: "/hɪr/" },
+		],
+		description: "voiceless glottal fricative",
+		guide: "Air through open vocal cords without voice.",
+	},
+	{
+		symbol: "m",
+		category: "consonant",
+		type: "nasal",
+		articulation: {
+			place: "bilabial",
+			manner: "nasal",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "make", audioUrl: "/make.mp3", phonemic: "/meɪk/" },
+			{ word: "some", audioUrl: "/some.mp3", phonemic: "/sʌm/" },
+		],
+		description: "voiced bilabial nasal",
+		guide: "Lips together, air through nose with vibration.",
+	},
+	{
+		symbol: "n",
+		category: "consonant",
+		type: "nasal",
+		articulation: {
+			place: "alveolar",
+			manner: "nasal",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "now", audioUrl: "/now.mp3", phonemic: "/naʊ/" },
+			{ word: "can", audioUrl: "/can.mp3", phonemic: "/kæn/" },
+		],
+		description: "voiced alveolar nasal",
+		guide: "Tongue on alveolar ridge, air through nose with vibration.",
+	},
+	{
+		symbol: "ŋ",
+		category: "consonant",
+		type: "nasal",
+		articulation: {
+			place: "velar",
+			manner: "nasal",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "long", audioUrl: "/long.mp3", phonemic: "/lɔŋ/" },
+			{ word: "thing", audioUrl: "/thing.mp3", phonemic: "/θɪŋ/" },
+		],
+		description: "voiced velar nasal",
+		guide: "Back of tongue against soft palate, air through nose with vibration.",
+	},
+	{
+		symbol: "l",
+		category: "consonant",
+		type: "liquid",
+		articulation: {
+			place: "alveolar",
+			manner: "liquid",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "like", audioUrl: "/like.mp3", phonemic: "/laɪk/" },
+			{ word: "will", audioUrl: "/will.mp3", phonemic: "/wɪl/" },
+		],
+		description: "voiced alveolar lateral liquid",
+		guide: "Tongue tip touches alveolar ridge, air flows around the sides.",
+		allophones: [
+			{
+				variant: "ɫ",
+				description: "Dark L (velarized) at syllable ends.",
+				examples: [{ word: "ball", audioUrl: "/ball.mp3", phonemic: "/bɔɫ/" }],
+				context: "Syllable-final position (coda)",
+			},
+		],
+	},
+	{
+		symbol: "ɹ",
+		category: "consonant",
+		type: "liquid",
+		articulation: {
+			place: "postalveolar",
+			manner: "liquid",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "right", audioUrl: "/right.mp3", phonemic: "/ɹaɪt/" },
+			{ word: "are", audioUrl: "/are.mp3", phonemic: "/aɹ/" },
+		],
+		description: "voiced postalveolar liquid",
+		guide: "Tongue tip curled back or bunched, not touching the roof of mouth.",
+	},
+	{
+		symbol: "j",
+		category: "consonant",
+		type: "glide",
+		articulation: {
+			place: "palatal",
+			manner: "glide",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "year", audioUrl: "/year.mp3", phonemic: "/jɪr/" },
+			{ word: "new", audioUrl: "/new.mp3", phonemic: "/nju/" },
+		],
+		description: "voiced palatal approximant",
+		guide: "Tongue near hard palate, like a quick 'ee' sound with vibration.",
+	},
+	{
+		symbol: "w",
+		category: "consonant",
+		type: "glide",
+		articulation: {
+			place: "velar",
+			manner: "glide",
+			voicing: "voiced",
+		},
+		examples: [
+			{ word: "want", audioUrl: "/want.mp3", phonemic: "/wɑnt/" },
+			{ word: "one", audioUrl: "/one.mp3", phonemic: "/wʌn/" },
+		],
+		description: "voiced labial-velar approximant",
+		guide: "Lips rounded while back of tongue approaches soft palate, like starting to say 'oo'.",
+	},
+];
