@@ -1,0 +1,12 @@
+{
+  "name": "phonix",
+  "version": "0.0.1",
+  "description": "Web application focused on phoneme-based learning using the International Phonetic Alphabet (IPA)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Miguel Rodriguez",
+  "license": "MIT",
+  "packageManager": "pnpm@10.12.4"
+}
