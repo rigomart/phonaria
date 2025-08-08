@@ -3,7 +3,6 @@ import type { ConsonantPhoneme } from "shared-data";
 import { consonants, phonixUtils } from "shared-data";
 import { AudioButton } from "@/components/audio/AudioButton";
 import { PhonemeTile } from "@/components/phoneme/PhonemeTile";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { buildConsonantGrid, MANNERS, PLACES } from "@/lib/phoneme-helpers";
@@ -14,8 +13,6 @@ export function ConsonantChart() {
 	const grid = buildConsonantGrid(consonants);
 	const [open, setOpen] = React.useState(false);
 	const [selected, setSelected] = React.useState<ConsonantPhoneme | null>(null);
-	const [showVoiced, setShowVoiced] = React.useState(true);
-	const [showVoiceless, setShowVoiceless] = React.useState(true);
 
 	function handleOpen(p: ConsonantPhoneme) {
 		setSelected(p);
@@ -25,29 +22,7 @@ export function ConsonantChart() {
 	return (
 		<>
 			<div className="mt-4 w-full overflow-x-auto">
-				<div className="mb-3 flex items-center justify-between gap-3">
-					<div className="text-xs text-muted-foreground">Rows: manner • Columns: place</div>
-					<div className="flex items-center gap-2">
-						<Button
-							type="button"
-							size="sm"
-							variant={showVoiced ? "default" : "outline"}
-							onClick={() => setShowVoiced((v) => !v)}
-							aria-pressed={showVoiced}
-						>
-							Voiced
-						</Button>
-						<Button
-							type="button"
-							size="sm"
-							variant={showVoiceless ? "default" : "outline"}
-							onClick={() => setShowVoiceless((v) => !v)}
-							aria-pressed={showVoiceless}
-						>
-							Voiceless
-						</Button>
-					</div>
-				</div>
+				<div className="mb-3 text-xs text-muted-foreground">Rows: manner • Columns: place</div>
 				<table className="w-full border-collapse text-sm">
 					<thead>
 						<tr>
@@ -67,13 +42,9 @@ export function ConsonantChart() {
 								</th>
 								{PLACES.map((place) => {
 									const p = grid[manner][place];
-									const allowed = p
-										? (p.articulation.voicing === "voiced" && showVoiced) ||
-											(p.articulation.voicing === "voiceless" && showVoiceless)
-										: false;
 									return (
 										<td key={`${manner}-${place}`} className="border p-2 align-top">
-											{p && allowed ? (
+											{p ? (
 												<Tooltip>
 													<TooltipTrigger asChild>
 														<div>
@@ -113,29 +84,35 @@ export function ConsonantChart() {
 								<p className="text-sm text-muted-foreground">{selected.description}</p>
 							</DialogHeader>
 
-							<section className="text-sm">
-								<h3 className="mb-1 font-medium">Articulation</h3>
-								<ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-									<li>
-										Place:{" "}
-										<span className="capitalize text-foreground">
-											{selected.articulation.place}
-										</span>
-									</li>
-									<li>
-										Manner:{" "}
-										<span className="capitalize text-foreground">
-											{selected.articulation.manner}
-										</span>
-									</li>
-									<li>
-										Voicing:{" "}
-										<span className="capitalize text-foreground">
-											{selected.articulation.voicing}
-										</span>
-									</li>
-								</ul>
-							</section>
+							<div className="flex flex-col gap-4 sm:flex-row">
+								<div
+									className="aspect-square w-full max-w-[10rem] rounded-md border bg-muted/30"
+									aria-hidden="true"
+								/>
+								<section className="text-sm flex-1">
+									<h3 className="mb-1 font-medium">Articulation</h3>
+									<ul className="list-disc space-y-1 pl-5 text-muted-foreground">
+										<li>
+											Place:{" "}
+											<span className="capitalize text-foreground">
+												{selected.articulation.place}
+											</span>
+										</li>
+										<li>
+											Manner:{" "}
+											<span className="capitalize text-foreground">
+												{selected.articulation.manner}
+											</span>
+										</li>
+										<li>
+											Voicing:{" "}
+											<span className="capitalize text-foreground">
+												{selected.articulation.voicing}
+											</span>
+										</li>
+									</ul>
+								</section>
+							</div>
 
 							<section className="text-sm">
 								<h3 className="mb-1 font-medium">Examples</h3>
