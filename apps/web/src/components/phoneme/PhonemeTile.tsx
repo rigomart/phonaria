@@ -7,10 +7,9 @@ const { getExampleAudioUrl, toPhonemic } = phonixUtils;
 type Props = {
 	phoneme: ConsonantPhoneme;
 	onOpen?: (p: ConsonantPhoneme) => void;
-	buttonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 };
 
-export function PhonemeTile({ phoneme, onOpen, buttonProps }: Props) {
+export function PhonemeTile({ phoneme, onOpen }: Props) {
 	const first = phoneme.examples[0];
 	return (
 		<div className="flex flex-col items-center justify-center gap-1 rounded-md border p-2 text-center">
@@ -19,7 +18,6 @@ export function PhonemeTile({ phoneme, onOpen, buttonProps }: Props) {
 				className="text-xl font-semibold"
 				onClick={() => onOpen?.(phoneme)}
 				aria-label={`Open details for ${toPhonemic(phoneme.symbol)}`}
-				{...buttonProps}
 			>
 				{phoneme.symbol}
 			</button>

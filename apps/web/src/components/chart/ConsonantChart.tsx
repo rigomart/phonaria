@@ -16,18 +16,6 @@ export function ConsonantChart() {
 	const [selected, setSelected] = React.useState<ConsonantPhoneme | null>(null);
 	const [showVoiced, setShowVoiced] = React.useState(true);
 	const [showVoiceless, setShowVoiceless] = React.useState(true);
-	const [, setFocusIdx] = React.useState<{ r: number; c: number }>({ r: 0, c: 0 });
-	const tableRef = React.useRef<HTMLTableElement | null>(null);
-
-	function moveFocus(dr: number, dc: number) {
-		setFocusIdx((idx) => {
-			const r = Math.max(0, Math.min(MANNERS.length - 1, idx.r + dr));
-			const c = Math.max(0, Math.min(PLACES.length - 1, idx.c + dc));
-			const el = tableRef.current?.querySelector<HTMLButtonElement>(`button[data-cell="${r}-${c}"]`);
-			el?.focus();
-			return { r, c };
-		});
-	}
 
 	function handleOpen(p: ConsonantPhoneme) {
 		setSelected(p);
@@ -60,7 +48,7 @@ export function ConsonantChart() {
 						</Button>
 					</div>
 				</div>
-				<table ref={tableRef} className="w-full border-collapse text-sm">
+				<table className="w-full border-collapse text-sm">
 					<thead>
 						<tr>
 							<th className="sticky left-0 z-10 bg-background p-2 text-left">Manner \\ Place</th>
@@ -72,12 +60,12 @@ export function ConsonantChart() {
 						</tr>
 					</thead>
 					<tbody>
-						{MANNERS.map((manner, r) => (
+						{MANNERS.map((manner) => (
 							<tr key={manner}>
 								<th className="sticky left-0 z-10 bg-background p-2 text-left capitalize">
 									{manner}
 								</th>
-								{PLACES.map((place, c) => {
+								{PLACES.map((place) => {
 									const p = grid[manner][place];
 									const allowed = p
 										? (p.articulation.voicing === "voiced" && showVoiced) ||
@@ -89,20 +77,7 @@ export function ConsonantChart() {
 												<Tooltip>
 													<TooltipTrigger asChild>
 														<div>
-															<PhonemeTile
-																phoneme={p}
-																onOpen={handleOpen}
-																buttonProps={{
-																	id: `cell-${r}-${c}`,
-																	onKeyDown: (e) => {
-																		if (e.key === "ArrowDown") moveFocus(1, 0);
-																		else if (e.key === "ArrowUp") moveFocus(-1, 0);
-																		else if (e.key === "ArrowRight") moveFocus(0, 1);
-																		else if (e.key === "ArrowLeft") moveFocus(0, -1);
-																		else if (e.key === "Enter") handleOpen(p);
-																	},
-																}}
-															/>
+															<PhonemeTile phoneme={p} onOpen={handleOpen} />
 														</div>
 													</TooltipTrigger>
 													<TooltipContent>
