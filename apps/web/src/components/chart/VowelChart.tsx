@@ -26,21 +26,7 @@ const FRONTS: VowelPhoneme["articulation"]["frontness"][] = [
 	"back",
 ];
 
-function buildVowelGrid(items: VowelPhoneme[]) {
-	const grid: Record<string, Record<string, VowelPhoneme | null>> = {};
-	for (const h of HEIGHTS) {
-		grid[h] = {} as Record<string, VowelPhoneme | null>;
-		for (const f of FRONTS) grid[h][f] = null;
-	}
-	for (const v of items) {
-		const { height, frontness } = v.articulation;
-		if (grid[height] && frontness in grid[height]) grid[height][frontness] = v;
-	}
-	return grid;
-}
-
 export function VowelChart() {
-	const grid = buildVowelGrid(vowels);
 	const [open, setOpen] = React.useState(false);
 	const [selected, setSelected] = React.useState<VowelPhoneme | null>(null);
 
@@ -51,53 +37,39 @@ export function VowelChart() {
 
 	return (
 		<>
-			<div className="mt-4 w-full overflow-x-auto">
-				<div className="mb-3 text-xs text-muted-foreground">Rows: height • Columns: frontness</div>
-				<table className="w-full border-collapse text-sm">
-					<thead>
-						<tr>
-							<th className="sticky left-0 z-10 bg-background p-2 text-left">
-								Height \\ Frontness
-							</th>
-							{FRONTS.map((f) => (
-								<th key={f} className="border p-2 capitalize">
-									{f}
-								</th>
-							))}
-						</tr>
-					</thead>
-					<tbody>
-						{HEIGHTS.map((h) => (
-							<tr key={h}>
-								<th className="sticky left-0 z-10 bg-background p-2 text-left capitalize">{h}</th>
-								{FRONTS.map((f) => {
-									const v = grid[h][f];
-									return (
-										<td key={`${h}-${f}`} className="border p-2 align-top">
-											{v ? (
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<div>
-															<VowelTile phoneme={v} onOpen={handleOpen} />
-														</div>
-													</TooltipTrigger>
-													<TooltipContent>
-														<div className="max-w-xs text-pretty">
-															<span className="font-medium">{v.symbol}</span> {toPhonemic(v.symbol)}{" "}
-															— {v.description}
-														</div>
-													</TooltipContent>
-												</Tooltip>
-											) : (
-												<div className="h-12" />
-											)}
-										</td>
-									);
-								})}
-							</tr>
-						))}
-					</tbody>
-				</table>
+			<div className="mt-4 space-y-6">
+				{HEIGHTS.map((h) => {
+					const items = vowels
+						.filter((v) => v.articulation.height === h)
+						.sort(
+							(a, b) =>
+								FRONTS.indexOf(a.articulation.frontness as (typeof FRONTS)[number]) -
+								FRONTS.indexOf(b.articulation.frontness as (typeof FRONTS)[number]),
+						);
+					if (!items.length) return null;
+					return (
+						<section key={h}>
+							<h3 className="mb-2 text-sm font-medium capitalize text-muted-foreground">{h}</h3>
+							<div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+								{items.map((v) => (
+									<Tooltip key={v.symbol}>
+										<TooltipTrigger asChild>
+											<div>
+												<VowelTile phoneme={v} onOpen={handleOpen} />
+											</div>
+										</TooltipTrigger>
+										<TooltipContent>
+											<div className="max-w-xs text-pretty">
+												<span className="font-medium">{v.symbol}</span> {toPhonemic(v.symbol)} —{" "}
+												{v.description}
+											</div>
+										</TooltipContent>
+									</Tooltip>
+								))}
+							</div>
+						</section>
+					);
+				})}
 			</div>
 
 			<Dialog open={open} onOpenChange={setOpen}>

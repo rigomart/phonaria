@@ -5,12 +5,11 @@ import { AudioButton } from "@/components/audio/AudioButton";
 import { PhonemeTile } from "@/components/phoneme/PhonemeTile";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { buildConsonantGrid, MANNERS, PLACES } from "@/lib/phoneme-helpers";
+import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
 export function ConsonantChart() {
-	const grid = buildConsonantGrid(consonants);
 	const [open, setOpen] = React.useState(false);
 	const [selected, setSelected] = React.useState<ConsonantPhoneme | null>(null);
 
@@ -21,53 +20,41 @@ export function ConsonantChart() {
 
 	return (
 		<>
-			<div className="mt-4 w-full overflow-x-auto">
-				<div className="mb-3 text-xs text-muted-foreground">Rows: manner • Columns: place</div>
-				<table className="w-full border-collapse text-sm">
-					<thead>
-						<tr>
-							<th className="sticky left-0 z-10 bg-background p-2 text-left">Manner \\ Place</th>
-							{PLACES.map((place) => (
-								<th key={place} className="border p-2 capitalize">
-									{place}
-								</th>
-							))}
-						</tr>
-					</thead>
-					<tbody>
-						{MANNERS.map((manner) => (
-							<tr key={manner}>
-								<th className="sticky left-0 z-10 bg-background p-2 text-left capitalize">
-									{manner}
-								</th>
-								{PLACES.map((place) => {
-									const p = grid[manner][place];
-									return (
-										<td key={`${manner}-${place}`} className="border p-2 align-top">
-											{p ? (
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<div>
-															<PhonemeTile phoneme={p} onOpen={handleOpen} />
-														</div>
-													</TooltipTrigger>
-													<TooltipContent>
-														<div className="max-w-xs text-pretty">
-															<span className="font-medium">{p.symbol}</span> {toPhonemic(p.symbol)}{" "}
-															— {p.description}
-														</div>
-													</TooltipContent>
-												</Tooltip>
-											) : (
-												<div className="h-12" />
-											)}
-										</td>
-									);
-								})}
-							</tr>
-						))}
-					</tbody>
-				</table>
+			<div className="mt-4 space-y-6">
+				{MANNERS.map((manner) => {
+					const items = consonants
+						.filter((c) => c.articulation.manner === manner)
+						.sort(
+							(a, b) =>
+								PLACES.indexOf(a.articulation.place as (typeof PLACES)[number]) -
+								PLACES.indexOf(b.articulation.place as (typeof PLACES)[number]),
+						);
+					if (!items.length) return null;
+					return (
+						<section key={manner}>
+							<h3 className="mb-2 text-sm font-medium capitalize text-muted-foreground">
+								{manner}
+							</h3>
+							<div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+								{items.map((p) => (
+									<Tooltip key={p.symbol}>
+										<TooltipTrigger asChild>
+											<div>
+												<PhonemeTile phoneme={p} onOpen={handleOpen} />
+											</div>
+										</TooltipTrigger>
+										<TooltipContent>
+											<div className="max-w-xs text-pretty">
+												<span className="font-medium">{p.symbol}</span> {toPhonemic(p.symbol)} —{" "}
+												{p.description}
+											</div>
+										</TooltipContent>
+									</Tooltip>
+								))}
+							</div>
+						</section>
+					);
+				})}
 			</div>
 
 			<Dialog open={open} onOpenChange={setOpen}>
