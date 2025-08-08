@@ -5,12 +5,13 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc -b && vite build",
+		"build": "tsc --noEmit -p tsconfig.app.json && vite build",
 		"lint": "biome check --write",
-		"typecheck": "tsc -b --pretty false",
+		"typecheck": "tsc --noEmit -p tsconfig.app.json",
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"shared-data": "workspace:*",
 		"@radix-ui/react-dialog": "^1.1.14",
 		"@radix-ui/react-slot": "^1.2.3",
 		"@radix-ui/react-tabs": "^1.1.12",
