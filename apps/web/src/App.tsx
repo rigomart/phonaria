@@ -1,6 +1,6 @@
 import "./index.css";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConsonantChart } from "@/components/chart/ConsonantChart";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function App() {
 	return (
