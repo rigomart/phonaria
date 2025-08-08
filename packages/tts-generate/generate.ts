@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { ElevenLabsClient, ElevenLabsError } from "@elevenlabs/elevenlabs-js";
 import { config } from "dotenv";
-import { consonants, vowels } from "shared-data";
+import { consonants, phonixUtils, vowels } from "shared-data";
 
 config();
 
@@ -18,7 +18,7 @@ if (!apiKey) {
 }
 
 const client = new ElevenLabsClient({ apiKey });
-const outputDir = path.resolve(__dirname, "../../apps/web/public/audio/phoneme-examples");
+const outputDir = path.resolve(__dirname, "../../apps/web/public/audio/examples");
 const voiceId = "MFZUKuGQUsGJPQjTS4wC"; // Jon voice ID
 
 /**
@@ -79,7 +79,8 @@ function ensureOutputDirectory(): void {
  */
 async function generateWordAudio(word: string): Promise<GenerationResult> {
 	try {
-		const outputPath = path.join(outputDir, `${word}.mp3`);
+		const fileName = `${phonixUtils.slugifyWord(word)}.mp3`;
+		const outputPath = path.join(outputDir, fileName);
 
 		if (fs.existsSync(outputPath)) {
 			console.log(`⏭️  Skipping ${word} (already exists)`);
@@ -120,7 +121,7 @@ async function generateWordAudio(word: string): Promise<GenerationResult> {
 			fileStream.on("error", reject);
 		});
 
-		console.log(`✅ Generated: ${word}.mp3`);
+		console.log(`✅ Generated: ${fileName}`);
 		return { word, success: true };
 	} catch (error) {
 		const errorMessage =
