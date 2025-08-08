@@ -1,5 +1,6 @@
 import "./index.css";
 import { ConsonantChart } from "@/components/chart/ConsonantChart";
+import { VowelChart } from "@/components/chart/VowelChart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function App() {
@@ -21,8 +22,7 @@ function App() {
 						<ConsonantChart />
 					</TabsContent>
 					<TabsContent value="vowels">
-						{/* TODO: VowelChart goes here */}
-						<p className="text-sm text-muted-foreground">Vowel chart will render here.</p>
+						<VowelChart />
 					</TabsContent>
 				</Tabs>
 			</main>
