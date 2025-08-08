@@ -1,14 +1,14 @@
 # TTS Generate Package
 
-This package is responsible for generating Text-to-Speech (TTS) audio files for the example words used in the Phonexis application. It uses the [ElevenLabs API](https://elevenlabs.io/) to create high-quality audio for each unique word found in the shared phonemes data.
+This package is responsible for generating Text-to-Speech (TTS) audio files for the example words used in the Phonix application. It uses the [ElevenLabs API](https://elevenlabs.io/) to create high-quality audio for each unique word found in the shared phonemes data.
 
 ## How It Works
 
 The script performs the following actions:
 
-1.  **Extracts Words**: It reads the `packages/shared/src/phonemes.json` file to gather a unique list of all example words.
+1.  **Extracts Words**: It gathers a unique list of all example words from the `shared-data` package (consonants, vowels, and allophones).
 2.  **Generates Audio**: It iterates through the list of words and uses the ElevenLabs API to generate an MP3 audio file for each one.
-3.  **Saves Files**: The generated `.mp3` files are saved to the `apps/web/public/audio/` directory, making them available to the frontend application.
+3.  **Saves Files**: The generated `.mp3` files are saved to the `apps/web/public/audio/examples/` directory, making them available to the frontend application.
 
 ## Setup
 
@@ -31,7 +31,7 @@ To generate the audio files, run the following command from the root of the mono
 pnpm run --filter tts-generate generate
 ```
 
-The script will process all unique words and save the corresponding `.mp3` files to `apps/web/public/audio/`.
+The script will process all unique words and save the corresponding `.mp3` files to `apps/web/public/audio/examples/`.
 
 ### Generating a Sample
 
