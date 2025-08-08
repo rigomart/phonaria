@@ -1,13 +1,13 @@
 # Shared Data Package
 
-This package contains shared TypeScript data structures and phoneme definitions for the Phonexis project.
+This package contains shared TypeScript data structures and phoneme definitions for the Phonix project.
 
 ## Structure
 
 The package exports phoneme data through TypeScript modules:
 
 - `consonants.ts` - Contains the 24 consonant phonemes with detailed articulation data
-- `vowels.ts` - Contains the 16 vowel phonemes (11 monophthongs, 4 diphthongs, 1 rhotic vowel)
+- `vowels.ts` - Contains the 16 vowel phonemes (10 monophthongs, 5 diphthongs, 1 rhotic vowel)
 - `types.ts` - TypeScript type definitions for phoneme data structures
 - `index.ts` - Main export file that combines all data
 
@@ -24,13 +24,13 @@ The package exports phoneme data through TypeScript modules:
 
 **Vowels (16)**
 
-- **Monophthongs (11):**
+- **Monophthongs (10):**
   - **High:** /i/, /ɪ/, /u/, /ʊ/
   - **Mid:** /ɛ/, /ə/, /ʌ/, /ɔ/
   - **Low:** /æ/, /ɑ/
   - **Rhotic:** /ɝ/ (with /ɚ/ allophone)
 
-- **Diphthongs (5):** /eɪ/, /aɪ/, /oɪ/, /aʊ/, /oʊ/
+- **Diphthongs (5):** /eɪ/, /aɪ/, /ɔɪ/, /aʊ/, /oʊ/
 
 ## Data Structure
 
@@ -42,7 +42,7 @@ Each phoneme object includes:
 - **Articulation**: Detailed phonetic properties
   - For consonants: `place`, `manner`, `voicing`
   - For vowels: `height`, `frontness`, `roundness`, `tenseness`, `rhoticity` (if applicable)
-- **Examples**: Array of example words with audio URLs and phonemic transcriptions
+- **Examples**: Array of example words with phonemic transcriptions (no surrounding slashes). Use `getExampleAudioUrl(word)` to derive audio paths.
 - **Description**: Human-readable phonetic description
 - **Guide**: Pronunciation guidance for learners
 - **Allophones**: Contextual variants (where applicable)
@@ -50,17 +50,23 @@ Each phoneme object includes:
 ## Usage
 
 ```typescript
-import { consonants, vowels } from '@phonexis/shared-data';
-import type { ConsonantPhoneme, VowelPhoneme } from '@phonexis/shared-data';
+import { consonants, vowels, phonixUtils } from 'shared-data';
+import type { ConsonantPhoneme, VowelPhoneme } from 'shared-data';
 
 // Access all consonants
 console.log(consonants); // Array of 24 consonant phonemes
 
-// Access all vowels  
+// Access all vowels
 console.log(vowels); // Array of 16 vowel phonemes
 
 // Find specific phoneme
 const pPhoneme = consonants.find(c => c.symbol === 'p');
+
+// Build audio URL on the fly from the example word
+const audioUrl = phonixUtils.getExampleAudioUrl('make'); // /audio/examples/make.mp3
+
+// Display with slashes in the UI
+const shown = phonixUtils.toPhonemic('bʌt'); // "/bʌt/"
 ```
 
 ## Pedagogical Design Principles
@@ -80,6 +86,7 @@ The transcription system balances phonetic accuracy with pedagogical effectivene
 
 - **`/ɹ/` vs. `/r/`**: We use `/ɹ/` for phonetic accuracy in representing the American English rhotic consonant
 - **`/ɡ/` vs. `/g/`**: We use `/ɡ/` (IPA voiced velar stop) rather than `/g/` to maintain IPA standard compliance
+- **No stored slashes**: Example transcriptions are stored without slashes (e.g., `bʌt`). The UI can add slashes when rendering.
 - **Allophone inclusion**: Only pedagogically significant allophones are included:
   - **Flap /ɾ/**: For /t/ and /d/ in intervocalic positions (e.g., "better")
   - **Glottal stop /ʔ/**: For /t/ before syllabic nasals (e.g., "button")  

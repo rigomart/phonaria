@@ -1,6 +1,5 @@
 export interface ExampleWord {
 	word: string;
-	audioUrl: string;
 	phonemic: string;
 }
 
