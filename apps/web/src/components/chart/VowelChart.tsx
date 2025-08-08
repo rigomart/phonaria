@@ -4,6 +4,8 @@ import { phonixUtils, vowels } from "shared-data";
 import { AudioButton } from "@/components/audio/AudioButton";
 import { VowelTile } from "@/components/phoneme/VowelTile";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
@@ -42,6 +44,10 @@ export function VowelChart() {
 	const grid = buildVowelGrid(vowels);
 	const [open, setOpen] = React.useState(false);
 	const [selected, setSelected] = React.useState<VowelPhoneme | null>(null);
+	const [showRounded, setShowRounded] = React.useState(true);
+	const [showUnrounded, setShowUnrounded] = React.useState(true);
+	const [showTense, setShowTense] = React.useState(true);
+	const [showLax, setShowLax] = React.useState(true);
 
 	function handleOpen(p: VowelPhoneme) {
 		setSelected(p);
@@ -51,6 +57,48 @@ export function VowelChart() {
 	return (
 		<>
 			<div className="mt-4 w-full overflow-x-auto">
+				<div className="mb-3 flex items-center justify-between gap-3">
+					<div className="text-xs text-muted-foreground">Rows: height • Columns: frontness</div>
+					<div className="flex flex-wrap items-center gap-2">
+						<Button
+							type="button"
+							size="sm"
+							variant={showRounded ? "default" : "outline"}
+							onClick={() => setShowRounded((v) => !v)}
+							aria-pressed={showRounded}
+						>
+							Rounded
+						</Button>
+						<Button
+							type="button"
+							size="sm"
+							variant={showUnrounded ? "default" : "outline"}
+							onClick={() => setShowUnrounded((v) => !v)}
+							aria-pressed={showUnrounded}
+						>
+							Unrounded
+						</Button>
+						<div className="mx-2 h-5 w-px bg-border" />
+						<Button
+							type="button"
+							size="sm"
+							variant={showTense ? "default" : "outline"}
+							onClick={() => setShowTense((v) => !v)}
+							aria-pressed={showTense}
+						>
+							Tense
+						</Button>
+						<Button
+							type="button"
+							size="sm"
+							variant={showLax ? "default" : "outline"}
+							onClick={() => setShowLax((v) => !v)}
+							aria-pressed={showLax}
+						>
+							Lax
+						</Button>
+					</div>
+				</div>
 				<table className="w-full border-collapse text-sm">
 					<thead>
 						<tr>
@@ -70,9 +118,30 @@ export function VowelChart() {
 								<th className="sticky left-0 z-10 bg-background p-2 text-left capitalize">{h}</th>
 								{FRONTS.map((f) => {
 									const v = grid[h][f];
+									const allowed = v
+										? ((v.articulation.roundness === "rounded" && showRounded) ||
+											(v.articulation.roundness === "unrounded" && showUnrounded)) &&
+										  ((v.articulation.tenseness === "tense" && showTense) ||
+											(v.articulation.tenseness === "lax" && showLax))
+										: false;
 									return (
 										<td key={`${h}-${f}`} className="border p-2 align-top">
-											{v ? <VowelTile phoneme={v} onOpen={handleOpen} /> : <div className="h-12" />}
+											{v && allowed ? (
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<div>
+															<VowelTile phoneme={v} onOpen={handleOpen} />
+														</div>
+													</TooltipTrigger>
+													<TooltipContent>
+														<div className="max-w-xs text-pretty">
+															<span className="font-medium">{v.symbol}</span> {toPhonemic(v.symbol)} — {v.description}
+														</div>
+													</TooltipContent>
+												</Tooltip>
+											) : (
+												<div className="h-12" />
+											)}
 										</td>
 									);
 								})}
