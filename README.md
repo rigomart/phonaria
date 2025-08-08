@@ -14,19 +14,28 @@ Phonix addresses these with a friendly IPA presentation, practical example words
 
 ## Current status (MVP in progress)
 
-Implemented in this repo:
-- packages/shared-data: Typed phoneme data (40 phonemes) + small utilities for audio paths and display
-- packages/tts-generate: Scripted audio generation via ElevenLabs for example words
+Implemented:
+- apps/web: Mobile‑first UI with consonant and vowel browsers, dialogs, audio, and dark mode
+- packages/shared-data: Typed phoneme data (40 phonemes) + utilities (audio URLs, display helpers)
+- packages/tts-generate: Scripted audio generation for example words (optional)
 
-Not implemented yet (planned next):
-- Web app UI (React + TypeScript + shadcn/ui)
+Planned next:
+- Interactive vowel chart (trapezoid) and transcription (G2P) flow
 - API layer for G2P/LLM glue (Hono.js)
-- Sentence analysis flow and interactive IPA chart UI
 
 ## Monorepo layout
 
 - apps/
-	- (empty for now; planned: web app)
+	- web/
+		- Vite + React + TypeScript + Tailwind v4 + shadcn/ui components
+		- Components (selected):
+			- `components/chart/ConsonantChart.tsx`: Cards grouped by manner; dialog with articulation, examples, allophones; includes 1:1 illustration placeholder
+			- `components/chart/VowelChart.tsx`: Cards grouped by height (temporary until interactive chart)
+			- `components/phoneme/PhonemeTile.tsx`, `components/phoneme/VowelTile.tsx`: Symbol button + quick audio
+			- `components/audio/AudioButton.tsx`: Accessible audio playback
+			- `components/theme-provider.tsx`: Class‑based theme (light/dark/system)
+		- Styling: dark mode tokens via CSS variables; Tailwind dark variant via `.dark`
+		- UI primitives imported from `@/components/ui/*` (shadcn/ui)
 - packages/
 	- shared-data/
 		- src/consonants.ts, src/vowels.ts: 24 consonants, 16 vowels (10 monophthongs, 5 diphthongs, 1 rhotic)
@@ -70,13 +79,30 @@ The tts-generate package uses the ElevenLabs API to generate example word audio 
 
 ## Tech plan (next steps)
 
-- Frontend: React + TypeScript + shadcn/ui (mobile-first dark UI)
+- Frontend: React + TypeScript + Tailwind v4 + shadcn/ui (mobile-first dark UI)
 - Backend/API: Hono.js, integrates with an OpenAI fine-tuned model for G2P
 - Audio: One short model clip per example word (derived by slug)
 
+## Web app (apps/web)
+
+- Stack: Vite + React + TypeScript, Tailwind v4, shadcn/ui (Radix under the hood)
+- Theming: `ThemeProvider` toggles `light`/`dark`/`system` by applying an `html` class; preference persisted in `localStorage` (key: `phonix-ui-theme`); defaults to system
+- Data: Consumes `shared-data` for phoneme sets and helpers
+	- Audio URLs: `phonixUtils.getExampleAudioUrl(word)` maps to `/audio/examples/<slug>.mp3`
+	- Display: `phonixUtils.toPhonemic(ipa)` renders slashes for UI
+- Current views:
+	- Consonants: cards grouped by manner (sorted by place); tooltip on hover; dialog with articulation, examples (with audio), and allophones; placeholder box for future side‑view illustration
+	- Vowels: cards grouped by height (temporary); tooltip + dialog with articulation and examples (with audio)
+- Accessibility: buttons with labels, Radix dialogs/tooltips, keyboard focus via native buttons
+
+How to run (from repository root):
+- Install dependencies: pnpm install
+- Start web app: pnpm -C apps/web dev (or pnpm --filter web dev)
+- Optional: generate audio with ElevenLabs via `packages/tts-generate` (outputs to `apps/web/public/audio/examples/`)
+
 ## Roadmap
 
-1) Wire the web app UI to render the IPA chart from shared-data and play audio via getExampleAudioUrl
+1) Interactive vowel chart and improved consonant visuals (illustrations)
 2) Add sentence analysis (G2P) and show phoneme-level breakdowns with audio models
 3) Incremental content: minimal pairs and common spelling patterns per phoneme
 4) Optional: progress, personalization—out of scope for MVP
