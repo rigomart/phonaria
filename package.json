@@ -1,16 +1,21 @@
 {
-  "name": "phonix",
-  "version": "0.0.1",
-  "description": "Web application focused on phoneme-based learning using the International Phonetic Alphabet (IPA)",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Miguel Rodriguez",
-  "license": "MIT",
-  "packageManager": "pnpm@10.14.0",
-  "devDependencies": {
-    "@biomejs/biome": "^2.1.3",
-    "typescript": "^5.9.2"
-  }
+	"name": "phonix",
+	"version": "0.0.1",
+	"description": "Web application focused on phoneme-based learning using the International Phonetic Alphabet (IPA)",
+	"scripts": {
+		"dev": "pnpm -r --parallel --if-present run dev",
+		"build": "pnpm -r --if-present run build",
+		"lint": "pnpm -r --if-present run lint",
+		"format": "pnpm -r --if-present run format",
+		"typecheck": "pnpm -r --if-present run typecheck",
+		"test": "pnpm -r --if-present run test"
+	},
+	"keywords": [],
+	"author": "Miguel Rodriguez",
+	"license": "MIT",
+	"packageManager": "pnpm@10.14.0",
+	"devDependencies": {
+		"@biomejs/biome": "^2.1.3",
+		"typescript": "^5.9.2"
+	}
 }
