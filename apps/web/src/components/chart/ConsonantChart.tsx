@@ -3,7 +3,9 @@ import type { ConsonantPhoneme } from "shared-data";
 import { consonants, phonixUtils } from "shared-data";
 import { AudioButton } from "@/components/audio/AudioButton";
 import { PhonemeTile } from "@/components/phoneme/PhonemeTile";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { buildConsonantGrid, MANNERS, PLACES } from "@/lib/phoneme-helpers";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
@@ -12,6 +14,8 @@ export function ConsonantChart() {
 	const grid = buildConsonantGrid(consonants);
 	const [open, setOpen] = React.useState(false);
 	const [selected, setSelected] = React.useState<ConsonantPhoneme | null>(null);
+	const [showVoiced, setShowVoiced] = React.useState(true);
+	const [showVoiceless, setShowVoiceless] = React.useState(true);
 
 	function handleOpen(p: ConsonantPhoneme) {
 		setSelected(p);
@@ -21,6 +25,29 @@ export function ConsonantChart() {
 	return (
 		<>
 			<div className="mt-4 w-full overflow-x-auto">
+				<div className="mb-3 flex items-center justify-between gap-3">
+					<div className="text-xs text-muted-foreground">Rows: manner • Columns: place</div>
+					<div className="flex items-center gap-2">
+						<Button
+							type="button"
+							size="sm"
+							variant={showVoiced ? "default" : "outline"}
+							onClick={() => setShowVoiced((v) => !v)}
+							aria-pressed={showVoiced}
+						>
+							Voiced
+						</Button>
+						<Button
+							type="button"
+							size="sm"
+							variant={showVoiceless ? "default" : "outline"}
+							onClick={() => setShowVoiceless((v) => !v)}
+							aria-pressed={showVoiceless}
+						>
+							Voiceless
+						</Button>
+					</div>
+				</div>
 				<table className="w-full border-collapse text-sm">
 					<thead>
 						<tr>
@@ -40,10 +67,26 @@ export function ConsonantChart() {
 								</th>
 								{PLACES.map((place) => {
 									const p = grid[manner][place];
+									const allowed = p
+										? (p.articulation.voicing === "voiced" && showVoiced) ||
+											(p.articulation.voicing === "voiceless" && showVoiceless)
+										: false;
 									return (
 										<td key={`${manner}-${place}`} className="border p-2 align-top">
-											{p ? (
-												<PhonemeTile phoneme={p} onOpen={handleOpen} />
+											{p && allowed ? (
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<div>
+															<PhonemeTile phoneme={p} onOpen={handleOpen} />
+														</div>
+													</TooltipTrigger>
+													<TooltipContent>
+														<div className="max-w-xs text-pretty">
+															<span className="font-medium">{p.symbol}</span> {toPhonemic(p.symbol)}{" "}
+															— {p.description}
+														</div>
+													</TooltipContent>
+												</Tooltip>
 											) : (
 												<div className="h-12" />
 											)}
