@@ -3,6 +3,15 @@ import type { ConsonantPhoneme } from "shared-data";
 import { consonants, phonixUtils } from "shared-data";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Table,
+	TableBody,
+	TableCaption,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
 
@@ -41,52 +50,45 @@ export function ConsonantChart() {
 						<div className="h-6 w-6 rounded-full border bg-primary/10" />
 						<span>Voiced</span>
 					</div>
-					<div className="flex items-center gap-1">
-						<span className="text-muted-foreground">Tap symbol: details</span>
-					</div>
 				</div>
 
 				<div className="overflow-x-auto">
-					<table
+					<Table
 						aria-label="Consonant chart organized by manner and place of articulation"
-						className="min-w-[60rem] border-collapse text-sm"
+						className="min-w-[60rem] text-sm"
 					>
-						<caption className="caption-top mb-3 text-sm text-muted-foreground font-normal">
+						<TableCaption className="mb-3 text-sm text-muted-foreground font-normal">
 							Rows: <span className="font-medium">Manner of articulation</span> • Columns:{" "}
 							<span className="font-medium">Place of articulation</span>
-						</caption>
-						<thead className="text-muted-foreground font-medium uppercase tracking-wide text-xs">
-							<tr className="border-b">
-								<th
-									scope="col"
-									className="pl-3 pr-4 py-3 text-left font-medium text-xs bg-muted/40 rounded-tl align-bottom"
-								>
+						</TableCaption>
+						<TableHeader className="text-xs">
+							<TableRow>
+								<TableHead className="pl-3 pr-4 py-3 text-left font-medium text-xs rounded-tl align-bottom">
 									<span className="sr-only">Corner (see caption for axis labels)</span>
-								</th>
+								</TableHead>
 								{PLACES.map((place) => (
-									<th
+									<TableHead
 										key={place}
-										scope="col"
 										className="px-3 py-3 text-center font-medium capitalize text-xs"
 									>
-										{place.replace("postalveolar", "post-alv")}
-									</th>
+										{place}
+									</TableHead>
 								))}
-							</tr>
-						</thead>
-						<tbody>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
 							{MANNERS.map((manner) => (
-								<tr key={manner} className={`border-b last:border-b-0`}>
-									<th
+								<TableRow key={manner} className="border-b last:border-b-0">
+									<TableHead
 										scope="row"
 										className="px-3 text-sm font-medium capitalize text-muted-foreground text-left align-middle"
 									>
 										{manner}
-									</th>
+									</TableHead>
 									{PLACES.map((place) => {
 										const items = getCellPhonemes(place, manner);
 										return (
-											<td key={place} className="text-center align-middle">
+											<TableCell key={place} className="text-center align-middle">
 												{items.length === 0 ? (
 													<div className="flex h-14 items-center justify-center">
 														<div
@@ -120,14 +122,6 @@ export function ConsonantChart() {
 																		<div className="font-medium">
 																			{toPhonemic(p.symbol)} {p.description}
 																		</div>
-																		{p.examples[0] ? (
-																			<div className="flex items-center gap-1">
-																				<span>{p.examples[0].word}</span>
-																				<span className="text-muted-foreground">
-																					{toPhonemic(p.examples[0].phonemic)}
-																				</span>
-																			</div>
-																		) : null}
 																		<div className="text-[10px] text-muted-foreground">
 																			Tap for details
 																		</div>
@@ -137,13 +131,13 @@ export function ConsonantChart() {
 														))}
 													</div>
 												)}
-											</td>
+											</TableCell>
 										);
 									})}
-								</tr>
+								</TableRow>
 							))}
-						</tbody>
-					</table>
+						</TableBody>
+					</Table>
 				</div>
 			</div>
 
@@ -154,20 +148,19 @@ export function ConsonantChart() {
 					setOpen(o);
 				}}
 			>
-				<DialogContent className="max-w-3xl">
+				<DialogContent className="max-w-4xl">
 					{selected ? (
 						<div className="flex flex-col gap-10">
 							{/* Hero + Illustration */}
-							<div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_16rem]">
+							<div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_16rem]">
 								<div className="space-y-5">
 									<DialogHeader className="space-y-4 p-0">
-										<DialogTitle className="flex items-start gap-4">
+										<DialogTitle className="flex items-center">
+											<span className="text-5xl text-muted-foreground">/</span>
 											<span className="text-6xl font-semibold leading-none tracking-tight">
 												{selected.symbol}
 											</span>
-											<span className="mt-3 text-xl text-muted-foreground">
-												{toPhonemic(selected.symbol)}
-											</span>
+											<span className="text-5xl text-muted-foreground">/</span>
 										</DialogTitle>
 										<div className="flex flex-wrap gap-2">
 											<span className="rounded-full bg-muted px-2 py-0.5 text-xs capitalize">
@@ -193,7 +186,9 @@ export function ConsonantChart() {
 										</section>
 									) : null}
 								</div>
-								<div className="md:sticky md:top-4">
+
+								{/* Articulation Illustration */}
+								<div className="mt-5">
 									<div
 										className="aspect-square w-full max-w-[16rem] rounded-md border bg-muted/30 flex items-center justify-center text-xs text-muted-foreground"
 										role="img"
@@ -236,7 +231,7 @@ export function ConsonantChart() {
 							{/* Allophones */}
 							{selected.allophones?.length ? (
 								<section className="space-y-4">
-									<h3 className="text-sm font-medium">Allophones & Context</h3>
+									<h3 className="text-sm font-medium">Allophones</h3>
 									<ul className="space-y-4">
 										{selected.allophones.map((allo) => (
 											<li
