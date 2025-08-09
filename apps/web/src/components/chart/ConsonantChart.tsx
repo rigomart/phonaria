@@ -15,11 +15,16 @@ function getCellPhonemes(place: string, manner: string): ConsonantPhoneme[] {
 		.sort((a) => (a.articulation.voicing === "voiceless" ? -1 : 1));
 }
 
-// Plays first example word for a phoneme if available
+// Play first example for a phoneme
 function playExample(p: ConsonantPhoneme) {
 	const first = p.examples[0];
 	if (!first) return;
-	const audio = new Audio(getExampleAudioUrl(first.word));
+	playWord(first.word);
+}
+
+// Play audio for a specific example word
+function playWord(word: string) {
+	const audio = new Audio(getExampleAudioUrl(word));
 	audio.play().catch(() => {
 		/* ignore */
 	});
@@ -125,18 +130,20 @@ export function ConsonantChart() {
 																	</button>
 																</TooltipTrigger>
 																<TooltipContent side="top" align="center">
-																	<div className="max-w-[14rem] text-pretty text-xs leading-snug">
+																	<div className="max-w-[12rem] text-pretty text-xs leading-snug">
 																		<div className="font-medium">
 																			{toPhonemic(p.symbol)} {p.description}
 																		</div>
 																		{p.examples[0] ? (
-																			<div>
-																				Example: {p.examples[0].word}{" "}
-																				{toPhonemic(p.examples[0].phonemic)}
+																			<div className="flex items-center gap-1">
+																				<span>{p.examples[0].word}</span>
+																				<span className="text-muted-foreground">
+																					{toPhonemic(p.examples[0].phonemic)}
+																				</span>
 																			</div>
 																		) : null}
 																		<div className="text-[10px] text-muted-foreground">
-																			Tap to play • Info for details
+																			Info for full details
 																		</div>
 																	</div>
 																</TooltipContent>
@@ -154,38 +161,67 @@ export function ConsonantChart() {
 				</div>
 			</div>
 
-			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogContent className="max-w-md">
+			<Dialog
+				open={open}
+				onOpenChange={(o) => {
+					if (!o) setSelected(null);
+					setOpen(o);
+				}}
+			>
+				<DialogContent className="max-w-3xl">
 					{selected ? (
-						<div className="space-y-4">
-							<DialogHeader>
-								<DialogTitle className="text-2xl font-semibold">
-									{selected.symbol}{" "}
-									<span className="ml-2 text-base text-muted-foreground">
-										{toPhonemic(selected.symbol)}
-									</span>
-								</DialogTitle>
-								<p className="text-sm text-muted-foreground">{selected.description}</p>
-							</DialogHeader>
-							<section className="text-sm">
-								<div className="flex flex-wrap gap-2">
-									<span className="rounded-full bg-muted px-2 py-0.5 text-xs capitalize">
-										{selected.articulation.place}
-									</span>
-									<span className="rounded-full bg-muted px-2 py-0.5 text-xs capitalize">
-										{selected.articulation.manner}
-									</span>
-									<span className="rounded-full bg-muted px-2 py-0.5 text-xs capitalize">
-										{selected.articulation.voicing}
-									</span>
+						<div className="flex flex-col gap-8">
+							{/* Hero + Illustration */}
+							<div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_16rem]">
+								<div className="space-y-4">
+									<DialogHeader className="space-y-3 p-0">
+										<DialogTitle className="flex items-start gap-3">
+											<span className="text-5xl font-semibold leading-none tracking-tight">
+												{selected.symbol}
+											</span>
+											<span className="mt-2 text-lg text-muted-foreground">
+												{toPhonemic(selected.symbol)}
+											</span>
+										</DialogTitle>
+										<div className="flex flex-wrap gap-2">
+											<span className="rounded-full bg-muted px-2 py-0.5 text-xs capitalize">
+												{selected.articulation.voicing}
+											</span>
+											<span className="rounded-full bg-muted px-2 py-0.5 text-xs capitalize">
+												{selected.articulation.place}
+											</span>
+											<span className="rounded-full bg-muted px-2 py-0.5 text-xs capitalize">
+												{selected.articulation.manner}
+											</span>
+										</div>
+										<p className="text-sm text-muted-foreground max-w-prose">
+											{selected.description}
+										</p>
+									</DialogHeader>
+									{selected.guide ? (
+										<section className="space-y-2">
+											<h3 className="text-sm font-medium">How to Make It</h3>
+											<p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+												{selected.guide}
+											</p>
+										</section>
+									) : null}
 								</div>
-								{selected.guide ? (
-									<p className="mt-3 leading-snug text-muted-foreground">{selected.guide}</p>
-								) : null}
-							</section>
-							<section className="text-sm">
-								<h3 className="mb-1 font-medium">Examples</h3>
-								<ul className="space-y-2">
+								<div className="md:sticky md:top-4">
+									<div
+										className="aspect-square w-full max-w-[16rem] rounded-md border bg-muted/30 flex items-center justify-center text-xs text-muted-foreground"
+										role="img"
+										aria-label="Articulation illustration placeholder"
+									>
+										Illustration
+									</div>
+								</div>
+							</div>
+
+							{/* Examples */}
+							<section className="space-y-3">
+								<h3 className="text-sm font-medium">Examples</h3>
+								<ul className="grid gap-2 sm:grid-cols-2">
 									{selected.examples.map((ex) => (
 										<li
 											key={ex.word}
@@ -193,13 +229,16 @@ export function ConsonantChart() {
 										>
 											<div>
 												<div className="font-medium">{ex.word}</div>
-												<div className="text-muted-foreground">{toPhonemic(ex.phonemic)}</div>
+												<div className="text-muted-foreground text-sm">
+													{toPhonemic(ex.phonemic)}
+												</div>
 											</div>
 											<Button
-												size="sm"
-												variant="outline"
-												onClick={() => playExample(selected)}
+												size="icon"
+												variant="ghost"
 												aria-label={`Play ${ex.word}`}
+												onClick={() => playWord(ex.word)}
+												className="h-8 w-8"
 											>
 												▶
 											</Button>
@@ -207,24 +246,33 @@ export function ConsonantChart() {
 									))}
 								</ul>
 							</section>
+
+							{/* Allophones */}
 							{selected.allophones?.length ? (
-								<section className="text-sm">
-									<h3 className="mb-1 font-medium">Allophones</h3>
-									<ul className="space-y-2">
+								<section className="space-y-3">
+									<h3 className="text-sm font-medium">Allophones & Context</h3>
+									<ul className="space-y-3">
 										{selected.allophones.map((allo) => (
-											<li key={allo.variant} className="rounded-md border p-2">
-												<div className="mb-1 font-medium">
-													{allo.variant} — {allo.description}
+											<li
+												key={allo.variant}
+												className="rounded-md border p-3 space-y-2 bg-muted/10"
+											>
+												<div className="flex flex-wrap items-baseline gap-2">
+													<span className="font-medium text-base">{allo.variant}</span>
+													<span className="text-sm text-muted-foreground">{allo.description}</span>
 												</div>
 												{allo.context ? (
-													<div className="mb-1 text-xs text-muted-foreground">
+													<div className="text-xs text-muted-foreground">
 														Context: {allo.context}
 													</div>
 												) : null}
 												{allo.examples?.length ? (
-													<ul className="mt-2 space-y-1">
+													<ul className="space-y-1">
 														{allo.examples.map((ex) => (
-															<li key={ex.word} className="flex items-center justify-between gap-3">
+															<li
+																key={ex.word}
+																className="flex items-center justify-between gap-3 rounded-md border p-2"
+															>
 																<div>
 																	<div className="text-sm">{ex.word}</div>
 																	<div className="text-xs text-muted-foreground">
@@ -235,7 +283,7 @@ export function ConsonantChart() {
 																	size="icon"
 																	variant="ghost"
 																	aria-label={`Play ${ex.word}`}
-																	onClick={() => playExample(selected)}
+																	onClick={() => playWord(ex.word)}
 																	className="h-6 w-6 p-0"
 																>
 																	▶
