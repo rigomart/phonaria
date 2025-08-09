@@ -12,7 +12,7 @@ function RouteComponent() {
 	const [activeSection, setActiveSection] = useState<"consonants" | "vowels">("consonants");
 
 	return (
-		<main className="mx-auto max-w-5xl px-4 py-6">
+		<main className="mx-auto max-w-6xl py-6">
 			<Tabs
 				value={activeSection}
 				onValueChange={(v) => setActiveSection(v as "consonants" | "vowels")}
