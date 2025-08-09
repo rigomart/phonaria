@@ -51,9 +51,6 @@ export function ConsonantChart() {
 						Voiced
 					</div>
 					<div className="flex items-center gap-1">
-						<span className="inline-block h-2 w-2 rounded-full bg-border" /> Empty = none
-					</div>
-					<div className="flex items-center gap-1">
 						<span className="text-muted-foreground">Tap symbol: play • Info: details</span>
 					</div>
 				</div>
