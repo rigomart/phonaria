@@ -43,17 +43,13 @@ export function ConsonantChart() {
 			<div className="mt-6 space-y-4">
 				{/* Legend */}
 				<div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-					<div className="flex items-center gap-1">
-						<span className="inline-flex h-6 w-6 items-center justify-center rounded border text-[0.85rem] font-semibold">
-							p
-						</span>{" "}
-						Voiceless
+					<div className="flex items-center gap-2">
+						<div className="h-6 w-6 rounded-full border"></div>
+						<span>Voiceless</span>
 					</div>
-					<div className="flex items-center gap-1">
-						<span className="inline-flex h-6 w-6 items-center justify-center rounded bg-primary/10 text-[0.85rem] font-semibold">
-							b
-						</span>{" "}
-						Voiced
+					<div className="flex items-center gap-2">
+						<div className="h-6 w-6 rounded-full border bg-primary/10"></div>
+						<span>Voiced</span>
 					</div>
 					<div className="flex items-center gap-1">
 						<span className="text-muted-foreground">Tap symbol: play • Info: details</span>
