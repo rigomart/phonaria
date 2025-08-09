@@ -65,6 +65,9 @@ importers:
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
+      zod:
+        specifier: ^4.0.16
+        version: 4.0.16
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.1.11
@@ -1759,6 +1762,9 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
+  zod@4.0.16:
+    resolution: {integrity: sha512-Djo/cM339grjI7/HmN+ixYO2FzEMcWr/On50UlQ/RjrWK1I/hPpWhpC76heCptnRFpH0LMwrEbUY50HDc0V8wg==}
+
 snapshots:
 
   '@ampproject/remapping@2.3.0':
@@ -3201,3 +3207,5 @@ snapshots:
   yallist@5.0.0: {}
 
   zod@3.25.76: {}
+
+  zod@4.0.16: {}
