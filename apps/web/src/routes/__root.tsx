@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ModeToggle } from "@/components/mode-toggle";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -12,7 +12,20 @@ export const Route = createRootRoute({
 						<div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
 							<h1 className="text-lg font-semibold tracking-tight">Phonix</h1>
 							<nav className="flex items-center gap-3 text-sm text-muted-foreground">
-								<span className="hidden sm:inline">Interactive IPA</span>
+								<Link
+									to="/ipa-chart"
+									search={{ set: "consonants" }}
+									className="hidden sm:inline transition-colors hover:text-foreground"
+								>
+									IPA
+								</Link>
+								<Link
+									to="/ipa-chart"
+									search={{ set: "vowels" }}
+									className="hidden md:inline transition-colors hover:text-foreground"
+								>
+									Vowels
+								</Link>
 								<ModeToggle />
 							</nav>
 						</div>
