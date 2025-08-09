@@ -15,13 +15,6 @@ function getCellPhonemes(place: string, manner: string): ConsonantPhoneme[] {
 		.sort((a) => (a.articulation.voicing === "voiceless" ? -1 : 1));
 }
 
-// Play first example for a phoneme
-function playExample(p: ConsonantPhoneme) {
-	const first = p.examples[0];
-	if (!first) return;
-	playWord(first.word);
-}
-
 // Play audio for a specific example word
 function playWord(word: string) {
 	const audio = new Audio(getExampleAudioUrl(word));
@@ -97,9 +90,8 @@ export function ConsonantChart() {
 																<TooltipTrigger asChild>
 																	<button
 																		type="button"
-																		onClick={() => playExample(p)}
-																		onDoubleClick={() => openDetails(p)}
-																		aria-label={`${toPhonemic(p.symbol)} ${p.articulation.voicing} ${p.articulation.place} ${p.articulation.manner}. Tap to play; double tap for details.`}
+																		onClick={() => openDetails(p)}
+																		aria-label={`${toPhonemic(p.symbol)} ${p.articulation.voicing} ${p.articulation.place} ${p.articulation.manner}. Tap for details.`}
 																		className={
 																			"group relative inline-flex h-10 w-10 items-center justify-center rounded font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring " +
 																			(p.articulation.voicing === "voiceless"
@@ -110,19 +102,6 @@ export function ConsonantChart() {
 																		<span className="pointer-events-none select-none text-lg leading-none">
 																			{p.symbol}
 																		</span>
-																		<Button
-																			type="button"
-																			size="icon"
-																			variant="ghost"
-																			aria-label={`Open details for ${toPhonemic(p.symbol)}`}
-																			onClick={(e) => {
-																				e.stopPropagation();
-																				openDetails(p);
-																			}}
-																			className="absolute -right-1 -top-1 h-5 w-5 rounded border bg-background/80 p-0 text-[10px] font-medium shadow backdrop-blur hover:bg-background"
-																		>
-																			i
-																		</Button>
 																	</button>
 																</TooltipTrigger>
 																<TooltipContent side="top" align="center">
@@ -139,7 +118,7 @@ export function ConsonantChart() {
 																			</div>
 																		) : null}
 																		<div className="text-[10px] text-muted-foreground">
-																			Info for full details
+																			Tap for details
 																		</div>
 																	</div>
 																</TooltipContent>
