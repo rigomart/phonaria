@@ -15,13 +15,14 @@ Phonix addresses these with a friendly IPA presentation, practical example words
 ## Current status (MVP in progress)
 
 Implemented:
-- apps/web: Mobile‑first UI with consonant and vowel browsers, dialogs, audio, and dark mode
-- packages/shared-data: Typed phoneme data (40 phonemes) + utilities (audio URLs, display helpers)
+- apps/web: Mobile‑first UI with consonant & vowel exploration, dark mode, audio, accessible dialogs
+- Consonant chart refactor: memoized grid hook, extracted cells/dialog, header micro‑learning tooltips (place & manner popovers)
+- packages/shared-data: Typed phoneme data (40 phonemes) + articulation metadata (`articulationPlaces`, `articulationManners`) + utilities (audio URLs, display helpers)
 - packages/tts-generate: Scripted audio generation for example words (optional)
 
 Planned next:
-- Interactive vowel chart (trapezoid) and transcription (G2P) flow
-- API layer for G2P/LLM glue (Hono.js)
+- Interactive vowel trapezoid + improved vowel navigation
+- G2P transcription flow (LLM + Hono.js API)
 
 ## Monorepo layout
 
@@ -29,7 +30,10 @@ Planned next:
 	- web/
 		- Vite + React + TypeScript + Tailwind v4 + shadcn/ui components
 		- Components (selected):
-			- `components/chart/ConsonantChart.tsx`: Cards grouped by manner; dialog with articulation, examples, allophones; includes 1:1 illustration placeholder
+			- `components/chart/ConsonantChart.tsx`: Table (manner rows × place columns) with memoized grid + header tooltips; dialog includes articulation, examples, allophones
+				- `ConsonantCell.tsx`: Renders a cell's phoneme buttons (tooltip + select)
+				- `ConsonantDialog.tsx`: Phoneme detail dialog
+				- `ArticulationInfoPopover.tsx`: Micro‑help tooltip for place/manner headers
 			- `components/chart/VowelChart.tsx`: Cards grouped by height (temporary until interactive chart)
 			- `components/phoneme/PhonemeTile.tsx`, `components/phoneme/VowelTile.tsx`: Symbol button + quick audio
 			- `components/audio/AudioButton.tsx`: Accessible audio playback
@@ -65,7 +69,22 @@ Planned next:
 	- Dark L ɫ in syllable-final position (e.g., ball)
 	- Unstressed ɚ as the allophone of ɝ
 
-## Utilities (shared-data)
+### Articulation metadata (shared-data)
+
+Exported arrays supply concise pedagogical help for chart headers:
+
+```ts
+import { articulationPlaces, articulationManners } from "shared-data";
+
+// Example: lookup short description for a place
+const alveolar = articulationPlaces.find(p => p.key === "alveolar");
+console.log(alveolar?.short);
+```
+
+Each place entry: `{ key, label, short, description, how[], articulators[], commonExamples[], order }`.
+Each manner entry: `{ key, label, short, description, how[], airflow, commonExamples[], order }`.
+
+### Utilities (shared-data)
 
 - slugifyWord(word): "Make" → make
 - getExampleAudioUrl(word, base = "/audio/examples"): builds canonical audio paths
@@ -102,10 +121,10 @@ How to run (from repository root):
 
 ## Roadmap
 
-1) Interactive vowel chart and improved consonant visuals (illustrations)
-2) Add sentence analysis (G2P) and show phoneme-level breakdowns with audio models
-3) Incremental content: minimal pairs and common spelling patterns per phoneme
-4) Optional: progress, personalization—out of scope for MVP
+1. Interactive vowel chart + improved consonant illustrations
+2. Sentence analysis (G2P) with phoneme breakdown & playback
+3. Minimal pairs + common spelling patterns per phoneme
+4. Optional (post‑MVP): progress tracking / personalization
 
 ## Requirements and constraints (summary)
 

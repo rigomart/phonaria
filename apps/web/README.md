@@ -4,12 +4,12 @@ Mobile-first UI to explore American English phonemes with audio and simple, appr
 
 ## Features
 
-- Consonants: cards grouped by manner (stops, fricatives, etc.), sorted by place; tooltips and details dialog
-- Vowels: temporary cards grouped by height; planned upgrade to interactive vowel chart
-- Details dialogs: symbol + phonemic display, articulation info, example words with audio, allophones (when present)
-- Audio: play short model clips for example words
-- Dark mode: light/dark/system via class-based theming, defaulting to system
-- Routing: TanStack Router file-based routes (`/` placeholder, `/ipa-chart` with in-page consonant/vowel switch for now)
+- Consonant chart: table (manner rows × place columns) with dotted‑underline header tooltips (place/manner micro‑help)
+- Vowels: temporary grouped list (height) until interactive vowel chart arrives
+- Phoneme dialogs: symbol, articulation tags, guide, examples with audio, pedagogically relevant allophones
+- Audio: quick playback for example words (one clip per word)
+- Dark mode: light/dark/system theme preference persisted
+- Routing: TanStack Router (`/` landing placeholder, `/ipa-chart` exploration)
 
 ## Tech Stack
 
@@ -20,9 +20,11 @@ Mobile-first UI to explore American English phonemes with audio and simple, appr
 
 ## App Structure
 
-- `src/components/chart/ConsonantChart.tsx`
-  - Cards-only view grouped by manner
-  - Dialog shows: header, 1:1 illustration placeholder, Articulation, Examples (with audio), Allophones
+-- `src/components/chart/ConsonantChart.tsx`
+  - Table layout; imports `ConsonantCell`, `ConsonantDialog`, `ArticulationInfoPopover`
+  - Memoized grid generation (`useConsonantGrid`) prevents redundant filtering
+  - Dialog: hero symbol + tags + guide + examples + allophones
+  - Micro‑help: header tooltip popovers (short definitions, examples)
 - `src/components/chart/VowelChart.tsx`
   - Cards-only view grouped by height (temporary)
   - Dialog shows: header, Articulation, Examples (with audio)
@@ -99,11 +101,11 @@ pnpm -C apps/web lint
 
 ## Roadmap (UI)
 
-- Interactive vowel chart (trapezoid) with tap/hover exploration
-- Improve consonant dialogs with illustration assets
-- Minimal pairs and spelling patterns per phoneme
-- Move consonant/vowel toggle to URL search param (`?section=`) for deep links
-- Add phoneme-specific deep link support (`/ipa-chart?section=consonants&symbol=tʃ` to auto-open dialog)
+- Interactive vowel trapezoid (responsive, hover/tap reveal)
+- Illustration assets for consonant place/manner (dialog + tooltips)
+- Minimal pairs + spelling patterns panel
+- URL search param for section + deep link to open symbol dialog
+- Progressive enhancement: optional side reference panel (articulation guide)
 
 ## Troubleshooting
 

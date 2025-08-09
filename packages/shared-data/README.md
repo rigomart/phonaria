@@ -4,12 +4,14 @@ This package contains shared TypeScript data structures and phoneme definitions 
 
 ## Structure
 
-The package exports phoneme data through TypeScript modules:
+Exports:
 
-- `consonants.ts` - Contains the 24 consonant phonemes with detailed articulation data
-- `vowels.ts` - Contains the 16 vowel phonemes (10 monophthongs, 5 diphthongs, 1 rhotic vowel)
-- `types.ts` - TypeScript type definitions for phoneme data structures
-- `index.ts` - Main export file that combines all data
+- `consonants.ts` – 24 consonant phonemes (with allophones where pedagogically useful)
+- `vowels.ts` – 16 vowel phonemes (10 monophthongs, 5 diphthongs, 1 rhotic vowel)
+- `articulation.ts` – Pedagogical metadata arrays: `articulationPlaces`, `articulationManners`
+- `types.ts` – Type definitions (phonemes + articulation metadata interfaces)
+- `utils/` – Helpers (`audio.ts`, `ipa.ts`, `slug.ts`)
+- `index.ts` – Barrel exports (data, utilities, types)
 
 ### Phoneme List (40 Total)
 
@@ -49,24 +51,51 @@ Each phoneme object includes:
 
 ## Usage
 
-```typescript
-import { consonants, vowels, phonixUtils } from 'shared-data';
-import type { ConsonantPhoneme, VowelPhoneme } from 'shared-data';
+```ts
+import {
+  consonants,
+  vowels,
+  articulationPlaces,
+  articulationManners,
+  phonixUtils,
+  type ConsonantPhoneme,
+} from 'shared-data';
 
-// Access all consonants
-console.log(consonants); // Array of 24 consonant phonemes
-
-// Access all vowels
-console.log(vowels); // Array of 16 vowel phonemes
-
-// Find specific phoneme
-const pPhoneme = consonants.find(c => c.symbol === 'p');
-
-// Build audio URL on the fly from the example word
+const stops = consonants.filter(c => c.articulation.manner === 'stop');
+const alveolarMeta = articulationPlaces.find(p => p.key === 'alveolar');
 const audioUrl = phonixUtils.getExampleAudioUrl('make'); // /audio/examples/make.mp3
-
-// Display with slashes in the UI
 const shown = phonixUtils.toPhonemic('bʌt'); // "/bʌt/"
+```
+
+### Articulation Metadata Shapes
+
+Place entry:
+```ts
+interface ArticulationPlaceInfo {
+  key: 'bilabial' | 'labiodental' | ...;
+  label: string;
+  short: string; // <= ~80 chars for tooltips
+  description: string; // longer paragraph
+  how: string[]; // ordered production steps
+  articulators: string[];
+  commonExamples: string[]; // representative symbols
+  diagram?: string; // asset slug (future)
+  order: number;
+}
+```
+
+Manner entry:
+```ts
+interface ArticulationMannerInfo {
+  key: 'stop' | 'fricative' | ...;
+  label: string;
+  short: string;
+  description: string;
+  how: string[];
+  airflow?: string;
+  commonExamples: string[];
+  order: number;
+}
 ```
 
 ## Pedagogical Design Principles
