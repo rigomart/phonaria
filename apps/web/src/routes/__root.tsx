@@ -11,20 +11,16 @@ export const Route = createRootRoute({
 					<header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur">
 						<div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
 							<h1 className="text-lg font-semibold tracking-tight">Phonix</h1>
-							<nav className="flex items-center gap-3 text-sm text-muted-foreground">
-								<Link
-									to="/ipa-chart"
-									search={{ set: "consonants" }}
-									className="hidden sm:inline transition-colors hover:text-foreground"
-								>
-									IPA
+							<nav className="flex items-center gap-4 text-sm text-muted-foreground">
+								<Link to="/" className="transition-colors hover:text-foreground">
+									Home
 								</Link>
 								<Link
 									to="/ipa-chart"
-									search={{ set: "vowels" }}
-									className="hidden md:inline transition-colors hover:text-foreground"
+									search={{ set: "consonants" }}
+									className="transition-colors hover:text-foreground"
 								>
-									Vowels
+									IPA Chart
 								</Link>
 								<ModeToggle />
 							</nav>
