@@ -6,5 +6,8 @@
 		"domains": {
 			"react": "recommended"
 		}
+	},
+	"files": {
+		"includes": ["**", "!**/*.gen.ts", "!**/*.generated.ts"]
 	}
 }
