@@ -21,7 +21,6 @@ export const Route = createRootRoute({
 								</Link>
 								<Link
 									to="/ipa-chart"
-									search={{ set: "consonants" }}
 									className="text-muted-foreground transition-colors hover:text-foreground"
 									activeProps={{ className: "text-foreground font-medium" }}
 								>

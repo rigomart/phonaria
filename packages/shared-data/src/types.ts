@@ -70,3 +70,24 @@ export interface PhonemesData {
 	consonants: ConsonantPhoneme[];
 	vowels: VowelPhoneme[];
 }
+
+export interface ArticulationPlaceInfo {
+	key: ConsonantArticulation["place"];
+	label: string;
+	short: string;
+	description: string;
+	how: string[];
+	articulators: string[];
+	diagram?: string;
+	order: number;
+}
+
+export interface ArticulationMannerInfo {
+	key: ConsonantArticulation["manner"];
+	label: string;
+	short: string;
+	description: string;
+	how: string[];
+	airflow?: string;
+	order: number;
+}

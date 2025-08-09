@@ -10,6 +10,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
+import { ArticulationInfoPopover } from "./ArticulationInfoPopover";
 import { ConsonantCell } from "./ConsonantCell";
 import { ConsonantDialog } from "./ConsonantDialog";
 import { useConsonantGrid } from "./useConsonantGrid";
@@ -58,7 +59,14 @@ export function ConsonantChart() {
 										key={place}
 										className="px-3 py-3 text-center font-medium capitalize text-xs"
 									>
-										{place}
+										<ArticulationInfoPopover type="place" id={place}>
+											<button
+												type="button"
+												className="capitalize underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+											>
+												{place}
+											</button>
+										</ArticulationInfoPopover>
 									</TableHead>
 								))}
 							</TableRow>
@@ -70,7 +78,14 @@ export function ConsonantChart() {
 										scope="row"
 										className="px-3 text-sm font-medium capitalize text-muted-foreground text-left align-middle"
 									>
-										{manner}
+										<ArticulationInfoPopover type="manner" id={manner}>
+											<button
+												type="button"
+												className="capitalize text-left underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+											>
+												{manner}
+											</button>
+										</ArticulationInfoPopover>
 									</TableHead>
 									{PLACES.map((place) => (
 										<TableCell key={place} className="text-center align-middle">
