@@ -15,8 +15,9 @@ Phonix addresses these with a friendly IPA presentation, practical example words
 ## Current status (MVP in progress)
 
 Implemented:
-- apps/web: Mobile‑first UI with consonant & vowel exploration, dark mode, audio, accessible dialogs
-- Consonant chart refactor: memoized grid hook, extracted cells/dialog, header micro‑learning tooltips (place & manner popovers)
+- apps/web: Mobile‑first UI with consonant & vowel exploration (now both in 2D grids), dark mode, audio, accessible dialogs
+- Consonant chart: memoized grid hook, extracted cells/dialog, header micro‑learning tooltips (place & manner popovers)
+- Vowel chart: full height × frontness grid (Option A granularity) with tense, rounded, rhotic visual encodings
 - packages/shared-data: Typed phoneme data (40 phonemes) + articulation metadata (`articulationPlaces`, `articulationManners`) + utilities (audio URLs, display helpers)
 - packages/tts-generate: Scripted audio generation for example words (optional)
 
@@ -30,14 +31,17 @@ Planned next:
 	- web/
 		- Vite + React + TypeScript + Tailwind v4 + shadcn/ui components
 		- Components (selected):
-			- `components/chart/ConsonantChart.tsx`: Table (manner rows × place columns) with memoized grid + header tooltips; dialog includes articulation, examples, allophones
-				- `ConsonantCell.tsx`: Renders a cell's phoneme buttons (tooltip + select)
-				- `ConsonantDialog.tsx`: Phoneme detail dialog
-				- `ArticulationInfoPopover.tsx`: Micro‑help tooltip for place/manner headers
-			- `components/chart/VowelChart.tsx`: Cards grouped by height (temporary until interactive chart)
-			- `components/phoneme/PhonemeTile.tsx`, `components/phoneme/VowelTile.tsx`: Symbol button + quick audio
-			- `components/audio/AudioButton.tsx`: Accessible audio playback
-			- `components/theme-provider.tsx`: Class‑based theme (light/dark/system)
+				- `src/routes/(charts)/ipa-chart.tsx`: Tabbed consonant / vowel exploration route
+					- `src/routes/(charts)/-components/chart/consonant-chart.tsx`: Table (manner × place) with tooltips and dialog
+						- `consonant-cell.tsx`: Cell rendering (voiceless vs voiced styling)
+						- `consonant-dialog.tsx`: Detail dialog
+						- `articulation-info-popover.tsx`: Micro‑help for headers
+						- `-hooks/use-consonant-grid.ts`: Memoized grid builder
+					- `src/routes/(charts)/-components/chart/vowel-chart.tsx`: Height × frontness grid (seven heights × five frontness levels)
+						- `vowel-cell.tsx`: Cell buttons with tense / lax, rounded ring, rhotic mark
+						- `-hooks/use-vowel-grid.ts`: Grid builder (sorts monophthong > diphthong, tense > lax)
+				- `src/components/audio/audio-button.tsx`: Accessible audio playback button
+				- `src/components/theme-provider.tsx`: Class‑based theme (light/dark/system)
 		- Styling: dark mode tokens via CSS variables; Tailwind dark variant via `.dark`
 		- UI primitives imported from `@/components/ui/*` (shadcn/ui)
 - packages/
@@ -110,8 +114,8 @@ The tts-generate package uses the ElevenLabs API to generate example word audio 
 	- Audio URLs: `phonixUtils.getExampleAudioUrl(word)` maps to `/audio/examples/<slug>.mp3`
 	- Display: `phonixUtils.toPhonemic(ipa)` renders slashes for UI
 - Current views:
-	- Consonants: cards grouped by manner (sorted by place); tooltip on hover; dialog with articulation, examples (with audio), and allophones; placeholder box for future side‑view illustration
-	- Vowels: cards grouped by height (temporary); tooltip + dialog with articulation and examples (with audio)
+	- Consonants: 2D chart (manner rows × place columns) with tooltips and dialog (articulation, examples, allophones)
+	- Vowels: 2D chart (height rows × frontness/backness columns) with legend encoding tenseness, rounding, rhoticity; dialog with articulation & examples
 - Accessibility: buttons with labels, Radix dialogs/tooltips, keyboard focus via native buttons
 
 How to run (from repository root):
