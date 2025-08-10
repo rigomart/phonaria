@@ -13,7 +13,7 @@ import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
 import { useConsonantGrid } from "../../-hooks/use-consonant-grid";
 import { ArticulationInfoPopover } from "./articulation-info-popover";
 import { ConsonantCell } from "./consonant-cell";
-import { ConsonantDialog } from "./consonant-dialog";
+import { PhonemeDialog } from "./phoneme-dialog";
 
 export function ConsonantChart() {
 	const [open, setOpen] = React.useState(false);
@@ -98,7 +98,7 @@ export function ConsonantChart() {
 					</Table>
 				</div>
 			</div>
-			<ConsonantDialog
+			<PhonemeDialog
 				phoneme={selected}
 				open={open}
 				onOpenChange={(o) => {

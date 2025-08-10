@@ -1,8 +1,5 @@
 import * as React from "react";
 import type { VowelPhoneme } from "shared-data";
-import { phonixUtils } from "shared-data";
-import { AudioButton } from "@/components/audio/audio-button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
 	Table,
 	TableBody,
@@ -13,10 +10,9 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useVowelGrid, VOWEL_FRONTS, VOWEL_HEIGHTS } from "../../-hooks/use-vowel-grid";
+import { PhonemeDialog } from "./phoneme-dialog";
 import { VowelAxisInfoPopover } from "./vowel-axis-info-popover";
 import { VowelCell } from "./vowel-cell";
-
-const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
 export function VowelChart() {
 	const [open, setOpen] = React.useState(false);
@@ -107,83 +103,14 @@ export function VowelChart() {
 					</Table>
 				</div>
 			</div>
-			<Dialog
+			<PhonemeDialog
+				phoneme={selected}
 				open={open}
 				onOpenChange={(o) => {
 					if (!o) setSelected(null);
 					setOpen(o);
 				}}
-			>
-				<DialogContent className="max-w-md">
-					{selected ? (
-						<div className="space-y-4">
-							<DialogHeader>
-								<DialogTitle className="text-2xl font-semibold">
-									{selected.symbol}{" "}
-									<span className="ml-2 text-base text-muted-foreground">
-										{toPhonemic(selected.symbol)}
-									</span>
-								</DialogTitle>
-								<p className="text-sm text-muted-foreground">{selected.description}</p>
-							</DialogHeader>
-							<section className="text-sm">
-								<h3 className="mb-1 font-medium">Articulation</h3>
-								<ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-									<li>
-										Height:{" "}
-										<span className="capitalize text-foreground">
-											{selected.articulation.height}
-										</span>
-									</li>
-									<li>
-										Frontness:{" "}
-										<span className="capitalize text-foreground">
-											{selected.articulation.frontness}
-										</span>
-									</li>
-									<li>
-										Lip rounding:{" "}
-										<span className="capitalize text-foreground">
-											{selected.articulation.roundness}
-										</span>
-									</li>
-									<li>
-										Tenseness:{" "}
-										<span className="capitalize text-foreground">
-											{selected.articulation.tenseness}
-										</span>
-									</li>
-									{selected.articulation.rhoticity ? (
-										<li>
-											Rhoticity:{" "}
-											<span className="capitalize text-foreground">
-												{selected.articulation.rhoticity}
-											</span>
-										</li>
-									) : null}
-								</ul>
-							</section>
-							<section className="text-sm">
-								<h3 className="mb-1 font-medium">Examples</h3>
-								<ul className="space-y-2">
-									{selected.examples.map((ex) => (
-										<li
-											key={ex.word}
-											className="flex items-center justify-between gap-3 rounded-md border p-2"
-										>
-											<div>
-												<div className="font-medium">{ex.word}</div>
-												<div className="text-muted-foreground">{toPhonemic(ex.phonemic)}</div>
-											</div>
-											<AudioButton src={getExampleAudioUrl(ex.word)} label={`Play ${ex.word}`} />
-										</li>
-									))}
-								</ul>
-							</section>
-						</div>
-					) : null}
-				</DialogContent>
-			</Dialog>
+			/>
 		</>
 	);
 }
