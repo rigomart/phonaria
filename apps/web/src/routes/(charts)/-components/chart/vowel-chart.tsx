@@ -13,6 +13,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useVowelGrid, VOWEL_FRONTS, VOWEL_HEIGHTS } from "../../-hooks/use-vowel-grid";
+import { VowelAxisInfoPopover } from "./vowel-axis-info-popover";
 import { VowelCell } from "./vowel-cell";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
@@ -67,9 +68,14 @@ export function VowelChart() {
 										key={front}
 										className="px-3 py-3 text-center font-medium capitalize text-xs"
 									>
-										<span className="capitalize underline decoration-dotted underline-offset-4">
-											{front.replace("near-", "near ")}
-										</span>
+										<VowelAxisInfoPopover type="frontness" id={front}>
+											<button
+												type="button"
+												className="capitalize underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+											>
+												{front.replace("near-", "near ")}
+											</button>
+										</VowelAxisInfoPopover>
 									</TableHead>
 								))}
 							</TableRow>
@@ -81,9 +87,14 @@ export function VowelChart() {
 										scope="row"
 										className="px-3 text-sm font-medium capitalize text-muted-foreground text-left align-middle"
 									>
-										<span className="capitalize underline decoration-dotted underline-offset-4">
-											{h.replace("near-", "near ")}
-										</span>
+										<VowelAxisInfoPopover type="height" id={h}>
+											<button
+												type="button"
+												className="capitalize text-left underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+											>
+												{h.replace("near-", "near ")}
+											</button>
+										</VowelAxisInfoPopover>
 									</TableHead>
 									{VOWEL_FRONTS.map((f) => (
 										<TableCell key={f} className="text-center align-middle">
