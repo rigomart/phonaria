@@ -30,5 +30,5 @@ function RouteComponent() {
 				</TabsContent>
 			</Tabs>
 		</main>
-	)
+	);
 }
