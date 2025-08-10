@@ -9,55 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IpaChartRouteImport } from './routes/ipa-chart'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as chartsIpaChartRouteImport } from './routes/(charts)/ipa-chart'
 
-const IpaChartRoute = IpaChartRouteImport.update({
-  id: '/ipa-chart',
-  path: '/ipa-chart',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const chartsIpaChartRoute = chartsIpaChartRouteImport.update({
+  id: '/(charts)/ipa-chart',
+  path: '/ipa-chart',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/ipa-chart': typeof IpaChartRoute
+  '/ipa-chart': typeof chartsIpaChartRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ipa-chart': typeof IpaChartRoute
+  '/ipa-chart': typeof chartsIpaChartRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/ipa-chart': typeof IpaChartRoute
+  '/(charts)/ipa-chart': typeof chartsIpaChartRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/ipa-chart'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/ipa-chart'
-  id: '__root__' | '/' | '/ipa-chart'
+  id: '__root__' | '/' | '/(charts)/ipa-chart'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  IpaChartRoute: typeof IpaChartRoute
+  chartsIpaChartRoute: typeof chartsIpaChartRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/ipa-chart': {
-      id: '/ipa-chart'
-      path: '/ipa-chart'
-      fullPath: '/ipa-chart'
-      preLoaderRoute: typeof IpaChartRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -65,12 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(charts)/ipa-chart': {
+      id: '/(charts)/ipa-chart'
+      path: '/ipa-chart'
+      fullPath: '/ipa-chart'
+      preLoaderRoute: typeof chartsIpaChartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  IpaChartRoute: IpaChartRoute,
+  chartsIpaChartRoute: chartsIpaChartRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

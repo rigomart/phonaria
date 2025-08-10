@@ -10,10 +10,10 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
+import { useConsonantGrid } from "../../-hooks/use-consonant-grid";
 import { ArticulationInfoPopover } from "./articulation-info-popover";
 import { ConsonantCell } from "./consonant-cell";
 import { ConsonantDialog } from "./consonant-dialog";
-import { useConsonantGrid } from "./use-consonant-grid";
 
 export function ConsonantChart() {
 	const [open, setOpen] = React.useState(false);

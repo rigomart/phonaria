@@ -12,7 +12,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useVowelGrid, VOWEL_FRONTS, VOWEL_HEIGHTS } from "./use-vowel-grid";
+import { useVowelGrid, VOWEL_FRONTS, VOWEL_HEIGHTS } from "../../-hooks/use-vowel-grid";
 import { VowelCell } from "./vowel-cell";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;

@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { ConsonantChart } from "@/components/chart/consonant-chart";
-import { VowelChart } from "@/components/chart/vowel-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ConsonantChart } from "@/routes/(charts)/-components/chart/consonant-chart";
+import { VowelChart } from "@/routes/(charts)/-components/chart/vowel-chart";
 
-export const Route = createFileRoute("/ipa-chart")({
+export const Route = createFileRoute("/(charts)/ipa-chart")({
 	component: RouteComponent,
 });
 
@@ -30,5 +30,5 @@ function RouteComponent() {
 				</TabsContent>
 			</Tabs>
 		</main>
-	);
+	)
 }
