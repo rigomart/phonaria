@@ -38,9 +38,7 @@ export function VowelChart() {
 						<span>Lax / other</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<div className="relative h-6 w-6 rounded border">
-							<div className="absolute inset-0 rounded ring-2 ring-primary/40" />
-						</div>
+						<div className="relative h-6 w-6 rounded-full border"></div>
 						<span>Rounded</span>
 					</div>
 					<div className="flex items-center gap-2">

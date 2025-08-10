@@ -16,7 +16,12 @@ interface VowelCellProps {
  * Variant-powered styling for vowel phoneme buttons.
  *
  * Variants:
- * - tenseness: tense (filled) vs lax (outlined) — also used for diphthongs / rhotic treated as lax currently
+ * - tenseness: tense (filled) vs lax (outlined)
+ * - rounded: yes adds a subtle ring overlay via ::after pseudo element
+ * - rhotic: yes adds a baseline bar via ::before pseudo element
+ *
+ * Pseudo elements are used so we don't need extra DOM nodes (keeps markup simpler and
+ * avoids interfering with the focus-visible ring).
  */
 const vowelButtonVariants = cva(
 	"group relative inline-flex h-14 w-14 items-center justify-center rounded font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -26,9 +31,16 @@ const vowelButtonVariants = cva(
 				tense: "bg-primary/10",
 				lax: "border",
 			},
+			type: {
+				unrounded: "",
+				rounded: "rounded-full",
+				rhotic:
+					"before:pointer-events-none before:content-[''] before:absolute before:bottom-1 before:left-1/2 before:-translate-x-1/2 before:h-0.5 before:w-6 before:rounded-full before:bg-primary/60",
+			},
 		},
 		defaultVariants: {
 			tenseness: "lax",
+			type: "unrounded",
 		},
 	},
 );
@@ -63,23 +75,16 @@ export const VowelCell: React.FC<VowelCellProps> = React.memo(function VowelCell
 								type="button"
 								onClick={() => onSelect(v)}
 								aria-label={`${toPhonemic(v.symbol)} ${v.articulation.height} ${v.articulation.frontness} ${v.articulation.tenseness} ${v.articulation.roundness}${rhotic ? " rhotic" : ""}. Tap for details.`}
-								className={cn(vowelButtonClass({ tenseness: tense ? "tense" : "lax" }))}
+								className={cn(
+									vowelButtonClass({
+										tenseness: tense ? "tense" : "lax",
+										type: rhotic ? "rhotic" : rounded ? "rounded" : "unrounded",
+									}),
+								)}
 							>
 								<span className="pointer-events-none select-none text-xl sm:text-2xl leading-none">
 									{v.symbol}
 								</span>
-								{rounded ? (
-									<span
-										aria-hidden="true"
-										className="absolute inset-0 rounded ring-2 ring-primary/40"
-									/>
-								) : null}
-								{rhotic ? (
-									<span
-										aria-hidden="true"
-										className="absolute bottom-1 h-0.5 w-6 rounded-full bg-primary/60"
-									/>
-								) : null}
 							</button>
 						</TooltipTrigger>
 						<TooltipContent side="top" align="center">
