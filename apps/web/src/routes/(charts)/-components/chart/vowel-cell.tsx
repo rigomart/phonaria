@@ -28,8 +28,7 @@ const vowelButtonVariants = cva(
 		variants: {
 			shape: {
 				plain: "",
-				rounded:
-					"after:pointer-events-none after:content-[''] after:absolute after:inset-0 after:rounded after:ring-2 after:ring-primary/40",
+				rounded: "rounded-full",
 				rhotic:
 					"before:pointer-events-none before:content-[''] before:absolute before:bottom-1 before:left-1/2 before:-translate-x-1/2 before:h-0.5 before:w-6 before:rounded-full before:bg-primary/60",
 			},
