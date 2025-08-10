@@ -27,14 +27,6 @@ export function VowelChart() {
 			<div className="mt-6 space-y-5 px-2">
 				<div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
 					<div className="flex items-center gap-2">
-						<div className="h-6 w-6 rounded bg-primary/10" />
-						<span>Tense</span>
-					</div>
-					<div className="flex items-center gap-2">
-						<div className="h-6 w-6 rounded border" />
-						<span>Lax / other</span>
-					</div>
-					<div className="flex items-center gap-2">
 						<div className="relative h-6 w-6 rounded-full border"></div>
 						<span>Rounded</span>
 					</div>
