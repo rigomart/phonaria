@@ -1,78 +1,110 @@
 import * as React from "react";
 import type { VowelPhoneme } from "shared-data";
-import { phonixUtils, vowels } from "shared-data";
+import { phonixUtils } from "shared-data";
 import { AudioButton } from "@/components/audio/AudioButton";
-import { VowelTile } from "@/components/phoneme/VowelTile";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Table,
+	TableBody,
+	TableCaption,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+import { useVowelGrid, VOWEL_FRONTS, VOWEL_HEIGHTS } from "./useVowelGrid";
+import { VowelCell } from "./VowelCell";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
-
-const HEIGHTS: VowelPhoneme["articulation"]["height"][] = [
-	"high",
-	"near-high",
-	"high-mid",
-	"mid",
-	"low-mid",
-	"near-low",
-	"low",
-];
-
-const FRONTS: VowelPhoneme["articulation"]["frontness"][] = [
-	"front",
-	"near-front",
-	"central",
-	"near-back",
-	"back",
-];
 
 export function VowelChart() {
 	const [open, setOpen] = React.useState(false);
 	const [selected, setSelected] = React.useState<VowelPhoneme | null>(null);
-
-	function handleOpen(p: VowelPhoneme) {
+	const grid = useVowelGrid();
+	const openDetails = React.useCallback((p: VowelPhoneme) => {
 		setSelected(p);
 		setOpen(true);
-	}
-
+	}, []);
 	return (
 		<>
-			<div className="mt-4 space-y-6">
-				{HEIGHTS.map((h) => {
-					const items = vowels
-						.filter((v) => v.articulation.height === h)
-						.sort(
-							(a, b) =>
-								FRONTS.indexOf(a.articulation.frontness as (typeof FRONTS)[number]) -
-								FRONTS.indexOf(b.articulation.frontness as (typeof FRONTS)[number]),
-						);
-					if (!items.length) return null;
-					return (
-						<section key={h}>
-							<h3 className="mb-2 text-sm font-medium capitalize text-muted-foreground">{h}</h3>
-							<div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-								{items.map((v) => (
-									<Tooltip key={v.symbol}>
-										<TooltipTrigger asChild>
-											<div>
-												<VowelTile phoneme={v} onOpen={handleOpen} />
-											</div>
-										</TooltipTrigger>
-										<TooltipContent>
-											<div className="max-w-xs text-pretty">
-												<span className="font-medium">{v.symbol}</span> {toPhonemic(v.symbol)} —{" "}
-												{v.description}
-											</div>
-										</TooltipContent>
-									</Tooltip>
+			<div className="mt-6 space-y-5 px-2">
+				<div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
+					<div className="flex items-center gap-2">
+						<div className="h-6 w-6 rounded bg-primary/10" />
+						<span>Tense</span>
+					</div>
+					<div className="flex items-center gap-2">
+						<div className="h-6 w-6 rounded border" />
+						<span>Lax / other</span>
+					</div>
+					<div className="flex items-center gap-2">
+						<div className="relative h-6 w-6 rounded border">
+							<div className="absolute inset-0 rounded ring-2 ring-primary/40" />
+						</div>
+						<span>Rounded</span>
+					</div>
+					<div className="flex items-center gap-2">
+						<div className="relative flex h-6 w-6 items-end justify-center rounded border">
+							<div className="mb-1 h-0.5 w-4 rounded-full bg-primary/60" />
+						</div>
+						<span>Rhotic</span>
+					</div>
+				</div>
+				<div className="overflow-x-auto">
+					<Table
+						aria-label="Vowel chart organized by height (rows) and frontness/backness (columns)"
+						className="min-w-[52rem] text-sm"
+					>
+						<TableCaption className="mb-3 text-sm text-muted-foreground font-normal">
+							Rows: <span className="font-medium">Height / Openness</span> • Columns:{" "}
+							<span className="font-medium">Frontness / Backness</span>
+						</TableCaption>
+						<TableHeader className="text-xs">
+							<TableRow>
+								<TableHead className="pl-3 pr-4 py-3 text-left font-medium text-xs rounded-tl align-bottom">
+									<span className="sr-only">Corner (see caption for axis labels)</span>
+								</TableHead>
+								{VOWEL_FRONTS.map((front) => (
+									<TableHead
+										key={front}
+										className="px-3 py-3 text-center font-medium capitalize text-xs"
+									>
+										<span className="capitalize underline decoration-dotted underline-offset-4">
+											{front.replace("near-", "near ")}
+										</span>
+									</TableHead>
 								))}
-							</div>
-						</section>
-					);
-				})}
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{VOWEL_HEIGHTS.map((h) => (
+								<TableRow key={h} className="border-b last:border-b-0">
+									<TableHead
+										scope="row"
+										className="px-3 text-sm font-medium capitalize text-muted-foreground text-left align-middle"
+									>
+										<span className="capitalize underline decoration-dotted underline-offset-4">
+											{h.replace("near-", "near ")}
+										</span>
+									</TableHead>
+									{VOWEL_FRONTS.map((f) => (
+										<TableCell key={f} className="text-center align-middle">
+											<VowelCell vowels={grid[h][f]} onSelect={openDetails} />
+										</TableCell>
+									))}
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</div>
 			</div>
-
-			<Dialog open={open} onOpenChange={setOpen}>
+			<Dialog
+				open={open}
+				onOpenChange={(o) => {
+					if (!o) setSelected(null);
+					setOpen(o);
+				}}
+			>
 				<DialogContent className="max-w-md">
 					{selected ? (
 						<div className="space-y-4">
@@ -85,7 +117,6 @@ export function VowelChart() {
 								</DialogTitle>
 								<p className="text-sm text-muted-foreground">{selected.description}</p>
 							</DialogHeader>
-
 							<section className="text-sm">
 								<h3 className="mb-1 font-medium">Articulation</h3>
 								<ul className="list-disc space-y-1 pl-5 text-muted-foreground">
@@ -123,7 +154,6 @@ export function VowelChart() {
 									) : null}
 								</ul>
 							</section>
-
 							<section className="text-sm">
 								<h3 className="mb-1 font-medium">Examples</h3>
 								<ul className="space-y-2">
