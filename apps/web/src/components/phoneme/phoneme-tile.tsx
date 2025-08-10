@@ -1,6 +1,6 @@
 import type { ConsonantPhoneme } from "shared-data";
 import { phonixUtils } from "shared-data";
-import { AudioButton } from "@/components/audio/AudioButton";
+import { AudioButton } from "@/components/audio/audio-button";
 
 const { getExampleAudioUrl, toPhonemic } = phonixUtils;
 

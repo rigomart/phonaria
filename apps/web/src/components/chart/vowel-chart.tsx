@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { VowelPhoneme } from "shared-data";
 import { phonixUtils } from "shared-data";
-import { AudioButton } from "@/components/audio/AudioButton";
+import { AudioButton } from "@/components/audio/audio-button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
 	Table,
@@ -12,8 +12,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useVowelGrid, VOWEL_FRONTS, VOWEL_HEIGHTS } from "./useVowelGrid";
-import { VowelCell } from "./VowelCell";
+import { useVowelGrid, VOWEL_FRONTS, VOWEL_HEIGHTS } from "./use-vowel-grid";
+import { VowelCell } from "./vowel-cell";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
