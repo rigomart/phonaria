@@ -5,8 +5,8 @@ Mobile-first UI to explore American English phonemes with audio and simple, appr
 ## Features
 
 - Consonant chart: table (manner rows × place columns) with dotted‑underline header tooltips (place/manner micro‑help)
-- Vowel chart: full height × frontness grid (7 heights × 5 frontness levels) with visual encodings:
-  - Tense (filled background), Lax (outlined), Rounded (ring), Rhotic (baseline bar)
+- Vowel chart: full height × frontness grid (7 × 5) with visual encodings:
+  - Rounded (ring), Rhotic (baseline bar); tenseness retained in data only
 - Phoneme dialogs: symbol, articulation tags, guide, examples with audio, pedagogically relevant allophones
 - Audio: quick playback for example words (one clip per word)
 - Dark mode: light/dark/system theme preference persisted
@@ -25,11 +25,12 @@ Charts and related hooks/components were reorganized under the `(charts)` route 
 
 - `src/routes/(charts)/ipa-chart.tsx`: Chart route with tabs (Consonants | Vowels)
   - `src/routes/(charts)/-components/chart/consonant-chart.tsx`
-    - `consonant-cell.tsx`, `consonant-dialog.tsx`, `articulation-info-popover.tsx`
+    - `consonant-cell.tsx`, `articulation-info-popover.tsx`
     - `src/routes/(charts)/-hooks/use-consonant-grid.ts`
   - `src/routes/(charts)/-components/chart/vowel-chart.tsx`
-    - `vowel-cell.tsx`
+    - `vowel-cell.tsx`, `vowel-axis-info-popover.tsx`
     - `src/routes/(charts)/-hooks/use-vowel-grid.ts`
+  - `phoneme-dialog.tsx`: unified dialog for consonant & vowel details
 - `src/components/audio/audio-button.tsx`: Audio playback button
 - `src/components/theme-provider.tsx`: Theme context/provider
 - `src/routes/__root.tsx`: Root layout (theme provider, devtools, outlet)
@@ -93,10 +94,11 @@ pnpm -C apps/web lint
 
 ## Roadmap (UI)
 
-- Vowel trapezoid visualization (overlay / coordinate refinement)
+- Dedicated diphthong view + optional glide path visualization
+- Vowel trapezoid refinement / coordinate overlay
 - Illustration assets for consonant place/manner (dialog + tooltips)
 - Minimal pairs + spelling patterns panel
-- URL search params for section + deep link to open symbol dialog
+- URL search params for deep linking directly to a symbol/dialog
 - Optional side reference / articulation guide panel
 
 ## Troubleshooting

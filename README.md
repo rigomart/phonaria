@@ -15,10 +15,12 @@ Phonix addresses these with a friendly IPA presentation, practical example words
 ## Current status (MVP in progress)
 
 Implemented:
-- apps/web: Mobile‑first UI with consonant & vowel exploration (now both in 2D grids), dark mode, audio, accessible dialogs
-- Consonant chart: memoized grid hook, extracted cells/dialog, header micro‑learning tooltips (place & manner popovers)
-- Vowel chart: full height × frontness grid (Option A granularity) with tense, rounded, rhotic visual encodings
-- packages/shared-data: Typed phoneme data (40 phonemes) + articulation metadata (`articulationPlaces`, `articulationManners`) + utilities (audio URLs, display helpers)
+- apps/web: Mobile‑first UI with consonant & vowel exploration (2D grids), dark mode, audio, unified accessible phoneme dialog
+- Consonant chart: memoized grid hook, extracted cell component, articulation header micro‑help popovers (place & manner)
+- Vowel chart: full height × frontness grid (7 × 5) with simplified visual encodings (rounded ring, rhotic baseline bar); *tenseness kept in data but not visually encoded to reduce clutter*
+- Vowel axis micro‑help: height & frontness tooltips via shared metadata
+- Unified `PhonemeDialog` (replaces separate consonant/vowel dialogs) with articulation, guide, examples, allophones
+- packages/shared-data: Typed phoneme data (40 phonemes) + articulation metadata (`articulationPlaces`, `articulationManners`) + vowel axis metadata (`vowelHeights`, `vowelFrontnesses`) + utilities (audio URLs, display helpers)
 - packages/tts-generate: Scripted audio generation for example words (optional)
 
 Planned next:
@@ -31,15 +33,16 @@ Planned next:
 	- web/
 		- Vite + React + TypeScript + Tailwind v4 + shadcn/ui components
 		- Components (selected):
-				- `src/routes/(charts)/ipa-chart.tsx`: Tabbed consonant / vowel exploration route
-					- `src/routes/(charts)/-components/chart/consonant-chart.tsx`: Table (manner × place) with tooltips and dialog
-						- `consonant-cell.tsx`: Cell rendering (voiceless vs voiced styling)
-						- `consonant-dialog.tsx`: Detail dialog
-						- `articulation-info-popover.tsx`: Micro‑help for headers
+				- `src/routes/(charts)/ipa-chart.tsx`: Tabbed exploration (Consonants | Vowels)
+					- `src/routes/(charts)/-components/chart/consonant-chart.tsx`: Table (manner × place)
+						- `consonant-cell.tsx`: Voiceless (border) vs voiced (bg) styling via cva
+						- `articulation-info-popover.tsx`: Place/manner tooltips
 						- `-hooks/use-consonant-grid.ts`: Memoized grid builder
-					- `src/routes/(charts)/-components/chart/vowel-chart.tsx`: Height × frontness grid (seven heights × five frontness levels)
-						- `vowel-cell.tsx`: Cell buttons with tense / lax, rounded ring, rhotic mark
-						- `-hooks/use-vowel-grid.ts`: Grid builder (sorts monophthong > diphthong, tense > lax)
+					- `src/routes/(charts)/-components/chart/vowel-chart.tsx`: Height × frontness grid
+						- `vowel-cell.tsx`: Cell buttons with rounded ring / rhotic bar (no tense/lax styling)
+						- `vowel-axis-info-popover.tsx`: Height & frontness tooltips
+						- `-hooks/use-vowel-grid.ts`: Grid builder (monophthongs before diphthongs)
+					- `phoneme-dialog.tsx`: Unified dialog component
 				- `src/components/audio/audio-button.tsx`: Accessible audio playback button
 				- `src/components/theme-provider.tsx`: Class‑based theme (light/dark/system)
 		- Styling: dark mode tokens via CSS variables; Tailwind dark variant via `.dark`
@@ -115,7 +118,7 @@ The tts-generate package uses the ElevenLabs API to generate example word audio 
 	- Display: `phonixUtils.toPhonemic(ipa)` renders slashes for UI
 - Current views:
 	- Consonants: 2D chart (manner rows × place columns) with tooltips and dialog (articulation, examples, allophones)
-	- Vowels: 2D chart (height rows × frontness/backness columns) with legend encoding tenseness, rounding, rhoticity; dialog with articulation & examples
+	- Vowels: 2D chart (height rows × frontness/backness columns) with legend encoding rounding & rhoticity (tenseness stored but not visually encoded); dialog with articulation & examples
 - Accessibility: buttons with labels, Radix dialogs/tooltips, keyboard focus via native buttons
 
 How to run (from repository root):
@@ -125,10 +128,11 @@ How to run (from repository root):
 
 ## Roadmap
 
-1. Interactive vowel chart + improved consonant illustrations
-2. Sentence analysis (G2P) with phoneme breakdown & playback
-3. Minimal pairs + common spelling patterns per phoneme
-4. Optional (post‑MVP): progress tracking / personalization
+1. Dedicated diphthong view (separate from monophthong grid) + mini glide visualization
+2. Interactive vowel trapezoid & improved consonant illustrations
+3. Sentence analysis (G2P) with phoneme breakdown & playback
+4. Minimal pairs + common spelling patterns per phoneme
+5. Optional (post‑MVP): progress tracking / personalization
 
 ## Requirements and constraints (summary)
 
