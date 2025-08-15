@@ -2,140 +2,95 @@
 
 Phonix is a phoneme-first ESL pronunciation project focused on helping learners hear and produce the sounds of American English (General American). It emphasizes clear, approachable IPA-based learning and connects individual phonemes to real-word usage.
 
-## Why it exists (context)
+## Current Status (MVP in Progress)
 
-Many ESL learners struggle with:
-- Phoneme blindness (not noticing contrastive sounds)
-- IPA intimidation (symbols feel opaque)
-- Lack of context (sounds practiced in isolation only)
-- Limited feedback without a teacher
+We are currently implementing the Core MVP features outlined in [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md#phase-1--core-mvp-phoneme-level-learning), specifically focusing on phoneme awareness and transcription.
 
-Phonix addresses these with a friendly IPA presentation, practical example words, and audio models—not speech analysis. The target user is an intermediate-to-advanced learner aiming for clearer, more confident pronunciation.
+**Implemented:**
+- **Web App (`apps/web`)**:
+  - Mobile-first UI with interactive consonant and vowel charts.
+  - Dark mode support.
+  - Unified phoneme dialog for detailed information, examples, and audio.
+  - Consonant Chart: 2D grid (manner × place) with articulation tooltips.
+  - Vowel Chart: 2D grid (height × frontness) with visual encodings for rounding and rhoticity.
+- **Shared Data (`packages/shared-data`)**:
+  - Typed phoneme data for 40 phonemes (24 consonants, 16 vowels).
+  - Articulation metadata (places, manners, vowel dimensions).
+  - Utility functions for audio URLs, display formatting, and example word lists.
+- **TTS Generation (`packages/tts-generate`)**:
+  - Scripted audio generation for example words using ElevenLabs (optional).
 
-## Current status (MVP in progress)
+**Planned Next:**
+- Interactive vowel trapezoid for better vowel navigation.
+- Grapheme-to-Phoneme (G2P) transcription flow (using LLM + Hono.js API).
 
-Implemented:
-- apps/web: Mobile‑first UI with consonant & vowel exploration (2D grids), dark mode, audio, unified accessible phoneme dialog
-- Consonant chart: memoized grid hook, extracted cell component, articulation header micro‑help popovers (place & manner)
-- Vowel chart: full height × frontness grid (7 × 5) with simplified visual encodings (rounded ring, rhotic baseline bar); *tenseness kept in data but not visually encoded to reduce clutter*
-- Vowel axis micro‑help: height & frontness tooltips via shared metadata
-- Unified `PhonemeDialog` (replaces separate consonant/vowel dialogs) with articulation, guide, examples, allophones
-- packages/shared-data: Typed phoneme data (40 phonemes) + articulation metadata (`articulationPlaces`, `articulationManners`) + vowel axis metadata (`vowelHeights`, `vowelFrontnesses`) + utilities (audio URLs, display helpers)
-- packages/tts-generate: Scripted audio generation for example words (optional)
+## Project Structure
 
-Planned next:
-- Interactive vowel trapezoid + improved vowel navigation
-- G2P transcription flow (LLM + Hono.js API)
+This is a monorepo managed with `pnpm` workspaces.
 
-## Monorepo layout
+- `apps/web`: The main web application.
+- `packages/shared-data`: Shared data models and utilities.
+- `packages/tts-generate`: Tooling for generating example audio.
 
-- apps/
-	- web/
-		- Vite + React + TypeScript + Tailwind v4 + shadcn/ui components
-		- Components (selected):
-				- `src/routes/(charts)/ipa-chart.tsx`: Tabbed exploration (Consonants | Vowels)
-					- `src/routes/(charts)/-components/chart/consonant-chart.tsx`: Table (manner × place)
-						- `consonant-cell.tsx`: Voiceless (border) vs voiced (bg) styling via cva
-						- `articulation-info-popover.tsx`: Place/manner tooltips
-						- `-hooks/use-consonant-grid.ts`: Memoized grid builder
-					- `src/routes/(charts)/-components/chart/vowel-chart.tsx`: Height × frontness grid
-						- `vowel-cell.tsx`: Cell buttons with rounded ring / rhotic bar (no tense/lax styling)
-						- `vowel-axis-info-popover.tsx`: Height & frontness tooltips
-						- `-hooks/use-vowel-grid.ts`: Grid builder (monophthongs before diphthongs)
-					- `phoneme-dialog.tsx`: Unified dialog component
-				- `src/components/audio/audio-button.tsx`: Accessible audio playback button
-				- `src/components/theme-provider.tsx`: Class‑based theme (light/dark/system)
-		- Styling: dark mode tokens via CSS variables; Tailwind dark variant via `.dark`
-		- UI primitives imported from `@/components/ui/*` (shadcn/ui)
-- packages/
-	- shared-data/
-		- src/consonants.ts, src/vowels.ts: 24 consonants, 16 vowels (10 monophthongs, 5 diphthongs, 1 rhotic)
-		- src/types.ts: data model (articulation, examples, allophones)
-		- src/index.ts: exports data and utilities
-		- src/utils/:
-			- slug.ts: slugifyWord(word)
-			- audio.ts: getExampleAudioUrl(word, base)
-			- ipa.ts: toPhonemic(ipa) for UI display
-			- examples.ts: listAllExampleWords(), listAllExampleAudioUrls()
-	- tts-generate/
-		- generate.ts: produces MP3s for all example words using ElevenLabs
-		- Outputs to apps/web/public/audio/examples/
+### Web App (`apps/web`)
 
-## Data and pedagogy
+- **Stack**: Vite + React + TypeScript + Tailwind CSS v4 + shadcn/ui.
+- **Key Components**:
+  - `ipa-chart.tsx`: Main view with tabs for consonants and vowels.
+  - `consonant-chart.tsx` & `vowel-chart.tsx`: Interactive 2D grids.
+  - `phoneme-dialog.tsx`: Detailed view for a selected phoneme.
+  - `audio-button.tsx`: Accessible audio playback.
+  - `theme-provider.tsx`: Handles light/dark/system themes.
+- **Data**: Consumes `shared-data` for phoneme information and utilities.
+- **Styling**: Uses Tailwind CSS with a custom dark theme.
+- **Accessibility**: Built with accessible components from Radix UI and proper focus management.
 
-- Inventory (General American):
-	- Consonants (24): stops, fricatives, affricates, nasals, liquids, glides
-	- Vowels (16): 10 monophthongs, 5 diphthongs, 1 rhotic (ɝ with ɚ allophone)
-- Transcription conventions:
-	- Use ɹ (not r) for the rhotic consonant; use ɡ (not g)
-	- Example phonemic transcriptions are stored without slashes (e.g., bʌt)
-	- UI can add slashes using a helper when needed
-- Allophones (pedagogically relevant only):
-	- Flap ɾ for /t/ and /d/ (e.g., butter, ladder)
-	- Glottal stop ʔ for /t/ before syllabic /n/ (e.g., button)
-	- Dark L ɫ in syllable-final position (e.g., ball)
-	- Unstressed ɚ as the allophone of ɝ
+### Shared Data (`packages/shared-data`)
 
-### Articulation metadata (shared-data)
+- Defines the core phoneme data (consonants, vowels) and their properties.
+- Provides articulation metadata for educational context.
+- Includes utility functions for common tasks like generating audio URLs (`getExampleAudioUrl`) and formatting IPA for display (`toPhonemic`).
+- Example words and their corresponding audio filenames are managed here.
 
-Exported arrays supply concise pedagogical help for chart headers:
+### TTS Generation (`packages/tts-generate`)
 
-```ts
-import { articulationPlaces, articulationManners } from "shared-data";
+- A utility script to generate audio files for all example words.
+- Uses the ElevenLabs API.
+- Outputs files to `apps/web/public/audio/examples/`.
 
-// Example: lookup short description for a place
-const alveolar = articulationPlaces.find(p => p.key === "alveolar");
-console.log(alveolar?.short);
-```
+## Development
 
-Each place entry: `{ key, label, short, description, how[], articulators[], commonExamples[], order }`.
-Each manner entry: `{ key, label, short, description, how[], airflow, commonExamples[], order }`.
+### Prerequisites
 
-### Utilities (shared-data)
+- [pnpm](https://pnpm.io/)
+- Node.js (version specified in `package.json` engines field)
 
-- slugifyWord(word): "Make" → make
-- getExampleAudioUrl(word, base = "/audio/examples"): builds canonical audio paths
-- toPhonemic(ipa): "bʌt" → "/bʌt/" (presentation only)
-- listAllExampleWords(): returns unique, sorted example words across data and allophones
-- listAllExampleAudioUrls(base?): list of audio URLs built from example words
+### Running the Project
 
-## TTS generation (optional)
+1. **Install dependencies:**
+   ```bash
+   pnpm install
+   ```
 
-The tts-generate package uses the ElevenLabs API to generate example word audio files. Place an ELEVENLABS_API_KEY in packages/tts-generate/.env and run the generator to populate apps/web/public/audio/examples/.
+2. **Start the web application:**
+   ```bash
+   pnpm -C apps/web dev
+   ```
+   Or, using pnpm's filter:
+   ```bash
+   pnpm --filter web dev
+   ```
 
-## Tech plan (next steps)
-
-- Frontend: React + TypeScript + Tailwind v4 + shadcn/ui (mobile-first dark UI)
-- Backend/API: Hono.js, integrates with an OpenAI fine-tuned model for G2P
-- Audio: One short model clip per example word (derived by slug)
-
-## Web app (apps/web)
-
-- Stack: Vite + React + TypeScript, Tailwind v4, shadcn/ui (Radix under the hood)
-- Theming: `ThemeProvider` toggles `light`/`dark`/`system` by applying an `html` class; preference persisted in `localStorage` (key: `phonix-ui-theme`); defaults to system
-- Data: Consumes `shared-data` for phoneme sets and helpers
-	- Audio URLs: `phonixUtils.getExampleAudioUrl(word)` maps to `/audio/examples/<slug>.mp3`
-	- Display: `phonixUtils.toPhonemic(ipa)` renders slashes for UI
-- Current views:
-	- Consonants: 2D chart (manner rows × place columns) with tooltips and dialog (articulation, examples, allophones)
-	- Vowels: 2D chart (height rows × frontness/backness columns) with legend encoding rounding & rhoticity (tenseness stored but not visually encoded); dialog with articulation & examples
-- Accessibility: buttons with labels, Radix dialogs/tooltips, keyboard focus via native buttons
-
-How to run (from repository root):
-- Install dependencies: pnpm install
-- Start web app: pnpm -C apps/web dev (or pnpm --filter web dev)
-- Optional: generate audio with ElevenLabs via `packages/tts-generate` (outputs to `apps/web/public/audio/examples/`)
+3. **(Optional) Generate example audio:**
+   - Add your `ELEVENLABS_API_KEY` to `packages/tts-generate/.env`.
+   - Run the generation script:
+     ```bash
+     pnpm -C packages/tts-generate generate
+     ```
+   - This will populate `apps/web/public/audio/examples/`.
 
 ## Roadmap
 
-1. Dedicated diphthong view (separate from monophthong grid) + mini glide visualization
-2. Interactive vowel trapezoid & improved consonant illustrations
-3. Sentence analysis (G2P) with phoneme breakdown & playback
-4. Minimal pairs + common spelling patterns per phoneme
-5. Optional (post‑MVP): progress tracking / personalization
+For a detailed, phased roadmap, see [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md).
 
-## Requirements and constraints (summary)
-
-- Accent: General American; UI language: English
-- No authentication; no progress tracking; no user speech analysis (for now)
-- Monorepo with pnpm workspaces
+Current focus is on completing the Core MVP (Phase 1), which includes the interactive IPA charts and the basic G2P transcription tool. Subsequent phases will introduce interactive practice, speech input, and personalized learning features.
