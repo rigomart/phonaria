@@ -1,23 +1,12 @@
 import type { VowelPhoneme } from "shared-data";
-import { vowels } from "shared-data";
+import { vowelFrontnesses, vowelHeights, vowels } from "shared-data";
 
-export const VOWEL_HEIGHTS: Array<VowelPhoneme["articulation"]["height"]> = [
-	"high",
-	"near-high",
-	"high-mid",
-	"mid",
-	"low-mid",
-	"near-low",
-	"low",
-];
-
-export const VOWEL_FRONTS: Array<VowelPhoneme["articulation"]["frontness"]> = [
-	"front",
-	"near-front",
-	"central",
-	"near-back",
-	"back",
-];
+export const VOWEL_HEIGHTS = vowelHeights.map((h) => h.key) as Array<
+	VowelPhoneme["articulation"]["height"]
+>;
+export const VOWEL_FRONTS = vowelFrontnesses.map((f) => f.key) as Array<
+	VowelPhoneme["articulation"]["frontness"]
+>;
 
 export type VowelGrid = Record<string, Record<string, VowelPhoneme[]>>;
 

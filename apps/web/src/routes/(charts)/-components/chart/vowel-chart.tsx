@@ -95,14 +95,27 @@ export function VowelChart() {
 					</Table>
 				</div>
 			</div>
-			<PhonemeDialog
-				phoneme={selected}
+			<PhonemeDialog.Root
 				open={open}
 				onOpenChange={(o) => {
 					if (!o) setSelected(null);
 					setOpen(o);
 				}}
-			/>
+			>
+				<PhonemeDialog.Content className="max-w-3xl">
+					{selected ? (
+						<div className="space-y-8">
+							<PhonemeDialog.Header phoneme={selected} />
+							<PhonemeDialog.VowelArticulation phoneme={selected} />
+							{selected.guide ? <PhonemeDialog.Guide guide={selected.guide} /> : null}
+							<PhonemeDialog.Examples examples={selected.examples} />
+							{selected.allophones?.length ? (
+								<PhonemeDialog.Allophones allophones={selected.allophones} />
+							) : null}
+						</div>
+					) : null}
+				</PhonemeDialog.Content>
+			</PhonemeDialog.Root>
 		</>
 	);
 }
