@@ -1,4 +1,4 @@
-# Phonix Web (apps/web)
+# Phonix Web Application
 
 Mobile-first UI to explore American English phonemes with audio and simple, approachable design.
 
@@ -36,8 +36,6 @@ Charts and related hooks/components were reorganized under the `(charts)` route 
 - `src/routes/__root.tsx`: Root layout (theme provider, devtools, outlet)
 - `src/routes/index.tsx`: Placeholder landing (future transcription tool)
 
-Removed (legacy) height-grouped vowel card list in favor of grid.
-
 ## Data & Audio
 
 - Import from `shared-data`:
@@ -55,7 +53,7 @@ pnpm install
 pnpm -C apps/web dev
 ```
 
-### Routing Dev
+### Routing
 
 File-based routes are defined under `src/routes`. The plugin generates `routeTree.gen.ts` which is imported by `src/routes/main.tsx` to create the router instance. Add a new page by creating `src/routes/<name>.tsx` using `createFileRoute("/<path>")` and the generator will rebuild the tree.
 
@@ -66,17 +64,19 @@ Current routes:
 
 Devtools: TanStack Router devtools are enabled in the root layout (`<TanStackRouterDevtools />`). They can be removed or gated later.
 
-Build and preview:
+### Build Commands
 
 ```sh
+# Build for production
 pnpm -C apps/web build
+
+# Preview production build
 pnpm -C apps/web preview
-```
 
-Typecheck & lint:
-
-```sh
+# Type checking
 pnpm -C apps/web typecheck
+
+# Linting
 pnpm -C apps/web lint
 ```
 
@@ -91,15 +91,6 @@ pnpm -C apps/web lint
 - Buttons have labels for screen readers
 - Dialogs and tooltips come from Radix primitives (focus management, ARIA)
 - Audio controls are keyboard accessible
-
-## Roadmap (UI)
-
-- Dedicated diphthong view + optional glide path visualization
-- Vowel trapezoid refinement / coordinate overlay
-- Illustration assets for consonant place/manner (dialog + tooltips)
-- Minimal pairs + spelling patterns panel
-- URL search params for deep linking directly to a symbol/dialog
-- Optional side reference / articulation guide panel
 
 ## Troubleshooting
 
