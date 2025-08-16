@@ -5,12 +5,11 @@ import { cn } from "@/lib/utils";
 
 type Props = {
 	src: string;
-	slowSrc?: string;
 	label: string;
 	className?: string;
 };
 
-export function AudioButton({ src, slowSrc, label, className }: Props) {
+export function AudioButton({ src, label, className }: Props) {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
 	// Effect to create and cleanup the audio element
