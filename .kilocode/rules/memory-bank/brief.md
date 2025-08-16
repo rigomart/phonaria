@@ -1,11 +1,49 @@
-# Phonix — Phased Development Plan
+# Application Description and Features
+
+## Overview
+Phonix is an interactive pronunciation learning platform focused on phoneme-level mastery for English as a Second Language (ESL) learners.  
+It addresses the lack of accessible tools that teach how to physically articulate individual sounds rather than only practicing words or sentences.  
+The application enables users to understand, identify, and produce target phonemes accurately, improving long-term pronunciation skills.
+
+## Key Features
+1. **Interactive IPA Chart**
+   - Visual, clickable chart of English phonemes.
+   - Each phoneme provides articulation guides, example words, and audio playback.
+   - Includes visual aids for place and manner of articulation.
+
+2. **Phonemic Transcription Tool**
+   - Converts user-input text into phonemic transcription.
+   - Each phoneme in the transcription is clickable, linking to articulation details.
+   - Handles common English pronunciation variants (e.g., General American focus initially).
+
+3. **Articulation Guides**
+   - Step-by-step instructions for producing each phoneme.
+   - Visual diagrams of mouth and tongue positions.
+   - Example recordings by native speakers.
+   - Optional slow-motion or isolated sound playback.
+
+4. **Minimal Pair Practice**
+   - Interactive exercises contrasting similar phonemes.
+   - Listening and speaking challenges to reinforce differences.
+
+5. **Search & Filtering**
+   - Search for phonemes by sound, spelling pattern, or articulation category.
+   - Filter IPA chart by vowel/consonant, place of articulation, or voicing.
+
+6. **Learning Path Support**
+   - Suggested progression for mastering phonemes.
+   - Recommendations based on user progress.
+
+7. **Fallback Accuracy Layer**
+   - If the system cannot confidently transcribe, a deterministic rule-based approach ensures a reasonable fallback result.
+
+## Phased Development Plan
 
 This phased plan focuses on **building the most valuable, technically viable features first**, while allowing for expansion into more advanced capabilities as resources and user feedback grow.  
 Each phase builds on the previous one, minimizing rework and ensuring continuous improvement.
 
----
 
-## Phase 1 — Core MVP (Phoneme-Level Learning)
+### Phase 1 — Core MVP
 
 **Goal:** Deliver a usable, accurate, and engaging phoneme-learning experience for ESL learners, with minimal dependencies and low technical risk.
 
@@ -32,12 +70,7 @@ Each phase builds on the previous one, minimizing rework and ensuring continuous
    - Accessible on mobile and desktop.  
    - Minimal but clear UI for learners of varying tech literacy.
 
-**Why This Order?**  
-We start with the **phoneme awareness foundation** — without this, advanced features like speech recognition won't have clear educational value.
-
----
-
-## Phase 2 — Interactive Practice
+### Phase 2 — Interactive Practice
 
 **Goal:** Introduce basic user interaction to reinforce learning, without heavy real-time processing demands.
 
@@ -54,12 +87,7 @@ We start with the **phoneme awareness foundation** — without this, advanced fe
    - Store simple stats (accuracy, phonemes practiced) in local storage.  
    - No account system yet.
 
-**Why This Order?**  
-Adds engagement and self-testing while avoiding complex backend needs.
-
----
-
-## Phase 3 — Speech Input & Feedback (Lightweight)
+### Phase 3 — Speech Input & Feedback (Lightweight)
 
 **Goal:** Enable learners to produce sounds and receive basic feedback using off-the-shelf speech recognition APIs.
 
@@ -76,12 +104,7 @@ Adds engagement and self-testing while avoiding complex backend needs.
 3. **Feedback on Confusions**  
    - If wrong, suggest the correct phoneme and link to IPA chart.
 
-**Why This Order?**  
-We leverage existing cloud APIs to avoid building complex phonetic scoring engines from scratch.
-
----
-
-## Phase 4 — Intelligent Feedback & Customization
+### Phase 4 — Intelligent Feedback & Customization
 
 **Goal:** Move towards personalized learning paths and better phoneme accuracy analysis.
 
@@ -97,12 +120,7 @@ We leverage existing cloud APIs to avoid building complex phonetic scoring engin
    - Allow learners to save progress across devices.  
    - Enable teachers to monitor class progress.
 
-**Why This Order?**  
-By now, we have enough user data to justify more advanced personalization.
-
----
-
-## Phase 5 — Advanced Features (Optional Expansion)
+### Phase 5 — Advanced Features (Optional Expansion)
 
 **Goal:** Enhance engagement and depth for advanced learners.
 
@@ -112,13 +130,9 @@ By now, we have enough user data to justify more advanced personalization.
 - **Gamified Learning Path** with badges, levels, and streaks.  
 - **Teacher Dashboard** for class-based learning.
 
----
+### Technical Notes & Priorities
 
-## Technical Notes & Priorities
-
-- **G2P Model:** Prefer a lightweight model (CMUdict + rules for unknown words) for Phase 1, with an option to integrate fine-tuned models later.  
+- **G2P Model:** Prefer a lightweight model (CMUdict + rules for unknown words) for Phase 1.
 - **Speech Recognition:** Phase 3 can start with Google Speech-to-Text or Whisper API, then move to custom phoneme-aware scoring in Phase 4.  
 - **Performance:** Keep IPA chart and transcription instant; avoid long API calls where possible.  
 - **Scalability:** Ensure Phase 1 data structure supports adding other English accents or even other languages in the future.
-
----
