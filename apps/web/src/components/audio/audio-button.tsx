@@ -1,5 +1,5 @@
-import { Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Play, Snail } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -12,8 +12,6 @@ type Props = {
 
 export function AudioButton({ src, slowSrc, label, className }: Props) {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
-	const [isPlaying, setIsPlaying] = useState(false);
-	const [activeSrc, setActiveSrc] = useState<string | null>(null);
 
 	// Effect to create and cleanup the audio element
 	useEffect(() => {
@@ -21,62 +19,60 @@ export function AudioButton({ src, slowSrc, label, className }: Props) {
 		audioRef.current = audio;
 
 		const handleEnded = () => {
-			setIsPlaying(false);
-			setActiveSrc(null);
+			// Reset audio element
+			audio.currentTime = 0;
 		};
 
 		audio.addEventListener("ended", handleEnded);
-		audio.addEventListener("pause", handleEnded); // Also treat pause as ended
 
 		return () => {
 			audio.removeEventListener("ended", handleEnded);
-			audio.removeEventListener("pause", handleEnded);
 			audio.pause();
 			audioRef.current = null;
 		};
 	}, []);
 
-	const playAudio = (sourceUrl: string) => {
+	const playAudio = (sourceUrl: string, speed: "normal" | "slow" = "normal") => {
 		const audio = audioRef.current;
 		if (!audio) return;
 
-		if (isPlaying && activeSrc === sourceUrl) {
-			audio.pause();
-		} else {
-			audio.src = sourceUrl;
-			audio.currentTime = 0;
-			audio.play().catch((e) => console.error("Audio play failed:", e));
-			setIsPlaying(true);
-			setActiveSrc(sourceUrl);
-		}
-	};
+		// Always play the audio from the beginning
+		audio.src = sourceUrl;
+		audio.currentTime = 0;
 
-	const isNormalPlaying = isPlaying && activeSrc === src;
-	const isSlowPlaying = isPlaying && activeSrc === slowSrc;
+		// Set playback rate and preserve pitch for slow playback
+		if (speed === "slow") {
+			audio.playbackRate = 0.75;
+			// Preserve pitch using standard and vendor-prefixed properties
+			audio.preservesPitch = true;
+		} else {
+			audio.playbackRate = 1.0;
+			audio.preservesPitch = false;
+		}
+
+		audio.play().catch((e) => console.error("Audio play failed:", e));
+	};
 
 	return (
 		<div className={cn("inline-flex items-center gap-1", className)}>
 			<Button
-				size="icon"
+				size="sm"
 				variant="outline"
-				className="h-8 w-8"
-				onClick={() => playAudio(src)}
-				aria-label={label}
+				className="h-8 gap-1 px-2 text-xs"
+				onClick={() => playAudio(src, "normal")}
+				aria-label={`Play ${label}`}
 			>
-				{isNormalPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+				<Play className="h-3 w-3" />
 			</Button>
-			{slowSrc ? (
-				<Button
-					size="sm"
-					variant="ghost"
-					className="h-8"
-					onClick={() => playAudio(slowSrc)}
-					aria-label={`Slow playback of ${label}`}
-					data-state={isSlowPlaying ? "playing" : "idle"}
-				>
-					Slow
-				</Button>
-			) : null}
+			<Button
+				size="sm"
+				variant="outline"
+				className="h-8 gap-1 px-2 text-xs"
+				onClick={() => playAudio(src, "slow")}
+				aria-label={`Play slow ${label}`}
+			>
+				<Snail className="h-3 w-3" />
+			</Button>
 		</div>
 	);
 }
