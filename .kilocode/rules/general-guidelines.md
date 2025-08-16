@@ -13,3 +13,4 @@ General instructions that you must absolutely follow.
   - kebab-case for filenames
 - You can read .env.example files to know what environment variables exist in the project.
 - DO NOT READ any other .env file apart from the specified previously as they may contain sensitive info.
+- AVOID the use of `any`.
