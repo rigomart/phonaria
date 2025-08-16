@@ -109,6 +109,18 @@ export function ConsonantChart() {
 					{selected ? (
 						<div className="space-y-8">
 							<PhonemeDialog.Header phoneme={selected} />
+							<section className="space-y-3">
+								<h3 className="text-sm font-medium">Sagittal view</h3>
+								<div className="flex justify-center">
+									<div
+										className="aspect-square w-full max-w-[28rem] sm:max-w-[30rem] md:max-w-[32rem] rounded-lg border bg-muted/30 text-muted-foreground flex items-center justify-center select-none"
+										role="img"
+										aria-label="Sagittal view placeholder"
+									>
+										<span className="text-sm">Sagittal view placeholder</span>
+									</div>
+								</div>
+							</section>
 							<PhonemeDialog.ConsonantArticulation phoneme={selected} />
 							{selected.guide ? <PhonemeDialog.Guide guide={selected.guide} /> : null}
 							<PhonemeDialog.Examples examples={selected.examples} />
