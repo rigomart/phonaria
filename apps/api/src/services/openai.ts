@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import type { G2PWord } from "../types/g2p";
+import type { G2PWord } from "./g2p";
 
 /**
  * OpenAI service for G2P (Grapheme-to-Phoneme) conversion

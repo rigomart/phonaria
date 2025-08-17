@@ -2,15 +2,13 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { z } from "zod";
-import { OpenAIService } from "./services/openai";
-import type { G2PError, G2PResponse } from "./types/g2p";
+import type { G2PResponse } from "./services/g2p";
+import { G2PService } from "./services/g2p";
+import type { ApiError } from "./types/error";
 
-/**
- * Hono.js API for Phonix G2P (Grapheme-to-Phoneme) conversion
- */
 // Environment variables interface for Cloudflare Workers
 interface CloudflareBindings {
-	OPENAI_API_KEY: string;
+	AI_PROVIDER_API_KEY: string;
 }
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
@@ -18,7 +16,7 @@ const app = new Hono<{ Bindings: CloudflareBindings }>();
 app.use(
 	"/*",
 	cors({
-		origin: ["http://localhost:5173"], // Common dev server ports
+		origin: ["http://localhost:5173"],
 		allowHeaders: ["Content-Type"],
 		allowMethods: ["GET", "POST"],
 	}),
@@ -47,28 +45,28 @@ app.get("/", (c) => {
  */
 app.post("/api/g2p", zValidator("json", g2pRequestSchema), async (c) => {
 	try {
-		const openaiApiKey = c.env.OPENAI_API_KEY;
+		const apiKey = c.env.AI_PROVIDER_API_KEY;
 
-		if (!openaiApiKey) {
-			const error: G2PError = {
+		if (!apiKey) {
+			const error: ApiError = {
 				error: "configuration_error",
-				message: "OpenAI API key not configured",
+				message: "Provider API key not configured",
 			};
 			return c.json(error, 500);
 		}
 
 		const { text } = c.req.valid("json");
 
-		const openaiService = new OpenAIService(openaiApiKey);
+		const g2pService = new G2PService("openai", { apiKey });
 
-		const words = await openaiService.textToPhonemes(text);
+		const words = await g2pService.textToPhonemes(text);
 
 		const response: G2PResponse = { words };
 		return c.json(response, 200);
 	} catch (error) {
 		console.error("G2P conversion error:", error);
 
-		const errorResponse: G2PError = {
+		const errorResponse: ApiError = {
 			error: "conversion_failed",
 			message: error instanceof Error ? error.message : "Failed to convert text to phonemes",
 		};
