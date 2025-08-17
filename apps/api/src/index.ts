@@ -15,22 +15,20 @@ interface CloudflareBindings {
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
-// Add CORS middleware for frontend integration
 app.use(
 	"/*",
 	cors({
-		origin: ["http://localhost:5173", "http://localhost:3000"], // Common dev server ports
+		origin: ["http://localhost:5173"], // Common dev server ports
 		allowHeaders: ["Content-Type"],
 		allowMethods: ["GET", "POST"],
 	}),
 );
 
-// Request validation schema
 const g2pRequestSchema = z.object({
 	text: z
 		.string()
 		.min(1, "Text cannot be empty")
-		.max(500, "Text must be 500 characters or less")
+		.max(200, "Text must be 200 characters or less")
 		.regex(/^[\w\s.,!?;:'"()-]+$/, "Text contains invalid characters"),
 });
 
@@ -49,8 +47,8 @@ app.get("/", (c) => {
  */
 app.post("/api/g2p", zValidator("json", g2pRequestSchema), async (c) => {
 	try {
-		// Get OpenAI API key from environment
-		const openaiApiKey = c.env?.OPENAI_API_KEY as string;
+		const openaiApiKey = process.env.OPENAI_API_KEY;
+
 		if (!openaiApiKey) {
 			const error: G2PError = {
 				error: "configuration_error",
@@ -59,16 +57,12 @@ app.post("/api/g2p", zValidator("json", g2pRequestSchema), async (c) => {
 			return c.json(error, 500);
 		}
 
-		// Get validated request data
 		const { text } = c.req.valid("json");
 
-		// Initialize OpenAI service
 		const openaiService = new OpenAIService(openaiApiKey);
 
-		// Convert text to phonemes
 		const words = await openaiService.textToPhonemes(text);
 
-		// Return successful response
 		const response: G2PResponse = { words };
 		return c.json(response, 200);
 	} catch (error) {
