@@ -47,7 +47,7 @@ app.get("/", (c) => {
  */
 app.post("/api/g2p", zValidator("json", g2pRequestSchema), async (c) => {
 	try {
-		const openaiApiKey = process.env.OPENAI_API_KEY;
+		const openaiApiKey = c.env.OPENAI_API_KEY;
 
 		if (!openaiApiKey) {
 			const error: G2PError = {
