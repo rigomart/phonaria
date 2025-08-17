@@ -22,7 +22,7 @@ const phonemeMap = new Map<string, IpaPhoneme>();
  * G2P API client instance
  */
 const g2pApiClient = createApiClient({
-	baseUrl: "http://localhost:8787", // Update with actual API URL
+	baseUrl: import.meta.env.VITE_API_BASE_URL, // Update with actual API URL
 	defaultHeaders: {
 		"Content-Type": "application/json",
 	},
