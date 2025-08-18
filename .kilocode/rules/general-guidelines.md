@@ -3,9 +3,7 @@
 General instructions that you must absolutely follow.
 
 ## Guidelines
-
-- Include JSDoc comments for complex functions, classes and types.
-- Do not include inline comments in code, unless absolutely necessary.
+- Do not include inline comments in code, unless the complexity makes it absolutely necessary.
 - Use consistent naming conventions and coding styles: 
   - camelCase for variables and functions
   - PascalCase for classes, components and types
@@ -13,5 +11,9 @@ General instructions that you must absolutely follow.
   - kebab-case for filenames
 - You can read .env.example files to know what environment variables exist in the project.
 - DO NOT READ any other .env file apart from the specified previously as they may contain sensitive info.
-- AVOID the use of `any`.
 - DO NOT add new dependencies editing the package.json directly. Prefer the use of commands like `pnpm add <dependency_name>`.
+
+### TypeScript Guidelines
+- Prefer the use of types instead of interfaces.
+- Prefer type unions instead of extending interfaces.
+- AVOID the use of `any`.
