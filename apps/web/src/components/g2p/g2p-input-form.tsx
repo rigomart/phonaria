@@ -28,7 +28,7 @@ export function G2PInputForm({
 	state,
 	disabled = false,
 	placeholder = "Enter text to see its phonemic transcription...",
-	maxLength = 500,
+	maxLength = 200,
 }: G2PInputFormProps) {
 	const [inputText, setInputText] = useState("");
 
@@ -66,8 +66,7 @@ export function G2PInputForm({
 					Phonemic Transcription
 				</CardTitle>
 				<CardDescription>
-					Enter words or sentences to see their pronunciation in phonemic notation (IPA). Click on
-					any phoneme to learn more about it.
+					Enter words or sentences to see their pronunciation in phonemic notation (IPA).
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
@@ -99,12 +98,12 @@ export function G2PInputForm({
 					>
 						{isLoading ? (
 							<>
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								<Loader2 className="h-4 w-4 animate-spin" />
 								Transcribing...
 							</>
 						) : (
 							<>
-								<Send className="mr-2 h-4 w-4" />
+								<Send className="h-4 w-4" />
 								Transcribe
 							</>
 						)}

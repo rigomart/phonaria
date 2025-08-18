@@ -3,6 +3,7 @@ import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ModeToggle } from "@/components/mode-toggle";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 // Create a client for TanStack Query
 const queryClient = new QueryClient({
@@ -48,6 +49,7 @@ export const Route = createRootRoute({
 
 						<Outlet />
 					</div>
+					<Toaster />
 				</ThemeProvider>
 				<TanStackRouterDevtools />
 			</QueryClientProvider>

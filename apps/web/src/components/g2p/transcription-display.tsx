@@ -1,10 +1,5 @@
-/**
- * Transcription Display Component
- * Shows phonemic transcription results with clickable phonemes
- */
-
-import { Clock, FileText, Hash } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileText } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TranscribedPhoneme, TranscriptionResult } from "@/types/g2p";
 import { PhonemeBadge } from "./phoneme-badge";
 
@@ -17,11 +12,7 @@ interface TranscriptionDisplayProps {
 /**
  * Displays transcription results with clickable phonemes
  */
-export function TranscriptionDisplay({
-	result,
-	onPhonemeClick,
-	showMetadata = true,
-}: TranscriptionDisplayProps) {
+export function TranscriptionDisplay({ result, onPhonemeClick }: TranscriptionDisplayProps) {
 	const totalPhonemes = result.words.reduce((total, word) => total + word.phonemes.length, 0);
 	const knownPhonemes = result.words.reduce(
 		(total, word) => total + word.phonemes.filter((p) => p.isKnown).length,
@@ -35,41 +26,10 @@ export function TranscriptionDisplay({
 					<FileText className="h-5 w-5 text-primary" />
 					Phonemic Transcription
 				</CardTitle>
-				{showMetadata && (
-					<CardDescription className="flex items-center gap-4 text-sm">
-						<span className="flex items-center gap-1">
-							<Hash className="h-3 w-3" />
-							{result.words.length} word{result.words.length !== 1 ? "s" : ""}
-						</span>
-						<span className="flex items-center gap-1">
-							<Hash className="h-3 w-3" />
-							{totalPhonemes} phoneme{totalPhonemes !== 1 ? "s" : ""}
-						</span>
-						<span className="flex items-center gap-1">
-							<Clock className="h-3 w-3" />
-							{result.timestamp.toLocaleTimeString()}
-						</span>
-					</CardDescription>
-				)}
 			</CardHeader>
 			<CardContent className="space-y-4">
-				{/* Original text */}
-				<div className="space-y-2">
-					<h4 className="text-sm font-medium text-muted-foreground">Original Text</h4>
-					<p className="text-base p-3 bg-muted/30 rounded-md border">{result.originalText}</p>
-				</div>
-
 				{/* Transcription */}
 				<div className="space-y-3">
-					<div className="flex items-center justify-between">
-						<h4 className="text-sm font-medium text-muted-foreground">Phonemic Transcription</h4>
-						{showMetadata && (
-							<span className="text-xs text-muted-foreground">
-								{knownPhonemes}/{totalPhonemes} phonemes recognized
-							</span>
-						)}
-					</div>
-
 					<div className="space-y-3 p-3 bg-muted/10 rounded-md border">
 						{result.words.map((word, wordIndex) => (
 							<div key={`${word.word}-${wordIndex}`} className="space-y-2">

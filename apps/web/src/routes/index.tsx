@@ -3,7 +3,6 @@ import { useState } from "react";
 import type { IpaPhoneme } from "shared-data";
 import { G2PInputForm } from "@/components/g2p/g2p-input-form";
 import { TranscriptionDisplay } from "@/components/g2p/transcription-display";
-import { Toaster } from "@/components/ui/sonner";
 import { useG2P } from "@/hooks/use-g2p";
 import { getPhonemeBySymbol } from "@/lib/g2p-client";
 import { PhonemeDialog } from "@/routes/(charts)/-components/chart/phoneme-dialog";
@@ -46,6 +45,23 @@ function Index() {
 				</p>
 			</div>
 
+			<div className="mt-4 space-y-2">
+				<h4 className="font-medium">Try these examples:</h4>
+				<div className="flex flex-wrap gap-2">
+					{["hello world", "pronunciation", "phonetics", "international"].map((example) => (
+						<button
+							key={example}
+							type="button"
+							onClick={() => g2p.transcribe(example)}
+							className="rounded-md bg-primary/10 px-3 py-1 text-xs text-primary transition-colors hover:bg-primary/20"
+							disabled={g2p.state === "loading"}
+						>
+							"{example}"
+						</button>
+					))}
+				</div>
+			</div>
+
 			{/* G2P Input Form */}
 			<G2PInputForm
 				onSubmit={g2p.transcribe}
@@ -73,51 +89,6 @@ function Index() {
 				/>
 			)}
 
-			{/* Getting Started - shown when no results */}
-			{g2p.state === "idle" && (
-				<div className="space-y-4 rounded-md border bg-muted/20 p-6">
-					<h3 className="text-lg font-semibold">Getting Started</h3>
-					<div className="space-y-3 text-sm text-muted-foreground">
-						<p>
-							• <strong>Enter text:</strong> Type any English word, phrase, or sentence in the input
-							field above
-						</p>
-						<p>
-							• <strong>View transcription:</strong> Click "Transcribe" to see the phonemic
-							representation
-						</p>
-						<p>
-							• <strong>Learn phonemes:</strong> Click on any phoneme symbol to learn about its
-							articulation
-						</p>
-						<p>
-							• <strong>Explore more:</strong> Visit the{" "}
-							<a href="/ipa-chart" className="text-primary hover:underline">
-								IPA Chart
-							</a>{" "}
-							to explore all English phonemes
-						</p>
-					</div>
-
-					<div className="mt-4 space-y-2">
-						<h4 className="font-medium">Try these examples:</h4>
-						<div className="flex flex-wrap gap-2">
-							{["hello world", "pronunciation", "phonetics", "international"].map((example) => (
-								<button
-									key={example}
-									type="button"
-									onClick={() => g2p.transcribe(example)}
-									className="rounded-md bg-primary/10 px-3 py-1 text-xs text-primary transition-colors hover:bg-primary/20"
-									disabled={g2p.state === "loading"}
-								>
-									"{example}"
-								</button>
-							))}
-						</div>
-					</div>
-				</div>
-			)}
-
 			{/* Phoneme Detail Dialog */}
 			{selectedPhoneme && (
 				<PhonemeDialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -125,20 +96,16 @@ function Index() {
 						<PhonemeDialog.Header phoneme={selectedPhoneme} />
 
 						<div className="space-y-6 py-4">
-							{/* Articulation Info */}
 							{selectedPhoneme.category === "consonant" ? (
 								<PhonemeDialog.ConsonantArticulation phoneme={selectedPhoneme} />
 							) : (
 								<PhonemeDialog.VowelArticulation phoneme={selectedPhoneme} />
 							)}
 
-							{/* How to Make It */}
 							<PhonemeDialog.Guide guide={selectedPhoneme.guide} />
 
-							{/* Examples */}
 							<PhonemeDialog.Examples examples={selectedPhoneme.examples} />
 
-							{/* Allophones (if any) */}
 							{selectedPhoneme.allophones && selectedPhoneme.allophones.length > 0 && (
 								<PhonemeDialog.Allophones allophones={selectedPhoneme.allophones} />
 							)}
@@ -146,9 +113,6 @@ function Index() {
 					</PhonemeDialog.Content>
 				</PhonemeDialog.Root>
 			)}
-
-			{/* Toast notifications */}
-			<Toaster />
 		</div>
 	);
 }
