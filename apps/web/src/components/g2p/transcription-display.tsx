@@ -1,8 +1,3 @@
-/**
- * Minimalistic Transcription Display Component
- * Clean word-by-word alignment of original text and IPA transcription
- */
-
 import { cn } from "@/lib/utils";
 import type { TranscribedPhoneme, TranscribedWord, TranscriptionResult } from "@/types/g2p";
 

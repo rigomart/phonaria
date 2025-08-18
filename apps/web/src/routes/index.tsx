@@ -32,9 +32,9 @@ function Index() {
 	};
 
 	return (
-		<div className="mx-auto max-w-6xl space-y-16 p-4">
+		<div className="mx-auto max-w-6xl space-y-8 p-4">
 			{/* Hero Section - Brief and Less Prominent */}
-			<div className="space-y-3 text-center py-8">
+			<div className="space-y-3 text-center py-4">
 				<h1 className="text-2xl font-semibold tracking-tight">Phonemic Transcription Tool</h1>
 				<p className="text-muted-foreground max-w-lg mx-auto">
 					Convert text to IPA notation and explore individual phonemes
@@ -62,7 +62,6 @@ function Index() {
 			{/* Input Form */}
 			<G2PInputForm
 				onSubmit={g2p.transcribe}
-				onClear={g2p.clear}
 				state={g2p.state as "idle" | "loading" | "success" | "error"}
 				className="w-full max-w-5xl mx-auto"
 			/>

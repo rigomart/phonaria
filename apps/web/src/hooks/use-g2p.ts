@@ -1,7 +1,3 @@
-/**
- * Custom hook for G2P (Grapheme-to-Phoneme) functionality using TanStack Query
- */
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ApiError } from "@/lib/api-client";

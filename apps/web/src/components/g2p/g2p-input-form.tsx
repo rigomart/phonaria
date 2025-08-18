@@ -6,7 +6,6 @@ import type { G2PState } from "@/types/g2p";
 
 interface G2PInputFormProps {
 	onSubmit: (text: string) => void;
-	onClear: () => void;
 	state: G2PState;
 	disabled?: boolean;
 	placeholder?: string;
@@ -19,7 +18,6 @@ interface G2PInputFormProps {
  */
 export function G2PInputForm({
 	onSubmit,
-	onClear,
 	state,
 	disabled = false,
 	placeholder = "Enter text to see phonemic transcription...",
@@ -31,18 +29,12 @@ export function G2PInputForm({
 	const isLoading = state === "loading";
 	const isDisabled = disabled || isLoading;
 	const hasText = inputText.trim().length > 0;
-	const hasResults = state === "success";
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (hasText && !isDisabled) {
 			onSubmit(inputText.trim());
 		}
-	};
-
-	const handleClear = () => {
-		setInputText("");
-		onClear();
 	};
 
 	return (
@@ -68,15 +60,6 @@ export function G2PInputForm({
 					</Button>
 				</div>
 			</form>
-
-			{/* Clear button - only show when there are results */}
-			{hasResults && (
-				<div className="text-center">
-					<Button onClick={handleClear} variant="outline" disabled={isLoading} className="text-sm">
-						Try another text
-					</Button>
-				</div>
-			)}
 		</div>
 	);
 }
