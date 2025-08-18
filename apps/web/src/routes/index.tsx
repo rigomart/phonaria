@@ -32,28 +32,25 @@ function Index() {
 	};
 
 	return (
-		<div className="mx-auto max-w-4xl space-y-6 p-4">
-			{/* Hero Section */}
-			<div className="space-y-4 text-center">
-				<h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-					Phonemic Transcription Tool
-				</h1>
-				<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-					Convert English text into phonemic transcription using the International Phonetic Alphabet
-					(IPA). Click on any phoneme to learn about its articulation and hear example
-					pronunciations.
+		<div className="mx-auto max-w-6xl space-y-16 p-4">
+			{/* Hero Section - Brief and Less Prominent */}
+			<div className="space-y-3 text-center py-8">
+				<h1 className="text-2xl font-semibold tracking-tight">Phonemic Transcription Tool</h1>
+				<p className="text-muted-foreground max-w-lg mx-auto">
+					Convert text to IPA notation and explore individual phonemes
 				</p>
 			</div>
 
-			<div className="mt-4 space-y-2">
-				<h4 className="font-medium">Try these examples:</h4>
-				<div className="flex flex-wrap gap-2">
+			{/* Example Sentences */}
+			<div className="text-center space-y-4">
+				<h2 className="text-lg font-medium">Try these examples:</h2>
+				<div className="flex flex-wrap justify-center gap-3">
 					{["hello world", "pronunciation", "phonetics", "international"].map((example) => (
 						<button
 							key={example}
 							type="button"
 							onClick={() => g2p.transcribe(example)}
-							className="rounded-md bg-primary/10 px-3 py-1 text-xs text-primary transition-colors hover:bg-primary/20"
+							className="rounded-full bg-primary/10 px-4 py-2 text-sm text-primary transition-colors hover:bg-primary/20 disabled:opacity-50"
 							disabled={g2p.state === "loading"}
 						>
 							"{example}"
@@ -62,31 +59,27 @@ function Index() {
 				</div>
 			</div>
 
-			{/* G2P Input Form */}
+			{/* Input Form */}
 			<G2PInputForm
 				onSubmit={g2p.transcribe}
 				onClear={g2p.clear}
 				state={g2p.state as "idle" | "loading" | "success" | "error"}
+				className="w-full max-w-5xl mx-auto"
 			/>
-
-			{/* Error Display */}
-			{g2p.state === "error" && g2p.error && (
-				<div className="rounded-md border border-destructive/20 bg-destructive/10 p-4">
-					<div className="flex items-start gap-3">
-						<div className="text-sm text-destructive">
-							<strong>Transcription Error:</strong> {g2p.error}
-						</div>
-					</div>
-				</div>
-			)}
 
 			{/* Transcription Results */}
 			{g2p.result && (
-				<TranscriptionDisplay
-					result={g2p.result}
-					onPhonemeClick={handlePhonemeClick}
-					showMetadata={true}
-				/>
+				<TranscriptionDisplay result={g2p.result} onPhonemeClick={handlePhonemeClick} />
+			)}
+
+			{/* Tip Section */}
+			{g2p.result && (
+				<div className="text-center">
+					<p className="text-sm text-muted-foreground/80 max-w-md mx-auto">
+						💡 Click on any phoneme in the transcription above to learn about its articulation and
+						hear pronunciation examples
+					</p>
+				</div>
 			)}
 
 			{/* Phoneme Detail Dialog */}

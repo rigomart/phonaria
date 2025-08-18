@@ -1,74 +1,128 @@
-import { FileText } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { TranscribedPhoneme, TranscriptionResult } from "@/types/g2p";
-import { PhonemeBadge } from "./phoneme-badge";
+/**
+ * Minimalistic Transcription Display Component
+ * Clean word-by-word alignment of original text and IPA transcription
+ */
+
+import { cn } from "@/lib/utils";
+import type { TranscribedPhoneme, TranscribedWord, TranscriptionResult } from "@/types/g2p";
 
 interface TranscriptionDisplayProps {
 	result: TranscriptionResult;
 	onPhonemeClick?: (phoneme: TranscribedPhoneme) => void;
-	showMetadata?: boolean;
+	className?: string;
+}
+
+interface WordColumnProps {
+	word: TranscribedWord;
+	onPhonemeClick?: (phoneme: TranscribedPhoneme) => void;
+}
+
+interface ClickablePhonemeProps {
+	phoneme: TranscribedPhoneme;
+	onClick?: (phoneme: TranscribedPhoneme) => void;
 }
 
 /**
- * Displays transcription results with clickable phonemes
+ * Individual clickable phoneme with minimal styling
  */
-export function TranscriptionDisplay({ result, onPhonemeClick }: TranscriptionDisplayProps) {
-	const totalPhonemes = result.words.reduce((total, word) => total + word.phonemes.length, 0);
-	const knownPhonemes = result.words.reduce(
-		(total, word) => total + word.phonemes.filter((p) => p.isKnown).length,
-		0,
-	);
+function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
+	const isClickable = !!onClick;
+	const isKnown = phoneme.isKnown;
+
+	const handleClick = () => {
+		if (isClickable) {
+			onClick(phoneme);
+		}
+	};
+
+	if (!isClickable) {
+		return (
+			<span
+				className={cn(
+					"font-mono text-3xl md:text-4xl",
+					!isKnown && "opacity-75 underline decoration-dotted underline-offset-4",
+				)}
+				style={{ letterSpacing: "0.1em" }}
+				title={
+					isKnown
+						? `Phoneme /${phoneme.symbol}/`
+						: `/${phoneme.symbol}/ - not found in phoneme database`
+				}
+			>
+				{phoneme.symbol}
+			</span>
+		);
+	}
 
 	return (
-		<Card className="w-full">
-			<CardHeader className="space-y-2">
-				<CardTitle className="flex items-center gap-2">
-					<FileText className="h-5 w-5 text-primary" />
-					Phonemic Transcription
-				</CardTitle>
-			</CardHeader>
-			<CardContent className="space-y-4">
-				{/* Transcription */}
-				<div className="space-y-3">
-					<div className="space-y-3 p-3 bg-muted/10 rounded-md border">
-						{result.words.map((word, wordIndex) => (
-							<div key={`${word.word}-${wordIndex}`} className="space-y-2">
-								{/* Word */}
-								<div className="flex items-baseline gap-2">
-									<span className="text-sm font-medium text-muted-foreground">{word.word}</span>
-									<span className="text-xs text-muted-foreground">
-										({word.phonemes.length} phoneme{word.phonemes.length !== 1 ? "s" : ""})
-									</span>
-								</div>
+		<button
+			type="button"
+			className={cn(
+				"font-mono text-3xl md:text-4xl bg-transparent border-none p-1 m-0",
+				"cursor-pointer transition-all duration-200",
+				"hover:text-primary hover:scale-105",
+				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:rounded-md",
+				!isKnown && "opacity-75 underline decoration-dotted underline-offset-4",
+			)}
+			style={{ letterSpacing: "0.1em" }}
+			onClick={handleClick}
+			aria-label={`Phoneme ${phoneme.symbol}${isKnown ? " - click to learn more" : " - not in database"}`}
+			title={
+				isKnown
+					? `Click to learn about /${phoneme.symbol}/`
+					: `/${phoneme.symbol}/ - not found in phoneme database`
+			}
+		>
+			{phoneme.symbol}
+		</button>
+	);
+}
 
-								{/* Phonemes */}
-								<div className="flex flex-wrap gap-2">
-									{word.phonemes.map((phoneme, phonemeIndex) => (
-										<PhonemeBadge
-											key={`${phoneme.symbol}-${wordIndex}-${phonemeIndex}`}
-											phoneme={phoneme}
-											onClick={onPhonemeClick}
-										/>
-									))}
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
+/**
+ * Word column showing original word above IPA transcription
+ */
+function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
+	return (
+		<div className="flex flex-col items-center text-center min-w-0">
+			{/* Original word - smaller, muted */}
+			<div className="text-lg md:text-xl text-muted-foreground font-normal mb-4 whitespace-nowrap">
+				{word.word}
+			</div>
 
-				{/* Instructions */}
-				{onPhonemeClick && (
-					<div className="text-xs text-muted-foreground p-2 bg-blue-50 dark:bg-blue-950/20 rounded border-l-4 border-blue-300 dark:border-blue-700">
-						💡 Click on any phoneme to learn about its articulation, see examples, and hear audio
-						pronunciation.
-						{knownPhonemes < totalPhonemes && (
-							<span className="block mt-1">
-								Dashed phonemes are not in our database but may still be valid IPA symbols.
-							</span>
-						)}
-					</div>
-				)}
-			</CardContent>
-		</Card>
+			{/* IPA transcription - larger, prominent */}
+			<div className="leading-relaxed whitespace-nowrap">
+				{word.phonemes.map((phoneme, phonemeIndex) => (
+					<ClickablePhoneme
+						key={`${phoneme.symbol}-${word.wordIndex}-${phonemeIndex}`}
+						phoneme={phoneme}
+						onClick={onPhonemeClick}
+					/>
+				))}
+			</div>
+		</div>
+	);
+}
+
+/**
+ * Minimalistic transcription display with clean word-by-word alignment
+ */
+export function TranscriptionDisplay({
+	result,
+	onPhonemeClick,
+	className,
+}: TranscriptionDisplayProps) {
+	return (
+		<div className={cn("w-full max-w-5xl mx-auto", "px-8 py-16", "bg-background", className)}>
+			{/* Word columns with horizontal alignment */}
+			<div className="flex items-start justify-center gap-12 md:gap-16 overflow-x-auto pb-4">
+				{result.words.map((word, wordIndex) => (
+					<WordColumn
+						key={`${word.word}-${wordIndex}`}
+						word={word}
+						onPhonemeClick={onPhonemeClick}
+					/>
+				))}
+			</div>
+		</div>
 	);
 }
