@@ -21,11 +21,30 @@ export function ConsonantChart() {
 				{/* Legend */}
 				<div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
 					<div className="flex items-center gap-2">
-						<div className="h-6 w-6 rounded-full border" />
+						<div className="relative h-6 w-6 rounded border flex items-center justify-center gap-0.5 bg-background">
+							{/* Static lines for voiceless (relaxed vocal cords) */}
+							<div className="w-0.5 h-3 bg-current opacity-60" />
+							<div className="w-0.5 h-3 bg-current opacity-40" />
+							<div className="w-0.5 h-3 bg-current opacity-60" />
+						</div>
 						<span>Voiceless</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<div className="h-6 w-6 rounded-full border bg-primary/10" />
+						<div className="relative h-6 w-6 rounded border flex items-center justify-center gap-0.5 bg-primary/10">
+							{/* Vertical animated lines for voiced (vibrating vocal cords) */}
+							<div
+								className="w-0.5 h-3 bg-current opacity-60 animate-vocal-vibration"
+								style={{ animationDelay: "0ms" }}
+							/>
+							<div
+								className="w-0.5 h-3 bg-current opacity-40 animate-vocal-vibration"
+								style={{ animationDelay: "200ms" }}
+							/>
+							<div
+								className="w-0.5 h-3 bg-current opacity-60 animate-vocal-vibration"
+								style={{ animationDelay: "400ms" }}
+							/>
+						</div>
 						<span>Voiced</span>
 					</div>
 				</div>

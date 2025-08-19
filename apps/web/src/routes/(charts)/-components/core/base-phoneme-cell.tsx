@@ -39,7 +39,34 @@ export const BasePhonemeCellRenderer = React.memo(function BasePhonemeCellRender
 								aria-label={getAriaLabel(phoneme)}
 								className={cn(getButtonClassName(phoneme))}
 							>
-								<span className="pointer-events-none select-none text-xl sm:text-2xl leading-none">
+								{/* Vocal cord visualization background - only for consonants */}
+								{phoneme.category === "consonant" && (
+									<div className="absolute inset-x-0 bottom-1 flex items-center justify-center gap-0.5 pointer-events-none">
+										{phoneme.articulation.voicing === "voiced" ? (
+											<>
+												<div
+													className="w-0.5 h-2 bg-current opacity-30 animate-vocal-vibration"
+													style={{ animationDelay: "0ms" }}
+												/>
+												<div
+													className="w-0.5 h-2 bg-current opacity-20 animate-vocal-vibration"
+													style={{ animationDelay: "150ms" }}
+												/>
+												<div
+													className="w-0.5 h-2 bg-current opacity-30 animate-vocal-vibration"
+													style={{ animationDelay: "300ms" }}
+												/>
+											</>
+										) : (
+											<>
+												<div className="w-0.5 h-2 bg-current opacity-30" />
+												<div className="w-0.5 h-2 bg-current opacity-20" />
+												<div className="w-0.5 h-2 bg-current opacity-30" />
+											</>
+										)}
+									</div>
+								)}
+								<span className="pointer-events-none select-none text-xl sm:text-2xl leading-none relative z-10">
 									{phoneme.symbol}
 								</span>
 							</PhonemeButton>

@@ -122,3 +122,25 @@
 		cursor: pointer;
 	}
 }
+
+@layer utilities {
+	@keyframes vocal-vibration {
+		0%,
+		100% {
+			transform: scaleY(1);
+		}
+		25% {
+			transform: scaleY(1.4);
+		}
+		50% {
+			transform: scaleY(0.6);
+		}
+		75% {
+			transform: scaleY(1.2);
+		}
+	}
+
+	.animate-vocal-vibration {
+		animation: vocal-vibration 1.2s ease-in-out infinite;
+	}
+}
