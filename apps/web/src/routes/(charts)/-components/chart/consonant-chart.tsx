@@ -1,15 +1,17 @@
 import * as React from "react";
 import type { ConsonantPhoneme } from "shared-data";
-import { ConsonantGridMatrix } from "./consonant-grid-matrix";
-import { ConsonantGridStacked } from "./consonant-grid-stacked";
-import { PhonemeDialog } from "./phoneme-dialog";
+import { PhonemeDialog } from "@/routes/(charts)/-components/core/phoneme-dialog";
+import { GridMatrix } from "@/routes/(charts)/-components/layout/grid-matrix";
+import { GridStacked } from "@/routes/(charts)/-components/layout/grid-stacked";
+import { useConsonantGrid } from "@/routes/(charts)/-hooks/use-consonant-grid";
 
 export function ConsonantChart() {
+	const grid = useConsonantGrid();
 	const [open, setOpen] = React.useState(false);
 	const [selected, setSelected] = React.useState<ConsonantPhoneme | null>(null);
 
-	const openDetails = React.useCallback((p: ConsonantPhoneme) => {
-		setSelected(p);
+	const openDetails = React.useCallback((phoneme: ConsonantPhoneme) => {
+		setSelected(phoneme);
 		setOpen(true);
 	}, []);
 
@@ -29,12 +31,13 @@ export function ConsonantChart() {
 				</div>
 
 				<div className="md:hidden">
-					<ConsonantGridStacked onSelect={openDetails} />
+					<GridStacked type="consonant" grid={grid} onSelect={openDetails} />
 				</div>
 				<div className="hidden md:block">
-					<ConsonantGridMatrix onSelect={openDetails} />
+					<GridMatrix type="consonant" grid={grid} onSelect={openDetails} />
 				</div>
 			</div>
+
 			<PhonemeDialog.Root
 				open={open}
 				onOpenChange={(o) => {

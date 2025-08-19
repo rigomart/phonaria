@@ -1,4 +1,11 @@
-import type { ConsonantPhoneme, ExampleWord, IpaPhoneme, VowelPhoneme } from "shared-data";
+import type {
+	ConsonantAllophone,
+	ConsonantPhoneme,
+	ExampleWord,
+	IpaPhoneme,
+	VowelAllophone,
+	VowelPhoneme,
+} from "shared-data";
 import { phonixUtils } from "shared-data";
 import { AudioButton } from "@/components/audio/audio-button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -101,14 +108,10 @@ function Examples({ examples }: { examples: ExampleWord[] }) {
 	);
 }
 
-interface AnyAllophone {
-	variant: string;
-	description: string;
-	examples: ExampleWord[];
-	context?: string;
-}
+// Properly typed allophone union
+type Allophone = ConsonantAllophone | VowelAllophone;
 
-function Allophones({ allophones }: { allophones: AnyAllophone[] }) {
+function Allophones({ allophones }: { allophones: Allophone[] }) {
 	return (
 		<section className="space-y-4">
 			<h3 className="text-sm font-medium">Allophones</h3>
@@ -124,7 +127,7 @@ function Allophones({ allophones }: { allophones: AnyAllophone[] }) {
 						) : null}
 						{allo.examples?.length ? (
 							<ul className="space-y-2">
-								{allo.examples.map((ex) => (
+								{allo.examples.map((ex: ExampleWord) => (
 									<li
 										key={ex.word}
 										className="flex items-center justify-between gap-3 rounded-md border p-2"

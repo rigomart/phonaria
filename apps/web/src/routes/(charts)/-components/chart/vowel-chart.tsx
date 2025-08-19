@@ -1,15 +1,17 @@
 import * as React from "react";
 import type { VowelPhoneme } from "shared-data";
-import { PhonemeDialog } from "./phoneme-dialog";
-import { VowelGridMatrix } from "./vowel-grid-matrix";
-import { VowelGridStacked } from "./vowel-grid-stacked";
+import { PhonemeDialog } from "@/routes/(charts)/-components/core/phoneme-dialog";
+import { GridMatrix } from "@/routes/(charts)/-components/layout/grid-matrix";
+import { GridStacked } from "@/routes/(charts)/-components/layout/grid-stacked";
+import { useVowelGrid } from "@/routes/(charts)/-hooks/use-vowel-grid";
 
 export function VowelChart() {
+	const grid = useVowelGrid();
 	const [open, setOpen] = React.useState(false);
 	const [selected, setSelected] = React.useState<VowelPhoneme | null>(null);
 
-	const openDetails = React.useCallback((p: VowelPhoneme) => {
-		setSelected(p);
+	const openDetails = React.useCallback((phoneme: VowelPhoneme) => {
+		setSelected(phoneme);
 		setOpen(true);
 	}, []);
 
@@ -30,10 +32,10 @@ export function VowelChart() {
 				</div>
 
 				<div className="md:hidden">
-					<VowelGridStacked onSelect={openDetails} />
+					<GridStacked type="vowel" grid={grid} onSelect={openDetails} />
 				</div>
 				<div className="hidden md:block">
-					<VowelGridMatrix onSelect={openDetails} />
+					<GridMatrix type="vowel" grid={grid} onSelect={openDetails} />
 				</div>
 			</div>
 
