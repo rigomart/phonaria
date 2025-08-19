@@ -4,6 +4,7 @@ import type { ConsonantPhoneme } from "shared-data";
 import { phonixUtils } from "shared-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { PhonemeButton } from "./phoneme-button";
 
 const { toPhonemic } = phonixUtils;
 
@@ -55,7 +56,7 @@ export const ConsonantCell: React.FC<ConsonantCellProps> = React.memo(function C
 			{phonemes.map((p) => (
 				<Tooltip key={p.symbol}>
 					<TooltipTrigger asChild>
-						<button
+						<PhonemeButton
 							type="button"
 							onClick={() => onSelect(p)}
 							aria-label={`${toPhonemic(p.symbol)} ${p.articulation.voicing} ${p.articulation.place} ${p.articulation.manner}. Tap for details.`}
@@ -68,7 +69,7 @@ export const ConsonantCell: React.FC<ConsonantCellProps> = React.memo(function C
 							<span className="pointer-events-none select-none text-xl sm:text-2xl leading-none">
 								{p.symbol}
 							</span>
-						</button>
+						</PhonemeButton>
 					</TooltipTrigger>
 					<TooltipContent side="top" align="center">
 						<div className="max-w-[14rem] text-pretty text-xs leading-snug">

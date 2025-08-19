@@ -1,25 +1,12 @@
 import * as React from "react";
 import type { ConsonantPhoneme } from "shared-data";
-import {
-	Table,
-	TableBody,
-	TableCaption,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
-import { useConsonantGrid } from "../../-hooks/use-consonant-grid";
-import { ArticulationInfoPopover } from "./articulation-info-popover";
-import { ConsonantCell } from "./consonant-cell";
+import { ConsonantGridMatrix } from "./consonant-grid-matrix";
 import { ConsonantGridStacked } from "./consonant-grid-stacked";
 import { PhonemeDialog } from "./phoneme-dialog";
 
 export function ConsonantChart() {
 	const [open, setOpen] = React.useState(false);
 	const [selected, setSelected] = React.useState<ConsonantPhoneme | null>(null);
-	const grid = useConsonantGrid();
 
 	const openDetails = React.useCallback((p: ConsonantPhoneme) => {
 		setSelected(p);
@@ -44,62 +31,8 @@ export function ConsonantChart() {
 				<div className="md:hidden">
 					<ConsonantGridStacked onSelect={openDetails} />
 				</div>
-				<div className="overflow-x-auto hidden md:block">
-					<Table
-						aria-label="Consonant chart organized by manner and place of articulation"
-						className="min-w-[60rem] text-sm"
-					>
-						<TableCaption className="mb-3 text-sm text-muted-foreground font-normal">
-							Rows: <span className="font-medium">Manner of articulation</span> • Columns:{" "}
-							<span className="font-medium">Place of articulation</span>
-						</TableCaption>
-						<TableHeader className="text-xs">
-							<TableRow>
-								<TableHead className="pl-3 pr-4 py-3 text-left font-medium text-xs rounded-tl align-bottom">
-									<span className="sr-only">Corner (see caption for axis labels)</span>
-								</TableHead>
-								{PLACES.map((place) => (
-									<TableHead
-										key={place}
-										className="px-3 py-3 text-center font-medium capitalize text-xs"
-									>
-										<ArticulationInfoPopover type="place" id={place}>
-											<button
-												type="button"
-												className="capitalize underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-											>
-												{place}
-											</button>
-										</ArticulationInfoPopover>
-									</TableHead>
-								))}
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{MANNERS.map((manner) => (
-								<TableRow key={manner} className="border-b last:border-b-0">
-									<TableHead
-										scope="row"
-										className="px-3 text-sm font-medium capitalize text-muted-foreground text-left align-middle"
-									>
-										<ArticulationInfoPopover type="manner" id={manner}>
-											<button
-												type="button"
-												className="capitalize text-left underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-											>
-												{manner}
-											</button>
-										</ArticulationInfoPopover>
-									</TableHead>
-									{PLACES.map((place) => (
-										<TableCell key={place} className="text-center align-middle">
-											<ConsonantCell phonemes={grid[manner][place]} onSelect={openDetails} />
-										</TableCell>
-									))}
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
+				<div className="hidden md:block">
+					<ConsonantGridMatrix onSelect={openDetails} />
 				</div>
 			</div>
 			<PhonemeDialog.Root

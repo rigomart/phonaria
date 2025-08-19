@@ -4,6 +4,7 @@ import type { VowelPhoneme } from "shared-data";
 import { phonixUtils } from "shared-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { PhonemeButton } from "./phoneme-button";
 
 const { toPhonemic } = phonixUtils;
 
@@ -64,7 +65,7 @@ export const VowelCell: React.FC<VowelCellProps> = React.memo(function VowelCell
 				return (
 					<Tooltip key={v.symbol}>
 						<TooltipTrigger asChild>
-							<button
+							<PhonemeButton
 								type="button"
 								onClick={() => onSelect(v)}
 								aria-label={`${toPhonemic(v.symbol)} ${v.articulation.height} ${v.articulation.frontness} ${v.articulation.tenseness} ${v.articulation.roundness}${rhotic ? " rhotic" : ""}. Tap for details.`}
@@ -75,7 +76,7 @@ export const VowelCell: React.FC<VowelCellProps> = React.memo(function VowelCell
 								<span className="pointer-events-none select-none text-xl sm:text-2xl leading-none">
 									{v.symbol}
 								</span>
-							</button>
+							</PhonemeButton>
 						</TooltipTrigger>
 						<TooltipContent side="top" align="center">
 							<div className="max-w-[14rem] text-pretty text-xs leading-snug">
