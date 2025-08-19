@@ -13,6 +13,7 @@ import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
 import { useConsonantGrid } from "../../-hooks/use-consonant-grid";
 import { ArticulationInfoPopover } from "./articulation-info-popover";
 import { ConsonantCell } from "./consonant-cell";
+import { ConsonantGridStacked } from "./consonant-grid-stacked";
 import { PhonemeDialog } from "./phoneme-dialog";
 
 export function ConsonantChart() {
@@ -40,7 +41,10 @@ export function ConsonantChart() {
 					</div>
 				</div>
 
-				<div className="overflow-x-auto">
+				<div className="md:hidden">
+					<ConsonantGridStacked onSelect={openDetails} />
+				</div>
+				<div className="overflow-x-auto hidden md:block">
 					<Table
 						aria-label="Consonant chart organized by manner and place of articulation"
 						className="min-w-[60rem] text-sm"

@@ -13,6 +13,7 @@ import { useVowelGrid, VOWEL_FRONTS, VOWEL_HEIGHTS } from "../../-hooks/use-vowe
 import { PhonemeDialog } from "./phoneme-dialog";
 import { VowelAxisInfoPopover } from "./vowel-axis-info-popover";
 import { VowelCell } from "./vowel-cell";
+import { VowelGridStacked } from "./vowel-grid-stacked";
 
 export function VowelChart() {
 	const [open, setOpen] = React.useState(false);
@@ -37,7 +38,10 @@ export function VowelChart() {
 						<span>Rhotic</span>
 					</div>
 				</div>
-				<div className="overflow-x-auto">
+				<div className="md:hidden">
+					<VowelGridStacked onSelect={openDetails} />
+				</div>
+				<div className="overflow-x-auto hidden md:block">
 					<Table
 						aria-label="Vowel chart organized by height (rows) and frontness/backness (columns)"
 						className="min-w-[52rem] text-sm"
