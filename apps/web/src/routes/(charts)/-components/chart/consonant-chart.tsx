@@ -42,7 +42,7 @@ export function ConsonantChart() {
 					setOpen(o);
 				}}
 			>
-				<PhonemeDialog.Content className="max-w-3xl">
+				<PhonemeDialog.Content className="max-w-3xl max-h-[min(85vh,calc(100dvh-2rem))] overflow-y-auto">
 					{selected ? (
 						<div className="space-y-8">
 							<PhonemeDialog.Header phoneme={selected} />
