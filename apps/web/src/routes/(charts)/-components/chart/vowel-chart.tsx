@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { VowelPhoneme } from "shared-data";
-import { PhonemeDialog } from "@/routes/(charts)/-components/core/phoneme-dialog";
+import { PhonemeDialog } from "@/components/phoneme-dialog";
 import { GridMatrix } from "@/routes/(charts)/-components/layout/grid-matrix";
 import { GridStacked } from "@/routes/(charts)/-components/layout/grid-stacked";
 import { useVowelGrid } from "@/routes/(charts)/-hooks/use-vowel-grid";

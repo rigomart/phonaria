@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { ConsonantPhoneme } from "shared-data";
-import { PhonemeDialog } from "@/routes/(charts)/-components/core/phoneme-dialog";
+import { PhonemeDialog } from "@/components/phoneme-dialog";
 import { GridMatrix } from "@/routes/(charts)/-components/layout/grid-matrix";
 import { GridStacked } from "@/routes/(charts)/-components/layout/grid-stacked";
 import { useConsonantGrid } from "@/routes/(charts)/-hooks/use-consonant-grid";

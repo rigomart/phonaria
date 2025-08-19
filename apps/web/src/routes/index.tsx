@@ -3,9 +3,9 @@ import { useState } from "react";
 import type { IpaPhoneme } from "shared-data";
 import { G2PInputForm } from "@/components/g2p/g2p-input-form";
 import { TranscriptionDisplay } from "@/components/g2p/transcription-display";
+import { PhonemeDialog } from "@/components/phoneme-dialog";
 import { useG2P } from "@/hooks/use-g2p";
 import { getPhonemeBySymbol } from "@/lib/g2p-client";
-import { PhonemeDialog } from "@/routes/(charts)/-components/chart/phoneme-dialog";
 import type { TranscribedPhoneme } from "@/types/g2p";
 
 export const Route = createFileRoute("/")({
