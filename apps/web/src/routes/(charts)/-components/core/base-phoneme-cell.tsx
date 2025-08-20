@@ -27,7 +27,7 @@ export const BasePhonemeCellRenderer = React.memo(function BasePhonemeCellRender
 	}
 
 	return (
-		<div className="flex h-14 items-center justify-center gap-1">
+		<div className="flex h-14 items-center gap-1">
 			{phonemes.map((phoneme) => {
 				const tooltipContent = `${toPhonemic(phoneme.symbol)} ${phoneme.description}`;
 

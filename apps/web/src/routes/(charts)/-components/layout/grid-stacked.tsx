@@ -1,4 +1,5 @@
 import type { ConsonantPhoneme, VowelPhoneme } from "shared-data";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
 import { ConsonantCell } from "@/routes/(charts)/-components/chart/consonant-cell";
 import { VowelCell } from "@/routes/(charts)/-components/chart/vowel-cell";
@@ -64,33 +65,31 @@ function PhonemeSection({ type, row, columns, grid, onSelect, config }: PhonemeS
 	if (!hasData) return null;
 
 	return (
-		<section
-			key={row}
-			className="space-y-3"
+		<Card
+			className="bg-card/20"
 			aria-labelledby={`${config.rowType}-${row}`}
 			aria-describedby={`${config.rowType}-caption`}
 		>
-			<h3
-				id={`${config.rowType}-${row}`}
-				className="px-2 text-sm font-medium text-muted-foreground"
-			>
-				<span className="mr-2">
-					{config.rowType.charAt(0).toUpperCase() + config.rowType.slice(1)}
-				</span>
-				<InfoPopover type={config.rowType} id={row}>
-					<button
-						type="button"
-						className="capitalize font-semibold text-foreground underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-					>
-						{config.getRowLabel(row)}
-					</button>
-				</InfoPopover>
-			</h3>
+			<CardHeader>
+				<h3 id={`${config.rowType}-${row}`} className="text-sm font-medium text-muted-foreground">
+					<span className="mr-2">
+						{config.rowType.charAt(0).toUpperCase() + config.rowType.slice(1)}
+					</span>
+					<InfoPopover type={config.rowType} id={row}>
+						<button
+							type="button"
+							className="capitalize font-semibold text-foreground underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+						>
+							{config.getRowLabel(row)}
+						</button>
+					</InfoPopover>
+				</h3>
+			</CardHeader>
 
-			<div className="-mx-2 overflow-x-auto px-2 pb-2">
-				<div className="flex gap-3">
+			<CardContent>
+				<div className="flex gap-3 flex-wrap">
 					{columns.map((column) => (
-						<div key={column} className="min-w-40 shrink-0 rounded-md border p-3">
+						<div key={column} className="min-w-40">
 							<div className="mb-2">
 								<div className="text-[11px] uppercase tracking-wide text-muted-foreground">
 									{config.columnType.charAt(0).toUpperCase() + config.columnType.slice(1)}
@@ -115,8 +114,8 @@ function PhonemeSection({ type, row, columns, grid, onSelect, config }: PhonemeS
 						</div>
 					))}
 				</div>
-			</div>
-		</section>
+			</CardContent>
+		</Card>
 	);
 }
 

@@ -1,181 +1,181 @@
 import * as React from "react";
-import type { ConsonantPhoneme, IpaPhoneme, VowelPhoneme } from "shared-data";
+import type { ConsonantPhoneme, VowelPhoneme } from "shared-data";
 import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
 import { ConsonantCell } from "@/routes/(charts)/-components/chart/consonant-cell";
 import { VowelCell } from "@/routes/(charts)/-components/chart/vowel-cell";
 import { InfoPopover } from "@/routes/(charts)/-components/info/info-popover";
-import { VOWEL_FRONTS, VOWEL_HEIGHTS } from "@/routes/(charts)/-hooks/use-vowel-grid";
+import type { ConsonantGrid } from "../../-hooks/use-consonant-grid";
+import { VOWEL_FRONTS, VOWEL_HEIGHTS, type VowelGrid } from "../../-hooks/use-vowel-grid";
 
-interface GridMatrixProps<T extends IpaPhoneme> {
-	type: "consonant" | "vowel";
-	grid: Record<string, Record<string, T[]>>;
-	onSelect: (phoneme: T) => void;
+interface GridConfig {
+	rows: string[];
+	columns: string[];
+	rowType: "manner" | "height";
+	columnType: "place" | "frontness";
+	caption: string;
+	getRowLabel: (row: string) => string;
+	getColumnLabel: (column: string) => string;
 }
 
-export function GridMatrix<T extends IpaPhoneme>({ type, grid, onSelect }: GridMatrixProps<T>) {
+function getGridConfig(type: "consonant" | "vowel"): GridConfig {
 	if (type === "consonant") {
-		const consonantGrid = grid as Record<string, Record<string, ConsonantPhoneme[]>>;
-
-		return (
-			<div className="space-y-3">
-				<p id="consonants-matrix-caption" className="sr-only">
-					Rows: Manner of articulation • Columns: Place of articulation
-				</p>
-
-				<div className="overflow-x-auto">
-					<div
-						className="inline-grid rounded-md border text-sm"
-						style={{
-							gridTemplateColumns: `max-content repeat(${PLACES.length}, minmax(4rem, 1fr))`,
-						}}
-						aria-describedby="consonants-matrix-caption"
-					>
-						<div className="sticky top-0 left-0 z-20 bg-background px-3 py-3 border-b border-r rounded-tl-md" />
-
-						{PLACES.map((place, i) => (
-							<div
-								key={place}
-								className={[
-									"sticky top-0 z-10 bg-background px-3 py-3 text-center font-medium capitalize text-xs",
-									i === PLACES.length - 1 ? "border-b" : "border-b border-r",
-								].join(" ")}
-							>
-								<InfoPopover type="place" id={place}>
-									<button
-										type="button"
-										className="capitalize underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-									>
-										{place}
-									</button>
-								</InfoPopover>
-							</div>
-						))}
-
-						{MANNERS.map((manner, rIndex) => (
-							<React.Fragment key={manner}>
-								<div
-									className={[
-										"sticky left-0 z-10 bg-background px-3 py-2 text-left align-middle text-sm font-medium capitalize text-muted-foreground",
-										rIndex === MANNERS.length - 1 ? "border-r" : "border-b border-r",
-									].join(" ")}
-								>
-									<InfoPopover type="manner" id={manner}>
-										<button
-											type="button"
-											className="capitalize text-left underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-										>
-											{manner}
-										</button>
-									</InfoPopover>
-								</div>
-
-								{PLACES.map((place, cIndex) => (
-									<div
-										key={`${manner}-${place}`}
-										className={[
-											"p-2 text-center align-middle",
-											rIndex === MANNERS.length - 1
-												? cIndex === PLACES.length - 1
-													? ""
-													: "border-r"
-												: cIndex === PLACES.length - 1
-													? "border-b"
-													: "border-b border-r",
-										].join(" ")}
-									>
-										<ConsonantCell
-											phonemes={consonantGrid[manner][place]}
-											onSelect={onSelect as (phoneme: ConsonantPhoneme) => void}
-										/>
-									</div>
-								))}
-							</React.Fragment>
-						))}
-					</div>
-				</div>
-			</div>
-		);
+		return {
+			rows: MANNERS,
+			columns: PLACES,
+			rowType: "manner",
+			columnType: "place",
+			caption: "Rows: Manner of articulation • Columns: Place of articulation",
+			getRowLabel: (row) => row,
+			getColumnLabel: (column) => column,
+		};
 	} else {
-		const vowelGrid = grid as Record<string, Record<string, VowelPhoneme[]>>;
+		return {
+			rows: VOWEL_HEIGHTS,
+			columns: VOWEL_FRONTS,
+			rowType: "height",
+			columnType: "frontness",
+			caption: "Rows: Height / Openness • Columns: Frontness / Backness",
+			getRowLabel: (row) => row.replace("near-", "near "),
+			getColumnLabel: (column) => column.replace("near-", "near "),
+		};
+	}
+}
 
-		return (
-			<div className="space-y-3">
-				<p id="vowels-matrix-caption" className="sr-only">
-					Rows: Height / Openness • Columns: Frontness / Backness
-				</p>
+type PhonemeMatrixProps =
+	| {
+			type: "consonant";
+			grid: ConsonantGrid;
+			onSelect: (phoneme: ConsonantPhoneme) => void;
+			config: GridConfig;
+	  }
+	| {
+			type: "vowel";
+			grid: VowelGrid;
+			onSelect: (phoneme: VowelPhoneme) => void;
+			config: GridConfig;
+	  };
 
-				<div className="overflow-x-auto">
-					<div
-						className="inline-grid rounded-md border text-sm"
-						style={{
-							gridTemplateColumns: `max-content repeat(${VOWEL_FRONTS.length}, minmax(4rem, 1fr))`,
-						}}
-						aria-describedby="vowels-matrix-caption"
-					>
-						<div className="sticky top-0 left-0 z-20 bg-background px-3 py-3 border-b border-r rounded-tl-md" />
+function PhonemeMatrix({ type, grid, onSelect, config }: PhonemeMatrixProps) {
+	return (
+		<div className="space-y-3">
+			<p id={`${config.rowType}-matrix-caption`} className="sr-only">
+				{config.caption}
+			</p>
 
-						{VOWEL_FRONTS.map((front, i) => (
+			<div className="overflow-x-auto">
+				<div
+					className="inline-grid rounded-md border text-sm"
+					style={{
+						gridTemplateColumns: `max-content repeat(${config.columns.length}, minmax(4rem, 1fr))`,
+					}}
+					aria-describedby={`${config.rowType}-matrix-caption`}
+				>
+					<div className="sticky top-0 left-0 z-20 bg-background px-3 py-3 border-b border-r rounded-tl-md" />
+
+					{config.columns.map((column, i) => (
+						<div
+							key={column}
+							className={[
+								"sticky top-0 z-10 bg-background px-3 py-3 text-center font-medium capitalize text-xs",
+								i === config.columns.length - 1 ? "border-b" : "border-b border-r",
+							].join(" ")}
+						>
+							<InfoPopover type={config.columnType} id={column}>
+								<button
+									type="button"
+									className="capitalize underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+								>
+									{config.getColumnLabel(column)}
+								</button>
+							</InfoPopover>
+						</div>
+					))}
+
+					{config.rows.map((row, rIndex) => (
+						<React.Fragment key={row}>
 							<div
-								key={front}
 								className={[
-									"sticky top-0 z-10 bg-background px-3 py-3 text-center font-medium capitalize text-xs",
-									i === VOWEL_FRONTS.length - 1 ? "border-b" : "border-b border-r",
+									"sticky left-0 z-10 bg-background px-3 py-2 text-left align-middle text-sm font-medium capitalize text-muted-foreground",
+									rIndex === config.rows.length - 1 ? "border-r" : "border-b border-r",
 								].join(" ")}
 							>
-								<InfoPopover type="frontness" id={front}>
+								<InfoPopover type={config.rowType} id={row}>
 									<button
 										type="button"
-										className="capitalize underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+										className="capitalize text-left underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
 									>
-										{front.replace("near-", "near ")}
+										{config.getRowLabel(row)}
 									</button>
 								</InfoPopover>
 							</div>
-						))}
 
-						{VOWEL_HEIGHTS.map((height, rIndex) => (
-							<React.Fragment key={height}>
+							{config.columns.map((column, cIndex) => (
 								<div
+									key={`${row}-${column}`}
 									className={[
-										"sticky left-0 z-10 bg-background px-3 py-2 text-left align-middle text-sm font-medium capitalize text-muted-foreground",
-										rIndex === VOWEL_HEIGHTS.length - 1 ? "border-r" : "border-b border-r",
+										"p-2 text-center align-middle",
+										rIndex === config.rows.length - 1
+											? cIndex === config.columns.length - 1
+												? ""
+												: "border-r"
+											: cIndex === config.columns.length - 1
+												? "border-b"
+												: "border-b border-r",
 									].join(" ")}
 								>
-									<InfoPopover type="height" id={height}>
-										<button
-											type="button"
-											className="capitalize text-left underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-										>
-											{height.replace("near-", "near ")}
-										</button>
-									</InfoPopover>
+									{type === "consonant" ? (
+										<ConsonantCell phonemes={grid[row][column]} onSelect={onSelect} />
+									) : (
+										<VowelCell vowels={grid[row][column]} onSelect={onSelect} />
+									)}
 								</div>
-
-								{VOWEL_FRONTS.map((front, cIndex) => (
-									<div
-										key={`${height}-${front}`}
-										className={[
-											"p-2 text-center align-middle",
-											rIndex === VOWEL_HEIGHTS.length - 1
-												? cIndex === VOWEL_FRONTS.length - 1
-													? ""
-													: "border-r"
-												: cIndex === VOWEL_FRONTS.length - 1
-													? "border-b"
-													: "border-b border-r",
-										].join(" ")}
-									>
-										<VowelCell
-											vowels={vowelGrid[height][front]}
-											onSelect={onSelect as (phoneme: VowelPhoneme) => void}
-										/>
-									</div>
-								))}
-							</React.Fragment>
-						))}
-					</div>
+							))}
+						</React.Fragment>
+					))}
 				</div>
 			</div>
-		);
+		</div>
+	);
+}
+
+function ConsonantGridMatrix({
+	grid,
+	onSelect,
+}: {
+	grid: ConsonantGrid;
+	onSelect: (phoneme: ConsonantPhoneme) => void;
+}) {
+	const config = getGridConfig("consonant");
+	return <PhonemeMatrix type="consonant" grid={grid} onSelect={onSelect} config={config} />;
+}
+
+function VowelGridMatrix({
+	grid,
+	onSelect,
+}: {
+	grid: VowelGrid;
+	onSelect: (phoneme: VowelPhoneme) => void;
+}) {
+	const config = getGridConfig("vowel");
+	return <PhonemeMatrix type="vowel" grid={grid} onSelect={onSelect} config={config} />;
+}
+
+type GridMatrixProps =
+	| {
+			type: "consonant";
+			grid: ConsonantGrid;
+			onSelect: (phoneme: ConsonantPhoneme) => void;
+	  }
+	| {
+			type: "vowel";
+			grid: VowelGrid;
+			onSelect: (phoneme: VowelPhoneme) => void;
+	  };
+
+export function GridMatrix(props: GridMatrixProps) {
+	if (props.type === "consonant") {
+		return <ConsonantGridMatrix grid={props.grid} onSelect={props.onSelect} />;
+	} else {
+		return <VowelGridMatrix grid={props.grid} onSelect={props.onSelect} />;
 	}
 }
