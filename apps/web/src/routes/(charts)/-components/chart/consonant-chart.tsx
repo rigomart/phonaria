@@ -4,6 +4,7 @@ import { PhonemeDialog } from "@/components/phoneme-dialog";
 import { GridMatrix } from "@/routes/(charts)/-components/layout/grid-matrix";
 import { GridStacked } from "@/routes/(charts)/-components/layout/grid-stacked";
 import { useConsonantGrid } from "@/routes/(charts)/-hooks/use-consonant-grid";
+import { ConsonantVoiceIndicator } from "../core/consonant-voice-indicator";
 
 export function ConsonantChart() {
 	const grid = useConsonantGrid();
@@ -21,29 +22,14 @@ export function ConsonantChart() {
 				{/* Legend */}
 				<div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
 					<div className="flex items-center gap-2">
-						<div className="relative h-6 w-6 rounded border flex items-center justify-center gap-0.5 bg-background">
-							{/* Static lines for voiceless (relaxed vocal cords) */}
-							<div className="w-0.5 h-3 bg-current opacity-60" />
-							<div className="w-0.5 h-3 bg-current opacity-40" />
-							<div className="w-0.5 h-3 bg-current opacity-60" />
+						<div className="flex items-center justify-center h-6 w-6 rounded border">
+							<ConsonantVoiceIndicator type="voiceless" />
 						</div>
 						<span>Voiceless</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<div className="relative h-6 w-6 rounded border flex items-center justify-center gap-0.5 bg-primary/10">
-							{/* Vertical animated lines for voiced (vibrating vocal cords) */}
-							<div
-								className="w-0.5 h-3 bg-current opacity-60 animate-vocal-vibration"
-								style={{ animationDelay: "0ms" }}
-							/>
-							<div
-								className="w-0.5 h-3 bg-current opacity-40 animate-vocal-vibration"
-								style={{ animationDelay: "200ms" }}
-							/>
-							<div
-								className="w-0.5 h-3 bg-current opacity-60 animate-vocal-vibration"
-								style={{ animationDelay: "400ms" }}
-							/>
+						<div className="flex items-center justify-center h-6 w-6 rounded border bg-primary/10">
+							<ConsonantVoiceIndicator type="voiced" />
 						</div>
 						<span>Voiced</span>
 					</div>

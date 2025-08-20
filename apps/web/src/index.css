@@ -123,7 +123,8 @@
 	}
 }
 
-@layer utilities {
+@theme {
+	--animate-vocal-vibration: vocal-vibration 1.2s ease-in-out infinite;
 	@keyframes vocal-vibration {
 		0%,
 		100% {
@@ -138,9 +139,5 @@
 		75% {
 			transform: scaleY(1.2);
 		}
-	}
-
-	.animate-vocal-vibration {
-		animation: vocal-vibration 1.2s ease-in-out infinite;
 	}
 }
