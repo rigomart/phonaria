@@ -3,6 +3,12 @@ import type { ConsonantPhoneme, VowelPhoneme } from "shared-data";
 import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
 import { ConsonantCell } from "@/routes/(charts)/-components/chart/consonant-cell";
 import { VowelCell } from "@/routes/(charts)/-components/chart/vowel-cell";
+import {
+	getArticulationInfo,
+	getCategoryLabel,
+	getTooltipSide,
+	type InfoType,
+} from "@/routes/(charts)/-components/info/info-helpers";
 import { InfoPopover } from "@/routes/(charts)/-components/info/info-popover";
 import type { ConsonantGrid } from "../../-hooks/use-consonant-grid";
 import { VOWEL_FRONTS, VOWEL_HEIGHTS, type VowelGrid } from "../../-hooks/use-vowel-grid";
@@ -80,14 +86,31 @@ function PhonemeMatrix({ type, grid, onSelect, config }: PhonemeMatrixProps) {
 								i === config.columns.length - 1 ? "border-b" : "border-b border-r",
 							].join(" ")}
 						>
-							<InfoPopover type={config.columnType} id={column}>
-								<button
-									type="button"
-									className="capitalize underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-								>
-									{config.getColumnLabel(column)}
-								</button>
-							</InfoPopover>
+							{(() => {
+								const info = getArticulationInfo(config.columnType, column);
+								const buttonElement = (
+									<button
+										type="button"
+										className="capitalize underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+									>
+										{config.getColumnLabel(column)}
+									</button>
+								);
+
+								return info ? (
+									<InfoPopover
+										category={getCategoryLabel(config.columnType)}
+										label={info.label}
+										short={info.short}
+										airflow={"airflow" in info ? info.airflow : undefined}
+										side={getTooltipSide(config.columnType)}
+									>
+										{buttonElement}
+									</InfoPopover>
+								) : (
+									buttonElement
+								);
+							})()}
 						</div>
 					))}
 
@@ -99,14 +122,31 @@ function PhonemeMatrix({ type, grid, onSelect, config }: PhonemeMatrixProps) {
 									rIndex === config.rows.length - 1 ? "border-r" : "border-b border-r",
 								].join(" ")}
 							>
-								<InfoPopover type={config.rowType} id={row}>
-									<button
-										type="button"
-										className="capitalize text-left underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-									>
-										{config.getRowLabel(row)}
-									</button>
-								</InfoPopover>
+								{(() => {
+									const info = getArticulationInfo(config.rowType as InfoType, row);
+									const buttonElement = (
+										<button
+											type="button"
+											className="capitalize text-left underline decoration-dotted underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+										>
+											{config.getRowLabel(row)}
+										</button>
+									);
+
+									return info ? (
+										<InfoPopover
+											category={getCategoryLabel(config.rowType as InfoType)}
+											label={info.label}
+											short={info.short}
+											airflow={"airflow" in info ? info.airflow : undefined}
+											side={getTooltipSide(config.rowType as InfoType)}
+										>
+											{buttonElement}
+										</InfoPopover>
+									) : (
+										buttonElement
+									);
+								})()}
 							</div>
 
 							{config.columns.map((column, cIndex) => (

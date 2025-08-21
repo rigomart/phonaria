@@ -3,6 +3,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
 import { ConsonantCell } from "@/routes/(charts)/-components/chart/consonant-cell";
 import { VowelCell } from "@/routes/(charts)/-components/chart/vowel-cell";
+import {
+	getArticulationInfo,
+	getCategoryLabel,
+	getTooltipSide,
+	type InfoType,
+} from "@/routes/(charts)/-components/info/info-helpers";
 import { InfoPopover } from "@/routes/(charts)/-components/info/info-popover";
 import type { ConsonantGrid } from "../../-hooks/use-consonant-grid";
 import { VOWEL_FRONTS, VOWEL_HEIGHTS, type VowelGrid } from "../../-hooks/use-vowel-grid";
@@ -75,14 +81,31 @@ function PhonemeSection({ type, row, columns, grid, onSelect, config }: PhonemeS
 					<span className="mr-2">
 						{config.rowType.charAt(0).toUpperCase() + config.rowType.slice(1)}
 					</span>
-					<InfoPopover type={config.rowType} id={row}>
-						<button
-							type="button"
-							className="capitalize font-semibold text-foreground underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-						>
-							{config.getRowLabel(row)}
-						</button>
-					</InfoPopover>
+					{(() => {
+						const info = getArticulationInfo(config.rowType as InfoType, row);
+						const buttonElement = (
+							<button
+								type="button"
+								className="capitalize font-semibold text-foreground underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+							>
+								{config.getRowLabel(row)}
+							</button>
+						);
+
+						return info ? (
+							<InfoPopover
+								category={getCategoryLabel(config.rowType as InfoType)}
+								label={info.label}
+								short={info.short}
+								airflow={"airflow" in info ? info.airflow : undefined}
+								side={getTooltipSide(config.rowType as InfoType)}
+							>
+								{buttonElement}
+							</InfoPopover>
+						) : (
+							buttonElement
+						);
+					})()}
 				</h3>
 			</CardHeader>
 
@@ -95,14 +118,31 @@ function PhonemeSection({ type, row, columns, grid, onSelect, config }: PhonemeS
 									{config.columnType.charAt(0).toUpperCase() + config.columnType.slice(1)}
 								</div>
 								<div className="text-sm font-semibold">
-									<InfoPopover type={config.columnType} id={column}>
-										<button
-											type="button"
-											className="capitalize underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-										>
-											{config.getColumnLabel(column)}
-										</button>
-									</InfoPopover>
+									{(() => {
+										const info = getArticulationInfo(config.columnType as InfoType, column);
+										const buttonElement = (
+											<button
+												type="button"
+												className="capitalize underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+											>
+												{config.getColumnLabel(column)}
+											</button>
+										);
+
+										return info ? (
+											<InfoPopover
+												category={getCategoryLabel(config.columnType as InfoType)}
+												label={info.label}
+												short={info.short}
+												airflow={"airflow" in info ? info.airflow : undefined}
+												side={getTooltipSide(config.columnType as InfoType)}
+											>
+												{buttonElement}
+											</InfoPopover>
+										) : (
+											buttonElement
+										);
+									})()}
 								</div>
 							</div>
 
