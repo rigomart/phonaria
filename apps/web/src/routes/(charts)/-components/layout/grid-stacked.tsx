@@ -87,10 +87,10 @@ function PhonemeSection({ type, row, columns, grid, onSelect, config }: PhonemeS
 			</CardHeader>
 
 			<CardContent>
-				<div className="flex gap-3 flex-wrap">
+				<div className="flex gap-y-6 gap-x-8 flex-wrap">
 					{columns.map((column) => (
-						<div key={column} className="min-w-40">
-							<div className="mb-2">
+						<div key={column} className="flex flex-col gap-4">
+							<div className="flex flex-col gap-0.5">
 								<div className="text-[11px] uppercase tracking-wide text-muted-foreground">
 									{config.columnType.charAt(0).toUpperCase() + config.columnType.slice(1)}
 								</div>
