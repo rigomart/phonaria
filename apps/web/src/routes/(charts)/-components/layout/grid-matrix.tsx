@@ -1,14 +1,9 @@
 import * as React from "react";
 import type { ConsonantPhoneme, VowelPhoneme } from "shared-data";
+import { articulationRegistry } from "shared-data";
 import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
 import { ConsonantCell } from "@/routes/(charts)/-components/chart/consonant-cell";
 import { VowelCell } from "@/routes/(charts)/-components/chart/vowel-cell";
-import {
-	getArticulationInfo,
-	getCategoryLabel,
-	getTooltipSide,
-	type InfoType,
-} from "@/routes/(charts)/-components/info/info-helpers";
 import { InfoPopover } from "@/routes/(charts)/-components/info/info-popover";
 import type { ConsonantGrid } from "../../-hooks/use-consonant-grid";
 import { VOWEL_FRONTS, VOWEL_HEIGHTS, type VowelGrid } from "../../-hooks/use-vowel-grid";
@@ -87,7 +82,7 @@ function PhonemeMatrix({ type, grid, onSelect, config }: PhonemeMatrixProps) {
 							].join(" ")}
 						>
 							{(() => {
-								const info = getArticulationInfo(config.columnType, column);
+								const entry = articulationRegistry[column];
 								const buttonElement = (
 									<button
 										type="button"
@@ -97,13 +92,13 @@ function PhonemeMatrix({ type, grid, onSelect, config }: PhonemeMatrixProps) {
 									</button>
 								);
 
-								return info ? (
+								return entry ? (
 									<InfoPopover
-										category={getCategoryLabel(config.columnType)}
-										label={info.label}
-										short={info.short}
-										airflow={"airflow" in info ? info.airflow : undefined}
-										side={getTooltipSide(config.columnType)}
+										category={entry.category}
+										label={entry.label}
+										short={entry.short}
+										airflow={entry.airflow}
+										side={entry.tooltipSide}
 									>
 										{buttonElement}
 									</InfoPopover>
@@ -123,7 +118,7 @@ function PhonemeMatrix({ type, grid, onSelect, config }: PhonemeMatrixProps) {
 								].join(" ")}
 							>
 								{(() => {
-									const info = getArticulationInfo(config.rowType as InfoType, row);
+									const entry = articulationRegistry[row];
 									const buttonElement = (
 										<button
 											type="button"
@@ -133,13 +128,13 @@ function PhonemeMatrix({ type, grid, onSelect, config }: PhonemeMatrixProps) {
 										</button>
 									);
 
-									return info ? (
+									return entry ? (
 										<InfoPopover
-											category={getCategoryLabel(config.rowType as InfoType)}
-											label={info.label}
-											short={info.short}
-											airflow={"airflow" in info ? info.airflow : undefined}
-											side={getTooltipSide(config.rowType as InfoType)}
+											category={entry.category}
+											label={entry.label}
+											short={entry.short}
+											airflow={entry.airflow}
+											side={entry.tooltipSide}
 										>
 											{buttonElement}
 										</InfoPopover>
