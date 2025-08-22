@@ -7,7 +7,7 @@ import type {
 	VowelPhoneme,
 } from "shared-data";
 import { phonixUtils } from "shared-data";
-import { AudioButton } from "@/components/audio/audio-button";
+import { AudioButton } from "@/components/audio-button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
