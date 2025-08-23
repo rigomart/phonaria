@@ -17,17 +17,42 @@ export function VowelChart() {
 
 	return (
 		<>
-			<div className="mt-6 space-y-5 px-2">
-				<div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
-					<div className="flex items-center gap-2">
-						<div className="relative h-6 w-6 rounded-full border"></div>
-						<span>Rounded</span>
-					</div>
-					<div className="flex items-center gap-2">
-						<div className="relative flex h-6 w-6 items-end justify-center rounded border">
-							<div className="mb-1 h-0.5 w-4 rounded-full bg-primary/60" />
+			<div className="space-y-6">
+				{/* Enhanced Legend */}
+				<div className="rounded-lg border bg-card/50 p-4">
+					<h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+						<div className="h-1 w-4 bg-secondary rounded-full" />
+						Vowel Characteristics
+					</h4>
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+						<div className="space-y-3">
+							<div className="flex items-center gap-3">
+								<div className="relative h-8 w-8 rounded-full border bg-background shadow-sm"></div>
+								<div>
+									<div className="font-medium text-foreground">Unrounded</div>
+									<div className="text-xs text-muted-foreground">Lips spread or neutral</div>
+								</div>
+							</div>
+							<div className="flex items-center gap-3">
+								<div className="relative h-8 w-8 rounded-full border bg-secondary/10 shadow-sm"></div>
+								<div>
+									<div className="font-medium text-foreground">Rounded</div>
+									<div className="text-xs text-muted-foreground">Lips pursed together</div>
+								</div>
+							</div>
+							<div className="flex items-center gap-3">
+								<div className="relative flex h-8 w-8 items-end justify-center rounded border bg-background shadow-sm">
+									<div className="mb-1 h-0.5 w-5 rounded-full bg-primary/60" />
+								</div>
+								<div>
+									<div className="font-medium text-foreground">Rhotic</div>
+									<div className="text-xs text-muted-foreground">With r-coloring</div>
+								</div>
+							</div>
 						</div>
-						<span>Rhotic</span>
+						<div className="space-y-2 text-xs text-muted-foreground">
+							<p>English vowels vary by tongue height, lip rounding, and rhotic quality.</p>
+						</div>
 					</div>
 				</div>
 

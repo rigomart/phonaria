@@ -18,20 +18,37 @@ export function ConsonantChart() {
 
 	return (
 		<>
-			<div className="mt-6 space-y-5 px-2">
-				{/* Legend */}
-				<div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
-					<div className="flex items-center gap-2">
-						<div className="flex items-center justify-center h-6 w-6 rounded border">
-							<ConsonantVoiceIndicator type="voiceless" />
+			<div className="space-y-6">
+				{/* Enhanced Legend */}
+				<div className="rounded-lg border bg-card/50 p-4">
+					<h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+						<div className="h-1 w-4 bg-primary rounded-full" />
+						Understanding the Chart
+					</h4>
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+						<div className="space-y-3">
+							<div className="flex items-center gap-3">
+								<div className="flex items-center justify-center h-8 w-8 rounded border bg-background shadow-sm">
+									<ConsonantVoiceIndicator type="voiceless" />
+								</div>
+								<div>
+									<div className="font-medium text-foreground">Voiceless</div>
+									<div className="text-xs text-muted-foreground">No vocal cord vibration</div>
+								</div>
+							</div>
+							<div className="flex items-center gap-3">
+								<div className="flex items-center justify-center h-8 w-8 rounded border bg-primary/10 shadow-sm">
+									<ConsonantVoiceIndicator type="voiced" />
+								</div>
+								<div>
+									<div className="font-medium text-foreground">Voiced</div>
+									<div className="text-xs text-muted-foreground">With vocal cord vibration</div>
+								</div>
+							</div>
 						</div>
-						<span>Voiceless</span>
-					</div>
-					<div className="flex items-center gap-2">
-						<div className="flex items-center justify-center h-6 w-6 rounded border bg-primary/10">
-							<ConsonantVoiceIndicator type="voiced" />
+						<div className="space-y-2 text-xs text-muted-foreground">
+							<p>Click any phoneme symbol for articulation details, examples, and audio.</p>
 						</div>
-						<span>Voiced</span>
 					</div>
 				</div>
 
