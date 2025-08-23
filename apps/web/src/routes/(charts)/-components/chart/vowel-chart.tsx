@@ -21,7 +21,7 @@ export function VowelChart() {
 				{/* Enhanced Legend */}
 				<div className="rounded-lg border bg-card/50 p-4">
 					<h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-						<div className="h-1 w-4 bg-secondary rounded-full" />
+						<div className="h-1 w-4 bg-accent rounded-full" />
 						Vowel Characteristics
 					</h4>
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">

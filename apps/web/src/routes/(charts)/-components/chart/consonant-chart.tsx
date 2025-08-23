@@ -28,21 +28,21 @@ export function ConsonantChart() {
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<div className="space-y-3">
 							<div className="flex items-center gap-3">
-								<div className="flex items-center justify-center h-8 w-8 rounded border bg-background shadow-sm">
+								<div className="flex items-center justify-center h-8 w-8 rounded border bg-chart-2/10 shadow-sm">
 									<ConsonantVoiceIndicator type="voiceless" />
 								</div>
 								<div>
 									<div className="font-medium text-foreground">Voiceless</div>
-									<div className="text-xs text-muted-foreground">No vocal cord vibration</div>
+									<div className="text-xs text-chart-2">No vocal cord vibration</div>
 								</div>
 							</div>
 							<div className="flex items-center gap-3">
-								<div className="flex items-center justify-center h-8 w-8 rounded border bg-primary/10 shadow-sm">
+								<div className="flex items-center justify-center h-8 w-8 rounded border bg-chart-1/10 shadow-sm">
 									<ConsonantVoiceIndicator type="voiced" />
 								</div>
 								<div>
 									<div className="font-medium text-foreground">Voiced</div>
-									<div className="text-xs text-muted-foreground">With vocal cord vibration</div>
+									<div className="text-xs text-chart-1">With vocal cord vibration</div>
 								</div>
 							</div>
 						</div>
