@@ -56,7 +56,6 @@ export function AudioButton({ src, label, className }: Props) {
 		<div className={cn("inline-flex items-center gap-1", className)}>
 			<Button
 				size="sm"
-				variant="outline"
 				className="h-8 gap-1 px-2 text-xs"
 				onClick={() => playAudio(src, "normal")}
 				aria-label={`Play ${label}`}
