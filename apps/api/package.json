@@ -11,7 +11,7 @@
 		"@hono/zod-validator": "^0.7.2",
 		"hono": "^4.9.2",
 		"openai": "^5.12.2",
-		"shared-data": "workspace:*",
+		"phonetic-engine": "workspace:*",
 		"zod": "^4.0.16"
 	},
 	"devDependencies": {
