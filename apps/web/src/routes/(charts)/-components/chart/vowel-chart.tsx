@@ -1,8 +1,8 @@
 import * as React from "react";
 import type { VowelPhoneme } from "shared-data";
 import { PhonemeDialog } from "@/components/phoneme-dialog";
-import { GridMatrix } from "@/routes/(charts)/-components/layout/grid-matrix";
-import { GridStacked } from "@/routes/(charts)/-components/layout/grid-stacked";
+import { PhonemeGridLayout } from "@/routes/(charts)/-components/core/phoneme-grid";
+import { PhonemeMatrix } from "@/routes/(charts)/-components/core/phoneme-matrix";
 import { useVowelGrid } from "@/routes/(charts)/-hooks/use-vowel-grid";
 
 export function VowelChart() {
@@ -32,10 +32,10 @@ export function VowelChart() {
 				</div>
 
 				<div className="md:hidden">
-					<GridStacked type="vowel" grid={grid} onSelect={openDetails} />
+					<PhonemeGridLayout type="vowel" grid={grid} onSelect={openDetails} />
 				</div>
 				<div className="hidden md:block">
-					<GridMatrix type="vowel" grid={grid} onSelect={openDetails} />
+					<PhonemeMatrix type="vowel" grid={grid} onSelect={openDetails} />
 				</div>
 			</div>
 

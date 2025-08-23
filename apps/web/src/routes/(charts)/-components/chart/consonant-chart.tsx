@@ -1,8 +1,8 @@
 import * as React from "react";
 import type { ConsonantPhoneme } from "shared-data";
 import { PhonemeDialog } from "@/components/phoneme-dialog";
-import { GridMatrix } from "@/routes/(charts)/-components/layout/grid-matrix";
-import { GridStacked } from "@/routes/(charts)/-components/layout/grid-stacked";
+import { PhonemeGridLayout } from "@/routes/(charts)/-components/core/phoneme-grid";
+import { PhonemeMatrix } from "@/routes/(charts)/-components/core/phoneme-matrix";
 import { useConsonantGrid } from "@/routes/(charts)/-hooks/use-consonant-grid";
 import { ConsonantVoiceIndicator } from "../core/consonant-voice-indicator";
 
@@ -36,10 +36,10 @@ export function ConsonantChart() {
 				</div>
 
 				<div className="md:hidden">
-					<GridStacked type="consonant" grid={grid} onSelect={openDetails} />
+					<PhonemeGridLayout type="consonant" grid={grid} onSelect={openDetails} />
 				</div>
 				<div className="hidden md:block">
-					<GridMatrix type="consonant" grid={grid} onSelect={openDetails} />
+					<PhonemeMatrix type="consonant" grid={grid} onSelect={openDetails} />
 				</div>
 			</div>
 
