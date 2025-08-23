@@ -99,7 +99,7 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 }
 
 /**
- * Minimalistic transcription display with clean word-by-word alignment
+ * Compact transcription display optimized for tool-like interface
  */
 export function TranscriptionDisplay({
 	result,
@@ -107,9 +107,9 @@ export function TranscriptionDisplay({
 	className,
 }: TranscriptionDisplayProps) {
 	return (
-		<div className={cn("w-full max-w-5xl mx-auto", "px-8 py-16", "bg-background", className)}>
-			{/* Word columns with horizontal alignment */}
-			<div className="flex items-start justify-center gap-12 md:gap-16 overflow-x-auto pb-4">
+		<div className={cn("w-full", "bg-muted/20 rounded-lg border p-4", className)}>
+			{/* Compact word display */}
+			<div className="flex flex-wrap items-start justify-start gap-6 md:gap-8 overflow-x-auto pb-2">
 				{result.words.map((word, wordIndex) => (
 					<WordColumn
 						key={`${word.word}-${wordIndex}`}
