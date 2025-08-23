@@ -4,18 +4,14 @@
  */
 
 import { DictionaryLoader } from "./dictionary-loader";
+import type { PhoneticResult } from "./llm-provider";
 
-export interface PhoneticResult {
-	word: string;
-	phonemes: string[];
-	source: "dictionary" | "rule" | "fallback";
-	confidence: number;
-	rawIpa?: string;
-}
+export type { PhoneticResult } from "./llm-provider";
 
 export interface EngineStats {
 	dictionaryHits: number;
 	ruleHits: number;
+	llmHits: number;
 	fallbackHits: number;
 	totalRequests: number;
 	averageConfidence: number;
@@ -26,6 +22,7 @@ export class PhoneticEngine {
 	private stats: EngineStats = {
 		dictionaryHits: 0,
 		ruleHits: 0,
+		llmHits: 0,
 		fallbackHits: 0,
 		totalRequests: 0,
 		averageConfidence: 0,
@@ -40,63 +37,54 @@ export class PhoneticEngine {
 	}
 
 	/**
-	 * Convert text to phonemes using the hybrid approach
+	 * Convert text to phonemes using dictionary and rule-based approach
+	 * Returns results for known words, marks unknown words as fallback
 	 */
 	async textToPhonemes(text: string): Promise<PhoneticResult[]> {
 		const words = this.tokenizeText(text);
 		const results: PhoneticResult[] = [];
 
 		for (const word of words) {
-			const result = await this.processWord(word);
-			results.push(result);
+			this.stats.totalRequests++;
+
+			// Try dictionary lookup first
+			const dictEntry = this.dictionaryLoader.lookup(word);
+			if (dictEntry) {
+				this.stats.dictionaryHits++;
+				results.push({
+					word,
+					phonemes: dictEntry.phonemes,
+					source: "dictionary",
+					confidence: 0.95,
+					rawIpa: dictEntry.rawIpa,
+				});
+				continue;
+			}
+
+			// Try rule-based processing for unknown words
+			const ruleResult = this.applyPhoneticRules(word);
+			if (ruleResult && ruleResult.confidence > 0.9) {
+				this.stats.ruleHits++;
+				results.push({
+					word,
+					phonemes: ruleResult.phonemes,
+					source: "rule",
+					confidence: ruleResult.confidence,
+				});
+				continue;
+			}
+
+			// Mark as fallback for LLM processing
+			this.stats.fallbackHits++;
+			results.push({
+				word,
+				phonemes: [],
+				source: "fallback",
+				confidence: 0.0,
+			});
 		}
 
 		return results;
-	}
-
-	/**
-	 * Process a single word through the phonetic pipeline
-	 */
-	private async processWord(word: string): Promise<PhoneticResult> {
-		this.stats.totalRequests++;
-
-		// Step 1: Try dictionary lookup first (fastest, most reliable)
-		const dictEntry = this.dictionaryLoader.lookup(word);
-		if (dictEntry) {
-			this.stats.dictionaryHits++;
-			return {
-				word,
-				phonemes: dictEntry.phonemes,
-				source: "dictionary",
-				confidence: 0.95, // High confidence for dictionary matches
-				rawIpa: dictEntry.rawIpa,
-			};
-		}
-
-		// Step 2: Try LLM (potentially very accurate, trained on massive data)
-		// TODO: Implement LLM integration here
-		// For now, this will be handled by the G2P service
-
-		// Step 3: Basic rules as final fallback (only if LLM completely fails)
-		const ruleResult = this.applyPhoneticRules(word);
-		if (ruleResult && ruleResult.confidence > 0.9) {
-			this.stats.ruleHits++;
-			return {
-				word,
-				phonemes: ruleResult.phonemes,
-				source: "rule",
-				confidence: ruleResult.confidence,
-			};
-		}
-
-		// Step 4: Ultimate fallback - no result available
-		this.stats.fallbackHits++;
-		return {
-			word,
-			phonemes: [], // No phonemes available
-			source: "fallback",
-			confidence: 0.0,
-		};
 	}
 
 	/**
@@ -216,6 +204,7 @@ export class PhoneticEngine {
 		this.stats = {
 			dictionaryHits: 0,
 			ruleHits: 0,
+			llmHits: 0,
 			fallbackHits: 0,
 			totalRequests: 0,
 			averageConfidence: 0,

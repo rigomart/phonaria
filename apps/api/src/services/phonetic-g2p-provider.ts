@@ -1,6 +1,7 @@
 /**
  * Phonetic Engine G2P Provider
- * Integrates the new rule-based phonetic engine with the existing G2P service
+ * Integrates the rule-based phonetic engine with the existing G2P service
+ * Focuses on dictionary and rule-based processing, lets API layer handle LLM
  */
 
 import { PhoneticEngine, type PhoneticResult } from "phonetic-engine";
@@ -24,7 +25,7 @@ export class PhoneticG2PProvider implements IG2PProvider {
 	}
 
 	/**
-	 * Convert text to phonemes using the rule-based phonetic engine
+	 * Convert text to phonemes using the hybrid phonetic engine
 	 */
 	async textToPhonemes(text: string): Promise<G2PWord[]> {
 		const results = await this.engine.textToPhonemes(text);

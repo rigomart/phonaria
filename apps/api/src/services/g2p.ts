@@ -73,8 +73,7 @@ export class G2PService {
 				break;
 			}
 			case "phonetic": {
-				// Create the provider but don't initialize yet
-				// We'll initialize it asynchronously later
+				// Create the provider - phonetic engine handles dictionary + rules only
 				this.createPhoneticProvider().catch((error) => {
 					console.error("Failed to initialize phonetic provider:", error);
 				});

@@ -3,8 +3,6 @@ export type {
 	DictionaryStats,
 } from "./dictionary-loader";
 export { DictionaryLoader } from "./dictionary-loader";
-export type {
-	EngineStats,
-	PhoneticResult,
-} from "./phonetic-engine";
+export type { PhoneticResult } from "./llm-provider";
+export type { EngineStats } from "./phonetic-engine";
 export { PhoneticEngine } from "./phonetic-engine";
