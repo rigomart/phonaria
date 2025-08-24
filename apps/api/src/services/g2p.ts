@@ -1,134 +1,62 @@
-import { OpenAIService } from "./openai";
-
 /**
- * Core domain types for G2P
+ * G2P Service - Phase 1.5 Implementation
+ * Uses hybrid dictionary (core + extended) for fast startup and full coverage
  */
-export interface G2PWord {
-	word: string;
-	phonemes: string[];
+
+import type { G2PResponse, G2PWord } from "../schemas/g2p.js";
+import { HybridDictionaryG2P } from "./hybrid-dictionary-g2p.js";
+
+export interface G2PRequest {
+	text: string;
 }
 
-export interface G2PResponse {
-	words: G2PWord[];
-}
+// Single service instance - will be initialized on first use
+const hybridDictionaryService = new HybridDictionaryG2P();
 
 /**
- * Provider configuration type. Keep it open-ended to support provider-specific options.
+ * Main transcription function using hybrid dictionary approach
  */
-export interface G2PProviderConfig {
-	apiKey: string;
-	baseUrl?: string;
-	[key: string]: unknown;
-}
+export async function transcribeText(request: G2PRequest): Promise<G2PResponse> {
+	const { text } = request;
 
-/**
- * Contract every G2P provider must implement.
- */
-export interface IG2PProvider {
-	readonly name: string;
-	readonly version?: string;
-	textToPhonemes(text: string): Promise<G2PWord[]>;
-	initialize?(): Promise<void>;
-}
-
-/**
- * OpenAI-backed G2P provider that delegates to the existing OpenAIService.
- */
-export class OpenAIG2PProvider implements IG2PProvider {
-	readonly name = "openai";
-	readonly version = "1.0.0";
-
-	private openaiService: OpenAIService;
-
-	constructor(apiKey: string) {
-		this.openaiService = new OpenAIService(apiKey);
+	if (!text?.trim()) {
+		throw new Error("Text cannot be empty");
 	}
 
-	async textToPhonemes(text: string): Promise<G2PWord[]> {
-		return this.openaiService.textToPhonemes(text);
+	if (text.length > 500) {
+		throw new Error("Text too long (maximum 500 characters)");
+	}
+
+	try {
+		// Use the hybrid dictionary service
+		const result = await hybridDictionaryService.transcribe(text);
+
+		// Log for monitoring
+		console.log(`Transcribed "${text}" -> ${result.words.length} words`);
+
+		return result;
+	} catch (error) {
+		console.error("G2P transcription error:", error);
+		throw new Error("Failed to transcribe text");
 	}
 }
 
 /**
- * Facade service that selects and uses a provider to perform G2P conversion.
- *
- * It intentionally hides provider implementation details from callers.
+ * Get service statistics (useful for debugging and health checks)
  */
-export class G2PService {
-	private provider: IG2PProvider | null = null;
-	private initialized = false;
-	private config: G2PProviderConfig;
-
-	constructor(providerName: string, config: G2PProviderConfig) {
-		this.config = config;
-
-		switch (providerName) {
-			case "openai": {
-				const apiKey = config.apiKey;
-				if (!apiKey) {
-					throw new Error("Provider API key not provided");
-				}
-				this.provider = new OpenAIG2PProvider(apiKey);
-				this.initialized = true;
-				break;
-			}
-			case "phonetic": {
-				// Create the provider - phonetic engine handles dictionary + rules only
-				this.createPhoneticProvider().catch((error) => {
-					console.error("Failed to initialize phonetic provider:", error);
-				});
-				break;
-			}
-			default:
-				throw new Error(`Unsupported G2P provider: ${providerName}`);
-		}
-	}
-
-	/**
-	 * Create phonetic provider (will be initialized later)
-	 */
-	private async createPhoneticProvider(): Promise<void> {
-		try {
-			const { PhoneticG2PProvider } = await import("./phonetic-g2p-provider");
-			this.provider = new PhoneticG2PProvider();
-			// Initialize the provider if it has an init method
-			if (this.provider.initialize) {
-				await this.provider.initialize();
-			}
-			this.initialized = true;
-		} catch (error) {
-			console.error("Failed to create phonetic provider:", error);
-			// Fallback to OpenAI provider if phonetic fails
-			console.log("Falling back to OpenAI provider");
-			if (this.config.apiKey) {
-				this.provider = new OpenAIG2PProvider(this.config.apiKey);
-				this.initialized = true;
-			} else {
-				throw new Error("Cannot fallback to OpenAI: no API key provided");
-			}
-		}
-	}
-
-	/**
-	 * Initialize the service (for providers that need async initialization)
-	 */
-	async initialize(): Promise<void> {
-		if (this.initialized) return;
-
-		await this.createPhoneticProvider();
-	}
-
-	async textToPhonemes(text: string): Promise<G2PWord[]> {
-		if (!this.provider) {
-			throw new Error("G2P provider not initialized");
-		}
-		return this.provider.textToPhonemes(text);
-	}
-
-	getProviderInfo() {
-		if (!this.provider) {
-			throw new Error("G2P provider not initialized");
-		}
-		return { name: this.provider.name, version: this.provider.version };
-	}
+export function getServiceStats() {
+	return hybridDictionaryService.getStats();
 }
+
+/**
+ * Health check function
+ */
+export function isHealthy(): boolean {
+	const stats = hybridDictionaryService.getStats();
+	return stats.isHealthy;
+}
+
+/**
+ * Export types for consistency
+ */
+export type { G2PWord, G2PResponse };

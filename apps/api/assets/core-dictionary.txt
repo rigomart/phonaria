@@ -1,0 +1,10 @@
+hello	/həˈloʊ/
+world	/wɝld/
+the	/ðə/, /ði/
+and	/ænd/, /ənd/
+you	/ju/
+that	/ðæt/
+for	/fɔr/
+are	/ɑr/
+with	/wɪθ/
+have	/hæv/
