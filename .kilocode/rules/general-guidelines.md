@@ -12,6 +12,7 @@ General instructions that you must absolutely follow.
 - You can read .env.example files to know what environment variables exist in the project.
 - DO NOT READ any other .env file apart from the specified previously as they may contain sensitive info.
 - DO NOT add new dependencies editing the package.json directly. Prefer the use of commands like `pnpm add <dependency_name>`.
+- DO NOT add unnecessary JSDoc comments. Prefer using it only for complex and large functions, classes, components or interfaces.
 
 ### TypeScript Guidelines
 - Prefer the use of types instead of interfaces.

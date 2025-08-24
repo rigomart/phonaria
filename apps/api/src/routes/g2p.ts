@@ -1,7 +1,3 @@
-/**
- * G2P API Routes with inline handlers (Hono best practices)
- */
-
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { type ApiError, type G2PResponse, g2pRequestSchema } from "../schemas/g2p";
