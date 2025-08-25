@@ -1,6 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { type ApiError, type G2PResponse, g2pRequestSchema } from "../schemas/g2p";
+import { type ApiError, g2pRequestSchema } from "../schemas/g2p";
 import { transcribeText } from "../services/g2p";
 
 const g2pRouter = new Hono();
@@ -13,7 +13,7 @@ g2pRouter.post("/", zValidator("json", g2pRequestSchema), async (c) => {
 		const { text } = c.req.valid("json");
 
 		// Use the G2P service to transcribe
-		const response: G2PResponse = await transcribeText({ text });
+		const response = await transcribeText({ text });
 
 		return c.json(response, 200);
 	} catch (error) {

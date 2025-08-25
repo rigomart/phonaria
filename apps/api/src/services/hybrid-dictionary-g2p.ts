@@ -1,19 +1,22 @@
 /**
  * Hybrid Dictionary-based G2P Service
  * Uses embedded core dictionary for instant startup + remote extended dictionary for full coverage
+ * Now with smart IPA phoneme parsing!
  */
 
-// Embedded core dictionary data (10 most common words)
+import { smartIPAParser } from "./smart-ipa-parser.js";
+
+// Embedded core dictionary data (10 words + examples to demonstrate smart parsing)
 const CORE_DICTIONARY_DATA = `hello	/həˈloʊ/
 world	/wɝld/
 the	/ðə/, /ði/
 and	/ænd/, /ənd/
 you	/ju/
 that	/ðæt/
-for	/fɔr/
-are	/ɑr/
-with	/wɪθ/
-have	/hæv/`;
+choice	/tʃɔɪs/
+judge	/dʒʌdʒ/
+night	/naɪt/
+about	/əˈbaʊt/`;
 
 export class HybridDictionaryG2P {
 	private coreDict = new Map<string, string[]>();
@@ -114,12 +117,11 @@ export class HybridDictionaryG2P {
 	}
 
 	/**
-	 * Extract basic phonemes from IPA string
-	 * TODO: Improve this in Phase 1.5 to handle complex phonemes properly
+	 * Extract phonemes from IPA string using smart parsing
+	 * Properly handles complex phonemes like 'tʃ', 'dʒ', 'eɪ', etc.
 	 */
 	private extractBasicPhonemes(ipaString: string): string[] {
-		const cleanString = ipaString.replace(/[ˈˌ]/g, "");
-		return cleanString.split("").filter((char) => char.trim().length > 0);
+		return smartIPAParser.parseIPA(ipaString);
 	}
 
 	/**
