@@ -16,14 +16,6 @@ export interface G2PRequest {
 export async function transcribeText(request: G2PRequest): Promise<G2PResponse> {
 	const { text } = request;
 
-	if (!text?.trim()) {
-		throw new Error("Text cannot be empty");
-	}
-
-	if (text.length > 200) {
-		throw new Error("Text too long (maximum 200 characters)");
-	}
-
 	try {
 		// Use phonemize with returnArray to get token objects
 		const tokens = phonemize(text, {
@@ -47,7 +39,10 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 
 			// Add phoneme to the word's phoneme array
 			if (token.phoneme?.trim()) {
-				wordMap.get(word)!.push(token.phoneme);
+				const wordPhonemes = wordMap.get(word);
+				if (wordPhonemes) {
+					wordPhonemes.push(token.phoneme);
+				}
 			}
 		}
 
