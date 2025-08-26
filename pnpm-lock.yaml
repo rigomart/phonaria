@@ -26,6 +26,9 @@ importers:
       openai:
         specifier: ^5.12.2
         version: 5.12.2(ws@8.18.0)(zod@4.0.16)
+      phonemize:
+        specifier: ^1.1.0
+        version: 1.1.0
       shared-data:
         specifier: workspace:*
         version: link:../../packages/shared-data
@@ -2008,6 +2011,9 @@ packages:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
 
+  number-to-words@1.2.4:
+    resolution: {integrity: sha512-/fYevVkXRcyBiZDg6yzZbm0RuaD6i0qRfn8yr+6D0KgBMOndFPxuW10qCHpzs50nN8qKuv78k8MuotZhcVX6Pw==}
+
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
 
@@ -2029,6 +2035,9 @@ packages:
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
+  phonemize@1.1.0:
+    resolution: {integrity: sha512-1OrNagrRUg8pbFF4rMsyl7XJF9Hyh9FWl5GBuBUz+JOZEt9YHiPJ6yJUvevkBBHVahY8Mi/ZmiWT9+kVbODX2Q==}
+
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
@@ -2039,6 +2048,9 @@ packages:
   picomatch@4.0.3:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
+
+  pinyin-pro@3.27.0:
+    resolution: {integrity: sha512-Osdgjwe7Rm17N2paDMM47yW+jUIUH3+0RGo8QP39ZTLpTaJVDK0T58hOLaMQJbcMmAebVuK2ePunTEVEx1clNQ==}
 
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
@@ -3939,6 +3951,8 @@ snapshots:
 
   normalize-path@3.0.0: {}
 
+  number-to-words@1.2.4: {}
+
   ohash@2.0.11: {}
 
   openai@5.12.2(ws@8.18.0)(zod@4.0.16):
@@ -3950,11 +3964,18 @@ snapshots:
 
   pathe@2.0.3: {}
 
+  phonemize@1.1.0:
+    dependencies:
+      number-to-words: 1.2.4
+      pinyin-pro: 3.27.0
+
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
 
   picomatch@4.0.3: {}
+
+  pinyin-pro@3.27.0: {}
 
   postcss@8.5.6:
     dependencies:

@@ -1,20 +1,17 @@
 /**
- * G2P Service - Phase 1.5 Implementation
- * Uses hybrid dictionary (core + extended) for fast startup and full coverage
+ * G2P Service - Phonemize Implementation
+ * Uses the phonemize npm package for grapheme-to-phoneme conversion
  */
 
+import { phonemize } from "phonemize";
 import type { G2PResponse, G2PWord } from "../schemas/g2p.js";
-import { HybridDictionaryG2P } from "./hybrid-dictionary-g2p.js";
 
 export interface G2PRequest {
 	text: string;
 }
 
-// Single service instance - will be initialized on first use
-const hybridDictionaryService = new HybridDictionaryG2P();
-
 /**
- * Main transcription function using hybrid dictionary approach
+ * Main transcription function using phonemize
  */
 export async function transcribeText(request: G2PRequest): Promise<G2PResponse> {
 	const { text } = request;
@@ -23,18 +20,45 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 		throw new Error("Text cannot be empty");
 	}
 
-	if (text.length > 500) {
-		throw new Error("Text too long (maximum 500 characters)");
+	if (text.length > 200) {
+		throw new Error("Text too long (maximum 200 characters)");
 	}
 
 	try {
-		// Use the hybrid dictionary service
-		const result = await hybridDictionaryService.transcribe(text);
+		// Use phonemize with returnArray to get token objects
+		const tokens = phonemize(text, {
+			returnArray: true,
+			format: "ipa",
+			stripStress: false,
+		});
 
-		// Log for monitoring
-		console.log(`Transcribed "${text}" -> ${result.words.length} words`);
+		// Group tokens by word
+		const wordMap = new Map<string, string[]>();
+		const wordOrder: string[] = [];
 
-		return result;
+		for (const token of tokens) {
+			const word = token.word?.trim();
+			if (!word) continue;
+
+			if (!wordMap.has(word)) {
+				wordMap.set(word, []);
+				wordOrder.push(word);
+			}
+
+			// Add phoneme to the word's phoneme array
+			if (token.phoneme?.trim()) {
+				wordMap.get(word)!.push(token.phoneme);
+			}
+		}
+
+		// Convert to expected format
+		const words: G2PWord[] = wordOrder.map((word) => ({
+			word,
+			phonemes: wordMap.get(word) || [],
+		}));
+
+		console.log(`Transcribed "${text}" -> ${words.length} words`);
+		return { words };
 	} catch (error) {
 		console.error("G2P transcription error:", error);
 		throw new Error("Failed to transcribe text");
@@ -42,18 +66,21 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 }
 
 /**
- * Get service statistics (useful for debugging and health checks)
+ * Get service statistics
  */
 export function getServiceStats() {
-	return hybridDictionaryService.getStats();
+	return {
+		serviceName: "phonemize-g2p",
+		isHealthy: true,
+		description: "Phonemize G2P service using phonemize function",
+	};
 }
 
 /**
  * Health check function
  */
 export function isHealthy(): boolean {
-	const stats = hybridDictionaryService.getStats();
-	return stats.isHealthy;
+	return true;
 }
 
 /**
