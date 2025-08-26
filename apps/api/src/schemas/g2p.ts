@@ -5,7 +5,10 @@ export const g2pRequestSchema = z.object({
 		.string()
 		.min(1, "Text cannot be empty")
 		.max(200, "Text must be 200 characters or less")
-		.regex(/^[\w\s.,!?;:'"()-]+$/, "Text contains invalid characters"),
+		.regex(
+			/^[\p{L}\p{N}\s.,!?;:'"()\-–—…""''‚„«»‹›@#$%&*+/=[\]{}|\\^_`~]+$/u,
+			"Text contains unsupported characters",
+		),
 });
 
 export const g2pWordSchema = z.object({
