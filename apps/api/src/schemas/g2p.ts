@@ -25,14 +25,7 @@ export const apiErrorSchema = z.object({
 	message: z.string(),
 });
 
-export const healthResponseSchema = z.object({
-	status: z.enum(["healthy", "unhealthy"]),
-	timestamp: z.string(),
-	dictionary: z.string(),
-});
-
 export type G2PRequest = z.infer<typeof g2pRequestSchema>;
 export type G2PWord = z.infer<typeof g2pWordSchema>;
 export type G2PResponse = z.infer<typeof g2pResponseSchema>;
 export type ApiError = z.infer<typeof apiErrorSchema>;
-export type HealthResponse = z.infer<typeof healthResponseSchema>;

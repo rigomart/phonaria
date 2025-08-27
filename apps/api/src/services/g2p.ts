@@ -78,13 +78,6 @@ export function getServiceStats() {
 }
 
 /**
- * Health check function
- */
-export function isHealthy(): boolean {
-	return true;
-}
-
-/**
  * Export types for consistency
  */
 export type { G2PWord, G2PResponse };

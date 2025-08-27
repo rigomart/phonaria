@@ -24,12 +24,6 @@ export class PhonemeSegmenter {
 		// Add vowels
 		vowels.forEach((vowel: VowelPhoneme) => {
 			allPhonemes.push(vowel.symbol);
-			// Also add allophone variants if they exist
-			if (vowel.allophones) {
-				vowel.allophones.forEach((allophone) => {
-					allPhonemes.push(allophone.variant);
-				});
-			}
 		});
 
 		// Add stress markers and other IPA symbols
