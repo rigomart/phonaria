@@ -1,17 +1,19 @@
 /**
- * G2P Service - Phonemize Implementation
+ * G2P Service - Phonemize Implementation with Accurate Segmentation
  * Uses the phonemize npm package for grapheme-to-phoneme conversion
+ * with improved phoneme segmentation to handle compound words and affricates
  */
 
 import { phonemize } from "phonemize";
 import type { G2PResponse, G2PWord } from "../schemas/g2p.js";
+import { phonemeSegmenter } from "./phoneme-segmenter.js";
 
 export interface G2PRequest {
 	text: string;
 }
 
 /**
- * Main transcription function using phonemize
+ * Main transcription function using phonemize with improved segmentation
  */
 export async function transcribeText(request: G2PRequest): Promise<G2PResponse> {
 	const { text } = request;
@@ -24,7 +26,7 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 			stripStress: false,
 		});
 
-		// Group tokens by word
+		// Group tokens by word and segment phonemes
 		const wordMap = new Map<string, string[]>();
 		const wordOrder: string[] = [];
 
@@ -37,12 +39,14 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 				wordOrder.push(word);
 			}
 
-			// Add phoneme to the word's phoneme array
+			// Use the improved phoneme segmenter instead of pushing the whole string
 			if (token.phoneme?.trim()) {
-				const wordPhonemes = wordMap.get(word);
-				if (wordPhonemes) {
-					wordPhonemes.push(token.phoneme);
-				}
+				const segmentedPhonemes = phonemeSegmenter.segment(token.phoneme);
+				console.log(`Segmented "${word}" (${token.phoneme}) -> [${segmentedPhonemes.join(", ")}]`);
+
+				// Add all segmented phonemes to the word's phoneme array
+				const existingPhonemes = wordMap.get(word)!;
+				existingPhonemes.push(...segmentedPhonemes);
 			}
 		}
 
@@ -64,10 +68,12 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
  * Get service statistics
  */
 export function getServiceStats() {
+	const segmenterStats = phonemeSegmenter.getStats();
 	return {
 		serviceName: "phonemize-g2p",
 		isHealthy: true,
-		description: "Phonemize G2P service using phonemize function",
+		description: "Phonemize G2P service with improved phoneme segmentation",
+		segmenter: segmenterStats,
 	};
 }
 
