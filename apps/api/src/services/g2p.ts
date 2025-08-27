@@ -5,8 +5,8 @@
  */
 
 import { phonemize } from "phonemize";
+import { phonemeSegmenter } from "../lib/linguistic/index.js";
 import type { G2PResponse, G2PWord } from "../schemas/g2p.js";
-import { phonemeSegmenter } from "./phoneme-segmenter.js";
 
 export interface G2PRequest {
 	text: string;
