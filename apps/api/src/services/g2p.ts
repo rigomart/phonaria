@@ -31,8 +31,7 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 		const wordOrder: string[] = [];
 
 		for (const token of tokens) {
-			const word = token.word?.trim();
-			if (!word) continue;
+			const word = token.word.trim();
 
 			if (!wordMap.has(word)) {
 				wordMap.set(word, []);
@@ -40,14 +39,13 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 			}
 
 			// Use the improved phoneme segmenter instead of pushing the whole string
-			if (token.phoneme?.trim()) {
-				const segmentedPhonemes = phonemeSegmenter.segment(token.phoneme);
-				console.log(`Segmented "${word}" (${token.phoneme}) -> [${segmentedPhonemes.join(", ")}]`);
 
-				// Add all segmented phonemes to the word's phoneme array
-				const existingPhonemes = wordMap.get(word)!;
-				existingPhonemes.push(...segmentedPhonemes);
-			}
+			const segmentedPhonemes = phonemeSegmenter.segment(token.phoneme);
+			console.log(`Segmented "${word}" (${token.phoneme}) -> [${segmentedPhonemes.join(", ")}]`);
+
+			// Add all segmented phonemes to the word's phoneme array
+			const existingPhonemes = wordMap.get(word)!;
+			existingPhonemes.push(...segmentedPhonemes);
 		}
 
 		// Convert to expected format
