@@ -1,89 +1,5 @@
-const ARPABET_TO_IPA: Record<string, string> = {
-	AA: "ɑ",
-	AA0: "ɑ",
-	AA1: "ɑ",
-	AA2: "ɑ",
-	AE: "æ",
-	AE0: "æ",
-	AE1: "æ",
-	AE2: "æ",
-	AH: "ʌ",
-	AH0: "ə",
-	AH1: "ʌ",
-	AH2: "ʌ",
-	AO: "ɔ",
-	AO0: "ɔ",
-	AO1: "ɔ",
-	AO2: "ɔ",
-	AW: "aʊ",
-	AW0: "aʊ",
-	AW1: "aʊ",
-	AW2: "aʊ",
-	AY: "aɪ",
-	AY0: "aɪ",
-	AY1: "aɪ",
-	AY2: "aɪ",
-	EH: "ɛ",
-	EH0: "ɛ",
-	EH1: "ɛ",
-	EH2: "ɛ",
-	ER: "ɝ",
-	ER0: "ɚ",
-	ER1: "ɝ",
-	ER2: "ɝ",
-	EY: "eɪ",
-	EY0: "eɪ",
-	EY1: "eɪ",
-	EY2: "eɪ",
-	IH: "ɪ",
-	IH0: "ɪ",
-	IH1: "ɪ",
-	IH2: "ɪ",
-	IY: "i",
-	IY0: "i",
-	IY1: "i",
-	IY2: "i",
-	OW: "oʊ",
-	OW0: "oʊ",
-	OW1: "oʊ",
-	OW2: "oʊ",
-	OY: "ɔɪ",
-	OY0: "ɔɪ",
-	OY1: "ɔɪ",
-	OY2: "ɔɪ",
-	UH: "ʊ",
-	UH0: "ʊ",
-	UH1: "ʊ",
-	UH2: "ʊ",
-	UW: "u",
-	UW0: "u",
-	UW1: "u",
-	UW2: "u",
-	B: "b",
-	CH: "tʃ",
-	D: "d",
-	DH: "ð",
-	F: "f",
-	G: "g",
-	HH: "h",
-	JH: "dʒ",
-	K: "k",
-	L: "l",
-	M: "m",
-	N: "n",
-	NG: "ŋ",
-	P: "p",
-	R: "ɹ",
-	S: "s",
-	SH: "ʃ",
-	T: "t",
-	TH: "θ",
-	V: "v",
-	W: "w",
-	Y: "j",
-	Z: "z",
-	ZH: "ʒ",
-};
+import { convertArpabetToIPA } from "./arpabet-mapping";
+import { fallbackG2P } from "./fallback-g2p";
 
 class CMUDict {
 	private dict = new Map<string, string[]>();
@@ -121,35 +37,25 @@ class CMUDict {
 
 			const word = wordPart.toUpperCase();
 			const arpaPhonemes = phonemePart.trim().split(/\s+/);
-			const ipaPhonemes = this.convertToIPA(arpaPhonemes);
+			const ipaPhonemes = convertArpabetToIPA(arpaPhonemes);
 
 			this.dict.set(word, ipaPhonemes);
 		}
 	}
 
-	private convertToIPA(arpaPhonemes: string[]): string[] {
-		const result: string[] = [];
-
-		for (const arpa of arpaPhonemes) {
-			if (arpa.endsWith("1")) {
-				result.push("ˈ");
-				result.push(ARPABET_TO_IPA[arpa] || arpa);
-			} else if (arpa.endsWith("2")) {
-				result.push("ˌ");
-				result.push(ARPABET_TO_IPA[arpa] || arpa);
-			} else {
-				result.push(ARPABET_TO_IPA[arpa] || arpa);
-			}
-		}
-
-		return result;
-	}
-
-	lookup(word: string): string[] | null {
+	lookup(word: string): string[] {
 		if (!this.loaded) {
 			throw new Error("Dictionary not loaded");
 		}
-		return this.dict.get(word.toUpperCase()) || null;
+
+		// Try dictionary lookup first
+		const dictResult = this.dict.get(word.toUpperCase());
+		if (dictResult) {
+			return dictResult;
+		}
+
+		// Phase 2.1: Fallback for unknown words
+		return fallbackG2P.generatePronunciation(word);
 	}
 }
 
