@@ -55,7 +55,7 @@ function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
 			className={cn(
 				"font-mono text-3xl md:text-4xl bg-transparent border-none p-1 m-0",
 				"cursor-pointer transition-all duration-200",
-				"hover:text-primary hover:scale-105",
+				"hover:text-primary hover:underline",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:rounded-md",
 				!isKnown && "opacity-75 underline decoration-dotted underline-offset-4",
 			)}

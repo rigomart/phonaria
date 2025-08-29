@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/g2p/empty-state";
 import { G2PInputForm } from "@/components/g2p/g2p-input-form";
 import { PhonemeDetailPanel } from "@/components/g2p/phoneme-detail-panel";
 import { TranscriptionDisplay } from "@/components/g2p/transcription-display";
+import { Button } from "@/components/ui/button";
 import { useG2P } from "@/hooks/use-g2p";
 import { getPhonemeBySymbol } from "@/lib/g2p-client";
 import type { TranscribedPhoneme } from "@/types/g2p";
@@ -63,17 +64,20 @@ function Index() {
 
 							{/* Quick Examples */}
 							<div className="flex flex-wrap gap-2">
-								<span className="text-xs text-muted-foreground self-center mr-2">Quick try:</span>
-								{["happy", "thought", "phone"].map((example) => (
-									<button
+								<span className="text-xs text-muted-foreground self-center mr-2">
+									Or try these examples:
+								</span>
+								{["Judge the rhythm", "She chose well", "Through thick fog"].map((example) => (
+									<Button
 										key={example}
 										type="button"
 										onClick={() => g2p.transcribe(example)}
 										className="text-xs px-3 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground transition-colors disabled:opacity-50"
 										disabled={g2p.state === "loading"}
+										size="sm"
 									>
 										"{example}"
-									</button>
+									</Button>
 								))}
 							</div>
 						</div>
@@ -89,7 +93,7 @@ function Index() {
 								</div>
 							</div>
 						) : (
-							<EmptyState onTryExample={g2p.transcribe} isLoading={g2p.state === "loading"} />
+							<EmptyState />
 						)}
 					</div>
 

@@ -1,67 +1,61 @@
-import { ArrowRight, BookOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye, MousePointer, Sparkles, Volume2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
-interface EmptyStateProps {
-	onTryExample: (text: string) => void;
-	isLoading?: boolean;
-}
-
-export function EmptyState({ onTryExample, isLoading }: EmptyStateProps) {
-	const examples = [
-		{ text: "happy", description: "Basic vowel sounds" },
-		{ text: "thought", description: "Silent letters" },
-		{ text: "phone", description: "Unusual spelling" },
-		{ text: "through", description: "Complex sounds" },
-		{ text: "enough", description: "Silent letters" },
-		{ text: "night", description: "Diphthongs" },
-	];
-
+export function EmptyState() {
 	return (
-		<Card className="bg-muted/20">
-			<CardHeader className="text-center pb-3">
-				<CardTitle className="text-base flex items-center justify-center gap-2">
-					<BookOpen className="w-4 h-4 text-primary" />
-					Phonemic Transcription Tool
-				</CardTitle>
-			</CardHeader>
-
-			<CardContent className="space-y-4">
-				{/* Quick How-to */}
-				<div className="text-xs text-muted-foreground text-center bg-muted/30 rounded p-2">
-					Enter text above → Get IPA transcription → Click phonemes to learn
+		<div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-6">
+			{/* Hero Visual */}
+			<div className="relative">
+				<div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+					<div className="text-2xl font-bold text-primary font-mono">/aɪ/</div>
 				</div>
+				<Sparkles className="w-4 h-4 text-primary absolute -top-1 -right-1 animate-pulse" />
+			</div>
 
-				{/* Examples */}
-				<div className="space-y-2">
-					<div className="text-sm font-medium">Or try these examples:</div>
-					<div className="grid gap-1.5">
-						{examples.map(({ text, description }) => (
-							<Button
-								key={text}
-								variant="outline"
-								size="sm"
-								className="h-auto py-2 px-3 justify-start text-left"
-								onClick={() => onTryExample(text)}
-								disabled={isLoading}
-							>
-								<div className="flex items-center justify-between w-full">
-									<div className="text-sm">
-										<span className="font-medium">"{text}"</span>
-										<span className="text-xs text-muted-foreground ml-2">{description}</span>
-									</div>
-									<ArrowRight className="w-3 h-3 text-muted-foreground" />
-								</div>
-							</Button>
-						))}
-					</div>
-				</div>
+			{/* Main Message */}
+			<div className="space-y-3 max-w-md">
+				<h2 className="text-xl font-semibold text-foreground">Discover How Words Really Sound</h2>
+				<p className="text-sm text-muted-foreground leading-relaxed">
+					Enter any English word or sentence above to see its phonemic transcription using the
+					International Phonetic Alphabet (IPA). Learn the exact sounds that make up English
+					pronunciation.
+				</p>
+			</div>
 
-				{/* Quick Tip */}
-				<div className="text-xs text-muted-foreground text-center">
-					💡 Click any phoneme in your transcription to view articulation details
+			{/* Features Grid */}
+			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-lg">
+				<Card className="bg-muted/30 border-0">
+					<CardContent className="p-4 text-center space-y-2">
+						<Volume2 className="w-5 h-5 text-primary mx-auto" />
+						<div className="text-xs font-medium">Audio Examples</div>
+						<div className="text-xs text-muted-foreground">Hear native pronunciations</div>
+					</CardContent>
+				</Card>
+
+				<Card className="bg-muted/30 border-0">
+					<CardContent className="p-4 text-center space-y-2">
+						<Eye className="w-5 h-5 text-primary mx-auto" />
+						<div className="text-xs font-medium">Visual Guides</div>
+						<div className="text-xs text-muted-foreground">See mouth positions</div>
+					</CardContent>
+				</Card>
+
+				<Card className="bg-muted/30 border-0">
+					<CardContent className="p-4 text-center space-y-2">
+						<MousePointer className="w-5 h-5 text-primary mx-auto" />
+						<div className="text-xs font-medium">Interactive</div>
+						<div className="text-xs text-muted-foreground">Click any phoneme</div>
+					</CardContent>
+				</Card>
+			</div>
+
+			{/* Call to Action */}
+			<div className="bg-primary/5 rounded-lg p-4 max-w-md">
+				<div className="text-xs text-muted-foreground">
+					<div className="font-medium text-foreground mb-1">How it works:</div>
+					Type text → Get IPA transcription → Click phonemes to learn articulation
 				</div>
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	);
 }

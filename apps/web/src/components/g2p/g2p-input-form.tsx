@@ -50,7 +50,7 @@ export function G2PInputForm({
 						onChange={(e) => setInputText(e.target.value)}
 						placeholder={placeholder}
 						disabled={isDisabled}
-						className="text-base py-3 px-4 flex-1"
+						className="flex-1"
 						maxLength={maxLength}
 						aria-label="Text to transcribe"
 					/>
