@@ -1,81 +1,53 @@
-/**
- * G2P Service - Phonemize Implementation with Accurate Segmentation
- * Uses the phonemize npm package for grapheme-to-phoneme conversion
- * with improved phoneme segmentation to handle compound words and affricates
- */
-
-import { phonemize } from "phonemize";
-import { phonemeSegmenter } from "../lib/linguistic/index.js";
-import type { G2PResponse, G2PWord } from "../schemas/g2p.js";
+import { cmudict } from "../lib/cmudict";
+import type { G2PResponse, G2PWord } from "../schemas/g2p";
 
 export interface G2PRequest {
 	text: string;
 }
 
-/**
- * Main transcription function using phonemize with improved segmentation
- */
+async function ensureDictLoaded(): Promise<void> {
+	await cmudict.load();
+}
+
+function tokenizeText(text: string): string[] {
+	return text
+		.replace(/[^\w\s'-]/g, " ")
+		.split(/\s+/)
+		.filter((word) => word.length > 0)
+		.map((word) => word.trim());
+}
+
 export async function transcribeText(request: G2PRequest): Promise<G2PResponse> {
 	const { text } = request;
 
 	try {
-		// Use phonemize with returnArray to get token objects
-		const tokens = phonemize(text, {
-			returnArray: true,
-			format: "ipa",
-			stripStress: false,
-		});
+		await ensureDictLoaded();
 
-		// Group tokens by word and segment phonemes
-		const wordMap = new Map<string, string[]>();
-		const wordOrder: string[] = [];
+		const words = tokenizeText(text);
+		const results: G2PWord[] = [];
 
-		for (const token of tokens) {
-			const word = token.word.trim();
+		for (const word of words) {
+			const phonemes = cmudict.lookup(word);
 
-			if (!wordMap.has(word)) {
-				wordMap.set(word, []);
-				wordOrder.push(word);
-			}
-
-			// Use the improved phoneme segmenter instead of pushing the whole string
-
-			const segmentedPhonemes = phonemeSegmenter.segment(token.phoneme);
-			console.log(`Segmented "${word}" (${token.phoneme}) -> [${segmentedPhonemes.join(", ")}]`);
-
-			// Add all segmented phonemes to the word's phoneme array
-			const existingPhonemes = wordMap.get(word)!;
-			existingPhonemes.push(...segmentedPhonemes);
+			results.push({
+				word: word.toLowerCase(),
+				phonemes: phonemes || [],
+			});
 		}
 
-		// Convert to expected format
-		const words: G2PWord[] = wordOrder.map((word) => ({
-			word,
-			phonemes: wordMap.get(word) || [],
-		}));
-
-		console.log(`Transcribed "${text}" -> ${words.length} words`);
-		return { words };
+		return { words: results };
 	} catch (error) {
-		console.error("G2P transcription error:", error);
-		throw new Error("Failed to transcribe text");
+		console.error("G2P error:", error);
+		throw new Error(`Failed to transcribe text: ${error}`);
 	}
 }
 
-/**
- * Get service statistics
- */
 export function getServiceStats() {
-	const segmenterStats = phonemeSegmenter.getStats();
 	return {
-		serviceName: "phonemize-g2p",
+		serviceName: "cmudict-g2p",
 		isHealthy: true,
-		description: "Phonemize G2P service with improved phoneme segmentation",
-		segmenter: segmenterStats,
+		description: "CMU Dictionary G2P service",
 	};
 }
 
-/**
- * Export types for consistency
- */
 export type { G2PWord, G2PResponse };
