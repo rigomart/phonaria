@@ -40,16 +40,6 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-### Files Using CMUdict
-
-The following files and modules in this project contain or use data from the CMU Pronouncing Dictionary:
-
-- `apps/api/assets/dict/cmudict-0.7b` - Original dictionary file
-- `apps/api/assets/dict/cmudict-0.7b.phones` - Phoneme classifications
-- `apps/api/assets/dict/cmudict-0.7b.symbols` - All phoneme symbols
-- `apps/api/src/lib/cmudict/` - CMUdict parsing and processing modules
-- `apps/api/src/services/g2p.ts` - G2P service using CMUdict data
-
 ### Attribution
 
 CMU Pronouncing Dictionary data is used for educational and research purposes in the Phonix pronunciation learning platform.

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { corsMiddleware } from "./middleware/cors";
-import g2pRouter from "./routes/g2p";
-import healthRouter from "./routes/health";
+import g2pRouter from "./routes/g2p.route";
+import healthRouter from "./routes/health.route";
 
 type CloudflareBindings = {};
 

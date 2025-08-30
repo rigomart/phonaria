@@ -1,5 +1,5 @@
 import { cmudict } from "../lib/cmudict";
-import type { G2PResponse, G2PWord } from "../schemas/g2p";
+import type { G2PResponse, G2PWord } from "../schemas/g2p.schema";
 
 export interface G2PRequest {
 	text: string;

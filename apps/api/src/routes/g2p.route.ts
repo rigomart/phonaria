@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { type ApiError, g2pRequestSchema } from "../schemas/g2p";
-import { transcribeText } from "../services/g2p";
+import { type ApiError, g2pRequestSchema } from "../schemas/g2p.schema";
+import { transcribeText } from "../services/g2p.service";
 
 const g2pRouter = new Hono();
 
