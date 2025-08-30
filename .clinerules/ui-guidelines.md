@@ -11,5 +11,5 @@ Instructions for building user interfaces.
 - shadcn/ui components are open code: you are expected to read, modify, and extend them directly.
 - Use the CLI (`pnpm dlx shadcn@latest add <component>`) to add or update components.
 - Always import from the local `@/components/ui/<component>` path.
-- Follow accessibility and composition best practices as described in the docs.
+- Follow accessibility and composition best practices.
 - Prefer using variants (via `cva` or `tailwind-variants`) and cn utility for styling over conditional classes.

@@ -1,8 +1,9 @@
-# general-guidelines.md
+---
+description: General instructions that you must absolutely follow.
+globs:
+alwaysApply: true
+---
 
-General instructions that you must absolutely follow.
-
-## Guidelines
 - Do not include inline comments in code, unless the complexity makes it absolutely necessary.
 - Use consistent naming conventions and coding styles: 
   - camelCase for variables and functions
@@ -15,7 +16,7 @@ General instructions that you must absolutely follow.
 - DO NOT add unnecessary JSDoc comments. Prefer using it only for complex and large functions, classes, components or interfaces.
 - DO NOT run dev commands. Assume the user is already running them in a separate terminal.
 
-### TypeScript Guidelines
+## TypeScript Guidelines
 - Prefer the use of types instead of interfaces.
 - Prefer type unions instead of extending interfaces.
 - AVOID the use of `any`.
