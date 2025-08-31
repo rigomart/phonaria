@@ -1,8 +1,8 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { transcribeText } from "@/app/(g2p)/_lib/g2p-client";
-import type { TranscriptionResult } from "@/app/(g2p)/_types/g2p";
 import { ApiError } from "@/lib/api-client";
+import { transcribeText } from "../_lib/g2p-client";
+import type { TranscriptionResult } from "../_types/g2p";
 
 /**
  * Hook for managing G2P transcription with React state

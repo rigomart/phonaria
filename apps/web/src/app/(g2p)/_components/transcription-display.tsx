@@ -1,9 +1,5 @@
-import type {
-	TranscribedPhoneme,
-	TranscribedWord,
-	TranscriptionResult,
-} from "@/app/(g2p)/_types/g2p";
 import { cn } from "@/lib/utils";
+import type { TranscribedPhoneme, TranscribedWord, TranscriptionResult } from "../_types/g2p";
 
 interface TranscriptionDisplayProps {
 	result: TranscriptionResult;

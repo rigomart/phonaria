@@ -1,11 +1,6 @@
-/**
- * Phoneme Badge Component
- * Displays individual phonemes as clickable badges
- */
-
-import type { TranscribedPhoneme } from "@/app/(g2p)/_types/g2p";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import type { TranscribedPhoneme } from "../_types/g2p";
 
 interface PhonemeBadgeProps {
 	phoneme: TranscribedPhoneme;

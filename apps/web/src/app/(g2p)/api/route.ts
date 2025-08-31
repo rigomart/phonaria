@@ -13,22 +13,10 @@ export async function POST(request: NextRequest) {
 		const body = await request.json();
 
 		// Validate request
-		const validationResult = g2pRequestSchema.safeParse(body);
-		if (!validationResult.success) {
-			const errorResponse: ApiError = {
-				error: "validation_failed",
-				message:
-					validationResult.error?.issues
-						?.map((err: { message: string }) => err.message)
-						.join(", ") || "Invalid request format",
-			};
-			return NextResponse.json(errorResponse, { status: 400 });
-		}
-
-		const { text } = validationResult.data;
+		const validationResult = g2pRequestSchema.parse(body);
 
 		// Use the G2P service to transcribe
-		const response = await transcribeText({ text });
+		const response = await transcribeText({ text: validationResult.text });
 
 		return NextResponse.json(response, { status: 200 });
 	} catch (error) {

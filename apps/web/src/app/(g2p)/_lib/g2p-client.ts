@@ -37,7 +37,7 @@ const g2pApiClient = createApiClient({
  * Make a validated request to the G2P API
  */
 async function callG2PAPI(request: G2PRequestData): Promise<G2PResponseData> {
-	return g2pApiClient.post("/api/g2p", g2pRequestSchema, g2pResponseSchema, request);
+	return g2pApiClient.post("/api", g2pRequestSchema, g2pResponseSchema, request);
 }
 
 /**

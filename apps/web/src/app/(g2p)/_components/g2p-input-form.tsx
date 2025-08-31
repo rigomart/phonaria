@@ -1,9 +1,9 @@
 import { Loader2, Send } from "lucide-react";
 import { useState } from "react";
-import type { G2PState } from "@/app/(g2p)/_types/g2p";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import type { G2PState } from "../_types/g2p";
 
 interface G2PInputFormProps {
 	onSubmit: (text: string) => void;
