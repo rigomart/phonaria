@@ -1,13 +1,13 @@
+"use client";
+
 import { Loader2, SendHorizonal } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import type { G2PState } from "../_types/g2p";
+import { useG2PStore } from "../_store/g2p-store";
 
 interface G2PInputFormProps {
-	onSubmit: (text: string) => void;
-	state: G2PState;
 	disabled?: boolean;
 	placeholder?: string;
 	maxLength?: number;
@@ -18,16 +18,14 @@ interface G2PInputFormProps {
  * Enhanced G2P Input Form with Character Limit Visualization
  */
 export function G2PInputForm({
-	onSubmit,
-	state,
 	disabled = false,
 	placeholder = "Enter text to see phonemic transcription...",
 	maxLength = 200,
 	className,
 }: G2PInputFormProps) {
 	const [inputText, setInputText] = useState("");
+	const { transcribe, isLoading } = useG2PStore();
 
-	const isLoading = state === "loading";
 	const isDisabled = disabled || isLoading;
 	const hasText = inputText.trim().length > 0;
 	const characterCount = inputText.length;
@@ -36,7 +34,7 @@ export function G2PInputForm({
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (hasText && !isDisabled) {
-			onSubmit(inputText.trim());
+			transcribe(inputText.trim());
 		}
 	};
 

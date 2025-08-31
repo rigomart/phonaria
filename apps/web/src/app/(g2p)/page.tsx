@@ -1,37 +1,9 @@
-"use client";
-
-import { useState } from "react";
-import type { IpaPhoneme } from "shared-data";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "./_components/empty-state";
+import { ExamplesSection } from "./_components/examples-section";
 import { G2PInputForm } from "./_components/g2p-input-form";
 import { PhonemeDetailPanel } from "./_components/phoneme-detail-panel";
 import { TranscriptionDisplay } from "./_components/transcription-display";
-import { useG2P } from "./_hooks/use-g2p";
-import { getPhonemeBySymbol } from "./_lib/g2p-client";
-import type { TranscribedPhoneme } from "./_types/g2p";
 
 export default function Index() {
-	const [selectedPhoneme, setSelectedPhoneme] = useState<IpaPhoneme | null>(null);
-
-	const g2p = useG2P();
-
-	const handlePhonemeClick = (transcribedPhoneme: TranscribedPhoneme) => {
-		// Get the full phoneme data if available
-		const phonemeData = getPhonemeBySymbol(transcribedPhoneme.symbol);
-
-		if (phonemeData) {
-			setSelectedPhoneme(phonemeData);
-		} else {
-			// Handle unknown phonemes
-			console.log(`Phoneme /${transcribedPhoneme.symbol}/ not found in database`);
-		}
-	};
-
-	const handleClosePanel = () => {
-		setSelectedPhoneme(null);
-	};
-
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-6">
@@ -40,50 +12,24 @@ export default function Index() {
 					<div className="lg:col-span-3 space-y-6">
 						{/* Input Section */}
 						<div className="space-y-4">
-							<G2PInputForm
-								onSubmit={g2p.transcribe}
-								state={g2p.state as "idle" | "loading" | "success" | "error"}
-								className="w-full"
-							/>
+							<G2PInputForm className="w-full" />
 
 							{/* Quick Examples */}
-							<div className="flex flex-wrap gap-2">
-								<span className="text-xs text-muted-foreground self-center mr-2">
-									Or try these examples:
-								</span>
-								{["Judge the rhythm", "She chose well", "Through thick fog"].map((example) => (
-									<Button
-										key={example}
-										type="button"
-										onClick={() => g2p.transcribe(example)}
-										className="text-xs px-3 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground transition-colors disabled:opacity-50"
-										disabled={g2p.state === "loading"}
-										size="sm"
-									>
-										"{example}"
-									</Button>
-								))}
-							</div>
+							<ExamplesSection />
 						</div>
 
 						{/* Transcription Results or Empty State */}
-						{g2p.result ? (
-							<div className="space-y-4">
-								<TranscriptionDisplay result={g2p.result} onPhonemeClick={handlePhonemeClick} />
+						<TranscriptionDisplay />
 
-								{/* Instructional Tip */}
-								<div className="text-xs text-muted-foreground text-center">
-									Click any phoneme to view details
-								</div>
-							</div>
-						) : (
-							<EmptyState />
-						)}
+						{/* Instructional Tip */}
+						<div className="text-xs text-muted-foreground text-center">
+							Click any phoneme to view details
+						</div>
 					</div>
 
 					{/* Detail Panel */}
 					<div className="lg:col-span-2">
-						<PhonemeDetailPanel phoneme={selectedPhoneme} onClose={handleClosePanel} />
+						<PhonemeDetailPanel />
 					</div>
 				</div>
 			</div>

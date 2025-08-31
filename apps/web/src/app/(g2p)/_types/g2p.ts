@@ -74,19 +74,3 @@ export interface TranscriptionResult {
 	/** Timestamp when transcription was generated */
 	timestamp: Date;
 }
-
-/**
- * API client states
- */
-export type G2PState = "idle" | "loading" | "success" | "error";
-
-/**
- * Complete G2P hook state
- */
-export interface G2PHookState {
-	state: G2PState;
-	result: TranscriptionResult | null;
-	error: string | null;
-	transcribe: (text: string) => Promise<void>;
-	clear: () => void;
-}

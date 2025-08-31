@@ -1,20 +1,22 @@
+"use client";
+
 import { cn } from "@/lib/utils";
-import type { TranscribedPhoneme, TranscribedWord, TranscriptionResult } from "../_types/g2p";
+import { useG2PStore } from "../_store/g2p-store";
+import type { TranscribedPhoneme, TranscribedWord } from "../_types/g2p";
+import { EmptyState } from "./empty-state";
 
 interface TranscriptionDisplayProps {
-	result: TranscriptionResult;
-	onPhonemeClick?: (phoneme: TranscribedPhoneme) => void;
 	className?: string;
 }
 
 interface WordColumnProps {
 	word: TranscribedWord;
-	onPhonemeClick?: (phoneme: TranscribedPhoneme) => void;
+	onPhonemeClick: (phoneme: TranscribedPhoneme) => void;
 }
 
 interface ClickablePhonemeProps {
 	phoneme: TranscribedPhoneme;
-	onClick?: (phoneme: TranscribedPhoneme) => void;
+	onClick: (phoneme: TranscribedPhoneme) => void;
 }
 
 /**
@@ -101,22 +103,27 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 /**
  * Compact transcription display optimized for tool-like interface
  */
-export function TranscriptionDisplay({
-	result,
-	onPhonemeClick,
-	className,
-}: TranscriptionDisplayProps) {
+export function TranscriptionDisplay({ className }: TranscriptionDisplayProps) {
+	const { result, selectPhoneme } = useG2PStore();
+
+	// Show empty state if no result
+	if (!result) {
+		return <EmptyState />;
+	}
+
 	return (
-		<div className={cn("w-full", "bg-muted/20 rounded-lg border p-4", className)}>
-			{/* Compact word display */}
-			<div className="flex flex-wrap items-start justify-start gap-6 md:gap-8 overflow-x-auto pb-2">
-				{result.words.map((word, wordIndex) => (
-					<WordColumn
-						key={`${word.word}-${wordIndex}`}
-						word={word}
-						onPhonemeClick={onPhonemeClick}
-					/>
-				))}
+		<div className="space-y-4">
+			<div className={cn("w-full", "bg-muted/20 rounded-lg border p-4", className)}>
+				{/* Compact word display */}
+				<div className="flex flex-wrap items-start justify-start gap-6 md:gap-8 overflow-x-auto pb-2">
+					{result.words.map((word, wordIndex) => (
+						<WordColumn
+							key={`${word.word}-${wordIndex}`}
+							word={word}
+							onPhonemeClick={selectPhoneme}
+						/>
+					))}
+				</div>
 			</div>
 		</div>
 	);

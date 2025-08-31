@@ -1,20 +1,21 @@
+"use client";
+
 import { X } from "lucide-react";
-import type { IpaPhoneme } from "shared-data";
+
 import { phonixUtils } from "shared-data";
 import { AudioButton } from "@/components/audio-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useG2PStore } from "../_store/g2p-store";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
-interface PhonemeDetailPanelProps {
-	phoneme: IpaPhoneme | null;
-	onClose: () => void;
-}
+export function PhonemeDetailPanel() {
+	const { selectedPhoneme, closePhonemePanel } = useG2PStore();
+	const phoneme = selectedPhoneme;
 
-export function PhonemeDetailPanel({ phoneme, onClose }: PhonemeDetailPanelProps) {
 	if (!phoneme) {
 		return (
 			<Card className="h-fit">
@@ -51,7 +52,7 @@ export function PhonemeDetailPanel({ phoneme, onClose }: PhonemeDetailPanelProps
 						<span className="font-semibold">{phoneme.symbol}</span>
 						<span className="text-muted-foreground">/</span>
 					</CardTitle>
-					<Button variant="ghost" size="sm" onClick={onClose} className="h-6 w-6 p-0">
+					<Button variant="ghost" size="sm" onClick={closePhonemePanel} className="h-6 w-6 p-0">
 						<X className="h-3 w-3" />
 					</Button>
 				</div>
