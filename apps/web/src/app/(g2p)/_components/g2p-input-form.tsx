@@ -1,4 +1,4 @@
-import { Loader2, Send } from "lucide-react";
+import { Loader2, SendHorizonal } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,7 +63,7 @@ export function G2PInputForm({
 						{isLoading ? (
 							<Loader2 className="h-4 w-4 animate-spin" />
 						) : (
-							<Send className="h-4 w-4" />
+							<SendHorizonal className="h-4 w-4" />
 						)}
 					</Button>
 				</div>

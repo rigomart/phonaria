@@ -34,19 +34,6 @@ export default function Index() {
 
 	return (
 		<div className="min-h-screen bg-background">
-			{/* Page Header */}
-			<div className="border-b bg-muted/30">
-				<div className="container mx-auto px-4 py-6">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-3">
-							<h1 className="text-xl font-medium">Phonemic Transcription</h1>
-							<span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">Tool</span>
-						</div>
-						<div className="text-sm text-muted-foreground">Convert text to IPA notation</div>
-					</div>
-				</div>
-			</div>
-
 			<div className="container mx-auto px-4 py-6">
 				<div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 					{/* Main Content Area */}
