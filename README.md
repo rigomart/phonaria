@@ -6,7 +6,7 @@ Phonix is a phoneme-first ESL pronunciation project focused on helping learners 
 
 This is a monorepo managed with `pnpm` workspaces, consisting of:
 
-- `apps/phonix-next`: The main Next.js application combining frontend and API for interactive phoneme learning.
+- `apps/web`: The main Next.js application combining frontend and API for interactive phoneme learning.
 - `packages/shared-data`: Shared data models and utilities for phoneme information.
 - `packages/tts-generate`: Tooling for generating example audio files.
 
@@ -30,7 +30,7 @@ We are currently implementing the Core MVP features, specifically focusing on ph
 
 2. **Start the application:**
    ```bash
-   pnpm -C apps/phonix-next dev
+   pnpm -C apps/web dev
    ```
 
    The Next.js app will be available at `http://localhost:3000` with both the frontend and API running together.
@@ -46,7 +46,7 @@ We are currently implementing the Core MVP features, specifically focusing on ph
 
 For detailed information about each package, see their respective README files:
 
-- [Next.js Application](apps/phonix-next/README.md)
+- [Next.js Application](apps/web/README.md)
 - [Shared Data Package](packages/shared-data/README.md)
 - [TTS Generation Package](packages/tts-generate/README.md)
 
