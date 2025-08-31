@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import type { IpaPhoneme } from "shared-data";
-import { EmptyState } from "@/components/g2p/empty-state";
-import { G2PInputForm } from "@/components/g2p/g2p-input-form";
-import { PhonemeDetailPanel } from "@/components/g2p/phoneme-detail-panel";
-import { TranscriptionDisplay } from "@/components/g2p/transcription-display";
 import { Button } from "@/components/ui/button";
-import { useG2P } from "@/hooks/use-g2p";
-import { getPhonemeBySymbol } from "@/lib/g2p-client";
-import type { TranscribedPhoneme } from "@/types/g2p";
+import { EmptyState } from "./_components/empty-state";
+import { G2PInputForm } from "./_components/g2p-input-form";
+import { PhonemeDetailPanel } from "./_components/phoneme-detail-panel";
+import { TranscriptionDisplay } from "./_components/transcription-display";
+import { useG2P } from "./_hooks/use-g2p";
+import { getPhonemeBySymbol } from "./_lib/g2p-client";
+import type { TranscribedPhoneme } from "./_types/g2p";
 
 export default function Index() {
 	const [selectedPhoneme, setSelectedPhoneme] = useState<IpaPhoneme | null>(null);

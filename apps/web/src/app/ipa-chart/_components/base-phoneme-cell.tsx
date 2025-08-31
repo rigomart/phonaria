@@ -1,10 +1,10 @@
 import * as React from "react";
 import type { IpaPhoneme } from "shared-data";
 import { phonixUtils } from "shared-data";
-import { PhonemeButton } from "@/components/chart/phoneme-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { ConsonantVoiceIndicator } from "./consonant-voice-indicator";
+import { PhonemeButton } from "./phoneme-button";
 
 const { toPhonemic } = phonixUtils;
 

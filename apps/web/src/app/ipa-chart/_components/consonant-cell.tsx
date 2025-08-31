@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import type { ConsonantPhoneme } from "shared-data";
 import { phonixUtils } from "shared-data";
-import { BasePhonemeCellRenderer } from "@/components/core/base-phoneme-cell";
+import { BasePhonemeCellRenderer } from "./base-phoneme-cell";
 
 const { toPhonemic } = phonixUtils;
 

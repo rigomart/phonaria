@@ -1,6 +1,6 @@
 import * as React from "react";
-import { InfoPopover } from "@/components/info/info-popover";
-import { getArticulationInfo } from "@/lib/grid-config";
+import { getArticulationInfo } from "../_lib/grid-config";
+import { InfoPopover } from "./info-popover";
 
 interface GridHeaderCellProps {
 	label: string;

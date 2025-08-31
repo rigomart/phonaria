@@ -1,7 +1,7 @@
 import type { ConsonantPhoneme, VowelPhoneme } from "shared-data";
 import { articulationRegistry } from "shared-data";
-import { VOWEL_FRONTS, VOWEL_HEIGHTS } from "@/hooks/chart/use-vowel-grid";
-import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
+import { VOWEL_FRONTS, VOWEL_HEIGHTS } from "../_hooks/use-vowel-grid";
+import { MANNERS, PLACES } from "./phoneme-helpers";
 
 export interface GridDimensions {
 	rows: string[];

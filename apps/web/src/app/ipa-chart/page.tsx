@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ConsonantChart } from "@/components/chart/consonant-chart";
-import { VowelChart } from "@/components/chart/vowel-chart";
-import { ChartContainer } from "@/components/ui/chart-container";
-import { HeroSection, QuickStats } from "@/components/ui/hero-section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChartContainer } from "./_components/chart-container";
+import { ConsonantChart } from "./_components/consonant-chart";
+import { HeroSection, QuickStats } from "./_components/hero-section";
+import { VowelChart } from "./_components/vowel-chart";
 
 export default function IpaChartPage() {
 	const [activeSection, setActiveSection] = useState<"consonants" | "vowels">("consonants");

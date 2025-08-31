@@ -1,10 +1,10 @@
 import * as React from "react";
 import type { ConsonantPhoneme } from "shared-data";
-import { PhonemeGridLayout } from "@/components/core/phoneme-grid";
-import { PhonemeMatrix } from "@/components/core/phoneme-matrix";
+import { useConsonantGrid } from "@/app/ipa-chart/_hooks/use-consonant-grid";
 import { PhonemeDialog } from "@/components/phoneme-dialog";
-import { useConsonantGrid } from "@/hooks/chart/use-consonant-grid";
-import { ConsonantVoiceIndicator } from "../core/consonant-voice-indicator";
+import { ConsonantVoiceIndicator } from "./consonant-voice-indicator";
+import { PhonemeGridLayout } from "./phoneme-grid";
+import { PhonemeMatrix } from "./phoneme-matrix";
 
 export function ConsonantChart() {
 	const grid = useConsonantGrid();

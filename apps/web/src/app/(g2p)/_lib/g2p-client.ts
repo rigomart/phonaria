@@ -3,14 +3,18 @@
  */
 
 import { consonants, type IpaPhoneme, vowels } from "shared-data";
+import type {
+	TranscribedPhoneme,
+	TranscribedWord,
+	TranscriptionResult,
+} from "@/app/(g2p)/_types/g2p";
 import { createApiClient } from "@/lib/api-client";
 import {
 	type G2PRequestData,
 	type G2PResponseData,
 	g2pRequestSchema,
 	g2pResponseSchema,
-} from "@/lib/schemas/g2p";
-import type { TranscribedPhoneme, TranscribedWord, TranscriptionResult } from "@/types/g2p";
+} from "./g2p-schema";
 
 // Create phoneme lookup map for quick access
 const phonemeMap = new Map<string, IpaPhoneme>();

@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { ConsonantPhoneme } from "shared-data";
 import { consonants } from "shared-data";
-import { MANNERS, PLACES } from "@/lib/phoneme-helpers";
+import { MANNERS, PLACES } from "../_lib/phoneme-helpers";
 
 export type ConsonantGrid = Record<string, Record<string, ConsonantPhoneme[]>>;
 

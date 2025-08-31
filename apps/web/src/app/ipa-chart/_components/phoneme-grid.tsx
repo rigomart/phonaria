@@ -1,7 +1,4 @@
 import type { ConsonantPhoneme, VowelPhoneme } from "shared-data";
-import { ConsonantCell } from "@/components/chart/consonant-cell";
-import { VowelCell } from "@/components/chart/vowel-cell";
-import { GridHeaderCell } from "@/components/core/grid-header-cell";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
 	type GridConfig,
@@ -9,7 +6,10 @@ import {
 	getNonEmptyColumns,
 	type PhonemeGrid,
 	type PhonemeGridProps,
-} from "@/lib/grid-config";
+} from "../_lib/grid-config";
+import { ConsonantCell } from "./consonant-cell";
+import { GridHeaderCell } from "./grid-header-cell";
+import { VowelCell } from "./vowel-cell";
 
 type PhonemeSectionProps = PhonemeGridProps & {
 	row: string;

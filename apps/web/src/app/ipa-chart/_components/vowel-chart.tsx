@@ -1,9 +1,9 @@
 import * as React from "react";
 import type { VowelPhoneme } from "shared-data";
-import { PhonemeGridLayout } from "@/components/core/phoneme-grid";
-import { PhonemeMatrix } from "@/components/core/phoneme-matrix";
 import { PhonemeDialog } from "@/components/phoneme-dialog";
-import { useVowelGrid } from "@/hooks/chart/use-vowel-grid";
+import { useVowelGrid } from "../_hooks/use-vowel-grid";
+import { PhonemeGridLayout } from "./phoneme-grid";
+import { PhonemeMatrix } from "./phoneme-matrix";
 
 export function VowelChart() {
 	const grid = useVowelGrid();

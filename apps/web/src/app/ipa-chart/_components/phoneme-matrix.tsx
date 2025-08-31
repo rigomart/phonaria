@@ -1,14 +1,14 @@
 import * as React from "react";
 import type { ConsonantPhoneme, VowelPhoneme } from "shared-data";
-import { ConsonantCell } from "@/components/chart/consonant-cell";
-import { VowelCell } from "@/components/chart/vowel-cell";
-import { GridHeaderCell } from "@/components/core/grid-header-cell";
 import {
 	type GridConfig,
 	getGridConfig,
 	type PhonemeGrid,
 	type PhonemeGridProps,
-} from "@/lib/grid-config";
+} from "../_lib/grid-config";
+import { ConsonantCell } from "./consonant-cell";
+import { GridHeaderCell } from "./grid-header-cell";
+import { VowelCell } from "./vowel-cell";
 
 export function PhonemeMatrix(props: PhonemeGridProps) {
 	const config = getGridConfig(props.type);
