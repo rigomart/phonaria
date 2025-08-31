@@ -1,103 +1,105 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { useState } from "react";
+import type { IpaPhoneme } from "shared-data";
+import { EmptyState } from "@/components/g2p/empty-state";
+import { G2PInputForm } from "@/components/g2p/g2p-input-form";
+import { PhonemeDetailPanel } from "@/components/g2p/phoneme-detail-panel";
+import { TranscriptionDisplay } from "@/components/g2p/transcription-display";
+import { Button } from "@/components/ui/button";
+import { useG2P } from "@/hooks/use-g2p";
+import { getPhonemeBySymbol } from "@/lib/g2p-client";
+import type { TranscribedPhoneme } from "@/types/g2p";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+export default function Index() {
+	const [selectedPhoneme, setSelectedPhoneme] = useState<IpaPhoneme | null>(null);
+
+	const g2p = useG2P();
+
+	const handlePhonemeClick = (transcribedPhoneme: TranscribedPhoneme) => {
+		// Get the full phoneme data if available
+		const phonemeData = getPhonemeBySymbol(transcribedPhoneme.symbol);
+
+		if (phonemeData) {
+			setSelectedPhoneme(phonemeData);
+		} else {
+			// Handle unknown phonemes
+			console.log(`Phoneme /${transcribedPhoneme.symbol}/ not found in database`);
+		}
+	};
+
+	const handleClosePanel = () => {
+		setSelectedPhoneme(null);
+	};
+
+	return (
+		<div className="min-h-screen bg-background">
+			{/* Page Header */}
+			<div className="border-b bg-muted/30">
+				<div className="container mx-auto px-4 py-6">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-3">
+							<h1 className="text-xl font-medium">Phonemic Transcription</h1>
+							<span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">Tool</span>
+						</div>
+						<div className="text-sm text-muted-foreground">Convert text to IPA notation</div>
+					</div>
+				</div>
+			</div>
+
+			<div className="container mx-auto px-4 py-6">
+				<div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+					{/* Main Content Area */}
+					<div className="lg:col-span-3 space-y-6">
+						{/* Input Section */}
+						<div className="space-y-4">
+							<G2PInputForm
+								onSubmit={g2p.transcribe}
+								state={g2p.state as "idle" | "loading" | "success" | "error"}
+								className="w-full"
+							/>
+
+							{/* Quick Examples */}
+							<div className="flex flex-wrap gap-2">
+								<span className="text-xs text-muted-foreground self-center mr-2">
+									Or try these examples:
+								</span>
+								{["Judge the rhythm", "She chose well", "Through thick fog"].map((example) => (
+									<Button
+										key={example}
+										type="button"
+										onClick={() => g2p.transcribe(example)}
+										className="text-xs px-3 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground transition-colors disabled:opacity-50"
+										disabled={g2p.state === "loading"}
+										size="sm"
+									>
+										"{example}"
+									</Button>
+								))}
+							</div>
+						</div>
+
+						{/* Transcription Results or Empty State */}
+						{g2p.result ? (
+							<div className="space-y-4">
+								<TranscriptionDisplay result={g2p.result} onPhonemeClick={handlePhonemeClick} />
+
+								{/* Instructional Tip */}
+								<div className="text-xs text-muted-foreground text-center">
+									Click any phoneme to view details
+								</div>
+							</div>
+						) : (
+							<EmptyState />
+						)}
+					</div>
+
+					{/* Detail Panel */}
+					<div className="lg:col-span-2">
+						<PhonemeDetailPanel phoneme={selectedPhoneme} onClose={handleClosePanel} />
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }

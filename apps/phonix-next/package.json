@@ -10,6 +10,7 @@
 		"format": "biome format --write ."
 	},
 	"dependencies": {
+		"shared-data": "workspace:*",
 		"@radix-ui/react-dialog": "^1.1.14",
 		"@radix-ui/react-dropdown-menu": "^2.1.15",
 		"@radix-ui/react-progress": "^1.1.7",
