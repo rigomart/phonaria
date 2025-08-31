@@ -49,9 +49,3 @@ For detailed information about each package, see their respective README files:
 - [Next.js Application](apps/web/README.md)
 - [Shared Data Package](packages/shared-data/README.md)
 - [TTS Generation Package](packages/tts-generate/README.md)
-
-## Roadmap
-
-For a detailed, phased roadmap, see [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md).
-
-Current focus is on completing the Core MVP (Phase 1), which includes the interactive IPA charts and the basic G2P transcription tool. Subsequent phases will introduce interactive practice, speech input, and personalized learning features.
