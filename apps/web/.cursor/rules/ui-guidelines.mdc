@@ -14,7 +14,7 @@ alwaysApply: false
   - Avoid prop drilling by using context for shared state
   - Keep component APIs clean and declarative
   ````tsx
-  // ❌ Prop drilling - state threaded through multiple levels
+  // Prop drilling - state threaded through multiple levels
   <Tabs activeTab={activeTab} onChange={setActiveTab}>
     <TabList activeTab={activeTab} onChange={setActiveTab}>
       <Tab isActive={activeTab === 0} onClick={() => setActiveTab(0)}>Tab 1</Tab>
@@ -22,7 +22,7 @@ alwaysApply: false
     </TabList>
   </Tabs>
 
-  // ✅ Compound components - state managed internally
+  // Compound components - state managed internally
   <Tabs>
     <TabList>
       <Tab index={0}>Tab 1</Tab>
