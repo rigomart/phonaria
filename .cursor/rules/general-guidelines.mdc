@@ -4,19 +4,47 @@ globs:
 alwaysApply: true
 ---
 
+# General Guidelines
+
+## General
+- Check for relevant cursor rules when modifying the project. Examples:
+  - when modifying UI components, check the UI guidelines.
+  - when modifying the API routes, check the API guidelines.
+- Check for relevant cursor rules
+- Prefer using Context7 to look up the latest commands and documentation for the project.
+- Prefer using pnpm as package manager.
+
+## Code Style
 - Do not include inline comments in code, unless the complexity makes it absolutely necessary.
 - Use consistent naming conventions and coding styles: 
   - camelCase for variables and functions
   - PascalCase for classes, components and types
   - UPPER_SNAKE_CASE for constants
   - kebab-case for filenames
-- You can read .env.example files to know what environment variables exist in the project.
-- DO NOT READ any other .env file apart from the specified previously as they may contain sensitive info.
-- DO NOT add new dependencies editing the package.json directly. Prefer the use of commands like `pnpm add <dependency_name>`.
-- DO NOT add unnecessary JSDoc comments. Prefer using it only for complex and large functions, classes, components or interfaces.
-- DO NOT run dev commands. Assume the user is already running them in a separate terminal.
+- Prefer named exports over default exports.
+- Prefer colocated file structure, keeping files close to where they are used instead of putting them all in big global folders.
+  ```
+  /app
+   /dashboard
+      page.tsx
+      user-card.tsx
+      stats-panel.tsx
+      fetch-users.ts
+  /components
+    button.tsx
+    modal.tsx
+  /lib
+    api-client.ts
+    auth.ts
+  ```
 
 ## TypeScript Guidelines
 - Prefer the use of types instead of interfaces.
 - Prefer type unions instead of extending interfaces.
 - AVOID the use of `any`.
+
+## DO NOT
+- DO NOT READ .env or .env.local files, as they may contain sensitive info.
+- DO NOT add new dependencies editing the package.json directly. Prefer the use of commands like `pnpm add <dependency_name>`.
+- DO NOT add unnecessary JSDoc comments. Prefer using it only for complex and large functions, classes, components or interfaces.
+- DO NOT run dev commands. Assume the user is already running them in a separate terminal.

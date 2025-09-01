@@ -1,0 +1,26 @@
+---
+globs: **/*.ts,**/*.tsx
+alwaysApply: false
+---
+# Next.js rules
+
+- Use the App Router structure
+- Minimize `'use client'` directives:
+  - Keep most components as React Server Components (RSC)
+  - Only use client components when you need interactivity and wrap in `Suspense` with fallback UI
+  - Create small client component wrappers around interactive 
+- Avoid unnecessary `useState` and `useEffect` when possible:
+  - Use server components for data fetching
+  - Use React Server Actions for form handling
+  - Use URL search params for shareable state
+- Use colocated file structure for components, pages, routes, etc. Example:
+  ```
+  /app
+   /dashboard
+    /_components
+      user-card.tsx
+      stats-panel.tsx
+    /_hooks
+      use-fetch-users.ts
+    page.tsx
+  ```
