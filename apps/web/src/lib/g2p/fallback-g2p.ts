@@ -72,7 +72,7 @@ const DIGRAPHS: Record<string, string> = {
 
 const SILENT_PATTERNS: Record<string, string> = {
 	kn: "n", // "know", "knee"
-	wr: "r", // "write", "wrong"
+	wr: "ɹ", // "write", "wrong" - silent w, keep r sound
 	mb: "m", // "thumb", "climb" (often silent b)
 	gn: "n", // "gnat", "sign"
 	ps: "s", // "psychology", "psalm"
