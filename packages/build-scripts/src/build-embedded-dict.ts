@@ -16,11 +16,130 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+// ARPABET to IPA mapping (copied from web app for deduplication)
+const ARPABET_TO_IPA: Record<string, string> = {
+	// Vowels with stress variants (0=unstressed, 1=primary, 2=secondary)
+	AA: "ɑ",
+	AA0: "ɑ",
+	AA1: "ɑ",
+	AA2: "ɑ", // father, cot
+	AE: "æ",
+	AE0: "æ",
+	AE1: "æ",
+	AE2: "æ", // cat, bat
+	AH: "ʌ",
+	AH0: "ə",
+	AH1: "ʌ",
+	AH2: "ʌ", // cut, about (AH0=schwa)
+	AO: "ɔ",
+	AO0: "ɔ",
+	AO1: "ɔ",
+	AO2: "ɔ", // caught, thought
+	AW: "aʊ",
+	AW0: "aʊ",
+	AW1: "aʊ",
+	AW2: "aʊ", // cow, about
+	AY: "aɪ",
+	AY0: "aɪ",
+	AY1: "aɪ",
+	AY2: "aɪ", // my, sight
+	EH: "ɛ",
+	EH0: "ɛ",
+	EH1: "ɛ",
+	EH2: "ɛ", // bet, red
+	ER: "ɝ",
+	ER0: "ɚ",
+	ER1: "ɝ",
+	ER2: "ɝ", // bird (ER0=unstressed)
+	EY: "eɪ",
+	EY0: "eɪ",
+	EY1: "eɪ",
+	EY2: "eɪ", // say, eight
+	IH: "ɪ",
+	IH0: "ɪ",
+	IH1: "ɪ",
+	IH2: "ɪ", // bit, hit
+	IY: "i",
+	IY0: "i",
+	IY1: "i",
+	IY2: "i", // beat, see
+	OW: "oʊ",
+	OW0: "oʊ",
+	OW1: "oʊ",
+	OW2: "oʊ", // go, boat
+	OY: "ɔɪ",
+	OY0: "ɔɪ",
+	OY1: "ɔɪ",
+	OY2: "ɔɪ", // boy, toy
+	UH: "ʊ",
+	UH0: "ʊ",
+	UH1: "ʊ",
+	UH2: "ʊ", // book, could
+	UW: "u",
+	UW0: "u",
+	UW1: "u",
+	UW2: "u", // boot, two
+
+	// Consonants
+	B: "b",
+	CH: "tʃ",
+	D: "d",
+	DH: "ð",
+	F: "f",
+	G: "ɡ",
+	HH: "h",
+	JH: "dʒ",
+	K: "k",
+	L: "l",
+	M: "m",
+	N: "n",
+	NG: "ŋ",
+	P: "p",
+	R: "ɹ",
+	S: "s",
+	SH: "ʃ",
+	T: "t",
+	TH: "θ",
+	V: "v",
+	W: "w",
+	Y: "j",
+	Z: "z",
+	ZH: "ʒ",
+};
+
 // URLs for data sources
 const GOOGLE_10K_URL =
 	"https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english.txt";
 const CMUDICT_URL =
 	"https://raw.githubusercontent.com/Alexir/CMUdict/refs/heads/master/cmudict-0.7b";
+
+/**
+ * Convert ARPABET phonemes to IPA phonemes (without stress markers for comparison)
+ */
+function convertArpabetToPhonemic(arpaPhonemes: string[]): string[] {
+	return arpaPhonemes.map((arpa) => ARPABET_TO_IPA[arpa] || arpa);
+}
+
+/**
+ * Deduplicate pronunciation variants that are phonemically identical
+ */
+function deduplicateVariants(variants: string[][]): string[][] {
+	const seen = new Set<string>();
+	const unique: string[][] = [];
+
+	for (const variant of variants) {
+		// Convert to phonemic IPA for comparison
+		const phonemic = convertArpabetToPhonemic(variant);
+		const phoneticKey = phonemic.join("|");
+
+		if (!seen.has(phoneticKey)) {
+			seen.add(phoneticKey);
+			unique.push(variant);
+		}
+	}
+
+	return unique;
+}
 
 // Known homographs that should always be included regardless of frequency
 const FORCE_INCLUDE_HOMOGRAPHS = [
@@ -51,6 +170,10 @@ interface DictMetadata {
 	totalWords: number;
 	googleWordsCount: number;
 	homographsCount: number;
+	variantsBefore: number;
+	variantsAfter: number;
+	variantsReduced: number;
+	reductionPercentage: number;
 	source: {
 		googleWords: string;
 		cmudict: string;
@@ -147,12 +270,17 @@ async function buildEmbeddedDict(): Promise<EmbeddedDict> {
 	const embeddedWords: EmbeddedDictEntry = {};
 	let googleWordsFound = 0;
 	let homographsAdded = 0;
+	let totalVariantsBefore = 0;
+	let totalVariantsAfter = 0;
 
 	// Add Google 10k words (in frequency order)
 	for (const word of googleWords) {
 		const pronunciations = cmudict.get(word);
 		if (pronunciations) {
-			embeddedWords[word] = pronunciations;
+			totalVariantsBefore += pronunciations.length;
+			const deduplicated = deduplicateVariants(pronunciations);
+			totalVariantsAfter += deduplicated.length;
+			embeddedWords[word] = deduplicated;
 			googleWordsFound++;
 		}
 	}
@@ -161,17 +289,26 @@ async function buildEmbeddedDict(): Promise<EmbeddedDict> {
 	for (const homograph of FORCE_INCLUDE_HOMOGRAPHS) {
 		const pronunciations = cmudict.get(homograph);
 		if (pronunciations && !embeddedWords[homograph]) {
-			embeddedWords[homograph] = pronunciations;
+			totalVariantsBefore += pronunciations.length;
+			const deduplicated = deduplicateVariants(pronunciations);
+			totalVariantsAfter += deduplicated.length;
+			embeddedWords[homograph] = deduplicated;
 			homographsAdded++;
 		}
 	}
 
 	const totalWords = Object.keys(embeddedWords).length;
 
+	const variantsReduced = totalVariantsBefore - totalVariantsAfter;
+	const reductionPercentage = Math.round((variantsReduced / totalVariantsBefore) * 100);
+
 	console.log(`✓ Embedded dictionary built:`);
 	console.log(`  - Google words found: ${googleWordsFound}`);
 	console.log(`  - Homographs added: ${homographsAdded}`);
 	console.log(`  - Total words: ${totalWords}`);
+	console.log(`  - Variants before deduplication: ${totalVariantsBefore}`);
+	console.log(`  - Variants after deduplication: ${totalVariantsAfter}`);
+	console.log(`  - Variants reduced: ${variantsReduced} (${reductionPercentage}%)`);
 
 	// Create metadata
 	const metadata: DictMetadata = {
@@ -180,6 +317,10 @@ async function buildEmbeddedDict(): Promise<EmbeddedDict> {
 		totalWords,
 		googleWordsCount: googleWordsFound,
 		homographsCount: homographsAdded,
+		variantsBefore: totalVariantsBefore,
+		variantsAfter: totalVariantsAfter,
+		variantsReduced,
+		reductionPercentage,
 		source: {
 			googleWords: GOOGLE_10K_URL,
 			cmudict: CMUDICT_URL,
@@ -204,7 +345,7 @@ function writeEmbeddedDict(dict: EmbeddedDict): void {
 	mkdirSync(outputDir, { recursive: true });
 
 	// Write JSON file
-	const jsonContent = JSON.stringify(dict, null, 2);
+	const jsonContent = JSON.stringify(dict, null, 0);
 	writeFileSync(outputPath, jsonContent, "utf8");
 
 	// Calculate file size
@@ -232,6 +373,10 @@ function displaySummary(dict: EmbeddedDict): void {
 	console.log(`   Total words: ${metadata.totalWords}`);
 	console.log(`   Google words: ${metadata.googleWordsCount}`);
 	console.log(`   Homographs: ${metadata.homographsCount}`);
+	console.log(
+		`   Variants reduced: ${metadata.variantsReduced} (${metadata.reductionPercentage}%)`,
+	);
+	console.log(`   Final variants: ${metadata.variantsAfter} (from ${metadata.variantsBefore})`);
 
 	// Show some example entries
 	console.log("\n📝 Sample entries:");
