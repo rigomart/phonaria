@@ -135,7 +135,7 @@ Implement the final hybrid architecture with embedded dictionary for performance
 ### Tasks
 
 #### 1. Frequency-Based Embedded Dictionary
-Create build script for optimized embedded dictionary:
+Create build script `apps/web/scripts/build-embedded-dict.ts` for optimized JSON dictionary:
 ```typescript
 // Build process:
 // 1. Download google-10000-english.txt
@@ -143,14 +143,19 @@ Create build script for optimized embedded dictionary:
 //    - Check if exists in CMUdict
 //    - If found: add with ALL variants
 // 3. Force-include remaining homographs
-// 4. Generate embedded JSON
+// 4. Generate public/data/embedded-dict.json
 
-const embeddedDict = {
+// Generated JSON file: public/data/embedded-dict.json
+{
   "THE": [["ð", "ə"]],
   "LEAD": [["l", "iː", "d"], ["l", "ɛ", "d"]],
   "READ": [["r", "iː", "d"], ["r", "ɛ", "d"]],
   // ~7k-9k most frequent + homographs
-};
+}
+
+// Runtime loading:
+const response = await fetch('/data/embedded-dict.json');
+const embeddedDict = new Map(Object.entries(await response.json()));
 ```
 
 #### 2. External Service for Remaining Words
@@ -353,14 +358,19 @@ Map<string, string[][]> // Supports multiple variants per word
 dict.get("LEAD") → [["l", "iː", "d"], ["l", "ɛ", "d"]]
 ```
 
-#### Phase 2+: Embedded JSON
+#### Phase 2+: Embedded JSON File
 ```json
+// File: public/data/embedded-dict.json
 {
+  "THE": [["ð", "ə"]],
   "LEAD": [["l", "iː", "d"], ["l", "ɛ", "d"]],
   "READ": [["r", "iː", "d"], ["r", "ɛ", "d"]],
-  "THE": [["ð", "ə"]],
   "metadata": { "version": "0.7b", "totalWords": 7500 }
 }
+
+// Runtime usage:
+// const response = await fetch('/data/embedded-dict.json');
+// const dict = new Map(Object.entries(await response.json()));
 ```
 
 ### Build Process
