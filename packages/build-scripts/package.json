@@ -1,0 +1,19 @@
+{
+	"name": "build-scripts",
+	"version": "1.0.0",
+	"description": "Build scripts and utilities for the Phonix project",
+	"type": "module",
+	"packageManager": "pnpm@10.12.4",
+	"scripts": {
+		"lint": "biome check --write",
+		"typecheck": "tsc --noEmit",
+		"build:embedded-dict": "tsx src/build-embedded-dict.ts"
+	},
+	"dependencies": {
+		"@types/node": "^24.0.10"
+	},
+	"devDependencies": {
+		"tsx": "^4.20.3",
+		"typescript": "~5.8.3"
+	}
+}
