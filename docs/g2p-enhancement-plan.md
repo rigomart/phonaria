@@ -4,111 +4,207 @@
 Current G2P system downloads 3.7MB CMUdict from GitHub on every cold start (~2-3s), ignores pronunciation variants, and uses poor fallback for unknown words.
 
 ## Solution Overview
-Three-phase approach maintaining full dictionary coverage while improving accuracy and performance:
+Four-phase iterative approach maintaining full dictionary coverage while improving accuracy and performance:
 
-1. **Phase 1**: Optimize loading + support variants (foundation)
-2. **Phase 2**: Add homograph disambiguation (intelligence)  
-3. **Phase 3**: Hybrid architecture (performance)
+1. **Phase 1**: Variant Support + Enhanced Fallback (foundation)
+2. **Phase 2**: Frequency-Based Hybrid Architecture (performance) 
+3. **Phase 3**: Context-Aware Homograph Disambiguation (intelligence)
+4. **Phase 4**: Performance & Polish (optimization)
 
 ---
 
-## Phase 1: Foundation
+## Phase 1: Variant Support + Enhanced Fallback
 
 ### What to Build
-Replace GitHub download with pre-processed JSON, support pronunciation variants, improve fallback.
+Add pronunciation variant support and improve fallback while keeping current GitHub architecture.
 
 ### Tasks
 
-#### 1. Build Script
-Create `apps/web/scripts/build-cmudict.ts`:
-- Parse `/path/to/cmudict-0.7b` file
-- Extract variants: `LEAD` and `LEAD(1)` → multiple pronunciations
-- Generate `public/data/cmudict.json`:
-```json
-{
-  "LEAD": [["L", "IY1", "D"], ["L", "EH1", "D"]],
-  "READ": [["R", "IY1", "D"], ["R", "EH1", "D"]],
-  "WORD": [["W", "ER1", "D"]]
-}
-```
-
-#### 2. Update Dictionary Loader
-Modify `src/lib/g2p/cmudict.ts`:
+#### 1. Update Dictionary Parsing
+Modify `src/lib/g2p/cmudict.ts` to support pronunciation variants:
 ```typescript
 class CMUDict {
-  private dict: Map<string, string[][]>; // Support multiple variants
+  private dict = new Map<string, string[][]>(); // Support multiple variants
   
-  async load() {
-    try {
-      const response = await fetch('/data/cmudict.json');
-      this.dict = new Map(Object.entries(await response.json()));
-    } catch {
-      // Fall back to current GitHub approach
-      await this.loadLegacyDict();
+  private parse(content: string): void {
+    for (const line of lines) {
+      if (line.startsWith(';;;') || !line.trim()) continue;
+      
+      const parts = line.split('  ');
+      const [wordPart, phonemePart] = parts;
+      
+      // Extract base word from variants (LEAD(1) → LEAD)
+      let baseWord = wordPart;
+      if (wordPart.includes('(')) {
+        baseWord = wordPart.replace(/\(\d+\)$/, '');
+      }
+      
+      const word = baseWord.toUpperCase();
+      const phonemes = convertArpabetToIPA(phonemePart.trim().split(/\s+/));
+      
+      // Store multiple variants per word
+      if (!this.dict.has(word)) {
+        this.dict.set(word, []);
+      }
+      this.dict.get(word)!.push(phonemes);
     }
   }
   
   lookup(word: string): string[][] | undefined {
-    return this.dict.get(word.toUpperCase());
+    return this.dict.get(word.toUpperCase()); // Returns array of variants
   }
 }
 ```
 
-#### 3. Update Service Logic
-Modify `src/lib/g2p/service.ts`:
+#### 2. Update Service Logic
+Modify `src/lib/g2p/service.ts` for simple variant selection:
 ```typescript
 function processWord(word: string): string[] {
   const variants = cmudict.lookup(word);
   
-  if (variants) {
-    return variants[0]; // Phase 1: Use first variant
+  if (variants && variants.length > 0) {
+    // Phase 1: Simple - use first variant
+    return variants[0];
   } else {
     return enhancedFallback.generate(word);
   }
 }
 ```
 
-#### 4. Enhanced Fallback
-Create `src/lib/g2p/enhanced-fallback.ts`:
+#### 3. Enhanced Fallback System
+Create `src/lib/g2p/enhanced-fallback.ts` for unknown words:
 ```typescript
 class EnhancedFallback {
   private patterns = {
-    'th': ['θ'], 'ch': ['tʃ'], 'sh': ['ʃ'], 'ph': ['f']
-    // Add more English patterns
+    // Common patterns
+    'th': ['θ'],      // "think" 
+    'ch': ['tʃ'],     // "church"
+    'sh': ['ʃ'],      // "shop"
+    'ph': ['f'],      // "phone", "iPhone"
+    'ght': ['t'],     // "night" 
+    
+    // Vowel patterns
+    'ea': ['iː'],     // "read" (basic)
+    'ou': ['aʊ'],     // "house"
+    'ai': ['eɪ'],     // "rain"
+    
+    // Silent letters
+    'kn': ['n'],      // "know"
+    'wr': ['r'],      // "write"
+    'mb': ['m'],      // "thumb"
   };
   
   generate(word: string): string[] {
-    // Apply phonotactic rules instead of letter-by-letter
+    // Apply English phonotactic rules for brand names, new words, etc.
+    // Examples: "iPhone" → ["aɪ", "f", "oʊ", "n"], "Tesla" → ["t", "ɛ", "s", "l", "ə"]
   }
 }
 ```
 
-### File Structure
-```
-apps/web/
-├── scripts/build-cmudict.ts
-├── public/data/cmudict.json (generated)
-└── src/lib/g2p/
-    ├── cmudict.ts (updated)
-    ├── enhanced-fallback.ts (new)
-    └── service.ts (updated)
-```
-
 ### Expected Results
-- Cold start: ~500ms (vs 2-3s)
-- Coverage: 125k+ words maintained  
-- Variants: Can access multiple pronunciations
+- Same cold start (~2-3s) but variant support enabled
+- Full CMUdict coverage (125k+ words) maintained
+- Better pronunciation for unknown words (brand names, new terms)
+- Foundation ready for Phase 2 architecture
+
+### Data Structure After Phase 1
+```typescript
+// Variant support examples:
+dict.get("LEAD") → [
+  ["l", "iː", "d"],     // /liːd/ - to guide
+  ["l", "ɛ", "d"]       // /led/ - the metal  
+]
+
+dict.get("READ") → [
+  ["r", "iː", "d"],     // /riːd/ - present
+  ["r", "ɛ", "d"]       // /red/ - past
+]
+
+dict.get("THE") → [
+  ["ð", "ə"]            // Single pronunciation
+]
+```
 
 ---
 
-## Phase 2: Homograph Disambiguation
+## Phase 2: Frequency-Based Hybrid Architecture
 
 ### What to Build
-Add context-aware pronunciation selection for words with multiple variants.
+Implement the final hybrid architecture with embedded dictionary for performance and external service for full coverage.
 
 ### Tasks
 
-#### 1. Context Analysis
+#### 1. Frequency-Based Embedded Dictionary
+Create build script for optimized embedded dictionary:
+```typescript
+// Build process:
+// 1. Download google-10000-english.txt
+// 2. For each word in frequency order:
+//    - Check if exists in CMUdict
+//    - If found: add with ALL variants
+// 3. Force-include remaining homographs
+// 4. Generate embedded JSON
+
+const embeddedDict = {
+  "THE": [["ð", "ə"]],
+  "LEAD": [["l", "iː", "d"], ["l", "ɛ", "d"]],
+  "READ": [["r", "iː", "d"], ["r", "ɛ", "d"]],
+  // ~7k-9k most frequent + homographs
+};
+```
+
+#### 2. External Service for Remaining Words
+Implement external lookup for ~115k remaining CMUdict words:
+```typescript
+class ExternalDictService {
+  async lookup(word: string): Promise<string[][]> {
+    // Lookup remaining CMUdict words via external service
+    // Options: CDN, Vercel KV, database API
+  }
+  
+  async batchLookup(words: string[]): Promise<Record<string, string[][]>> {
+    // Single API call for multiple words
+  }
+}
+```
+
+#### 3. Three-Tier Lookup System
+Update service to implement complete hierarchy:
+```typescript
+async function processWord(word: string): string[] {
+  // Tier 1: Embedded dictionary (~90% coverage, instant)
+  const embedded = embeddedDict.lookup(word);
+  if (embedded) {
+    return embedded[0]; // Use first variant (Phase 3 will add smart selection)
+  }
+  
+  // Tier 2: External service (~8% coverage, network call)
+  const external = await externalService.lookup(word);
+  if (external) {
+    return external[0];
+  }
+  
+  // Tier 3: Enhanced fallback (~2% coverage, unknown words)
+  return enhancedFallback.generate(word);
+}
+```
+
+### Expected Results
+- Cold start: ~100-200ms (embedded dict loads fast)
+- Coverage: 90% instant, 8% network call, 2% fallback = 100% total
+- Bundle size: ~300-500KB embedded dictionary
+- Performance: Major improvement in typical usage
+
+---
+
+## Phase 3: Context-Aware Homograph Disambiguation
+
+### What to Build
+Add intelligent pronunciation selection based on context analysis.
+
+### Tasks
+
+#### 1. Context Analysis Framework
 Create `src/lib/g2p/context-analyzer.ts`:
 ```typescript
 interface WordContext {
@@ -128,7 +224,7 @@ function analyzeContext(word: string, position: number, words: string[]): WordCo
 }
 ```
 
-#### 2. Homograph Rules
+#### 2. Homograph Rules Database
 Create `src/lib/g2p/homograph-rules.ts`:
 ```typescript
 interface HomographRule {
@@ -146,113 +242,124 @@ const RULES: HomographRule[] = [
       { patterns: ["lead singer", "will lead"], variantIndex: 0 }, // /liːd/
       { patterns: ["lead pipe", "made of lead"], variantIndex: 1 } // /led/
     ]
+  },
+  {
+    word: "READ",
+    rules: [
+      { patterns: ["read books", "will read"], variantIndex: 0 }, // /riːd/
+      { patterns: ["read yesterday", "already read"], variantIndex: 1 } // /red/
+    ]
   }
-  // Add rules for READ, RECORD, etc.
+  // Add rules for RECORD, etc.
 ];
 ```
 
-#### 3. Variant Selection
+#### 3. Smart Variant Selection
 Create `src/lib/g2p/variant-selector.ts`:
 ```typescript
 function selectBestVariant(word: string, variants: string[][], context: WordContext): string[] {
   const rule = RULES.find(r => r.word === word.toUpperCase());
   if (!rule) return variants[0];
   
+  // Try pattern matching
   for (const r of rule.rules) {
     if (r.patterns?.some(pattern => context.sentence.includes(pattern))) {
       return variants[r.variantIndex];
     }
   }
   
-  return variants[0]; // Default to first
+  // Default to first variant
+  return variants[0];
 }
 ```
 
-#### 4. Update Service
-Modify `src/lib/g2p/service.ts`:
+#### 4. Update Service for Smart Selection
 ```typescript
-function processWord(word: string, context: WordContext): string[] {
-  const variants = cmudict.lookup(word);
-  
-  if (variants) {
-    if (variants.length === 1) {
-      return variants[0];
-    } else {
-      return selectBestVariant(word, variants, context); // NEW
-    }
-  } else {
-    return enhancedFallback.generate(word);
+async function processWord(word: string, context: WordContext): string[] {
+  const embedded = embeddedDict.lookup(word);
+  if (embedded) {
+    return embedded.length === 1 ? embedded[0] : selectBestVariant(word, embedded, context);
   }
+  
+  const external = await externalService.lookup(word);
+  if (external) {
+    return external.length === 1 ? external[0] : selectBestVariant(word, external, context);
+  }
+  
+  return enhancedFallback.generate(word);
 }
 ```
 
 ### Expected Results
-- 80%+ accuracy on common homographs
-- Same coverage and performance as Phase 1
+- 80%+ accuracy on common homographs (lead, read, record, etc.)
+- Maintain Phase 2 performance and coverage
+- Context-aware pronunciation selection
 
 ---
 
-## Phase 3: Performance Optimization
+## Phase 4: Performance & Polish
 
 ### What to Build
-Split dictionary into embedded common words + external rare words for better cold start.
+Optimize system performance and add production-ready features.
 
 ### Tasks
 
-#### 1. Dictionary Splitting
-Update build script to generate:
-- `src/lib/g2p/embedded-common.json` (5k most frequent words)
-- `src/lib/g2p/embedded-homographs.json` (known homographs)
-- External service for remaining words
-
-#### 2. Hybrid Lookup
-Create `src/lib/g2p/hybrid-dictionary.ts`:
+#### 1. Advanced Caching
+Implement intelligent caching for external lookups:
 ```typescript
-class HybridDictionary {
+class ExternalDictService {
+  private cache = new Map<string, string[][]>();
+  private lruCache = new LRUCache(1000);
+  
   async lookup(word: string): Promise<string[][]> {
-    // Try embedded first
-    let result = embeddedCommon.get(word) || embeddedHomographs.get(word);
-    if (result) return result;
+    if (this.cache.has(word)) return this.cache.get(word);
     
-    // External lookup for rare words
-    return await externalService.lookup(word);
+    const result = await this.fetchFromService(word);
+    this.cache.set(word, result);
+    return result;
   }
 }
 ```
 
-#### 3. Batch External Calls
+#### 2. Performance Monitoring
+Add metrics and monitoring:
 ```typescript
-async function processText(text: string) {
-  const words = tokenize(text);
-  const unknownWords = [];
-  
-  // First pass: embedded lookup
-  for (const word of words) {
-    const variants = await hybridDict.lookupEmbedded(word);
-    if (!variants) unknownWords.push(word);
-  }
-  
-  // Single batch call for unknowns
-  if (unknownWords.length > 0) {
-    await externalService.batchLookup(unknownWords);
-  }
+class PerformanceMonitor {
+  trackLookupTime(source: 'embedded' | 'external' | 'fallback', duration: number) {}
+  trackCacheHitRate() {}
+  trackErrorRates() {}
 }
 ```
+
+#### 3. Bundle Optimization
+- Compression strategies for embedded dictionary
+- Tree-shaking optimizations
+- Build-time analysis and reporting
 
 ### Expected Results
-- Cold start: <150ms
-- 90% coverage from embedded (no network calls)
-- Bundle size: ~500KB
+- Optimized cold start: <100ms
+- Production-ready monitoring and metrics
+- Refined caching and performance tuning
 
 ---
 
 ## Technical Decisions
 
 ### Data Format
+
+#### Phase 1: In-Memory (GitHub + Parsing)
+```typescript
+Map<string, string[][]> // Supports multiple variants per word
+dict.get("LEAD") → [["l", "iː", "d"], ["l", "ɛ", "d"]]
+```
+
+#### Phase 2+: Embedded JSON
 ```json
 {
-  "WORD": [["phoneme1", "phoneme2"], ["variant1", "variant2"]],
-  "metadata": { "version": "0.7b", "totalEntries": 125000 }
+  "LEAD": [["l", "iː", "d"], ["l", "ɛ", "d"]],
+  "READ": [["r", "iː", "d"], ["r", "ɛ", "d"]],
+  "THE": [["ð", "ə"]],
+  "metadata": { "version": "0.7b", "totalWords": 7500 }
 }
 ```
 
@@ -267,26 +374,29 @@ async function processText(text: string) {
 - All fails → Letter mapping
 
 ### Deployment
-- Phase 1-2: Node.js runtime (~2-3MB dictionary)
-- Phase 3: Optimize for Vercel Edge if needed
+- Phase 1: Node.js runtime (GitHub download, full CMUdict)
+- Phase 2+: Vercel Edge Runtime compatible (~300-500KB embedded dictionary)
+- External service handles remaining words (Phase 2+)
+- Node.js runtime as fallback if needed
 
 ---
 
 ## Implementation Notes
 
 ### Start with Phase 1
-- Modify existing build script to generate flat JSON
-- Update cmudict.ts to load from `/data/cmudict.json`  
-- Add variant support to service.ts
-- Test that cold start improves
+- Update cmudict.ts parsing to support variants (remove skip logic)
+- Change data structure from `Map<string, string[]>` to `Map<string, string[][]>`
+- Add enhanced fallback for unknown words  
+- Test that variant support works without breaking existing functionality
 
 ### Testing
 - Ensure all existing tests pass
 - Add variant lookup tests
-- Benchmark cold start performance
-- Validate homograph accuracy in Phase 2
+- Test enhanced fallback with brand names
+- Validate data structure changes
 
-### External Service (Phase 3)
-- TBD: CDN, database, or Vercel KV
-- Must support batch lookup
-- Include caching and timeout handling
+### Phase Progression
+- **Phase 1**: Foundation (variant support + fallback)
+- **Phase 2**: Architecture (hybrid embedded/external system)
+- **Phase 3**: Intelligence (context-aware disambiguation)  
+- **Phase 4**: Polish (performance optimization)
