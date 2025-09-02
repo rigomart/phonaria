@@ -1,8 +1,7 @@
 import { convertArpabetToIPA } from "./arpabet-mapping";
-import { fallbackG2P } from "./fallback-g2p";
 
 class CMUDict {
-	private dict = new Map<string, string[]>();
+	private dict = new Map<string, string[][]>();
 	private loaded = false;
 
 	async load(): Promise<void> {
@@ -32,30 +31,32 @@ class CMUDict {
 
 			const [wordPart, phonemePart] = parts;
 
-			// Skip variants for now - use base form only
-			if (wordPart.includes("(")) continue;
+			// Extract base word from variants (LEAD(1) → LEAD)
+			let baseWord = wordPart;
+			if (wordPart.includes("(")) {
+				baseWord = wordPart.replace(/\(\d+\)$/, "");
+			}
 
-			const word = wordPart.toUpperCase();
+			const word = baseWord.toUpperCase();
 			const arpaPhonemes = phonemePart.trim().split(/\s+/);
 			const ipaPhonemes = convertArpabetToIPA(arpaPhonemes);
 
-			this.dict.set(word, ipaPhonemes);
+			// Store multiple variants per word
+			const variants = this.dict.get(word);
+			if (!variants) {
+				this.dict.set(word, [ipaPhonemes]);
+			} else {
+				variants.push(ipaPhonemes);
+			}
 		}
 	}
 
-	lookup(word: string): string[] {
+	lookup(word: string): string[][] | undefined {
 		if (!this.loaded) {
 			throw new Error("Dictionary not loaded");
 		}
 
-		// Try dictionary lookup first
-		const dictResult = this.dict.get(word.toUpperCase());
-		if (dictResult) {
-			return dictResult;
-		}
-
-		// Phase 2.1: Fallback for unknown words
-		return fallbackG2P.generatePronunciation(word);
+		return this.dict.get(word.toUpperCase());
 	}
 }
 

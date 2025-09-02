@@ -1,4 +1,5 @@
 import { cmudict } from "./cmudict";
+import { fallbackG2P } from "./fallback-g2p";
 import type { G2PRequest, G2PResponse, G2PWord } from "./schemas";
 
 async function ensureDictLoaded(): Promise<void> {
@@ -30,11 +31,21 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 		for (const word of words) {
 			if (word.length === 0) continue; // Skip empty words
 
-			const phonemes = cmudict.lookup(word);
+			// Phase 1: Simple variant selection
+			const variants = cmudict.lookup(word);
+			let phonemes: string[];
+
+			if (variants && variants.length > 0) {
+				// Use first variant (Phase 1: simple selection)
+				phonemes = variants[0];
+			} else {
+				// Fallback for unknown words
+				phonemes = fallbackG2P.generatePronunciation(word);
+			}
 
 			results.push({
 				word: word.toLowerCase(),
-				phonemes: phonemes || [],
+				phonemes,
 			});
 		}
 
