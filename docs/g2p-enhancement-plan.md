@@ -40,7 +40,7 @@ class CMUDict {
       }
       
       const word = baseWord.toUpperCase();
-      const phonemes = convertArpabetToIPA(phonemePart.trim().split(/\s+/));
+      const phonemes = phonemePart.trim().split(/\s+/); // Keep as ARPABET
       
       // Store multiple variants per word
       if (!this.dict.has(word)) {
@@ -63,10 +63,10 @@ function processWord(word: string): string[] {
   const variants = cmudict.lookup(word);
   
   if (variants && variants.length > 0) {
-    // Phase 1: Simple - use first variant
-    return variants[0];
+    // Phase 1: Simple - use first variant, convert ARPABET to IPA
+    return convertArpabetToIPA(variants[0]);
   } else {
-    return enhancedFallback.generate(word);
+    return enhancedFallback.generate(word); // Already returns IPA
   }
 }
 ```
@@ -109,19 +109,19 @@ class EnhancedFallback {
 
 ### Data Structure After Phase 1
 ```typescript
-// Variant support examples:
+// Variant support examples (ARPABET stored, converted to IPA at runtime):
 dict.get("LEAD") → [
-  ["l", "iː", "d"],     // /liːd/ - to guide
-  ["l", "ɛ", "d"]       // /led/ - the metal  
+  ["L", "IY1", "D"],     // /liːd/ - to guide
+  ["L", "EH1", "D"]      // /led/ - the metal  
 ]
 
 dict.get("READ") → [
-  ["r", "iː", "d"],     // /riːd/ - present
-  ["r", "ɛ", "d"]       // /red/ - past
+  ["R", "IY1", "D"],     // /riːd/ - present
+  ["R", "EH1", "D"]      // /red/ - past
 ]
 
 dict.get("THE") → [
-  ["ð", "ə"]            // Single pronunciation
+  ["DH", "AH0"]          // Single pronunciation
 ]
 ```
 
@@ -145,17 +145,18 @@ Create build script `apps/web/scripts/build-embedded-dict.ts` for optimized JSON
 // 3. Force-include remaining homographs
 // 4. Generate public/data/embedded-dict.json
 
-// Generated JSON file: public/data/embedded-dict.json
+// Generated JSON file: public/data/embedded-dict.json (ARPABET format)
 {
-  "THE": [["ð", "ə"]],
-  "LEAD": [["l", "iː", "d"], ["l", "ɛ", "d"]],
-  "READ": [["r", "iː", "d"], ["r", "ɛ", "d"]],
+  "THE": [["DH", "AH0"]],
+  "LEAD": [["L", "IY1", "D"], ["L", "EH1", "D"]],
+  "READ": [["R", "IY1", "D"], ["R", "EH1", "D"]],
   // ~7k-9k most frequent + homographs
 }
 
-// Runtime loading:
+// Runtime loading and conversion:
 const response = await fetch('/data/embedded-dict.json');
 const embeddedDict = new Map(Object.entries(await response.json()));
+// Convert ARPABET to IPA at runtime: convertArpabetToIPA(phonemes)
 ```
 
 #### 2. External Service for Remaining Words
@@ -180,17 +181,17 @@ async function processWord(word: string): string[] {
   // Tier 1: Embedded dictionary (~90% coverage, instant)
   const embedded = embeddedDict.lookup(word);
   if (embedded) {
-    return embedded[0]; // Use first variant (Phase 3 will add smart selection)
+    return convertArpabetToIPA(embedded[0]); // Convert ARPABET to IPA
   }
   
   // Tier 2: External service (~8% coverage, network call)
   const external = await externalService.lookup(word);
   if (external) {
-    return external[0];
+    return convertArpabetToIPA(external[0]); // Convert ARPABET to IPA
   }
   
   // Tier 3: Enhanced fallback (~2% coverage, unknown words)
-  return enhancedFallback.generate(word);
+  return enhancedFallback.generate(word); // Already returns IPA
 }
 ```
 
@@ -283,15 +284,17 @@ function selectBestVariant(word: string, variants: string[][], context: WordCont
 async function processWord(word: string, context: WordContext): string[] {
   const embedded = embeddedDict.lookup(word);
   if (embedded) {
-    return embedded.length === 1 ? embedded[0] : selectBestVariant(word, embedded, context);
+    const selectedVariant = embedded.length === 1 ? embedded[0] : selectBestVariant(word, embedded, context);
+    return convertArpabetToIPA(selectedVariant);
   }
   
   const external = await externalService.lookup(word);
   if (external) {
-    return external.length === 1 ? external[0] : selectBestVariant(word, external, context);
+    const selectedVariant = external.length === 1 ? external[0] : selectBestVariant(word, external, context);
+    return convertArpabetToIPA(selectedVariant);
   }
   
-  return enhancedFallback.generate(word);
+  return enhancedFallback.generate(word); // Already returns IPA
 }
 ```
 
@@ -354,23 +357,24 @@ class PerformanceMonitor {
 
 #### Phase 1: In-Memory (GitHub + Parsing)
 ```typescript
-Map<string, string[][]> // Supports multiple variants per word
-dict.get("LEAD") → [["l", "iː", "d"], ["l", "ɛ", "d"]]
+Map<string, string[][]> // Supports multiple variants per word (ARPABET)
+dict.get("LEAD") → [["L", "IY1", "D"], ["L", "EH1", "D"]]
 ```
 
 #### Phase 2+: Embedded JSON File
 ```json
-// File: public/data/embedded-dict.json
+// File: public/data/embedded-dict.json (ARPABET format)
 {
-  "THE": [["ð", "ə"]],
-  "LEAD": [["l", "iː", "d"], ["l", "ɛ", "d"]],
-  "READ": [["r", "iː", "d"], ["r", "ɛ", "d"]],
+  "THE": [["DH", "AH0"]],
+  "LEAD": [["L", "IY1", "D"], ["L", "EH1", "D"]],
+  "READ": [["R", "IY1", "D"], ["R", "EH1", "D"]],
   "metadata": { "version": "0.7b", "totalWords": 7500 }
 }
 
 // Runtime usage:
 // const response = await fetch('/data/embedded-dict.json');
 // const dict = new Map(Object.entries(await response.json()));
+// Convert to IPA: convertArpabetToIPA(phonemes)
 ```
 
 ### Build Process
