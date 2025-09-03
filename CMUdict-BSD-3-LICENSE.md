@@ -1,11 +1,3 @@
-# Third Party Licenses - Phonix
-
-## CMU Pronouncing Dictionary
-
-Phonix uses pronunciation data from the CMU Pronouncing Dictionary for grapheme-to-phoneme conversion.
-
-### Copyright and License
-
 Copyright (C) 1993-2015 Carnegie Mellon University. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,11 +31,3 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-### Attribution
-
-CMU Pronouncing Dictionary data is used for educational and research purposes in the Phonix pronunciation learning platform.
-
-For more information about the CMU Pronouncing Dictionary, visit:
-- https://github.com/cmusphinx/cmudict
-- http://www.speech.cs.cmu.edu/cgi-bin/cmudict
