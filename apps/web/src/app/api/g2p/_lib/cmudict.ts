@@ -9,7 +9,7 @@ class CMUDict {
 
 		console.log("Loading CMUdict from GitHub...");
 		const response = await fetch(
-			"https://raw.githubusercontent.com/Alexir/CMUdict/refs/heads/master/cmudict-0.7b",
+			"https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/master/cmudict.dict",
 		);
 		if (!response.ok) {
 			throw new Error(`Failed to load CMUdict: ${response.statusText}`);
@@ -23,13 +23,18 @@ class CMUDict {
 
 	private parse(content: string): void {
 		const lines = content.split(/\r?\n/);
-		for (const line of lines) {
-			if (line.startsWith(";;;") || !line.trim()) continue;
+		for (const rawLine of lines) {
+			const line = rawLine.trim();
+			if (!line) continue;
+			// Skip comment/header lines that may start with ';' (old CMU format) or '#'
+			if (line.startsWith(";") || line.startsWith("#")) continue;
 
-			const parts = line.split("  ");
-			if (parts.length !== 2) continue;
+			// Capture WORD and the rest of the line as phoneme sequence using flexible whitespace
+			const match = line.match(/^(\S+)\s+(.+)$/);
+			if (!match) continue;
 
-			const [wordPart, phonemePart] = parts;
+			const wordPart = match[1];
+			const phonemePart = match[2];
 
 			// Extract base word from variants (LEAD(1) → LEAD)
 			let baseWord = wordPart;

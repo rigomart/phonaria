@@ -49,7 +49,7 @@ describe("CMUDict", () => {
 			await cmudict.load();
 
 			expect(mockFetch).toHaveBeenCalledWith(
-				"https://raw.githubusercontent.com/Alexir/CMUdict/refs/heads/master/cmudict-0.7b",
+				"https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/master/cmudict.dict",
 			);
 		});
 	});
