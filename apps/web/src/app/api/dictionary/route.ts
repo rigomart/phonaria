@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { dictionaryQuerySchema, fetchWordDefinition } from "../_lib/dictionary-service";
+import { dictionaryQuerySchema, fetchWordDefinition } from "./_services/dictionary-service";
 
 export const runtime = "nodejs";
 
 /**
- * GET /api/g2p/dictionary?word=<word>
+ * GET /api/dictionary?word=<word>
  */
 export async function GET(request: Request) {
 	try {

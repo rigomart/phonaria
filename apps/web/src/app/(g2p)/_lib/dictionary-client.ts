@@ -8,6 +8,6 @@ const client = createApiClient({
 });
 
 export async function fetchDefinition(word: string) {
-	const url = `/api/g2p/dictionary?word=${encodeURIComponent(word)}`;
+	const url = `/api/dictionary?word=${encodeURIComponent(word)}`;
 	return client.get(url, dictionarySuccessSchema);
 }

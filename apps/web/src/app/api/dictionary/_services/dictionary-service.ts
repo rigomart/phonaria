@@ -3,7 +3,7 @@ import {
 	freeDictionaryErrorSchema,
 	freeDictionarySuccessSchema,
 	type WordDefinition,
-} from "./dictionary-schemas";
+} from "../_schemas/dictionary-schemas";
 
 const FREE_DICT_BASE = "https://api.dictionaryapi.dev/api/v2/entries/en";
 

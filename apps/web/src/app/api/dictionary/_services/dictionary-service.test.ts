@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { freeDictionaryErrorSchema, freeDictionarySuccessSchema } from "./dictionary-schemas";
-import { dictionaryQuerySchema } from "./dictionary-service";
+import {
+	freeDictionaryErrorSchema,
+	freeDictionarySuccessSchema,
+} from "../../dictionary/_schemas/dictionary-schemas";
+import { dictionaryQuerySchema } from "../../dictionary/_services/dictionary-service";
 
 describe("dictionary schemas", () => {
 	it("validates success shape (subset)", () => {
