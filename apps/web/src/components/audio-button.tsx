@@ -41,7 +41,7 @@ export function AudioButton({ src, label, className }: Props) {
 
 		// Set playback rate and preserve pitch for slow playback
 		if (speed === "slow") {
-			audio.playbackRate = 0.75;
+			audio.playbackRate = 0.5;
 			// Preserve pitch using standard and vendor-prefixed properties
 			audio.preservesPitch = true;
 		} else {

@@ -18,14 +18,11 @@ export function WordDefinitionPanel() {
 	if (!selectedWord) return null;
 
 	return (
-		<Card className="h-fit sticky top-6">
+		<Card className="h-fit">
 			<CardHeader className="pb-3">
 				<div className="flex items-center justify-between">
 					<CardTitle className="text-lg">
 						<span className="font-semibold">{selectedWord}</span>
-						{wordDefinition?.phonetic && (
-							<span className="ml-2 text-muted-foreground text-sm">{wordDefinition.phonetic}</span>
-						)}
 					</CardTitle>
 					<div className="flex items-center gap-2">
 						{wordDefinition?.audioUrl && (
