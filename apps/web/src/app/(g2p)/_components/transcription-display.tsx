@@ -12,6 +12,7 @@ interface TranscriptionDisplayProps {
 interface WordColumnProps {
 	word: TranscribedWord;
 	onPhonemeClick: (phoneme: TranscribedPhoneme) => void;
+	onWordClick: (word: string) => void;
 }
 
 interface ClickablePhonemeProps {
@@ -78,13 +79,19 @@ function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
 /**
  * Word column showing original word above IPA transcription
  */
-function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
+function WordColumn({ word, onPhonemeClick, onWordClick }: WordColumnProps) {
 	return (
 		<div className="flex flex-col items-center text-center min-w-0">
 			{/* Original word - smaller, muted */}
-			<div className="text-lg md:text-xl text-muted-foreground font-normal mb-4 whitespace-nowrap">
+			<button
+				type="button"
+				className="text-lg md:text-xl text-muted-foreground font-normal mb-4 whitespace-nowrap hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded"
+				onClick={() => onWordClick(word.word)}
+				aria-label={`Show definition for ${word.word}`}
+				title={`Click to see definition for ${word.word}`}
+			>
 				{word.word}
-			</div>
+			</button>
 
 			{/* IPA transcription - larger, prominent */}
 			<div className="leading-relaxed whitespace-nowrap">
@@ -104,7 +111,7 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
  * Compact transcription display optimized for tool-like interface
  */
 export function TranscriptionDisplay({ className }: TranscriptionDisplayProps) {
-	const { result, selectPhoneme } = useG2PStore();
+	const { result, selectPhoneme, selectWord } = useG2PStore();
 
 	// Show empty state if no result
 	if (!result) {
@@ -121,6 +128,7 @@ export function TranscriptionDisplay({ className }: TranscriptionDisplayProps) {
 							key={`${word.word}-${wordIndex}`}
 							word={word}
 							onPhonemeClick={selectPhoneme}
+							onWordClick={selectWord}
 						/>
 					))}
 				</div>
