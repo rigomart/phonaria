@@ -1,416 +1,201 @@
-# G2P Enhancement Implementation Plan
+# G2P Enhancement Plan
 
-## Problem
-Current G2P system downloads 3.7MB CMUdict from GitHub on every cold start (~2-3s), ignores pronunciation variants, and uses poor fallback for unknown words.
-
-## Solution Overview
-Four-phase iterative approach maintaining full dictionary coverage while improving accuracy and performance:
-
-1. **Phase 1**: Variant Support + Enhanced Fallback (foundation)
-2. **Phase 2**: Frequency-Based Hybrid Architecture (performance) 
-3. **Phase 3**: Context-Aware Homograph Disambiguation (intelligence)
-4. **Phase 4**: Performance & Polish (optimization)
+A high-level plan to make the G2P (grapheme-to-phoneme) system fast, accurate, and edge-friendly—without AI—while keeping it maintainable.
 
 ---
 
-## Phase 1: Variant Support + Enhanced Fallback
+## Overview
 
-### What to Build
-Add pronunciation variant support and improve fallback while keeping current GitHub architecture.
-
-### Tasks
-
-#### 1. Update Dictionary Parsing
-Modify `src/lib/g2p/cmudict.ts` to support pronunciation variants:
-```typescript
-class CMUDict {
-  private dict = new Map<string, string[][]>(); // Support multiple variants
-  
-  private parse(content: string): void {
-    for (const line of lines) {
-      if (line.startsWith(';;;') || !line.trim()) continue;
-      
-      const parts = line.split('  ');
-      const [wordPart, phonemePart] = parts;
-      
-      // Extract base word from variants (LEAD(1) → LEAD)
-      let baseWord = wordPart;
-      if (wordPart.includes('(')) {
-        baseWord = wordPart.replace(/\(\d+\)$/, '');
-      }
-      
-      const word = baseWord.toUpperCase();
-      const phonemes = phonemePart.trim().split(/\s+/); // Keep as ARPABET
-      
-      // Store multiple variants per word
-      if (!this.dict.has(word)) {
-        this.dict.set(word, []);
-      }
-      this.dict.get(word)!.push(phonemes);
-    }
-  }
-  
-  lookup(word: string): string[][] | undefined {
-    return this.dict.get(word.toUpperCase()); // Returns array of variants
-  }
-}
-```
-
-#### 2. Update Service Logic
-Modify `src/lib/g2p/service.ts` for simple variant selection:
-```typescript
-function processWord(word: string): string[] {
-  const variants = cmudict.lookup(word);
-  
-  if (variants && variants.length > 0) {
-    // Phase 1: Simple - use first variant, convert ARPABET to IPA
-    return convertArpabetToIPA(variants[0]);
-  } else {
-    return enhancedFallback.generate(word); // Already returns IPA
-  }
-}
-```
-
-#### 3. Enhanced Fallback System
-Create `src/lib/g2p/enhanced-fallback.ts` for unknown words:
-```typescript
-class EnhancedFallback {
-  private patterns = {
-    // Common patterns
-    'th': ['θ'],      // "think" 
-    'ch': ['tʃ'],     // "church"
-    'sh': ['ʃ'],      // "shop"
-    'ph': ['f'],      // "phone", "iPhone"
-    'ght': ['t'],     // "night" 
-    
-    // Vowel patterns
-    'ea': ['iː'],     // "read" (basic)
-    'ou': ['aʊ'],     // "house"
-    'ai': ['eɪ'],     // "rain"
-    
-    // Silent letters
-    'kn': ['n'],      // "know"
-    'wr': ['r'],      // "write"
-    'mb': ['m'],      // "thumb"
-  };
-  
-  generate(word: string): string[] {
-    // Apply English phonotactic rules for brand names, new words, etc.
-    // Examples: "iPhone" → ["aɪ", "f", "oʊ", "n"], "Tesla" → ["t", "ɛ", "s", "l", "ə"]
-  }
-}
-```
-
-### Expected Results
-- Same cold start (~2-3s) but variant support enabled
-- Full CMUdict coverage (125k+ words) maintained
-- Better pronunciation for unknown words (brand names, new terms)
-- Foundation ready for Phase 2 architecture
-
-### Data Structure After Phase 1
-```typescript
-// Variant support examples (ARPABET stored, converted to IPA at runtime):
-dict.get("LEAD") → [
-  ["L", "IY1", "D"],     // /liːd/ - to guide
-  ["L", "EH1", "D"]      // /led/ - the metal  
-]
-
-dict.get("READ") → [
-  ["R", "IY1", "D"],     // /riːd/ - present
-  ["R", "EH1", "D"]      // /red/ - past
-]
-
-dict.get("THE") → [
-  ["DH", "AH0"]          // Single pronunciation
-]
-```
+- **Goal:** Deterministic, low-latency G2P for General American English, prioritizing dictionary accuracy with a robust rule-based fallback.
+- **Approach:** Multi-layer pipeline using globally cached lexicon lookups, context disambiguation, and strong grapheme-to-phoneme rules.
 
 ---
 
-## Phase 2: Frequency-Based Hybrid Architecture
+## High-Level Architecture
 
-### What to Build
-Implement the final hybrid architecture with embedded dictionary for performance and external service for full coverage.
+### 1. Client (Next.js UI)
+- Debounced input sent to `/api/g2p` (Edge).
+- Displays IPA transcription with per-phoneme links to the chart and indicators for confidence/alternatives.
+- Optionally, a lightweight UI for disambiguation when ambiguity remains (user can pick pronunciation, persisted to user settings).
 
-### Tasks
+### 2. Edge API (Coordinator)
+- **Pipeline per request:**
+  1. Normalize, tokenize, and segment (words, numbers, acronyms, punctuation).
+  2. Batch dictionary lookup (multi-get) against a globally replicated KV store.
+  3. Ambiguity resolution (homographs, "the" before vowels, stress-shifting noun/verb pairs).
+  4. Morphological derive-and-lookup (remove ’s, -s/-es, -ed, -ing, -er/-est, etc.).
+  5. Rule-based fallback G2P for unknown tokens.
+  6. Post-process (syllabification, stress marks, optional schwa reduction).
+- **Returns structured results:**
+  - `tokens`: Array of objects with fields like `surface`, `normalized`, `ipaSelected`, `ipaAlternatives`, `source`, `confidence`, `syllables`, `stressPattern`, `notes`.
+  - `meta`: Includes `durationMs`, `cacheHits`, `ruleCoverage`, `dialect`.
 
-#### 1. Frequency-Based Embedded Dictionary
-Create build script `apps/web/scripts/build-embedded-dict.ts` for optimized JSON dictionary:
-```typescript
-// Build process:
-// 1. Download google-10000-english.txt
-// 2. For each word in frequency order:
-//    - Check if exists in CMUdict
-//    - If found: add with ALL variants
-// 3. Force-include remaining homographs
-// 4. Generate public/data/embedded-dict.json
-
-// Generated JSON file: public/data/embedded-dict.json (ARPABET format)
-{
-  "THE": [["DH", "AH0"]],
-  "LEAD": [["L", "IY1", "D"], ["L", "EH1", "D"]],
-  "READ": [["R", "IY1", "D"], ["R", "EH1", "D"]],
-  // ~7k-9k most frequent + homographs
-}
-
-// Runtime loading and conversion:
-const response = await fetch('/data/embedded-dict.json');
-const embeddedDict = new Map(Object.entries(await response.json()));
-// Convert ARPABET to IPA at runtime: convertArpabetToIPA(phonemes)
-```
-
-#### 2. External Service for Remaining Words
-Implement external lookup for ~115k remaining CMUdict words:
-```typescript
-class ExternalDictService {
-  async lookup(word: string): Promise<string[][]> {
-    // Lookup remaining CMUdict words via external service
-    // Options: CDN, Vercel KV, database API
-  }
-  
-  async batchLookup(words: string[]): Promise<Record<string, string[][]>> {
-    // Single API call for multiple words
-  }
-}
-```
-
-#### 3. Three-Tier Lookup System
-Update service to implement complete hierarchy:
-```typescript
-async function processWord(word: string): string[] {
-  // Tier 1: Embedded dictionary (~90% coverage, instant)
-  const embedded = embeddedDict.lookup(word);
-  if (embedded) {
-    return convertArpabetToIPA(embedded[0]); // Convert ARPABET to IPA
-  }
-  
-  // Tier 2: External service (~8% coverage, network call)
-  const external = await externalService.lookup(word);
-  if (external) {
-    return convertArpabetToIPA(external[0]); // Convert ARPABET to IPA
-  }
-  
-  // Tier 3: Enhanced fallback (~2% coverage, unknown words)
-  return enhancedFallback.generate(word); // Already returns IPA
-}
-```
-
-### Expected Results
-- Cold start: ~100-200ms (embedded dict loads fast)
-- Coverage: 90% instant, 8% network call, 2% fallback = 100% total
-- Bundle size: ~300-500KB embedded dictionary
-- Performance: Major improvement in typical usage
+### 3. Data/Infra Layer
+- **Primary lexicon:** CMU-derived IPA, stored in Vercel KV (Upstash) or as sharded static JSON over CDN.
+- **Secondary:** Small "Ambiguity Lexicon" with context rules for homographs.
+- **Rulesets:** Deterministic letter-to-sound rules (JSON), morphological rules, number/acronym rules.
+- **Caching:** CDN cache of entire API responses for identical inputs; KV read cache at edge.
 
 ---
 
-## Phase 3: Context-Aware Homograph Disambiguation
+## CMUdict Storage (Avoiding Large Downloads)
 
-### What to Build
-Add intelligent pronunciation selection based on context analysis.
+- **Preferred:** Vercel KV (Upstash Redis)
+  - Preload: `word → [IPA variants with tags]`
+  - O(1) lookups, multi-get per request, globally replicated, very low latency.
+  - Store IPA directly to avoid runtime ARPABET→IPA conversion.
+- **Alternative:** Sharded static assets on Vercel
+  - Preprocess into 2- or 3-letter shards (e.g., `/data/cmu_ipa_shards/re.json`).
+  - Fetch only needed shards per request; results cached at Vercel edge CDN.
+- **Optional:** Tiny "hot set" in Vercel Edge Config (top 5k words for sub-millisecond lookup).
+- **Note:** Do not fetch from GitHub at runtime. Treat the dictionary as a published artifact served from your infra.
 
-### Tasks
+---
 
-#### 1. Context Analysis Framework
-Create `src/lib/g2p/context-analyzer.ts`:
-```typescript
-interface WordContext {
-  word: string;
-  position: number;
-  surrounding: string[]; // [prevWord, nextWord]
-  sentence: string;
-}
+## Dictionary Data Model (High-Level)
 
-function analyzeContext(word: string, position: number, words: string[]): WordContext {
-  return {
-    word,
-    position,
-    surrounding: [words[position-1] || '', words[position+1] || ''],
-    sentence: words.join(' ')
-  };
-}
-```
-
-#### 2. Homograph Rules Database
-Create `src/lib/g2p/homograph-rules.ts`:
-```typescript
-interface HomographRule {
-  word: string;
-  rules: Array<{
-    patterns?: string[];     // ["lead singer", "lead role"]
-    variantIndex: number;    // Which pronunciation to use
-  }>;
-}
-
-const RULES: HomographRule[] = [
+- **Key:** Lowercased, normalized word.
+- **Value:**
+  ```json
   {
-    word: "LEAD",
-    rules: [
-      { patterns: ["lead singer", "will lead"], variantIndex: 0 }, // /liːd/
-      { patterns: ["lead pipe", "made of lead"], variantIndex: 1 } // /led/
-    ]
-  },
-  {
-    word: "READ",
-    rules: [
-      { patterns: ["read books", "will read"], variantIndex: 0 }, // /riːd/
-      { patterns: ["read yesterday", "already read"], variantIndex: 1 } // /red/
-    ]
+    "ipa": ["ˈrɛkərd", "rɪˈkɔːrd"],
+    "posHints": ["N", "V"],
+    "notes": { "special": "the_variant", "freqRank": 5234 }
   }
-  // Add rules for RECORD, etc.
-];
-```
-
-#### 3. Smart Variant Selection
-Create `src/lib/g2p/variant-selector.ts`:
-```typescript
-function selectBestVariant(word: string, variants: string[][], context: WordContext): string[] {
-  const rule = RULES.find(r => r.word === word.toUpperCase());
-  if (!rule) return variants[0];
-  
-  // Try pattern matching
-  for (const r of rule.rules) {
-    if (r.patterns?.some(pattern => context.sentence.includes(pattern))) {
-      return variants[r.variantIndex];
-    }
-  }
-  
-  // Default to first variant
-  return variants[0];
-}
-```
-
-#### 4. Update Service for Smart Selection
-```typescript
-async function processWord(word: string, context: WordContext): string[] {
-  const embedded = embeddedDict.lookup(word);
-  if (embedded) {
-    const selectedVariant = embedded.length === 1 ? embedded[0] : selectBestVariant(word, embedded, context);
-    return convertArpabetToIPA(selectedVariant);
-  }
-  
-  const external = await externalService.lookup(word);
-  if (external) {
-    const selectedVariant = external.length === 1 ? external[0] : selectBestVariant(word, external, context);
-    return convertArpabetToIPA(selectedVariant);
-  }
-  
-  return enhancedFallback.generate(word); // Already returns IPA
-}
-```
-
-### Expected Results
-- 80%+ accuracy on common homographs (lead, read, record, etc.)
-- Maintain Phase 2 performance and coverage
-- Context-aware pronunciation selection
+  ```
+- Store IPA directly, with primary and alternative forms, to avoid runtime conversions.
 
 ---
 
-## Phase 4: Performance & Polish
+## Robust Fallback: Layered Letter-to-Sound Rules
 
-### What to Build
-Optimize system performance and add production-ready features.
+### 1. Pre-normalization
+- Lowercase except for proper nouns (leading cap after sentence boundary).
+- Strip punctuation; handle possessives and hyphens.
+- Convert numbers and dates to words before G2P.
+- Acronyms: ALL-CAPS (length ≥ 2) → letter names (A = eɪ, B = biː, etc.), plus special cases (NASA, SQL).
 
-### Tasks
+### 2. Morphological Handling (Before Rules)
+- Try base forms: remove -s/-es, -ed, -ing, -er/-est, -’s; apply e-dropping, y→i rules.
+- If base is found in dictionary, apply suffix phonology deterministically:
+  - -s/-es: /s/ after voiceless, /z/ after voiced, /ɪz/ after sibilants.
+  - -ed: /t/ after voiceless, /d/ after voiced, /ɪd/ after /t|d/.
+  - -ing: base + ɪŋ, with silent-e handling.
+  - Common derivational patterns: -tion/-sion → ʃən/ʒən; -cial/-tial → ʃəl; -ph → f; -que/-gue → k/g.
 
-#### 1. Advanced Caching
-Implement intelligent caching for external lookups:
-```typescript
-class ExternalDictService {
-  private cache = new Map<string, string[][]>();
-  private lruCache = new LRUCache(1000);
-  
-  async lookup(word: string): Promise<string[][]> {
-    if (this.cache.has(word)) return this.cache.get(word);
-    
-    const result = await this.fetchFromService(word);
-    this.cache.set(word, result);
-    return result;
-  }
-}
-```
+### 3. Grapheme Segmentation
+- Handle multigraphs first: ch, sh, th, ph, gh, ng, qu, ck, wh, tion/sion, tch, eau, etc.
+- Vowel teams: ee, ea, ai, ay, oa, oe, oo, ou, ow, au, aw, oi, oy, ie, ue, ui, ei, ey.
+- Context rules:
+  - c → s before e, i, y; else k.
+  - g → dʒ before e, i, y; else g.
+  - x → ks generally, gz before stressed vowel onset in some contexts (e.g., "exact").
+  - s → z between vowels.
+  - y as vowel in syllable nucleus (ɪ/i), y as consonant at onset (j).
+  - magic-e: a_e → eɪ, i_e → aɪ (or iː in some systems), o_e → oʊ, u_e → juː/uː contextually.
+  - gh: silent in most environments; -ough pattern list (though/through/rough/ought/cough/borough).
+  - kn-/wr- initial letter silent; mb final b silent; lk/lt after a → l often dark but keep /l/.
+  - qu → kw; wh → w in GA (except "who" → huː).
 
-#### 2. Performance Monitoring
-Add metrics and monitoring:
-```typescript
-class PerformanceMonitor {
-  trackLookupTime(source: 'embedded' | 'external' | 'fallback', duration: number) {}
-  trackCacheHitRate() {}
-  trackErrorRates() {}
-}
-```
+### 4. Syllabification and Stress Heuristics
+- Sonority-based syllable parsing with maximal onset.
+- Stress rules:
+  - Suffix-driven (e.g., -ation: ˈeɪʃən with antepenultimate stress).
+  - -ity/-ety: stress antepenult.
+  - -ic/-sion/-tion: penultimate stress.
+  - -graphy/-logy/-meter: antepenult or standard lexeme patterns.
+  - Two-syllable noun/verb alternation: nouns/adjectives → stress first; verbs → stress second.
+  - Compound nouns: primary stress on first element.
+- Unstressed vowel reduction to ə/ɪ where appropriate (phonemic target for GA).
 
-#### 3. Bundle Optimization
-- Compression strategies for embedded dictionary
-- Tree-shaking optimizations
-- Build-time analysis and reporting
-
-### Expected Results
-- Optimized cold start: <100ms
-- Production-ready monitoring and metrics
-- Refined caching and performance tuning
-
----
-
-## Technical Decisions
-
-### Data Format
-
-#### Phase 1: In-Memory (GitHub + Parsing)
-```typescript
-Map<string, string[][]> // Supports multiple variants per word (ARPABET)
-dict.get("LEAD") → [["L", "IY1", "D"], ["L", "EH1", "D"]]
-```
-
-#### Phase 2+: Embedded JSON File
-```json
-// File: public/data/embedded-dict.json (ARPABET format)
-{
-  "THE": [["DH", "AH0"]],
-  "LEAD": [["L", "IY1", "D"], ["L", "EH1", "D"]],
-  "READ": [["R", "IY1", "D"], ["R", "EH1", "D"]],
-  "metadata": { "version": "0.7b", "totalWords": 7500 }
-}
-
-// Runtime usage:
-// const response = await fetch('/data/embedded-dict.json');
-// const dict = new Map(Object.entries(await response.json()));
-// Convert to IPA: convertArpabetToIPA(phonemes)
-```
-
-### Build Process
-- Generate dictionary **once**, commit to repo
-- Only regenerate when updating source dictionary
-- Run: `node scripts/build-cmudict.ts`
-
-### Error Handling
-- Optimized JSON fails → GitHub fallback
-- External service fails → Enhanced rules
-- All fails → Letter mapping
-
-### Deployment
-- Phase 1: Node.js runtime (GitHub download, full CMUdict)
-- Phase 2+: Vercel Edge Runtime compatible (~300-500KB embedded dictionary)
-- External service handles remaining words (Phase 2+)
-- Node.js runtime as fallback if needed
+### 5. Post-processing
+- Keep phonemic (do not add allophones like flapping).
+- Apply rhotic GA consistently (keep /r/ in coda).
+- Confidence score based on rule matches and exceptions.
 
 ---
 
-## Implementation Notes
+## Handling Homographs and Context
 
-### Start with Phase 1
-- Update cmudict.ts parsing to support variants (remove skip logic)
-- Change data structure from `Map<string, string[]>` to `Map<string, string[][]>`
-- Add enhanced fallback for unknown words  
-- Test that variant support works without breaking existing functionality
+- Maintain a small, curated "Ambiguity Lexicon" with deterministic rules:
+  - "the" → ðə before consonant sounds, ði before vowel sounds.
+  - Words like "record", "present", "project", etc.: noun/adj → 1st-syllable stress; verb → 2nd-syllable stress.
+  - Homographs: "lead" (metal vs verb), "read" (present vs past), "wind", "live", "bow", "bass", "tear", "close".
+  - "Polish" vs "polish": capitalization rule.
+- Lightweight POS/tagging heuristics (no ML):
+  - Simple patterns: DET + WORD → likely noun; PRON + WORD → likely verb/adj; "to" + WORD → likely verb; modal + WORD → verb; preposition + WORD → noun; "-ly" followers → adjective before adverb; sentence-initial capitalization vs mid-sentence.
+  - Suffix cues: -ment/-tion/-ness → noun; -able/-al/-ive → adj; -ize/-ise/-ify → verb.
+- If still ambiguous:
+  - Use frequency-based default (from lexicon metadata).
+  - Return alternatives to the client and allow user selection.
+  - Persist user choice for that word/context for future lookups.
 
-### Testing
-- Ensure all existing tests pass
-- Add variant lookup tests
-- Test enhanced fallback with brand names
-- Validate data structure changes
+---
 
-### Phase Progression
-- **Phase 1**: Foundation (variant support + fallback)
-- **Phase 2**: Architecture (hybrid embedded/external system)
-- **Phase 3**: Intelligence (context-aware disambiguation)  
-- **Phase 4**: Polish (performance optimization)
+## Performance Plan (Edge-First)
+
+- Batch and deduplicate tokens per request.
+- KV multi-get (single network round trip).
+- Cache layers:
+  - Response cache: hash of normalized input → full result, CDN cached with s-maxage and stale-while-revalidate.
+  - Token-level cache: optional KV of recent token→result.
+  - Shard prefetch: if using static shards, only fetch shards needed for current tokens; leverage CDN.
+- Keep bundle small: rules and ambiguity tables as compact JSON; CMU kept out of function bundle.
+- Rate limiting and graceful degradation: if KV unavailable, fallback to shards; if shards unavailable, rules-only mode with a "lower confidence" flag.
+
+---
+
+## Data Pipeline (Build-Time)
+
+- Pull CMUdict, convert to IPA (GA choices), normalize, compress.
+- Generate:
+  - KV preload dataset (word → IPA variants + metadata).
+  - Optional shard files for CDN.
+  - Ambiguity Lexicon table (hand-curated, evolving).
+  - Rule tables for G2P fallback.
+- Run integrity checks: duplicates, illegal IPA, stress marks.
+- Publish and version the artifacts; include checksum in the API for observability.
+
+---
+
+## UX Considerations for Learners
+
+- Show per-word confidence and alternatives when applicable.
+- Click any phoneme to open the articulation guide.
+- Toggle "show syllable boundaries/stress" to reinforce learning.
+- Offer a "dialect: General American" tag; allow future dialect switch.
+- When rules are used, show "how we derived this" for transparency.
+
+---
+
+## Observability and Quality
+
+- **Metrics:** p50/p95 latency, KV hit rate, fallback rate (% not found in dict), homograph disambiguation rate, error rate.
+- **Sampling:** Log a small percent of requests with anonymized tokens and chosen pathway (dict vs rules) to a private dataset for improving rules/ambiguity list.
+- **Accuracy review loop:** Maintain a growing exceptions list for tough patterns (e.g., ough, proper names).
+
+---
+
+## Phased Delivery Plan
+
+1. **Phase 1: Foundations**
+   - Build-time pipeline: CMU→IPA, KV preloader, artifact versioning.
+   - Edge API skeleton with tokenization, KV lookups, response caching.
+   - Basic UI wiring and clickable IPA integration.
+
+2. **Phase 2: Morphology + Fallback Rules**
+   - Suffix handling, multigraph segmentation, core context rules, syllabification, stress heuristics.
+   - Confidence scoring, notes, and rule trace.
+
+3. **Phase 3: Ambiguity + Context**
+   - Ambiguity Lexicon and rule-based POS heuristics.
+   - "The" rule and common noun/verb alternations.
+   - UI for alternative selection and persistence.
+
+4. **Phase 4: Performance + Hardening**
+   - KV multi-get, CDN tuning, shard fallback path, rate limiting.
+   - Metrics, logging, and QA against test corpus.
+
+5. **Phase 5: Polish for Learning Experience**
+   - Syllable/stress toggles, tooltips, examples, confidence hints.
+   - Personal dictionary overrides (user profile).

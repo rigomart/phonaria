@@ -6,6 +6,8 @@ This is the main Next.js application for Phonix, a phoneme-first ESL pronunciati
 
 - **Interactive IPA Charts**: Explore English phonemes with clickable charts
 - **G2P Transcription**: Convert text to phonemic transcription using CMU Dictionary
+- **Word Definitions**: Click a word in results to view definitions in a side panel
+- **Pronunciation Audio**: Play dictionary audio for words when available
 - **Dark/Light Theme**: Built-in theme switching with next-themes
 - **Responsive Design**: Mobile-first approach with shadcn/ui components
 - **Type Safety**: Full TypeScript implementation with strict settings
@@ -23,6 +25,7 @@ This is the main Next.js application for Phonix, a phoneme-first ESL pronunciati
 
 - `GET /api/health` - Health check endpoint
 - `POST /api/g2p` - Convert text to phonemic transcription
+- `GET /api/dictionary?word=<word>` - Fetch dictionary definition for a word
 
 ## Development
 

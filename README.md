@@ -12,7 +12,7 @@ This is a monorepo managed with `pnpm` workspaces, consisting of:
 
 ## Current Status
 
-We are currently implementing the Core MVP features, specifically focusing on phoneme awareness and transcription. The project includes interactive IPA charts, phoneme dialogs with audio examples, and a comprehensive data model for 40 English phonemes.
+We are currently implementing the Core MVP features, specifically focusing on phoneme awareness, transcription, and dictionary lookup. The project includes interactive IPA charts, phoneme dialogs with audio examples, a concise dictionary side panel (with pronunciation audio when available), and a comprehensive data model for 40 English phonemes.
 
 ## Development
 
@@ -49,3 +49,9 @@ For detailed information about each package, see their respective README files:
 - [Next.js Application](apps/web/README.md)
 - [Shared Data Package](packages/shared-data/README.md)
 - [TTS Generation Package](packages/tts-generate/README.md)
+
+## New: Dictionary Lookup
+
+- Click any word in G2P results to view definitions in a side panel.
+- Pronunciation audio plays when provided by the dictionary source.
+- API: `GET /api/dictionary?word=<word>` → `{ success, data }` or `404` with `{ error: "not_found" }`.
