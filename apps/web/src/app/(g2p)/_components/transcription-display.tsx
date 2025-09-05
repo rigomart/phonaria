@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useDictionaryStore } from "../_store/dictionary-store";
 import { useG2PStore } from "../_store/g2p-store";
 import type { TranscribedPhoneme, TranscribedWord } from "../_types/g2p";
 import { EmptyState } from "./empty-state";
@@ -111,7 +112,8 @@ function WordColumn({ word, onPhonemeClick, onWordClick }: WordColumnProps) {
  * Compact transcription display optimized for tool-like interface
  */
 export function TranscriptionDisplay({ className }: TranscriptionDisplayProps) {
-	const { result, selectPhoneme, selectWord } = useG2PStore();
+	const { result, selectPhoneme } = useG2PStore();
+	const { selectWord } = useDictionaryStore();
 
 	// Show empty state if no result
 	if (!result) {

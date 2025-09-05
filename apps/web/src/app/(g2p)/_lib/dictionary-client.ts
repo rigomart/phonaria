@@ -1,5 +1,5 @@
 import { createApiClient } from "@/lib/api-client";
-import { dictionarySuccessSchema } from "../_types/dictionary";
+import { dictionarySuccessSchema } from "../_schemas/dictionary";
 
 const client = createApiClient({
 	baseUrl: "",

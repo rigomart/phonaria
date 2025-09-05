@@ -3,7 +3,7 @@ import { z } from "zod";
 export const wordDefinitionSchema = z.object({
 	word: z.string(),
 	phonetic: z.string().optional(),
-	audioUrl: z.string().url().optional(),
+	audioUrl: z.url().optional(),
 	meanings: z.array(
 		z.object({
 			partOfSpeech: z.string(),

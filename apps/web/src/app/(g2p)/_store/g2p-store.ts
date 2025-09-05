@@ -1,9 +1,7 @@
 import type { IpaPhoneme } from "shared-data";
 import { toast } from "sonner";
 import { create } from "zustand";
-import { fetchDefinition } from "../_lib/dictionary-client";
 import { getPhonemeBySymbol, transcribeText } from "../_lib/g2p-client";
-import type { WordDefinition } from "../_types/dictionary";
 import type { TranscribedPhoneme, TranscriptionResult } from "../_types/g2p";
 
 interface G2PStore {
@@ -15,18 +13,10 @@ interface G2PStore {
 	// Selected phoneme state
 	selectedPhoneme: IpaPhoneme | null;
 
-	// Dictionary state
-	selectedWord: string | null;
-	wordDefinition: WordDefinition | null;
-	definitionStatus: "idle" | "loading" | "loaded" | "error" | "not_found";
-	definitionError: string | null;
-
 	// Actions
 	transcribe: (text: string) => Promise<void>;
 	clearResult: () => void;
 	selectPhoneme: (transcribedPhoneme: TranscribedPhoneme) => void;
-	selectWord: (word: string) => Promise<void>;
-	clearDefinition: () => void;
 	closePhonemePanel: () => void;
 }
 
@@ -36,10 +26,6 @@ export const useG2PStore = create<G2PStore>((set) => ({
 	error: null,
 	isLoading: false,
 	selectedPhoneme: null,
-	selectedWord: null,
-	wordDefinition: null,
-	definitionStatus: "idle",
-	definitionError: null,
 
 	// Actions
 	transcribe: async (text: string) => {
@@ -68,10 +54,6 @@ export const useG2PStore = create<G2PStore>((set) => ({
 			result: null,
 			error: null,
 			selectedPhoneme: null,
-			selectedWord: null,
-			wordDefinition: null,
-			definitionStatus: "idle",
-			definitionError: null,
 		});
 	},
 
@@ -88,32 +70,5 @@ export const useG2PStore = create<G2PStore>((set) => ({
 
 	closePhonemePanel: () => {
 		set({ selectedPhoneme: null });
-	},
-
-	selectWord: async (word: string) => {
-		const trimmed = word.trim();
-		if (!trimmed) return;
-		set({ selectedWord: trimmed, definitionStatus: "loading", definitionError: null });
-		try {
-			const { data } = await fetchDefinition(trimmed);
-			set({ wordDefinition: data, definitionStatus: "loaded" });
-		} catch (e) {
-			const message = e instanceof Error ? e.message : "Failed to load definition";
-			// Heuristic: the API client includes status code in ApiError, but we keep it simple here
-			if (message.toLowerCase().includes("not found") || message.toLowerCase().includes("404")) {
-				set({ definitionStatus: "not_found", definitionError: null, wordDefinition: null });
-				return;
-			}
-			set({ definitionStatus: "error", definitionError: message, wordDefinition: null });
-		}
-	},
-
-	clearDefinition: () => {
-		set({
-			selectedWord: null,
-			wordDefinition: null,
-			definitionStatus: "idle",
-			definitionError: null,
-		});
 	},
 }));

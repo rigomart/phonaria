@@ -8,9 +8,9 @@ export default function Index() {
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-6">
-				<div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+				<div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 					{/* Main Content Area */}
-					<div className="lg:col-span-3 space-y-6">
+					<div className="lg:col-span-7 space-y-6">
 						{/* Input Section */}
 						<div className="space-y-4">
 							<G2PInputForm className="w-full" />
@@ -29,7 +29,7 @@ export default function Index() {
 					</div>
 
 					{/* Right Column: Definition over Phoneme details */}
-					<div className="lg:col-span-2 space-y-6">
+					<div className="lg:col-span-5 space-y-6">
 						<WordDefinitionPanel />
 						<PhonemeDetailPanel />
 					</div>
