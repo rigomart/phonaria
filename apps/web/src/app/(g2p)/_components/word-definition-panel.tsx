@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useG2PStore } from "../_store/g2p-store";
 
@@ -61,7 +60,7 @@ export function WordDefinitionPanel() {
 
 				{definitionStatus === "loaded" && wordDefinition && (
 					<ScrollArea className="h-[400px] pr-3">
-						<div className="space-y-4">
+						<div className="space-y-8">
 							{wordDefinition.meanings.map((meaning) => (
 								<div
 									key={`${meaning.partOfSpeech}-${meaning.definitions[0]?.definition.slice(0, 40) || meaning.partOfSpeech}`}
@@ -78,14 +77,13 @@ export function WordDefinitionPanel() {
 												key={`${def.definition.slice(0, 60)}-${def.example || ""}`}
 												className="leading-relaxed"
 											>
-												<div className="text-sm">{def.definition}</div>
+												<span className="text-sm">{def.definition}</span>
 												{def.example && (
 													<div className="text-xs text-muted-foreground mt-1">“{def.example}”</div>
 												)}
 											</li>
 										))}
 									</ol>
-									<Separator className="my-2" />
 								</div>
 							))}
 						</div>
