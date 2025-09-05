@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Geist, Geist_Mono, Inter, Noto_Sans, Rubik } from "next/font/google";
 import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
@@ -11,6 +11,26 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
 	variable: "--font-geist-mono",
+	subsets: ["latin"],
+});
+
+const archivo = Archivo({
+	variable: "--font-archivo",
+	subsets: ["latin"],
+});
+
+const inter = Inter({
+	variable: "--font-inter",
+	subsets: ["latin"],
+});
+
+const rubik = Rubik({
+	variable: "--font-rubik",
+	subsets: ["latin"],
+});
+
+const notoSans = Noto_Sans({
+	variable: "--font-noto-sans",
 	subsets: ["latin"],
 });
 
@@ -26,7 +46,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+			<body
+				className={`${geistSans.variable} ${geistMono.variable} ${archivo.variable} ${inter.variable} ${rubik.variable} ${notoSans.variable} antialiased`}
+			>
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"

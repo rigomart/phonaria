@@ -4,8 +4,8 @@ import { Loader2, SendHorizonal } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import { useG2PStore } from "../_store/g2p-store";
+import { CharacterProgress } from "./character-progress";
 
 interface G2PInputFormProps {
 	disabled?: boolean;
@@ -29,7 +29,6 @@ export function G2PInputForm({
 	const isDisabled = disabled || isLoading;
 	const hasText = inputText.trim().length > 0;
 	const characterCount = inputText.length;
-	const characterPercentage = (characterCount / maxLength) * 100;
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -67,20 +66,7 @@ export function G2PInputForm({
 				</div>
 
 				{/* Character Limit Visualization */}
-				<div className="space-y-2">
-					<Progress value={characterPercentage} className="h-1.5" />
-					<div className="flex justify-between items-center text-xs text-muted-foreground">
-						<span className="text-xs text-muted-foreground">
-							{characterCount} / {maxLength} characters
-						</span>
-						{characterCount > maxLength * 0.8 && characterCount < maxLength && (
-							<span className="text-amber-600">Approaching limit</span>
-						)}
-						{characterCount >= maxLength && (
-							<span className="text-red-600">Character limit reached</span>
-						)}
-					</div>
-				</div>
+				<CharacterProgress current={characterCount} max={maxLength} size="md" />
 			</form>
 		</div>
 	);
