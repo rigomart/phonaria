@@ -8,7 +8,7 @@ import {
 	g2pRequestSchema,
 	g2pResponseSchema,
 	g2pWordSchema,
-} from "./schemas";
+} from "./g2p-api.schema";
 
 describe("G2P API Schemas", () => {
 	describe("g2pRequestSchema", () => {

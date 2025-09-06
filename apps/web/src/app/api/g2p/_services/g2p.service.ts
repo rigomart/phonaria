@@ -1,6 +1,6 @@
+import type { G2PRequest, G2PResponse, G2PWord } from "../_schemas/g2p-api.schema";
 import { cmudict } from "./cmudict";
 import { fallbackG2P } from "./fallback-g2p";
-import type { G2PRequest, G2PResponse, G2PWord } from "./schemas";
 
 async function ensureDictLoaded(): Promise<void> {
 	await cmudict.load();

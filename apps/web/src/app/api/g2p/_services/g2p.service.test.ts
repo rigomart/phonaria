@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { G2PRequest } from "./schemas";
-import { getServiceStats } from "./service";
+import type { G2PRequest } from "../_schemas/g2p-api.schema";
+import { getServiceStats } from "./g2p.service";
 
 // Mock the dependencies
 vi.mock("./cmudict", () => ({
@@ -42,7 +42,7 @@ describe("G2P Service", () => {
 
 	describe("transcribeText() basic functionality", () => {
 		it("handles empty text input", async () => {
-			const { transcribeText } = await import("./service");
+			const { transcribeText } = await import("./g2p.service");
 			const request: G2PRequest = { text: "" };
 			const result = await transcribeText(request);
 
@@ -50,7 +50,7 @@ describe("G2P Service", () => {
 		});
 
 		it("handles whitespace-only text input", async () => {
-			const { transcribeText } = await import("./service");
+			const { transcribeText } = await import("./g2p.service");
 			const request: G2PRequest = { text: "   " };
 			const result = await transcribeText(request);
 
@@ -58,7 +58,7 @@ describe("G2P Service", () => {
 		});
 
 		it("loads dictionary before processing", async () => {
-			const { transcribeText } = await import("./service");
+			const { transcribeText } = await import("./g2p.service");
 			const { cmudict } = await import("./cmudict");
 
 			const request: G2PRequest = { text: "hello" };
@@ -72,7 +72,7 @@ describe("G2P Service", () => {
 		});
 
 		it("falls back to fallback G2P for unknown words", async () => {
-			const { transcribeText } = await import("./service");
+			const { transcribeText } = await import("./g2p.service");
 			const { cmudict } = await import("./cmudict");
 			const { fallbackG2P } = await import("./fallback-g2p");
 
@@ -97,7 +97,7 @@ describe("G2P Service", () => {
 
 	describe("text tokenization", () => {
 		it("handles punctuation correctly", async () => {
-			const { transcribeText } = await import("./service");
+			const { transcribeText } = await import("./g2p.service");
 			const { cmudict } = await import("./cmudict");
 			const { fallbackG2P } = await import("./fallback-g2p");
 
@@ -115,7 +115,7 @@ describe("G2P Service", () => {
 		});
 
 		it("preserves contractions", async () => {
-			const { transcribeText } = await import("./service");
+			const { transcribeText } = await import("./g2p.service");
 			const { cmudict } = await import("./cmudict");
 			const { fallbackG2P } = await import("./fallback-g2p");
 
@@ -130,7 +130,7 @@ describe("G2P Service", () => {
 		});
 
 		it("converts words to lowercase", async () => {
-			const { transcribeText } = await import("./service");
+			const { transcribeText } = await import("./g2p.service");
 			const { cmudict } = await import("./cmudict");
 			const { fallbackG2P } = await import("./fallback-g2p");
 
