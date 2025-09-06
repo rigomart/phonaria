@@ -48,14 +48,6 @@ export function EmptyState() {
 					</CardContent>
 				</Card>
 			</div>
-
-			{/* Call to Action */}
-			<div className="bg-primary/5 rounded-lg p-4 max-w-md">
-				<div className="text-xs text-muted-foreground">
-					<div className="font-medium text-foreground mb-1">How it works:</div>
-					Type text → Get IPA transcription → Click phonemes to learn articulation
-				</div>
-			</div>
 		</div>
 	);
 }

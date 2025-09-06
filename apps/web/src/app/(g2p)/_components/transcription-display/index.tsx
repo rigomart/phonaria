@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { useDictionaryStore } from "../../_store/dictionary-store";
 import { useG2PStore } from "../../_store/g2p-store";
 import type { TranscribedPhoneme, TranscribedWord } from "../../_types/g2p";
-import { EmptyState } from "../empty-state";
+import { EmptyState } from "./empty-state";
 
 interface WordColumnProps {
 	word: TranscribedWord;
