@@ -69,6 +69,63 @@ function countNuclei(tokens: ArpaToken[]): number {
 	return tokens.reduce((count, t) => count + (t.type === "vowel" ? 1 : 0), 0);
 }
 
+// Find the onset start index for the syllable containing the vowel at `vowelIdx`.
+// Heuristic:
+// - Prefer valid 3-consonant onsets: S + (P|T|K) + (R|L|W|Y)
+// - Else prefer valid 2-consonant onsets: (S + (P|T|K)) OR (firstSet + secondSet)
+// - Else fall back to a single consonant immediately before the vowel
+// - If there are no preceding consonants, place before the vowel
+function findOnsetStartIndex(tokens: ArpaToken[], vowelIdx: number): number {
+	let i = vowelIdx - 1;
+	while (i >= 0 && tokens[i].type === "consonant") i--;
+	const clusterStart = i + 1;
+	const available = vowelIdx - clusterStart;
+	if (available <= 0) return vowelIdx;
+
+	const secondSet = new Set(["R", "L", "W", "Y"]);
+	const sptk = new Set(["P", "T", "K"]);
+	const firstSet = new Set([
+		"P",
+		"B",
+		"T",
+		"D",
+		"K",
+		"G",
+		"F",
+		"V",
+		"TH",
+		"S",
+		"SH",
+		"CH",
+		"JH",
+		"HH",
+		"M",
+		"N",
+	]);
+
+	if (available >= 3) {
+		const a = tokens[vowelIdx - 3]?.base;
+		const b = tokens[vowelIdx - 2]?.base;
+		const c = tokens[vowelIdx - 1]?.base;
+		if (a === "S" && sptk.has(b) && secondSet.has(c)) {
+			return vowelIdx - 3;
+		}
+	}
+
+	if (available >= 2) {
+		const a = tokens[vowelIdx - 2]?.base;
+		const b = tokens[vowelIdx - 1]?.base;
+		if (a === "S" && sptk.has(b)) {
+			return vowelIdx - 2;
+		}
+		if (firstSet.has(a) && secondSet.has(b)) {
+			return vowelIdx - 2;
+		}
+	}
+
+	return vowelIdx - 1;
+}
+
 /**
  * Convert ARPAbet tokens to an IPA array with correctly positioned stress marks.
  * - Stress marks (ˈ, ˌ) are separate tokens inserted before the onset of the stressed syllable.
@@ -97,14 +154,7 @@ export function convertArpabetToIPA(arpaPhonemes: string[]): string[] {
 		const marker = t.stress === 1 ? "ˈ" : t.stress === 2 ? "ˌ" : undefined;
 		if (!marker) continue;
 
-		let prevVowelIdx = -1;
-		for (let k = j - 1; k >= 0; k--) {
-			if (tokens[k].type === "vowel") {
-				prevVowelIdx = k;
-				break;
-			}
-		}
-		const insertBeforeIdx = prevVowelIdx + 1;
+		const insertBeforeIdx = findOnsetStartIndex(tokens, j);
 		const bucket = insertBeforeIndexToMarkers.get(insertBeforeIdx) ?? [];
 		bucket.push(marker);
 		insertBeforeIndexToMarkers.set(insertBeforeIdx, bucket);

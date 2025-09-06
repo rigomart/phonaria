@@ -100,5 +100,75 @@ describe("ARPAbet to IPA Mapping", () => {
 			const expected = ["p", "ə", "ˈ", "l", "i", "s"];
 			expect(convertArpabetToIPA(input)).toEqual(expected);
 		});
+
+		it("handles 'diphthong' with primary stress before onset", () => {
+			// DIPHTHONG: D IH1 F TH AO NG -> ˈ before D onset
+			const input = ["D", "IH1", "F", "TH", "AO2", "NG"];
+			const expected = ["ˈ", "d", "ɪ", "f", "ˌ", "θ", "ɔ", "ŋ"];
+			expect(convertArpabetToIPA(input)).toEqual(expected);
+		});
+
+		it("handles 'encyclopedia' with secondary then primary stress before onsets", () => {
+			// ENCYcloPEdia: IH0 N S AY2 K L AH0 P IY1 D IY0 AH0
+			const input = ["IH0", "N", "S", "AY2", "K", "L", "AH0", "P", "IY1", "D", "IY0", "AH0"];
+			const expected = ["ɪ", "n", "ˌ", "s", "aɪ", "k", "l", "ə", "ˈ", "p", "i", "d", "i", "ə"];
+			expect(convertArpabetToIPA(input)).toEqual(expected);
+		});
+
+		it("handles tricky onsets and vowel-initial stressed syllables", () => {
+			// about: AH0 B AW1 T -> ˈ before B
+			expect(convertArpabetToIPA(["AH0", "B", "AW1", "T"])).toEqual(["ə", "ˈ", "b", "aʊ", "t"]);
+
+			// computer: K AH0 M P Y UW1 T ER0 -> ˈ before P (PY onset)
+			expect(convertArpabetToIPA(["K", "AH0", "M", "P", "Y", "UW1", "T", "ER0"])).toEqual([
+				"k",
+				"ə",
+				"m",
+				"ˈ",
+				"p",
+				"j",
+				"u",
+				"t",
+				"ɚ",
+			]);
+
+			// astronomy: AE0 S T R AA1 N AH0 M IY0 -> ˈ before S (STR onset)
+			expect(convertArpabetToIPA(["AE0", "S", "T", "R", "AA1", "N", "AH0", "M", "IY0"])).toEqual([
+				"æ",
+				"ˈ",
+				"s",
+				"t",
+				"ɹ",
+				"ɑ",
+				"n",
+				"ə",
+				"m",
+				"i",
+			]);
+
+			// prelude: P R EH1 L Y UW0 D -> ˈ before PR onset
+			expect(convertArpabetToIPA(["P", "R", "EH1", "L", "Y", "UW0", "D"])).toEqual([
+				"ˈ",
+				"p",
+				"ɹ",
+				"ɛ",
+				"l",
+				"j",
+				"u",
+				"d",
+			]);
+
+			// describe: D IH0 S K R AY1 B -> ˈ before S (SKR onset)
+			expect(convertArpabetToIPA(["D", "IH0", "S", "K", "R", "AY1", "B"])).toEqual([
+				"d",
+				"ɪ",
+				"ˈ",
+				"s",
+				"k",
+				"ɹ",
+				"aɪ",
+				"b",
+			]);
+		});
 	});
 });
