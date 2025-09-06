@@ -42,27 +42,26 @@ describe("ARPAbet to IPA Mapping", () => {
 	});
 
 	describe("convertArpabetToIPA", () => {
-		it("converts simple words correctly", () => {
-			// CAT: K AE1 T
-			expect(convertArpabetToIPA(["K", "AE1", "T"])).toEqual(["k", "ˈ", "æ", "t"]);
+		it("converts simple words correctly with stress on syllable onset", () => {
+			// CAT: K AE1 T -> monosyllable; no stress mark
+			expect(convertArpabetToIPA(["K", "AE1", "T"])).toEqual(["k", "æ", "t"]);
 
-			// HELLO: HH AH0 L OW1
-			expect(convertArpabetToIPA(["HH", "AH0", "L", "OW1"])).toEqual(["h", "ə", "l", "ˈ", "oʊ"]);
+			// HELLO: HH AH0 L OW1 -> ˈ before L onset
+			expect(convertArpabetToIPA(["HH", "AH0", "L", "OW1"])).toEqual(["h", "ə", "ˈ", "l", "oʊ"]);
 
-			// WATER: W AO1 T ER0
-			expect(convertArpabetToIPA(["W", "AO1", "T", "ER0"])).toEqual(["w", "ˈ", "ɔ", "t", "ɚ"]);
+			// WATER: W AO1 T ER0 -> ˈ before W onset
+			expect(convertArpabetToIPA(["W", "AO1", "T", "ER0"])).toEqual(["ˈ", "w", "ɔ", "t", "ɚ"]);
 		});
 
-		it("handles primary stress correctly", () => {
-			// Primary stress (1) adds ˈ before the phoneme
-			expect(convertArpabetToIPA(["AE1"])).toEqual(["ˈ", "æ"]);
-			expect(convertArpabetToIPA(["IY1"])).toEqual(["ˈ", "i"]);
+		it("suppresses stress for monosyllables", () => {
+			// Monosyllables should not include stress marks
+			expect(convertArpabetToIPA(["AE1"])).toEqual(["æ"]);
+			expect(convertArpabetToIPA(["IY1"])).toEqual(["i"]);
 		});
 
-		it("handles secondary stress correctly", () => {
-			// Secondary stress (2) adds ˌ before the phoneme
-			expect(convertArpabetToIPA(["AE2"])).toEqual(["ˌ", "æ"]);
-			expect(convertArpabetToIPA(["OW2"])).toEqual(["ˌ", "oʊ"]);
+		it("handles secondary stress by inserting before onset", () => {
+			// Provide context to avoid monosyllable suppression
+			expect(convertArpabetToIPA(["S", "AE2", "T", "ER0"])).toEqual(["ˌ", "s", "æ", "t", "ɚ"]);
 		});
 
 		it("handles unstressed vowels correctly", () => {
@@ -80,32 +79,25 @@ describe("ARPAbet to IPA Mapping", () => {
 			expect(convertArpabetToIPA(["TH", "DH", "NG"])).toEqual(["θ", "ð", "ŋ"]);
 		});
 
-		it("handles complex words with multiple stresses", () => {
+		it("handles complex words with multiple stresses, placing marks before onsets", () => {
 			// COMMUNICATION: K AH0 M Y UW2 N AH0 K EY1 SH AH0 N
 			const input = ["K", "AH0", "M", "Y", "UW2", "N", "AH0", "K", "EY1", "SH", "AH0", "N"];
-			const expected = ["k", "ə", "m", "j", "ˌ", "u", "n", "ə", "k", "ˈ", "eɪ", "ʃ", "ə", "n"];
+			const expected = ["k", "ə", "ˌ", "m", "j", "u", "n", "ə", "ˈ", "k", "eɪ", "ʃ", "ə", "n"];
 			expect(convertArpabetToIPA(input)).toEqual(expected);
 		});
 
 		it("handles unknown ARPAbet symbols gracefully", () => {
-			// Should pass through unknown symbols unchanged
-			expect(convertArpabetToIPA(["UNKNOWN", "AE1", "FAKE2"])).toEqual([
-				"UNKNOWN",
-				"ˈ",
-				"æ",
-				"ˌ",
-				"FAKE2",
-			]);
+			// Unknowns pass through; monosyllable suppression still applies if needed
+			expect(convertArpabetToIPA(["UNKNOWN", "AE1", "FAKE2"])).toEqual(["UNKNOWN", "æ", "FAKE2"]);
 		});
 
 		it("handles empty input", () => {
 			expect(convertArpabetToIPA([])).toEqual([]);
 		});
 
-		it("maintains correct order with mixed stress patterns", () => {
-			// Test that stress markers come before their vowels
+		it("maintains correct order with mixed stress patterns, inserting before onset", () => {
 			const input = ["P", "AH0", "L", "IY1", "S"];
-			const expected = ["p", "ə", "l", "ˈ", "i", "s"];
+			const expected = ["p", "ə", "ˈ", "l", "i", "s"];
 			expect(convertArpabetToIPA(input)).toEqual(expected);
 		});
 	});

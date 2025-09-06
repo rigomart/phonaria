@@ -1,16 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { G2PRequest } from "../_schemas/g2p-api.schema";
 import { getServiceStats } from "./g2p.service";
 
-// Mock the dependencies
-vi.mock("./cmudict", () => ({
+// Mock the dependencies (must match import paths used in g2p.service.ts)
+vi.mock("../_lib/cmudict", () => ({
 	cmudict: {
 		load: vi.fn().mockResolvedValue(undefined),
 		lookup: vi.fn(),
 	},
 }));
 
-vi.mock("./fallback-g2p", () => ({
+vi.mock("../_lib/fallback-g2p", () => ({
 	fallbackG2P: {
 		generatePronunciation: vi.fn(),
 	},
@@ -31,44 +30,24 @@ describe("G2P Service", () => {
 				description: "CMU Dictionary G2P service",
 			});
 		});
-
-		it("returns consistent results", () => {
-			const stats1 = getServiceStats();
-			const stats2 = getServiceStats();
-
-			expect(stats1).toEqual(stats2);
-		});
 	});
 
-	describe("transcribeText() basic functionality", () => {
-		it("handles empty text input", async () => {
+	describe("transcribeText()", () => {
+		it("returns empty words for empty/whitespace input", async () => {
 			const { transcribeText } = await import("./g2p.service");
-			const request: G2PRequest = { text: "" };
-			const result = await transcribeText(request);
-
-			expect(result).toEqual({ words: [] });
+			expect(await transcribeText({ text: "" })).toEqual({ words: [] });
+			expect(await transcribeText({ text: "   " })).toEqual({ words: [] });
 		});
 
-		it("handles whitespace-only text input", async () => {
-			const { transcribeText } = await import("./g2p.service");
-			const request: G2PRequest = { text: "   " };
-			const result = await transcribeText(request);
-
-			expect(result).toEqual({ words: [] });
-		});
-
-		it("loads dictionary before processing", async () => {
+		it("loads the dictionary and passes through IPA tokens from cmudict", async () => {
 			const { transcribeText } = await import("./g2p.service");
 			const { cmudict } = await import("../_lib/cmudict");
 
-			const request: G2PRequest = { text: "hello" };
+			vi.mocked(cmudict.lookup).mockReturnValue([["h", "ə", "ˈ", "l", "oʊ"]]);
 
-			// Mock successful dictionary lookup
-			vi.mocked(cmudict.lookup).mockReturnValue([["h", "ə", "l", "oʊ"]]);
-
-			await transcribeText(request);
-
+			const res = await transcribeText({ text: "hello" });
 			expect(cmudict.load).toHaveBeenCalled();
+			expect(res.words).toEqual([{ word: "hello", variants: [["h", "ə", "ˈ", "l", "oʊ"]] }]);
 		});
 
 		it("falls back to fallback G2P for unknown words", async () => {
@@ -76,45 +55,19 @@ describe("G2P Service", () => {
 			const { cmudict } = await import("../_lib/cmudict");
 			const { fallbackG2P } = await import("../_lib/fallback-g2p");
 
-			const request: G2PRequest = { text: "unknownword" };
-
-			// Mock dictionary returning no results
 			vi.mocked(cmudict.lookup).mockReturnValue(undefined);
+			vi.mocked(fallbackG2P.generatePronunciation).mockReturnValue(["t", "ɛ", "s", "t"]);
 
-			// Mock fallback G2P
-			vi.mocked(fallbackG2P.generatePronunciation).mockReturnValue(["ʌ", "n", "n", "oʊ", "n"]);
-
-			const result = await transcribeText(request);
+			const result = await transcribeText({ text: "unknownword" });
 
 			expect(result).toEqual({
-				words: [{ word: "unknownword", variants: [["ʌ", "n", "n", "oʊ", "n"]] }],
+				words: [{ word: "unknownword", variants: [["t", "ɛ", "s", "t"]] }],
 			});
-
 			expect(cmudict.lookup).toHaveBeenCalledWith("unknownword");
 			expect(fallbackG2P.generatePronunciation).toHaveBeenCalledWith("unknownword");
 		});
-	});
 
-	describe("text tokenization", () => {
-		it("handles punctuation correctly", async () => {
-			const { transcribeText } = await import("./g2p.service");
-			const { cmudict } = await import("../_lib/cmudict");
-			const { fallbackG2P } = await import("../_lib/fallback-g2p");
-
-			// Mock all words as unknown to test tokenization
-			vi.mocked(cmudict.lookup).mockReturnValue(undefined);
-			vi.mocked(fallbackG2P.generatePronunciation).mockReturnValue(["t", "ɛ", "s", "t"]);
-
-			const request: G2PRequest = { text: "Hello, world! How are you?" };
-
-			const result = await transcribeText(request);
-
-			// Should extract words without punctuation
-			expect(result.words).toHaveLength(5);
-			expect(result.words.map((w) => w.word)).toEqual(["hello", "world", "how", "are", "you"]);
-		});
-
-		it("preserves contractions", async () => {
+		it("tokenizes basic sentences (punctuation, contractions, case)", async () => {
 			const { transcribeText } = await import("./g2p.service");
 			const { cmudict } = await import("../_lib/cmudict");
 			const { fallbackG2P } = await import("../_lib/fallback-g2p");
@@ -122,26 +75,14 @@ describe("G2P Service", () => {
 			vi.mocked(cmudict.lookup).mockReturnValue(undefined);
 			vi.mocked(fallbackG2P.generatePronunciation).mockReturnValue(["t", "ɛ", "s", "t"]);
 
-			const request: G2PRequest = { text: "don't can't won't" };
+			const withPunct = await transcribeText({ text: "Hello, world! How are you?" });
+			expect(withPunct.words.map((w) => w.word)).toEqual(["hello", "world", "how", "are", "you"]);
 
-			const result = await transcribeText(request);
+			const withContractions = await transcribeText({ text: "don't can't won't" });
+			expect(withContractions.words.map((w) => w.word)).toEqual(["don't", "can't", "won't"]);
 
-			expect(result.words.map((w) => w.word)).toEqual(["don't", "can't", "won't"]);
-		});
-
-		it("converts words to lowercase", async () => {
-			const { transcribeText } = await import("./g2p.service");
-			const { cmudict } = await import("../_lib/cmudict");
-			const { fallbackG2P } = await import("../_lib/fallback-g2p");
-
-			vi.mocked(cmudict.lookup).mockReturnValue(undefined);
-			vi.mocked(fallbackG2P.generatePronunciation).mockReturnValue(["t", "ɛ", "s", "t"]);
-
-			const request: G2PRequest = { text: "HELLO World TeSt" };
-
-			const result = await transcribeText(request);
-
-			expect(result.words.map((w) => w.word)).toEqual(["hello", "world", "test"]);
+			const withCase = await transcribeText({ text: "HELLO World TeSt" });
+			expect(withCase.words.map((w) => w.word)).toEqual(["hello", "world", "test"]);
 		});
 	});
 });
