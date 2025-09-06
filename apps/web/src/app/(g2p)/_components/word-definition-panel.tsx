@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { WordDefinition } from "../_schemas/dictionary";
 import { type DictionaryStatus, useDictionaryStore } from "../_store/dictionary-store";
@@ -19,7 +18,9 @@ export function WordDefinitionPanel() {
 
 	return (
 		<Card className="h-fit">
-			<CardHeader className="pb-3">
+			<CardHeader>
+				<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
+
 				<div className="flex items-center justify-between">
 					<CardTitle className="text-lg">
 						<span className="font-semibold">{selectedWord}</span>
@@ -36,7 +37,6 @@ export function WordDefinitionPanel() {
 						</Button>
 					</div>
 				</div>
-				<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
 			</CardHeader>
 
 			<CardContent>
@@ -74,10 +74,7 @@ function WordDefinitionContent({ wordDefinition, status, error }: WordDefinition
 
 	return (
 		<ScrollArea className="h-[400px] pr-3">
-			<div className="space-y-4">
-				{wordDefinition.phonetic && (
-					<div className="text-sm text-muted-foreground">{wordDefinition.phonetic}</div>
-				)}
+			<div className="space-y-6">
 				{wordDefinition.meanings.map((meaning) => (
 					<div
 						key={`${meaning.partOfSpeech}-${meaning.definitions[0]?.definition.slice(0, 40) || meaning.partOfSpeech}`}
@@ -101,7 +98,6 @@ function WordDefinitionContent({ wordDefinition, status, error }: WordDefinition
 								</li>
 							))}
 						</ol>
-						<Separator className="my-2" />
 					</div>
 				))}
 			</div>
