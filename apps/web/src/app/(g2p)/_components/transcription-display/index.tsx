@@ -95,7 +95,7 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 
 				{word.variants.length > 1 && (
 					<DropdownMenu>
-						<DropdownMenuTrigger>
+						<DropdownMenuTrigger asChild>
 							<Button size="icon" variant="ghost">
 								<ChevronDown />
 							</Button>

@@ -59,7 +59,7 @@ describe("G2P Service", () => {
 
 		it("loads dictionary before processing", async () => {
 			const { transcribeText } = await import("./g2p.service");
-			const { cmudict } = await import("./cmudict");
+			const { cmudict } = await import("../_lib/cmudict");
 
 			const request: G2PRequest = { text: "hello" };
 
@@ -73,8 +73,8 @@ describe("G2P Service", () => {
 
 		it("falls back to fallback G2P for unknown words", async () => {
 			const { transcribeText } = await import("./g2p.service");
-			const { cmudict } = await import("./cmudict");
-			const { fallbackG2P } = await import("./fallback-g2p");
+			const { cmudict } = await import("../_lib/cmudict");
+			const { fallbackG2P } = await import("../_lib/fallback-g2p");
 
 			const request: G2PRequest = { text: "unknownword" };
 
@@ -98,8 +98,8 @@ describe("G2P Service", () => {
 	describe("text tokenization", () => {
 		it("handles punctuation correctly", async () => {
 			const { transcribeText } = await import("./g2p.service");
-			const { cmudict } = await import("./cmudict");
-			const { fallbackG2P } = await import("./fallback-g2p");
+			const { cmudict } = await import("../_lib/cmudict");
+			const { fallbackG2P } = await import("../_lib/fallback-g2p");
 
 			// Mock all words as unknown to test tokenization
 			vi.mocked(cmudict.lookup).mockReturnValue(undefined);
@@ -116,8 +116,8 @@ describe("G2P Service", () => {
 
 		it("preserves contractions", async () => {
 			const { transcribeText } = await import("./g2p.service");
-			const { cmudict } = await import("./cmudict");
-			const { fallbackG2P } = await import("./fallback-g2p");
+			const { cmudict } = await import("../_lib/cmudict");
+			const { fallbackG2P } = await import("../_lib/fallback-g2p");
 
 			vi.mocked(cmudict.lookup).mockReturnValue(undefined);
 			vi.mocked(fallbackG2P.generatePronunciation).mockReturnValue(["t", "ɛ", "s", "t"]);
@@ -131,8 +131,8 @@ describe("G2P Service", () => {
 
 		it("converts words to lowercase", async () => {
 			const { transcribeText } = await import("./g2p.service");
-			const { cmudict } = await import("./cmudict");
-			const { fallbackG2P } = await import("./fallback-g2p");
+			const { cmudict } = await import("../_lib/cmudict");
+			const { fallbackG2P } = await import("../_lib/fallback-g2p");
 
 			vi.mocked(cmudict.lookup).mockReturnValue(undefined);
 			vi.mocked(fallbackG2P.generatePronunciation).mockReturnValue(["t", "ɛ", "s", "t"]);

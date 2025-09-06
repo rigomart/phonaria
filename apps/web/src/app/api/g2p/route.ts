@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { transcribeText } from "./_lib/service";
 import type { ApiError } from "./_schemas/g2p-api.schema";
 import { g2pRequestSchema } from "./_schemas/g2p-api.schema";
+import { transcribeText } from "./_services/g2p.service";
 
 export const runtime = "nodejs";
 
