@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -12,15 +12,14 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useDictionaryStore } from "../_store/dictionary-store";
-import { useG2PStore } from "../_store/g2p-store";
-import type { TranscribedPhoneme, TranscribedWord } from "../_types/g2p";
-import { EmptyState } from "./empty-state";
+import { useDictionaryStore } from "../../_store/dictionary-store";
+import { useG2PStore } from "../../_store/g2p-store";
+import type { TranscribedPhoneme, TranscribedWord } from "../../_types/g2p";
+import { EmptyState } from "../empty-state";
 
 interface WordColumnProps {
 	word: TranscribedWord;
 	onPhonemeClick: (phoneme: TranscribedPhoneme) => void;
-	onWordClick: (word: string) => void;
 }
 
 interface ClickablePhonemeProps {
@@ -65,34 +64,40 @@ function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
 /**
  * Word column showing original word above IPA transcription
  */
-function WordColumn({ word, onPhonemeClick, onWordClick }: WordColumnProps) {
-	const [selected, setSelected] = useState<number>(word.selectedVariantIndex ?? 0);
-	const currentVariant = word.variants[selected] ?? [];
+function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
+	const { selectedVariants, setVariant } = useG2PStore();
+	const { selectWord } = useDictionaryStore();
+	const selected = selectedVariants[word.wordIndex] ?? 0;
+	const currentVariant = useMemo(() => word.variants[selected] ?? [], [word.variants, selected]);
+
 	return (
 		<div className="flex flex-col items-center text-center min-w-0">
 			<button
 				type="button"
 				className="text-lg md:text-xl text-muted-foreground font-normal mb-2 whitespace-nowrap hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded"
-				onClick={() => onWordClick(word.word)}
+				onClick={() => selectWord(word.word)}
 				aria-label={`Show definition for ${word.word}`}
 				title={`Click to see definition for ${word.word}`}
 			>
 				{word.word}
 			</button>
 
-			<div className="leading-normal whitespace-nowrap flex items-center gap-2">
-				{currentVariant.map((phoneme, phonemeIndex) => (
-					<ClickablePhoneme
-						key={`${phoneme.symbol}-${word.wordIndex}-${phonemeIndex}`}
-						phoneme={phoneme}
-						onClick={onPhonemeClick}
-					/>
-				))}
+			<div className="flex items-center">
+				<div className="leading-normal whitespace-nowrap flex items-center gap-1">
+					{currentVariant.map((phoneme, phonemeIndex) => (
+						<ClickablePhoneme
+							key={`${phoneme.symbol}-${word.wordIndex}-${phonemeIndex}`}
+							phoneme={phoneme}
+							onClick={onPhonemeClick}
+						/>
+					))}
+				</div>
+
 				{word.variants.length > 1 && (
 					<DropdownMenu>
-						<DropdownMenuTrigger className="text-xs underline">
-							<Button size="sm" variant="outline">
-								{word.variants.length} <ChevronDown />
+						<DropdownMenuTrigger>
+							<Button size="icon" variant="ghost">
+								<ChevronDown />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="start">
@@ -101,7 +106,7 @@ function WordColumn({ word, onPhonemeClick, onWordClick }: WordColumnProps) {
 							{word.variants.map((v, i) => {
 								const key = v.map((p) => (typeof p === "string" ? p : p.symbol)).join("");
 								return (
-									<DropdownMenuItem key={key} onClick={() => setSelected(i)}>
+									<DropdownMenuItem key={key} onClick={() => setVariant(word.wordIndex, i)}>
 										{`/${v.map((p) => (typeof p === "string" ? p : p.symbol)).join(" ")}/`}
 									</DropdownMenuItem>
 								);
@@ -116,7 +121,6 @@ function WordColumn({ word, onPhonemeClick, onWordClick }: WordColumnProps) {
 
 export function TranscriptionDisplay() {
 	const { result, selectPhoneme } = useG2PStore();
-	const { selectWord } = useDictionaryStore();
 
 	if (!result) {
 		return <EmptyState />;
@@ -124,14 +128,13 @@ export function TranscriptionDisplay() {
 
 	return (
 		<div className="space-y-4">
-			<div className="w-full rounded-lg p-4">
+			<div className="w-full rounded-lg p-4 flex flex-col gap-2">
 				<div className="flex flex-wrap items-start justify-start gap-6 md:gap-8 overflow-x-auto pb-2">
 					{result.words.map((word, wordIndex) => (
 						<WordColumn
 							key={`${word.word}-${wordIndex}`}
 							word={word}
 							onPhonemeClick={selectPhoneme}
-							onWordClick={selectWord}
 						/>
 					))}
 				</div>

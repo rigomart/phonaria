@@ -13,11 +13,15 @@ interface G2PStore {
 	// Selected phoneme state
 	selectedPhoneme: IpaPhoneme | null;
 
+	// Per-word selected variant indices (aligned with result.words)
+	selectedVariants: number[];
+
 	// Actions
 	transcribe: (text: string) => Promise<void>;
 	clearResult: () => void;
 	selectPhoneme: (transcribedPhoneme: TranscribedPhoneme) => void;
 	closePhonemePanel: () => void;
+	setVariant: (wordIndex: number, variantIndex: number) => void;
 }
 
 export const useG2PStore = create<G2PStore>((set) => ({
@@ -26,6 +30,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 	error: null,
 	isLoading: false,
 	selectedPhoneme: null,
+	selectedVariants: [],
 
 	// Actions
 	transcribe: async (text: string) => {
@@ -39,7 +44,11 @@ export const useG2PStore = create<G2PStore>((set) => ({
 
 		try {
 			const transcriptionResult = await transcribeText(text.trim());
-			set({ result: transcriptionResult, isLoading: false });
+			set({
+				result: transcriptionResult,
+				isLoading: false,
+				selectedVariants: Array(transcriptionResult.words.length).fill(0),
+			});
 			toast.success("Text transcribed successfully!");
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : "Failed to transcribe text";
@@ -54,6 +63,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 			result: null,
 			error: null,
 			selectedPhoneme: null,
+			selectedVariants: [],
 		});
 	},
 
@@ -70,5 +80,13 @@ export const useG2PStore = create<G2PStore>((set) => ({
 
 	closePhonemePanel: () => {
 		set({ selectedPhoneme: null });
+	},
+
+	setVariant: (wordIndex: number, variantIndex: number) => {
+		set((state) => {
+			const next = state.selectedVariants.slice();
+			next[wordIndex] = variantIndex;
+			return { selectedVariants: next };
+		});
 	},
 }));
