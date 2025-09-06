@@ -87,7 +87,7 @@ describe("G2P Service", () => {
 			const result = await transcribeText(request);
 
 			expect(result).toEqual({
-				words: [{ word: "unknownword", phonemes: ["ʌ", "n", "n", "oʊ", "n"] }],
+				words: [{ word: "unknownword", variants: [["ʌ", "n", "n", "oʊ", "n"]] }],
 			});
 
 			expect(cmudict.lookup).toHaveBeenCalledWith("unknownword");

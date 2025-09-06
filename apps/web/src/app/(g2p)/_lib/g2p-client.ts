@@ -48,20 +48,23 @@ function transformG2PResponse(
 	originalText: string,
 ): TranscriptionResult {
 	const words: TranscribedWord[] = response.words.map((word, wordIndex) => {
-		const phonemes: TranscribedPhoneme[] = word.phonemes.map((symbol, phonemeIndex) => {
-			const phonemeData = phonemeMap.get(symbol);
-			return {
-				symbol,
-				wordIndex,
-				phonemeIndex,
-				phonemeData,
-				isKnown: !!phonemeData,
-			};
-		});
+		const variants: TranscribedPhoneme[][] = word.variants.map((variant) =>
+			variant.map((symbol, phonemeIndex) => {
+				const phonemeData = phonemeMap.get(symbol);
+				return {
+					symbol,
+					wordIndex,
+					phonemeIndex,
+					phonemeData,
+					isKnown: !!phonemeData,
+				};
+			}),
+		);
 
 		return {
 			word: word.word,
-			phonemes,
+			variants,
+			selectedVariantIndex: 0,
 			wordIndex,
 		};
 	});

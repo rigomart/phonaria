@@ -58,9 +58,9 @@ describe("G2P API Schemas", () => {
 	describe("g2pWordSchema", () => {
 		it("accepts valid word objects", () => {
 			const validWords: G2PWord[] = [
-				{ word: "hello", phonemes: ["h", "ɛ", "l", "oʊ"] },
-				{ word: "cat", phonemes: ["k", "æ", "t"] },
-				{ word: "empty", phonemes: [] },
+				{ word: "hello", variants: [["h", "ɛ", "l", "oʊ"]] },
+				{ word: "cat", variants: [["k", "æ", "t"]] },
+				{ word: "empty", variants: [[]] },
 			];
 
 			for (const word of validWords) {
@@ -70,13 +70,14 @@ describe("G2P API Schemas", () => {
 
 		it("rejects invalid word objects", () => {
 			const invalidWords = [
-				{ word: 123, phonemes: ["h"] }, // word not string
-				{ word: "hello", phonemes: "not-array" }, // phonemes not array
-				{ word: "hello", phonemes: [123] }, // phoneme not string
+				{ word: 123, variants: [["h"]] }, // word not string
+				{ word: "hello", variants: "not-array" }, // variants not array
+				{ word: "hello", variants: [123] }, // variant not array
+				{ word: "hello", variants: [[123]] }, // phoneme not string
 			];
 
 			for (const word of invalidWords) {
-				expect(() => g2pWordSchema.parse(word)).toThrow();
+				expect(() => g2pWordSchema.parse(word as unknown as G2PWord)).toThrow();
 			}
 		});
 	});
@@ -87,8 +88,14 @@ describe("G2P API Schemas", () => {
 				{ words: [] },
 				{
 					words: [
-						{ word: "hello", phonemes: ["h", "ɛ", "l", "oʊ"] },
-						{ word: "world", phonemes: ["w", "ɝ", "l", "d"] },
+						{
+							word: "hello",
+							variants: [
+								["h", "ɛ", "l", "oʊ"],
+								["h", "e", "l", "oʊ"],
+							],
+						},
+						{ word: "world", variants: [["w", "ɝ", "l", "d"]] },
 					],
 				},
 			];
@@ -106,7 +113,7 @@ describe("G2P API Schemas", () => {
 			];
 
 			for (const response of invalidResponses) {
-				expect(() => g2pResponseSchema.parse(response)).toThrow();
+				expect(() => g2pResponseSchema.parse(response as unknown as G2PResponse)).toThrow();
 			}
 		});
 	});

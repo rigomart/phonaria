@@ -31,21 +31,18 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 		for (const word of words) {
 			if (word.length === 0) continue; // Skip empty words
 
-			// Phase 1: Simple variant selection
 			const variants = cmudict.lookup(word);
-			let phonemes: string[];
+			let ipaVariants: string[][];
 
 			if (variants && variants.length > 0) {
-				// Use first variant (Phase 1: simple selection)
-				phonemes = variants[0];
+				ipaVariants = variants;
 			} else {
-				// Fallback for unknown words
-				phonemes = fallbackG2P.generatePronunciation(word);
+				ipaVariants = [fallbackG2P.generatePronunciation(word)];
 			}
 
 			results.push({
 				word: word.toLowerCase(),
-				phonemes,
+				variants: ipaVariants,
 			});
 		}
 

@@ -17,7 +17,7 @@ export interface G2PRequest {
  */
 export interface G2PWord {
 	word: string;
-	phonemes: string[];
+	variants: string[][];
 }
 
 /**
@@ -57,8 +57,10 @@ export interface TranscribedPhoneme {
 export interface TranscribedWord {
 	/** Original word text */
 	word: string;
-	/** Array of phonemes with metadata */
-	phonemes: TranscribedPhoneme[];
+	/** Variants with enriched phoneme metadata */
+	variants: TranscribedPhoneme[][];
+	/** Currently selected variant index */
+	selectedVariantIndex: number;
 	/** Index in the original text */
 	wordIndex: number;
 }

@@ -1,5 +1,16 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useDictionaryStore } from "../_store/dictionary-store";
 import { useG2PStore } from "../_store/g2p-store";
@@ -55,11 +66,13 @@ function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
  * Word column showing original word above IPA transcription
  */
 function WordColumn({ word, onPhonemeClick, onWordClick }: WordColumnProps) {
+	const [selected, setSelected] = useState<number>(word.selectedVariantIndex ?? 0);
+	const currentVariant = word.variants[selected] ?? [];
 	return (
 		<div className="flex flex-col items-center text-center min-w-0">
 			<button
 				type="button"
-				className="text-lg md:text-xl text-muted-foreground font-normal mb-4 whitespace-nowrap hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded"
+				className="text-lg md:text-xl text-muted-foreground font-normal mb-2 whitespace-nowrap hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded"
 				onClick={() => onWordClick(word.word)}
 				aria-label={`Show definition for ${word.word}`}
 				title={`Click to see definition for ${word.word}`}
@@ -67,14 +80,35 @@ function WordColumn({ word, onPhonemeClick, onWordClick }: WordColumnProps) {
 				{word.word}
 			</button>
 
-			<div className="leading-normal whitespace-nowrap">
-				{word.phonemes.map((phoneme, phonemeIndex) => (
+			<div className="leading-normal whitespace-nowrap flex items-center gap-2">
+				{currentVariant.map((phoneme, phonemeIndex) => (
 					<ClickablePhoneme
 						key={`${phoneme.symbol}-${word.wordIndex}-${phonemeIndex}`}
 						phoneme={phoneme}
 						onClick={onPhonemeClick}
 					/>
 				))}
+				{word.variants.length > 1 && (
+					<DropdownMenu>
+						<DropdownMenuTrigger className="text-xs underline">
+							<Button size="sm" variant="outline">
+								{word.variants.length} <ChevronDown />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="start">
+							<DropdownMenuLabel>Variants</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							{word.variants.map((v, i) => {
+								const key = v.map((p) => (typeof p === "string" ? p : p.symbol)).join("");
+								return (
+									<DropdownMenuItem key={key} onClick={() => setSelected(i)}>
+										{`/${v.map((p) => (typeof p === "string" ? p : p.symbol)).join(" ")}/`}
+									</DropdownMenuItem>
+								);
+							})}
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)}
 			</div>
 		</div>
 	);

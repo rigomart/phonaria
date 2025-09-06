@@ -13,7 +13,7 @@ export const g2pRequestSchema = z.object({
 
 export const g2pWordSchema = z.object({
 	word: z.string(),
-	phonemes: z.array(z.string()),
+	variants: z.array(z.array(z.string())),
 });
 
 export const g2pResponseSchema = z.object({
