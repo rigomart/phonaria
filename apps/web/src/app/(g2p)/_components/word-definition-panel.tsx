@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useDictionary } from "../_lib/use-dictionary";
 import type { WordDefinition } from "../_schemas/dictionary";
-import { type DictionaryStatus, useDictionaryStore } from "../_store/dictionary-store";
+import { useDictionaryStore } from "../_store/dictionary-store";
 
 export function WordDefinitionPanel() {
-	const { selectedWord, wordDefinition, status, error, clear } = useDictionaryStore();
+	const { selectedWord, clear } = useDictionaryStore();
+	const query = useDictionary(selectedWord);
 
 	if (!selectedWord) return null;
 
@@ -26,9 +28,9 @@ export function WordDefinitionPanel() {
 						<span className="font-semibold">{selectedWord}</span>
 					</CardTitle>
 					<div className="flex items-center gap-2">
-						{wordDefinition?.audioUrl && (
+						{(query.data as WordDefinition | undefined)?.audioUrl && (
 							<AudioButton
-								src={wordDefinition.audioUrl}
+								src={(query.data as WordDefinition).audioUrl as string}
 								label={`Pronunciation for ${selectedWord}`}
 							/>
 						)}
@@ -40,7 +42,12 @@ export function WordDefinitionPanel() {
 			</CardHeader>
 
 			<CardContent>
-				<WordDefinitionContent wordDefinition={wordDefinition} status={status} error={error} />
+				<WordDefinitionContent
+					wordDefinition={query.data}
+					isLoading={query.isLoading}
+					isNotFound={query.isNotFound}
+					error={query.errorMessage}
+				/>
 			</CardContent>
 		</Card>
 	);
@@ -48,12 +55,18 @@ export function WordDefinitionPanel() {
 
 type WordDefinitionContentProps = {
 	wordDefinition: WordDefinition | null;
-	status: DictionaryStatus;
+	isLoading: boolean;
+	isNotFound: boolean;
 	error: string | null;
 };
 
-function WordDefinitionContent({ wordDefinition, status, error }: WordDefinitionContentProps) {
-	if (status === "loading") {
+function WordDefinitionContent({
+	wordDefinition,
+	isLoading,
+	isNotFound,
+	error,
+}: WordDefinitionContentProps) {
+	if (isLoading) {
 		return (
 			<div className="space-y-3">
 				<Skeleton className="h-5 w-40" />
@@ -64,11 +77,11 @@ function WordDefinitionContent({ wordDefinition, status, error }: WordDefinition
 		);
 	}
 
-	if (status === "error") {
+	if (error) {
 		return <div className="text-sm text-destructive">{error || "Failed to load definition."}</div>;
 	}
 
-	if (status === "not_found" || !wordDefinition) {
+	if (isNotFound || !wordDefinition) {
 		return <div className="text-sm text-muted-foreground">No definition found.</div>;
 	}
 

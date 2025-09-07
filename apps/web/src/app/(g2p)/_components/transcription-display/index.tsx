@@ -66,7 +66,7 @@ function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
  */
 function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 	const { selectedVariants, setVariant } = useG2PStore();
-	const { selectWord } = useDictionaryStore();
+	const { setSelectedWord } = useDictionaryStore();
 	const selected = selectedVariants[word.wordIndex] ?? 0;
 	const currentVariant = useMemo(() => word.variants[selected] ?? [], [word.variants, selected]);
 
@@ -75,7 +75,7 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 			<button
 				type="button"
 				className="text-lg md:text-xl text-muted-foreground font-normal mb-2 whitespace-nowrap hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded"
-				onClick={() => selectWord(word.word)}
+				onClick={() => setSelectedWord(word.word)}
 				aria-label={`Show definition for ${word.word}`}
 				title={`Click to see definition for ${word.word}`}
 			>
