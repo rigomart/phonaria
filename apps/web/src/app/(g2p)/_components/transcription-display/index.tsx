@@ -12,6 +12,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useCurrentTranscription } from "../../_lib/use-g2p";
 import { useDictionaryStore } from "../../_store/dictionary-store";
 import { useG2PStore } from "../../_store/g2p-store";
 import type { TranscribedPhoneme, TranscribedWord } from "../../_types/g2p";
@@ -120,11 +121,10 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 }
 
 export function TranscriptionDisplay() {
-	const { result, selectPhoneme } = useG2PStore();
+	const { selectPhoneme } = useG2PStore();
+	const { data: result } = useCurrentTranscription();
 
-	if (!result) {
-		return <EmptyState />;
-	}
+	if (!result) return <EmptyState />;
 
 	return (
 		<div className="space-y-4">

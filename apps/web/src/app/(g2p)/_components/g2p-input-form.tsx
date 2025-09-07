@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { useG2PStore } from "../_store/g2p-store";
+import { useTranscribe } from "../_lib/use-g2p";
 
 interface G2PInputFormProps {
 	placeholder?: string;
@@ -20,16 +20,15 @@ export function G2PInputForm({
 	maxLength = 200,
 }: G2PInputFormProps) {
 	const [inputText, setInputText] = useState("");
-	const { transcribe, isLoading } = useG2PStore();
+	const transcribeMutation = useTranscribe();
+	const isLoading = transcribeMutation.isPending;
 
 	const hasText = inputText.trim().length > 0;
 	const characterCount = inputText.length;
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (hasText && !isLoading) {
-			transcribe(inputText.trim());
-		}
+		if (hasText && !isLoading) transcribeMutation.mutate(inputText.trim());
 	};
 
 	return (

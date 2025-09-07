@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useG2PStore } from "../_store/g2p-store";
+import { useTranscribe } from "../_lib/use-g2p";
 
 export function ExamplesSection() {
-	const { transcribe, isLoading } = useG2PStore();
+	const transcribeMutation = useTranscribe();
 
 	const examples = ["Judge the rhythm", "She chose well", "Through thick fog"];
 
@@ -15,9 +15,9 @@ export function ExamplesSection() {
 				<Button
 					key={example}
 					type="button"
-					onClick={() => transcribe(example)}
+					onClick={() => transcribeMutation.mutate(example)}
 					className="text-xs px-3 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground transition-colors disabled:opacity-50"
-					disabled={isLoading}
+					disabled={transcribeMutation.isPending}
 					size="sm"
 				>
 					"{example}"

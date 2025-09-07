@@ -1,23 +1,17 @@
 import type { IpaPhoneme } from "shared-data";
-import { toast } from "sonner";
 import { create } from "zustand";
-import { getPhonemeBySymbol, transcribeText } from "../_lib/g2p-client";
-import type { TranscribedPhoneme, TranscriptionResult } from "../_types/g2p";
+import { getPhonemeBySymbol } from "../_lib/g2p-client";
+import type { TranscribedPhoneme } from "../_types/g2p";
 
 interface G2PStore {
-	// Transcription state
-	result: TranscriptionResult | null;
-	error: string | null;
-	isLoading: boolean;
-
 	// Selected phoneme state
 	selectedPhoneme: IpaPhoneme | null;
 
-	// Per-word selected variant indices (aligned with result.words)
+	// Per-word selected variant indices (aligned with current result)
 	selectedVariants: number[];
 
 	// Actions
-	transcribe: (text: string) => Promise<void>;
+	resetVariants: (wordCount: number) => void;
 	clearResult: () => void;
 	selectPhoneme: (transcribedPhoneme: TranscribedPhoneme) => void;
 	closePhonemePanel: () => void;
@@ -26,42 +20,16 @@ interface G2PStore {
 
 export const useG2PStore = create<G2PStore>((set) => ({
 	// Initial state
-	result: null,
-	error: null,
-	isLoading: false,
 	selectedPhoneme: null,
 	selectedVariants: [],
 
 	// Actions
-	transcribe: async (text: string) => {
-		if (!text.trim()) {
-			set({ error: "Please enter some text to transcribe" });
-			toast.error("Please enter some text to transcribe");
-			return;
-		}
-
-		set({ error: null, isLoading: true });
-
-		try {
-			const transcriptionResult = await transcribeText(text.trim());
-			set({
-				result: transcriptionResult,
-				isLoading: false,
-				selectedVariants: Array(transcriptionResult.words.length).fill(0),
-			});
-			toast.success("Text transcribed successfully!");
-		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : "Failed to transcribe text";
-
-			set({ error: errorMessage, result: null, isLoading: false });
-			toast.error(`Transcription failed: ${errorMessage}`);
-		}
+	resetVariants: (wordCount: number) => {
+		set({ selectedVariants: Array(wordCount).fill(0) });
 	},
 
 	clearResult: () => {
 		set({
-			result: null,
-			error: null,
 			selectedPhoneme: null,
 			selectedVariants: [],
 		});
