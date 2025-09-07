@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, Geist, Geist_Mono, Inter, Noto_Sans, Rubik } from "next/font/google";
 import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -49,17 +50,19 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} ${archivo.variable} ${inter.variable} ${rubik.variable} ${notoSans.variable} antialiased`}
 			>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					<div className="h-screen flex flex-col">
-						<Header />
-						{children}
-					</div>
-				</ThemeProvider>
+				<Providers>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<div className="h-screen flex flex-col">
+							<Header />
+							{children}
+						</div>
+					</ThemeProvider>
+				</Providers>
 			</body>
 		</html>
 	);
