@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Archivo, Geist, Geist_Mono, Inter, Noto_Sans, Rubik } from "next/font/google";
-import { Header } from "@/components/header";
-import { Providers } from "./providers";
-import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
+import { Header } from "@/components/header";
+import Providers from "./providers";
+import "./globals.css";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 	description: "Interactive tool for learning English phonemes with IPA transcription",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
