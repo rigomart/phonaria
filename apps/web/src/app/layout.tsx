@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Archivo, Geist, Geist_Mono, Inter, Noto_Sans, Rubik } from "next/font/google";
 import { Header } from "@/components/header";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Providers } from "./providers";
 import "./globals.css";
+import { NextIntlClientProvider } from "next-intl";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 	description: "Interactive tool for learning English phonemes with IPA transcription",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
@@ -50,19 +50,14 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} ${archivo.variable} ${inter.variable} ${rubik.variable} ${notoSans.variable} antialiased`}
 			>
-				<Providers>
-					<ThemeProvider
-						attribute="class"
-						defaultTheme="system"
-						enableSystem
-						disableTransitionOnChange
-					>
+				<NextIntlClientProvider>
+					<Providers>
 						<div className="h-screen flex flex-col">
 							<Header />
 							{children}
 						</div>
-					</ThemeProvider>
-				</Providers>
+					</Providers>
+				</NextIntlClientProvider>
 			</body>
 		</html>
 	);
