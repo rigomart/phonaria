@@ -1,6 +1,4 @@
-import type { Metadata } from "next";
 import { Archivo, Geist, Geist_Mono, Inter, Noto_Sans, Rubik } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
 import { Header } from "@/components/header";
 import Providers from "./providers";
 import "./globals.css";
@@ -35,11 +33,6 @@ const notoSans = Noto_Sans({
 	subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-	title: "Phonix - English Phoneme Learning",
-	description: "Interactive tool for learning English phonemes with IPA transcription",
-};
-
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -50,14 +43,12 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} ${archivo.variable} ${inter.variable} ${rubik.variable} ${notoSans.variable} antialiased`}
 			>
-				<NextIntlClientProvider>
-					<Providers>
-						<div className="h-screen flex flex-col">
-							<Header />
-							{children}
-						</div>
-					</Providers>
-				</NextIntlClientProvider>
+				<Providers>
+					<div className="h-screen flex flex-col">
+						<Header />
+						{children}
+					</div>
+				</Providers>
 			</body>
 		</html>
 	);

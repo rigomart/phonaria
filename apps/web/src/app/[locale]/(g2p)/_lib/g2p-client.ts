@@ -7,7 +7,7 @@ import type {
 	TranscribedPhoneme,
 	TranscribedWord,
 	TranscriptionResult,
-} from "@/app/(g2p)/_types/g2p";
+} from "@/app/[locale]/(g2p)/_types/g2p";
 import { createApiClient } from "@/lib/api-client";
 import {
 	type G2PRequestData,
