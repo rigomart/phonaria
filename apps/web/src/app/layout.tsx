@@ -1,36 +1,27 @@
-import { Archivo, Geist, Geist_Mono, Inter, Noto_Sans, Rubik } from "next/font/google";
+import { DM_Mono, IBM_Plex_Sans, Inter, Noto_Serif } from "next/font/google";
 import { Header } from "@/components/header";
 import Providers from "./providers";
 import "./globals.css";
-
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
-
-const archivo = Archivo({
-	variable: "--font-archivo",
-	subsets: ["latin"],
-});
 
 const inter = Inter({
 	variable: "--font-inter",
 	subsets: ["latin"],
 });
 
-const rubik = Rubik({
-	variable: "--font-rubik",
+const ibmPlexSans = IBM_Plex_Sans({
+	variable: "--font-ibm-plex-sans",
 	subsets: ["latin"],
 });
 
-const notoSans = Noto_Sans({
-	variable: "--font-noto-sans",
+const notoSerif = Noto_Serif({
+	variable: "--font-noto-serif",
 	subsets: ["latin"],
+});
+
+const dmMono = DM_Mono({
+	variable: "--font-dm-mono",
+	subsets: ["latin"],
+	weight: ["400"],
 });
 
 export default function RootLayout({
@@ -41,7 +32,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} ${archivo.variable} ${inter.variable} ${rubik.variable} ${notoSans.variable} antialiased`}
+				className={`${inter.variable} ${ibmPlexSans.variable} ${dmMono.variable} ${notoSerif.variable} antialiased`}
 			>
 				<Providers>
 					<div className="h-screen flex flex-col">
