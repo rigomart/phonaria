@@ -1,69 +1,38 @@
-import type * as React from "react";
-import { cn } from "@/lib/utils";
+const PHONEME_COUNT = 44;
+const VOWEL_COUNT = 12;
+const CONSONANT_COUNT = 32;
 
-interface HeroSectionProps {
-	title: string;
-	subtitle: string;
-	description?: string;
-	children?: React.ReactNode;
-	className?: string;
-}
-
-export function HeroSection({
-	title,
-	subtitle,
-	description,
-	children,
-	className,
-}: HeroSectionProps) {
+export function HeroSection() {
 	return (
-		<section className={cn("rounded-lg border bg-card p-6 text-center", className)}>
+		<section className={"rounded-lg border bg-card p-6 text-center"}>
 			<div className="space-y-3">
-				<h1 className="text-2xl font-semibold text-foreground">{title}</h1>
-				<p className="text-lg text-muted-foreground">{subtitle}</p>
-				{description && (
-					<p className="text-sm text-muted-foreground max-w-xl mx-auto">{description}</p>
-				)}
-				{children && <div className="pt-2">{children}</div>}
+				<h1 className="text-2xl font-semibold text-foreground">English Phoneme Reference</h1>
+				<p className="text-lg text-muted-foreground">Interactive IPA Chart</p>
+
+				<p className="text-sm text-muted-foreground max-w-xl mx-auto">
+					Reference tool for understanding English phonemes. Click on any symbol to see articulation
+					details, example words, and audio pronunciation.
+				</p>
+
+				<div className="pt-2">
+					<div className={"flex items-center justify-center gap-4 text-sm text-muted-foreground"}>
+						<div className="text-center">
+							<div className="text-lg font-semibold text-foreground">{PHONEME_COUNT}</div>
+							<div className="text-xs">phonemes</div>
+						</div>
+						<div className="text-muted-foreground/50">•</div>
+						<div className="text-center">
+							<div className="text-lg font-semibold text-foreground">{VOWEL_COUNT}</div>
+							<div className="text-xs">vowels</div>
+						</div>
+						<div className="text-muted-foreground/50">•</div>
+						<div className="text-center">
+							<div className="text-lg font-semibold text-foreground">{CONSONANT_COUNT}</div>
+							<div className="text-xs">consonants</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</section>
-	);
-}
-
-interface QuickStatsProps {
-	phonemeCount: number;
-	vowelCount: number;
-	consonantCount: number;
-	className?: string;
-}
-
-export function QuickStats({
-	phonemeCount,
-	vowelCount,
-	consonantCount,
-	className,
-}: QuickStatsProps) {
-	return (
-		<div
-			className={cn(
-				"flex items-center justify-center gap-4 text-sm text-muted-foreground",
-				className,
-			)}
-		>
-			<div className="text-center">
-				<div className="text-lg font-semibold text-foreground">{phonemeCount}</div>
-				<div className="text-xs">phonemes</div>
-			</div>
-			<div className="text-muted-foreground/50">•</div>
-			<div className="text-center">
-				<div className="text-lg font-semibold text-foreground">{vowelCount}</div>
-				<div className="text-xs">vowels</div>
-			</div>
-			<div className="text-muted-foreground/50">•</div>
-			<div className="text-center">
-				<div className="text-lg font-semibold text-foreground">{consonantCount}</div>
-				<div className="text-xs">consonants</div>
-			</div>
-		</div>
 	);
 }
