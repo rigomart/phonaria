@@ -6,10 +6,8 @@ import { consonants, vowels } from "shared-data";
 import { PhonemeDialog } from "@/components/phoneme-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeroSection } from "./_components/hero-section";
-
-// Import our simplified components
-import { PhonemeCategories } from "./_components/simplified/phoneme-categories";
-import { PhonemeSearch } from "./_components/simplified/phoneme-search";
+import { PhonemeCategories } from "./_components/phoneme-categories";
+import { PhonemeSearch } from "./_components/phoneme-search";
 
 type PageSection = "consonants" | "vowels";
 

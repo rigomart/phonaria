@@ -1,12 +1,12 @@
 "use client";
 
 import type { IpaPhoneme } from "shared-data";
-import { getAvailableCategories, getCategoryOrderMap } from "../../_lib/simplified/category-config";
+import { getAvailableCategories, getCategoryOrderMap } from "../_lib/category-config";
 import {
 	filterPhonemesByCategory,
 	searchPhonemes,
 	sortPhonemesByCategory,
-} from "../../_lib/simplified/phoneme-filters";
+} from "../_lib/phoneme-filters";
 import { CategorySection } from "./category-section";
 
 interface PhonemeCategoriesProps<T extends IpaPhoneme> {
