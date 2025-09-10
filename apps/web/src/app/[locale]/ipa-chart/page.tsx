@@ -7,7 +7,6 @@ import { PhonemeDialog } from "@/components/phoneme-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeroSection } from "./_components/hero-section";
 import { PhonemeCategories } from "./_components/phoneme-categories";
-import { PhonemeSearch } from "./_components/phoneme-search";
 
 type PageSection = "consonants" | "vowels";
 
@@ -17,7 +16,6 @@ type PageSection = "consonants" | "vowels";
  */
 export default function IpaChartPage() {
 	const [activeSection, setActiveSection] = useState<PageSection>("consonants");
-	const [searchTerm, setSearchTerm] = useState("");
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [selectedPhoneme, setSelectedPhoneme] = useState<ConsonantPhoneme | VowelPhoneme | null>(
 		null,
@@ -41,41 +39,10 @@ export default function IpaChartPage() {
 		}
 	};
 
-	// Get filtered counts for result display
-	const getFilteredCount = (phonemes: ConsonantPhoneme[] | VowelPhoneme[]) => {
-		if (!searchTerm.trim()) return phonemes.length;
-
-		const normalizedTerm = searchTerm.toLowerCase().trim();
-		return phonemes.filter((phoneme) => {
-			return (
-				phoneme.symbol.toLowerCase().includes(normalizedTerm) ||
-				phoneme.description.toLowerCase().includes(normalizedTerm) ||
-				phoneme.guide?.toLowerCase().includes(normalizedTerm) ||
-				phoneme.examples.some(
-					(example) =>
-						example.word.toLowerCase().includes(normalizedTerm) ||
-						example.phonemic.toLowerCase().includes(normalizedTerm),
-				)
-			);
-		}).length;
-	};
-
-	const consonantCount = getFilteredCount(consonants);
-	const vowelCount = getFilteredCount(vowels);
-	const totalCount = activeSection === "consonants" ? consonantCount : vowelCount;
-
 	return (
 		<main className="mx-auto max-w-6xl py-6 space-y-6 px-4">
 			{/* Hero Section */}
 			<HeroSection />
-
-			{/* Universal Search */}
-			<PhonemeSearch
-				searchTerm={searchTerm}
-				onSearchChange={setSearchTerm}
-				resultCount={totalCount}
-				placeholder="Search by sound, word, or description..."
-			/>
 
 			{/* Navigation Tabs */}
 			<div className="flex justify-center">
@@ -85,10 +52,8 @@ export default function IpaChartPage() {
 					className="w-full max-w-6xl"
 				>
 					<TabsList className="grid w-full grid-cols-2 h-10 p-1 bg-muted border">
-						<TabsTrigger value="consonants">
-							Consonants {searchTerm && `(${consonantCount})`}
-						</TabsTrigger>
-						<TabsTrigger value="vowels">Vowels {searchTerm && `(${vowelCount})`}</TabsTrigger>
+						<TabsTrigger value="consonants">Consonants</TabsTrigger>
+						<TabsTrigger value="vowels">Vowels</TabsTrigger>
 					</TabsList>
 
 					<div className="mt-8">
@@ -104,9 +69,8 @@ export default function IpaChartPage() {
 								<PhonemeCategories
 									phonemes={consonants}
 									type="consonant"
-									searchTerm={searchTerm}
 									onPhonemeClick={handleConsonantClick}
-									defaultOpenCategories={!searchTerm} // Close categories when searching
+									defaultOpenCategories={true}
 								/>
 							</div>
 						</TabsContent>
@@ -123,9 +87,8 @@ export default function IpaChartPage() {
 								<PhonemeCategories
 									phonemes={vowels}
 									type="vowel"
-									searchTerm={searchTerm}
 									onPhonemeClick={handleVowelClick}
-									defaultOpenCategories={!searchTerm} // Close categories when searching
+									defaultOpenCategories={true}
 								/>
 							</div>
 						</TabsContent>

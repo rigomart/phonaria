@@ -10,5 +10,15 @@
 	"NotFoundPage": {
 		"description": "Please double-check the browser address bar or use the navigation to go to a known page.",
 		"title": "Page not found"
+	},
+	"IpaChart": {
+		"HeroSection": {
+			"title": "English Phoneme Reference",
+			"short": "Interactive IPA Chart",
+			"description": "Reference tool for understanding English phonemes. Click on any symbol to see articulation details, example words, and audio pronunciation.",
+			"phonemes": "phonemes",
+			"vowels": "vowels",
+			"consonants": "consonants"
+		}
 	}
 }

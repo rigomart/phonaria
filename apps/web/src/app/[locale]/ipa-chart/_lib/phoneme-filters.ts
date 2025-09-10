@@ -11,47 +11,6 @@ export function filterPhonemesByCategory<T extends IpaPhoneme>(
 }
 
 /**
- * Search phonemes across multiple fields
- */
-export function searchPhonemes<T extends IpaPhoneme>(phonemes: T[], searchTerm: string): T[] {
-	if (!searchTerm.trim()) {
-		return phonemes;
-	}
-
-	const normalizedTerm = searchTerm.toLowerCase().trim();
-
-	return phonemes.filter((phoneme) => {
-		// Search in symbol
-		if (phoneme.symbol.toLowerCase().includes(normalizedTerm)) {
-			return true;
-		}
-
-		// Search in description
-		if (phoneme.description.toLowerCase().includes(normalizedTerm)) {
-			return true;
-		}
-
-		// Search in guide
-		if (phoneme.guide?.toLowerCase().includes(normalizedTerm)) {
-			return true;
-		}
-
-		// Search in example words
-		if (
-			phoneme.examples.some(
-				(example) =>
-					example.word.toLowerCase().includes(normalizedTerm) ||
-					example.phonemic.toLowerCase().includes(normalizedTerm),
-			)
-		) {
-			return true;
-		}
-
-		return false;
-	});
-}
-
-/**
  * Sort phonemes by category order and then alphabetically by symbol
  */
 export function sortPhonemesByCategory<T extends IpaPhoneme>(
