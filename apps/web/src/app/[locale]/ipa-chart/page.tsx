@@ -24,25 +24,15 @@ export default function IpaChartPage() {
 					className="w-full max-w-6xl"
 				>
 					<TabsList className="grid w-full grid-cols-2 h-10 p-1 bg-muted border">
-						<TabsTrigger
-							value="consonants"
-							className="data-[state=active]:bg-background data-[state=active]:shadow-sm text-sm"
-						>
-							Consonants
-						</TabsTrigger>
-						<TabsTrigger
-							value="vowels"
-							className="data-[state=active]:bg-background data-[state=active]:shadow-sm text-sm"
-						>
-							Vowels
-						</TabsTrigger>
+						<TabsTrigger value="consonants">Consonants</TabsTrigger>
+						<TabsTrigger value="vowels">Vowels</TabsTrigger>
 					</TabsList>
 
 					<div className="mt-8">
 						<TabsContent value="consonants" className="space-y-0">
 							<div className="space-y-4">
-								<div className="space-y-1">
-									<h2 className="text-xl font-medium text-foreground">Consonant Phonemes</h2>
+								<div>
+									<h2 className="text-xl font-medium">Consonant Phonemes</h2>
 									<p className="text-sm text-muted-foreground">
 										Consonant sounds organized by place and manner of articulation. Click any
 										phoneme for detailed pronunciation information.
@@ -54,8 +44,8 @@ export default function IpaChartPage() {
 
 						<TabsContent value="vowels" className="space-y-0">
 							<div className="space-y-4">
-								<div className="space-y-1">
-									<h2 className="text-xl font-medium text-foreground">Vowel Phonemes</h2>
+								<div>
+									<h2 className="text-xl font-medium">Vowel Phonemes</h2>
 									<p className="text-sm text-muted-foreground">
 										Vowel sounds showing tongue position, lip rounding, and rhotic variants. Click
 										any phoneme for pronunciation details.
