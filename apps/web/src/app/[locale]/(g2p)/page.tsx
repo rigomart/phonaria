@@ -29,7 +29,7 @@ export default function Index() {
 					</div>
 
 					{/* Right Column: Definition over Phoneme details */}
-					<div className="lg:col-span-5 space-y-6 border h-full">
+					<div className="lg:col-span-5 space-y-6 border flex-1 flex flex-col">
 						<WordDefinitionPanel />
 						<PhonemeDetailPanel />
 					</div>

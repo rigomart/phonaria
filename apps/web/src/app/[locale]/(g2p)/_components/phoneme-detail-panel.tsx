@@ -23,17 +23,17 @@ export function PhonemeDetailPanel() {
 	}
 
 	return (
-		<div className="h-fit bg-card relative">
+		<div className="flex-1 bg-card relative">
 			<Button
 				variant="ghost"
 				size="sm"
 				onClick={closePhonemePanel}
-				className="absolute top-4 right-4 h-6 w-6 p-0 z-1"
+				className="absolute top-2 right-2 h-6 w-6 p-0 z-1"
 			>
 				<X className="h-3 w-3" />
 			</Button>
 
-			<ScrollArea className="h-[500px] p-4">
+			<ScrollArea className="max- p-4">
 				<PhonemeDetails.Content phoneme={phoneme} />
 			</ScrollArea>
 		</div>
