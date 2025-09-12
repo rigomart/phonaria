@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type {
 	ConsonantAllophone,
 	ConsonantPhoneme,
@@ -8,25 +9,37 @@ import type {
 } from "shared-data";
 import { phonixUtils } from "shared-data";
 import { AudioButton } from "@/components/audio-button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
-// --- Compound Component Definitions ---
-
-const Root = Dialog;
-const Content = DialogContent;
-
 function Header({ phoneme }: { phoneme: IpaPhoneme }) {
 	return (
-		<DialogHeader className="space-y-4 p-0">
-			<DialogTitle className="flex items-center gap-2">
+		<div className="space-y-4">
+			<div className="flex items-center gap-2">
 				<span className="text-5xl text-muted-foreground">/</span>
 				<span className="text-6xl font-semibold leading-none tracking-tight">{phoneme.symbol}</span>
 				<span className="text-5xl text-muted-foreground">/</span>
-			</DialogTitle>
+			</div>
 			<p className="text-sm text-muted-foreground max-w-prose">{phoneme.description}</p>
-		</DialogHeader>
+		</div>
+	);
+}
+
+function SagittalView() {
+	const t = useTranslations("IpaChart.Dialog");
+	return (
+		<section className="space-y-3">
+			<h3 className="text-sm font-medium">{t("sagittalTitle")}</h3>
+			<div className="flex justify-center">
+				<div
+					className="aspect-square w-full max-w-[28rem] sm:max-w-[30rem] md:max-w-[32rem] rounded-lg border bg-muted/30 text-muted-foreground flex items-center justify-center select-none"
+					role="img"
+					aria-label={t("sagittalAriaLabel")}
+				>
+					<span className="text-sm">{t("sagittalPlaceholder")}</span>
+				</div>
+			</div>
+		</section>
 	);
 }
 
@@ -108,7 +121,6 @@ function Examples({ examples }: { examples: ExampleWord[] }) {
 	);
 }
 
-// Properly typed allophone union
 type Allophone = ConsonantAllophone | VowelAllophone;
 
 function Allophones({ allophones }: { allophones: Allophone[] }) {
@@ -148,12 +160,27 @@ function Allophones({ allophones }: { allophones: Allophone[] }) {
 	);
 }
 
-// --- Assemble and Export Compound Component ---
+function Content({ phoneme }: { phoneme: IpaPhoneme }) {
+	return (
+		<div className="space-y-8">
+			<Header phoneme={phoneme} />
+			<SagittalView />
+			{phoneme.category === "consonant" ? (
+				<ConsonantArticulation phoneme={phoneme} />
+			) : (
+				<VowelArticulation phoneme={phoneme} />
+			)}
+			{phoneme.guide ? <Guide guide={phoneme.guide} /> : null}
+			<Examples examples={phoneme.examples} />
+			{phoneme.allophones?.length ? <Allophones allophones={phoneme.allophones} /> : null}
+		</div>
+	);
+}
 
-export const PhonemeDialog = {
-	Root,
+export const PhonemeDetails = {
 	Content,
 	Header,
+	SagittalView,
 	ConsonantArticulation,
 	VowelArticulation,
 	Guide,
