@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ConsonantPhoneme, IpaPhoneme, VowelPhoneme } from "shared-data";
 import { phonixUtils } from "shared-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -14,6 +15,7 @@ interface PhonemeCardProps<T extends IpaPhoneme> {
 export function PhonemeCard<T extends IpaPhoneme>({ phoneme, className }: PhonemeCardProps<T>) {
 	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
 	const handleClick = () => selectPhoneme(phoneme);
+	const t = useTranslations("IpaChart.Card");
 
 	// Generate tooltip content
 	const tooltipContent = `${toPhonemic(phoneme.symbol)} ${phoneme.description}`;
@@ -49,9 +51,7 @@ export function PhonemeCard<T extends IpaPhoneme>({ phoneme, className }: Phonem
 			<TooltipContent side="top" align="center">
 				<div className="max-w-[14rem] text-pretty text-xs leading-snug">
 					<div className="font-medium">{tooltipContent}</div>
-					<div className="text-[10px] text-muted-foreground mt-1">
-						Click for articulation details
-					</div>
+					<div className="text-[10px] text-muted-foreground mt-1">{t("tooltipHint")}</div>
 				</div>
 			</TooltipContent>
 		</Tooltip>

@@ -19,6 +19,28 @@
 			"phonemes": "phonemes",
 			"vowels": "vowels",
 			"consonants": "consonants"
+		},
+		"NavTabs": {
+			"consonants": "Consonants",
+			"vowels": "Vowels"
+		},
+		"Sections": {
+			"consonants": {
+				"title": "Consonant Phonemes",
+				"description": "Consonant sounds organized by type and characteristics. Click any phoneme for detailed pronunciation information."
+			},
+			"vowels": {
+				"title": "Vowel Phonemes",
+				"description": "Vowel sounds organized by type and characteristics. Click any phoneme for pronunciation details."
+			}
+		},
+		"Dialog": {
+			"sagittalTitle": "Sagittal view",
+			"sagittalAriaLabel": "Sagittal view placeholder",
+			"sagittalPlaceholder": "Sagittal view placeholder"
+		},
+		"Card": {
+			"tooltipHint": "Click for articulation details"
 		}
 	}
 }

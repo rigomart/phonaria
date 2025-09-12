@@ -1,9 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { PhonemeDialog } from "@/components/phoneme-dialog";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 export function PhonemeDialogSection() {
+	const t = useTranslations("IpaChart.Dialog");
 	const dialogOpen = useIpaChartStore((s) => s.dialogOpen);
 	const setDialogOpen = useIpaChartStore((s) => s.setDialogOpen);
 	const selectedPhoneme = useIpaChartStore((s) => s.selectedPhoneme);
@@ -15,14 +17,14 @@ export function PhonemeDialogSection() {
 					<div className="space-y-8">
 						<PhonemeDialog.Header phoneme={selectedPhoneme} />
 						<section className="space-y-3">
-							<h3 className="text-sm font-medium">Sagittal view</h3>
+							<h3 className="text-sm font-medium">{t("sagittalTitle")}</h3>
 							<div className="flex justify-center">
 								<div
 									className="aspect-square w-full max-w-[28rem] sm:max-w-[30rem] md:max-w-[32rem] rounded-lg border bg-muted/30 text-muted-foreground flex items-center justify-center select-none"
 									role="img"
-									aria-label="Sagittal view placeholder"
+									aria-label={t("sagittalAriaLabel")}
 								>
-									<span className="text-sm">Sagittal view placeholder</span>
+									<span className="text-sm">{t("sagittalPlaceholder")}</span>
 								</div>
 							</div>
 						</section>
