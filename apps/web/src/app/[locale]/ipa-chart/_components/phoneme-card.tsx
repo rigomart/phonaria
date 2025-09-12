@@ -2,21 +2,18 @@ import type { ConsonantPhoneme, IpaPhoneme, VowelPhoneme } from "shared-data";
 import { phonixUtils } from "shared-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 const { toPhonemic } = phonixUtils;
 
 interface PhonemeCardProps<T extends IpaPhoneme> {
 	phoneme: T;
-	onClick: (phoneme: T) => void;
 	className?: string;
 }
 
-export function PhonemeCard<T extends IpaPhoneme>({
-	phoneme,
-	onClick,
-	className,
-}: PhonemeCardProps<T>) {
-	const handleClick = () => onClick(phoneme);
+export function PhonemeCard<T extends IpaPhoneme>({ phoneme, className }: PhonemeCardProps<T>) {
+	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
+	const handleClick = () => selectPhoneme(phoneme);
 
 	// Generate tooltip content
 	const tooltipContent = `${toPhonemic(phoneme.symbol)} ${phoneme.description}`;

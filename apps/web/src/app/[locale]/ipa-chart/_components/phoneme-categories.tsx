@@ -3,12 +3,12 @@
 import type { IpaPhoneme } from "shared-data";
 import { getAvailableCategories, getCategoryOrderMap } from "../_lib/category-config";
 import { filterPhonemesByCategory, sortPhonemesByCategory } from "../_lib/phoneme-filters";
+import { useIpaChartStore } from "../_store/ipa-chart-store";
 import { CategorySection } from "./category-section";
 
 interface PhonemeCategoriesProps<T extends IpaPhoneme> {
 	phonemes: T[];
 	type: "consonant" | "vowel";
-	onPhonemeClick: (phoneme: T) => void;
 	defaultOpenCategories?: boolean;
 	showCategoryCounts?: boolean;
 }
@@ -20,7 +20,6 @@ interface PhonemeCategoriesProps<T extends IpaPhoneme> {
 export function PhonemeCategories<T extends IpaPhoneme>({
 	phonemes,
 	type,
-	onPhonemeClick,
 	defaultOpenCategories = true,
 	showCategoryCounts = true,
 }: PhonemeCategoriesProps<T>) {
@@ -41,7 +40,6 @@ export function PhonemeCategories<T extends IpaPhoneme>({
 						key={category.key}
 						category={category}
 						phonemes={sortedPhonemes}
-						onPhonemeClick={onPhonemeClick}
 						defaultOpen={defaultOpenCategories}
 						showCount={showCategoryCounts}
 					/>
@@ -57,8 +55,8 @@ export function PhonemeCategories<T extends IpaPhoneme>({
 export function PhonemeCategoriesCompact<T extends IpaPhoneme>({
 	phonemes,
 	type,
-	onPhonemeClick,
 }: Omit<PhonemeCategoriesProps<T>, "defaultOpenCategories" | "showCategoryCounts">) {
+	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
 	const availableCategories = getAvailableCategories(phonemes, type);
 	const categoryOrder = getCategoryOrderMap(type);
 
@@ -79,7 +77,7 @@ export function PhonemeCategoriesCompact<T extends IpaPhoneme>({
 								<button
 									key={phoneme.symbol}
 									type="button"
-									onClick={() => onPhonemeClick(phoneme)}
+									onClick={() => selectPhoneme(phoneme)}
 									className="aspect-square flex items-center justify-center rounded border hover:border-primary transition-colors text-sm font-semibold"
 								>
 									{phoneme.symbol}

@@ -9,7 +9,6 @@ import { PhonemeCard } from "./phoneme-card";
 interface CategorySectionProps<T extends IpaPhoneme> {
 	category: CategoryInfo;
 	phonemes: T[];
-	onPhonemeClick: (phoneme: T) => void;
 	defaultOpen?: boolean;
 	showCount?: boolean;
 }
@@ -21,7 +20,6 @@ interface CategorySectionProps<T extends IpaPhoneme> {
 export function CategorySection<T extends IpaPhoneme>({
 	category,
 	phonemes,
-	onPhonemeClick,
 	defaultOpen = true,
 	showCount = true,
 }: CategorySectionProps<T>) {
@@ -61,7 +59,7 @@ export function CategorySection<T extends IpaPhoneme>({
 				<div className="space-y-0 animate-in slide-in-from-top-2 duration-200">
 					<div className="grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))] gap-3 max-w-6xl">
 						{phonemes.map((phoneme) => (
-							<PhonemeCard key={phoneme.symbol} phoneme={phoneme} onClick={onPhonemeClick} />
+							<PhonemeCard key={phoneme.symbol} phoneme={phoneme} />
 						))}
 					</div>
 				</div>
@@ -76,7 +74,6 @@ export function CategorySection<T extends IpaPhoneme>({
 export function CategorySectionCompact<T extends IpaPhoneme>({
 	category,
 	phonemes,
-	onPhonemeClick,
 }: CategorySectionProps<T>) {
 	if (phonemes.length === 0) {
 		return null;
@@ -96,7 +93,6 @@ export function CategorySectionCompact<T extends IpaPhoneme>({
 					<PhonemeCard
 						key={phoneme.symbol}
 						phoneme={phoneme}
-						onClick={onPhonemeClick}
 						className="min-w-[3.5rem] min-h-[3.5rem] p-2"
 					/>
 				))}
