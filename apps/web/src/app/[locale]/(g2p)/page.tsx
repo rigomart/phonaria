@@ -1,8 +1,7 @@
 import { ExamplesSection } from "./_components/examples-section";
 import { G2PInputForm } from "./_components/g2p-input-form";
-import { PhonemeDetailPanel } from "./_components/phoneme-detail-panel";
+import { SideInspector } from "./_components/side-inspector";
 import { TranscriptionDisplay } from "./_components/transcription-display";
-import { WordDefinitionPanel } from "./_components/word-definition-panel";
 
 export default function Index() {
 	return (
@@ -28,10 +27,9 @@ export default function Index() {
 						</div>
 					</div>
 
-					{/* Right Column: Definition over Phoneme details */}
+					{/* Right Column: Stacked summary blocks */}
 					<div className="lg:col-span-5 space-y-6 border flex-1 flex flex-col">
-						<WordDefinitionPanel />
-						<PhonemeDetailPanel />
+						<SideInspector />
 					</div>
 				</div>
 			</div>
