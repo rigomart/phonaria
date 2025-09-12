@@ -7,7 +7,7 @@
 		"build": "next build --turbopack",
 		"start": "next start",
 		"lint": "biome check --write",
-		"typecheck": "tsc --noEmit",
+		"check-types": "tsc --noEmit",
 		"test": "vitest run",
 		"build:embedded-dict": "pnpm --filter build-scripts run build:embedded-dict"
 	},

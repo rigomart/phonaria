@@ -9,6 +9,7 @@
 /dist/
 /.next/
 /out/
+.turbo
 
 # Testing
 /coverage/

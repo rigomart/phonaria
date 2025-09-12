@@ -8,9 +8,8 @@
 	"packageManager": "pnpm@10.12.4",
 	"scripts": {
 		"lint": "biome check --write",
-		"typecheck": "tsc --noEmit",
-		"generate": "tsx generate.ts",
-		"build": "tsc generate.ts --outDir dist"
+		"check-types": "tsc --noEmit",
+		"generate": "tsx generate.ts"
 	},
 	"dependencies": {
 		"@elevenlabs/elevenlabs-js": "^2.6.0",

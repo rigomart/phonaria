@@ -7,6 +7,6 @@
 	"packageManager": "pnpm@10.12.4",
 	"scripts": {
 		"lint": "biome check --write",
-		"typecheck": "tsc --noEmit"
+		"check-types": "tsc --noEmit"
 	}
 }
