@@ -5,8 +5,8 @@ import type { ConsonantPhoneme, VowelPhoneme } from "shared-data";
 import { consonants, vowels } from "shared-data";
 import { PhonemeDialog } from "@/components/phoneme-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeroSection } from "./_components/hero-section";
 import { PhonemeCategories } from "./_components/phoneme-categories";
+import { HeroSection } from "./_sections/hero-section";
 
 type PageSection = "consonants" | "vowels";
 
