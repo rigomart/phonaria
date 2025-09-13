@@ -42,18 +42,19 @@ function WordDefinitionDetails({ word, children }: { word: string; children: Rea
 }
 
 function WordDefinitionDetailsHeader() {
-	const { word, data } = useWordDefinitionContext();
+	const { word } = useWordDefinitionContext();
 	return (
 		<div className="space-y-2">
 			<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
-			<div className="flex items-center justify-between">
-				<div className="text-lg font-semibold">{word}</div>
-				{data?.audioUrl ? (
-					<AudioButton src={data.audioUrl} label={`Pronunciation for ${word}`} />
-				) : null}
-			</div>
+			<div className="text-lg font-semibold">{word}</div>
 		</div>
 	);
+}
+
+function WordDefinitionDetailsHeaderActions() {
+	const { word, data } = useWordDefinitionContext();
+	if (!data?.audioUrl) return null;
+	return <AudioButton src={data.audioUrl} label={`Pronunciation for ${word}`} />;
 }
 
 function WordDefinitionDetailsContent() {
@@ -108,4 +109,9 @@ function WordDefinitionDetailsContent() {
 	);
 }
 
-export { WordDefinitionDetails, WordDefinitionDetailsHeader, WordDefinitionDetailsContent };
+export {
+	WordDefinitionDetails,
+	WordDefinitionDetailsHeader,
+	WordDefinitionDetailsHeaderActions,
+	WordDefinitionDetailsContent,
+};
