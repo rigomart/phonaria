@@ -60,7 +60,7 @@ type WordDefinitionContentProps = {
 	error: string | null;
 };
 
-function WordDefinitionContent({
+export function WordDefinitionContent({
 	wordDefinition,
 	isLoading,
 	isNotFound,

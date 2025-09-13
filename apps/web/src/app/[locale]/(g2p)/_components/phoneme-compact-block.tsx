@@ -2,13 +2,13 @@
 
 import { ChevronDown } from "lucide-react";
 import { useMemo } from "react";
+import { PhonemeDetails } from "@/components/phoneme-details";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCurrentTranscription } from "../_lib/use-g2p";
 import { useG2PStore } from "../_store/g2p-store";
 import type { TranscriptionResult } from "../_types/g2p";
-import { PhonemeDetailPanel } from "./phoneme-detail-panel";
 
 export function PhonemeCompactBlock({
 	expanded,
@@ -36,8 +36,8 @@ export function PhonemeCompactBlock({
 
 		const chips: string[] = [];
 		if (selectedPhoneme.category === "consonant") {
-			chips.push(selectedPhoneme.articulation.place);
 			chips.push(selectedPhoneme.articulation.manner);
+			chips.push(selectedPhoneme.articulation.place);
 			chips.push(selectedPhoneme.articulation.voicing);
 		} else {
 			chips.push(selectedPhoneme.articulation.height);
@@ -60,29 +60,15 @@ export function PhonemeCompactBlock({
 		);
 	}
 
-	if (expanded) {
-		return <PhonemeDetailPanel />;
-	}
-
 	return (
-		<Card
-			tabIndex={0}
-			onClick={(e) => {
-				const target = e.target as HTMLElement | null;
-				if (target?.closest("button")) return;
-				onToggle();
-			}}
-			onKeyDown={(e) => {
-				if (e.currentTarget !== e.target) return;
-				if (e.key === "Enter" || e.key === " ") {
-					e.preventDefault();
-					onToggle();
-				}
-			}}
-			className="h-fit cursor-pointer hover:bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/40"
-		>
+		<Card className="h-fit">
 			<CardHeader className="py-2">
-				<div className="flex items-start justify-between gap-2">
+				<button
+					type="button"
+					aria-expanded={expanded}
+					onClick={() => onToggle()}
+					className="w-full text-left rounded-md p-1 -m-1 cursor-pointer hover:bg-muted/70 active:bg-muted shadow-sm hover:shadow transition flex items-start justify-between gap-2"
+				>
 					<div>
 						<CardTitle className="text-xs">Phoneme</CardTitle>
 						<div className="text-sm font-semibold">/{selectedPhoneme.symbol}/</div>
@@ -95,20 +81,30 @@ export function PhonemeCompactBlock({
 						</div>
 					</div>
 					<div className="flex items-center gap-2">
-						<ChevronDown className="h-3 w-3 opacity-70" />
+						<ChevronDown
+							className={`h-3 w-3 opacity-70 transition-transform ${expanded ? "rotate-180" : "rotate-0"}`}
+						/>
 					</div>
-				</div>
+				</button>
 			</CardHeader>
-			<CardContent className="py-2 space-y-1">
-				{summary?.words && summary.words.length > 0 ? (
-					<div className="text-[10px] text-muted-foreground">
-						Examples: {summary.words.join(", ")}
-					</div>
-				) : (
-					<div className="text-[10px] text-muted-foreground">No examples in current result</div>
-				)}
-				<div className="text-[10px] text-muted-foreground">Press Enter to open</div>
-			</CardContent>
+			{expanded ? (
+				<CardContent className="py-2">
+					<ScrollArea className="h-[400px] pr-3">
+						<PhonemeDetails.Content phoneme={selectedPhoneme} />
+					</ScrollArea>
+				</CardContent>
+			) : (
+				<CardContent className="py-2 space-y-1">
+					{summary?.words && summary.words.length > 0 ? (
+						<div className="text-[10px] text-muted-foreground">
+							Examples: {summary.words.join(", ")}
+						</div>
+					) : (
+						<div className="text-[10px] text-muted-foreground">No examples in current result</div>
+					)}
+					<div className="text-[10px] text-muted-foreground">Press Enter to open</div>
+				</CardContent>
+			)}
 		</Card>
 	);
 }
