@@ -2,7 +2,14 @@
 
 import { ChevronDown } from "lucide-react";
 
-import { PhonemeDetails } from "@/components/phoneme-details";
+import {
+	PhonemeDetails,
+	PhonemeDetailsAllophones,
+	PhonemeDetailsArticulation,
+	PhonemeDetailsExamples,
+	PhonemeDetailsGuide,
+	PhonemeDetailsHeader,
+} from "@/components/phoneme-details";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useG2PStore } from "../_store/g2p-store";
@@ -38,15 +45,15 @@ export function PhonemeDetailPanel() {
 			</CardHeader>
 			<CardContent className="p-0">
 				<ScrollArea className="max-h-[60vh] p-4">
-					<PhonemeDetails.Root phoneme={phoneme}>
+					<PhonemeDetails phoneme={phoneme}>
 						<div className="space-y-8">
-							<PhonemeDetails.Header />
-							<PhonemeDetails.Articulation />
-							<PhonemeDetails.Guide />
-							<PhonemeDetails.Examples />
-							<PhonemeDetails.Allophones />
+							<PhonemeDetailsHeader />
+							<PhonemeDetailsArticulation />
+							<PhonemeDetailsGuide />
+							<PhonemeDetailsExamples />
+							<PhonemeDetailsAllophones />
 						</div>
-					</PhonemeDetails.Root>
+					</PhonemeDetails>
 				</ScrollArea>
 			</CardContent>
 		</Card>
