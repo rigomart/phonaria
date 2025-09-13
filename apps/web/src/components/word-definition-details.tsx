@@ -1,0 +1,111 @@
+"use client";
+
+import { createContext, useContext } from "react";
+import { useDictionary } from "@/app/[locale]/(g2p)/_lib/use-dictionary";
+import type { WordDefinition } from "@/app/[locale]/(g2p)/_schemas/dictionary";
+import { AudioButton } from "@/components/audio-button";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+
+type WordDefinitionContextValue = {
+	word: string;
+	data: WordDefinition | null;
+	isLoading: boolean;
+	isNotFound: boolean;
+	error: string | null;
+};
+
+const WordDefinitionContext = createContext<WordDefinitionContextValue | null>(null);
+
+function useWordDefinitionContext() {
+	const ctx = useContext(WordDefinitionContext);
+	if (!ctx) throw new Error("WordDefinitionDetails* must be used within WordDefinitionDetails");
+	return ctx;
+}
+
+function WordDefinitionDetails({ word, children }: { word: string; children: React.ReactNode }) {
+	const query = useDictionary(word);
+	return (
+		<WordDefinitionContext.Provider
+			value={{
+				word,
+				data: (query.data as WordDefinition | null) ?? null,
+				isLoading: query.isLoading,
+				isNotFound: query.isNotFound,
+				error: query.errorMessage,
+			}}
+		>
+			{children}
+		</WordDefinitionContext.Provider>
+	);
+}
+
+function WordDefinitionDetailsHeader() {
+	const { word, data } = useWordDefinitionContext();
+	return (
+		<div className="space-y-2">
+			<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
+			<div className="flex items-center justify-between">
+				<div className="text-lg font-semibold">{word}</div>
+				{data?.audioUrl ? (
+					<AudioButton src={data.audioUrl} label={`Pronunciation for ${word}`} />
+				) : null}
+			</div>
+		</div>
+	);
+}
+
+function WordDefinitionDetailsContent() {
+	const { data, isLoading, isNotFound, error } = useWordDefinitionContext();
+	if (isLoading) {
+		return (
+			<div className="space-y-3">
+				<Skeleton className="h-5 w-40" />
+				<Skeleton className="h-4 w-full" />
+				<Skeleton className="h-4 w-5/6" />
+				<Skeleton className="h-4 w-4/6" />
+			</div>
+		);
+	}
+	if (error) {
+		return <div className="text-sm text-destructive">{error || "Failed to load definition."}</div>;
+	}
+	if (isNotFound || !data) {
+		return <div className="text-sm text-muted-foreground">No definition found.</div>;
+	}
+
+	return (
+		<ScrollArea className="h-[400px] pr-3">
+			<div className="space-y-6">
+				{data.meanings.map((meaning) => (
+					<div
+						key={`${meaning.partOfSpeech}-${meaning.definitions[0]?.definition.slice(0, 40) || meaning.partOfSpeech}`}
+						className="space-y-2"
+					>
+						<div className="flex items-center gap-2">
+							<Badge variant="secondary" className="capitalize">
+								{meaning.partOfSpeech}
+							</Badge>
+						</div>
+						<ol className="list-decimal list-inside space-y-2">
+							{meaning.definitions.map((def) => (
+								<li
+									key={`${def.definition.slice(0, 60)}-${def.example || ""}`}
+									className="leading-relaxed text-sm"
+								>
+									<span className="text-sm">{def.definition}</span>
+									{def.example ? (
+										<div className="text-xs text-muted-foreground mt-1">“{def.example}”</div>
+									) : null}
+								</li>
+							))}
+						</ol>
+					</div>
+				))}
+			</div>
+		</ScrollArea>
+	);
+}
+
+export { WordDefinitionDetails, WordDefinitionDetailsHeader, WordDefinitionDetailsContent };

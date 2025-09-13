@@ -2,7 +2,14 @@
 
 import { ChevronDown } from "lucide-react";
 import { useMemo } from "react";
-import { PhonemeDetails } from "@/components/phoneme-details";
+import {
+	PhonemeDetails,
+	PhonemeDetailsAllophones,
+	PhonemeDetailsArticulation,
+	PhonemeDetailsExamples,
+	PhonemeDetailsGuide,
+	PhonemeDetailsHeader,
+} from "@/components/phoneme-details";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -87,30 +94,19 @@ export function PhonemeCompactBlock({
 					</div>
 				</button>
 			</CardHeader>
-			{expanded ? (
+			{expanded && (
 				<CardContent className="py-2">
 					<ScrollArea className="h-[400px] pr-3">
-						<PhonemeDetails.Root phoneme={selectedPhoneme}>
+						<PhonemeDetails phoneme={selectedPhoneme}>
 							<div className="space-y-6">
-								<PhonemeDetails.Header />
-								<PhonemeDetails.Articulation />
-								<PhonemeDetails.Examples />
-								<PhonemeDetails.Guide />
-								<PhonemeDetails.Allophones />
+								<PhonemeDetailsHeader />
+								<PhonemeDetailsArticulation />
+								<PhonemeDetailsExamples />
+								<PhonemeDetailsGuide />
+								<PhonemeDetailsAllophones />
 							</div>
-						</PhonemeDetails.Root>
+						</PhonemeDetails>
 					</ScrollArea>
-				</CardContent>
-			) : (
-				<CardContent className="py-2 space-y-1">
-					{summary?.words && summary.words.length > 0 ? (
-						<div className="text-[10px] text-muted-foreground">
-							Examples: {summary.words.join(", ")}
-						</div>
-					) : (
-						<div className="text-[10px] text-muted-foreground">No examples in current result</div>
-					)}
-					<div className="text-[10px] text-muted-foreground">Press Enter to open</div>
 				</CardContent>
 			)}
 		</Card>

@@ -21,13 +21,13 @@ function usePhonemeDetails() {
 	return ctx;
 }
 
-function Root({ phoneme, children }: { phoneme: IpaPhoneme; children: React.ReactNode }) {
+function PhonemeDetails({ phoneme, children }: { phoneme: IpaPhoneme; children: React.ReactNode }) {
 	return (
 		<PhonemeDetailsContext.Provider value={phoneme}>{children}</PhonemeDetailsContext.Provider>
 	);
 }
 
-function Header() {
+function PhonemeDetailsHeader() {
 	const phoneme = usePhonemeDetails();
 	return (
 		<div className="space-y-4">
@@ -41,7 +41,7 @@ function Header() {
 	);
 }
 
-function SagittalView() {
+function PhonemeDetailsSagittalView() {
 	const t = useTranslations("IpaChart.Dialog");
 	return (
 		<section className="space-y-3">
@@ -108,12 +108,12 @@ function VowelArticulation() {
 	);
 }
 
-function Articulation() {
+function PhonemeDetailsArticulation() {
 	const phoneme = usePhonemeDetails();
 	return phoneme.category === "consonant" ? <ConsonantArticulation /> : <VowelArticulation />;
 }
 
-function Guide() {
+function PhonemeDetailsGuide() {
 	const phoneme = usePhonemeDetails();
 	return phoneme.guide ? (
 		<section className="space-y-2">
@@ -125,7 +125,7 @@ function Guide() {
 	) : null;
 }
 
-function Examples() {
+function PhonemeDetailsExamples() {
 	const phoneme = usePhonemeDetails();
 	return (
 		<section className="space-y-4">
@@ -150,7 +150,7 @@ function Examples() {
 
 type Allophone = ConsonantAllophone | VowelAllophone;
 
-function Allophones() {
+function PhonemeDetailsAllophones() {
 	const phoneme = usePhonemeDetails();
 	const list = (phoneme.allophones || []) as Allophone[];
 	if (!list.length) return null;
@@ -190,12 +190,12 @@ function Allophones() {
 	);
 }
 
-export const PhonemeDetails = {
-	Root,
-	Header,
-	SagittalView,
-	Articulation,
-	Guide,
-	Examples,
-	Allophones,
+export {
+	PhonemeDetails,
+	PhonemeDetailsHeader,
+	PhonemeDetailsSagittalView,
+	PhonemeDetailsArticulation,
+	PhonemeDetailsGuide,
+	PhonemeDetailsExamples,
+	PhonemeDetailsAllophones,
 };
