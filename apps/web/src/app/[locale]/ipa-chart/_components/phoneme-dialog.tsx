@@ -4,7 +4,7 @@ import { PhonemeDetails } from "@/components/phoneme-details";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 
-export function PhonemeDialogSection() {
+export function PhonemeDialog() {
 	const dialogOpen = useIpaChartStore((s) => s.dialogOpen);
 	const setDialogOpen = useIpaChartStore((s) => s.setDialogOpen);
 	const selectedPhoneme = useIpaChartStore((s) => s.selectedPhoneme);
