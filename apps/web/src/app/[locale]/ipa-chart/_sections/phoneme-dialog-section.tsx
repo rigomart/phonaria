@@ -17,7 +17,16 @@ export function PhonemeDialogSection() {
 						<DialogHeader>
 							<DialogTitle className="sr-only">{`Phoneme /${selectedPhoneme.symbol}/`}</DialogTitle>
 						</DialogHeader>
-						<PhonemeDetails.Content phoneme={selectedPhoneme} />
+						<PhonemeDetails.Root phoneme={selectedPhoneme}>
+							<div className="space-y-8">
+								<PhonemeDetails.Header />
+								<PhonemeDetails.SagittalView />
+								<PhonemeDetails.Articulation />
+								<PhonemeDetails.Guide />
+								<PhonemeDetails.Examples />
+								<PhonemeDetails.Allophones />
+							</div>
+						</PhonemeDetails.Root>
 					</>
 				) : null}
 			</DialogContent>

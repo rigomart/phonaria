@@ -90,7 +90,15 @@ export function PhonemeCompactBlock({
 			{expanded ? (
 				<CardContent className="py-2">
 					<ScrollArea className="h-[400px] pr-3">
-						<PhonemeDetails.Content phoneme={selectedPhoneme} />
+						<PhonemeDetails.Root phoneme={selectedPhoneme}>
+							<div className="space-y-6">
+								<PhonemeDetails.Header />
+								<PhonemeDetails.Articulation />
+								<PhonemeDetails.Examples />
+								<PhonemeDetails.Guide />
+								<PhonemeDetails.Allophones />
+							</div>
+						</PhonemeDetails.Root>
 					</ScrollArea>
 				</CardContent>
 			) : (

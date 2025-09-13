@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { createContext, useContext } from "react";
 import type {
 	ConsonantAllophone,
 	ConsonantPhoneme,
@@ -12,7 +13,22 @@ import { AudioButton } from "@/components/audio-button";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
-function Header({ phoneme }: { phoneme: IpaPhoneme }) {
+// Context and Root
+const PhonemeDetailsContext = createContext<IpaPhoneme | null>(null);
+function usePhonemeDetails() {
+	const ctx = useContext(PhonemeDetailsContext);
+	if (!ctx) throw new Error("PhonemeDetails.* must be used within PhonemeDetails.Root");
+	return ctx;
+}
+
+function Root({ phoneme, children }: { phoneme: IpaPhoneme; children: React.ReactNode }) {
+	return (
+		<PhonemeDetailsContext.Provider value={phoneme}>{children}</PhonemeDetailsContext.Provider>
+	);
+}
+
+function Header() {
+	const phoneme = usePhonemeDetails();
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center gap-2">
@@ -43,7 +59,8 @@ function SagittalView() {
 	);
 }
 
-function ConsonantArticulation({ phoneme }: { phoneme: ConsonantPhoneme }) {
+function ConsonantArticulation() {
+	const phoneme = usePhonemeDetails() as ConsonantPhoneme;
 	const properties: { label: string; value: string }[] = [
 		{ label: "Voicing", value: phoneme.articulation.voicing },
 		{ label: "Place", value: phoneme.articulation.place },
@@ -64,7 +81,8 @@ function ConsonantArticulation({ phoneme }: { phoneme: ConsonantPhoneme }) {
 	);
 }
 
-function VowelArticulation({ phoneme }: { phoneme: VowelPhoneme }) {
+function VowelArticulation() {
+	const phoneme = usePhonemeDetails() as VowelPhoneme;
 	const properties: { label: string; value: string }[] = [
 		{ label: "Height", value: phoneme.articulation.height },
 		{ label: "Frontness", value: phoneme.articulation.frontness },
@@ -90,21 +108,30 @@ function VowelArticulation({ phoneme }: { phoneme: VowelPhoneme }) {
 	);
 }
 
-function Guide({ guide }: { guide: string }) {
-	return (
-		<section className="space-y-2">
-			<h3 className="text-sm font-medium">How to Make It</h3>
-			<p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">{guide}</p>
-		</section>
-	);
+function Articulation() {
+	const phoneme = usePhonemeDetails();
+	return phoneme.category === "consonant" ? <ConsonantArticulation /> : <VowelArticulation />;
 }
 
-function Examples({ examples }: { examples: ExampleWord[] }) {
+function Guide() {
+	const phoneme = usePhonemeDetails();
+	return phoneme.guide ? (
+		<section className="space-y-2">
+			<h3 className="text-sm font-medium">How to Make It</h3>
+			<p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+				{phoneme.guide}
+			</p>
+		</section>
+	) : null;
+}
+
+function Examples() {
+	const phoneme = usePhonemeDetails();
 	return (
 		<section className="space-y-4">
 			<h3 className="text-sm font-medium">Examples</h3>
 			<ul className="grid gap-3 sm:grid-cols-2">
-				{examples.map((ex) => (
+				{phoneme.examples.map((ex) => (
 					<li
 						key={ex.word}
 						className="flex items-center justify-between gap-4 rounded-md border p-3"
@@ -123,19 +150,22 @@ function Examples({ examples }: { examples: ExampleWord[] }) {
 
 type Allophone = ConsonantAllophone | VowelAllophone;
 
-function Allophones({ allophones }: { allophones: Allophone[] }) {
+function Allophones() {
+	const phoneme = usePhonemeDetails();
+	const list = (phoneme.allophones || []) as Allophone[];
+	if (!list.length) return null;
 	return (
 		<section className="space-y-4">
 			<h3 className="text-sm font-medium">Allophones</h3>
 			<ul className="space-y-4">
-				{allophones.map((allo) => (
+				{list.map((allo) => (
 					<li key={allo.variant} className="rounded-md border p-4 space-y-3 bg-muted/10">
 						<div className="flex flex-wrap items-baseline gap-2">
 							<span className="font-medium text-base">{allo.variant}</span>
 							<span className="text-sm text-muted-foreground">{allo.description}</span>
 						</div>
-						{allo.context ? (
-							<div className="text-xs text-muted-foreground">Context: {allo.context}</div>
+						{"context" in allo && allo.context ? (
+							<div className="text-xs text-muted-foreground">Context: {allo.context as string}</div>
 						) : null}
 						{allo.examples?.length ? (
 							<ul className="space-y-2">
@@ -160,29 +190,11 @@ function Allophones({ allophones }: { allophones: Allophone[] }) {
 	);
 }
 
-function Content({ phoneme }: { phoneme: IpaPhoneme }) {
-	return (
-		<div className="space-y-8">
-			<Header phoneme={phoneme} />
-			<SagittalView />
-			{phoneme.category === "consonant" ? (
-				<ConsonantArticulation phoneme={phoneme} />
-			) : (
-				<VowelArticulation phoneme={phoneme} />
-			)}
-			{phoneme.guide ? <Guide guide={phoneme.guide} /> : null}
-			<Examples examples={phoneme.examples} />
-			{phoneme.allophones?.length ? <Allophones allophones={phoneme.allophones} /> : null}
-		</div>
-	);
-}
-
 export const PhonemeDetails = {
-	Content,
+	Root,
 	Header,
 	SagittalView,
-	ConsonantArticulation,
-	VowelArticulation,
+	Articulation,
 	Guide,
 	Examples,
 	Allophones,

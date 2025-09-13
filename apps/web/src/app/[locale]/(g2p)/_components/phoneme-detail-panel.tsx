@@ -1,10 +1,9 @@
 "use client";
 
-import { X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 import { PhonemeDetails } from "@/components/phoneme-details";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useG2PStore } from "../_store/g2p-store";
 
@@ -23,19 +22,33 @@ export function PhonemeDetailPanel() {
 	}
 
 	return (
-		<div className="flex-1 bg-card relative">
-			<Button
-				variant="ghost"
-				size="sm"
-				onClick={closePhonemePanel}
-				className="absolute top-2 right-2 h-6 w-6 p-0 z-1"
-			>
-				<X className="h-3 w-3" />
-			</Button>
-
-			<ScrollArea className="max- p-4">
-				<PhonemeDetails.Content phoneme={phoneme} />
-			</ScrollArea>
-		</div>
+		<Card className="flex-1">
+			<CardHeader className="py-2">
+				<div className="flex items-center justify-between gap-2">
+					<CardTitle className="text-xs">Phoneme</CardTitle>
+					<button
+						type="button"
+						className="rounded-md p-1 -m-1 hover:bg-muted/70 active:bg-muted transition flex items-center gap-1"
+						onClick={closePhonemePanel}
+						aria-label="Collapse phoneme details"
+					>
+						<ChevronDown className="h-3 w-3 rotate-180" />
+					</button>
+				</div>
+			</CardHeader>
+			<CardContent className="p-0">
+				<ScrollArea className="max-h-[60vh] p-4">
+					<PhonemeDetails.Root phoneme={phoneme}>
+						<div className="space-y-8">
+							<PhonemeDetails.Header />
+							<PhonemeDetails.Articulation />
+							<PhonemeDetails.Guide />
+							<PhonemeDetails.Examples />
+							<PhonemeDetails.Allophones />
+						</div>
+					</PhonemeDetails.Root>
+				</ScrollArea>
+			</CardContent>
+		</Card>
 	);
 }
