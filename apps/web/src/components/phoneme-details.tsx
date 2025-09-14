@@ -13,11 +13,11 @@ import { AudioButton } from "@/components/audio-button";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
-// Context and Root
 const PhonemeDetailsContext = createContext<IpaPhoneme | null>(null);
+
 function usePhonemeDetails() {
 	const ctx = useContext(PhonemeDetailsContext);
-	if (!ctx) throw new Error("PhonemeDetails.* must be used within PhonemeDetails.Root");
+	if (!ctx) throw new Error("PhonemeDetails* must be used within PhonemeDetails");
 	return ctx;
 }
 
