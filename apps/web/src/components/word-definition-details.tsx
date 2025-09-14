@@ -5,7 +5,6 @@ import { useDictionary } from "@/app/[locale]/(g2p)/_lib/use-dictionary";
 import type { WordDefinition } from "@/app/[locale]/(g2p)/_schemas/dictionary";
 import { AudioButton } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type WordDefinitionContextValue = {
@@ -77,35 +76,33 @@ function WordDefinitionDetailsContent() {
 	}
 
 	return (
-		<ScrollArea className="h-[400px] pr-3">
-			<div className="space-y-6">
-				{data.meanings.map((meaning) => (
-					<div
-						key={`${meaning.partOfSpeech}-${meaning.definitions[0]?.definition.slice(0, 40) || meaning.partOfSpeech}`}
-						className="space-y-2"
-					>
-						<div className="flex items-center gap-2">
-							<Badge variant="secondary" className="capitalize">
-								{meaning.partOfSpeech}
-							</Badge>
-						</div>
-						<ol className="list-decimal list-inside space-y-2">
-							{meaning.definitions.map((def) => (
-								<li
-									key={`${def.definition.slice(0, 60)}-${def.example || ""}`}
-									className="leading-relaxed text-sm"
-								>
-									<span className="text-sm">{def.definition}</span>
-									{def.example ? (
-										<div className="text-xs text-muted-foreground mt-1">“{def.example}”</div>
-									) : null}
-								</li>
-							))}
-						</ol>
+		<div className="space-y-6">
+			{data.meanings.map((meaning) => (
+				<div
+					key={`${meaning.partOfSpeech}-${meaning.definitions[0]?.definition.slice(0, 40) || meaning.partOfSpeech}`}
+					className="space-y-2"
+				>
+					<div className="flex items-center gap-2">
+						<Badge variant="secondary" className="capitalize">
+							{meaning.partOfSpeech}
+						</Badge>
 					</div>
-				))}
-			</div>
-		</ScrollArea>
+					<ol className="list-decimal list-inside space-y-2">
+						{meaning.definitions.map((def) => (
+							<li
+								key={`${def.definition.slice(0, 60)}-${def.example || ""}`}
+								className="leading-relaxed text-sm"
+							>
+								<span className="text-sm">{def.definition}</span>
+								{def.example ? (
+									<div className="text-xs text-muted-foreground mt-1">“{def.example}”</div>
+								) : null}
+							</li>
+						))}
+					</ol>
+				</div>
+			))}
+		</div>
 	);
 }
 
