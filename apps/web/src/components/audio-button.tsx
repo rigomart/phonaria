@@ -1,6 +1,6 @@
 import { Play, Snail } from "lucide-react";
-import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { useAudioPlayer } from "@/hooks/use-audio-player";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -10,47 +10,7 @@ type Props = {
 };
 
 export function AudioButton({ src, label, className }: Props) {
-	const audioRef = useRef<HTMLAudioElement | null>(null);
-
-	// Effect to create and cleanup the audio element
-	useEffect(() => {
-		const audio = new Audio();
-		audioRef.current = audio;
-
-		const handleEnded = () => {
-			// Reset audio element
-			audio.currentTime = 0;
-		};
-
-		audio.addEventListener("ended", handleEnded);
-
-		return () => {
-			audio.removeEventListener("ended", handleEnded);
-			audio.pause();
-			audioRef.current = null;
-		};
-	}, []);
-
-	const playAudio = (sourceUrl: string, speed: "normal" | "slow" = "normal") => {
-		const audio = audioRef.current;
-		if (!audio) return;
-
-		// Always play the audio from the beginning
-		audio.src = sourceUrl;
-		audio.currentTime = 0;
-
-		// Set playback rate and preserve pitch for slow playback
-		if (speed === "slow") {
-			audio.playbackRate = 0.5;
-			// Preserve pitch using standard and vendor-prefixed properties
-			audio.preservesPitch = true;
-		} else {
-			audio.playbackRate = 1.0;
-			audio.preservesPitch = false;
-		}
-
-		audio.play().catch((e) => console.error("Audio play failed:", e));
-	};
+	const { playAudio } = useAudioPlayer();
 
 	return (
 		<div className={cn("inline-flex items-center gap-1", className)}>
