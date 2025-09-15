@@ -11,7 +11,11 @@ import {
 import { Card, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useG2PStore } from "../_store/g2p-store";
-import { CollapsibleDetailCard } from "./collapsible-detail-card";
+import {
+	CollapsibleDetailCard,
+	CollapsibleDetailCardContent,
+	CollapsibleDetailCardHeader,
+} from "./collapsible-detail-card";
 
 export function PhonemeCompactBlock({
 	expanded,
@@ -34,20 +38,20 @@ export function PhonemeCompactBlock({
 
 	return (
 		<PhonemeDetails phoneme={selectedPhoneme}>
-			<CollapsibleDetailCard
-				expanded={expanded}
-				onToggle={onToggle}
-				header={<PhonemeDetailsHeader />}
-				contentId="phoneme-content"
-			>
-				<ScrollArea className="h-[400px] pr-3">
-					<div className="space-y-6">
-						<PhonemeDetailsArticulation />
-						<PhonemeDetailsExamples />
-						<PhonemeDetailsGuide />
-						<PhonemeDetailsAllophones />
-					</div>
-				</ScrollArea>
+			<CollapsibleDetailCard expanded={expanded} onToggle={onToggle}>
+				<CollapsibleDetailCardHeader controlsId="phoneme-content">
+					<PhonemeDetailsHeader />
+				</CollapsibleDetailCardHeader>
+				<CollapsibleDetailCardContent id="phoneme-content">
+					<ScrollArea className="h-[400px] pr-3">
+						<div className="space-y-6">
+							<PhonemeDetailsArticulation />
+							<PhonemeDetailsExamples />
+							<PhonemeDetailsGuide />
+							<PhonemeDetailsAllophones />
+						</div>
+					</ScrollArea>
+				</CollapsibleDetailCardContent>
 			</CollapsibleDetailCard>
 		</PhonemeDetails>
 	);

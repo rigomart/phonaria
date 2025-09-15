@@ -9,7 +9,11 @@ import {
 	WordDefinitionDetailsHeaderActions,
 } from "@/components/word-definition-details";
 import { useDictionaryStore } from "../_store/dictionary-store";
-import { CollapsibleDetailCard } from "./collapsible-detail-card";
+import {
+	CollapsibleDetailCard,
+	CollapsibleDetailCardContent,
+	CollapsibleDetailCardHeader,
+} from "./collapsible-detail-card";
 
 export function DefinitionCompactBlock({
 	expanded,
@@ -34,16 +38,18 @@ export function DefinitionCompactBlock({
 
 	return (
 		<WordDefinitionDetails word={selectedWord}>
-			<CollapsibleDetailCard
-				expanded={expanded}
-				onToggle={onToggle}
-				header={<WordDefinitionDetailsHeader />}
-				actions={<WordDefinitionDetailsHeaderActions />}
-				contentId="definition-content"
-			>
-				<div className="max-h-80 overflow-auto">
-					<WordDefinitionDetailsContent />
-				</div>
+			<CollapsibleDetailCard expanded={expanded} onToggle={onToggle}>
+				<CollapsibleDetailCardHeader
+					controlsId="definition-content"
+					actions={<WordDefinitionDetailsHeaderActions />}
+				>
+					<WordDefinitionDetailsHeader />
+				</CollapsibleDetailCardHeader>
+				<CollapsibleDetailCardContent id="definition-content">
+					<div className="max-h-80 overflow-auto">
+						<WordDefinitionDetailsContent />
+					</div>
+				</CollapsibleDetailCardContent>
 			</CollapsibleDetailCard>
 		</WordDefinitionDetails>
 	);

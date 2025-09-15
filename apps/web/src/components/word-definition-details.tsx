@@ -45,7 +45,7 @@ function WordDefinitionDetailsHeader() {
 	return (
 		<div className="space-y-2">
 			<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
-			<div className="text-lg font-semibold">{word}</div>
+			<div className="text-xl font-semibold">{word}</div>
 		</div>
 	);
 }
