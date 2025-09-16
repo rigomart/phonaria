@@ -12,7 +12,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useCurrentTranscription } from "../../_lib/use-g2p";
+import { useCurrentTranscription } from "../../_hooks/use-g2p";
 import { useDictionaryStore } from "../../_store/dictionary-store";
 import { useG2PStore } from "../../_store/g2p-store";
 import type { TranscribedPhoneme, TranscribedWord } from "../../_types/g2p";

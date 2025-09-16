@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { createContext, useContext } from "react";
 import { AudioButton } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
-import { useDictionary } from "../_lib/use-dictionary";
+import { useDictionary } from "../_hooks/use-dictionary";
 import type { WordDefinition } from "../_schemas/dictionary";
 
 type WordDefinitionContextValue = {

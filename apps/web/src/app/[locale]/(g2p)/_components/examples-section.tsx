@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useTranscribe } from "../_lib/use-g2p";
+import { useTranscribe } from "../_hooks/use-g2p";
 
 export function ExamplesSection() {
 	const transcribeMutation = useTranscribe();

@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { transcribeText } from "../_lib/g2p-client";
 import { useG2PStore } from "../_store/g2p-store";
 import type { TranscriptionResult } from "../_types/g2p";
-import { transcribeText } from "./g2p-client";
 
 export function useTranscribe() {
 	const queryClient = useQueryClient();

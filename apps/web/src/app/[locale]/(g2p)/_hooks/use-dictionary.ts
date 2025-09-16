@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ApiError } from "@/lib/api-client";
+import { fetchDefinition } from "../_lib/dictionary-client";
 import type { WordDefinition } from "../_schemas/dictionary";
-import { fetchDefinition } from "./dictionary-client";
 
 export function useDictionary(word: string | null) {
 	const query = useQuery({

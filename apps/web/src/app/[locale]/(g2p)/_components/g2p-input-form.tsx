@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { useTranscribe } from "../_lib/use-g2p";
+import { useTranscribe } from "../_hooks/use-g2p";
 
 interface G2PInputFormProps {
 	placeholder?: string;
