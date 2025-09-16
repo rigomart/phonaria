@@ -7,7 +7,6 @@ import {
 	WordDefinitionDetails,
 	WordDefinitionDetailsContent,
 	WordDefinitionDetailsHeader,
-	WordDefinitionDetailsHeaderActions,
 } from "./word-definition-details";
 
 export function WordDefinitionDialog() {
@@ -26,10 +25,8 @@ export function WordDefinitionDialog() {
 					<WordDefinitionDetails word={selectedWord}>
 						<DialogHeader>
 							<DialogTitle className="sr-only">{`Definition for ${selectedWord}`}</DialogTitle>
-							<div className="flex items-start justify-between">
-								<WordDefinitionDetailsHeader />
-								<WordDefinitionDetailsHeaderActions />
-							</div>
+
+							<WordDefinitionDetailsHeader />
 						</DialogHeader>
 						<ScrollArea className="h-[60vh]">
 							<div className="p-1">

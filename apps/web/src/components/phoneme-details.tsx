@@ -30,13 +30,18 @@ function PhonemeDetails({ phoneme, children }: { phoneme: IpaPhoneme; children: 
 function PhonemeDetailsHeader() {
 	const phoneme = usePhonemeDetails();
 	return (
-		<div className="space-y-1">
-			<div className="flex items-center gap-1 font-bold">
-				<span className="text-3xl text-muted-foreground/50">/</span>
-				<span className="text-4xl leading-none tracking-tight">{phoneme.symbol}</span>
-				<span className="text-3xl text-muted-foreground/50">/</span>
+		<div className="flex items-center justify-between">
+			<div className="space-y-1">
+				<div className="flex items-center gap-1 font-bold">
+					<span className="text-3xl text-muted-foreground/50">/</span>
+					<span className="text-4xl leading-none tracking-tight">{phoneme.symbol}</span>
+					<span className="text-3xl text-muted-foreground/50">/</span>
+				</div>
+				<p className="text-xs text-muted-foreground max-w-prose">{phoneme.description}</p>
 			</div>
-			<p className="text-xs text-muted-foreground max-w-prose">{phoneme.description}</p>
+			{phoneme.audioUrl ? (
+				<AudioControls src={phoneme.audioUrl} label={`Play ${phoneme.symbol}`} variant="extended" />
+			) : null}
 		</div>
 	);
 }

@@ -47,6 +47,7 @@ export interface ConsonantPhoneme {
 	category: "consonant";
 	type: "stop" | "fricative" | "affricate" | "nasal" | "liquid" | "glide";
 	articulation: ConsonantArticulation;
+	audioUrl?: string;
 	examples: ExampleWord[];
 	description: string;
 	guide: string;
@@ -58,6 +59,7 @@ export interface VowelPhoneme {
 	category: "vowel";
 	type: "monophthong" | "diphthong" | "rhotic";
 	articulation: VowelArticulation;
+	audioUrl?: string;
 	examples: ExampleWord[];
 	description: string;
 	guide: string;
