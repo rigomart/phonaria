@@ -7,6 +7,7 @@ import {
 	PhonemeDetailsExamples,
 	PhonemeDetailsGuide,
 	PhonemeDetailsHeader,
+	PhonemeDetailsSagittalView,
 } from "@/components/phoneme-details";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -50,6 +51,7 @@ export function PhonemeCompactBlock() {
 							<PhonemeDetailsExamples />
 							<PhonemeDetailsGuide />
 							<PhonemeDetailsAllophones />
+							<PhonemeDetailsSagittalView />
 						</div>
 					</ScrollArea>
 				</CardContent>
