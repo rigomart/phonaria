@@ -49,7 +49,7 @@ export function useAudioPlayer() {
 
 		setCurrentSource(sourceUrl);
 
-		// TTS fallback: support scheme tts:TEXT
+		// Use Web Speech Synthesis when the source starts with the tts: scheme (tts:TEXT)
 		if (sourceUrl.startsWith("tts:")) {
 			try {
 				const text = decodeURIComponent(sourceUrl.slice(4));
