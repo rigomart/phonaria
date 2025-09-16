@@ -17,7 +17,11 @@ export function useDictionary(word: string | null) {
 			if (error instanceof ApiError && error.status === 404) return false;
 			return failureCount < 2;
 		},
-		staleTime: 5 * 60 * 1000,
+		staleTime: 60 * 60 * 1000,
+		gcTime: 24 * 60 * 60 * 1000,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		refetchOnMount: false,
 	});
 
 	const isNotFound = query.error instanceof ApiError && query.error.status === 404;

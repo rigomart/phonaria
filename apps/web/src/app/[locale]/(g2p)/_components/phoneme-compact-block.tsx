@@ -40,12 +40,12 @@ export function PhonemeCompactBlock() {
 	return (
 		<PhonemeDetails phoneme={selectedPhoneme}>
 			<Card className="h-full flex flex-col">
-				<CardHeader className="py-3">
+				<CardHeader>
 					<PhonemeDetailsHeader />
 				</CardHeader>
-				<CardContent className="flex-1 p-0 min-h-0">
+				<CardContent className="flex-1min-h-0">
 					<ScrollArea className="h-full">
-						<div className="p-4 space-y-6">
+						<div className="space-y-6">
 							<PhonemeDetailsArticulation />
 							<PhonemeDetailsExamples />
 							<PhonemeDetailsGuide />

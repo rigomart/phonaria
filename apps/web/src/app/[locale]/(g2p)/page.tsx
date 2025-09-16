@@ -2,6 +2,7 @@ import { ExamplesSection } from "./_components/examples-section";
 import { G2PInputForm } from "./_components/g2p-input-form";
 import { SideInspector } from "./_components/side-inspector";
 import { TranscriptionDisplay } from "./_components/transcription-display";
+import { WordDefinitionDialog } from "./_components/word-definition-dialog";
 
 export default function Index() {
 	return (
@@ -32,6 +33,7 @@ export default function Index() {
 						<SideInspector />
 					</div>
 				</div>
+				<WordDefinitionDialog />
 			</div>
 		</div>
 	);

@@ -1,9 +1,9 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { createContext, useContext } from "react";
 import { AudioButton } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useDictionary } from "../_lib/use-dictionary";
 import type { WordDefinition } from "../_schemas/dictionary";
 
@@ -60,11 +60,11 @@ function WordDefinitionDetailsContent() {
 	const { data, isLoading, isNotFound, error } = useWordDefinitionContext();
 	if (isLoading) {
 		return (
-			<div className="space-y-3">
-				<Skeleton className="h-5 w-40" />
-				<Skeleton className="h-4 w-full" />
-				<Skeleton className="h-4 w-5/6" />
-				<Skeleton className="h-4 w-4/6" />
+			<div className="h-40 flex items-center justify-center">
+				<div className="flex items-center gap-2 text-muted-foreground">
+					<Loader2 className="h-4 w-4 animate-spin" />
+					<span className="text-sm">Fetching definition…</span>
+				</div>
 			</div>
 		);
 	}
