@@ -33,6 +33,8 @@ interface ClickablePhonemeProps {
  */
 function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
 	const isKnown = phoneme.isKnown;
+	const selectedSymbol = useG2PStore((s) => s.selectedPhoneme?.symbol);
+	const isSelected = selectedSymbol === phoneme.symbol;
 
 	const handleClick = () => {
 		onClick(phoneme);
@@ -47,8 +49,10 @@ function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
 				"hover:text-primary hover:underline",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:rounded-md",
 				!isKnown && "opacity-75 underline decoration-dotted underline-offset-4",
+				isSelected && "text-primary underline underline-offset-4 ring-2 ring-primary/40 rounded-md",
 			)}
 			onClick={handleClick}
+			aria-current={isSelected ? "true" : undefined}
 			aria-label={`Phoneme ${phoneme.symbol}${isKnown ? " - click to learn more" : " - not in database"}`}
 			title={
 				isKnown
