@@ -10,7 +10,7 @@ import { phonixUtils } from "shared-data";
 import { MINIMAL_PAIRS } from "../_data/minimal-pairs";
 import { PhonemeContrastInfo } from "./phoneme-contrast-info";
 
-const { toPhonemic, getExampleAudioUrl } = phonixUtils;
+const { toPhonemic } = phonixUtils;
 
 export function MinimalPairsPageContent() {
 	const [query, setQuery] = useState("");
@@ -72,7 +72,7 @@ export function MinimalPairsPageContent() {
 													<div className="font-medium">{pair.a.word}</div>
 													<div className="text-xs text-muted-foreground">{toPhonemic(pair.a.phonemic)}</div>
 												</div>
-												<AudioControls src={getExampleAudioUrl(pair.a.word)} label={`Play ${pair.a.word}`} />
+												<AudioControls src={`tts:${encodeURIComponent(pair.a.word)}`} label={`Play ${pair.a.word}`} />
 											</div>
 										</TableCell>
 										<TableCell>
@@ -81,7 +81,7 @@ export function MinimalPairsPageContent() {
 													<div className="font-medium">{pair.b.word}</div>
 													<div className="text-xs text-muted-foreground">{toPhonemic(pair.b.phonemic)}</div>
 												</div>
-												<AudioControls src={getExampleAudioUrl(pair.b.word)} label={`Play ${pair.b.word}`} />
+												<AudioControls src={`tts:${encodeURIComponent(pair.b.word)}`} label={`Play ${pair.b.word}`} />
 											</div>
 											{pair.note ? (
 												<div className="text-xs text-muted-foreground mt-2">{pair.note}</div>
