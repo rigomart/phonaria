@@ -47,11 +47,11 @@ export function PhonemeCompactBlock() {
 				<CardContent className="flex-1min-h-0">
 					<ScrollArea className="h-full">
 						<div className="space-y-6">
+							<PhonemeDetailsSagittalView />
 							<PhonemeDetailsArticulation />
 							<PhonemeDetailsExamples />
 							<PhonemeDetailsGuide />
 							<PhonemeDetailsAllophones />
-							<PhonemeDetailsSagittalView />
 						</div>
 					</ScrollArea>
 				</CardContent>
