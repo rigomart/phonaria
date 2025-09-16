@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { createContext, useContext } from "react";
-import { AudioButton } from "@/components/audio-button";
+import { AudioControls } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
 import { useDictionary } from "../_hooks/use-dictionary";
 import type { WordDefinition } from "../_schemas/dictionary";
@@ -53,7 +53,9 @@ function WordDefinitionDetailsHeader() {
 function WordDefinitionDetailsHeaderActions() {
 	const { word, data } = useWordDefinitionContext();
 	if (!data?.audioUrl) return null;
-	return <AudioButton src={data.audioUrl} label={`Pronunciation for ${word}`} />;
+	return (
+		<AudioControls src={data.audioUrl} label={`Pronunciation for ${word}`} variant="extended" />
+	);
 }
 
 function WordDefinitionDetailsContent() {

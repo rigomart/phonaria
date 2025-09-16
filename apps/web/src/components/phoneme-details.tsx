@@ -9,7 +9,7 @@ import type {
 	VowelPhoneme,
 } from "shared-data";
 import { phonixUtils } from "shared-data";
-import { AudioButton } from "@/components/audio-button";
+import { AudioControls } from "@/components/audio-button";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
@@ -140,7 +140,7 @@ function PhonemeDetailsExamples() {
 							<div className="font-medium">{ex.word}</div>
 							<div className="text-muted-foreground text-sm">{toPhonemic(ex.phonemic)}</div>
 						</div>
-						<AudioButton src={getExampleAudioUrl(ex.word)} label={`Play ${ex.word}`} />
+						<AudioControls src={getExampleAudioUrl(ex.word)} label={`Play ${ex.word}`} />
 					</li>
 				))}
 			</ul>
@@ -178,7 +178,7 @@ function PhonemeDetailsAllophones() {
 											<div className="text-sm">{ex.word}</div>
 											<div className="text-xs text-muted-foreground">{toPhonemic(ex.phonemic)}</div>
 										</div>
-										<AudioButton src={getExampleAudioUrl(ex.word)} label={`Play ${ex.word}`} />
+										<AudioControls src={getExampleAudioUrl(ex.word)} label={`Play ${ex.word}`} />
 									</li>
 								))}
 							</ul>

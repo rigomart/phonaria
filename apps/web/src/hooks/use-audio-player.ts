@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type PlaybackSpeed = "slow" | "normal" | "fast" | number;
 
@@ -8,23 +8,36 @@ const playbackRateMap: Record<PlaybackSpeed, number> = {
 	fast: 1.5,
 };
 
+type PlaybackStatus = "idle" | "loading" | "playing" | "error";
+
 export function useAudioPlayer() {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
+	const [status, setStatus] = useState<PlaybackStatus>("idle");
+	const [currentSource, setCurrentSource] = useState<string | null>(null);
 
 	// Effect to create and cleanup the audio element
 	useEffect(() => {
 		const audio = new Audio();
 		audioRef.current = audio;
 
+		const handleLoadStart = () => setStatus("loading");
+		const handlePlaying = () => setStatus("playing");
 		const handleEnded = () => {
-			// Reset audio element
 			audio.currentTime = 0;
+			setStatus("idle");
 		};
+		const handleError = () => setStatus("error");
 
+		audio.addEventListener("loadstart", handleLoadStart);
+		audio.addEventListener("playing", handlePlaying);
 		audio.addEventListener("ended", handleEnded);
+		audio.addEventListener("error", handleError);
 
 		return () => {
+			audio.removeEventListener("loadstart", handleLoadStart);
+			audio.removeEventListener("playing", handlePlaying);
 			audio.removeEventListener("ended", handleEnded);
+			audio.removeEventListener("error", handleError);
 			audio.pause();
 			audioRef.current = null;
 		};
@@ -34,14 +47,23 @@ export function useAudioPlayer() {
 		const audio = audioRef.current;
 		if (!audio) return;
 
-		// Always play the audio from the beginning
+		setCurrentSource(sourceUrl);
 		audio.src = sourceUrl;
 		audio.currentTime = 0;
 
 		audio.playbackRate = playbackRateMap[speed];
 
-		audio.play().catch((e) => console.error("Audio play failed:", e));
+		audio.play().catch((e) => {
+			setStatus("error");
+			console.error("Audio play failed:", e);
+		});
 	};
 
-	return { playAudio };
+	return {
+		playAudio,
+		status,
+		isLoading: status === "loading",
+		isPlaying: status === "playing",
+		currentSource,
+	};
 }
