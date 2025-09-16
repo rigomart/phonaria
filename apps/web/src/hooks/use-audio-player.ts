@@ -48,6 +48,26 @@ export function useAudioPlayer() {
 		if (!audio) return;
 
 		setCurrentSource(sourceUrl);
+
+		// TTS fallback: support scheme tts:TEXT
+		if (sourceUrl.startsWith("tts:")) {
+			try {
+				const text = decodeURIComponent(sourceUrl.slice(4));
+				const utterance = new SpeechSynthesisUtterance(text);
+				utterance.rate = playbackRateMap[speed] ?? 1.0;
+				setStatus("playing");
+				utterance.onend = () => setStatus("idle");
+				utterance.onerror = () => setStatus("error");
+				window.speechSynthesis.cancel();
+				window.speechSynthesis.speak(utterance);
+				return;
+			} catch (e) {
+				console.error("TTS failed:", e);
+				setStatus("error");
+				return;
+			}
+		}
+
 		audio.src = sourceUrl;
 		audio.currentTime = 0;
 
