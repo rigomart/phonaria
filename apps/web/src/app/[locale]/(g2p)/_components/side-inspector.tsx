@@ -28,13 +28,13 @@ export function SideInspector() {
 
 	return (
 		<div className="flex flex-col gap-4">
-			<DefinitionCompactBlock
-				expanded={expanded === "definition"}
-				onToggle={() => setExpanded(expanded === "definition" ? null : "definition")}
-			/>
 			<PhonemeCompactBlock
 				expanded={expanded === "phoneme"}
 				onToggle={() => setExpanded(expanded === "phoneme" ? null : "phoneme")}
+			/>
+			<DefinitionCompactBlock
+				expanded={expanded === "definition"}
+				onToggle={() => setExpanded(expanded === "definition" ? null : "definition")}
 			/>
 		</div>
 	);

@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { useDictionary } from "@/app/[locale]/(g2p)/_lib/use-dictionary";
-import type { WordDefinition } from "@/app/[locale]/(g2p)/_schemas/dictionary";
 import { AudioButton } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useDictionary } from "../_lib/use-dictionary";
+import type { WordDefinition } from "../_schemas/dictionary";
 
 type WordDefinitionContextValue = {
 	word: string;

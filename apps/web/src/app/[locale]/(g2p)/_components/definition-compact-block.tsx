@@ -1,19 +1,19 @@
 "use client";
 
 import { useMemo } from "react";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	WordDefinitionDetails,
 	WordDefinitionDetailsContent,
 	WordDefinitionDetailsHeader,
-	WordDefinitionDetailsHeaderActions,
-} from "@/components/word-definition-details";
+} from "@/app/[locale]/(g2p)/_components/word-definition-details";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDictionaryStore } from "../_store/dictionary-store";
 import {
 	CollapsibleDetailCard,
 	CollapsibleDetailCardContent,
 	CollapsibleDetailCardHeader,
 } from "./collapsible-detail-card";
+import { PlayAudio } from "./play-audio";
 
 export function DefinitionCompactBlock({
 	expanded,
@@ -39,14 +39,16 @@ export function DefinitionCompactBlock({
 	return (
 		<WordDefinitionDetails word={selectedWord}>
 			<CollapsibleDetailCard expanded={expanded} onToggle={onToggle}>
-				<CollapsibleDetailCardHeader
-					controlsId="definition-content"
-					actions={<WordDefinitionDetailsHeaderActions />}
-				>
-					<WordDefinitionDetailsHeader />
-				</CollapsibleDetailCardHeader>
+				<div className="relative">
+					<CollapsibleDetailCardHeader controlsId="definition-content">
+						<WordDefinitionDetailsHeader />
+					</CollapsibleDetailCardHeader>
+					<div className="absolute right-0 bottom-0">
+						<PlayAudio src={"test"} label={`Pronunciation for ${selectedWord}`} />
+					</div>
+				</div>
 				<CollapsibleDetailCardContent id="definition-content">
-					<div className="max-h-80 overflow-auto">
+					<div className="max-h-80 overflow-auto pb-6">
 						<WordDefinitionDetailsContent />
 					</div>
 				</CollapsibleDetailCardContent>

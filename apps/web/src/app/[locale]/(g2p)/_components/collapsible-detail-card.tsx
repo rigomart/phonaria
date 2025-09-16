@@ -30,7 +30,7 @@ function CollapsibleDetailCard({
 }) {
 	return (
 		<CollapsibleDetailCardContext.Provider value={{ expanded, onToggle }}>
-			<Card className={`h-fit p-0 ${className ?? ""}`}>{children}</Card>
+			<Card className={`h-fit p-0 ${className ?? ""} gap-2`}>{children}</Card>
 		</CollapsibleDetailCardContext.Provider>
 	);
 }

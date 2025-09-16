@@ -9,7 +9,6 @@ import {
 	PhonemeDetailsHeader,
 } from "@/components/phoneme-details";
 import { Card, CardHeader } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useG2PStore } from "../_store/g2p-store";
 import {
 	CollapsibleDetailCard,
@@ -43,14 +42,14 @@ export function PhonemeCompactBlock({
 					<PhonemeDetailsHeader />
 				</CollapsibleDetailCardHeader>
 				<CollapsibleDetailCardContent id="phoneme-content">
-					<ScrollArea className="h-[400px] pr-3">
+					<div className="max-h-80 overflow-auto pb-6">
 						<div className="space-y-6">
 							<PhonemeDetailsArticulation />
 							<PhonemeDetailsExamples />
 							<PhonemeDetailsGuide />
 							<PhonemeDetailsAllophones />
 						</div>
-					</ScrollArea>
+					</div>
 				</CollapsibleDetailCardContent>
 			</CollapsibleDetailCard>
 		</PhonemeDetails>
