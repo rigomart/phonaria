@@ -8,50 +8,52 @@ import {
 	PhonemeDetailsGuide,
 	PhonemeDetailsHeader,
 } from "@/components/phoneme-details";
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useG2PStore } from "../_store/g2p-store";
-import {
-	CollapsibleDetailCard,
-	CollapsibleDetailCardContent,
-	CollapsibleDetailCardHeader,
-} from "./collapsible-detail-card";
 
-export function PhonemeCompactBlock({
-	expanded,
-	onToggle,
-}: {
-	expanded: boolean;
-	onToggle: () => void;
-}) {
+export function PhonemeCompactBlock() {
 	const { selectedPhoneme } = useG2PStore();
 
 	if (!selectedPhoneme) {
 		return (
-			<Card className="h-fit">
-				<CardHeader className="py-2">
-					<div className="text-xs text-muted-foreground">Click a phoneme to see details.</div>
+			<Card className="h-full">
+				<CardHeader className="py-3">
+					<div className="text-xs font-medium">Phoneme</div>
 				</CardHeader>
+				<CardContent className="h-[calc(100%-44px)] p-0">
+					<div className="h-full flex items-center justify-center">
+						<div className="text-center space-y-2 px-6">
+							<div className="text-sm text-muted-foreground">
+								Select a phoneme from the transcription.
+							</div>
+							<div className="text-xs text-muted-foreground">
+								Click any symbol like /aɪ/ to explore details.
+							</div>
+						</div>
+					</div>
+				</CardContent>
 			</Card>
 		);
 	}
 
 	return (
 		<PhonemeDetails phoneme={selectedPhoneme}>
-			<CollapsibleDetailCard expanded={expanded} onToggle={onToggle}>
-				<CollapsibleDetailCardHeader controlsId="phoneme-content">
+			<Card className="h-full flex flex-col">
+				<CardHeader className="py-3">
 					<PhonemeDetailsHeader />
-				</CollapsibleDetailCardHeader>
-				<CollapsibleDetailCardContent id="phoneme-content">
-					<div className="max-h-80 overflow-auto pb-6">
-						<div className="space-y-6">
+				</CardHeader>
+				<CardContent className="flex-1 p-0 min-h-0">
+					<ScrollArea className="h-full">
+						<div className="p-4 space-y-6">
 							<PhonemeDetailsArticulation />
 							<PhonemeDetailsExamples />
 							<PhonemeDetailsGuide />
 							<PhonemeDetailsAllophones />
 						</div>
-					</div>
-				</CollapsibleDetailCardContent>
-			</CollapsibleDetailCard>
+					</ScrollArea>
+				</CardContent>
+			</Card>
 		</PhonemeDetails>
 	);
 }

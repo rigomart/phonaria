@@ -43,7 +43,7 @@ function WordDefinitionDetails({ word, children }: { word: string; children: Rea
 function WordDefinitionDetailsHeader() {
 	const { word } = useWordDefinitionContext();
 	return (
-		<div className="space-y-2">
+		<div className="space-y-1">
 			<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
 			<div className="text-xl font-semibold">{word}</div>
 		</div>

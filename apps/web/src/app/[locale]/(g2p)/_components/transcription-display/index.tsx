@@ -48,7 +48,6 @@ function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:rounded-md",
 				!isKnown && "opacity-75 underline decoration-dotted underline-offset-4",
 			)}
-			style={{ letterSpacing: "0.1em" }}
 			onClick={handleClick}
 			aria-label={`Phoneme ${phoneme.symbol}${isKnown ? " - click to learn more" : " - not in database"}`}
 			title={
@@ -84,7 +83,7 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 			</button>
 
 			<div className="flex items-center">
-				<div className="leading-normal whitespace-nowrap flex items-center gap-1">
+				<div className="leading-normal whitespace-nowrap flex items-center gap-0.5">
 					{currentVariant.map((phoneme, phonemeIndex) => (
 						<ClickablePhoneme
 							key={`${phoneme.symbol}-${word.wordIndex}-${phonemeIndex}`}
@@ -129,7 +128,7 @@ export function TranscriptionDisplay() {
 	return (
 		<div className="space-y-4">
 			<div className="w-full rounded-lg p-4 flex flex-col gap-2">
-				<div className="flex flex-wrap items-start justify-start gap-6 md:gap-8 overflow-x-auto pb-2">
+				<div className="flex flex-wrap items-start justify-start gap-4 md:gap-6 overflow-x-auto pb-2">
 					{result.words.map((word, wordIndex) => (
 						<WordColumn
 							key={`${word.word}-${wordIndex}`}

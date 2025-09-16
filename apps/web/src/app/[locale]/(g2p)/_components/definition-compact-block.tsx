@@ -1,58 +1,55 @@
 "use client";
 
-import { useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useDictionaryStore } from "../_store/dictionary-store";
 import {
 	WordDefinitionDetails,
 	WordDefinitionDetailsContent,
 	WordDefinitionDetailsHeader,
-} from "@/app/[locale]/(g2p)/_components/word-definition-details";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDictionaryStore } from "../_store/dictionary-store";
-import {
-	CollapsibleDetailCard,
-	CollapsibleDetailCardContent,
-	CollapsibleDetailCardHeader,
-} from "./collapsible-detail-card";
-import { PlayAudio } from "./play-audio";
+	WordDefinitionDetailsHeaderActions,
+} from "./word-definition-details";
 
-export function DefinitionCompactBlock({
-	expanded,
-	onToggle,
-}: {
-	expanded: boolean;
-	onToggle: () => void;
-}) {
+export function DefinitionCompactBlock() {
 	const { selectedWord } = useDictionaryStore();
-
-	useMemo(() => selectedWord, [selectedWord]);
 
 	if (!selectedWord) {
 		return (
-			<Card className="h-fit">
-				<CardHeader className="py-2">
+			<Card className="h-full">
+				<CardHeader className="py-3">
 					<CardTitle className="text-xs">Definition</CardTitle>
 				</CardHeader>
+				<CardContent className="p-0 h-full">
+					<div className="h-full flex items-center justify-center">
+						<div className="text-center space-y-2 px-6">
+							<div className="text-sm text-muted-foreground">Select a word to see definitions.</div>
+							<div className="text-xs text-muted-foreground">
+								Click a word above the transcription.
+							</div>
+						</div>
+					</div>
+				</CardContent>
 			</Card>
 		);
 	}
 
 	return (
 		<WordDefinitionDetails word={selectedWord}>
-			<CollapsibleDetailCard expanded={expanded} onToggle={onToggle}>
-				<div className="relative">
-					<CollapsibleDetailCardHeader controlsId="definition-content">
+			<Card className="h-full flex flex-col">
+				<CardHeader className="py-3">
+					<div className="flex items-center justify-between">
 						<WordDefinitionDetailsHeader />
-					</CollapsibleDetailCardHeader>
-					<div className="absolute right-0 bottom-0">
-						<PlayAudio src={"test"} label={`Pronunciation for ${selectedWord}`} />
+						<WordDefinitionDetailsHeaderActions />
 					</div>
-				</div>
-				<CollapsibleDetailCardContent id="definition-content">
-					<div className="max-h-80 overflow-auto pb-6">
-						<WordDefinitionDetailsContent />
-					</div>
-				</CollapsibleDetailCardContent>
-			</CollapsibleDetailCard>
+				</CardHeader>
+				<CardContent className="flex-1 p-0 min-h-0">
+					<ScrollArea className="h-full">
+						<div className="p-4">
+							<WordDefinitionDetailsContent />
+						</div>
+					</ScrollArea>
+				</CardContent>
+			</Card>
 		</WordDefinitionDetails>
 	);
 }
