@@ -7,18 +7,60 @@ class CMUDict {
 	async load(): Promise<void> {
 		if (this.loaded) return;
 
-		console.log("Loading CMUdict from GitHub...");
-		const response = await fetch(
-			"https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/master/cmudict.dict",
-		);
+		const CMUDICT_URL =
+			"https://raw.githubusercontent.com/rigomart/cmudict/0f8072f814306c5ee4fbf992ed853601b12c01f9/cmudict.dict";
+		const MAX_BYTES = 10 * 1024 * 1024; // 10MB safety cap
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+		let response: Response;
+		try {
+			response = await fetch(CMUDICT_URL, { signal: controller.signal, cache: "force-cache" });
+		} catch {
+			clearTimeout(timeoutId);
+			throw new Error("Failed to load CMUdict");
+		}
+		clearTimeout(timeoutId);
+
 		if (!response.ok) {
-			throw new Error(`Failed to load CMUdict: ${response.statusText}`);
+			throw new Error("Failed to load CMUdict");
 		}
 
-		const content = await response.text();
-		this.parse(content);
+		const contentType = response.headers.get("content-type") || "";
+		if (!contentType.startsWith("text/")) {
+			throw new Error("Unexpected content type for CMUdict");
+		}
+
+		const contentLengthHeader = response.headers.get("content-length");
+		if (contentLengthHeader && Number(contentLengthHeader) > MAX_BYTES) {
+			throw new Error("CMUdict too large");
+		}
+
+		const reader = response.body?.getReader();
+		let received = 0;
+		const chunks: Uint8Array[] = [];
+		if (reader) {
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+				if (value) {
+					received += value.byteLength;
+					if (received > MAX_BYTES) {
+						throw new Error("CMUdict too large");
+					}
+					chunks.push(value);
+				}
+			}
+			const decoded = new TextDecoder("utf-8").decode(concatUint8Arrays(chunks));
+			this.parse(decoded);
+		} else {
+			const text = await response.text();
+			if (text.length > MAX_BYTES) {
+				throw new Error("CMUdict too large");
+			}
+			this.parse(text);
+		}
 		this.loaded = true;
-		console.log(`CMUdict loaded: ${this.dict.size} words`);
 	}
 
 	private parse(content: string): void {
@@ -66,3 +108,15 @@ class CMUDict {
 }
 
 export const cmudict = new CMUDict();
+
+function concatUint8Arrays(arrays: Uint8Array[]): Uint8Array {
+	let totalLength = 0;
+	for (const arr of arrays) totalLength += arr.length;
+	const result = new Uint8Array(totalLength);
+	let offset = 0;
+	for (const arr of arrays) {
+		result.set(arr, offset);
+		offset += arr.length;
+	}
+	return result;
+}
