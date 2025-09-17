@@ -7,8 +7,10 @@ class CMUDict {
 	async load(): Promise<void> {
 		if (this.loaded) return;
 
-		const CMUDICT_URL =
-			"https://raw.githubusercontent.com/rigomart/cmudict/0f8072f814306c5ee4fbf992ed853601b12c01f9/cmudict.dict";
+		const CMUDICT_URL = process.env.CMUDICT_SRC_URL;
+		if (!CMUDICT_URL) {
+			throw new Error("CMUDICT_SRC_URL is not set");
+		}
 		const MAX_BYTES = 10 * 1024 * 1024; // 10MB safety cap
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), 5000);
