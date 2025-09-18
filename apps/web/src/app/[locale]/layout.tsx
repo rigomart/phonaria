@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Header } from "@/components/header";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -34,5 +35,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 	// Enable static rendering
 	setRequestLocale(locale);
 
-	return <NextIntlClientProvider>{children}</NextIntlClientProvider>;
+	return (
+		<NextIntlClientProvider>
+			<div className="h-screen flex flex-col">
+				<Header />
+				{children}
+			</div>
+		</NextIntlClientProvider>
+	);
 }

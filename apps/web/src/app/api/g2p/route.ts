@@ -4,19 +4,19 @@ import type { ApiError } from "./_schemas/g2p-api.schema";
 import { g2pRequestSchema } from "./_schemas/g2p-api.schema";
 import { transcribeText } from "./_services/g2p.service";
 
-export const runtime = "nodejs";
-
 /**
  * POST /api/g2p - Convert text to phonemic transcription
  */
 export async function POST(request: NextRequest) {
 	try {
-		// Rate limit (per IP)
-		const rl = await applyRateLimit(request, "g2p");
-		if (!rl.success) {
-			return new NextResponse(
-				JSON.stringify({ error: "rate_limited", message: "Too many requests" }),
-				{ status: 429, headers: rl.headers },
+		const { success, pending } = await applyRateLimit(request);
+
+		await pending;
+
+		if (!success) {
+			return NextResponse.json(
+				{ error: "rate_limited", message: "Too many requests" },
+				{ status: 429 },
 			);
 		}
 
@@ -26,14 +26,14 @@ export async function POST(request: NextRequest) {
 		if (contentLength && Number(contentLength) > MAX_BYTES) {
 			return NextResponse.json(
 				{ error: "payload_too_large", message: "Request body too large" },
-				{ status: 413, headers: rl.headers },
+				{ status: 413 },
 			);
 		}
 		const raw = await request.text();
 		if (raw.length > MAX_BYTES) {
 			return NextResponse.json(
 				{ error: "payload_too_large", message: "Request body too large" },
-				{ status: 413, headers: rl.headers },
+				{ status: 413 },
 			);
 		}
 		let body: unknown;
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 		} catch {
 			return NextResponse.json(
 				{ error: "invalid_json", message: "Invalid JSON" satisfies ApiError["message"] },
-				{ status: 400, headers: rl.headers },
+				{ status: 400 },
 			);
 		}
 
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 		// Use the G2P service to transcribe
 		const response = await transcribeText({ text: validationResult.text });
 
-		return NextResponse.json(response, { status: 200, headers: rl.headers });
+		return NextResponse.json(response, { status: 200 });
 	} catch (error) {
 		console.error("G2P conversion error:", error);
 
