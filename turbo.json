@@ -4,24 +4,13 @@
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": [".next/**", "!.next/cache/**", "dist/**"],
-			"inputs": [
-				"$TURBO_DEFAULT$",
-				".env.production.local",
-				".env.local",
-				".env.production",
-				".env"
-			]
+			"env": ["UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", "CMUDICT_SRC_URL"],
+			"inputs": ["$TURBO_DEFAULT$", ".env*"]
 		},
 		"dev": {
 			"persistent": true,
 			"cache": false,
-			"inputs": [
-				"$TURBO_DEFAULT$",
-				".env.development.local",
-				".env.local",
-				".env.development",
-				".env"
-			]
+			"inputs": ["$TURBO_DEFAULT$", ".env*"]
 		},
 		"check-types": {
 			"dependsOn": ["^check-types"]
