@@ -33,6 +33,9 @@ function getClientIP(request: Request): string {
 type RateLimitResult = {
 	isRateLimited: boolean;
 	pending: Promise<unknown>;
+	limit: number;
+	remaining: number;
+	resetMs: number;
 };
 
 /**
@@ -41,7 +44,13 @@ type RateLimitResult = {
  */
 export async function checkRateLimit(request: Request): Promise<RateLimitResult> {
 	const ip = getClientIP(request);
-	const { success, pending } = await ratelimit.limit(ip);
+	const { success, pending, limit, remaining, reset } = await ratelimit.limit(ip);
 
-	return { isRateLimited: !success, pending };
+	return {
+		isRateLimited: !success,
+		pending,
+		limit,
+		remaining,
+		resetMs: reset,
+	};
 }

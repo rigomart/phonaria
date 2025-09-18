@@ -7,12 +7,23 @@ import { transcribeText } from "./_services/g2p.service";
  * POST /api/g2p - Convert text to phonemic transcription
  */
 export async function POST(request: NextRequest) {
-	const { isRateLimited } = await checkRateLimit(request);
+	const { isRateLimited, pending, limit, remaining, resetMs } = await checkRateLimit(request);
 
 	if (isRateLimited) {
+		const retryAfterSeconds = Math.max(1, Math.ceil((resetMs - Date.now()) / 1000));
+		const resetSecondsUnix = Math.ceil(resetMs / 1000);
+		await pending;
 		return NextResponse.json(
 			{ error: "rate_limited", message: "Too many requests" },
-			{ status: 429 },
+			{
+				status: 429,
+				headers: {
+					"Retry-After": String(retryAfterSeconds),
+					"X-RateLimit-Limit": String(limit),
+					"X-RateLimit-Remaining": String(Math.max(0, remaining)),
+					"X-RateLimit-Reset": String(resetSecondsUnix),
+				},
+			},
 		);
 	}
 
@@ -36,5 +47,7 @@ export async function POST(request: NextRequest) {
 	// Use the G2P service to transcribe
 	const response = await transcribeText({ text: validationResult.data.text });
 
+	// Ensure rate-limit analytics are flushed before responding
+	await pending;
 	return NextResponse.json(response, { status: 200 });
 }
