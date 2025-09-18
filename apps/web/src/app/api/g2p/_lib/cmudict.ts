@@ -1,4 +1,5 @@
 import { convertArpabetToIPA } from "./arpabet-mapping";
+import { normalizeCmuWord } from "./cmudict-utils";
 
 class CMUDict {
 	private dict = new Map<string, string[][]>();
@@ -38,30 +39,13 @@ class CMUDict {
 			throw new Error("CMUdict too large");
 		}
 
-		const reader = response.body?.getReader();
-		let received = 0;
-		const chunks: Uint8Array[] = [];
-		if (reader) {
-			while (true) {
-				const { done, value } = await reader.read();
-				if (done) break;
-				if (value) {
-					received += value.byteLength;
-					if (received > MAX_BYTES) {
-						throw new Error("CMUdict too large");
-					}
-					chunks.push(value);
-				}
-			}
-			const decoded = new TextDecoder("utf-8").decode(concatUint8Arrays(chunks));
-			this.parse(decoded);
-		} else {
-			const text = await response.text();
-			if (text.length > MAX_BYTES) {
-				throw new Error("CMUdict too large");
-			}
-			this.parse(text);
+		const blob = await response.blob();
+		if (blob.size > MAX_BYTES) {
+			throw new Error("CMUdict too large");
 		}
+		const text = await blob.text();
+
+		this.parse(text);
 		this.loaded = true;
 	}
 
@@ -70,33 +54,18 @@ class CMUDict {
 		for (const rawLine of lines) {
 			const line = rawLine.trim();
 			if (!line) continue;
-			// Skip comment/header lines that may start with ';' (old CMU format) or '#'
 			if (line.startsWith(";") || line.startsWith("#")) continue;
 
-			// Capture WORD and the rest of the line as phoneme sequence using flexible whitespace
 			const match = line.match(/^(\S+)\s+(.+)$/);
 			if (!match) continue;
 
-			const wordPart = match[1];
-			const phonemePart = match[2];
-
-			// Extract base word from variants (LEAD(1) → LEAD)
-			let baseWord = wordPart;
-			if (wordPart.includes("(")) {
-				baseWord = wordPart.replace(/\(\d+\)$/, "");
-			}
-
-			const word = baseWord.toUpperCase();
-			const arpaPhonemes = phonemePart.trim().split(/\s+/);
+			const word = normalizeCmuWord(match[1]);
+			const arpaPhonemes = match[2].trim().split(/\s+/);
 			const ipaPhonemes = convertArpabetToIPA(arpaPhonemes);
 
-			// Store multiple variants per word
 			const variants = this.dict.get(word);
-			if (!variants) {
-				this.dict.set(word, [ipaPhonemes]);
-			} else {
-				variants.push(ipaPhonemes);
-			}
+			if (variants) variants.push(ipaPhonemes);
+			else this.dict.set(word, [ipaPhonemes]);
 		}
 	}
 
@@ -110,15 +79,3 @@ class CMUDict {
 }
 
 export const cmudict = new CMUDict();
-
-function concatUint8Arrays(arrays: Uint8Array[]): Uint8Array {
-	let totalLength = 0;
-	for (const arr of arrays) totalLength += arr.length;
-	const result = new Uint8Array(totalLength);
-	let offset = 0;
-	for (const arr of arrays) {
-		result.set(arr, offset);
-		offset += arr.length;
-	}
-	return result;
-}
