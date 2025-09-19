@@ -1,18 +1,12 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { createContext, useContext } from "react";
 import { AudioControls } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
-import { useDictionary } from "../_hooks/use-dictionary";
 import type { WordDefinition } from "../_schemas/dictionary";
 
 type WordDefinitionContextValue = {
-	word: string;
-	data: WordDefinition | null;
-	isLoading: boolean;
-	isNotFound: boolean;
-	error: string | null;
+	wordDefinition: WordDefinition;
 };
 
 const WordDefinitionContext = createContext<WordDefinitionContextValue | null>(null);
@@ -23,16 +17,16 @@ function useWordDefinitionContext() {
 	return ctx;
 }
 
-function WordDefinitionDetails({ word, children }: { word: string; children: React.ReactNode }) {
-	const query = useDictionary(word);
+type WordDefinitionDetailsProps = {
+	wordDefinition: WordDefinition;
+	children: React.ReactNode;
+};
+
+function WordDefinitionDetails({ wordDefinition, children }: WordDefinitionDetailsProps) {
 	return (
 		<WordDefinitionContext.Provider
 			value={{
-				word,
-				data: (query.data as WordDefinition | null) ?? null,
-				isLoading: query.isLoading,
-				isNotFound: query.isNotFound,
-				error: query.errorMessage,
+				wordDefinition,
 			}}
 		>
 			{children}
@@ -41,42 +35,34 @@ function WordDefinitionDetails({ word, children }: { word: string; children: Rea
 }
 
 function WordDefinitionDetailsHeader() {
-	const { word, data } = useWordDefinitionContext();
+	const { wordDefinition } = useWordDefinitionContext();
 	return (
 		<div className="flex items-end justify-between">
 			<div className="space-y-1">
 				<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
-				<div className="text-xl font-semibold">{word}</div>
+				<div className="text-xl font-semibold">{wordDefinition.word}</div>
 			</div>
-			{data?.audioUrl ? (
-				<AudioControls src={data.audioUrl} label={`Pronunciation for ${word}`} variant="extended" />
+			{wordDefinition.audioUrl ? (
+				<AudioControls
+					src={wordDefinition.audioUrl}
+					label={`Pronunciation for ${wordDefinition.word}`}
+					variant="extended"
+				/>
 			) : null}
 		</div>
 	);
 }
 
 function WordDefinitionDetailsContent() {
-	const { data, isLoading, isNotFound, error } = useWordDefinitionContext();
-	if (isLoading) {
-		return (
-			<div className="h-40 flex items-center justify-center">
-				<div className="flex items-center gap-2 text-muted-foreground">
-					<Loader2 className="h-4 w-4 animate-spin" />
-					<span className="text-sm">Fetching definition…</span>
-				</div>
-			</div>
-		);
-	}
-	if (error) {
-		return <div className="text-sm text-destructive">{error || "Failed to load definition."}</div>;
-	}
-	if (isNotFound || !data) {
+	const { wordDefinition } = useWordDefinitionContext();
+
+	if (!wordDefinition) {
 		return <div className="text-sm text-muted-foreground">No definition found.</div>;
 	}
 
 	return (
 		<div className="space-y-6">
-			{data.meanings.map((meaning) => (
+			{wordDefinition.meanings.map((meaning) => (
 				<div
 					key={`${meaning.partOfSpeech}-${meaning.definitions[0]?.definition.slice(0, 40) || meaning.partOfSpeech}`}
 					className="space-y-2"

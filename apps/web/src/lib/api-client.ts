@@ -30,6 +30,10 @@ export class ApiError extends Error {
 	public status?: number;
 	public code?: string;
 	public details?: unknown;
+	public retryAfterSeconds?: number;
+	public rateLimitLimit?: number;
+	public rateLimitRemaining?: number;
+	public rateLimitResetUnixSeconds?: number;
 
 	constructor(message: string, status?: number, code?: string, details?: unknown) {
 		super(message);
@@ -127,7 +131,44 @@ export class ApiClient {
 					errorMessage = response.statusText || errorMessage;
 				}
 
-				throw new ApiError(errorMessage, response.status, errorCode, errorDetails);
+				// Extract rate limit headers if present
+				const retryAfterHeader = response.headers.get("Retry-After");
+				const limitHeader = response.headers.get("X-RateLimit-Limit");
+				const remainingHeader = response.headers.get("X-RateLimit-Remaining");
+				const resetHeader = response.headers.get("X-RateLimit-Reset");
+
+				const parseNumber = (v: string | null): number | undefined => {
+					if (v == null) return undefined;
+					const n = Number(v);
+					return Number.isFinite(n) ? n : undefined;
+				};
+
+				let retryAfterSeconds: number | undefined;
+				if (retryAfterHeader) {
+					const asNumber = parseNumber(retryAfterHeader);
+					if (asNumber !== undefined) {
+						retryAfterSeconds = Math.max(0, Math.ceil(asNumber));
+					} else {
+						const asDate = Date.parse(retryAfterHeader);
+						if (!Number.isNaN(asDate)) {
+							retryAfterSeconds = Math.max(0, Math.ceil((asDate - Date.now()) / 1000));
+						}
+					}
+				}
+
+				const limit = parseNumber(limitHeader);
+				const remaining = parseNumber(remainingHeader);
+				const resetUnixSeconds = parseNumber(resetHeader);
+
+				const apiError = new ApiError(errorMessage, response.status, errorCode, errorDetails);
+
+				throw {
+					...apiError,
+					retryAfterSeconds,
+					rateLimitLimit: limit,
+					rateLimitRemaining: remaining,
+					rateLimitResetUnixSeconds: resetUnixSeconds,
+				};
 			}
 
 			// Parse and validate response
