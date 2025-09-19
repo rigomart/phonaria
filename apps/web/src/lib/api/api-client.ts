@@ -1,47 +1,17 @@
-/**
- * Base API client with Zod validation and error handling
- */
-
 import { z } from "zod";
+import { ApiError, type ApiErrorCode } from "./api-error";
 
-/**
- * Base API client configuration
- */
 export interface ApiClientConfig {
 	baseUrl: string;
 	defaultHeaders?: Record<string, string>;
 	timeout?: number;
 }
 
-/**
- * API request options
- */
 export interface ApiRequestOptions {
 	method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 	headers?: Record<string, string>;
 	timeout?: number;
 	signal?: AbortSignal;
-}
-
-/**
- * API error class with enhanced error information
- */
-export class ApiError extends Error {
-	public status?: number;
-	public code?: string;
-	public details?: unknown;
-	public retryAfterSeconds?: number;
-	public rateLimitLimit?: number;
-	public rateLimitRemaining?: number;
-	public rateLimitResetUnixSeconds?: number;
-
-	constructor(message: string, status?: number, code?: string, details?: unknown) {
-		super(message);
-		this.name = "ApiError";
-		this.status = status;
-		this.code = code;
-		this.details = details;
-	}
 }
 
 /**
@@ -93,6 +63,14 @@ export class ApiClient {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), options.timeout || this.timeout);
 
+		if (options.signal) {
+			if (options.signal.aborted) {
+				controller.abort();
+			} else {
+				options.signal.addEventListener("abort", () => controller.abort(), { once: true });
+			}
+		}
+
 		const headers = {
 			...this.defaultHeaders,
 			...options.headers,
@@ -101,7 +79,7 @@ export class ApiClient {
 		const requestConfig: RequestInit = {
 			method,
 			headers,
-			signal: options.signal || controller.signal,
+			signal: controller.signal,
 		};
 
 		if (validatedData && method !== "GET") {
@@ -116,14 +94,32 @@ export class ApiClient {
 			// Handle HTTP errors
 			if (!response.ok) {
 				let errorMessage = `HTTP ${response.status}`;
-				let errorCode = "http_error";
+				let errorCode: ApiErrorCode = "http_error";
 				let errorDetails: unknown;
 
 				try {
-					const errorData = await response.json();
+					const errorData = (await response.json()) as unknown;
 					if (typeof errorData === "object" && errorData !== null) {
-						errorMessage = errorData.message || errorData.error || errorMessage;
-						errorCode = errorData.error || errorCode;
+						const dataObj = errorData as Record<string, unknown>;
+						const message = typeof dataObj.message === "string" ? dataObj.message : undefined;
+						const code = typeof dataObj.error === "string" ? dataObj.error : undefined;
+						if (message) {
+							errorMessage = message;
+						}
+						if (code) {
+							switch (code) {
+								case "http_error":
+								case "validation_error":
+								case "parse_error":
+								case "timeout_error":
+								case "network_error":
+								case "rate_limited":
+									errorCode = code;
+									break;
+								default:
+									break;
+							}
+						}
 						errorDetails = errorData;
 					}
 				} catch {
@@ -161,14 +157,14 @@ export class ApiClient {
 				const resetUnixSeconds = parseNumber(resetHeader);
 
 				const apiError = new ApiError(errorMessage, response.status, errorCode, errorDetails);
-
-				throw {
-					...apiError,
+				apiError.rateLimit = {
 					retryAfterSeconds,
-					rateLimitLimit: limit,
-					rateLimitRemaining: remaining,
-					rateLimitResetUnixSeconds: resetUnixSeconds,
+					limit,
+					remaining,
+					resetUnixSeconds,
 				};
+
+				throw apiError;
 			}
 
 			// Parse and validate response

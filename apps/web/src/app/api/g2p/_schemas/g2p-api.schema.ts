@@ -20,12 +20,6 @@ export const g2pResponseSchema = z.object({
 	words: z.array(g2pWordSchema),
 });
 
-export const apiErrorSchema = z.object({
-	error: z.string(),
-	message: z.string(),
-});
-
 export type G2PRequest = z.infer<typeof g2pRequestSchema>;
 export type G2PWord = z.infer<typeof g2pWordSchema>;
 export type G2PResponse = z.infer<typeof g2pResponseSchema>;
-export type ApiError = z.infer<typeof apiErrorSchema>;

@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/api-client";
+import { createApiClient } from "@/lib/api/api-client";
 import { dictionarySuccessSchema } from "../_schemas/dictionary";
 
 const client = createApiClient({
