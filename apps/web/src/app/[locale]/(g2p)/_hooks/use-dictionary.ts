@@ -13,7 +13,6 @@ export function useDictionary(word: string | null) {
 			return fetchDefinition(word).then((r) => r.data);
 		},
 		retry(failureCount, error) {
-			console.log("retry", failureCount, JSON.stringify(error, null, 2));
 			const status = error.status;
 			if (status === 404 || status === 429) return false;
 			return failureCount < 2;
