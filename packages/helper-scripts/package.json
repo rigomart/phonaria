@@ -1,15 +1,21 @@
 {
-	"name": "tts-generate",
+	"name": "helper-scripts",
 	"version": "1.0.0",
-	"description": "",
-	"keywords": [],
+	"description": "Collection of helper scripts for Phonix application including TTS audio generation and data processing utilities",
+	"keywords": [
+		"phonix",
+		"helper-scripts",
+		"tts",
+		"data-processing"
+	],
 	"author": "",
 	"license": "ISC",
 	"packageManager": "pnpm@10.12.4",
 	"scripts": {
 		"lint": "biome check --write",
 		"check-types": "tsc --noEmit",
-		"generate": "tsx generate.ts"
+		"generate": "tsx src/generate.ts",
+		"cmudict-to-json": "tsx src/cmudict-to-json.ts"
 	},
 	"dependencies": {
 		"@elevenlabs/elevenlabs-js": "^2.6.0",

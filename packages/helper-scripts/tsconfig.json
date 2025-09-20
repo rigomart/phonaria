@@ -12,6 +12,6 @@
 		"noEmit": true,
 		"types": ["node"]
 	},
-	"include": ["generate.ts", "src/**/*.ts"],
+	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]
 }

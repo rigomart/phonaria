@@ -8,7 +8,7 @@ This is a monorepo managed with `pnpm` workspaces, consisting of:
 
 - `apps/web`: The main Next.js application combining frontend and API for interactive phoneme learning.
 - `packages/shared-data`: Shared data models and utilities for phoneme information.
-- `packages/tts-generate`: Tooling for generating example audio files.
+- `packages/helper-scripts`: Collection of helper scripts including TTS audio generation and data processing utilities.
 
 ## Current Status
 
@@ -36,10 +36,10 @@ We are currently implementing the Core MVP features, specifically focusing on ph
    The Next.js app will be available at `http://localhost:3000` with both the frontend and API running together.
 
 3. **(Optional) Generate example audio:**
-   - Add your `ELEVENLABS_API_KEY` to `packages/tts-generate/.env`.
+   - Add your `ELEVENLABS_API_KEY` to `packages/helper-scripts/.env`.
    - Run the generation script:
      ```bash
-     pnpm -C packages/tts-generate generate
+     pnpm -C packages/helper-scripts generate
      ```
 
 ## Project Structure
@@ -48,7 +48,7 @@ For detailed information about each package, see their respective README files:
 
 - [Next.js Application](apps/web/README.md)
 - [Shared Data Package](packages/shared-data/README.md)
-- [TTS Generation Package](packages/tts-generate/README.md)
+- [Helper Scripts Package](packages/helper-scripts/README.md)
 
 ## New: Dictionary Lookup
 
