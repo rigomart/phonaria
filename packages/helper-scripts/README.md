@@ -22,7 +22,7 @@ This script downloads the CMU Pronouncing Dictionary and converts it to a compac
 
 1.  **Fetches Data**: Downloads the CMUDict data from a configurable URL (set via `CMUDICT_SRC_URL` environment variable).
 2.  **Processes Entries**: Parses the dictionary format and handles multiple pronunciations for each word.
-3.  **Generates JSON**: Creates a compact JSON file with optimized format for fast API lookups.
+3.  **Generates JSON**: Creates a compact JSON file with optimized format for fast API lookups (complete dataset with 130,000+ words).
 4.  **Saves File**: Outputs to `apps/web/public/data/cmudict.json` for bundling with the Next.js application.
 
 ## Setup

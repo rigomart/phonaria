@@ -9,8 +9,7 @@ type CompactCmudict = Record<string, string[]>;
 
 const cmudictUrl = process.env.CMUDICT_SRC_URL;
 const outputPath =
-	process.env.CMUDICT_JSON_PATH ||
-	path.resolve(__dirname, "../../apps/web/public/data/cmudict.json");
+	process.env.CMUDICT_JSON_PATH || path.resolve(__dirname, "../../../apps/web/data/cmudict.json");
 
 if (!cmudictUrl) {
 	throw new Error("CMUDICT_SRC_URL environment variable is required");
@@ -20,10 +19,10 @@ if (!cmudictUrl) {
 const safeCmudictUrl: string = cmudictUrl;
 
 /**
- * Normalize CMUdict word format (remove parentheses and convert to uppercase)
+ * Normalize CMUdict word format (remove parentheses but preserve case)
  */
 function normalizeCmuWord(word: string): string {
-	return word.replace(/\([^)]*\)/g, "").toUpperCase();
+	return word.replace(/\([^)]*\)/g, "");
 }
 
 /**
@@ -52,7 +51,8 @@ function parseCmudict(content: string): CompactCmudict {
 		if (!line) continue;
 		if (line.startsWith(";") || line.startsWith("#")) continue;
 
-		const match = line.match(/^(\S+)\s+(.+)$/);
+		// Match word followed by phonemes, optionally followed by comment
+		const match = line.match(/^(\S+)\s+(.+?)(?:\s*#.*)?$/);
 		if (!match) {
 			skipped++;
 			continue;
@@ -61,12 +61,14 @@ function parseCmudict(content: string): CompactCmudict {
 		const word = normalizeCmuWord(match[1]);
 		const arpaPhonemes = match[2].trim();
 
-		// Skip variants (words with parentheses) as they're handled by normalizeCmuWord
-		if (match[1].includes("(")) continue;
-
-		const variants = dict[word];
-		if (variants) {
-			variants.push(arpaPhonemes);
+		// Include all variants - they will be grouped by the normalized word (without parentheses)
+		const existing = dict[word];
+		if (existing) {
+			if (Array.isArray(existing)) {
+				existing.push(arpaPhonemes);
+			} else {
+				dict[word] = [existing, arpaPhonemes];
+			}
 		} else {
 			dict[word] = [arpaPhonemes];
 		}
@@ -74,7 +76,7 @@ function parseCmudict(content: string): CompactCmudict {
 		processed++;
 	}
 
-	console.log(`📊 Processed ${processed} words, skipped ${skipped} lines`);
+	console.log(`Parsed ${processed} entries, skipped ${skipped} invalid lines`);
 	return dict;
 }
 
@@ -82,7 +84,7 @@ function parseCmudict(content: string): CompactCmudict {
  * Fetch CMUDict data from URL
  */
 async function fetchCmudict(): Promise<string> {
-	console.log("🌐 Fetching CMUDict data...");
+	console.log("Fetching CMUDict data from remote source...");
 
 	const MAX_BYTES = 10 * 1024 * 1024; // 10MB safety cap
 	const controller = new AbortController();
@@ -117,7 +119,7 @@ async function fetchCmudict(): Promise<string> {
 	}
 
 	const text = await blob.text();
-	console.log(`✅ Downloaded ${text.length} characters of CMUDict data`);
+	console.log(`Downloaded ${text.length} characters of CMUDict data`);
 	return text;
 }
 
@@ -125,20 +127,21 @@ async function fetchCmudict(): Promise<string> {
  * Save dictionary to JSON file
  */
 function saveToJson(dict: CompactCmudict): void {
-	console.log(`💾 Saving ${Object.keys(dict).length} words to ${outputPath}`);
+	const wordCount = Object.keys(dict).length;
+	console.log(`Saving ${wordCount} words to ${outputPath}`);
 
 	const json = JSON.stringify(dict, null, 0); // Minified for size
 	fs.writeFileSync(outputPath, json, "utf-8");
 
 	const stats = fs.statSync(outputPath);
-	console.log(`✅ Saved ${stats.size} bytes to ${outputPath}`);
+	console.log(`Saved ${stats.size} bytes to ${outputPath}`);
 }
 
 /**
  * Generate CMUDict JSON file
  */
-async function generateCmudictJson(): Promise<void> {
-	console.log("🚀 Starting CMUDict JSON generation...\n");
+async function main(): Promise<void> {
+	console.log("Starting CMUDict JSON generation...");
 
 	ensureOutputDirectory();
 
@@ -147,22 +150,12 @@ async function generateCmudictJson(): Promise<void> {
 		const dict = parseCmudict(content);
 		saveToJson(dict);
 
-		console.log("\n📊 Generation Summary:");
-		console.log(`✅ Words processed: ${Object.keys(dict).length}`);
-		console.log(`📁 Output file: ${outputPath}`);
-		console.log("\n🎉 CMUDict JSON generation complete!");
+		console.log("\nGeneration Summary:");
+		console.log(`Words processed: ${Object.keys(dict).length}`);
+		console.log(`Output file: ${outputPath}`);
+		console.log("\nCMUDict JSON generation complete.");
 	} catch (error) {
-		console.error("❌ Error during CMUDict generation:", error);
-		process.exit(1);
-	}
-}
-
-// Main execution
-async function main() {
-	try {
-		await generateCmudictJson();
-	} catch (error) {
-		console.error("💥 Fatal error:", error);
+		console.error("Error during CMUDict generation:", error);
 		process.exit(1);
 	}
 }
