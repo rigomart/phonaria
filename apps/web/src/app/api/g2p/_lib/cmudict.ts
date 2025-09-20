@@ -1,5 +1,9 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { convertArpabetToIPA } from "./arpabet-mapping";
 import { normalizeCmuWord } from "./cmudict-utils";
+
+type CompactCmudict = Record<string, string[]>;
 
 class CMUDict {
 	private dict = new Map<string, string[][]>();
@@ -8,64 +12,50 @@ class CMUDict {
 	async load(): Promise<void> {
 		if (this.loaded) return;
 
-		const CMUDICT_URL = process.env.CMUDICT_SRC_URL;
-		if (!CMUDICT_URL) {
-			throw new Error("CMUDICT_SRC_URL is not set");
-		}
-		const MAX_BYTES = 10 * 1024 * 1024; // 10MB safety cap
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 5000);
+		// Load the pre-processed CMUDict JSON file
+		const cmudictPath = path.resolve(process.cwd(), "data/cmudict.json");
 
-		let response: Response;
+		let rawData: string;
 		try {
-			response = await fetch(CMUDICT_URL, { signal: controller.signal, cache: "force-cache" });
-		} catch {
-			clearTimeout(timeoutId);
-			throw new Error("Failed to load CMUdict");
-		}
-		clearTimeout(timeoutId);
-
-		if (!response.ok) {
-			throw new Error("Failed to load CMUdict");
+			rawData = fs.readFileSync(cmudictPath, "utf-8");
+		} catch (error) {
+			throw new Error(`Failed to load CMUDict JSON file: ${error}`);
 		}
 
-		const contentType = response.headers.get("content-type") || "";
-		if (!contentType.startsWith("text/")) {
-			throw new Error("Unexpected content type for CMUdict");
-		}
-
-		const contentLengthHeader = response.headers.get("content-length");
-		if (contentLengthHeader && Number(contentLengthHeader) > MAX_BYTES) {
-			throw new Error("CMUdict too large");
-		}
-
-		const blob = await response.blob();
-		if (blob.size > MAX_BYTES) {
-			throw new Error("CMUdict too large");
-		}
-		const text = await blob.text();
-
-		this.parse(text);
+		this.parse(rawData);
 		this.loaded = true;
 	}
 
 	private parse(content: string): void {
-		const lines = content.split(/\r?\n/);
-		for (const rawLine of lines) {
-			const line = rawLine.trim();
-			if (!line) continue;
-			if (line.startsWith(";") || line.startsWith("#")) continue;
+		let jsonData: CompactCmudict;
 
-			const match = line.match(/^(\S+)\s+(.+)$/);
-			if (!match) continue;
+		try {
+			jsonData = JSON.parse(content) as CompactCmudict;
+		} catch (error) {
+			throw new Error(`Failed to parse CMUDict JSON: ${error}`);
+		}
 
-			const word = normalizeCmuWord(match[1]);
-			const arpaPhonemes = match[2].trim().split(/\s+/);
-			const ipaPhonemes = convertArpabetToIPA(arpaPhonemes);
+		// Process each word and its ARPABET variants
+		for (const [word, arpaVariants] of Object.entries(jsonData)) {
+			// Filter out null values and convert each ARPABET variant to IPA
+			const validVariants = arpaVariants.filter(
+				(arpaPhonemes): arpaPhonemes is string =>
+					typeof arpaPhonemes === "string" && arpaPhonemes.trim().length > 0,
+			);
 
-			const variants = this.dict.get(word);
-			if (variants) variants.push(ipaPhonemes);
-			else this.dict.set(word, [ipaPhonemes]);
+			if (validVariants.length === 0) {
+				// Skip words with no valid pronunciations
+				continue;
+			}
+
+			const ipaVariants: string[][] = validVariants.map((arpaPhonemes) => {
+				const arpaTokens = arpaPhonemes.split(/\s+/);
+				return convertArpabetToIPA(arpaTokens);
+			});
+
+			// Normalize the word key and store variants
+			const normalizedWord = normalizeCmuWord(word);
+			this.dict.set(normalizedWord, ipaVariants);
 		}
 	}
 

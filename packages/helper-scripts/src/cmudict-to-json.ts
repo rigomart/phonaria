@@ -40,13 +40,14 @@ function ensureOutputDirectory(): void {
  * Parse CMUDict content and convert to compact JSON format
  */
 function parseCmudict(content: string): CompactCmudict {
-	const dict: CompactCmudict = {};
+	const dictMap = new Map<string, string[]>();
 	const lines = content.split(/\r?\n/);
 
 	let processed = 0;
 	let skipped = 0;
 
-	for (const rawLine of lines) {
+	for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+		const rawLine = lines[lineIndex];
 		const line = rawLine.trim();
 		if (!line) continue;
 		if (line.startsWith(";") || line.startsWith("#")) continue;
@@ -61,23 +62,33 @@ function parseCmudict(content: string): CompactCmudict {
 		const word = normalizeCmuWord(match[1]);
 		const arpaPhonemes = match[2].trim();
 
-		// Include all variants - they will be grouped by the normalized word (without parentheses)
-		const existing = dict[word];
+		// Skip entries with empty phonemes
+		if (!arpaPhonemes) {
+			console.warn(`Warning: Empty phonemes for word '${word}' on line ${lineIndex + 1}: ${line}`);
+			skipped++;
+			continue;
+		}
+
+		const existing = dictMap.get(word);
+
 		if (existing) {
-			if (Array.isArray(existing)) {
-				existing.push(arpaPhonemes);
-			} else {
-				dict[word] = [existing, arpaPhonemes];
-			}
+			existing.push(arpaPhonemes);
 		} else {
-			dict[word] = [arpaPhonemes];
+			dictMap.set(word, [arpaPhonemes]);
 		}
 
 		processed++;
 	}
 
 	console.log(`Parsed ${processed} entries, skipped ${skipped} invalid lines`);
-	return dict;
+
+	// Convert Map back to object for return type compatibility
+	const result: CompactCmudict = {};
+	for (const [key, value] of dictMap.entries()) {
+		result[key] = value;
+	}
+
+	return result;
 }
 
 /**
@@ -130,7 +141,7 @@ function saveToJson(dict: CompactCmudict): void {
 	const wordCount = Object.keys(dict).length;
 	console.log(`Saving ${wordCount} words to ${outputPath}`);
 
-	const json = JSON.stringify(dict, null, 0); // Minified for size
+	const json = JSON.stringify(dict, null, 0);
 	fs.writeFileSync(outputPath, json, "utf-8");
 
 	const stats = fs.statSync(outputPath);

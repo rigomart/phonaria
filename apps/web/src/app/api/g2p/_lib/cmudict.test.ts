@@ -1,46 +1,53 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock data that mimics actual CMUdict format
-const mockCmudictData = `;;;	CMUdict version 0.7b
-;;;	Copyright (C) 1993-2015 Carnegie Mellon University. All rights reserved.
-;;;
-A  AH0
-A(1)  EY1
-CAT  K AE1 T
-CAT(1)  K AE1 T
-HELLO  HH AH0 L OW1
-HELLO(1)  HH EH1 L OW1
-WORLD  W ER1 L D
+// Mock data that mimics the JSON format used by the helper script
+const mockCmudictData = {
+	A: ["AH0", "EY1"],
+	CAT: ["K AE1 T"],
+	HELLO: ["HH AH0 L OW1", "HH EH1 L OW1"],
+	WORLD: ["W ER1 L D"],
+};
 
-INVALID LINE WITHOUT DOUBLE SPACE
-;;;	This is a comment line
-`;
+// Create mocks for fs and path
+const mockReadFileSync = vi.fn();
+const mockResolve = vi.fn();
 
-// Create a mock fetch
-const mockFetch = vi.fn();
-global.fetch = mockFetch as unknown as typeof fetch;
+vi.mock("node:fs", () => ({
+	readFileSync: mockReadFileSync,
+}));
+
+vi.mock("node:path", () => ({
+	resolve: mockResolve,
+}));
 
 describe("CMUDict", () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
 
-		// Mock successful fetch response by default
-		mockFetch.mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve(mockCmudictData),
-		});
+		// Mock successful file read by default
+		mockResolve.mockReturnValue("/path/to/cmudict.json");
+		mockReadFileSync.mockReturnValue(JSON.stringify(mockCmudictData));
 	});
 
 	describe("basic functionality", () => {
-		it("should handle fetch errors", async () => {
-			mockFetch.mockResolvedValue({
-				ok: false,
-				statusText: "Not Found",
+		it("should handle file read errors", async () => {
+			mockReadFileSync.mockImplementation(() => {
+				throw new Error("File not found");
 			});
 
 			const { cmudict } = await import("./cmudict");
 
-			await expect(cmudict.load()).rejects.toThrow("Failed to load CMUdict: Not Found");
+			await expect(cmudict.load()).rejects.toThrow(
+				"Failed to load CMUDict JSON file: Error: File not found",
+			);
+		});
+
+		it("should handle JSON parse errors", async () => {
+			mockReadFileSync.mockReturnValue("invalid json content");
+
+			const { cmudict } = await import("./cmudict");
+
+			await expect(cmudict.load()).rejects.toThrow("Failed to parse CMUDict JSON: SyntaxError:");
 		});
 
 		it("should parse dictionary data correctly", async () => {
@@ -48,9 +55,8 @@ describe("CMUDict", () => {
 
 			await cmudict.load();
 
-			expect(mockFetch).toHaveBeenCalledWith(
-				"https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/master/cmudict.dict",
-			);
+			expect(mockResolve).toHaveBeenCalledWith(process.cwd(), "data/cmudict.json");
+			expect(mockReadFileSync).toHaveBeenCalledWith("/path/to/cmudict.json", "utf-8");
 		});
 	});
 
