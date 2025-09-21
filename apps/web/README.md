@@ -85,3 +85,39 @@ src/
 - `zod` - Runtime type validation
 - `lucide-react` - Icon library
 - `sonner` - Toast notifications
+
+## G2P and CMUDict (Design & Rationale)
+
+### What powers G2P
+
+- **Source**: CMU Pronouncing Dictionary (compact JSON) at `apps/web/data/cmudict.json` (~4.5MB)
+- **Loader**: `apps/web/src/app/api/g2p/_lib/cmudict.ts`
+- **API**: `POST /api/g2p` (see `apps/web/src/app/api/g2p/route.ts`)
+
+### Why static JSON import (not FS or network)
+
+- **Reliability on Vercel**: Avoids path resolution issues (e.g., ENOENT) that occur when reading from `process.cwd()` within serverless bundles.
+- **Zero network on hot path**: No fetch from `public/` or external bucket; keeps the request path fast and predictable.
+- **Bundled with the server**: Ensures the dictionary ships with the function and is available at cold start. It's also using the Node.js runtime to make sure it has enough memory to load the dictionary.
+
+### One-time load, safe for concurrency
+
+- `cmudict.ts` maintains module-level state:
+  - `loaded` flag and a shared `loadPromise`.
+  - First request triggers the load; concurrent requests await the same promise (prevents duplicate work).
+  - After load, the dictionary lives in memory for the lifetime of the instance and is reused across requests.
+- This plays well with Vercel Fluid Compute: multiple concurrent requests on the same instance share the loaded data.
+
+### Performance characteristics
+
+- Cold start does the initial JSON parse and phoneme mapping, then all lookups are in-memory.
+- No per-request file I/O or network I/O.
+- If cold-start CPU becomes a concern, consider an alternative strategy:
+  - Store ARPABET variants in memory, convert to IPA on demand, and cache per word.
+  - Or shard the JSON by first letter and lazily import only needed shards.
+  - Or use Redis to store records for highly requested words.
+
+### Regenerating `cmudict.json`
+
+- Use the helper script in `packages/helper-scripts` (see that package's README) to download and convert CMUDict to JSON.
+- Place the output at `apps/web/data/cmudict.json` to be bundled with the app.
