@@ -53,12 +53,4 @@ export async function transcribeText(request: G2PRequest): Promise<G2PResponse> 
 	}
 }
 
-export function getServiceStats() {
-	return {
-		serviceName: "cmudict-g2p",
-		isHealthy: true,
-		description: "CMU Dictionary G2P service",
-	};
-}
-
 export type { G2PWord, G2PResponse, G2PRequest };
