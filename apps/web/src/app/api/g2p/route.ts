@@ -9,18 +9,27 @@ import { isValidText, validateRequest } from "./_utils/validation";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
+	const rateLimitResult = await checkRateLimit(request);
+	if (rateLimitResult.isRateLimited) {
+		return NextResponse.json(
+			{ error: "rate_limit_exceeded", message: "Too many requests" },
+			{ status: 429 },
+		);
+	}
+
+	let body: unknown;
 	try {
-		const rateLimitResult = await checkRateLimit(request);
-		if (rateLimitResult.isRateLimited) {
-			return NextResponse.json(
-				{ error: "rate_limit_exceeded", message: "Too many requests" },
-				{ status: 429 },
-			);
-		}
+		body = (await request.json()) as unknown;
+	} catch (error) {
+		return NextResponse.json(
+			{ error: "invalid_json", message: "Invalid JSON in request body" },
+			{ status: 400 },
+		);
+	}
 
-		const body = (await request.json()) as unknown;
-		const validationResult = validateRequest(body);
+	const validationResult = validateRequest(body);
 
+	try {
 		if (!validationResult.success) {
 			return NextResponse.json(
 				{ error: "invalid_request", message: "Invalid request" },
