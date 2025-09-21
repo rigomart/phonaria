@@ -3,7 +3,7 @@ import * as path from "node:path";
 import { convertArpabetToIPA } from "./arpabet-mapping";
 import { normalizeCmuWord } from "./cmudict-utils";
 
-type CompactCmudict = Record<string, string[]>;
+type CompactCmudictMap = Map<string, string[]>;
 
 class CMUDict {
 	private dict = new Map<string, string[][]>();
@@ -27,20 +27,24 @@ class CMUDict {
 	}
 
 	private parse(content: string): void {
-		let jsonData: CompactCmudict;
+		let jsonData: CompactCmudictMap;
 
 		try {
-			jsonData = JSON.parse(content) as CompactCmudict;
+			// Parse JSON into a Map for safer iteration
+			const parsed = JSON.parse(content) as Record<string, string[]>;
+			jsonData = new Map(Object.entries(parsed));
 		} catch (error) {
 			throw new Error(`Failed to parse CMUDict JSON: ${error}`);
 		}
 
 		// Process each word and its ARPABET variants
-		for (const [word, arpaVariants] of Object.entries(jsonData)) {
-			// Filter out null values and convert each ARPABET variant to IPA
+		for (const [word, arpaVariants] of jsonData) {
+			// Filter out null/undefined values and empty strings
 			const validVariants = arpaVariants.filter(
 				(arpaPhonemes): arpaPhonemes is string =>
-					typeof arpaPhonemes === "string" && arpaPhonemes.trim().length > 0,
+					arpaPhonemes != null &&
+					typeof arpaPhonemes === "string" &&
+					arpaPhonemes.trim().length > 0,
 			);
 
 			if (validVariants.length === 0) {
