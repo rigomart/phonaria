@@ -2,6 +2,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { g2pRequestSchema } from "./_schemas/g2p-api.schema";
 import { transcribeText } from "./_services/g2p.service";
 
+export const runtime = "nodejs";
+
 /**
  * POST /api/g2p - Convert text to phonemic transcription
  */

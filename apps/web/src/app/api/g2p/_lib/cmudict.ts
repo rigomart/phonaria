@@ -1,5 +1,4 @@
-import * as fs from "node:fs";
-import * as path from "node:path";
+import cmudictData from "@data/cmudict.json";
 import { convertArpabetToIPA } from "./arpabet-mapping";
 import { normalizeCmuWord } from "./cmudict-utils";
 
@@ -8,38 +7,28 @@ type CompactCmudictMap = Map<string, string[]>;
 class CMUDict {
 	private dict = new Map<string, string[][]>();
 	private loaded = false;
+	private loadPromise: Promise<void> | null = null;
 
 	async load(): Promise<void> {
 		if (this.loaded) return;
+		if (this.loadPromise) return this.loadPromise;
 
-		// Load the pre-processed CMUDict JSON file
-		const cmudictPath = path.resolve(process.cwd(), "data/cmudict.json");
+		this.loadPromise = (async () => {
+			if (this.loaded) return;
+			this.parseObject(cmudictData as Record<string, string[]>);
+			this.loaded = true;
+		})().catch((error) => {
+			this.loadPromise = null;
+			throw error;
+		});
 
-		let rawData: string;
-		try {
-			rawData = fs.readFileSync(cmudictPath, "utf-8");
-		} catch (error) {
-			throw new Error(`Failed to load CMUDict JSON file: ${error}`);
-		}
-
-		this.parse(rawData);
-		this.loaded = true;
+		return this.loadPromise;
 	}
 
-	private parse(content: string): void {
-		let jsonData: CompactCmudictMap;
+	private parseObject(data: Record<string, string[]>): void {
+		const jsonData: CompactCmudictMap = new Map(Object.entries(data));
 
-		try {
-			// Parse JSON into a Map for safer iteration
-			const parsed = JSON.parse(content) as Record<string, string[]>;
-			jsonData = new Map(Object.entries(parsed));
-		} catch (error) {
-			throw new Error(`Failed to parse CMUDict JSON: ${error}`);
-		}
-
-		// Process each word and its ARPABET variants
 		for (const [word, arpaVariants] of jsonData) {
-			// Filter out null/undefined values and empty strings
 			const validVariants = arpaVariants.filter(
 				(arpaPhonemes): arpaPhonemes is string =>
 					arpaPhonemes != null &&
@@ -48,7 +37,6 @@ class CMUDict {
 			);
 
 			if (validVariants.length === 0) {
-				// Skip words with no valid pronunciations
 				continue;
 			}
 
@@ -57,7 +45,6 @@ class CMUDict {
 				return convertArpabetToIPA(arpaTokens);
 			});
 
-			// Normalize the word key and store variants
 			const normalizedWord = normalizeCmuWord(word);
 			this.dict.set(normalizedWord, ipaVariants);
 		}
