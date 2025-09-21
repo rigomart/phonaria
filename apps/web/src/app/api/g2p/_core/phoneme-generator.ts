@@ -1,10 +1,4 @@
-/**
- * Fallback G2P System
- * Provides basic pronunciation for words not in CMUdict
- */
-
 export class FallbackG2P {
-	// Phase 2.1: Basic letter-to-IPA mapping
 	private basicConsonantMap: Record<string, string> = {
 		b: "b",
 		c: "k",
@@ -37,10 +31,6 @@ export class FallbackG2P {
 		u: "ʌ",
 	};
 
-	/**
-	 * Generate basic pronunciation for unknown words
-	 * Phase 2.1: Simple letter-by-letter conversion
-	 */
 	generatePronunciation(word: string): string[] {
 		const result: string[] = [];
 		const letters = word.toLowerCase().split("");
@@ -51,7 +41,6 @@ export class FallbackG2P {
 			} else if (this.basicVowelMap[letter]) {
 				result.push(this.basicVowelMap[letter]);
 			} else {
-				// Handle unknown characters
 				result.push(letter);
 			}
 		}

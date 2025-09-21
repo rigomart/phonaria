@@ -4,14 +4,10 @@ alwaysApply: false
 ---
 - Structure
   - Group by resource (`/api/users/index.ts`, `/api/users/[id].ts`)
-  - Keep business logic separate in `lib/` or `services/`
   - Use Zod/Yup for schema validation
-  - Centralize cross-cutting logic in middleware (auth, logging, rate limiting)
 
 - Handlers
-
   - Explicitly check `req.method` (or `export async function GET/POST` in App Router)
-  - Return `405 Method Not Allowed` for unsupported methods
   - Follow HTTP semantics (`GET`, `POST`, `PUT/PATCH`, `DELETE`)
 
 - Responses
