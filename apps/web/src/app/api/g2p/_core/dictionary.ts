@@ -1,6 +1,6 @@
 import cmudictData from "@data/cmudict.json";
-import { convertArpabetToIPA } from "./arpabet-mapping";
-import { normalizeCmuWord } from "./cmudict-utils";
+import { convertArpabetToIPA } from "../_utils/arpabet-mapping";
+import { normalizeCmuWord } from "../_utils/text-processing";
 
 type CompactCmudictMap = Map<string, string[]>;
 

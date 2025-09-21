@@ -1,24 +1,69 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { g2pRequestSchema } from "./_schemas/g2p-api.schema";
-import { transcribeText } from "./_services/g2p.service";
+import { checkRateLimit } from "../_lib/rate-limit";
+import { cmudict } from "./_core/dictionary";
+import { fallbackG2P } from "./_core/phoneme-generator";
+import type { G2PResponse, G2PWord } from "./_schemas/g2p-api.schema";
+import { tokenizeText } from "./_utils/text-processing";
+import { isValidText, validateRequest } from "./_utils/validation";
 
 export const runtime = "nodejs";
-/**
- * POST /api/g2p - Convert text to phonemic transcription
- */
+
 export async function POST(request: NextRequest) {
-	const body = (await request.json()) as unknown;
+	try {
+		const rateLimitResult = await checkRateLimit(request);
+		if (rateLimitResult.isRateLimited) {
+			return NextResponse.json(
+				{ error: "rate_limit_exceeded", message: "Too many requests" },
+				{ status: 429 },
+			);
+		}
 
-	const validationResult = g2pRequestSchema.safeParse(body);
+		const body = (await request.json()) as unknown;
+		const validationResult = validateRequest(body);
 
-	if (!validationResult.success) {
+		if (!validationResult.success) {
+			return NextResponse.json(
+				{ error: "invalid_request", message: "Invalid request" },
+				{ status: 400 },
+			);
+		}
+
+		const { text } = validationResult.data;
+
+		if (!isValidText(text)) {
+			return NextResponse.json({ words: [] }, { status: 200 });
+		}
+
+		await cmudict.load();
+
+		const words = tokenizeText(text);
+		const results: G2PWord[] = [];
+
+		for (const word of words) {
+			if (word.length === 0) continue;
+
+			const variants = cmudict.lookup(word);
+			let ipaVariants: string[][];
+
+			if (variants && variants.length > 0) {
+				ipaVariants = variants;
+			} else {
+				ipaVariants = [fallbackG2P.generatePronunciation(word)];
+			}
+
+			results.push({
+				word: word.toLowerCase(),
+				variants: ipaVariants,
+			});
+		}
+
+		const response: G2PResponse = { words: results };
+		return NextResponse.json(response, { status: 200 });
+	} catch (error) {
+		console.error("G2P API error:", error);
 		return NextResponse.json(
-			{ error: "invalid_request", message: "Invalid request" },
-			{ status: 400 },
+			{ error: "internal_server_error", message: "Failed to process request" },
+			{ status: 500 },
 		);
 	}
-
-	const response = await transcribeText({ text: validationResult.data.text });
-
-	return NextResponse.json(response, { status: 200 });
 }
