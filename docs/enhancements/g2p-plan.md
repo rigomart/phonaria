@@ -58,7 +58,7 @@ A high-level plan to make the G2P (grapheme-to-phoneme) system fast, accurate, a
 - **Value:**
   ```json
   {
-    "ipa": ["ˈrɛkərd", "rɪˈkɔːrd"],
+    "ipa": ["ˈrɛkərd", "rɪˈkɔrd"],
     "posHints": ["N", "V"],
     "notes": { "special": "the_variant", "freqRank": 5234 }
   }
@@ -73,7 +73,7 @@ A high-level plan to make the G2P (grapheme-to-phoneme) system fast, accurate, a
 - Lowercase except for proper nouns (leading cap after sentence boundary).
 - Strip punctuation; handle possessives and hyphens.
 - Convert numbers and dates to words before G2P.
-- Acronyms: ALL-CAPS (length ≥ 2) → letter names (A = eɪ, B = biː, etc.), plus special cases (NASA, SQL).
+- Acronyms: ALL-CAPS (length ≥ 2) → letter names (A = eɪ, B = bi, etc.), plus special cases (NASA, SQL).
 
 ### 2. Morphological Handling (Before Rules)
 - Try base forms: remove -s/-es, -ed, -ing, -er/-est, -’s; apply e-dropping, y→i rules.
@@ -92,10 +92,10 @@ A high-level plan to make the G2P (grapheme-to-phoneme) system fast, accurate, a
   - x → ks generally, gz before stressed vowel onset in some contexts (e.g., "exact").
   - s → z between vowels.
   - y as vowel in syllable nucleus (ɪ/i), y as consonant at onset (j).
-  - magic-e: a_e → eɪ, i_e → aɪ (or iː in some systems), o_e → oʊ, u_e → juː/uː contextually.
+  - magic-e: a_e → eɪ, i_e → aɪ (or i in some systems), o_e → oʊ, u_e → ju/u contextually.
   - gh: silent in most environments; -ough pattern list (though/through/rough/ought/cough/borough).
   - kn-/wr- initial letter silent; mb final b silent; lk/lt after a → l often dark but keep /l/.
-  - qu → kw; wh → w in GA (except "who" → huː).
+  - qu → kw; wh → w in GA (except "who" → hu).
 
 ### 4. Syllabification and Stress Heuristics
 - Sonority-based syllable parsing with maximal onset.
