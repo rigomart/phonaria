@@ -1,11 +1,13 @@
 "use client";
 
-import { useMinimalPairSelection } from "../_hooks/use-minimal-pair-selection";
+import type { MinimalPairSet } from "shared-data";
 import { ContrastDetail } from "../_components/contrast-detail";
 
-export function MinimalPairsExperienceSection() {
-	const { activeSet } = useMinimalPairSelection();
+interface MinimalPairsExperienceSectionProps {
+	activeSet: MinimalPairSet | null;
+}
 
+export function MinimalPairsExperienceSection({ activeSet }: MinimalPairsExperienceSectionProps) {
 	if (!activeSet) {
 		return (
 			<section className="border-t bg-muted/20">
