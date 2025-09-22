@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 
 export function Header() {
+
 	return (
 		<header className="border-b bg-card">
 			<div className="container mx-auto px-4 py-3">
@@ -16,6 +17,9 @@ export function Header() {
 							</Link>
 							<Link href="/ipa-chart" className="text-sm hover:text-primary transition-colors">
 								IPA Chart
+							</Link>
+							<Link href="/minimal-pairs" className="text-sm hover:text-primary transition-colors">
+								Minimal Pairs
 							</Link>
 						</nav>
 					</div>
