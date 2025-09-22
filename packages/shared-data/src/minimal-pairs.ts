@@ -5,12 +5,12 @@ export const minimalPairSets: MinimalPairSet[] = [
 	{
 		id: "vowel-short-long-i",
 		slug: "short-i-vs-long-ee",
-		title: "/ɪ/ vs /iː/: Ship vs. Sheep",
+		title: "/ɪ/ vs /i/: Ship vs. Sheep",
 		category: "vowel",
-		focusPhonemes: ["ɪ", "iː"],
-		summary: "Contrast the relaxed short /ɪ/ with the tense, lengthened /iː/",
+		focusPhonemes: ["ɪ", "i"],
+		summary: "Contrast the relaxed short /ɪ/ with the tense, lengthened /i/",
 		description:
-			"Keep the tongue high at the front for both vowels, but shorten and relax /ɪ/ while lengthening /iː/ with tighter lips.",
+			"Keep the tongue high at the front for both vowels, but shorten and relax /ɪ/ while lengthening /i/ with tighter lips.",
 		tags: ["front vowels", "length", "common ESL"],
 		difficulty: "foundational",
 		l1Notes:
@@ -22,7 +22,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 				details: "Tongue sits high and front but remains relaxed and brief with neutral lips.",
 			},
 			{
-				phoneme: "iː",
+				phoneme: "i",
 				headline: "Tense high front vowel",
 				details: "Raise the tongue fully high-front, spread the lips, and sustain the vowel.",
 			},
@@ -43,7 +43,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "sheep",
-						phonemic: "ʃiːp",
+						phonemic: "ʃip",
 						graphemeHint: "ee",
 						audioUrl: getExampleAudioUrl("sheep"),
 						pronunciationTip: "Hold the vowel slightly longer with a smile shape.",
@@ -64,7 +64,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "leave",
-						phonemic: "liːv",
+						phonemic: "liv",
 						graphemeHint: "ea",
 						audioUrl: getExampleAudioUrl("leave"),
 					},
@@ -73,7 +73,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 			{
 				id: "sit-seat",
 				contrastLabel: "short vs. long vowel",
-				description: "Listen for the clipped /ɪ/ compared with the gliding /iː/.",
+				description: "Listen for the clipped /ɪ/ compared with the gliding /i/.",
 				practiceNote: "Touch the top teeth lightly for the final /t/ to keep timing even.",
 				words: [
 					{
@@ -84,7 +84,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "seat",
-						phonemic: "siːt",
+						phonemic: "sit",
 						graphemeHint: "ea",
 						audioUrl: getExampleAudioUrl("seat"),
 					},
@@ -105,7 +105,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "leek",
-						phonemic: "liːk",
+						phonemic: "lik",
 						graphemeHint: "ee",
 						audioUrl: getExampleAudioUrl("leek"),
 					},
@@ -125,7 +125,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "feel",
-						phonemic: "fiːl",
+						phonemic: "fil",
 						graphemeHint: "ee",
 						audioUrl: getExampleAudioUrl("feel"),
 					},
@@ -264,12 +264,12 @@ export const minimalPairSets: MinimalPairSet[] = [
 	{
 		id: "vowel-pull-pool",
 		slug: "pull-vs-pool",
-		title: "/ʊ/ vs /uː/: Pull vs. Pool",
+		title: "/ʊ/ vs /u/: Pull vs. Pool",
 		category: "vowel",
-		focusPhonemes: ["ʊ", "uː"],
-		summary: "Contrast the short rounded /ʊ/ with the long, tense /uː/",
+		focusPhonemes: ["ʊ", "u"],
+		summary: "Contrast the short rounded /ʊ/ with the long, tense /u/",
 		description:
-			"Both vowels require rounded lips, but /ʊ/ is shorter with a central tongue, while /uː/ is longer with a tighter high-back position.",
+			"Both vowels require rounded lips, but /ʊ/ is shorter with a central tongue, while /u/ is longer with a tighter high-back position.",
 		tags: ["back vowels", "length", "rounded"],
 		difficulty: "intermediate",
 		l1Notes: "Germanic learners often over-tense /ʊ/, while Romance speakers merge toward /u/.",
@@ -280,7 +280,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 				details: "Rounded lips but keep the tongue slightly lower and central.",
 			},
 			{
-				phoneme: "uː",
+				phoneme: "u",
 				headline: "Long tense back vowel",
 				details: "Round firmly, pull the tongue high and back, and sustain.",
 			},
@@ -301,7 +301,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "pool",
-						phonemic: "puːl",
+						phonemic: "pul",
 						graphemeHint: "oo",
 						audioUrl: getExampleAudioUrl("pool"),
 					},
@@ -311,7 +311,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 				id: "full-fool",
 				contrastLabel: "short vs. long rounded vowel",
 				description: "Same consonants across both syllables—listen for vowel core.",
-				practiceNote: "Avoid diphthongizing /uː/.",
+				practiceNote: "Avoid diphthongizing /u/.",
 				words: [
 					{
 						word: "full",
@@ -321,7 +321,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "fool",
-						phonemic: "fuːl",
+						phonemic: "ful",
 						graphemeHint: "oo",
 						audioUrl: getExampleAudioUrl("fool"),
 					},
@@ -331,7 +331,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 				id: "foot-food",
 				contrastLabel: "short vs. long rounded vowel",
 				description: "One of the most frequent listening confusions for English learners.",
-				practiceNote: "Keep /uː/ steady—no glide toward /ʊ/.",
+				practiceNote: "Keep /u/ steady—no glide toward /ʊ/.",
 				words: [
 					{
 						word: "foot",
@@ -341,7 +341,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "food",
-						phonemic: "fuːd",
+						phonemic: "fud",
 						graphemeHint: "oo",
 						audioUrl: getExampleAudioUrl("food"),
 					},
@@ -351,7 +351,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 				id: "could-cooed",
 				contrastLabel: "short vs. long rounded vowel",
 				description: "Spelling stays the same—only vowel length signals the meaning.",
-				practiceNote: "Keep /ʊ/ central; pull /uː/ farther back.",
+				practiceNote: "Keep /ʊ/ central; pull /u/ farther back.",
 				words: [
 					{
 						word: "could",
@@ -361,7 +361,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "cooed",
-						phonemic: "kuːd",
+						phonemic: "kud",
 						graphemeHint: "oo",
 						audioUrl: getExampleAudioUrl("cooed"),
 					},
@@ -371,7 +371,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 				id: "pull-peel",
 				contrastLabel: "rounded vs. unrounded",
 				description: "A bonus contrast mixing vowel quality and length cues.",
-				practiceNote: "Feel the lips relax for the /iː/ in peel.",
+				practiceNote: "Feel the lips relax for the /i/ in peel.",
 				words: [
 					{
 						word: "pull",
@@ -381,7 +381,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 					},
 					{
 						word: "peel",
-						phonemic: "piːl",
+						phonemic: "pil",
 						graphemeHint: "ee",
 						audioUrl: getExampleAudioUrl("peel"),
 					},

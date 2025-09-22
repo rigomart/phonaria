@@ -1,6 +1,6 @@
 # Minimal Pairs Feature Development Plan
 
-This document outlines the phased development plan for the Minimal Pairs feature in Phonix, an interactive pronunciation learning platform for ESL learners. The feature focuses on phoneme-level mastery by helping users distinguish and practice similar sounds (e.g., /ɪ/ vs. /iː/ in "ship" vs. "sheep"). Each phase delivers a functional, iterable product, progressing from core functionality to advanced enhancements, integrating with existing IPA chart and G2P transcription tools. The plan prioritizes a phoneme-first approach, interactive discovery, and evidence-based ESL practices.
+This document outlines the phased development plan for the Minimal Pairs feature in Phonix, an interactive pronunciation learning platform for ESL learners. The feature focuses on phoneme-level mastery by helping users distinguish and practice similar sounds (e.g., /ɪ/ vs. /i/ in "ship" vs. "sheep"). Each phase delivers a functional, iterable product, progressing from core functionality to advanced enhancements, integrating with existing IPA chart and G2P transcription tools. The plan prioritizes a phoneme-first approach, interactive discovery, and evidence-based ESL practices.
 
 ## Phase 1: Core Listening Discrimination
 
@@ -9,7 +9,7 @@ Create a foundational tool for users to compare and distinguish minimal pairs th
 
 ### Access Points
 - **Navbar Link**: Add "Minimal Pairs" to the app's top-level navigation, alongside "IPA Chart" and "G2P Tool," for direct access to the feature.
-- **Phoneme Details**: In the IPA chart or G2P analysis phoneme detail views, include a "Differentiate with X" section listing 2-3 common contrasts (e.g., for /ɪ/, suggest /iː/ with "ship/sheep"), with buttons to launch focused pair sessions.
+- **Phoneme Details**: In the IPA chart or G2P analysis phoneme detail views, include a "Differentiate with X" section listing 2-3 common contrasts (e.g., for /ɪ/, suggest /i/ with "ship/sheep"), with buttons to launch focused pair sessions.
 
 ### Core Functionality
 - **Predefined Pair Sets**: Curate 20-30 minimal pairs, categorized by contrast type (vowels, consonants) and searchable via dropdowns on the Minimal Pairs page.
