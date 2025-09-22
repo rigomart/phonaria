@@ -1,123 +1,67 @@
-# Phonix Next.js Application
+# Phonix – Web Application
 
-This is the main Next.js application for Phonix, a phoneme-first ESL pronunciation learning platform. It combines both the frontend user interface and the backend API into a single, unified Next.js application using the App Router.
+This package hosts the primary Phonix experience: a Next.js App Router project that delivers IPA charts, grapheme-to-phoneme transcription, dictionary lookups, and pronunciation audio for ESL learners.
 
-## Features
+## Feature overview
 
-- **Interactive IPA Charts**: Explore English phonemes with clickable charts
-- **G2P Transcription**: Convert text to phonemic transcription using CMU Dictionary
-- **Word Definitions**: Click a word in results to view definitions in a side panel
-- **Pronunciation Audio**: Play dictionary audio for words when available
-- **Dark/Light Theme**: Built-in theme switching with next-themes
-- **Responsive Design**: Mobile-first approach with shadcn/ui components
-- **Type Safety**: Full TypeScript implementation with strict settings
+- **Interactive IPA chart** – Explore 40 General American phonemes with articulation metadata, example words, and optional ElevenLabs audio.
+- **Grapheme-to-phoneme transcription** – `POST /api/g2p` converts user text into IPA with highlighted phoneme matches.
+- **Dictionary side drawer** – Clicking a word shows definitions and pronunciation audio via `GET /api/dictionary`.
+- **Themeable & responsive UI** – Tailwind CSS v4, shadcn/ui primitives, and next-themes provide a polished experience across devices.
+- **Internationalization ready** – `src/i18n` exposes next-intl configuration for future locale support.
 
-## Tech Stack
+## Tech stack
 
-- **Framework**: Next.js 15 with App Router
-- **Styling**: Tailwind CSS v4 with custom theme colors
-- **UI Components**: shadcn/ui with Radix UI primitives
-- **TypeScript**: Strict configuration with path aliases
-- **Linting**: Biome (extends root workspace configuration)
-- **Package Manager**: pnpm with workspace support
+- **Framework** – Next.js 15 (App Router, Turbopack dev server)
+- **Language** – TypeScript with strict settings and path aliases (`@/`)
+- **Styling** – Tailwind CSS v4, CSS variables managed in `src/app/globals.css`
+- **State & data** – React Query (for async flows), Zustand (lightweight client stores)
+- **Testing** – Vitest with utility-first unit coverage for API services and hooks
+- **Linting** – Biome (shared workspace configuration)
 
-## API Routes
+## Running locally
 
-- `GET /api/health` - Health check endpoint
-- `POST /api/g2p` - Convert text to phonemic transcription
-- `GET /api/dictionary?word=<word>` - Fetch dictionary definition for a word
-
-## Development
-
-### Prerequisites
-
-- Node.js (see root package.json for version)
-- pnpm
-
-### Local Development
-
-1. **Install dependencies:**
-   ```bash
-   pnpm install
-   ```
-
-2. **Start development server:**
-   ```bash
-   pnpm dev
-   ```
-
-3. **Open [http://localhost:3000](http://localhost:3000)**
-
-### Available Scripts
-
-- `pnpm dev` - Start development server with Turbopack
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Run Biome linter and formatter
-- `pnpm typecheck` - Run TypeScript type checking
-
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js App Router pages and API routes
-│   ├── api/               # API route handlers
-│   ├── globals.css        # Global styles and theme variables
-│   ├── layout.tsx         # Root layout with theme provider
-│   └── page.tsx           # Home page (G2P transcription)
-├── components/            # Reusable React components
-│   ├── ui/               # shadcn/ui components
-│   ├── g2p/              # G2P-specific components
-│   ├── chart/            # IPA chart components
-│   └── core/             # Core phoneme components
-├── hooks/                # Custom React hooks
-├── lib/                  # Utility functions and configurations
-│   ├── g2p/              # G2P service and utilities
-│   └── shared/           # Shared utilities
-└── types/                # TypeScript type definitions
+```bash
+pnpm install             # once per workspace
+pnpm -C apps/web dev     # start Next.js at http://localhost:3000
 ```
 
-## Key Dependencies
+The root `pnpm dev` will also start this project if you prefer Turborepo orchestration.
 
-- `shared-data` - Shared phoneme data and utilities
-- `@tanstack/react-query` - (Optional) Data fetching and caching
-- `next-themes` - Theme switching functionality
-- `zod` - Runtime type validation
-- `lucide-react` - Icon library
-- `sonner` - Toast notifications
+### Useful scripts
 
-## G2P and CMUDict (Design & Rationale)
+```bash
+pnpm -C apps/web lint            # biome check --write
+pnpm -C apps/web check-types     # tsc --noEmit
+pnpm -C apps/web test            # vitest run
+pnpm -C apps/web build           # next build --turbopack
+pnpm -C apps/web start           # next start (after build)
+```
 
-### What powers G2P
+## Directory structure
 
-- **Source**: CMU Pronouncing Dictionary (compact JSON) at `apps/web/data/cmudict.json` (~4.5MB)
-- **Loader**: `apps/web/src/app/api/g2p/_lib/cmudict.ts`
-- **API**: `POST /api/g2p` (see `apps/web/src/app/api/g2p/route.ts`)
+```
+apps/web
+├── data/                 # Bundled CMU Pronouncing Dictionary JSON
+├── public/audio/         # ElevenLabs example audio (optional)
+├── src/
+│   ├── app/              # Routes, layouts, and API handlers (App Router)
+│   │   ├── api/          # REST endpoints (e.g., g2p, dictionary)
+│   │   └── (routes)      # Feature entry points
+│   ├── components/       # Reusable UI components (feature folders under chart/, g2p/, core/, ui/)
+│   ├── hooks/            # Custom React hooks
+│   ├── i18n/             # next-intl configuration and messages
+│   └── lib/              # Client/server utilities (g2p helpers, dictionary services, design tokens)
+├── global.ts             # Shared runtime configuration
+├── messages/             # Localized message bundles (per locale)
+└── vitest.config.ts      # Test runner configuration
+```
 
-### Why static JSON import (not FS or network)
+## Data dependencies
 
-- **Reliability on Vercel**: Avoids path resolution issues (e.g., ENOENT) that occur when reading from `process.cwd()` within serverless bundles.
-- **Zero network on hot path**: No fetch from `public/` or external bucket; keeps the request path fast and predictable.
-- **Bundled with the server**: Ensures the dictionary ships with the function and is available at cold start. It's also using the Node.js runtime to make sure it has enough memory to load the dictionary.
+- **CMU Pronouncing Dictionary** – Expected at `apps/web/data/cmudict.json`. Regenerate via `pnpm -C packages/helper-scripts cmudict-to-json` (see helper-scripts README).
+- **Example audio** – Optional `.mp3` files under `public/audio/examples`. Generated with `pnpm -C packages/helper-scripts generate` once `ELEVENLABS_API_KEY` is configured.
 
-### One-time load, safe for concurrency
+## Testing guidance
 
-- `cmudict.ts` maintains module-level state:
-  - `loaded` flag and a shared `loadPromise`.
-  - First request triggers the load; concurrent requests await the same promise (prevents duplicate work).
-  - After load, the dictionary lives in memory for the lifetime of the instance and is reused across requests.
-- This plays well with Vercel Fluid Compute: multiple concurrent requests on the same instance share the loaded data.
-
-### Performance characteristics
-
-- Cold start does the initial JSON parse and phoneme mapping, then all lookups are in-memory.
-- No per-request file I/O or network I/O.
-- If cold-start CPU becomes a concern, consider an alternative strategy:
-  - Store ARPABET variants in memory, convert to IPA on demand, and cache per word.
-  - Or shard the JSON by first letter and lazily import only needed shards.
-  - Or use Redis to store records for highly requested words.
-
-### Regenerating `cmudict.json`
-
-- Use the helper script in `packages/helper-scripts` (see that package's README) to download and convert CMUDict to JSON.
-- Place the output at `apps/web/data/cmudict.json` to be bundled with the app.
+Unit tests live alongside the code they cover (e.g., `src/app/api/dictionary/_services/dictionary-service.test.ts`). Run `pnpm -C apps/web test` locally or rely on the root `pnpm test` command for workspace-wide coverage.
