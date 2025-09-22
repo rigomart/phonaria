@@ -19,7 +19,6 @@ export function useTranscribe() {
 		onSuccess: (data: TranscriptionResult) => {
 			queryClient.setQueryData(["g2p", "current"], data);
 			resetVariants(data.words.length);
-			toast.success("Text transcribed successfully!");
 		},
 		onError: (error: unknown) => {
 			const message = error instanceof Error ? error.message : "Failed to transcribe text";

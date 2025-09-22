@@ -21,6 +21,7 @@ export const g2pRequestSchema = z.object({
 export const g2pWordSchema = z.object({
 	word: z.string().min(1),
 	variants: z.array(z.array(z.string())),
+	source: z.enum(["cmudict", "fallback"]),
 });
 
 /**

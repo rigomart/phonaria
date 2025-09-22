@@ -18,6 +18,7 @@ export interface G2PRequest {
 export interface G2PWord {
 	word: string;
 	variants: string[][];
+	source: "cmudict" | "fallback";
 }
 
 /**
@@ -63,6 +64,8 @@ export interface TranscribedWord {
 	selectedVariantIndex: number;
 	/** Index in the original text */
 	wordIndex: number;
+	/** Source that provided the transcription */
+	source: "cmudict" | "fallback";
 }
 
 /**

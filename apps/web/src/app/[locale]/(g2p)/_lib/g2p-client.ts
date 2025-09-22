@@ -66,6 +66,7 @@ function transformG2PResponse(
 			variants,
 			selectedVariantIndex: 0,
 			wordIndex,
+			source: word.source,
 		};
 	});
 

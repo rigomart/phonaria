@@ -53,16 +53,20 @@ export async function POST(request: NextRequest) {
 
 			const variants = cmudict.lookup(word);
 			let ipaVariants: string[][];
+			let source: G2PWord["source"];
 
 			if (variants && variants.length > 0) {
 				ipaVariants = variants;
+				source = "cmudict";
 			} else {
 				ipaVariants = [fallbackG2P.generatePronunciation(word)];
+				source = "fallback";
 			}
 
 			results.push({
 				word: word.toLowerCase(),
 				variants: ipaVariants,
+				source,
 			});
 		}
 
