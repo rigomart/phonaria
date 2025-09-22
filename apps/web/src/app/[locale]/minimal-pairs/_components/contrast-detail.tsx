@@ -1,7 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MinimalPairSet } from "shared-data";
-import { PairCard } from "./pair-card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArticulationPanel } from "./articulation-panel";
+import { PairCard } from "./pair-card";
 
 interface ContrastDetailProps {
 	set: MinimalPairSet;

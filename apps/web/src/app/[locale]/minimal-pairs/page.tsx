@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { MinimalPairsExperienceSection } from "./_components/experience-section";
+import { MinimalPairsExperienceSection } from "./_sections/experience-section";
 import { ContrastSelectorSection } from "./_sections/contrast-selector-section";
 import { MinimalPairsHeroSection } from "./_sections/hero-section";
 

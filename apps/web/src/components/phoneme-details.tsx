@@ -1,6 +1,6 @@
+import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createContext, useContext } from "react";
-import { ArrowRight } from "lucide-react";
 import type {
 	ConsonantAllophone,
 	ConsonantPhoneme,
@@ -9,11 +9,10 @@ import type {
 	VowelAllophone,
 	VowelPhoneme,
 } from "shared-data";
-import { phonixUtils } from "shared-data";
+import { minimalPairSets, phonixUtils } from "shared-data";
 import { AudioControls } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
-import { minimalPairSets } from "shared-data";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
@@ -208,7 +207,9 @@ function PhonemeDetailsMinimalPairs() {
 		<section className="space-y-3">
 			<h3 className="text-sm font-medium">Differentiate with…</h3>
 			<p className="text-xs text-muted-foreground">
-				Launch a listening session that contrasts <span className="font-semibold text-foreground">/{phoneme.symbol}/</span> with nearby sounds.
+				Launch a listening session that contrasts{" "}
+				<span className="font-semibold text-foreground">/{phoneme.symbol}/</span> with nearby
+				sounds.
 			</p>
 			<ul className="grid gap-3">
 				{matchingSets.slice(0, 3).map((set) => {

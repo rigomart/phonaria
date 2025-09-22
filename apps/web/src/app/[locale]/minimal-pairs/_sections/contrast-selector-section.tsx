@@ -13,7 +13,8 @@ export function ContrastSelectorSection() {
 				<div className="flex flex-col gap-2">
 					<h2 className="text-base font-semibold leading-tight">Choose a contrast to explore</h2>
 					<p className="text-sm text-muted-foreground">
-						Select a minimal pair set to review listening examples, IPA cues, and short articulation reminders.
+						Select a minimal pair set to review listening examples, IPA cues, and short articulation
+						reminders.
 					</p>
 				</div>
 				<div className="flex flex-wrap gap-3">

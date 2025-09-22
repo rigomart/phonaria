@@ -1,7 +1,7 @@
 "use client";
 
-import { ContrastDetail } from "./contrast-detail";
 import { useMinimalPairSelection } from "../_hooks/use-minimal-pair-selection";
+import { ContrastDetail } from "../_components/contrast-detail";
 
 export function MinimalPairsExperienceSection() {
 	const { activeSet } = useMinimalPairSelection();

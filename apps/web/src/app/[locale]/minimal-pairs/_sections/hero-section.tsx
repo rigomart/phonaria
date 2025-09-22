@@ -12,8 +12,8 @@ export function MinimalPairsHeroSection() {
 							Tune your ear with practical minimal pair drills
 						</h1>
 						<p className="text-pretty text-base leading-relaxed text-muted-foreground">
-							Work through focused sound contrasts, listen to native examples, and review the articulation
-							reminders you need to practise independently.
+							Work through focused sound contrasts, listen to native examples, and review the
+							articulation reminders you need to practise independently.
 						</p>
 					</div>
 				</div>

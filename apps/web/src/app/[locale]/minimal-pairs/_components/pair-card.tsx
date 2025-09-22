@@ -1,7 +1,7 @@
+import type { MinimalPairSet } from "shared-data";
+import { phonixUtils } from "shared-data";
 import { AudioControls } from "@/components/audio-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { phonixUtils } from "shared-data";
-import type { MinimalPairSet } from "shared-data";
 
 const { toPhonemic } = phonixUtils;
 

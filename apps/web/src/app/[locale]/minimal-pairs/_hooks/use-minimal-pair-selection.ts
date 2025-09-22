@@ -15,9 +15,8 @@ export function useMinimalPairSelection() {
 	const activeSet = useMemo(() => {
 		if (!contrastParam) return minimalPairSets[0];
 		return (
-			minimalPairSets.find(
-				(set) => set.slug === contrastParam || set.id === contrastParam,
-			) ?? minimalPairSets[0]
+			minimalPairSets.find((set) => set.slug === contrastParam || set.id === contrastParam) ??
+			minimalPairSets[0]
 		);
 	}, [contrastParam]);
 

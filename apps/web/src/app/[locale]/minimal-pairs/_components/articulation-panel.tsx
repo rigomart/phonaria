@@ -1,6 +1,6 @@
+import type { MinimalPairSet } from "shared-data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getManyPhonemes } from "@/lib/phonemes";
-import type { MinimalPairSet } from "shared-data";
 
 interface ArticulationPanelProps {
 	set: MinimalPairSet;
@@ -25,15 +25,17 @@ export function ArticulationPanel({ set }: ArticulationPanelProps) {
 						const phonemeData = phonemes.find((item) => item.symbol === highlight.phoneme);
 
 						return (
-							<Card key={highlight.phoneme} className="border border-dashed border-muted-foreground/30 bg-background">
+							<Card
+								key={highlight.phoneme}
+								className="border border-dashed border-muted-foreground/30 bg-background"
+							>
 								<CardHeader className="gap-2">
 									<CardTitle className="text-lg">
-										<span className="text-primary">/{highlight.phoneme}/</span> · {highlight.headline}
+										<span className="text-primary">/{highlight.phoneme}/</span> ·{" "}
+										{highlight.headline}
 									</CardTitle>
 									{phonemeData ? (
-										<CardDescription>
-											{phonemeData.description}
-										</CardDescription>
+										<CardDescription>{phonemeData.description}</CardDescription>
 									) : null}
 								</CardHeader>
 								<CardContent className="space-y-3 text-sm text-muted-foreground">
@@ -54,18 +56,19 @@ function PhonemeFeatureList({ phonemeSymbol }: { phonemeSymbol: string }) {
 
 	if (!phoneme) return null;
 
-	const coreDetails = phoneme.category === "consonant"
-		? [
-			`Voicing: ${phoneme.articulation.voicing}`,
-			`Place: ${phoneme.articulation.place}`,
-			`Manner: ${phoneme.articulation.manner}`,
-		]
-		: [
-			`Height: ${phoneme.articulation.height}`,
-			`Frontness: ${phoneme.articulation.frontness}`,
-			`Rounded: ${phoneme.articulation.roundness}`,
-			`Tenseness: ${phoneme.articulation.tenseness}`,
-		];
+	const coreDetails =
+		phoneme.category === "consonant"
+			? [
+					`Voicing: ${phoneme.articulation.voicing}`,
+					`Place: ${phoneme.articulation.place}`,
+					`Manner: ${phoneme.articulation.manner}`,
+				]
+			: [
+					`Height: ${phoneme.articulation.height}`,
+					`Frontness: ${phoneme.articulation.frontness}`,
+					`Rounded: ${phoneme.articulation.roundness}`,
+					`Tenseness: ${phoneme.articulation.tenseness}`,
+				];
 
 	return (
 		<ul className="grid gap-1 text-xs text-muted-foreground">

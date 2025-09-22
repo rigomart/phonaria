@@ -13,7 +13,8 @@ export const minimalPairSets: MinimalPairSet[] = [
 			"Keep the tongue high at the front for both vowels, but shorten and relax /ɪ/ while lengthening /iː/ with tighter lips.",
 		tags: ["front vowels", "length", "common ESL"],
 		difficulty: "foundational",
-		l1Notes: "Learners from Japanese, Spanish, and Portuguese backgrounds often merge these vowels due to absent length contrast.",
+		l1Notes:
+			"Learners from Japanese, Spanish, and Portuguese backgrounds often merge these vowels due to absent length contrast.",
 		articulationHighlights: [
 			{
 				phoneme: "ɪ",
@@ -92,7 +93,8 @@ export const minimalPairSets: MinimalPairSet[] = [
 			{
 				id: "lick-leek",
 				contrastLabel: "short vs. long vowel",
-				description: "A final voiceless consonant makes vowel length harder to hear—focus carefully.",
+				description:
+					"A final voiceless consonant makes vowel length harder to hear—focus carefully.",
 				practiceNote: "Keep /ɪ/ centered and avoid rounding.",
 				words: [
 					{
@@ -142,7 +144,8 @@ export const minimalPairSets: MinimalPairSet[] = [
 			"Drop the jaw further for /æ/, keeping the tongue low and front, while /ɛ/ stays mid-height and tighter.",
 		tags: ["front vowels", "jaw height"],
 		difficulty: "foundational",
-		l1Notes: "Speakers of Romance and East Asian languages often under-open the jaw, merging both vowels toward /e/.",
+		l1Notes:
+			"Speakers of Romance and East Asian languages often under-open the jaw, merging both vowels toward /e/.",
 		articulationHighlights: [
 			{
 				phoneme: "ɛ",
@@ -286,7 +289,8 @@ export const minimalPairSets: MinimalPairSet[] = [
 			{
 				id: "pull-pool",
 				contrastLabel: "short vs. long rounded vowel",
-				description: "Lip rounding stays similar—the difference lives in length and tongue tension.",
+				description:
+					"Lip rounding stays similar—the difference lives in length and tongue tension.",
 				practiceNote: "Keep /ʊ/ short and relaxed before the /l/.",
 				words: [
 					{
@@ -396,7 +400,8 @@ export const minimalPairSets: MinimalPairSet[] = [
 			"/θ/ pushes air between the tongue tip and teeth, while /s/ channels air along the alveolar ridge behind the teeth.",
 		tags: ["fricatives", "dental", "common ESL"],
 		difficulty: "foundational",
-		l1Notes: "Arabic, Spanish, and French speakers often replace /θ/ with /s/ because the non-native dental fricative feels unstable.",
+		l1Notes:
+			"Arabic, Spanish, and French speakers often replace /θ/ with /s/ because the non-native dental fricative feels unstable.",
 		articulationHighlights: [
 			{
 				phoneme: "θ",
@@ -414,7 +419,8 @@ export const minimalPairSets: MinimalPairSet[] = [
 				id: "think-sink",
 				contrastLabel: "dental vs. alveolar",
 				description: "Both start with voiceless fricatives—focus on tongue placement.",
-				practiceNote: "For /θ/, bite the tongue gently and blow; for /s/, keep it behind the teeth.",
+				practiceNote:
+					"For /θ/, bite the tongue gently and blow; for /s/, keep it behind the teeth.",
 				words: [
 					{
 						word: "think",
@@ -523,7 +529,8 @@ export const minimalPairSets: MinimalPairSet[] = [
 			"/ɹ/ curls the tongue tip without touching the ridge, while /l/ taps the ridge and lets air flow around the sides.",
 		tags: ["liquids", "retroflex", "common ESL"],
 		difficulty: "intermediate",
-		l1Notes: "Japanese and Korean speakers often substitute /l/ for /ɹ/ because their languages lack the retroflex approximant.",
+		l1Notes:
+			"Japanese and Korean speakers often substitute /l/ for /ɹ/ because their languages lack the retroflex approximant.",
 		articulationHighlights: [
 			{
 				phoneme: "ɹ",

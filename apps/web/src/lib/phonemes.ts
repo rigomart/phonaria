@@ -1,4 +1,4 @@
-import { consonants, vowels, type IpaPhoneme } from "shared-data";
+import { consonants, type IpaPhoneme, vowels } from "shared-data";
 
 const phonemeMap = new Map<string, IpaPhoneme>();
 [...consonants, ...vowels].forEach((phoneme) => {
