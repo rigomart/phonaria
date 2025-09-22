@@ -1,11 +1,11 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 const PHONEME_COUNT = 44;
 const VOWEL_COUNT = 12;
 const CONSONANT_COUNT = 32;
 
-export function HeroSection() {
-	const t = useTranslations("IpaChart.HeroSection");
+export async function HeroSection() {
+	const t = await getTranslations("IpaChart.HeroSection");
 
 	return (
 		<section className={"rounded-lg border bg-card p-6 text-center"}>
