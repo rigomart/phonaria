@@ -1,18 +1,25 @@
 # Phonix Documentation
 
-This directory contains comprehensive documentation for the Phonix project.
+This directory centralizes long-form product context, technical deep-dives, and feature briefs for the Phonix project. Use it alongside the package READMEs to understand the rationale behind major systems and upcoming enhancements.
 
-## Documents
+## Directory map
 
-- **[Project Overview](./project-overview.md)** - High-level product, UX, and technical architecture overview, including the dictionary lookup feature and pronunciation audio.
-- **[G2P Enhancement Implementation Plan](./g2p-enhancement-plan.md)** - Complete technical specification and implementation guide for improving the Grapheme-to-Phoneme system with homograph disambiguation and performance optimization.
+- [`project-overview.md`](./project-overview.md) – A guided tour of the learner experience, architecture, and data sources (including dictionary lookup and audio strategy).
+- [`enhancements/g2p-plan.md`](./enhancements/g2p-plan.md) – Three-phase roadmap for evolving the grapheme-to-phoneme pipeline with homograph disambiguation and performance wins.
+- [`features/minimal-pairs.md`](./features/minimal-pairs.md) – Product notes and UX considerations for future minimal pair drills inside the IPA chart experience.
 
-## Quick Overview
+Add new documents in logical subfolders (`enhancements/`, `features/`, etc.) to keep related work clustered and easily discoverable.
 
-The system focuses on phoneme-first learning with interactive charts, G2P transcription, and in-context dictionary lookup (with audio when available). The G2P Enhancement Plan outlines a three-phase approach to improve pronunciation accuracy and system performance:
+## When to read what
 
-1. **Phase 1: Foundation** - Optimize dictionary loading and support pronunciation variants
-2. **Phase 2: Intelligence** - Add context-aware homograph disambiguation 
-3. **Phase 3: Performance** - Implement hybrid architecture for optimal speed and bundle size
+| Scenario | Start here |
+| --- | --- |
+| New to the project | [`project-overview.md`](./project-overview.md) for context on goals, personas, and technical architecture. |
+| Working on the G2P service | [`enhancements/g2p-plan.md`](./enhancements/g2p-plan.md) to understand the current baseline and proposed improvements. |
+| Exploring future feature work | [`features/minimal-pairs.md`](./features/minimal-pairs.md) for the next UX milestone. |
 
-Each phase builds incrementally on the previous while maintaining full functionality and backward compatibility.
+## Contributing documentation
+
+1. Keep filenames descriptive and use kebab-case.
+2. Update this README with a short description when new docs are added so the directory remains discoverable.
+3. Cross-link to relevant code packages or other documents where it helps the reader connect the dots.

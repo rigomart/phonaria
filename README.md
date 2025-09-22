@@ -1,57 +1,70 @@
 # Phonix
 
-Phonix is a phoneme-first ESL pronunciation project focused on helping learners hear and produce the sounds of American English (General American). It emphasizes clear, approachable IPA-based learning and connects individual phonemes to real-word usage.
+Phonix is a phoneme-first ESL pronunciation project built around a modern Next.js application. Learners explore General American phonemes through interactive IPA charts, grapheme-to-phoneme (G2P) transcription, and in-context dictionary lookups with audio support.
 
-## Project Overview
+## Highlights
 
-This is a monorepo managed with `pnpm` workspaces, consisting of:
+- **Audio-first learning** – Interactive phoneme dialogs with minimal pairs, production tips, and optional ElevenLabs example audio.
+- **Fast G2P service** – A bundled CMU Pronouncing Dictionary powers instant transcription and phoneme highlighting.
+- **Dictionary integration** – Clickable transcriptions surface word definitions and available pronunciation audio in a side drawer.
+- **Shared phoneme metadata** – Typed phoneme data and articulation metadata are reusable across the app and helper tooling.
 
-- `apps/web`: The main Next.js application combining frontend and API for interactive phoneme learning.
-- `packages/shared-data`: Shared data models and utilities for phoneme information.
-- `packages/helper-scripts`: Collection of helper scripts including TTS audio generation and data processing utilities.
+## Monorepo layout
 
-## Current Status
+| Package | Description |
+| --- | --- |
+| [`apps/web`](apps/web/README.md) | Next.js App Router project containing the learner experience and API routes. |
+| [`packages/shared-data`](packages/shared-data/README.md) | Source of truth for phoneme metadata, articulation registries, and helper utilities. |
+| [`packages/helper-scripts`](packages/helper-scripts/README.md) | ElevenLabs audio generation and CMUDict tooling that feed the web app. |
+| [`docs`](docs/README.md) | Product briefs, technical design notes, and feature deep-dives. |
 
-We are currently implementing the Core MVP features, specifically focusing on phoneme awareness, transcription, and dictionary lookup. The project includes interactive IPA charts, phoneme dialogs with audio examples, a concise dictionary side panel (with pronunciation audio when available), and a comprehensive data model for 40 English phonemes.
-
-## Development
+## Getting started
 
 ### Prerequisites
 
-- [pnpm](https://pnpm.io/)
-- Node.js (version specified in `package.json` engines field)
+- [pnpm](https://pnpm.io/) 10+
+- Node.js 18.18 or newer (matching the Next.js support matrix)
 
-### Quick Start
+### Installation & local development
 
-1. **Install dependencies:**
-   ```bash
-   pnpm install
-   ```
+```bash
+pnpm install            # install workspace dependencies once
+pnpm -C apps/web dev    # launch the learner experience at http://localhost:3000
+```
 
-2. **Start the application:**
-   ```bash
-   pnpm -C apps/web dev
-   ```
+The root `pnpm dev` command delegates to Turborepo and will start every package with a `dev` script. Use package-specific commands (shown above) for a focused workflow.
 
-   The Next.js app will be available at `http://localhost:3000` with both the frontend and API running together.
+## Common workspace tasks
 
-3. **(Optional) Generate example audio:**
-   - Add your `ELEVENLABS_API_KEY` to `packages/helper-scripts/.env`.
-   - Run the generation script:
-     ```bash
-     pnpm -C packages/helper-scripts generate
-     ```
+```bash
+pnpm lint         # run Biome across packages
+pnpm check-types  # run TypeScript in --noEmit mode
+pnpm test         # execute Vitest suites (filtered via Turborepo)
+pnpm build        # build all packages for production
+```
 
-## Project Structure
+All commits should pass linting, type checking, and relevant tests.
 
-For detailed information about each package, see their respective README files:
+## Data & helper workflows
 
-- [Next.js Application](apps/web/README.md)
-- [Shared Data Package](packages/shared-data/README.md)
-- [Helper Scripts Package](packages/helper-scripts/README.md)
+Phonix ships with pre-generated assets but also supports regeneration when source data changes:
 
-## New: Dictionary Lookup
+- **CMU Pronouncing Dictionary** – Stored at `apps/web/data/cmudict.json` and bundled with the API for fast lookups. Regenerate with:
+  ```bash
+  CMUDICT_SRC_URL="<remote .dict file>" pnpm -C packages/helper-scripts cmudict-to-json
+  ```
+  Use `CMUDICT_JSON_PATH` to override the default output location.
+- **Example audio** – ElevenLabs powered `.mp3` files saved to `apps/web/public/audio/examples`. Provide an `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env` and run:
+  ```bash
+  pnpm -C packages/helper-scripts generate
+  ```
 
-- Click any word in G2P results to view definitions in a side panel.
-- Pronunciation audio plays when provided by the dictionary source.
-- API: `GET /api/dictionary?word=<word>` → `{ success, data }` or `404` with `{ error: "not_found" }`.
+Generated assets are committed so deployments remain deterministic.
+
+## Documentation
+
+Deeper product context, enhancement plans, and feature briefs live in the [`docs`](docs/README.md) directory. Start with the [project overview](docs/project-overview.md) for a guided tour and explore enhancement plans or feature notes as needed.
+
+## Licensing
+
+Phonix is distributed under the MIT License. The embedded CMU Pronouncing Dictionary follows its original [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).
