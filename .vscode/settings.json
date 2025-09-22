@@ -10,5 +10,6 @@
 		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"chat.tools.autoApprove": true,
-	"chat.agent.maxRequests": 100
+	"chat.agent.maxRequests": 100,
+	"chatgpt.openOnStartup": true
 }
