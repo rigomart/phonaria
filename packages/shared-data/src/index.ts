@@ -3,6 +3,7 @@ export {
 	consonantArticulationRegistry,
 	vowelArticulationRegistry,
 } from "./articulation";
+export { FEATURED_MINIMAL_PAIR_SET_ID, minimalPairSets } from "./minimal-pairs";
 export {
 	type CategoryConfig,
 	type CategoryInfo,
