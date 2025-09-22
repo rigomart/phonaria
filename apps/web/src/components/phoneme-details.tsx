@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createContext, useContext } from "react";
 import type {
@@ -8,8 +9,10 @@ import type {
 	VowelAllophone,
 	VowelPhoneme,
 } from "shared-data";
-import { phonixUtils } from "shared-data";
+import { minimalPairSets, phonixUtils } from "shared-data";
 import { AudioControls } from "@/components/audio-button";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "@/i18n/navigation";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
 
@@ -195,6 +198,58 @@ function PhonemeDetailsAllophones() {
 	);
 }
 
+function PhonemeDetailsMinimalPairs() {
+	const phoneme = usePhonemeDetails();
+	const matchingSets = minimalPairSets.filter((set) => set.focusPhonemes.includes(phoneme.symbol));
+	if (!matchingSets.length) return null;
+
+	return (
+		<section className="space-y-3">
+			<h3 className="text-sm font-medium">Differentiate with…</h3>
+			<p className="text-xs text-muted-foreground">
+				Launch a listening session that contrasts{" "}
+				<span className="font-semibold text-foreground">/{phoneme.symbol}/</span> with nearby
+				sounds.
+			</p>
+			<ul className="grid gap-3">
+				{matchingSets.slice(0, 3).map((set) => {
+					const partnerSymbol =
+						set.focusPhonemes.find((symbol) => symbol !== phoneme.symbol) ?? set.focusPhonemes[0];
+					const samplePair = set.pairs[0];
+					return (
+						<li
+							key={set.id}
+							className="rounded-lg border border-dashed border-muted-foreground/40 bg-muted/20 p-4"
+						>
+							<div className="flex items-center justify-between gap-3">
+								<div className="text-sm font-semibold">
+									/{phoneme.symbol}/ vs /{partnerSymbol}/
+								</div>
+								<Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+									{set.category}
+								</Badge>
+							</div>
+							<p className="mt-1 text-xs leading-relaxed text-muted-foreground">{set.summary}</p>
+							{samplePair ? (
+								<div className="mt-3 rounded-md border border-muted-foreground/30 bg-background/60 px-3 py-2 text-xs font-medium text-foreground">
+									{samplePair.words[0].word} · {samplePair.words[1].word}
+								</div>
+							) : null}
+							<Link
+								href={{ pathname: "/minimal-pairs", query: { contrast: set.slug } }}
+								className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80"
+							>
+								Open listening session
+								<ArrowRight className="h-3 w-3" />
+							</Link>
+						</li>
+					);
+				})}
+			</ul>
+		</section>
+	);
+}
+
 export {
 	PhonemeDetails,
 	PhonemeDetailsHeader,
@@ -203,4 +258,5 @@ export {
 	PhonemeDetailsGuide,
 	PhonemeDetailsExamples,
 	PhonemeDetailsAllophones,
+	PhonemeDetailsMinimalPairs,
 };

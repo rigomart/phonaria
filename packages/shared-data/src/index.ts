@@ -11,6 +11,7 @@ export {
 	PHONEME_CATEGORIES,
 } from "./category-config";
 export { consonants } from "./consonants";
+export { FEATURED_MINIMAL_PAIR_SET_ID, minimalPairSets } from "./minimal-pairs";
 export * from "./types";
 export * as phonixUtils from "./utils/index";
 export type { VowelFrontnessInfo, VowelHeightInfo } from "./vowel-axis";

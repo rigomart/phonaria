@@ -17,6 +17,9 @@ export function Header() {
 							<Link href="/ipa-chart" className="text-sm hover:text-primary transition-colors">
 								IPA Chart
 							</Link>
+							<Link href="/minimal-pairs" className="text-sm hover:text-primary transition-colors">
+								Minimal Pairs
+							</Link>
 						</nav>
 					</div>
 					<ModeToggle />

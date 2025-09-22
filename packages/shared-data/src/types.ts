@@ -3,6 +3,48 @@ export interface ExampleWord {
 	phonemic: string;
 }
 
+export type MinimalPairCategory = "vowel" | "consonant";
+
+export interface MinimalPairWordEntry {
+	word: string;
+	phonemic: string;
+	graphemeHint?: string;
+	audioUrl?: string;
+	mouthHint?: string;
+	pronunciationTip?: string;
+	contextSentence?: string;
+}
+
+export interface MinimalPairExample {
+	id: string;
+	words: [MinimalPairWordEntry, MinimalPairWordEntry];
+	contrastLabel: string;
+	description?: string;
+	practiceNote?: string;
+}
+
+export interface MinimalPairArticulationHighlight {
+	phoneme: string;
+	headline: string;
+	details: string;
+	illustrationUrl?: string;
+}
+
+export interface MinimalPairSet {
+	id: string;
+	slug: string;
+	title: string;
+	category: MinimalPairCategory;
+	focusPhonemes: [string, string];
+	summary: string;
+	description?: string;
+	tags: string[];
+	difficulty: "foundational" | "intermediate" | "advanced";
+	l1Notes?: string;
+	articulationHighlights: MinimalPairArticulationHighlight[];
+	pairs: MinimalPairExample[];
+}
+
 export interface ConsonantArticulation {
 	place:
 		| "bilabial"
