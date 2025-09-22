@@ -30,7 +30,7 @@ export function Header() {
 								</Badge>
 							</span>
 						</Link>
-						
+
 						<nav className="hidden items-center gap-1 md:flex">
 							{navigationLinks.map((link) => (
 								<Link
@@ -44,8 +44,7 @@ export function Header() {
 						</nav>
 					</div>
 
-						<ModeToggle />
-		
+					<ModeToggle />
 				</div>
 				<nav className="mt-3 flex gap-2 overflow-x-auto md:hidden">
 					{navigationLinks.map((link) => (
