@@ -47,7 +47,7 @@ class CMUDict {
 		for (const variant of variants) {
 			const sanitized = typeof variant === "string" ? variant.trim() : "";
 			if (!sanitized) continue;
-			const tokens = sanitized.split(/\s+/);
+			const tokens = sanitized.split(" ");
 			const ipa = convertArpabetToIPA(tokens);
 			if (ipa.length === 0) continue;
 			ipaVariants.push(ipa);

@@ -119,6 +119,27 @@ const CONSONANT_FALLBACK: Record<string, string> = {
 	EN: "n̩",
 };
 
+const ONSET_SECOND_SET = new Set(["R", "L", "W", "Y"]);
+const ONSET_SPTK_SET = new Set(["P", "T", "K"]);
+const ONSET_FIRST_SET = new Set([
+	"P",
+	"B",
+	"T",
+	"D",
+	"K",
+	"G",
+	"F",
+	"V",
+	"TH",
+	"S",
+	"SH",
+	"CH",
+	"JH",
+	"HH",
+	"M",
+	"N",
+]);
+
 type StressLevel = 0 | 1 | 2;
 type PhonemeType = "vowel" | "consonant";
 
@@ -156,32 +177,11 @@ function findOnsetStartIndex(tokens: ArpaToken[], vowelIdx: number): number {
 	const available = vowelIdx - clusterStart;
 	if (available <= 0) return vowelIdx;
 
-	const secondSet = new Set(["R", "L", "W", "Y"]);
-	const sptk = new Set(["P", "T", "K"]);
-	const firstSet = new Set([
-		"P",
-		"B",
-		"T",
-		"D",
-		"K",
-		"G",
-		"F",
-		"V",
-		"TH",
-		"S",
-		"SH",
-		"CH",
-		"JH",
-		"HH",
-		"M",
-		"N",
-	]);
-
 	if (available >= 3) {
 		const a = tokens[vowelIdx - 3]?.base;
 		const b = tokens[vowelIdx - 2]?.base;
 		const c = tokens[vowelIdx - 1]?.base;
-		if (a === "S" && sptk.has(b) && secondSet.has(c)) {
+		if (a === "S" && ONSET_SPTK_SET.has(b) && ONSET_SECOND_SET.has(c)) {
 			return vowelIdx - 3;
 		}
 	}
@@ -189,10 +189,10 @@ function findOnsetStartIndex(tokens: ArpaToken[], vowelIdx: number): number {
 	if (available >= 2) {
 		const a = tokens[vowelIdx - 2]?.base;
 		const b = tokens[vowelIdx - 1]?.base;
-		if (a === "S" && sptk.has(b)) {
+		if (a === "S" && ONSET_SPTK_SET.has(b)) {
 			return vowelIdx - 2;
 		}
-		if (firstSet.has(a) && secondSet.has(b)) {
+		if (ONSET_FIRST_SET.has(a) && ONSET_SECOND_SET.has(b)) {
 			return vowelIdx - 2;
 		}
 	}
@@ -201,12 +201,21 @@ function findOnsetStartIndex(tokens: ArpaToken[], vowelIdx: number): number {
 }
 
 function mapArpaToIpa(raw: string): string {
-	return (
-		ARPABET_TO_IPA[raw] ||
-		ARPABET_TO_IPA[raw.replace(/[0-2]$/, "")] ||
-		CONSONANT_FALLBACK[raw] ||
-		raw
-	);
+	const direct = ARPABET_TO_IPA[raw];
+	if (direct) {
+		return direct;
+	}
+
+	const lastCharCode = raw.charCodeAt(raw.length - 1);
+	if (lastCharCode >= 48 && lastCharCode <= 50) {
+		const withoutStress = raw.slice(0, -1);
+		const stressless = ARPABET_TO_IPA[withoutStress];
+		if (stressless) {
+			return stressless;
+		}
+	}
+
+	return CONSONANT_FALLBACK[raw] || raw;
 }
 
 export function convertArpabetToIPA(arpaPhonemes: string[]): string[] {
