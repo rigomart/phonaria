@@ -190,7 +190,8 @@ export const vowels: VowelPhoneme[] = [
 			{ word: "work", phonemic: "wɝk" },
 		],
 		description: "mid central stressed r-colored vowel",
-		guide: "Raise the tongue toward the mid-central space and curl slightly for the American r coloring.",
+		guide:
+			"Raise the tongue toward the mid-central space and curl slightly for the American r coloring.",
 	},
 	{
 		symbol: "ɚ",
@@ -208,7 +209,8 @@ export const vowels: VowelPhoneme[] = [
 			{ word: "after", phonemic: "æftɚ" },
 		],
 		description: "mid central unstressed r-colored vowel",
-		guide: "Relax the tongue in mid-central position while adding a light r coloring for unstressed syllables.",
+		guide:
+			"Relax the tongue in mid-central position while adding a light r coloring for unstressed syllables.",
 	},
 
 	// Diphthongs

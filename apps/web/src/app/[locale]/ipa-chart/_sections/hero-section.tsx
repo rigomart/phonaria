@@ -8,7 +8,7 @@ export async function HeroSection() {
 	const t = await getTranslations("IpaChart.HeroSection");
 
 	return (
-		<section className={"rounded-lg border bg-card p-6 text-center"}>
+		<section className="rounded-lg border bg-card p-6 text-center">
 			<div className="space-y-3">
 				<h1 className="text-2xl font-semibold text-foreground">{t("title")}</h1>
 				<p className="text-lg text-muted-foreground">{t("short")}</p>

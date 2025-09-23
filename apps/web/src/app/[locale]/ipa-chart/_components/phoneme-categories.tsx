@@ -1,10 +1,12 @@
 "use client";
 
-import type { IpaPhoneme } from "shared-data";
+import { ChevronDownIcon } from "lucide-react";
+import { useState } from "react";
+import type { CategoryInfo, IpaPhoneme } from "shared-data";
+import { cn } from "@/lib/utils";
 import { getAvailableCategories, getCategoryOrderMap } from "../_lib/category-config";
 import { filterPhonemesByCategory, sortPhonemesByCategory } from "../_lib/phoneme-filters";
-import { useIpaChartStore } from "../_store/ipa-chart-store";
-import { CategorySection } from "./category-section";
+import { PhonemeCard } from "./phoneme-card";
 
 interface PhonemeCategoriesProps<T extends IpaPhoneme> {
 	phonemes: T[];
@@ -49,44 +51,64 @@ export function PhonemeCategories<T extends IpaPhoneme>({
 	);
 }
 
+interface CategorySectionProps<T extends IpaPhoneme> {
+	category: CategoryInfo;
+	phonemes: T[];
+	defaultOpen?: boolean;
+	showCount?: boolean;
+}
+
 /**
- * Compact variant for smaller spaces or embedded contexts
+ * Enhanced category section component that groups phonemes by type.
+ * Features collapsible sections, phoneme counts, and responsive grid layout.
  */
-export function PhonemeCategoriesCompact<T extends IpaPhoneme>({
+export function CategorySection<T extends IpaPhoneme>({
+	category,
 	phonemes,
-	type,
-}: Omit<PhonemeCategoriesProps<T>, "defaultOpenCategories" | "showCategoryCounts">) {
-	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
-	const availableCategories = getAvailableCategories(phonemes, type);
-	const categoryOrder = getCategoryOrderMap(type);
+	defaultOpen = true,
+	showCount = true,
+}: CategorySectionProps<T>) {
+	const [isOpen, setIsOpen] = useState(defaultOpen);
+
+	if (phonemes.length === 0) {
+		return null;
+	}
 
 	return (
 		<div className="space-y-4">
-			{availableCategories.map((category) => {
-				const categoryPhonemes = filterPhonemesByCategory(phonemes, category.key);
-				const sortedPhonemes = sortPhonemesByCategory(categoryPhonemes, categoryOrder);
-
-				return (
-					<div key={category.key} className="space-y-2">
-						<div className="flex items-center gap-2">
-							<h4 className="text-sm font-medium">{category.label}</h4>
-							<span className="text-xs text-muted-foreground">({sortedPhonemes.length})</span>
-						</div>
-						<div className="grid grid-cols-[repeat(auto-fill,minmax(3rem,1fr))] gap-2">
-							{sortedPhonemes.map((phoneme) => (
-								<button
-									key={phoneme.symbol}
-									type="button"
-									onClick={() => selectPhoneme(phoneme)}
-									className="aspect-square flex items-center justify-center rounded border hover:border-primary transition-colors text-sm font-semibold"
-								>
-									{phoneme.symbol}
-								</button>
-							))}
-						</div>
+			<button
+				type="button"
+				onClick={() => setIsOpen(!isOpen)}
+				className="group w-full flex items-center justify-between rounded-lg border bg-card/50 p-4 text-left hover:bg-card/80 transition-colors"
+			>
+				<div className="space-y-1">
+					<div className="flex items-center gap-3">
+						<h3 className="text-lg font-semibold text-foreground">{category.label}</h3>
+						{showCount && (
+							<span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+								{phonemes.length}
+							</span>
+						)}
 					</div>
-				);
-			})}
+					<p className="text-sm text-muted-foreground max-w-2xl">{category.description}</p>
+				</div>
+				<ChevronDownIcon
+					className={cn(
+						"h-5 w-5 text-muted-foreground transition-transform duration-200",
+						isOpen && "rotate-180",
+					)}
+				/>
+			</button>
+
+			{isOpen && (
+				<div className="space-y-0 animate-in slide-in-from-top-2 duration-200">
+					<div className="flex flex-wrap gap-3 max-w-6xl">
+						{phonemes.map((phoneme) => (
+							<PhonemeCard key={phoneme.symbol} phoneme={phoneme} />
+						))}
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }
