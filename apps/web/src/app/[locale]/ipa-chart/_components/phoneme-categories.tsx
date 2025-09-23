@@ -1,9 +1,6 @@
 "use client";
 
-import { ChevronDownIcon } from "lucide-react";
-import { useState } from "react";
 import type { CategoryInfo, IpaPhoneme } from "shared-data";
-import { cn } from "@/lib/utils";
 import { getAvailableCategories, getCategoryOrderMap } from "../_lib/category-config";
 import { filterPhonemesByCategory, sortPhonemesByCategory } from "../_lib/phoneme-filters";
 import { PhonemeCard } from "./phoneme-card";
@@ -11,18 +8,15 @@ import { PhonemeCard } from "./phoneme-card";
 interface PhonemeCategoriesProps<T extends IpaPhoneme> {
 	phonemes: T[];
 	type: "consonant" | "vowel";
-	defaultOpenCategories?: boolean;
 	showCategoryCounts?: boolean;
 }
 
 /**
- * Enhanced main container component that organizes phonemes by categories.
- * Provides collapsible categories, search filtering, and responsive layout.
+ * Main container component that organizes phonemes by categories.
  */
 export function PhonemeCategories<T extends IpaPhoneme>({
 	phonemes,
 	type,
-	defaultOpenCategories = true,
 	showCategoryCounts = true,
 }: PhonemeCategoriesProps<T>) {
 	// Get available categories
@@ -32,7 +26,7 @@ export function PhonemeCategories<T extends IpaPhoneme>({
 	const categoryOrder = getCategoryOrderMap(type);
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-5">
 			{availableCategories.map((category) => {
 				const categoryPhonemes = filterPhonemesByCategory(phonemes, category.key);
 				const sortedPhonemes = sortPhonemesByCategory(categoryPhonemes, categoryOrder);
@@ -42,7 +36,6 @@ export function PhonemeCategories<T extends IpaPhoneme>({
 						key={category.key}
 						category={category}
 						phonemes={sortedPhonemes}
-						defaultOpen={defaultOpenCategories}
 						showCount={showCategoryCounts}
 					/>
 				);
@@ -54,61 +47,41 @@ export function PhonemeCategories<T extends IpaPhoneme>({
 interface CategorySectionProps<T extends IpaPhoneme> {
 	category: CategoryInfo;
 	phonemes: T[];
-	defaultOpen?: boolean;
 	showCount?: boolean;
 }
 
 /**
- * Enhanced category section component that groups phonemes by type.
- * Features collapsible sections, phoneme counts, and responsive grid layout.
+ * Category section component that groups phonemes by type using a compact layout.
  */
 export function CategorySection<T extends IpaPhoneme>({
 	category,
 	phonemes,
-	defaultOpen = true,
 	showCount = true,
 }: CategorySectionProps<T>) {
-	const [isOpen, setIsOpen] = useState(defaultOpen);
-
 	if (phonemes.length === 0) {
 		return null;
 	}
 
 	return (
-		<div className="space-y-4">
-			<button
-				type="button"
-				onClick={() => setIsOpen(!isOpen)}
-				className="group w-full flex items-center justify-between rounded-lg border bg-card/50 p-4 text-left hover:bg-card/80 transition-colors"
-			>
+		<section className="space-y-3">
+			<header className="flex items-start justify-between border-b border-border/60 pb-2">
 				<div className="space-y-1">
-					<div className="flex items-center gap-3">
-						<h3 className="text-lg font-semibold text-foreground">{category.label}</h3>
-						{showCount && (
-							<span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-								{phonemes.length}
-							</span>
-						)}
-					</div>
-					<p className="text-sm text-muted-foreground max-w-2xl">{category.description}</p>
+					<h3 className="text-sm font-semibold text-foreground tracking-tight">{category.label}</h3>
+					<p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+						{category.description}
+					</p>
 				</div>
-				<ChevronDownIcon
-					className={cn(
-						"h-5 w-5 text-muted-foreground transition-transform duration-200",
-						isOpen && "rotate-180",
-					)}
-				/>
-			</button>
-
-			{isOpen && (
-				<div className="space-y-0 animate-in slide-in-from-top-2 duration-200">
-					<div className="flex flex-wrap gap-3 max-w-6xl">
-						{phonemes.map((phoneme) => (
-							<PhonemeCard key={phoneme.symbol} phoneme={phoneme} />
-						))}
-					</div>
-				</div>
-			)}
-		</div>
+				{showCount && (
+					<span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-[3px] text-[10px] font-semibold uppercase tracking-wide text-primary">
+						{phonemes.length}
+					</span>
+				)}
+			</header>
+			<div className="grid grid-cols-[repeat(auto-fill,minmax(3.25rem,max-content))] justify-start gap-2 sm:gap-2.5">
+				{phonemes.map((phoneme) => (
+					<PhonemeCard key={phoneme.symbol} phoneme={phoneme} />
+				))}
+			</div>
+		</section>
 	);
 }

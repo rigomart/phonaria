@@ -27,7 +27,7 @@ export function PhonemeDialog() {
 							<DialogTitle className="sr-only">{`Phoneme /${selectedPhoneme.symbol}/`}</DialogTitle>
 						</DialogHeader>
 						<PhonemeDetails phoneme={selectedPhoneme}>
-							<div className="space-y-8">
+							<div className="space-y-6">
 								<PhonemeDetailsHeader />
 								<PhonemeDetailsSagittalView />
 								<PhonemeDetailsArticulation />

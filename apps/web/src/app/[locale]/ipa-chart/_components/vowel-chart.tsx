@@ -69,12 +69,12 @@ export function VowelChart({ vowels }: VowelChartProps) {
 
 	return (
 		<div className="overflow-x-auto">
-			<div className="inline-grid w-full min-w-max gap-2 grid-cols-[auto_repeat(5,minmax(5rem,1fr))]">
+			<div className="inline-grid w-full min-w-max gap-1.5 grid-cols-[auto_repeat(5,minmax(4.25rem,1fr))]">
 				<div />
 				{FRONTNESS_ORDER.map((frontness) => (
 					<div
 						key={frontness}
-						className="px-2 text-center text-sm font-medium uppercase tracking-wide text-muted-foreground"
+						className="px-1.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
 					>
 						{FRONTNESS_LABELS[frontness]}
 					</div>
@@ -82,7 +82,7 @@ export function VowelChart({ vowels }: VowelChartProps) {
 
 				{HEIGHT_ORDER.map((height) => (
 					<Fragment key={height}>
-						<div className="flex items-center justify-end pr-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
+						<div className="flex items-center justify-end pr-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 							{HEIGHT_LABELS[height]}
 						</div>
 						{FRONTNESS_ORDER.map((frontness) => {
@@ -93,8 +93,8 @@ export function VowelChart({ vowels }: VowelChartProps) {
 								<div
 									key={frontness}
 									className={cn(
-										"flex min-h-[3.75rem] flex-wrap items-center justify-center gap-2 rounded-lg border border-dashed border-border/60 bg-card/60 p-2",
-										phonemes.length === 0 && "opacity-40",
+										"flex min-h-[3.25rem] flex-wrap items-center justify-center gap-1.5 rounded-md border border-border/60 bg-card/40 px-2 py-1.5",
+										phonemes.length === 0 && "opacity-45",
 									)}
 								>
 									{phonemes.map((phoneme) => (
@@ -128,11 +128,11 @@ export function VowelSymbolButton({ phoneme, onSelect }: VowelSymbolButtonProps)
 			type="button"
 			onClick={handleClick}
 			className={cn(
-				"flex h-10 min-w-[2.5rem] items-center justify-center border text-lg font-semibold transition",
-				"hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-				isRounded
-					? "rounded-full border-primary/40 bg-secondary/30"
-					: "rounded-md border-border bg-background",
+				"grid place-items-center text-center",
+				"min-w-[3.25rem] min-h-[3.25rem] px-2 py-2 rounded-md border",
+				"text-lg sm:text-xl font-semibold leading-none tracking-tight transition",
+				"hover:border-primary hover:bg-primary/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+				isRounded ? "border-primary/40 bg-secondary/30" : "border-border bg-background",
 			)}
 			aria-label={`Vowel ${phoneme.symbol}`}
 		>
