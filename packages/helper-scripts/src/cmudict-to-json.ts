@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { config } from "dotenv";
+import { normalizeCmuWord } from "shared-data";
 
 config();
 
@@ -19,13 +20,6 @@ if (!cmudictUrl) {
 const safeCmudictUrl: string = cmudictUrl;
 
 /**
- * Normalize CMUdict word format (remove parentheses but preserve case)
- */
-function normalizeCmuWord(word: string): string {
-	return word.replace(/\([^)]*\)/g, "");
-}
-
-/**
  * Ensure output directory exists
  */
 function ensureOutputDirectory(): void {
@@ -40,11 +34,12 @@ function ensureOutputDirectory(): void {
  * Parse CMUDict content and convert to compact JSON format
  */
 function parseCmudict(content: string): CompactCmudict {
-	const dictMap = new Map<string, string[]>();
+	const dictMap = new Map<string, Set<string>>();
 	const lines = content.split(/\r?\n/);
 
 	let processed = 0;
 	let skipped = 0;
+	let deduplicatedVariants = 0;
 
 	for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
 		const rawLine = lines[lineIndex];
@@ -59,33 +54,50 @@ function parseCmudict(content: string): CompactCmudict {
 			continue;
 		}
 
-		const word = normalizeCmuWord(match[1]);
+		const rawWord = match[1];
 		const arpaPhonemes = match[2].trim();
 
 		// Skip entries with empty phonemes
 		if (!arpaPhonemes) {
-			console.warn(`Warning: Empty phonemes for word '${word}' on line ${lineIndex + 1}: ${line}`);
+			console.warn(
+				`Warning: Empty phonemes for word '${rawWord}' on line ${lineIndex + 1}: ${line}`,
+			);
 			skipped++;
 			continue;
 		}
 
-		const existing = dictMap.get(word);
+		const normalizedWord = normalizeCmuWord(rawWord);
+		if (!normalizedWord) {
+			skipped++;
+			continue;
+		}
 
-		if (existing) {
-			existing.push(arpaPhonemes);
+		const sanitizedVariant = arpaPhonemes.replace(/\s+/g, " ").trim();
+		const existingVariants = dictMap.get(normalizedWord);
+		if (existingVariants) {
+			const sizeBefore = existingVariants.size;
+			existingVariants.add(sanitizedVariant);
+			if (existingVariants.size === sizeBefore) {
+				deduplicatedVariants++;
+			}
 		} else {
-			dictMap.set(word, [arpaPhonemes]);
+			dictMap.set(normalizedWord, new Set([sanitizedVariant]));
 		}
 
 		processed++;
 	}
 
 	console.log(`Parsed ${processed} entries, skipped ${skipped} invalid lines`);
+	console.log(`Removed ${deduplicatedVariants} duplicate ARPAbet variants`);
 
 	// Convert Map back to object for return type compatibility
 	const result: CompactCmudict = {};
-	for (const [key, value] of dictMap.entries()) {
-		result[key] = value;
+	for (const [word, variants] of dictMap.entries()) {
+		if (variants.size === 0) {
+			continue;
+		}
+
+		result[word] = Array.from(variants);
 	}
 
 	return result;

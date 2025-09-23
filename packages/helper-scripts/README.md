@@ -36,7 +36,7 @@ The script skips words that already have audio. To experiment with a smaller bat
 
 ## CMUDict JSON workflow
 
-`cmudict-to-json.ts` downloads the raw CMU Pronouncing Dictionary, normalizes entries, and writes a compact JSON map used by the web API.
+`cmudict-to-json.ts` downloads the raw CMU Pronouncing Dictionary, normalizes entries, and writes a compact JSON map of uppercase words to sanitized ARPAbet variants used by the web API.
 
 1. Configure `CMUDICT_SRC_URL` (see `.env` example above).
 2. Optionally set `CMUDICT_JSON_PATH`; otherwise the output defaults to `apps/web/data/cmudict.json`.
