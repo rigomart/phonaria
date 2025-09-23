@@ -19,6 +19,8 @@ export function PhonemeCard<T extends IpaPhoneme>({ phoneme, className }: Phonem
 
 	// Generate tooltip content
 	const tooltipContent = `${toPhonemic(phoneme.symbol)} ${phoneme.description}`;
+	const primaryExample = phoneme.examples[0];
+	const ariaLabel = primaryExample ? `${phoneme.symbol} — ${primaryExample.word}` : phoneme.symbol;
 
 	return (
 		<Tooltip>
@@ -26,31 +28,31 @@ export function PhonemeCard<T extends IpaPhoneme>({ phoneme, className }: Phonem
 				<button
 					type="button"
 					onClick={handleClick}
-					aria-label={phoneme.symbol}
+					aria-label={ariaLabel}
 					className={cn(
-						"group relative flex flex-col items-center justify-center",
-						"min-w-[4.5rem] min-h-[4.5rem] p-3 rounded-lg border",
-						"hover:border-primary hover:shadow-sm transition-all duration-200",
+						"group relative grid place-items-center text-center",
+						"min-w-[3.25rem] min-h-[3.25rem] px-2 py-2 rounded-md border",
+						"hover:border-primary hover:bg-primary/5 transition-all duration-150",
 						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-						"active:scale-95",
+						"active:scale-[0.98]",
 						getPhonemeCardVariant(phoneme),
 						className,
 					)}
 				>
 					{/* Main phoneme symbol */}
-					<div className="text-xl sm:text-2xl font-semibold leading-none mb-1 relative z-10">
+					<div className="text-lg sm:text-xl font-semibold leading-none tracking-tight">
 						{phoneme.symbol}
-					</div>
-
-					{/* Example word */}
-					<div className="text-xs text-center text-muted-foreground leading-tight">
-						{phoneme.examples[0]?.word || ""}
 					</div>
 				</button>
 			</TooltipTrigger>
 			<TooltipContent side="top" align="center">
 				<div className="max-w-[14rem] text-pretty text-xs leading-snug">
 					<div className="font-medium">{tooltipContent}</div>
+					{primaryExample && (
+						<div className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+							{primaryExample.word}
+						</div>
+					)}
 					<div className="text-[10px] text-muted-foreground mt-1">{t("tooltipHint")}</div>
 				</div>
 			</TooltipContent>

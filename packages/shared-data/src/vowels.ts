@@ -173,7 +173,7 @@ export const vowels: VowelPhoneme[] = [
 		guide: "Tongue high and back, lips pursed.",
 	},
 
-	// R-colored vowel (Rhotic)
+	// R-colored vowels (Rhotic)
 	{
 		symbol: "ɝ",
 		category: "vowel",
@@ -189,19 +189,28 @@ export const vowels: VowelPhoneme[] = [
 			{ word: "first", phonemic: "fɝst" },
 			{ word: "work", phonemic: "wɝk" },
 		],
-		description: "mid central r-colored vowel",
-		guide: "Tongue mid and central with r-like coloring.",
-		allophones: [
-			{
-				variant: "ɚ",
-				description: "Unstressed version in syllables.",
-				examples: [
-					{ word: "better", phonemic: "bɛtɚ" },
-					{ word: "after", phonemic: "æftɚ" },
-				],
-				context: "Unstressed syllables",
-			},
+		description: "mid central stressed r-colored vowel",
+		guide:
+			"Raise the tongue toward the mid-central space and curl slightly for the American r coloring.",
+	},
+	{
+		symbol: "ɚ",
+		category: "vowel",
+		type: "rhotic",
+		articulation: {
+			height: "mid",
+			frontness: "central",
+			roundness: "unrounded",
+			tenseness: "lax",
+			rhoticity: "rhotic",
+		},
+		examples: [
+			{ word: "better", phonemic: "bɛtɚ" },
+			{ word: "after", phonemic: "æftɚ" },
 		],
+		description: "mid central unstressed r-colored vowel",
+		guide:
+			"Relax the tongue in mid-central position while adding a light r coloring for unstressed syllables.",
 	},
 
 	// Diphthongs

@@ -13,7 +13,7 @@ export function NavTabsSection() {
 	const setActiveSection = useIpaChartStore((s) => s.setActiveSection);
 
 	return (
-		<div className="flex justify-center">
+		<div className="flex justify-center w-full">
 			<Tabs
 				value={activeSection}
 				onValueChange={(v) => setActiveSection(v as IpaSection)}

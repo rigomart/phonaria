@@ -10,7 +10,7 @@ export function ConsonantsSection() {
 				<h2 className="text-xl font-medium">{t("title")}</h2>
 				<p className="text-sm text-muted-foreground">{t("description")}</p>
 			</div>
-			<PhonemeCategories phonemes={consonants} type="consonant" defaultOpenCategories={true} />
+			<PhonemeCategories phonemes={consonants} type="consonant" />
 		</div>
 	);
 }
