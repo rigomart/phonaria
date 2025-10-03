@@ -13,12 +13,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useG2PStore } from "../_store/g2p-store";
 
-export function PhonemeCompactBlock() {
+export function PhonemeInspector() {
 	const { selectedPhoneme } = useG2PStore();
 
 	if (!selectedPhoneme) {
 		return (
-			<Card className="h-full">
+			<Card className="h-full rounded-none">
 				<CardHeader className="py-3">
 					<div className="text-xs font-medium">Phoneme</div>
 				</CardHeader>
@@ -40,12 +40,12 @@ export function PhonemeCompactBlock() {
 
 	return (
 		<PhonemeDetails phoneme={selectedPhoneme}>
-			<Card className="h-full flex flex-col">
-				<CardHeader>
-					<PhonemeDetailsHeader />
-				</CardHeader>
-				<CardContent className="flex-1min-h-0">
-					<ScrollArea className="h-full">
+			<ScrollArea className="h-full">
+				<Card className="h-full flex flex-col rounded-none">
+					<CardHeader>
+						<PhonemeDetailsHeader />
+					</CardHeader>
+					<CardContent className="flex-1min-h-0">
 						<div className="space-y-6">
 							<PhonemeDetailsSagittalView />
 							<PhonemeDetailsArticulation />
@@ -53,9 +53,9 @@ export function PhonemeCompactBlock() {
 							<PhonemeDetailsGuide />
 							<PhonemeDetailsAllophones />
 						</div>
-					</ScrollArea>
-				</CardContent>
-			</Card>
+					</CardContent>
+				</Card>
+			</ScrollArea>
 		</PhonemeDetails>
 	);
 }
