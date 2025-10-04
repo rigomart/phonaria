@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 /**
  * Utility function to detect if the device is likely mobile/touch-based
