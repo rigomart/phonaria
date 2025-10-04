@@ -44,11 +44,8 @@ export function G2PInputForm({
 
 	return (
 		<div className="w-full flex flex-col gap-2">
-			{/* Start typing indicator */}
 			{!isMobileDevice && (
-				<div className="text-sm text-muted-foreground animate-pulse">
-					Start typing anywhere on this page to begin transcribing
-				</div>
+				<div className="text-xs text-muted-foreground/40">Type anywhere to begin transcribing</div>
 			)}
 
 			{/* Compact Input Section */}
