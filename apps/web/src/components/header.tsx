@@ -5,6 +5,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { Badge } from "@/components/ui/badge";
 
 const navigationLinks = [
+	{ href: "/overview", label: "Overview" },
 	{ href: "/", label: "G2P Tool" },
 	{ href: "/ipa-chart", label: "IPA Chart" },
 	{ href: "/minimal-pairs", label: "Minimal Pairs" },
