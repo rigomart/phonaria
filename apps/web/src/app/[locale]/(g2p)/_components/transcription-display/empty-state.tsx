@@ -7,20 +7,14 @@ export function EmptyState() {
 	const transcribeMutation = useTranscribe();
 
 	// Mix of simple examples and stress pattern examples
-	const examples = [
-		"hello world",
-		"pronunciation",
-		"Judge the rhythm",
-		"She chose well",
-		"Through thick fog",
-	];
+	const examples = ["hello world", "Judge the rhythm", "She chose well", "Through thick fog"];
 
 	const handleExampleClick = (example: string) => {
 		transcribeMutation.mutate(example);
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-8 px-4">
+		<div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-8 p-4">
 			<div className="space-y-3 max-w-lg">
 				<h2 className="text-lg font-medium text-foreground">
 					Enter text to see phonetic transcription

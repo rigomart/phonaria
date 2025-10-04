@@ -17,11 +17,6 @@ export default function Index() {
 
 						{/* Transcription Results or Empty State */}
 						<TranscriptionDisplay />
-
-						{/* Instructional Tip */}
-						<div className="text-xs text-muted-foreground text-center mt-4">
-							Click any phoneme to view details
-						</div>
 					</div>
 
 					{/* Right Column: Stacked summary blocks */}
