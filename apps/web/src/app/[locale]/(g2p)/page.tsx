@@ -1,4 +1,3 @@
-import { ExamplesSection } from "./_components/examples-section";
 import { G2PInputForm } from "./_components/g2p-input-form";
 import { PhonemeInspector } from "./_components/phoneme-inspector";
 import { TranscriptionDisplay } from "./_components/transcription-display";
@@ -10,22 +9,14 @@ export default function Index() {
 			<div className="container mx-auto h-full min-h-0">
 				<div className="grid grid-cols-1 lg:grid-cols-12 h-full min-h-0 border">
 					{/* Main Content Area */}
-					<div className="lg:col-span-7 space-y-6 min-h-0 overflow-y-auto">
+					<div className="lg:col-span-7 min-h-0 overflow-y-auto">
 						{/* Input Section */}
-						<div className="space-y-2 border-b p-6">
+						<div className="border-b p-6">
 							<G2PInputForm />
-
-							{/* Quick Examples */}
-							<ExamplesSection />
 						</div>
 
 						{/* Transcription Results or Empty State */}
 						<TranscriptionDisplay />
-
-						{/* Instructional Tip */}
-						<div className="text-xs text-muted-foreground text-center">
-							Click any phoneme to view details
-						</div>
 					</div>
 
 					{/* Right Column: Stacked summary blocks */}

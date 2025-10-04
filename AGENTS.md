@@ -35,3 +35,15 @@ Phonix helps ESL learners master General American phonemes through clickable IPA
 ## Environment & Configuration Tips
 - Never commit secrets. Keep runtime credentials in `apps/web/.env.local` and ElevenLabs keys in `packages/helper-scripts/.env`.
 - When updating CMUDict assets, regenerate via helper scripts and commit the JSON under `apps/web/data` so deployments stay deterministic.
+
+## Design & UX Patterns
+
+Core Design Philosophy: Functional Over Marketing:
+- Avoid hero sections, gradients, and marketing copy in favor of functional design
+- Explain what tools do, not what benefits they provide
+- Prefer subtle, functional design over decorative elements
+
+Progressive Disclosure:
+- Show examples and guidance only when needed (empty state)
+- Remove help elements once users engage with content
+- Reduce cognitive load. Single source of truth for each functionality

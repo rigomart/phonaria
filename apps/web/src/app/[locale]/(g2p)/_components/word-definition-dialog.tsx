@@ -28,7 +28,7 @@ export function WordDefinitionDialog() {
 				<DialogHeader>
 					<DialogTitle className="sr-only">{`Definition for ${selectedWord}`}</DialogTitle>
 
-					<WordDefinitionDetailsHeader word={selectedWord ?? ""} />
+					<WordDefinitionDetailsHeader word={selectedWord ?? ""} audioUrl={data?.audioUrl} />
 				</DialogHeader>
 				<ScrollArea className="h-[60vh]">
 					{data && <WordDefinitionDetailsContent wordDefinition={data} />}

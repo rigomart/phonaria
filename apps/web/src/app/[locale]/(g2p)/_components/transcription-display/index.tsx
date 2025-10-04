@@ -44,12 +44,13 @@ function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
 		<button
 			type="button"
 			className={cn(
-				"font-mono text-3xl md:text-4xl bg-transparent border-none p-1 m-0",
-				"cursor-pointer transition-all duration-200",
-				"hover:text-primary hover:underline",
+				"font-mono text-3xl md:text-4xl bg-transparent border-none p-2 m-0 rounded-md",
+				"cursor-pointer transition-all duration-100 ease-out",
+				"hover:text-primary hover:bg-primary/5 hover:shadow-sm",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:rounded-md",
-				!isKnown && "opacity-75 underline decoration-dotted underline-offset-4",
-				isSelected && "text-primary underline underline-offset-4 ring-2 ring-primary/40 rounded-md",
+				!isKnown && "opacity-60 underline decoration-dotted underline-offset-4 hover:opacity-80",
+				isSelected &&
+					"text-primary bg-primary/10 underline underline-offset-4 ring-2 ring-primary/40 rounded-md shadow-sm",
 			)}
 			onClick={handleClick}
 			aria-current={isSelected ? "true" : undefined}
@@ -78,7 +79,7 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 		<div className="flex flex-col items-center text-center min-w-0">
 			<button
 				type="button"
-				className="text-lg md:text-xl text-muted-foreground font-normal mb-2 whitespace-nowrap hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded"
+				className="text-lg md:text-xl text-muted-foreground font-normal mb-3 whitespace-nowrap px-3 py-1 rounded-md hover:bg-muted/50 hover:text-foreground transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
 				onClick={() => setSelectedWord(word.word)}
 				aria-label={`Show definition for ${word.word}`}
 				title={`Click to see definition for ${word.word}`}
@@ -86,8 +87,8 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 				{word.word}
 			</button>
 
-			<div className="flex items-center">
-				<div className="leading-normal whitespace-nowrap flex items-center gap-0.5">
+			<div className="flex items-center gap-2">
+				<div className="leading-normal whitespace-nowrap flex items-center gap-1">
 					{currentVariant.map((phoneme, phonemeIndex) => (
 						<ClickablePhoneme
 							key={`${phoneme.symbol}-${word.wordIndex}-${phonemeIndex}`}
@@ -100,8 +101,8 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 				{word.variants.length > 1 && (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<Button size="icon" variant="ghost">
-								<ChevronDown />
+							<Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-muted/50">
+								<ChevronDown className="h-4 w-4" />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="start">
@@ -130,18 +131,10 @@ export function TranscriptionDisplay() {
 	if (!result) return <EmptyState />;
 
 	return (
-		<div className="space-y-4">
-			<div className="w-full rounded-lg p-4 flex flex-col gap-2">
-				<div className="flex flex-wrap items-start justify-start gap-4 md:gap-6 overflow-x-auto pb-2">
-					{result.words.map((word, wordIndex) => (
-						<WordColumn
-							key={`${word.word}-${wordIndex}`}
-							word={word}
-							onPhonemeClick={selectPhoneme}
-						/>
-					))}
-				</div>
-			</div>
+		<div className="flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto bg-muted/20 border border-border/40 p-4 md:p-6">
+			{result.words.map((word, wordIndex) => (
+				<WordColumn key={`${word.word}-${wordIndex}`} word={word} onPhonemeClick={selectPhoneme} />
+			))}
 		</div>
 	);
 }

@@ -7,14 +7,18 @@ import type { WordDefinition } from "../_schemas/dictionary";
 
 type WordDefinitionDetailsHeaderProps = {
 	word: string;
+	audioUrl?: string;
 };
 
-function WordDefinitionDetailsHeader({ word }: WordDefinitionDetailsHeaderProps) {
+function WordDefinitionDetailsHeader({ word, audioUrl }: WordDefinitionDetailsHeaderProps) {
 	return (
 		<div className="flex items-end justify-between">
-			<div className="space-y-1">
-				<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
-				<div className="text-xl font-semibold">{word}</div>
+			<div className="flex items-end gap-3">
+				<div className="space-y-1">
+					<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
+					<div className="text-xl font-semibold">{word}</div>
+				</div>
+				{audioUrl && <WordDefinitionDetailsAudio audioUrl={audioUrl} word={word} />}
 			</div>
 		</div>
 	);
@@ -26,7 +30,14 @@ type WordDefinitionDetailsAudioProps = {
 };
 
 function WordDefinitionDetailsAudio({ audioUrl, word }: WordDefinitionDetailsAudioProps) {
-	return <AudioControls src={audioUrl} label={`Pronunciation for ${word}`} variant="extended" />;
+	return (
+		<AudioControls
+			src={audioUrl}
+			label={`Pronunciation for ${word}`}
+			variant="default"
+			className="ml-3"
+		/>
+	);
 }
 
 type WordDefinitionDetailsContentProps = {
