@@ -13,11 +13,11 @@ export function NavTabsSection() {
 	const setActiveSection = useIpaChartStore((s) => s.setActiveSection);
 
 	return (
-		<div className="flex justify-center w-full">
+		<div className="p-6">
 			<Tabs
 				value={activeSection}
 				onValueChange={(v) => setActiveSection(v as IpaSection)}
-				className="w-full max-w-6xl"
+				className="w-full max-w-6xl mx-auto"
 			>
 				<TabsList className="grid w-full grid-cols-2 h-10 p-1 bg-muted border">
 					<TabsTrigger value="consonants">{t("consonants")}</TabsTrigger>
@@ -25,11 +25,11 @@ export function NavTabsSection() {
 				</TabsList>
 
 				<div className="mt-8">
-					<TabsContent value="consonants" className="space-y-0">
+					<TabsContent value="consonants" className="space-y-6">
 						<ConsonantsSection />
 					</TabsContent>
 
-					<TabsContent value="vowels" className="space-y-0">
+					<TabsContent value="vowels" className="space-y-6">
 						<VowelsSection />
 					</TabsContent>
 				</div>
