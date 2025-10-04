@@ -11,12 +11,10 @@ export function HeroSection() {
 				<div className="max-w-4xl mx-auto space-y-8">
 					{/* Header */}
 					<div className="text-center space-y-4">
-						<h1 className="text-3xl font-semibold tracking-tight">
-							Pronunciation learning tools
-						</h1>
+						<h1 className="text-3xl font-semibold tracking-tight">Pronunciation learning tools</h1>
 						<p className="text-base text-muted-foreground max-w-2xl mx-auto">
-							Choose a tool to start practicing. Each tool focuses on a different aspect of pronunciation learning,
-							from understanding individual sounds to listening practice.
+							Choose a tool to start practicing. Each tool focuses on a different aspect of
+							pronunciation learning, from understanding individual sounds to listening practice.
 						</p>
 					</div>
 
