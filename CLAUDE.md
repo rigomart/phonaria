@@ -85,6 +85,21 @@ Next.js API routes handle:
 - Use Vitest for unit testing
 - TypeScript `--noEmit` mode for type validation
 
+### Post-Task Quality Checks
+After completing any coding task, run the following commands to ensure code quality:
+```bash
+# Run linting with auto-fix (Biome will automatically fix fixable issues)
+pnpm lint
+
+# Run type checking to catch TypeScript errors
+pnpm check-types
+
+# Run tests if applicable
+pnpm test
+```
+
+**IMPORTANT**: Always run `pnpm lint` and `pnpm check-types` before considering a task complete. This catches formatting issues, linting violations, and type errors early. The lint command includes auto-fix functionality, so it will resolve many issues automatically.
+
 ### Data Generation
 When updating phoneme data or audio:
 1. Update source data in `packages/shared-data`

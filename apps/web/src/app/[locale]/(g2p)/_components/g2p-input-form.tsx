@@ -1,11 +1,12 @@
 "use client";
 
 import { Loader2, SendHorizonal } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { useTranscribe } from "../_hooks/use-g2p";
+import { useStartTypingAnywhere } from "../_hooks/use-start-typing-anywhere";
 
 interface G2PInputFormProps {
 	placeholder?: string;
@@ -22,9 +23,19 @@ export function G2PInputForm({
 	const [inputText, setInputText] = useState("");
 	const transcribeMutation = useTranscribe();
 	const isLoading = transcribeMutation.isPending;
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	const hasText = inputText.trim().length > 0;
 	const characterCount = inputText.length;
+
+	// Handle "start typing anywhere" functionality
+	const { isMobileDevice } = useStartTypingAnywhere({
+		inputRef,
+		disabled: isLoading,
+		onTyping: (character) => {
+			setInputText((current) => current + character);
+		},
+	});
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -33,15 +44,23 @@ export function G2PInputForm({
 
 	return (
 		<div className="w-full flex flex-col gap-2">
+			{/* Start typing indicator */}
+			{!isMobileDevice && (
+				<div className="text-sm text-muted-foreground animate-pulse">
+					Start typing anywhere on this page to begin transcribing
+				</div>
+			)}
+
 			{/* Compact Input Section */}
 			<form onSubmit={handleSubmit} className="space-y-3">
 				<div className="flex gap-3">
 					<Input
+						ref={inputRef}
 						value={inputText}
 						onChange={(e) => setInputText(e.target.value)}
 						placeholder={placeholder}
 						disabled={isLoading}
-						className="flex-1"
+						className={`flex-1 transition-all duration-200`}
 						maxLength={maxLength}
 						aria-label="Text to transcribe"
 					/>
