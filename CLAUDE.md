@@ -100,6 +100,18 @@ pnpm test
 
 **IMPORTANT**: Always run `pnpm lint` and `pnpm check-types` before considering a task complete. This catches formatting issues, linting violations, and type errors early. The lint command includes auto-fix functionality, so it will resolve many issues automatically.
 
+## Design & UX Patterns
+
+Core Design Philosophy: Functional Over Marketing:
+- Avoid hero sections, gradients, and marketing copy in favor of functional design
+- Explain what tools do, not what benefits they provide
+- Prefer subtle, functional design over decorative elements
+
+Progressive Disclosure:
+- Show examples and guidance only when needed (empty state)
+- Remove help elements once users engage with content
+- Reduce cognitive load. Single source of truth for each functionality
+
 ### Data Generation
 When updating phoneme data or audio:
 1. Update source data in `packages/shared-data`

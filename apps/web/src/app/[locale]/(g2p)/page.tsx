@@ -9,7 +9,7 @@ export default function Index() {
 			<div className="container mx-auto h-full min-h-0">
 				<div className="grid grid-cols-1 lg:grid-cols-12 h-full min-h-0 border">
 					{/* Main Content Area */}
-					<div className="lg:col-span-7 space-y-6 min-h-0 overflow-y-auto">
+					<div className="lg:col-span-7 min-h-0 overflow-y-auto">
 						{/* Input Section */}
 						<div className="border-b p-6">
 							<G2PInputForm />
@@ -19,7 +19,7 @@ export default function Index() {
 						<TranscriptionDisplay />
 
 						{/* Instructional Tip */}
-						<div className="text-xs text-muted-foreground text-center">
+						<div className="text-xs text-muted-foreground text-center mt-4">
 							Click any phoneme to view details
 						</div>
 					</div>
