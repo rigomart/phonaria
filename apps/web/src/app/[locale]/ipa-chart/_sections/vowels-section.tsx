@@ -1,15 +1,18 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { vowels } from "shared-data";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { DiphthongChart } from "../_components/diphthong-chart";
 import { VowelChart } from "../_components/vowel-chart";
 import { SupplementalVowelGroup } from "../_components/vowel-supplement";
 
+type VowelView = "monophthongs" | "diphthongs" | "all";
+
 export function VowelsSection() {
 	const t = useTranslations("IpaChart.Sections.vowels");
+	const [view, setView] = useState<VowelView>("monophthongs");
 
 	const monophthongs = useMemo(
 		() => vowels.filter((phoneme) => phoneme.type === "monophthong"),
@@ -20,19 +23,35 @@ export function VowelsSection() {
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<h2 className="text-xl font-medium">{t("title")}</h2>
-				<p className="text-sm text-muted-foreground">{t("description")}</p>
+			<div className="space-y-4">
+				<div>
+					<h2 className="text-xl font-medium">{t("title")}</h2>
+					<p className="text-sm text-muted-foreground">{t("description")}</p>
+				</div>
+
+				<div className="flex items-center gap-3">
+					<span className="text-sm font-medium text-muted-foreground">View:</span>
+					<ToggleGroup
+						type="single"
+						value={view}
+						onValueChange={(value) => value && setView(value as VowelView)}
+						className="justify-start"
+					>
+						<ToggleGroupItem value="monophthongs" aria-label="Show monophthongs">
+							Single Vowels
+						</ToggleGroupItem>
+						<ToggleGroupItem value="diphthongs" aria-label="Show diphthongs">
+							Glides
+						</ToggleGroupItem>
+						<ToggleGroupItem value="all" aria-label="Show all vowels">
+							All
+						</ToggleGroupItem>
+					</ToggleGroup>
+				</div>
 			</div>
 
-			<Tabs defaultValue="monophthongs" className="w-full">
-				<TabsList className="grid w-full max-w-md grid-cols-3">
-					<TabsTrigger value="monophthongs">Monophthongs</TabsTrigger>
-					<TabsTrigger value="diphthongs">Diphthongs</TabsTrigger>
-					<TabsTrigger value="all">All Vowels</TabsTrigger>
-				</TabsList>
-
-				<TabsContent value="monophthongs" className="space-y-6 mt-6">
+			{view === "monophthongs" && (
+				<div className="space-y-6">
 					<div>
 						<h3 className="text-base font-medium mb-2">Single Vowel Sounds</h3>
 						<p className="text-sm text-muted-foreground">
@@ -44,9 +63,11 @@ export function VowelsSection() {
 					{rhoticVowels.length > 0 && (
 						<SupplementalVowelGroup title="Rhotic vowels" phonemes={rhoticVowels} />
 					)}
-				</TabsContent>
+				</div>
+			)}
 
-				<TabsContent value="diphthongs" className="space-y-6 mt-6">
+			{view === "diphthongs" && (
+				<div className="space-y-6">
 					<div>
 						<h3 className="text-base font-medium mb-2">Vowel Glides</h3>
 						<p className="text-sm text-muted-foreground">
@@ -55,9 +76,11 @@ export function VowelsSection() {
 						</p>
 					</div>
 					<DiphthongChart diphthongs={diphthongs} />
-				</TabsContent>
+				</div>
+			)}
 
-				<TabsContent value="all" className="space-y-6 mt-6">
+			{view === "all" && (
+				<div className="space-y-6">
 					<div>
 						<h3 className="text-base font-medium mb-2">Complete Vowel Inventory</h3>
 						<p className="text-sm text-muted-foreground">
@@ -73,8 +96,8 @@ export function VowelsSection() {
 							<SupplementalVowelGroup title="Diphthongs" phonemes={diphthongs} />
 						)}
 					</div>
-				</TabsContent>
-			</Tabs>
+				</div>
+			)}
 		</div>
 	);
 }

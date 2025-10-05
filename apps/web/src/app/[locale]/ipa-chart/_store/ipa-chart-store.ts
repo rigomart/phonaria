@@ -1,7 +1,7 @@
 import type { IpaPhoneme } from "shared-data";
 import { create } from "zustand";
 
-export type IpaSection = "consonants" | "vowels";
+export type IpaSection = "consonants" | "monophthongs" | "diphthongs";
 
 interface IpaChartState {
 	activeSection: IpaSection;
@@ -19,7 +19,7 @@ interface IpaChartActions {
 export type IpaChartStore = IpaChartState & IpaChartActions;
 
 export const useIpaChartStore = create<IpaChartStore>((set) => ({
-	activeSection: "consonants",
+	activeSection: "monophthongs",
 	selectedPhoneme: null,
 	dialogOpen: false,
 
