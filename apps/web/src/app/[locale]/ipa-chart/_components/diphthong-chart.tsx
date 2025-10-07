@@ -123,6 +123,7 @@ export function DiphthongChart({ diphthongs }: DiphthongChartProps) {
 									controlOffsetY,
 									diphthong,
 									endPos,
+									interactionStrokeWidth,
 									pathData,
 									startPos,
 								} = trajectoryData;
@@ -171,7 +172,9 @@ export function DiphthongChart({ diphthongs }: DiphthongChartProps) {
 											d={pathData}
 											fill="none"
 											stroke="transparent"
-											strokeWidth={16}
+											strokeWidth={interactionStrokeWidth}
+											strokeLinecap="round"
+											strokeLinejoin="round"
 											className="pointer-events-auto"
 										/>
 
@@ -355,6 +358,7 @@ interface TrajectoryRenderData {
 	controlOffsetY: number;
 	pathData: string;
 	arrowPoints: string;
+	interactionStrokeWidth: number;
 	startKey: string;
 	endKey: string;
 }
@@ -396,6 +400,7 @@ function prepareTrajectoryRenderData(
 	const arrowTipY = endPos.y - unitY * arrowGap;
 
 	const pathData = `M ${startPos.x} ${startPos.y} Q ${controlX} ${controlY} ${arrowTipX} ${arrowTipY}`;
+	const interactionStrokeWidth = Math.min(36, Math.max(24, safeDistance * 0.24));
 
 	const angle = Math.atan2(dy, dx);
 	const arrowLength = 12;
@@ -414,6 +419,7 @@ function prepareTrajectoryRenderData(
 		controlOffsetY,
 		pathData,
 		arrowPoints,
+		interactionStrokeWidth,
 		startKey,
 		endKey,
 	};
