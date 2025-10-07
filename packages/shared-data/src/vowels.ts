@@ -218,6 +218,7 @@ export const vowels: VowelPhoneme[] = [
 		symbol: "eɪ",
 		category: "vowel",
 		type: "diphthong",
+		glideTarget: "ɪ",
 		articulation: {
 			height: "high-mid", // Starting position
 			frontness: "front",
@@ -235,6 +236,7 @@ export const vowels: VowelPhoneme[] = [
 		symbol: "aɪ",
 		category: "vowel",
 		type: "diphthong",
+		glideTarget: "ɪ",
 		articulation: {
 			height: "low", // Starting position
 			frontness: "central",
@@ -252,6 +254,7 @@ export const vowels: VowelPhoneme[] = [
 		symbol: "ɔɪ",
 		category: "vowel",
 		type: "diphthong",
+		glideTarget: "ɪ",
 		articulation: {
 			height: "low-mid", // Starting position
 			frontness: "back",
@@ -269,6 +272,7 @@ export const vowels: VowelPhoneme[] = [
 		symbol: "aʊ",
 		category: "vowel",
 		type: "diphthong",
+		glideTarget: "ʊ",
 		articulation: {
 			height: "low", // Starting position
 			frontness: "central",
@@ -286,6 +290,7 @@ export const vowels: VowelPhoneme[] = [
 		symbol: "oʊ",
 		category: "vowel",
 		type: "diphthong",
+		glideTarget: "ʊ",
 		articulation: {
 			height: "low-mid", // Starting position
 			frontness: "back",

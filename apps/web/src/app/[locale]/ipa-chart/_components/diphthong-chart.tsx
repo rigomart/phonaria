@@ -2,8 +2,8 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import type { VowelPhoneme } from "shared-data";
-import { getDiphthongTrajectories } from "shared-data";
 import { cn } from "@/lib/utils";
+import { getDiphthongTrajectories } from "../_lib/diphthong-trajectories";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 interface DiphthongChartProps {

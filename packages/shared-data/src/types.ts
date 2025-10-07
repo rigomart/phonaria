@@ -100,6 +100,7 @@ export interface VowelPhoneme {
 	symbol: string;
 	category: "vowel";
 	type: "monophthong" | "diphthong" | "rhotic";
+	glideTarget?: string; // Only for diphthongs - explicit target vowel
 	articulation: VowelArticulation;
 	audioUrl?: string;
 	examples: ExampleWord[];
