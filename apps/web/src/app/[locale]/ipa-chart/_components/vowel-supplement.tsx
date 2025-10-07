@@ -1,8 +1,7 @@
 "use client";
 
 import type { VowelPhoneme } from "shared-data";
-import { useIpaChartStore } from "../_store/ipa-chart-store";
-import { VowelSymbolButton } from "./vowel-chart";
+import { PhonemeCard } from "./phoneme-card";
 
 interface SupplementalVowelGroupProps {
 	title: string;
@@ -10,8 +9,6 @@ interface SupplementalVowelGroupProps {
 }
 
 export function SupplementalVowelGroup({ title, phonemes }: SupplementalVowelGroupProps) {
-	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
-
 	if (phonemes.length === 0) {
 		return null;
 	}
@@ -26,7 +23,7 @@ export function SupplementalVowelGroup({ title, phonemes }: SupplementalVowelGro
 			</header>
 			<div className="grid grid-cols-[repeat(auto-fill,minmax(2.75rem,max-content))] justify-start gap-2">
 				{phonemes.map((phoneme) => (
-					<VowelSymbolButton key={phoneme.symbol} phoneme={phoneme} onSelect={selectPhoneme} />
+					<PhonemeCard key={phoneme.symbol} phoneme={phoneme} />
 				))}
 			</div>
 		</section>

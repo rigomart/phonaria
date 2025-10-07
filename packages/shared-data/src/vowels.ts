@@ -292,7 +292,7 @@ export const vowels: VowelPhoneme[] = [
 		type: "diphthong",
 		glideTarget: "ʊ",
 		articulation: {
-			height: "low-mid", // Starting position
+			height: "high-mid", // Starting position
 			frontness: "back",
 			roundness: "rounded",
 			tenseness: "tense",
