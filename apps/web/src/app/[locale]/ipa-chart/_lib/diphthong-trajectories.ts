@@ -1,5 +1,5 @@
-import type { VowelArticulation, VowelPhoneme } from "../types";
-import { vowels } from "../vowels";
+import type { VowelArticulation, VowelPhoneme } from "shared-data";
+import { vowels } from "shared-data";
 
 export interface DiphthongEndPosition {
 	height: VowelArticulation["height"];
@@ -7,30 +7,15 @@ export interface DiphthongEndPosition {
 	roundness: VowelArticulation["roundness"];
 }
 
-const END_VOWEL_MAP: Record<string, string> = {
-	ɪ: "ɪ",
-	ʊ: "ʊ",
-	i: "i",
-	u: "u",
-};
-
-export function getDiphthongEndPosition(diphthongSymbol: string): DiphthongEndPosition | null {
-	const lastChar = diphthongSymbol.slice(-1);
-	const secondLastChar = diphthongSymbol.slice(-2, -1);
-
-	let targetSymbol: string | null = null;
-
-	if (END_VOWEL_MAP[lastChar]) {
-		targetSymbol = END_VOWEL_MAP[lastChar];
-	} else if (secondLastChar && END_VOWEL_MAP[secondLastChar + lastChar]) {
-		targetSymbol = END_VOWEL_MAP[secondLastChar + lastChar];
-	}
-
-	if (!targetSymbol) {
+export function getDiphthongEndPosition(diphthong: VowelPhoneme): DiphthongEndPosition | null {
+	// All diphthongs should have explicit glideTarget
+	if (!diphthong.glideTarget) {
 		return null;
 	}
 
-	const endVowel = vowels.find((v) => v.symbol === targetSymbol && v.type === "monophthong");
+	const endVowel = vowels.find(
+		(v) => v.symbol === diphthong.glideTarget && v.type === "monophthong",
+	);
 
 	if (!endVowel) {
 		return null;
@@ -57,7 +42,7 @@ export function getDiphthongTrajectories(diphthongs: VowelPhoneme[]): DiphthongT
 	const trajectories: DiphthongTrajectory[] = [];
 
 	for (const diphthong of diphthongs) {
-		const endPosition = getDiphthongEndPosition(diphthong.symbol);
+		const endPosition = getDiphthongEndPosition(diphthong);
 
 		if (endPosition) {
 			trajectories.push({

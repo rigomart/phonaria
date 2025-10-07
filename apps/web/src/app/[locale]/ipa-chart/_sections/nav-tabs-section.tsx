@@ -1,25 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
-import { vowels } from "shared-data";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DiphthongChart } from "../_components/diphthong-chart";
 import { VowelChart } from "../_components/vowel-chart";
 import { SupplementalVowelGroup } from "../_components/vowel-supplement";
-import type { IpaSection } from "../_store/ipa-chart-store";
-import { useIpaChartStore } from "../_store/ipa-chart-store";
+import { useVowelGroupings } from "../_lib/vowel-groupings";
 import { ConsonantsSection } from "./consonants-section";
 
-export function NavTabsSection() {
-	const activeSection = useIpaChartStore((s) => s.activeSection);
-	const setActiveSection = useIpaChartStore((s) => s.setActiveSection);
+type IpaSection = "consonants" | "monophthongs" | "diphthongs";
 
-	const monophthongs = useMemo(
-		() => vowels.filter((phoneme) => phoneme.type === "monophthong"),
-		[],
-	);
-	const rhoticVowels = useMemo(() => vowels.filter((phoneme) => phoneme.type === "rhotic"), []);
-	const diphthongs = useMemo(() => vowels.filter((phoneme) => phoneme.type === "diphthong"), []);
+export function NavTabsSection() {
+	const [activeSection, setActiveSection] = useState<IpaSection>("monophthongs");
+	const { monophthongs, diphthongs, rhoticVowels } = useVowelGroupings();
 
 	return (
 		<div className="p-6">

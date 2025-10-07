@@ -2,43 +2,20 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import type { VowelPhoneme } from "shared-data";
-import { getDiphthongTrajectories } from "shared-data";
 import { cn } from "@/lib/utils";
+import { getDiphthongTrajectories } from "../_lib/diphthong-trajectories";
+import {
+	FRONTNESS_LABELS,
+	FRONTNESS_ORDER,
+	getCellKey,
+	HEIGHT_LABELS,
+	HEIGHT_ORDER,
+} from "../_lib/vowel-grid";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 interface DiphthongChartProps {
 	diphthongs: VowelPhoneme[];
 }
-
-const HEIGHT_ORDER = [
-	"high",
-	"near-high",
-	"high-mid",
-	"mid",
-	"low-mid",
-	"near-low",
-	"low",
-] as const;
-
-const FRONTNESS_ORDER = ["front", "near-front", "central", "near-back", "back"] as const;
-
-const HEIGHT_LABELS: Record<(typeof HEIGHT_ORDER)[number], string> = {
-	high: "Close",
-	"near-high": "Near-close",
-	"high-mid": "Close-mid",
-	mid: "Mid",
-	"low-mid": "Open-mid",
-	"near-low": "Near-open",
-	low: "Open",
-};
-
-const FRONTNESS_LABELS: Record<(typeof FRONTNESS_ORDER)[number], string> = {
-	front: "Front",
-	"near-front": "Near-front",
-	central: "Central",
-	"near-back": "Near-back",
-	back: "Back",
-};
 
 export function DiphthongChart({ diphthongs }: DiphthongChartProps) {
 	const trajectories = useMemo(() => getDiphthongTrajectories(diphthongs), [diphthongs]);
@@ -100,7 +77,7 @@ export function DiphthongChart({ diphthongs }: DiphthongChartProps) {
 							{HEIGHT_LABELS[height]}
 						</div>
 						{FRONTNESS_ORDER.map((frontness) => {
-							const cellKey = `${height}-${frontness}`;
+							const cellKey = getCellKey(height, frontness);
 							return (
 								<div
 									key={frontness}
@@ -123,8 +100,8 @@ export function DiphthongChart({ diphthongs }: DiphthongChartProps) {
 					>
 						<title>Diphthong Trajectories</title>
 						{trajectories.map((trajectory) => {
-							const startKey = `${trajectory.start.height}-${trajectory.start.frontness}`;
-							const endKey = `${trajectory.end.height}-${trajectory.end.frontness}`;
+							const startKey = getCellKey(trajectory.start.height, trajectory.start.frontness);
+							const endKey = getCellKey(trajectory.end.height, trajectory.end.frontness);
 
 							const startPos = cellPositions.get(startKey);
 							const endPos = cellPositions.get(endKey);

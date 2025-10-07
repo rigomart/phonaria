@@ -153,6 +153,16 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+	@supports (scrollbar-gutter: stable) {
+		html {
+			scrollbar-gutter: stable;
+		}
+	}
+	@supports not (scrollbar-gutter: stable) {
+		body {
+			overflow-y: scroll;
+		}
+	}
 	button:not(:disabled),
 	[role="button"]:not(:disabled) {
 		cursor: pointer;
