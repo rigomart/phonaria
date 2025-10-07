@@ -179,8 +179,8 @@ export function DiphthongChart({ diphthongs }: DiphthongChartProps) {
 											d={pathData}
 											fill="none"
 											stroke="currentColor"
-											strokeWidth={isHighlighted || isSelected ? 5 : 3}
-											className={cn("stroke-primary transition-all pointer-events-none")}
+											className="stroke-primary/60 transition-all pointer-events-none data-[highlighted=true]:stroke-primary stroke-3 data-[highlighted=true]:stroke-4"
+											data-highlighted={isHighlighted}
 										/>
 
 										<polygon
@@ -235,8 +235,9 @@ export function DiphthongChart({ diphthongs }: DiphthongChartProps) {
 											x={startPos.x + controlOffsetX}
 											y={startPos.y + controlOffsetY - 20}
 											textAnchor="middle"
-											className="fill-current pointer-events-none transition-all font-semibold"
+											className="fill-current pointer-events-none transition-all font-semibold data-[highlighted=true]:-translate-y-2"
 											fontSize={22}
+											data-highlighted={isHighlighted}
 										>
 											{diphthong.symbol}
 										</text>
@@ -377,20 +378,28 @@ function prepareTrajectoryRenderData(
 	const distance = Math.hypot(dx, dy);
 	const safeDistance = distance || 1;
 
-	const controlOffsetX = dx * 0.5;
-	const controlOffsetY = dy * 0.5 + Math.min(distance * 0.15, 20);
-
 	const unitX = dx / safeDistance;
 	const unitY = dy / safeDistance;
-	const arrowGap = Math.min(14, Math.max(8, safeDistance * 0.18));
+	const midpointX = startPos.x + dx * 0.5;
+	const midpointY = startPos.y + dy * 0.5;
+	const normalX = -unitY;
+	const normalY = unitX;
+	const curvature = Math.min(distance * 0.22, 24);
+	// Pull the control point off the center line so the glide bows slightly outward
+	const alongPathBias = Math.min(distance * 0.1, 12);
+	const controlX = midpointX + normalX * curvature;
+	const controlY = midpointY + normalY * curvature + alongPathBias;
+	const controlOffsetX = controlX - startPos.x;
+	const controlOffsetY = controlY - startPos.y;
+	const arrowGap = 14;
 	const arrowTipX = endPos.x - unitX * arrowGap;
 	const arrowTipY = endPos.y - unitY * arrowGap;
 
-	const pathData = `M ${startPos.x} ${startPos.y} Q ${startPos.x + controlOffsetX} ${startPos.y + controlOffsetY} ${arrowTipX} ${arrowTipY}`;
+	const pathData = `M ${startPos.x} ${startPos.y} Q ${controlX} ${controlY} ${arrowTipX} ${arrowTipY}`;
 
 	const angle = Math.atan2(dy, dx);
-	const arrowLength = 8;
-	const arrowWidth = 5;
+	const arrowLength = 12;
+	const arrowWidth = 2;
 	const arrowPoints = `
 		${arrowTipX},${arrowTipY}
 		${arrowTipX - arrowLength * Math.cos(angle - Math.PI / 6) - arrowWidth * Math.sin(angle - Math.PI / 6)},${arrowTipY - arrowLength * Math.sin(angle - Math.PI / 6) + arrowWidth * Math.cos(angle - Math.PI / 6)}
