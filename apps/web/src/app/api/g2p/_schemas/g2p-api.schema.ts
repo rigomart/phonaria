@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 
 export const g2pRequestSchema = z.object({
 	text: z
