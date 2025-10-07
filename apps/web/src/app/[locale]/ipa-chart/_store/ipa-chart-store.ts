@@ -21,7 +21,7 @@ export const useIpaChartStore = create<IpaChartStore>((set) => ({
 	selectPhoneme: (phoneme: IpaPhoneme) => set({ selectedPhoneme: phoneme, dialogOpen: true }),
 
 	setDialogOpen: (open: boolean) =>
-		set((state) => ({ dialogOpen: open, selectedPhoneme: open ? state.selectedPhoneme: null })),
+		set((state) => ({ dialogOpen: open, selectedPhoneme: open ? state.selectedPhoneme : null })),
 
 	clearSelection: () => set({ selectedPhoneme: null, dialogOpen: false }),
 }));

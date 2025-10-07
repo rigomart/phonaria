@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { vowels } from "shared-data";
 import type { VowelPhoneme } from "shared-data";
+import { vowels } from "shared-data";
 
 export interface VowelGroupings {
 	monophthongs: VowelPhoneme[];
@@ -19,5 +19,5 @@ export function useVowelGroupings(): VowelGroupings {
 			diphthongs,
 			rhoticVowels,
 		};
-	}, []); // Empty dependency array means this only runs once
+	}, []);
 }
