@@ -16,5 +16,4 @@ export { ARPABET_TO_IPA, convertArpabetToIPA } from "./phonetics/arpabet-to-ipa"
 export { normalizeCmuWord } from "./phonetics/cmudict";
 export * from "./types";
 export * as phonixUtils from "./utils/index";
-export type { VowelFrontnessInfo, VowelHeightInfo } from "./vowel-axis";
 export { vowels } from "./vowels";
