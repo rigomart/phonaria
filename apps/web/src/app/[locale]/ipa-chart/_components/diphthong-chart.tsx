@@ -35,194 +35,225 @@ export function DiphthongChart({ diphthongs }: DiphthongChartProps) {
 				.filter((value): value is TrajectoryRenderData => value !== null),
 		[trajectories, cellPositions],
 	);
+	const occupiedCellKeys = useMemo(() => {
+		const set = new Set<string>();
+		for (const trajectory of drawableTrajectories) {
+			set.add(trajectory.startKey);
+			set.add(trajectory.endKey);
+		}
+		return set;
+	}, [drawableTrajectories]);
+
+	const activeSymbol =
+		hoveredSymbol ??
+		focusedSymbol ??
+		(dialogOpen && selectedPhoneme?.type === "diphthong" ? selectedPhoneme.symbol : null);
+	const activeTrajectory = useMemo(() => {
+		if (!activeSymbol) return null;
+		return (
+			drawableTrajectories.find((trajectory) => trajectory.diphthong.symbol === activeSymbol) ??
+			null
+		);
+	}, [drawableTrajectories, activeSymbol]);
+
+	const activeCellKeys = useMemo(() => {
+		if (!activeTrajectory) return new Set<string>();
+		return new Set<string>([activeTrajectory.startKey, activeTrajectory.endKey]);
+	}, [activeTrajectory]);
 	const legendDescriptionId = useId();
 	const svgDescriptionId = useId();
 
 	return (
 		<div className="space-y-4">
+			<div className="rounded-md border border-dashed border-muted-foreground/40 bg-card/80 px-3 py-2 text-xs text-muted-foreground">
+				Hover, tap, or tab through a glide to see how its starting and ending vowels align in the
+				grid.
+			</div>
 			<div className="overflow-x-auto">
 				<div
-				ref={gridRef}
-				className="relative inline-grid w-full min-w-max gap-1.5 grid-cols-[auto_repeat(5,minmax(5rem,1fr))]"
-			>
-				<div />
-				{FRONTNESS_ORDER.map((frontness) => (
-					<div
-						key={frontness}
-						className="px-1.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-					>
-						{FRONTNESS_LABELS[frontness]}
-					</div>
-				))}
-
-				{HEIGHT_ORDER.map((height) => (
-					<Fragment key={height}>
-						<div className="flex items-center justify-end pr-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-							{HEIGHT_LABELS[height]}
+					ref={gridRef}
+					className="relative inline-grid w-full min-w-max gap-1.5 grid-cols-[auto_repeat(5,minmax(5rem,1fr))]"
+				>
+					<div />
+					{FRONTNESS_ORDER.map((frontness) => (
+						<div
+							key={frontness}
+							className="px-1.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+						>
+							{FRONTNESS_LABELS[frontness]}
 						</div>
-						{FRONTNESS_ORDER.map((frontness) => {
-							const cellKey = getCellKey(height, frontness);
-							return (
-								<div
-									key={frontness}
-									data-cell={cellKey}
-									className={cn(
-										"flex min-h-[4rem] flex-wrap items-center justify-center gap-1.5 rounded-md border border-border/60 bg-card/40 px-2 py-1.5",
-										"opacity-45",
-									)}
-								/>
-							);
-						})}
-					</Fragment>
-				))}
+					))}
 
-				{drawableTrajectories.length > 0 && (
-					<svg
-						className="absolute inset-0 pointer-events-none"
-						style={{ width: "100%", height: "100%" }}
-						role="presentation"
-						aria-describedby={`${legendDescriptionId} ${svgDescriptionId}`}
-					>
-						<title>Diphthong Trajectories</title>
-						{drawableTrajectories.map((trajectoryData) => {
-							const {
-								arrowPoints,
-								controlOffsetX,
-								controlOffsetY,
-								diphthong,
-								endPos,
-								pathData,
-								startPos,
-							} = trajectoryData;
-							const isHighlighted =
-								hoveredSymbol === diphthong.symbol || focusedSymbol === diphthong.symbol;
-							const isSelected = selectedPhoneme?.symbol === diphthong.symbol;
-
-							const handleClick = () => selectPhoneme(diphthong);
-							const handleKeyDown = (event: KeyboardEvent<SVGGElement>) => {
-								if (event.key === "Enter" || event.key === " ") {
-									event.preventDefault();
-									handleClick();
-								}
-							};
-
-							return (
-								// biome-ignore lint/a11y/useSemanticElements: SVG elements cannot be wrapped in button elements
-								<g
-									key={diphthong.symbol}
-									className="trajectory-group cursor-pointer pointer-events-auto"
-									onClick={handleClick}
-									onKeyDown={handleKeyDown}
-									onPointerEnter={() => setHoveredSymbol(diphthong.symbol)}
-									onPointerLeave={() =>
-										setHoveredSymbol((current) =>
-											current === diphthong.symbol ? null : current,
-										)
-									}
-									onFocus={() => setFocusedSymbol(diphthong.symbol)}
-									onBlur={() =>
-										setFocusedSymbol((current) => (current === diphthong.symbol ? null : current))
-									}
-									role="button"
-									tabIndex={0}
-									aria-label={`Diphthong ${diphthong.symbol}. Starts at ${diphthong.symbol[0]}, transitions to ${diphthong.symbol[1]}`}
-									aria-haspopup="dialog"
-									aria-expanded={dialogOpen && isSelected}
-									aria-pressed={isSelected}
-									data-state={isSelected ? "selected" : undefined}
-								>
-									<path
-										d={pathData}
-										fill="none"
-										stroke="transparent"
-										strokeWidth={16}
-										className="pointer-events-auto"
-									/>
-
-									<path
-										d={pathData}
-										fill="none"
-										stroke="currentColor"
-										strokeWidth={isHighlighted || isSelected ? 3.75 : 3}
+					{HEIGHT_ORDER.map((height) => (
+						<Fragment key={height}>
+							<div className="flex items-center justify-end pr-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+								{HEIGHT_LABELS[height]}
+							</div>
+							{FRONTNESS_ORDER.map((frontness) => {
+								const cellKey = getCellKey(height, frontness);
+								const isOccupied = occupiedCellKeys.has(cellKey);
+								const isActiveCell = activeCellKeys.has(cellKey);
+								return (
+									<div
+										key={frontness}
+										data-cell={cellKey}
 										className={cn(
-											"stroke-primary transition-all pointer-events-none",
-											isSelected && "brightness-[1.15]",
+											"flex min-h-[4rem] flex-wrap items-center justify-center gap-1.5 rounded-lg border px-2 py-1.5 transition-all duration-100",
+											isOccupied ? "bg-card/50 hover:bg-primary/10" : "border-border/50",
+											isActiveCell && "bg-primary/12 border-primary/50 ring ring-primary/50",
 										)}
-										opacity={isHighlighted || isSelected ? 0.95 : 0.7}
 									/>
+								);
+							})}
+						</Fragment>
+					))}
 
-									<polygon
-										points={arrowPoints}
-										className="fill-primary transition-all pointer-events-none"
-										opacity={isHighlighted || isSelected ? 0.95 : 0.7}
-									/>
+					{drawableTrajectories.length > 0 && (
+						<svg
+							className="absolute inset-0 pointer-events-none"
+							style={{ width: "100%", height: "100%" }}
+							role="presentation"
+							aria-describedby={`${legendDescriptionId} ${svgDescriptionId}`}
+						>
+							<title>Diphthong Trajectories</title>
+							{drawableTrajectories.map((trajectoryData) => {
+								const {
+									arrowPoints,
+									controlOffsetX,
+									controlOffsetY,
+									diphthong,
+									endPos,
+									pathData,
+									startPos,
+								} = trajectoryData;
+								const isHighlighted =
+									hoveredSymbol === diphthong.symbol || focusedSymbol === diphthong.symbol;
+								const isSelected = selectedPhoneme?.symbol === diphthong.symbol;
 
-									<circle
-										cx={startPos.x}
-										cy={startPos.y}
-										r={isHighlighted || isSelected ? 9.5 : 8}
-										className="fill-primary transition-all pointer-events-none"
-										opacity={isHighlighted || isSelected ? 0.95 : 0.75}
-									/>
+								const handleClick = () => {
+									selectPhoneme(diphthong);
+								};
+								const handleKeyDown = (event: KeyboardEvent<SVGGElement>) => {
+									if (event.key === "Enter" || event.key === " ") {
+										event.preventDefault();
+										handleClick();
+									}
+								};
 
-									<text
-										x={startPos.x}
-										y={startPos.y - (isHighlighted || isSelected ? 14 : 12)}
-										textAnchor="middle"
-										dominantBaseline="auto"
-										className="fill-current font-bold pointer-events-none transition-all"
-										fontSize={isHighlighted || isSelected ? 16 : 15}
-										opacity={isHighlighted || isSelected ? 1 : 0.9}
+								return (
+									// biome-ignore lint/a11y/useSemanticElements: SVG elements cannot be wrapped in button elements
+									<g
+										key={diphthong.symbol}
+										className="trajectory-group cursor-pointer pointer-events-auto"
+										onClick={handleClick}
+										onKeyDown={handleKeyDown}
+										onPointerEnter={() => {
+											setHoveredSymbol(diphthong.symbol);
+										}}
+										onPointerLeave={() =>
+											setHoveredSymbol((current) => (current === diphthong.symbol ? null : current))
+										}
+										onFocus={() => {
+											setFocusedSymbol(diphthong.symbol);
+										}}
+										onBlur={() =>
+											setFocusedSymbol((current) => (current === diphthong.symbol ? null : current))
+										}
+										role="button"
+										tabIndex={0}
+										aria-label={`Diphthong ${diphthong.symbol}. Starts at ${diphthong.symbol[0]}, transitions to ${diphthong.symbol[1]}`}
+										aria-haspopup="dialog"
+										aria-expanded={dialogOpen && isSelected}
+										aria-pressed={isSelected}
+										data-state={isSelected ? "selected" : undefined}
 									>
-										{diphthong.symbol[0]}
-									</text>
+										<path
+											d={pathData}
+											fill="none"
+											stroke="transparent"
+											strokeWidth={16}
+											className="pointer-events-auto"
+										/>
 
-									<circle
-										cx={endPos.x}
-										cy={endPos.y}
-										r={isHighlighted || isSelected ? 7.5 : 6}
-										className="fill-primary transition-all pointer-events-none"
-										opacity={isHighlighted || isSelected ? 0.95 : 0.75}
-									/>
+										<path
+											d={pathData}
+											fill="none"
+											stroke="currentColor"
+											strokeWidth={isHighlighted || isSelected ? 5 : 3}
+											className={cn("stroke-primary transition-all pointer-events-none")}
+										/>
 
-									<text
-										x={endPos.x}
-										y={endPos.y + (isHighlighted || isSelected ? 19 : 17)}
-										textAnchor="middle"
-										dominantBaseline="hanging"
-										className="fill-current font-bold pointer-events-none transition-all"
-										fontSize={isHighlighted || isSelected ? 14.5 : 13}
-										opacity={isHighlighted || isSelected ? 1 : 0.9}
-									>
-										{diphthong.symbol[1]}
-									</text>
+										<polygon
+											points={arrowPoints}
+											className="fill-primary transition-all pointer-events-none"
+										/>
 
-									<text
-										x={startPos.x + controlOffsetX}
-										y={startPos.y + controlOffsetY - 6}
-										textAnchor="middle"
-										className={cn(
-											"fill-current font-semibold pointer-events-none transition-all",
-											isSelected && "font-bold",
-										)}
-										fontSize={isHighlighted || isSelected ? 21 : 20}
-										opacity={isHighlighted || isSelected ? 1 : 0.85}
-									>
-										{diphthong.symbol}
-									</text>
-								</g>
-							);
-						})}
-					</svg>
-				)}
+										<circle
+											cx={startPos.x}
+											cy={startPos.y}
+											r={isHighlighted || isSelected ? 10 : 8}
+											className="fill-primary transition-all pointer-events-none"
+											opacity={0.8}
+										/>
+
+										<text
+											x={startPos.x}
+											y={startPos.y - 14}
+											textAnchor="middle"
+											dominantBaseline="auto"
+											className="fill-current pointer-events-none transition-all"
+											fontSize={18}
+											opacity={0.8}
+										>
+											{diphthong.symbol[0]}
+										</text>
+
+										<circle
+											cx={endPos.x}
+											cy={endPos.y}
+											r={isHighlighted || isSelected ? 8 : 6}
+											className={cn(
+												"pointer-events-none transition-all stroke-primary",
+												isHighlighted || isSelected ? "fill-primary/20" : "fill-transparent",
+											)}
+											strokeWidth={isHighlighted || isSelected ? 2.4 : 2}
+										/>
+
+										<text
+											x={endPos.x}
+											y={endPos.y + 20}
+											textAnchor="middle"
+											dominantBaseline="hanging"
+											className="fill-current pointer-events-none transition-all"
+											fontSize={18}
+											opacity={0.8}
+										>
+											{diphthong.symbol[1]}
+										</text>
+
+										<text
+											x={startPos.x + controlOffsetX}
+											y={startPos.y + controlOffsetY - 20}
+											textAnchor="middle"
+											className="fill-current pointer-events-none transition-all font-semibold"
+											fontSize={22}
+										>
+											{diphthong.symbol}
+										</text>
+									</g>
+								);
+							})}
+						</svg>
+					)}
+				</div>
 			</div>
+			<TrajectoryLegend id={legendDescriptionId} />
+
+			<p id={svgDescriptionId} className="sr-only">
+				Each glide shows a filled circle for the starting vowel and a smaller outlined circle where
+				the tongue finishes.
+			</p>
 		</div>
-		<TrajectoryLegend id={legendDescriptionId} />
-		<p id={svgDescriptionId} className="sr-only">
-			Each glide shows a filled circle for the starting vowel and a smaller filled circle where the
-			tongue finishes.
-		</p>
-	</div>
 	);
 }
 
@@ -323,6 +354,8 @@ interface TrajectoryRenderData {
 	controlOffsetY: number;
 	pathData: string;
 	arrowPoints: string;
+	startKey: string;
+	endKey: string;
 }
 
 function prepareTrajectoryRenderData(
@@ -342,19 +375,26 @@ function prepareTrajectoryRenderData(
 	const dx = endPos.x - startPos.x;
 	const dy = endPos.y - startPos.y;
 	const distance = Math.hypot(dx, dy);
+	const safeDistance = distance || 1;
 
 	const controlOffsetX = dx * 0.5;
 	const controlOffsetY = dy * 0.5 + Math.min(distance * 0.15, 20);
 
-	const pathData = `M ${startPos.x} ${startPos.y} Q ${startPos.x + controlOffsetX} ${startPos.y + controlOffsetY} ${endPos.x} ${endPos.y}`;
+	const unitX = dx / safeDistance;
+	const unitY = dy / safeDistance;
+	const arrowGap = Math.min(14, Math.max(8, safeDistance * 0.18));
+	const arrowTipX = endPos.x - unitX * arrowGap;
+	const arrowTipY = endPos.y - unitY * arrowGap;
+
+	const pathData = `M ${startPos.x} ${startPos.y} Q ${startPos.x + controlOffsetX} ${startPos.y + controlOffsetY} ${arrowTipX} ${arrowTipY}`;
 
 	const angle = Math.atan2(dy, dx);
 	const arrowLength = 8;
 	const arrowWidth = 5;
 	const arrowPoints = `
-		${endPos.x},${endPos.y}
-		${endPos.x - arrowLength * Math.cos(angle - Math.PI / 6) - arrowWidth * Math.sin(angle - Math.PI / 6)},${endPos.y - arrowLength * Math.sin(angle - Math.PI / 6) + arrowWidth * Math.cos(angle - Math.PI / 6)}
-		${endPos.x - arrowLength * Math.cos(angle + Math.PI / 6) + arrowWidth * Math.sin(angle + Math.PI / 6)},${endPos.y - arrowLength * Math.sin(angle + Math.PI / 6) - arrowWidth * Math.cos(angle + Math.PI / 6)}
+		${arrowTipX},${arrowTipY}
+		${arrowTipX - arrowLength * Math.cos(angle - Math.PI / 6) - arrowWidth * Math.sin(angle - Math.PI / 6)},${arrowTipY - arrowLength * Math.sin(angle - Math.PI / 6) + arrowWidth * Math.cos(angle - Math.PI / 6)}
+		${arrowTipX - arrowLength * Math.cos(angle + Math.PI / 6) + arrowWidth * Math.sin(angle + Math.PI / 6)},${arrowTipY - arrowLength * Math.sin(angle + Math.PI / 6) - arrowWidth * Math.cos(angle + Math.PI / 6)}
 	`;
 
 	return {
@@ -365,6 +405,8 @@ function prepareTrajectoryRenderData(
 		controlOffsetY,
 		pathData,
 		arrowPoints,
+		startKey,
+		endKey,
 	};
 }
 
@@ -374,10 +416,7 @@ interface TrajectoryLegendProps {
 
 function TrajectoryLegend({ id }: TrajectoryLegendProps) {
 	return (
-		<div
-			id={id}
-			className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground"
-		>
+		<div id={id} className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
 			<div className="flex items-center gap-1.5" aria-hidden="true">
 				<span className="inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
 				<span className="font-medium text-foreground">Start vowel</span>
