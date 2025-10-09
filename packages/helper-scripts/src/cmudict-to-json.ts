@@ -8,6 +8,21 @@ config();
 // Type for the compact JSON format
 type CompactCmudict = Record<string, string[]>;
 
+// Type for the new payload format with metadata
+type CmudictPayload = {
+	meta: {
+		formatVersion: number;
+		source: string;
+		sourceUrl: string;
+		generatedAt: string;
+		wordCount: number;
+		variantCount: number;
+		skippedLineCount: number;
+		deduplicatedVariantCount: number;
+	};
+	data: CompactCmudict;
+};
+
 const cmudictUrl = process.env.CMUDICT_SRC_URL;
 const outputPath =
 	process.env.CMUDICT_JSON_PATH || path.resolve(__dirname, "../../../apps/web/data/cmudict.json");
@@ -33,7 +48,13 @@ function ensureOutputDirectory(): void {
 /**
  * Parse CMUDict content and convert to compact JSON format
  */
-function parseCmudict(content: string): CompactCmudict {
+function parseCmudict(content: string): {
+	result: CompactCmudict;
+	wordCount: number;
+	variantCount: number;
+	skippedLineCount: number;
+	deduplicatedVariantCount: number;
+} {
 	const dictMap = new Map<string, Set<string>>();
 	const lines = content.split(/\r?\n/);
 
@@ -92,15 +113,25 @@ function parseCmudict(content: string): CompactCmudict {
 
 	// Convert Map back to object for return type compatibility
 	const result: CompactCmudict = {};
+	let variantCount = 0;
 	for (const [word, variants] of dictMap.entries()) {
 		if (variants.size === 0) {
 			continue;
 		}
 
 		result[word] = Array.from(variants);
+		variantCount += variants.size;
 	}
 
-	return result;
+	const wordCount = Object.keys(result).length;
+
+	return {
+		result,
+		wordCount,
+		variantCount,
+		skippedLineCount: skipped,
+		deduplicatedVariantCount: deduplicatedVariants,
+	};
 }
 
 /**
@@ -149,11 +180,11 @@ async function fetchCmudict(): Promise<string> {
 /**
  * Save dictionary to JSON file
  */
-function saveToJson(dict: CompactCmudict): void {
-	const wordCount = Object.keys(dict).length;
-	console.log(`Saving ${wordCount} words to ${outputPath}`);
+function saveToJson(payload: CmudictPayload): void {
+	const wordCount = payload.meta.wordCount;
+	console.log(`Saving ${wordCount} words to ${payload.meta.sourceUrl}`);
 
-	const json = JSON.stringify(dict, null, 0);
+	const json = JSON.stringify(payload, null, 0);
 	fs.writeFileSync(outputPath, json, "utf-8");
 
 	const stats = fs.statSync(outputPath);
@@ -170,11 +201,29 @@ async function main(): Promise<void> {
 
 	try {
 		const content = await fetchCmudict();
-		const dict = parseCmudict(content);
-		saveToJson(dict);
+		const parseResult = parseCmudict(content);
+
+		const payload: CmudictPayload = {
+			meta: {
+				formatVersion: 1,
+				source: "cmudict",
+				sourceUrl: safeCmudictUrl,
+				generatedAt: new Date().toISOString(),
+				wordCount: parseResult.wordCount,
+				variantCount: parseResult.variantCount,
+				skippedLineCount: parseResult.skippedLineCount,
+				deduplicatedVariantCount: parseResult.deduplicatedVariantCount,
+			},
+			data: parseResult.result,
+		};
+
+		saveToJson(payload);
 
 		console.log("\nGeneration Summary:");
-		console.log(`Words processed: ${Object.keys(dict).length}`);
+		console.log(`Words processed: ${payload.meta.wordCount}`);
+		console.log(`Variants processed: ${payload.meta.variantCount}`);
+		console.log(`Skipped lines: ${payload.meta.skippedLineCount}`);
+		console.log(`Deduplicated variants: ${payload.meta.deduplicatedVariantCount}`);
 		console.log(`Output file: ${outputPath}`);
 		console.log("\nCMUDict JSON generation complete.");
 	} catch (error) {

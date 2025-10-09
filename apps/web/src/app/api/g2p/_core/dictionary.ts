@@ -3,6 +3,9 @@ import { convertArpabetToIPA, normalizeCmuWord } from "shared-data";
 
 type PreprocessedCmudict = Record<string, string[]>;
 
+// Type for the new CMUDict JSON format with metadata
+type CmudictJson = { meta: unknown; data: Record<string, string[]> };
+
 class CMUDict {
 	private data: PreprocessedCmudict | null = null;
 	private cache = new Map<string, string[][]>();
@@ -16,7 +19,7 @@ class CMUDict {
 		this.loadPromise = Promise.resolve()
 			.then(() => {
 				if (this.loaded) return;
-				this.data = cmudictData as PreprocessedCmudict;
+				this.data = (cmudictData as CmudictJson).data;
 				this.loaded = true;
 			})
 			.catch((error) => {
