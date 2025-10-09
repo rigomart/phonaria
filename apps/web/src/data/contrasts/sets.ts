@@ -1,5 +1,7 @@
+import { phonixUtils } from "shared-data";
 import type { MinimalPairSet } from "./types";
-import { getExampleAudioUrl } from "./utils/audio";
+
+const { getExampleAudioUrl } = phonixUtils;
 
 export const minimalPairSets: MinimalPairSet[] = [
 	{
@@ -11,8 +13,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 		summary: "Contrast the relaxed short /ɪ/ with the tense, lengthened /i/",
 		description:
 			"Keep the tongue high at the front for both vowels, but shorten and relax /ɪ/ while lengthening /i/ with tighter lips.",
-		tags: ["front vowels", "length", "common ESL"],
-		difficulty: "foundational",
+		learningStage: "foundation",
 		l1Notes:
 			"Learners from Japanese, Spanish, and Portuguese backgrounds often merge these vowels due to absent length contrast.",
 		articulationHighlights: [
@@ -142,8 +143,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 		summary: "Differentiate the mid-front /ɛ/ from the open-front /æ/",
 		description:
 			"Drop the jaw further for /æ/, keeping the tongue low and front, while /ɛ/ stays mid-height and tighter.",
-		tags: ["front vowels", "jaw height"],
-		difficulty: "foundational",
+		learningStage: "foundation",
 		l1Notes:
 			"Speakers of Romance and East Asian languages often under-open the jaw, merging both vowels toward /e/.",
 		articulationHighlights: [
@@ -270,8 +270,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 		summary: "Contrast the short rounded /ʊ/ with the long, tense /u/",
 		description:
 			"Both vowels require rounded lips, but /ʊ/ is shorter with a central tongue, while /u/ is longer with a tighter high-back position.",
-		tags: ["back vowels", "length", "rounded"],
-		difficulty: "intermediate",
+		learningStage: "core",
 		l1Notes: "Germanic learners often over-tense /ʊ/, while Romance speakers merge toward /u/.",
 		articulationHighlights: [
 			{
@@ -398,8 +397,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 		summary: "Contrast the dental fricative /θ/ with the alveolar fricative /s/",
 		description:
 			"/θ/ pushes air between the tongue tip and teeth, while /s/ channels air along the alveolar ridge behind the teeth.",
-		tags: ["fricatives", "dental", "common ESL"],
-		difficulty: "foundational",
+		learningStage: "situational",
 		l1Notes:
 			"Arabic, Spanish, and French speakers often replace /θ/ with /s/ because the non-native dental fricative feels unstable.",
 		articulationHighlights: [
@@ -527,8 +525,7 @@ export const minimalPairSets: MinimalPairSet[] = [
 		summary: "Contrast the American English retroflex /ɹ/ with the alveolar lateral /l/",
 		description:
 			"/ɹ/ curls the tongue tip without touching the ridge, while /l/ taps the ridge and lets air flow around the sides.",
-		tags: ["liquids", "retroflex", "common ESL"],
-		difficulty: "intermediate",
+		learningStage: "fineTuning",
 		l1Notes:
 			"Japanese and Korean speakers often substitute /l/ for /ɹ/ because their languages lack the retroflex approximant.",
 		articulationHighlights: [
@@ -648,4 +645,4 @@ export const minimalPairSets: MinimalPairSet[] = [
 	},
 ];
 
-export const FEATURED_MINIMAL_PAIR_SET_ID = minimalPairSets[0]?.id ?? "";
+export const FEATURED_CONTRAST_SET_ID = minimalPairSets[0]?.id ?? "";

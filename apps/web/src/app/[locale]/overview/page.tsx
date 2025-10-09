@@ -6,7 +6,7 @@ import { ToolCombinationSection } from "./_components/tool-combination-section";
 export const metadata: Metadata = {
 	title: "Phonix tools overview",
 	description:
-		"Preview the grapheme-to-phoneme workspace, IPA reference chart, and minimal pair activities available in Phonix.",
+		"Preview the grapheme-to-phoneme workspace, IPA reference chart, and sound contrast activities available in Phonix.",
 };
 
 export default function FeaturesRoute() {

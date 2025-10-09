@@ -58,15 +58,15 @@ export function HeroSection() {
 							<CardHeader className="pb-3">
 								<div className="flex items-center gap-2">
 									<Headphones className="h-5 w-5 text-primary" />
-									<CardTitle className="text-lg">Minimal Pairs</CardTitle>
+									<CardTitle className="text-lg">Sound Contrasts</CardTitle>
 								</div>
 							</CardHeader>
 							<CardContent className="space-y-3">
 								<p className="text-sm text-muted-foreground">
-									Practice distinguishing similar sounds with targeted listening exercises.
+									Contrast nearby phonemes with guided listening and articulation prompts.
 								</p>
 								<Button asChild className="w-full" variant="outline">
-									<Link href="/minimal-pairs">Start Practice</Link>
+									<Link href="/contrasts">Explore Contrasts</Link>
 								</Button>
 							</CardContent>
 						</Card>
@@ -85,7 +85,7 @@ export function HeroSection() {
 								<p>Transcribe words you encounter in your reading</p>
 							</div>
 							<div>
-								<p className="font-medium text-foreground mb-1">Practice with Minimal Pairs</p>
+								<p className="font-medium text-foreground mb-1">Practice with Contrasts</p>
 								<p>Improve your listening and pronunciation accuracy</p>
 							</div>
 						</div>

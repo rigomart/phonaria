@@ -5,7 +5,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 const navigationLinks = [
 	{ href: "/overview", label: "Overview" },
 	{ href: "/", label: "Transcription" },
-	{ href: "/minimal-pairs", label: "Minimal Pairs" },
+	{ href: "/contrasts", label: "Contrasts" },
 	{ href: "/ipa-chart", label: "IPA Reference" },
 ];
 

@@ -29,8 +29,8 @@ export function ToolCombinationSection() {
 							<div>
 								<p className="font-semibold">Listen with intent</p>
 								<p className="text-sm text-muted-foreground">
-									After transcription, pick a related minimal pair set and compare how the words
-									differ. Use the note field to keep track of words that need another review.
+									After transcription, pick a related contrast set and compare how the words differ.
+									Use the note field to keep track of words that need another review.
 								</p>
 							</div>
 						</div>

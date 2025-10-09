@@ -1,6 +1,6 @@
 import { AudioLines } from "lucide-react";
 
-export function MinimalPairsPreview() {
+export function ContrastsPreview() {
 	const contrasts = [
 		{ label: "/ɪ/ vs /iː/", words: ["ship", "sheep"] },
 		{ label: "/æ/ vs /ɛ/", words: ["man", "men"] },
