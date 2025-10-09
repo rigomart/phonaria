@@ -49,7 +49,7 @@ All commits should pass linting, type checking, and relevant tests.
 
 Phonix ships with pre-generated assets but also supports regeneration when source data changes:
 
-- **CMU Pronouncing Dictionary** – Stored at `apps/web/data/cmudict.json` and bundled with the API for fast lookups. Regenerate with:
+- **CMU Pronouncing Dictionary** – Stored at `apps/web/data/cmudict.json` and bundled with the API for fast lookups. The JSON includes metadata (source, generation timestamp, counts) and the dictionary data. Regenerate with:
   ```bash
   CMUDICT_SRC_URL="<remote .dict file>" pnpm -C packages/helper-scripts cmudict-to-json
   ```

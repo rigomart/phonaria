@@ -36,10 +36,29 @@ The script skips words that already have audio. To experiment with a smaller bat
 
 ## CMUDict JSON workflow
 
-`cmudict-to-json.ts` downloads the raw CMU Pronouncing Dictionary, normalizes entries, and writes a compact JSON map of uppercase words to sanitized ARPAbet variants used by the web API.
+`cmudict-to-json.ts` downloads the raw CMU Pronouncing Dictionary, normalizes entries, and writes a JSON payload with metadata and a compact map of uppercase words to sanitized ARPAbet variants used by the web API.
 
 1. Configure `CMUDICT_SRC_URL` (see `.env` example above).
 2. Optionally set `CMUDICT_JSON_PATH`; otherwise the output defaults to `apps/web/data/cmudict.json`.
 3. Run `pnpm -C packages/helper-scripts cmudict-to-json`.
 
-Logs include entry counts, skipped lines, and file size so you can confirm the generated dictionary before committing it.
+The generated JSON has the following structure:
+```json
+{
+  "meta": {
+    "formatVersion": 1,
+    "source": "cmudict",
+    "sourceUrl": "https://...",
+    "generatedAt": "2025-01-09T12:34:56.000Z",
+    "wordCount": 123456,
+    "variantCount": 234567,
+    "skippedLineCount": 123,
+    "deduplicatedVariantCount": 456
+  },
+  "data": {
+    "WORD1": ["VARIANT1", "VARIANT2"]
+  }
+}
+```
+
+Consumers should read from the `data` property for dictionary lookups. Logs include entry counts, skipped lines, and file size so you can confirm the generated dictionary before committing it.

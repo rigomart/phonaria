@@ -59,7 +59,7 @@ apps/web
 
 ## Data dependencies
 
-- **CMU Pronouncing Dictionary** – Expected at `apps/web/data/cmudict.json`. Regenerate via `pnpm -C packages/helper-scripts cmudict-to-json` (see helper-scripts README).
+- **CMU Pronouncing Dictionary** – Expected at `apps/web/data/cmudict.json` with metadata and dictionary data. Regenerate via `pnpm -C packages/helper-scripts cmudict-to-json` (see helper-scripts README).
 - **Example audio** – Optional `.mp3` files under `public/audio/examples`. Generated with `pnpm -C packages/helper-scripts generate` once `ELEVENLABS_API_KEY` is configured.
 
 ## Testing guidance
