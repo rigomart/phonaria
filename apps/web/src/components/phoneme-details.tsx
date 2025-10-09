@@ -9,12 +9,14 @@ import type {
 	VowelAllophone,
 	VowelPhoneme,
 } from "shared-data";
-import { minimalPairSets, phonixUtils } from "shared-data";
+import { phonixUtils } from "shared-data";
 import { AudioControls } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
+import { getMinimalPairSets } from "@/data/contrasts";
 import { Link } from "@/i18n/navigation";
 
 const { toPhonemic, getExampleAudioUrl } = phonixUtils;
+const minimalPairSets = getMinimalPairSets();
 
 const PhonemeDetailsContext = createContext<IpaPhoneme | null>(null);
 
@@ -198,7 +200,7 @@ function PhonemeDetailsAllophones() {
 	);
 }
 
-function PhonemeDetailsMinimalPairs() {
+function PhonemeDetailsContrasts() {
 	const phoneme = usePhonemeDetails();
 	const matchingSets = minimalPairSets.filter((set) => set.focusPhonemes.includes(phoneme.symbol));
 	if (!matchingSets.length) return null;
@@ -236,7 +238,7 @@ function PhonemeDetailsMinimalPairs() {
 								</div>
 							) : null}
 							<Link
-								href={{ pathname: "/minimal-pairs", query: { contrast: set.slug } }}
+								href={{ pathname: "/contrasts", query: { contrast: set.slug } }}
 								className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80"
 							>
 								Open listening session
@@ -258,5 +260,5 @@ export {
 	PhonemeDetailsGuide,
 	PhonemeDetailsExamples,
 	PhonemeDetailsAllophones,
-	PhonemeDetailsMinimalPairs,
+	PhonemeDetailsContrasts,
 };

@@ -4,10 +4,10 @@ import {
 	PhonemeDetails,
 	PhonemeDetailsAllophones,
 	PhonemeDetailsArticulation,
+	PhonemeDetailsContrasts,
 	PhonemeDetailsExamples,
 	PhonemeDetailsGuide,
 	PhonemeDetailsHeader,
-	PhonemeDetailsMinimalPairs,
 	PhonemeDetailsSagittalView,
 } from "@/components/phoneme-details";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -32,7 +32,7 @@ export function PhonemeDialog() {
 								<PhonemeDetailsSagittalView />
 								<PhonemeDetailsArticulation />
 								<PhonemeDetailsGuide />
-								<PhonemeDetailsMinimalPairs />
+								<PhonemeDetailsContrasts />
 								<PhonemeDetailsExamples />
 								<PhonemeDetailsAllophones />
 							</div>

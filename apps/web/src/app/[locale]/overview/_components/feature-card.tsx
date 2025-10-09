@@ -11,10 +11,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-
+import { ContrastsPreview } from "./contrasts-preview";
 import { G2PPreview } from "./g2p-preview";
 import { IpaChartPreview } from "./ipa-chart-preview";
-import { MinimalPairsPreview } from "./minimal-pairs-preview";
 
 export type FeatureCardConfig = {
 	id: string;
@@ -59,19 +58,19 @@ export const featureCards: FeatureCardConfig[] = [
 		preview: <IpaChartPreview />,
 	},
 	{
-		id: "minimal-pairs",
-		name: "Minimal Pair Labs",
+		id: "contrasts",
+		name: "Sound Contrast Labs",
 		tagline: "Targeted listening drills",
 		description:
-			"Contrast similar sounds through curated word pairs with built-in listening support.",
-		href: "/minimal-pairs",
+			"Work through curated word sets that highlight tricky phoneme differences with audio and notes.",
+		href: "/contrasts",
 		highlights: [
-			"Choose from ready-made contrast sets",
+			"Choose from ready-made contrast groups",
 			"Hear native audio for each word pair",
-			"Add quick notes about what still needs practice",
+			"Review articulation cues for both sounds",
 		],
 		icon: Route,
-		preview: <MinimalPairsPreview />,
+		preview: <ContrastsPreview />,
 	},
 ];
 

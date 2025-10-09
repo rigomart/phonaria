@@ -1,5 +1,5 @@
-import type { MinimalPairSet } from "shared-data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { MinimalPairSet } from "@/data/contrasts";
 import { getManyPhonemes } from "@/lib/phonemes";
 
 interface ArticulationPanelProps {
@@ -12,7 +12,7 @@ export function ArticulationPanel({ set }: ArticulationPanelProps) {
 	if (!set.articulationHighlights.length) return null;
 
 	return (
-		<section id="minimal-pair-articulation" className="grid gap-6">
+		<section id="contrast-articulation" className="grid gap-6">
 			<Card className="border-muted-foreground/20 bg-muted/10">
 				<CardHeader>
 					<CardTitle className="text-xl">Articulation snapshot</CardTitle>
