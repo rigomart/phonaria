@@ -4,80 +4,68 @@ globs:
 alwaysApply: true
 ---
 
-Phonix is an interactive pronunciation learning platform focused on phoneme-level mastery for English as a Second Language (ESL) learners. It addresses the lack of accessible tools that teach how to physically articulate individual sounds rather than only practicing words or sentences, enabling users to understand, identify, and produce target phonemes accurately for improved long-term pronunciation skills.
+Phonix is a learner-first pronunciation toolkit for people studying English as a second language. Rather than a single curriculum, it gathers the core resources learners need to understand how English sounds work, explore spelling and phoneme patterns, and connect what they read with how it should sound.
 
-# The Problem We're Solving
+# Learner Challenges We Address
 
-## Primary Problem: Lack of Phoneme-Level Articulation Instruction
-Traditional pronunciation tools teach "repeat after me" without explaining how sounds are physically produced, leaving learners guessing at proper mouth, tongue, and lip positioning. This creates a foundational weakness where learners struggle with pronunciation because they don't understand the building blocks of English speech sounds.
+1. **English spelling unpredictability** – Learners regularly meet words whose pronunciation cannot be guessed from spelling alone.
+2. **Limited approachable references** – Most IPA charts and phonetic explanations feel academic, static, or scattered across multiple sites.
+3. **Fragmented tooling** – Transcription, dictionary lookup, and contrast practice typically live in separate apps, forcing constant context switching.
 
-## Secondary Problems
-1. **IPA Intimidation**: The International Phonetic Alphabet seems complex and academic to many learners
-2. **Limited Interactive Tools**: Most IPA resources are static charts without engaging, clickable exploration
-3. **Disconnected Learning**: Phoneme instruction isn't connected to real word usage and examples
-4. **Generic Feedback**: No personalized learning paths based on individual pronunciation difficulties
+# Core Toolkit
 
-# Core Features & Learning Experience
+## Grapheme-to-Phoneme Studio
+- **Instant transcription** – Paste any sentence or passage to see an IPA rendering with stress markers.
+- **Clickable insights** – Select individual phonemes for articulation detail, example words, and comparison notes.
+- **Dictionary bridge** – Jump straight from a word in the transcription to concise definitions and usage notes.
 
-## 1. Interactive IPA Chart
-- **Visual, clickable chart** of English phonemes (General American focus initially)
-- **Comprehensive phoneme details**: Each phoneme provides articulation guides, example words, and audio playback
-- **Visual articulation aids**: Place and manner of articulation for consonants; height, backness, and rounding for vowels
-- **Accessibility focus**: Mobile and desktop responsive with clear, learner-friendly interface
+## IPA Reference Hub
+- **Interactive chart** – Browse General American consonants, vowels, and diphthongs through a responsive grid.
+- **Articulation guidance** – Review step-by-step production notes, visual diagrams, and learner-friendly descriptions.
+- **Example library** – Access curated word lists with audio so learners can hear each sound in context.
 
-## 2. Phonemic Transcription Tool
-- **Text-to-phonemes conversion**: User inputs words or phrases → system outputs phonemic transcription
-- **Clickable transcription**: Each phoneme in the transcription links to detailed articulation information
-- **Word definitions**: Clicking a word opens a concise dictionary panel with meanings and optional pronunciation audio
-- **Dual approach**: Primary G2P model for accuracy with deterministic fallback for unknown words
-- **Real-world application**: Helps learners understand pronunciation of new vocabulary
+## Sound Contrast Explorer
+- **Minimal pair collections** – Study curated sets that highlight frequently confused sounds.
+- **Listening-first drills** – Play word-level audio, compare IPA transcriptions, and note takeaways for future review.
+- **Articulation cross-reference** – Surface cues from both sounds to reinforce what makes each distinct.
 
-## 3. Articulation Guides
-- **Step-by-step instructions** for producing each phoneme
-- **Visual diagrams** of mouth and tongue positions
-- **Native speaker recordings** with example words
-- **Multi-modal learning**: Text, visual, and audio instruction combined
+## Dictionary Lookup
+- **In-context definitions** – Request meanings for any word without leaving the workspace.
+- **Pronunciation confirmation** – Cross-check the dictionary’s audio with the transcription result for added confidence.
+- **Clear states** – Designed for fast retries, helpful errors, and obvious “no results” messaging.
 
-## 4. Interactive Practice Features
-- **Minimal Pair Practice**: Interactive exercises contrasting similar phonemes with listening and speaking challenges
-- **Listen & Identify**: Audio-based phoneme recognition with multiple choice responses and score tracking
-- **Speech Input & Feedback**: Phoneme pronunciation checking with basic pass/fail feedback using speech recognition APIs
-- **Word Repetition Mode**: Confidence-building exercises where users repeat words for recognition verification
+# Learning Experience Principles
 
-## 5. Learning Path Support
-- **Suggested progression** for mastering phonemes based on difficulty and common learner challenges
-- **Personalized recommendations** based on user progress and identified pronunciation difficulties
+1. **Toolbox over coursework** – Learners can enter through any feature and combine tools based on their immediate problem.
+2. **Approachable language** – Plain-language explanations demystify IPA, minimal pairs, and articulation terms.
+3. **Audio-first feedback** – High-quality recordings reinforce what learners read on screen.
+4. **Progressive disclosure** – Guidance appears when a learner is new to a surface and recedes as they explore.
+5. **No user tracking** – Phonix focuses on utility, not personalization or progress scoring.
 
-## 6. Dictionary Lookup
-- **In-context definitions**: Click any word in G2P results to view meanings in a right-side panel
-- **Pronunciation audio**: Play word audio when provided by the dictionary source
-- **Resilient UX**: Clear loading, not-found, and error states
-
-# User Experience Philosophy
-
-## Core Learning Flow
-1. **Discover**: Users explore an interactive IPA chart where each phoneme is immediately accessible
-2. **Learn**: Clicking reveals detailed articulation instructions, visual guides, and example words with audio
-3. **Practice**: Text input provides phonemic transcription; phonemes link to articulation details and words open dictionary definitions (with audio when available)
-4. **Progress**: Personalized practice based on identified pronunciation challenges and learning patterns
-
-## Key Design Principles
-- **Phoneme-first approach**: Everything starts with understanding individual sounds
-- **Interactive discovery**: Learning through exploration rather than linear lessons
-- **Immediate feedback**: Audio examples and visual guides available instantly
-- **Real-world connection**: All phonemes connected to actual English words and usage
-- **Approachable**: Makes IPA friendly and non-academic for everyday learners
-- **Progressive enhancement**: Core functionality accessible to all, enhanced features for capable devices
-
-# Technical Architecture Philosophy
+# Technical Philosophy
 
 ## Modern Web Standards
-- **Performance-first**: Instant IPA chart interaction, minimal loading times
-- **Responsive design**: Mobile-first approach for learners using phones and tablets
+- **Performance-first** – Low-latency interactions across desktop and mobile devices.
+- **Responsive surfaces** – Every tool adapts gracefully from phones to large displays.
 
 ## Development Standards
-- **Monorepo architecture**: Clear separation between web app, API, shared data, and utilities
-- **Type safety**: Full TypeScript implementation with strict settings
-- **Component composition**: Reusable UI elements with compound component patterns
-- **Data-driven UI**: Grid layouts generated from comprehensive phoneme data structures
-- **Modern tooling**: Vite, React 19, TanStack Router, Tailwind CSS v4, shadcn/ui
+- **Monorepo architecture** – Shared data, helper scripts, and the web app live together for tight iteration.
+- **Type safety** – Strict TypeScript adoption keeps the toolchain reliable.
+- **Composable UI** – Reusable components power multiple surfaces without duplication.
+- **Data-driven layouts** – Feature sections render from structured phoneme and contrast metadata.
+- **Modern tooling** – Next.js, React, Tailwind CSS, and shadcn/ui form the foundation.
+
+# Upcoming Features
+
+## Spelling Pattern Explorer
+- **Predictable chunks** – Explain recurring pronunciation outcomes for endings such as `-tion`, `-able`, or silent “magic e” patterns.
+- **Cross-tool links** – Highlight patterns found in user transcriptions and connect them back to relevant IPA entries and contrasts.
+- **Learner strategy prompts** – Offer practical tips on when patterns hold and how to spot exceptions.
+
+## Pronunciation History & Context
+- **Accessible timeline** – Summarize pivotal events like the Great Vowel Shift that shaped modern English sounds.
+- **Cross-language comparisons** – Contrast English unpredictability with languages such as Spanish to frame expectations.
+- **Cultural insights** – Show how historical change, borrowing, and regional variation influence today’s pronunciation norms.
+
+# Out of Scope
+- Personal progress dashboards, adaptive lesson plans, and personalization engines are intentionally excluded. Phonix is built to be a reliable, free resource learners can revisit on their own terms.

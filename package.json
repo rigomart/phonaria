@@ -1,7 +1,7 @@
 {
 	"name": "phonix",
 	"version": "0.0.1",
-	"description": "Web application focused on phoneme-based learning using the International Phonetic Alphabet (IPA)",
+	"description": "Toolkit of English pronunciation resources for ESL learners, including G2P transcription, IPA reference, and contrast explorers",
 	"scripts": {
 		"build": "turbo run build",
 		"lint": "turbo run lint",
@@ -9,7 +9,14 @@
 		"check-types": "turbo run check-types",
 		"test": "turbo run test"
 	},
-	"keywords": [],
+	"keywords": [
+		"english pronunciation",
+		"ipa",
+		"esl",
+		"grapheme to phoneme",
+		"minimal pairs",
+		"spelling patterns"
+	],
 	"author": "Miguel Rodriguez",
 	"license": "MIT",
 	"packageManager": "pnpm@10.15.1",
