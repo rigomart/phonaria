@@ -1,6 +1,6 @@
-# Phonix
+# Phonaria
 
-Phonix is a phoneme-first ESL pronunciation project built around a modern Next.js application. Learners explore General American phonemes through interactive IPA charts, grapheme-to-phoneme (G2P) transcription, and in-context dictionary lookups with audio support.
+Phonaria is a phoneme-first ESL pronunciation project built around a modern Next.js application. Learners explore General American phonemes through interactive IPA charts, grapheme-to-phoneme (G2P) transcription, and in-context dictionary lookups with audio support.
 
 ## Highlights
 
@@ -47,7 +47,7 @@ All commits should pass linting, type checking, and relevant tests.
 
 ## Data & helper workflows
 
-Phonix ships with pre-generated assets but also supports regeneration when source data changes:
+Phonaria ships with pre-generated assets but also supports regeneration when source data changes:
 
 - **CMU Pronouncing Dictionary** – Stored at `apps/web/data/cmudict.json` and bundled with the API for fast lookups. The JSON includes metadata (source, generation timestamp, counts) and the dictionary data. Regenerate with:
   ```bash
@@ -67,4 +67,4 @@ Deeper product context, enhancement plans, and feature briefs live in the [`docs
 
 ## Licensing
 
-Phonix is distributed under the MIT License. The embedded CMU Pronouncing Dictionary follows its original [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).
+Phonaria is distributed under the MIT License. The embedded CMU Pronouncing Dictionary follows its original [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).

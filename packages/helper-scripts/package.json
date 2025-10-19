@@ -1,9 +1,9 @@
 {
 	"name": "helper-scripts",
 	"version": "1.0.0",
-	"description": "Collection of helper scripts for Phonix application including TTS audio generation and data processing utilities",
+	"description": "Collection of helper scripts for Phonaria application including TTS audio generation and data processing utilities",
 	"keywords": [
-		"phonix",
+		"phonaria",
 		"helper-scripts",
 		"tts",
 		"data-processing"

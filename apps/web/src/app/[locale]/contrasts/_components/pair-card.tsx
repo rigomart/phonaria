@@ -1,9 +1,9 @@
-import { phonixUtils } from "shared-data";
+import { phonariaUtils } from "shared-data";
 import { AudioControls } from "@/components/audio-button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { MinimalPairSet } from "@/data/contrasts";
 
-const { toPhonemic } = phonixUtils;
+const { toPhonemic } = phonariaUtils;
 
 interface PairCardProps {
 	set: MinimalPairSet;

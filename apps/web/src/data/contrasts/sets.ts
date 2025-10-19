@@ -1,7 +1,7 @@
-import { phonixUtils } from "shared-data";
+import { phonariaUtils } from "shared-data";
 import type { MinimalPairSet } from "./types";
 
-const { getExampleAudioUrl } = phonixUtils;
+const { getExampleAudioUrl } = phonariaUtils;
 
 export const minimalPairSets: MinimalPairSet[] = [
 	{

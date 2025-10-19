@@ -43,7 +43,7 @@ export function ToolCombinationSection() {
 						practice so that learners can continue from any device.
 					</p>
 					<Button asChild variant="outline" className="w-full">
-						<Link href="mailto:hello@phonix.app">Suggest a feature</Link>
+						<Link href="mailto:hello@phonaria.app">Suggest a feature</Link>
 					</Button>
 				</div>
 			</div>

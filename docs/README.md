@@ -1,6 +1,6 @@
-# Phonix Documentation
+# Phonaria Documentation
 
-This directory centralizes long-form product context, technical deep-dives, and feature briefs for the Phonix project. Use it alongside the package READMEs to understand the rationale behind major systems and upcoming enhancements.
+This directory centralizes long-form product context, technical deep-dives, and feature briefs for the Phonaria project. Use it alongside the package READMEs to understand the rationale behind major systems and upcoming enhancements.
 
 ## Directory map
 

@@ -1,11 +1,11 @@
 import { useTranslations } from "next-intl";
 import type { ConsonantPhoneme, IpaPhoneme, VowelPhoneme } from "shared-data";
-import { phonixUtils } from "shared-data";
+import { phonariaUtils } from "shared-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 
-const { toPhonemic } = phonixUtils;
+const { toPhonemic } = phonariaUtils;
 
 interface PhonemeCardProps<T extends IpaPhoneme> {
 	phoneme: T;

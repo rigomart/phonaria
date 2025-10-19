@@ -22,7 +22,7 @@ export function Header() {
 							<span className="flex size-6 items-center justify-center">
 								<AudioLines className="size-4" aria-hidden="true" />
 							</span>
-							<span className="text-base font-medium">Phonix</span>
+							<span className="text-base font-medium">Phonaria</span>
 						</Link>
 
 						<nav className="hidden items-center gap-5 md:flex">

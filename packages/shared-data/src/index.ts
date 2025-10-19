@@ -14,5 +14,5 @@ export { consonants } from "./consonants";
 export { ARPABET_TO_IPA, convertArpabetToIPA } from "./phonetics/arpabet-to-ipa";
 export { normalizeCmuWord } from "./phonetics/cmudict";
 export * from "./types";
-export * as phonixUtils from "./utils/index";
+export * as phonariaUtils from "./utils/index";
 export { vowels } from "./vowels";
