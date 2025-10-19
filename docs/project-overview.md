@@ -1,10 +1,10 @@
 ---
-description: Project overview for Phonix
+description: Project overview for Phonaria
 globs:
 alwaysApply: true
 ---
 
-Phonix is a learner-first pronunciation toolkit for people studying English as a second language. Rather than a single curriculum, it gathers the core resources learners need to understand how English sounds work, explore spelling and phoneme patterns, and connect what they read with how it should sound.
+Phonaria is a learner-first pronunciation toolkit for people studying English as a second language. Rather than a single curriculum, it gathers the core resources learners need to understand how English sounds work, explore spelling and phoneme patterns, and connect what they read with how it should sound.
 
 # Learner Challenges We Address
 
@@ -40,7 +40,7 @@ Phonix is a learner-first pronunciation toolkit for people studying English as a
 2. **Approachable language** – Plain-language explanations demystify IPA, minimal pairs, and articulation terms.
 3. **Audio-first feedback** – High-quality recordings reinforce what learners read on screen.
 4. **Progressive disclosure** – Guidance appears when a learner is new to a surface and recedes as they explore.
-5. **No user tracking** – Phonix focuses on utility, not personalization or progress scoring.
+5. **No user tracking** – Phonaria focuses on utility, not personalization or progress scoring.
 
 # Technical Philosophy
 
@@ -68,4 +68,4 @@ Phonix is a learner-first pronunciation toolkit for people studying English as a
 - **Cultural insights** – Show how historical change, borrowing, and regional variation influence today’s pronunciation norms.
 
 # Out of Scope
-- Personal progress dashboards, adaptive lesson plans, and personalization engines are intentionally excluded. Phonix is built to be a reliable, free resource learners can revisit on their own terms.
+- Personal progress dashboards, adaptive lesson plans, and personalization engines are intentionally excluded. Phonaria is built to be a reliable, free resource learners can revisit on their own terms.

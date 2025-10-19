@@ -30,7 +30,7 @@ pnpm -C packages/helper-scripts cmudict-to-json    # Convert CMU dict to JSON
 
 ## Architecture Overview
 
-Phonix is a monorepo built with Turborepo containing a phoneme-first ESL pronunciation application.
+Phonaria is a monorepo built with Turborepo containing a phoneme-first ESL pronunciation application.
 
 ### Monorepo Structure
 - **`apps/web`** - Next.js App Router application with learner experience and API routes

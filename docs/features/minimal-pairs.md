@@ -1,6 +1,6 @@
 # Minimal Pairs Feature Development Plan
 
-This document outlines the phased development plan for the Minimal Pairs feature in Phonix, an interactive pronunciation learning platform for ESL learners. The feature focuses on phoneme-level mastery by helping users distinguish and practice similar sounds (e.g., /ɪ/ vs. /i/ in "ship" vs. "sheep"). Each phase delivers a functional, iterable product, progressing from core functionality to advanced enhancements, integrating with existing IPA chart and G2P transcription tools. The plan prioritizes a phoneme-first approach, interactive discovery, and evidence-based ESL practices.
+This document outlines the phased development plan for the Minimal Pairs feature in Phonaria, an interactive pronunciation learning platform for ESL learners. The feature focuses on phoneme-level mastery by helping users distinguish and practice similar sounds (e.g., /ɪ/ vs. /i/ in "ship" vs. "sheep"). Each phase delivers a functional, iterable product, progressing from core functionality to advanced enhancements, integrating with existing IPA chart and G2P transcription tools. The plan prioritizes a phoneme-first approach, interactive discovery, and evidence-based ESL practices.
 
 ## Phase 1: Core Listening Discrimination
 

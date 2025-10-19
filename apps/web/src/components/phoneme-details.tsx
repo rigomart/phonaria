@@ -9,13 +9,13 @@ import type {
 	VowelAllophone,
 	VowelPhoneme,
 } from "shared-data";
-import { phonixUtils } from "shared-data";
+import { phonariaUtils } from "shared-data";
 import { AudioControls } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
 import { getMinimalPairSets } from "@/data/contrasts";
 import { Link } from "@/i18n/navigation";
 
-const { toPhonemic, getExampleAudioUrl } = phonixUtils;
+const { toPhonemic, getExampleAudioUrl } = phonariaUtils;
 const minimalPairSets = getMinimalPairSets();
 
 const PhonemeDetailsContext = createContext<IpaPhoneme | null>(null);

@@ -1,6 +1,6 @@
-# Phonix – Web Application
+# Phonaria – Web Application
 
-This package hosts the primary Phonix experience: a Next.js App Router project that delivers IPA charts, grapheme-to-phoneme transcription, dictionary lookups, and pronunciation audio for ESL learners.
+This package hosts the primary Phonaria experience: a Next.js App Router project that delivers IPA charts, grapheme-to-phoneme transcription, dictionary lookups, and pronunciation audio for ESL learners.
 
 ## Feature overview
 

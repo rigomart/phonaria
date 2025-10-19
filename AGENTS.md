@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Context
-Phonix helps ESL learners master General American phonemes through clickable IPA charts, phonemic transcription, and dictionary lookups delivered in a responsive, audio-first Next.js app that keeps IPA approachable.
+Phonaria helps ESL learners master General American phonemes through clickable IPA charts, phonemic transcription, and dictionary lookups delivered in a responsive, audio-first Next.js app that keeps IPA approachable.
 
 ## Project Structure & Module Organization
 - `apps/web`: Next.js App Router for UI and API. Components live in `src/components`, hooks in `src/hooks`, services in `src/lib`; keep feature data under its route (e.g. `src/app/**/data`).

@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { ElevenLabsClient, ElevenLabsError } from "@elevenlabs/elevenlabs-js";
 import { config } from "dotenv";
-import { consonants, phonixUtils, vowels } from "shared-data";
+import { consonants, phonariaUtils, vowels } from "shared-data";
 
 config();
 
@@ -79,7 +79,7 @@ function ensureOutputDirectory(): void {
  */
 async function generateWordAudio(word: string): Promise<GenerationResult> {
 	try {
-		const fileName = `${phonixUtils.slugifyWord(word)}.mp3`;
+		const fileName = `${phonariaUtils.slugifyWord(word)}.mp3`;
 		const outputPath = path.join(outputDir, fileName);
 
 		if (fs.existsSync(outputPath)) {

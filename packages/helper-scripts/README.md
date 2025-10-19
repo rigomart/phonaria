@@ -1,6 +1,6 @@
 # Helper Scripts
 
-Utility scripts that back the Phonix web application. They generate reusable assets (example audio and CMU Pronouncing Dictionary JSON) and provide lint/type checks for the package itself.
+Utility scripts that back the Phonaria web application. They generate reusable assets (example audio and CMU Pronouncing Dictionary JSON) and provide lint/type checks for the package itself.
 
 ## Prerequisites
 

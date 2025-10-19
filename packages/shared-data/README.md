@@ -13,7 +13,7 @@ import {
   vowelArticulationRegistry,
   PHONEME_CATEGORIES,
   getCategoryInfo,
-  phonixUtils,
+  phonariaUtils,
   type ConsonantPhoneme,
   type VowelPhoneme,
 } from "shared-data";
@@ -52,7 +52,7 @@ interface ExampleWord {
 }
 ```
 
-Utilities such as `phonixUtils.getExampleAudioUrl(word)` and `phonixUtils.toPhonemic(ipa)` keep formatting consistent between packages.
+Utilities such as `phonariaUtils.getExampleAudioUrl(word)` and `phonariaUtils.toPhonemic(ipa)` keep formatting consistent between packages.
 
 ## Adding or updating phonemes
 
