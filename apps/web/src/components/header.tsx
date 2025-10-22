@@ -1,6 +1,6 @@
 import { AudioLines } from "lucide-react";
-import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Link } from "@/i18n/navigation";
 
 const navigationLinks = [
 	{ href: "/overview", label: "Overview" },

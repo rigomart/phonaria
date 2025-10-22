@@ -1,3 +1,5 @@
+"use client";
+
 import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { NavTabsSection } from "./_sections/nav-tabs-section";
 
