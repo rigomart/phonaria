@@ -5,7 +5,6 @@ import { Link } from "@/i18n/navigation";
 const navigationLinks = [
 	{ href: "/overview", label: "Overview" },
 	{ href: "/", label: "Transcription" },
-	{ href: "/contrasts", label: "Contrasts" },
 	{ href: "/ipa-chart", label: "IPA Reference" },
 ];
 
