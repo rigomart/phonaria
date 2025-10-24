@@ -353,6 +353,13 @@ The sample below demonstrates the required report shape. It follows the steps ab
 }
 ```
 
+## Field glossary
+- `priority` → `P1` (critical), `P2` (important), `P3` (enhancement).
+- `layer` → `L1` (always visible), `L2` (secondary/on-demand), `L3` (deep-dive reference).
+- `purpose` → choose from `layout`, `display`, `input`, `control`, `feedback`, `nav`.
+- `presentation.grouping.method` → `spacing`, `border`, `divider`, `tint`, `depth`, `heading`.
+- `interactions.event` → user triggers such as `click`, `toggle`, `submit`, `tab.change`.
+
 ## Open Questions & Assumptions
 - None
 ````
