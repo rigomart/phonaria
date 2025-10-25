@@ -5,15 +5,8 @@
 - Ensure the surface communicates essential phoneme knowledge without relying on existing data structures, layouts, or hosting flows.
 - Ground the redesign in learner-first, audio-centric principles that align with Phonaria’s goals.
 
-## Guiding Principles
-- **Cognitive Load & Chunking:** present information in focused, layered blocks so learners digest one idea at a time.
-- **Progressive Disclosure & Information Scent:** reveal depth on demand; learners should always know what additional content exists before expanding it.
-- **Dual Coding & Multimedia:** pair auditory, visual, and verbal cues to reinforce memory and comprehension.
-- **Interaction for Understanding:** every control should strengthen recognition or production; avoid decorative interactivity.
-- **Pedagogical UX:** support immediate practice, highlight meaningful contrasts, and frame tips as actionable guidance.
-
 ## Functional Requirements
-All sections are required unless their supporting content is unavailable. Long or secondary content must support progressive disclosure (e.g., explicit expand toggles).
+All sections are required unless their supporting content is unavailable. Long or secondary content must support progressive disclosure.
 
 1. **Identity Snapshot**
    - Display the phoneme symbol, its phonetic category, and one learner-friendly description sentence.
