@@ -11,12 +11,11 @@ All sections are required unless their supporting content is unavailable. Long o
 1. **Identity Snapshot**
    - Display the phoneme symbol, its phonetic category, and one learner-friendly description sentence.
 2. **Sound Playback**
-   - Provide a primary high-quality recording, a fixed-speed slow playback, and a loop control.
+   - Provide a primary high-quality recording, a fixed-speed slow playback.
    - Ensure playback states supply clear feedback and accessible labels.
-   - May include a small set of word-level clips tied to the phoneme.
 3. **Production Guidance**
    - Describe articulation as a concise ordered sequence.
-   - Reference static visual assets (e.g., sagittal diagram stills) aligned to each step.
+   - Reference a static visual asset (sagittal diagram).
    - Include at least one common mistake callout and one sensory cue to signal correct production.
 4. **Spelling Bridges**
    - List high-frequency grapheme patterns that map to the phoneme and highlight notable exceptions.
@@ -38,14 +37,13 @@ All sections are required unless their supporting content is unavailable. Long o
    - Ensure tips can be explored individually so they do not clutter the default view.
 
 ## Interaction & Accessibility
-- All interactive controls (audio, toggles, expanders) must be keyboard accessible and provide immediate, perceivable feedback.
 - Static visuals require descriptive text or captions.
 - Tone should remain instructional, calm, and precise; define jargon through tooltips or inline explanations.
 
 ## Content & Asset Considerations
 - Requires dedicated phoneme metadata covering identity, audio variants, production steps, grapheme mappings, variations, example word sets, contrast cues, and tip catalogues.
 - Needs curated static imagery or iconography to support the production guidance section.
-- Enforce concise copy to prevent cognitive overload; secondary data defaults to collapsed views.
+- Enforce concise copy to prevent cognitive overload.
 
 ## Risks & Notes
 - **Information overload:** mitigated by strict word limits and progressive disclosure.
