@@ -2,251 +2,337 @@
 
 ## Scope & Goal
 
-**Scope**: Feature  
-**Primary Goal**: Enable ESL learners to understand a phoneme's identity, sound, production technique, and usage contexts in a single cohesive view.  
-**Constraints**: Audio limited to studio-quality recordings from metadata; must support progressive disclosure to prevent cognitive overload; contrast handoff opens external page; component remains host-agnostic.  
-**Existing Patterns**: Builds on Phonaria's phoneme-first learning approach; extends current scattered audio/articulation/spelling flows into unified surface.
+**Scope**: Feature
+**Primary Goal**: Provide comprehensive phoneme learning materials combining identity, audio, production technique, reference materials, and practice support in a single focused view.
+**Constraints**: 
+- Progressive disclosure required to prevent cognitive overload
+- Host-agnostic design (no assumptions about embedding context)
+- Audio controls limited to studio-quality recordings from metadata
+- All visual content requires descriptive text for accessibility
+- External contrast experience opens in new tab/window
+
+**Existing Patterns**: Collapsible sections, tabs for reference materials
 
 ## Legend
 
 **Layers:**
-- **L1**: Immediately visible on page load (minimal set to start primary task)
-- **L2**: Hidden by default, revealed through user action (secondary/optional content)
+- L1: Immediately visible on page load (minimal set to start primary task)
+- L2: Hidden by default, revealed through user action (secondary/optional content)
 
 **Patterns:** See glossary at `.agents/reference/ui-planner-glossary.md` for detailed definitions.
 
-**Principles:** Cognitive and accessibility principles cited from catalog in UI Planner documentation.
-
----
+**Principles:** Cognitive and accessibility principles cited from catalog in this document.
 
 ## UI Structure
 
-- **Phoneme Identity Section**
-  - Purpose: Display phoneme symbol, phonetic category, and descriptive sentence to establish what the phoneme is.
+- **Phoneme Identity Snapshot**
+  - Purpose: Display phoneme symbol, phonetic category, and descriptive sentence to establish what sound learner is studying.
   - Layer: L1
-  - Why: Essential orientation before any learning can begin. Users need immediate context for "what am I learning?" Supports orientation and infoScent principles—learners must know what they're studying before engaging with production or examples.
-  - Principles: orientation, infoScent, cognitiveLoad
-  - Accessibility:
-    - Screen readers: Announce symbol, category, and description as landmark heading
-  - Notes: Include IPA symbol, category label (e.g., "Vowel - Front, High"), and single-sentence description
+  - Why: Essential orientation providing immediate context for all subsequent learning. Users cannot engage meaningfully with production or examples without knowing which phoneme they're studying. Supports orientation principle by answering "what am I looking at" before any other interaction.
+  - Principles: orientation, cognitiveLoad, chunking
+  - Notes: Contains IPA symbol, category label (e.g., "Voiceless alveolar stop"), and single descriptive sentence
 
-- **Audio Playback Controls**
-  - Purpose: Play primary studio recording at normal and slow speeds to let learners hear the target sound.
+- **Primary Audio Playback**
+  - Purpose: Play studio-quality recording of isolated phoneme at normal speed with visible playback state.
   - Layer: L1
-  - Why: Auditory model is prerequisite for pronunciation learning—learners cannot produce what they haven't heard. Immediate access to both speeds supports affordance and feedback principles. Slow playback aids noticing for learners who struggle with native speed.
-  - Principles: affordance, feedback, noticing
+  - Why: Core learning requirement allowing immediate sound exposure. Hearing the phoneme is prerequisite for all articulation and discrimination work. Visible playback state provides feedback and reinforces control affordance.
+  - Principles: affordance, feedback, cognitiveLoad
+  - Pattern: Audio control
   - Interactions:
-    - Click Normal Speed button → plays primary audio, button shows playing state
-    - Click Slow Speed button → plays slow audio (fixed speed), button shows playing state
-    - Playback completes → button returns to default state
-    - One audio plays at a time (clicking another stops current)
+    - Click play button → audio plays, button shows playing state
+    - During playback → progress indication visible
+    - Click pause → audio stops, button returns to play state
+    - Playback completes → button returns to play state
   - Accessibility:
-    - Keyboard: Space or Enter activates playback
-    - Screen readers: Announce button labels ("Play Normal Speed", "Play Slow Speed") and state changes ("Playing", "Stopped")
-    - Focus: Clear focus indicator on buttons
-  - Notes: Display both controls prominently; ensure clear labeling and visual feedback during playback
+    - Keyboard: Space or Enter toggles playback
+    - Screen readers: Announce playback state changes ("playing", "paused", "stopped")
+    - Focus: Visible focus indicator on play button
+
+- **Slow Playback Control**
+  - Purpose: Play fixed-speed slowed version of phoneme audio for detailed listening.
+  - Layer: L2
+  - Why: Refinement tool for learners needing more granular sound perception. Optional because primary audio suffices for initial exposure. Progressive disclosure prevents overwhelming beginners while serving advanced needs.
+  - Principles: progressiveDisclosure, affordance, feedback
+  - Pattern: Audio control
+  - Interactions: Identical to primary playback (play/pause, state indication)
+  - Accessibility: Same keyboard and screen reader support as primary playback
+  - Notes: Uses same interaction pattern as primary audio for consistency
 
 - **Production Guidance Section**
-  - Purpose: Teach articulatory technique through ordered steps, visual diagram, and reinforcement cues.
-  - Layer: L1
-  - Why: Core instructional content enabling accurate production—the "how to make this sound" learners need immediately. Chunking articulation into steps reduces cognitive load. Visual + textual reinforcement supports diverse learning styles. Combining steps, diagram, mistakes, and sensory cues in one section maintains focus rather than scattering guidance.
-  - Principles: chunking, cognitiveLoad, affordance, feedback
-  - Accessibility:
-    - Screen readers: Provide descriptive alt text for sagittal diagram explaining tongue/lip positions
-    - Keyboard: Standard navigation through text content
-  - Notes: Contains production steps list, sagittal diagram with caption, common mistake callout, and sensory cue item
-
-- **Example Words Section**
-  - Purpose: Show phoneme in authentic word contexts across positions (initial, medial, final) with audio playback.
-  - Layer: L1
-  - Why: Essential grounding—learners need to see phoneme in real usage immediately to connect abstract symbol to concrete words. Positional variety supports noticing of context-dependent patterns. Supports retrievalPractice and affordance principles by providing immediate practice opportunities.
-  - Principles: retrievalPractice, noticing, affordance
-  - Pattern: list
-  - Interactions:
-    - Click word audio button → plays word-level recording, button shows playing state
-    - Highlight source word (if provided by host) → visually distinguished without reordering
-    - Words without audio → show entry but omit audio control
-  - Accessibility:
-    - Keyboard: Tab through audio buttons, Space/Enter plays
-    - Screen readers: Announce word, IPA transcription with stress marks, and audio availability
-    - Focus: Clear indicators on audio buttons
-  - Notes: Display orthographic word, IPA fragment with stress, positional context (Initial/Medial/Final); show reasonable initial set (6-9 examples covering positions)
-
-- **Extended Learning Content**
-  - Purpose: Provide deeper phoneme knowledge through spelling patterns, variations, and contrasts for learners ready to extend beyond core production.
+  - Purpose: Teach articulation technique through ordered steps, visual diagram, and error prevention cues.
   - Layer: L2
-  - Why: Secondary content that clarifies and extends primary learning without overwhelming initial view. Progressive disclosure keeps cognitive load manageable while ensuring comprehensive coverage. Tabbed organization enables switching between related knowledge categories that learners frequently compare (spelling vs variations vs contrasts).
-  - Principles: progressiveDisclosure, cognitiveLoad, chunking, patternConsistency
-  - Pattern: tabs
+  - Pattern: collapsible
+  - Why: Detailed how-to content supporting learners who need explicit technique instruction. L2 placement prevents overwhelming users who prefer auditory learning or already know articulation. Collapsible pattern allows quick access without cluttering initial view.
+  - Principles: progressiveDisclosure, chunking, cognitiveLoad
+  - Interactions:
+    - Click section header → expands to reveal content
+    - Click again → collapses section
   - Accessibility:
-    - Keyboard: Arrow keys navigate tabs, Tab enters tab panel content, Shift+Tab exits
-    - Screen readers: Announce tab list role, selected tab, and panel content
-    - Focus: Maintain focus on selected tab, move focus into panel on activation
-  - Notes: Tabs enable related content exploration without scrolling through stacked sections; users can quickly switch between spelling, variations, and contrasts during study
+    - Keyboard: Enter or Space toggles expansion
+    - Screen readers: Announce expanded/collapsed state
+    - Focus: Visible indicator on header
+
+  - **Articulation Steps List**
+    - Purpose: Present ordered production instructions for making the phoneme sound.
+    - Layer: L1
+    - Why: Core teaching content within Production section. Ordered list supports sequential learning and reduces cognitive load by breaking complex motor task into manageable steps. Chunking principle applied through numbered progression.
+    - Principles: chunking, cognitiveLoad
+    - Notes: Concise ordered list (e.g., "1. Place tongue tip behind upper teeth, 2. Build air pressure, 3. Release quickly")
+
+  - **Production Visual**
+    - Purpose: Display sagittal diagram or articulation image with descriptive caption.
+    - Layer: L1
+    - Why: Visual reinforcement supporting learners who benefit from spatial understanding of tongue/lip placement. Complements textual steps through dual coding. Descriptive text ensures accessibility for screen reader users.
+    - Principles: chunking, affordance
+    - Accessibility:
+      - Screen readers: Descriptive text alternative explains diagram content
+    - Notes: Static image with descriptive caption, not interactive
+
+  - **Common Mistakes Callout**
+    - Purpose: Alert learners to typical articulation errors for this phoneme.
+    - Layer: L1
+    - Why: Error prevention reduces frustration and accelerates learning by addressing predictable failure modes. Positioning within Production section maintains relevance while chunking keeps callouts distinct from instruction steps.
+    - Principles: chunking, feedback, noticing
+    - Notes: One or more brief callouts (e.g., "Don't let tongue touch teeth", "Avoid adding vowel sound")
+
+  - **Sensory Cues**
+    - Purpose: Provide tactile or kinesthetic feedback hints for confirming correct production.
+    - Layer: L1
+    - Why: Sensory feedback helps learners self-correct during solo practice. Noticing principle applied by directing attention to physical sensations often overlooked. Complements visual and textual instruction through multi-sensory approach.
+    - Principles: noticing, feedback
+    - Notes: Brief sensory descriptions (e.g., "Feel air burst against hand", "Tongue should vibrate slightly")
+
+- **Learning Reference Tabs**
+  - Purpose: Organize related reference materials for spelling, variations, and usage examples in switchable views.
+  - Layer: L2
+  - Pattern: tabs
+  - Why: Three reference materials users switch between while studying phoneme usage patterns. Tabs reduce scrolling and maintain consistent vertical position, supporting orientation by keeping learner anchored in one UI location while exploring different facets. L2 placement keeps initial view focused on identity and sound.
+  - Principles: chunking, progressiveDisclosure, orientation, patternConsistency
+  - Interactions:
+    - Click tab header → switches to that tab's content
+    - Tab content updates without page scroll
+  - Accessibility:
+    - Keyboard: Arrow keys navigate between tabs, Tab key moves focus into active panel
+    - Screen readers: Announce selected tab and total tab count
+    - Focus: Clear focus indicator on tab headers and logical flow into panel content
 
   - **Spelling Patterns Tab**
-    - Purpose: Map phoneme to high-frequency grapheme patterns and notable exceptions to bridge sound and spelling.
-    - Layer: L1 (within Extended Learning)
-    - Why: Critical for reading/writing transfer—ESL learners need explicit spelling connections that native speakers intuit. Highlighting exceptions reduces future errors through noticing principle. Supports retrieval practice when learners encounter these patterns in text.
-    - Principles: noticing, retrievalPractice, chunking
-    - Notes: List grapheme patterns in frequency order; visually distinguish exceptions
+    - Purpose: Show high-frequency grapheme patterns that map to this phoneme with notable exceptions.
+    - Layer: L1
+    - Why: Critical reference for bridging orthographic knowledge to pronunciation. Learners need this to recognize phoneme in written text. Exceptions highlighted through noticing principle to prevent overgeneralization errors.
+    - Principles: chunking, noticing, infoScent
+    - Notes: List common patterns (e.g., "ph" → /f/, "gh" → /f/) with exception callouts (e.g., "Exceptions: 'shepherd'")
 
-  - **Variations & Allophones Tab**
-    - Purpose: Document phoneme variations with explanations and audio availability indicators, using show-more for long lists.
-    - Layer: L1 (within Extended Learning)
-    - Why: Advanced understanding—learners benefit from knowing regional or contextual variants but don't need this to start producing the phoneme. Progressive disclosure via show-more prevents overwhelming learners with extensive allophone lists while preserving completeness.
-    - Principles: progressiveDisclosure, cognitiveLoad, chunking
+  - **Variations Tab**
+    - Purpose: Document allophones or phoneme variations with explanations and audio availability indicators.
+    - Layer: L1
+    - Why: Advanced content for learners encountering dialectal or contextual variation. Grouped here rather than independent section to reduce L2 clutter. Show more pattern prevents overwhelming users when many variations exist.
+    - Principles: progressiveDisclosure, chunking, patternConsistency
     - Interactions:
-      - Initial display → shows first 3-5 variations
-      - Click "Show More" → reveals remaining variations
-      - Audio available indicator → clear visual cue (no audio playback embedded yet)
-    - Accessibility:
-      - Keyboard: Tab to "Show More" button, Enter expands
-      - Screen readers: Announce variation description and audio availability
-    - Notes: Each variation entry shows short explanation plus audio availability indicator
+      - View initial variation entries (typically 3-5)
+      - Click "Show more" → reveals additional entries
+    - Notes: Each entry shows variation description, context, and audio icon (if available)
 
-  - **Contrast & Practice Tab**
-    - Purpose: Preview frequently confused phonemes with distinguishing cues and handoff to dedicated contrast practice.
-    - Layer: L1 (within Extended Learning)
-    - Why: Addresses common confusion points explicitly—supporting noticing and interleaving principles by highlighting differences learners often miss. Handoff to external contrast experience maintains component scope while enabling deeper practice. Separation into preview (here) vs full practice (external) follows progressive disclosure.
-    - Principles: noticing, interleaving, affordance, progressiveDisclosure
-    - Pattern: list (contrast preview items)
+  - **Example Words Tab**
+    - Purpose: Display word examples grouped by phoneme position with IPA transcription and audio playback.
+    - Layer: L1
+    - Why: Essential for connecting isolated phoneme to real usage. Positional grouping (initial/medial/final) supports pattern recognition and prepares for minimal pair work. Chunking by position reduces cognitive load while covering comprehensive usage.
+    - Principles: chunking, retrievalPractice, patternConsistency
     - Interactions:
-      - Display contrast list → shows confused phoneme, distinguishing cue, optional sample pair
-      - Click contrast handoff action → opens external contrast page (new tab/window)
+      - Browse examples grouped by position (Initial, Medial, Final)
+      - Click word audio button → plays word-level recording
+      - Highlighted source word (if provided by host) visually distinct but maintains position-based order
     - Accessibility:
-      - Keyboard: Tab to handoff link/button, Enter activates
-      - Screen readers: Announce link purpose ("Open contrast practice for /ɪ/ vs /i:/")
-    - Notes: Limit preview to 3-5 frequently confused phonemes; handoff action clearly labeled
+      - Keyboard: Tab through example words, Enter/Space plays audio
+      - Screen readers: Announce word, IPA transcription, position category
+      - Focus: Clear focus indicator on playable words
+    - Notes: Each example shows orthographic word, IPA fragment with stress marks, position label. Audio control only visible when word-level audio exists. Missing audio omits control entirely (no placeholder).
 
-  - **Tips & Guidance Tab**
-    - Purpose: Offer optional micro-practice prompts and tips for learners seeking additional reinforcement.
-    - Layer: L1 (within Extended Learning)
-    - Why: Optional guidance that extends learning without cluttering core view. Supports progressiveDisclosure and affordance—learners discover tips when ready. Prevents cognitive overload by isolating exploratory content from essential production steps.
-    - Principles: progressiveDisclosure, affordance, cognitiveLoad
-    - Notes: Individual tip items; each tip is self-contained and can be explored independently
+- **Contrasts Preview**
+  - Purpose: List frequently confused phonemes with distinguishing cues and link to dedicated contrast practice.
+  - Layer: L2
+  - Pattern: collapsible
+  - Why: Comparison tool for discrimination practice. L2 placement appropriate because contrasts serve learners who've mastered isolation and are ready for distinction work. Preview format with external handoff prevents scope creep while directing users to specialized practice tool.
+  - Principles: progressiveDisclosure, interleaving, infoScent, affordance
+  - Interactions:
+    - Click section header → expands to show confused phonemes list
+    - Click "Practice contrasts" link → opens external contrast experience in new tab
+  - Accessibility:
+    - Keyboard: Enter/Space toggles expansion, Tab reaches handoff link, Enter opens link
+    - Screen readers: Announce link destination and new window behavior
+    - Focus: Clear focus indicator on header and link
+  - Notes: Lists 3-5 commonly confused phonemes with brief distinguishing cues (e.g., "/s/ vs /θ/ — /s/ is hissing, /θ/ has tongue visible"). Sample word pairs optional if metadata provides them.
 
----
+- **Practice Tips**
+  - Purpose: Offer individual micro-practice prompts or learning suggestions for this phoneme.
+  - Layer: L2
+  - Pattern: collapsible
+  - Why: Optional enhancement for motivated learners seeking additional practice ideas. L2 placement prevents overwhelming users with too many options initially. Individual reveal (if multiple tips) applies progressive disclosure within section.
+  - Principles: progressiveDisclosure, cognitiveLoad, retrievalPractice
+  - Interactions:
+    - Click section header → expands to show tips
+    - If multiple tips, each visible individually or via show more pattern
+  - Accessibility:
+    - Keyboard: Enter/Space toggles expansion
+    - Screen readers: Announce expanded state
+  - Notes: Tips might include retrieval prompts, recording suggestions, or contextual practice ideas
 
 ## Key Decisions
 
 | Area | Principles Applied | Rationale |
 |------|-------------------|-----------|
-| **L1 vs L2 Assignment** | progressiveDisclosure, cognitiveLoad | L1 limited to identity, audio, production, and examples—the minimal set to START learning the phoneme. Spelling, variations, contrasts, and tips moved to L2 to prevent overwhelming initial view. This honors cognitive load principle (limit simultaneous novelty) while ensuring essential content remains immediately visible. |
-| **Example Words in L1** | retrievalPractice, affordance, noticing | Unlike other optional content, examples provide essential grounding—learners need concrete word contexts immediately to connect abstract phoneme to usage. Evidence of success confirms learners engage with examples on every visit, justifying L1 placement. |
-| **Extended Learning Tabs** | chunking, progressiveDisclosure, patternConsistency | Four related L2 sections (spelling, variations, contrasts, tips) organized as tabs rather than independent collapsibles or accordion. Tabs chosen because categories are equally important and learners frequently switch between them during study (e.g., comparing spelling patterns while reviewing variations). Maintains context better than stacked sections. Rejected accordion (users benefit from keeping multiple tabs open mentally) and rejected independent collapsibles (increases scrolling and reduces sense of relationship). |
-| **Production Section Grouping** | chunking, cognitiveLoad | Combined articulation steps, visual diagram, common mistakes, and sensory cues into single L1 section rather than splitting. Grouping related production content reduces navigation and maintains instructional flow. Keeps cognitive load manageable by presenting complete production knowledge in one coherent unit. |
-| **Conditional Section Hiding** | affordance, orientation | Sections with missing required content are entirely hidden rather than shown as empty states. Prevents confusion and maintains clean information scent—learners see only applicable content. Supports affordance principle by avoiding UI elements that don't lead to useful outcomes. |
-| **Audio Controls Prominence** | affordance, feedback | Normal and slow playback controls placed in L1 with clear labels and playing states. Auditory input is prerequisite for pronunciation learning—learners cannot produce what they haven't heard. Immediate, obvious access supports affordance; state feedback (playing/stopped) supports feedback principle. |
-
----
+| **L1 minimal set** | cognitiveLoad, progressiveDisclosure, orientation | Only Identity Snapshot and Primary Audio visible initially. This represents absolute minimum to start learning (what + sound). Production, examples, and reference materials deferred to L2 to prevent overwhelming first encounter. Alternative rejected: showing examples L1 would create dense initial view. |
+| **Slow audio as L2** | progressiveDisclosure, cognitiveLoad | Refinement tool for advanced needs. Primary audio suffices for initial exposure; slow playback serves learners who need granular listening. L2 prevents cluttering audio controls for users who don't need it. |
+| **Reference materials as tabs** | chunking, orientation, patternConsistency | Spelling, Variations, and Examples are related reference materials users switch between while studying. Tabs reduce scrolling and maintain consistent vertical position, supporting orientation. Alternative rejected: independent collapsibles would create long vertical stack with lost context during scrolling. Tabs chosen over accordion because users frequently switch between references (not sequential exploration). |
+| **Production as independent section** | chunking, progressiveDisclosure | Production serves distinct purpose (technique teaching) separate from reference materials. Keeping it independent from tabs maintains clear separation between "how to make sound" (doing) and "where sound appears" (reference). Collapsible pattern allows quick access without permanent space consumption. |
+| **Contrasts as preview + handoff** | progressiveDisclosure, infoScent, affordance | Spec indicates contrast practice belongs in dedicated external experience. Preview lists confused phonemes with brief cues to support infoScent (users know what to expect), then handoff link provides clear affordance for deeper practice. Prevents scope creep while maintaining discovery path. |
+| **Examples within tabs** | chunking, patternConsistency | Examples are reference material (where phoneme appears) rather than core identity/audio. Grouping with Spelling and Variations reduces L2 section count while maintaining logical relationship (all three answer "how/where is this phoneme used in language"). |
+| **Conditional section hiding** | affordance, cognitiveLoad | When metadata lacks content for a section (e.g., no variations documented), entire section hidden rather than showing empty state. Reduces clutter and prevents learner confusion about missing data. Reinforces affordance by showing only actionable content. |
 
 ## Implementation Guidance
 
 ### Accessibility
 
 **Keyboard Navigation:**
-- Tab through all interactive elements (audio buttons, tabs, links) in logical top-to-bottom order
-- Space or Enter activates audio playback and buttons
-- Arrow keys navigate between tabs; Tab enters tab panel content
-- Escape closes expanded "show more" variations if implemented as overlay
+- Tab key moves through interactive elements in logical top-to-bottom order
+- Audio controls respond to Space and Enter for play/pause
+- Collapsible sections toggle with Enter or Space on header
+- Tab navigation within tabs: Arrow keys switch tabs, Tab key enters active panel
+- Contrast handoff link opens with Enter (new tab behavior announced)
 
 **Screen Reader Support:**
-- Announce phoneme identity section as landmark heading with symbol, category, description
-- Announce audio button states ("Play Normal Speed", "Playing", "Stopped")
-- Announce example word entries with orthographic word, IPA transcription, stress, and audio availability
-- Announce tab list role, selected tab state, and panel content on activation
-- Announce variation descriptions and audio availability indicators
-- Announce contrast preview items with phoneme pair and distinguishing cue
+- Identity snapshot read as landmark heading with phoneme symbol and category
+- Audio controls announce state changes (playing, paused, stopped, loading)
+- Collapsible sections announce expanded/collapsed state when toggled
+- Tab selection announces active tab name and total count
+- Example words announce orthographic form, IPA transcription, and position category
+- Contrast handoff link announces destination and new window behavior
+- Dynamic content updates (example audio playback, tab switches) announced without stealing focus
 
 **Focus Management:**
-- Maintain clear focus indicators on all interactive elements (audio buttons, tabs, links)
-- Tab navigation maintains logical reading order within each section
-- When expanding tabs, focus moves to first interactive element in panel (or panel itself if none)
-- Contrast handoff link opens external page without losing current component context
+- All interactive elements have visible focus indicators
+- Focus order follows visual top-to-bottom layout
+- Collapsible sections maintain focus on header after toggle
+- Tab switches move focus to selected tab header, then user tabs into panel
+- Audio controls maintain focus on play button during and after playback
+- Modal/overlay patterns (if needed for future enhancements) trap focus and restore to trigger on close
 
 **Touch Targets:**
-- Ensure all interactive elements (buttons, tabs, links) meet minimum touch target sizes for mobile usability
+- All interactive elements meet minimum touch target sizing for mobile accessibility
 
 ### Interaction Patterns
 
 **Audio Playback:**
-- Only one audio plays at a time (starting new audio stops current)
-- Visual state changes clearly indicate playing vs stopped
-- Buttons return to default state on completion
+- Consistent play/pause toggle pattern for primary and slow audio
+- Visual state indication during playback (progress, playing state)
+- Single audio instance plays at a time (playing new audio stops previous)
+- Example word audio uses same playback pattern for consistency
 
-**Progressive Disclosure (Extended Learning):**
-- Initial load: Extended Learning content hidden (L2)
-- User trigger: Click/tap to reveal tabs, select tab to view content
-- Variations "show more": Initially shows 3-5 variations, expands on demand
+**Progressive Disclosure:**
+- Collapsible sections initially collapsed (L2 content hidden)
+- Section headers clearly indicate expandable nature
+- Tabs start with first tab active (Spelling)
+- Show more pattern (Variations) reveals additional content inline without navigation
+
+**Handoff Pattern:**
+- Contrast handoff link opens external practice tool in new tab
+- Clear affordance through link styling and "opens in new tab" indication
+- Link positioned after preview content to maintain information → action flow
+
+### Component Structure
+
+Consider decomposing into logical sub-components:
+
+**Core Structure:**
+- Phoneme Details Container (orchestrates layout, receives phoneme metadata)
+  - Identity Snapshot (symbol, category, description)
+  - Audio Controls Section (primary + slow playback)
+  - Production Guidance Section (collapsible)
+    - Steps List
+    - Visual with Caption
+    - Mistakes Callouts
+    - Sensory Cues
+  - Learning Reference Tabs
+    - Spelling Patterns Tab Panel
+    - Variations Tab Panel (with show more)
+    - Examples Tab Panel (grouped by position)
+  - Contrasts Preview (collapsible with handoff link)
+  - Practice Tips (collapsible)
+
+**Reusable Components:**
+- Audio Player Control (reused for primary, slow, example words)
+- Collapsible Section (reused for Production, Contrasts, Tips)
+- Tab Container (custom implementation for reference materials)
+- Example Word Entry (reused within Examples tab)
 
 **Conditional Rendering:**
-- Sections with missing required metadata are completely hidden (not shown as empty states)
-- Example words without audio show entry but omit audio control
-
-**Source Word Highlighting:**
-- If host provides source word, visually distinguish it in example list without reordering
-- Maintain original positional ordering (initial → medial → final)
+- Each section checks for required metadata before rendering
+- Missing content results in section omission (no empty states shown)
+- Audio controls only appear when audio URLs exist in metadata
+- Show more button appears only when variation count exceeds threshold
 
 ### Layer Strategy
 
 **L1 (Immediately Visible):**
-- Phoneme Identity Section (symbol, category, description)
-- Audio Playback Controls (normal + slow speeds)
-- Production Guidance Section (steps, visual, mistakes, cues)
-- Example Words Section (initial set covering positions)
+- Phoneme Identity Snapshot: Establishes context (what am I studying?)
+- Primary Audio Playback: Immediate sound exposure (how does it sound?)
 
-**L2 (On-Demand via Extended Learning Tabs):**
-- Spelling Patterns Tab (graphemes with exceptions)
-- Variations & Allophones Tab (with show-more for long lists)
-- Contrast & Practice Tab (preview + handoff)
-- Tips & Guidance Tab (optional micro-practice)
+These two elements represent minimum viable learning surface. Everything else builds on this foundation.
+
+**L2 (On-Demand):**
+- Slow Audio: Refinement for granular listening
+- Production Guidance: Detailed articulation technique
+- Learning Reference Tabs: Spelling, variations, examples reference
+- Contrasts Preview: Discrimination preparation and handoff
+- Practice Tips: Optional enhancement for motivated learners
+
+L2 content revealed through user action (expanding sections, switching tabs) prevents cognitive overload while maintaining comprehensive coverage.
 
 ### Development Phasing
 
-**Core/MVP:**
-- L1 sections: Identity, Audio, Production, Examples
-- Basic L2 structure with at least Spelling and Variations tabs
-- Conditional section hiding logic
-- Keyboard and screen reader support for all interactive elements
+**Phase 1 (Core/MVP):**
+- Identity snapshot
+- Primary audio playback
+- Production guidance (collapsible)
+- Basic example words (without audio)
+- Conditional section hiding
 
-**Phase 2:**
-- Complete all Extended Learning tabs (Contrast, Tips)
-- "Show more" variations expansion
-- Source word highlighting from host context
-- Enhanced audio state feedback
+**Phase 2 (Enhancement):**
+- Slow audio playback
+- Learning reference tabs (Spelling, Variations, Examples)
+- Example word audio integration
+- Show more pattern for variations
+- Contrasts preview with handoff
 
-**Future:**
-- Inline tip interactivity (micro-quizzes within tips)
-- Variation audio playback (currently only shows availability)
-- Collapsible production substeps for complex phonemes
+**Phase 3 (Polish):**
+- Practice tips section
+- Source word highlighting in examples
+- Enhanced accessibility (screen reader optimization)
+- Mobile-specific touch optimizations
 
 ### Notes
 
-**Component Boundaries:**
-- Component receives phoneme metadata bundle from host (identity, audio URLs, production content, spelling data, variations, examples, contrasts, tips, visuals)
-- Component receives optional source word context from host for highlighting
-- Component receives contrast handoff URL configuration from host
-- Component emits no events—purely presentational with self-contained audio interactions
-- Component handles conditional rendering based on metadata completeness
+**Metadata Requirements:**
+- Component expects comprehensive phoneme metadata including identity, audio URLs, production steps, visual URLs, spelling patterns, variations, examples, contrasts, tips
+- Missing sections gracefully hidden (no error states)
+- Host provides phoneme identifier, optional context word, contrast handoff URL
 
-**Tone & Copy:**
-- Instructional, calm, jargon-free
-- Define technical terms inline or via tooltips
-- Production steps use clear imperative language ("Place tongue...", "Round lips...")
-- Error states (if needed) use supportive language without blame
+**Host Integration:**
+- Component host-agnostic (embeddable in dictionary, IPA chart, practice flows)
+- Host responsible for loading metadata, providing contrast handoff URL
+- Optional source word prop highlights that word in examples without reordering
 
-**Data Dependencies:**
-- All content sourced from curated phoneme metadata
-- Audio files must exist at provided URLs (component doesn't generate or fallback)
-- Sagittal diagrams must include descriptive captions for accessibility
-- Example words require IPA transcription with stress marks
+**Audio Management:**
+- Only one audio instance plays at a time across all controls
+- Audio files assumed pre-generated at normal and slow speeds
+- Example word audio optional (controls hidden when absent)
+- No fallback audio (don't substitute phoneme audio for missing word audio)
 
----
+**Progressive Enhancement:**
+- Core content (identity, audio, production) works without JavaScript
+- Interactive features (collapsibles, tabs, show more) degrade gracefully
+- Audio controls require JavaScript for playback state management
 
 ## Open Questions
 
-- Should "show more" variations use inline expansion or overlay (popover/dialog) for very long lists?
-- If phoneme has 15+ example words, should Example Words section implement pagination or limit initial display with "show more"?
-- Should Tips tab support any interactivity (e.g., marking tips as "completed" or "helpful") or remain purely informational?
-- For source word highlighting, should component scroll to that word in Example Words section when component loads?
+None

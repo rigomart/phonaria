@@ -30,7 +30,7 @@ Interaction patterns describing user navigation and behavior without dictating i
 #### Overlays & Dialogs
 - `tooltip` — Brief help text on hover/focus; non-interactive, purely informational
 - `hover-card` — Rich preview card on hover for links and mentions; good for showing user profiles, link previews, or additional context without clicking
-- `popover` — Lightweight non-modal overlay anchored to trigger; good for small forms, quick settings, or controls that don't require blocking the page
+- `popover` — Lightweight non-modal overlay anchored to trigger; good for supplementary info, definitions, small forms, quick settings, or controls that don't require blocking the page
 - `dialog` — Modal window that blocks background interaction; good for forms, data entry, or focused tasks that need completion
 - `alert-dialog` — Blocking confirmation dialog for critical actions; good for warnings, confirmations, or destructive actions (delete, logout); cannot be dismissed by clicking outside
 - `drawer` — Panel sliding from screen edge (typically bottom on mobile, side on desktop); good for mobile-friendly forms or supplementary content
@@ -102,6 +102,12 @@ Interaction patterns describing user navigation and behavior without dictating i
 - `kbd` — Keyboard shortcut display; good for showing hotkeys
 
 ### Layout & Structure Patterns
+
+#### Spatial Organization
+- `columns` — Multi-column horizontal layout; good for displaying related content side-by-side (e.g., form + preview, diagram + steps)
+- `grid` — Items arranged in repeating grid; good for cards, thumbnails, or uniform content blocks
+- `split-view` — Two-panel layout with adjustable divider; good for master-detail or navigation + content
+- `sidebar-layout` — Content area with persistent side panel; good for filters, navigation, or supplementary controls
 
 #### Navigation Structure
 - `sidebar` — Persistent side navigation; good for app-level navigation with many sections

@@ -60,7 +60,7 @@ Canonical definitions in `.agents/reference/ui-planner-glossary.md`:
 
 ## Mindset
 
-You are an **Information Architect and Interaction Designer**. Ground decisions in user goals and cognitive principles. Treat UI as information architecture first, visual artifact second. Balance clarity with parsimony. Defend accessibility from the outset. Flag ambiguity early—ask when needed, otherwise state assumptions.
+You are an **Information Architect and Interaction Designer**. Ground decisions in user goals and cognitive principles. Treat UI as information architecture first, visual artifact second. Balance clarity with parsimony. Consider both hierarchy (L1/L2) and spatial organization (columns, grid) when appropriate. Defend accessibility from the outset. Flag ambiguity early—ask when needed, otherwise state assumptions.
 
 ## Execution Workflow
 
@@ -74,14 +74,19 @@ You are an **Information Architect and Interaction Designer**. Ground decisions 
 5. **Cluster content** by user goal, data type, task
 6. **Assign layers**: L1 (visible) vs L2 (on-demand)
 7. **If multiple L2 sections**, choose organization:
+   - If 5+: Look for higher-level groupings by user task (not just topic)
    - Related content users switch between? → tabs or accordion
-   - Unrelated/deeply optional? → independent sections
-8. **Identify patterns**: From glossary for individual sections
+   - Distinct purposes? → independent sections
+   - Avoid long scrollable stacks
+8. **Consider layout**: Should related L1 content be side-by-side (columns, grid) or stacked?
+9. **Identify patterns**: From glossary for individual sections
 
 ### Phase 3: Document
 10. **Build structure** following decomposition rules and field specs
 11. **Self-validate** using comprehensive checklist
 12. **Output** to `.agents/plans/` with confirmation
+
+**Note**: Plans focus on information architecture and user flows. Layout suggestions (columns, grid) belong in Notes field. File structure belongs in Component Structure subsection of Implementation Guidance.
 
 ---
 
@@ -117,10 +122,15 @@ Use these objective criteria for subjective decisions:
 - Maximum nesting depth: 3 levels
 
 **Multiple L2 sections:**
-When you have several L2 sections, choose organization based on relationships:
-- **Tabs**: Content categories of equal importance users switch between
-- **Accordion**: Related topics where users explore one at a time
-- **Independent**: Sections are unrelated or deeply optional
+When you have several L2 sections, choose organization based on user behavior:
+- **Tabs**: Content users switch between frequently (reference materials, views, categories)
+- **Accordion**: Related topics users explore sequentially, one at a time
+- **Independent**: Sections with distinct purposes or deeply optional
+
+**When 5+ L2 sections exist:**
+- Look for higher-level groupings by user task (not just subject matter)
+- Consider hybrid: tabs for related content + independent sections for distinct purposes
+- Avoid creating long scrollable stacks—group related materials to reduce navigation cost
 
 Document choice in Key Decisions table.
 
@@ -236,8 +246,8 @@ Document choice in Key Decisions table.
 
 #### Notes
 - **Format**: 1-3 sentences, max 200 characters
-- **Use for**: Element listings when stopping decomposition, or brief non-prescriptive hints
-- **Examples**: "Common fields include name, email, phone, bio" or "Consider debouncing search input"
+- **Use for**: Element listings when stopping decomposition, layout considerations, or brief non-prescriptive hints
+- **Examples**: "Common fields include name, email, phone, bio" or "Consider two-column layout: diagram left, steps right" or "Consider debouncing search input"
 
 ---
 
@@ -413,6 +423,10 @@ Non-prescriptive developer notes:
 - [Named patterns and where applied]
 - [Expected behaviors]
 
+### Component Structure
+- [Suggested decomposition into sub-components if helpful]
+- [Logical boundaries for code organization]
+
 ### Layer Strategy
 - **L1**: [What's visible immediately and why]
 - **L2**: [What's on-demand and why]
@@ -524,35 +538,42 @@ See Minimal Example above. For complex nested structures, follow same format wit
 
 ### Pattern Variety Example (Multiple L2 Sections)
 
-**Component with 5 L2 sections**: Production, Spelling, Variations, Examples, Contrasts
+**Component with 6 L2 sections**: Production, Spelling, Variations, Examples, Contrasts, Tips
 
-**Option A - Independent sections:**
+**Option A - All independent (creates long scroll):**
+```markdown
+- **Production Guidance** (L2) - collapsible
+- **Spelling Patterns** (L2) - collapsible
+- **Variations** (L2) - collapsible
+- **Examples** (L2) - collapsible
+- **Contrasts** (L2) - collapsible
+- **Tips** (L2) - collapsible
+```
+**Problem**: 6 sections create long vertical stack, users lose context scrolling between them.
+
+**Option B - Hybrid grouping:**
 ```markdown
 - **Production Guidance** (L2)
   - Pattern: collapsible
+  - Why: Distinct purpose (teaching articulation technique vs providing reference)
   
-- **Spelling Patterns** (L2)
-  - Pattern: collapsible
-  
-[... 3 more independent collapsible sections ...]
-```
-
-**Option B - Organized with tabs:**
-```markdown
-- **Learning Content** (L2)
+- **Learning Resources** (L2)
   - Pattern: tabs
-  - Why: Five categories equally important for mastery. Tabs enable switching between production, spelling, examples without scrolling. Users compare across categories frequently.
+  - Why: Four reference materials users switch between while studying. Tabs reduce scrolling and maintain consistent vertical position.
   
-  - **Production** (L1 within tabs)
   - **Spelling** (L1 within tabs)
   - **Variations** (L1 within tabs)
   - **Examples** (L1 within tabs)
   - **Contrasts** (L1 within tabs)
+
+- **Practice Tips** (L2)
+  - Pattern: collapsible
+  - Why: Optional practice ideas, separate from core learning content
 ```
 
 **Key Decision:**
 ```markdown
-| L2 Organization | affordance, chunking | Tabs chosen over independent sections. Categories are related and users switch between them frequently. Tabs maintain context better than stack of collapsibles. Rejected accordion (users need multiple categories open). |
+| L2 Organization | chunking, cognitiveLoad | Hybrid approach: 4 reference materials grouped as tabs (Spelling/Variations/Examples/Contrasts), Production and Tips remain independent. Tabs chosen for reference materials because users switch between them frequently while studying—tabs reduce scrolling and maintain context better than stack. Production and Tips separate because they serve distinct purposes (doing vs reading vs practicing). Rejected all-independent (creates excessive scrolling for 6 sections). Rejected all-tabs (forces unrelated content together). |
 ```
 
 ### Anti-Pattern Examples (What NOT to Do)
