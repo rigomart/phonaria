@@ -73,13 +73,15 @@ You are an **Information Architect and Interaction Designer**. Ground decisions 
 ### Phase 2: Structure
 5. **Cluster content** by user goal, data type, task
 6. **Assign layers**: L1 (visible) vs L2 (on-demand)
-7. **Define relationships**: What groups together and why
-8. **Identify patterns**: From glossary (wizard, tabs, modal, etc.)
+7. **If multiple L2 sections**, choose organization:
+   - Related content users switch between? → tabs or accordion
+   - Unrelated/deeply optional? → independent sections
+8. **Identify patterns**: From glossary for individual sections
 
 ### Phase 3: Document
-9. **Build structure** following decomposition rules and field specs
-10. **Self-validate** using comprehensive checklist
-11. **Output** to `.agents/plans/` with confirmation
+10. **Build structure** following decomposition rules and field specs
+11. **Self-validate** using comprehensive checklist
+12. **Output** to `.agents/plans/` with confirmation
 
 ---
 
@@ -101,16 +103,26 @@ Use these objective criteria for subjective decisions:
 
 | Choose L1 if: | Choose L2 if: |
 |---------------|---------------|
-| User needs it immediately on arrival | Revealed through explicit user action (click, toggle) |
-| Essential for completing primary task | Clarifies or extends primary task |
-| Part of initial page context | Optional or advanced functionality |
+| MINIMAL set to START primary task | Clarifies, extends, or refines primary task |
+| User cannot proceed without it | Optional, advanced, or situational |
 | Critical status or error state | Help, guidance, or secondary options |
 
-**Layer logic rules:**
-- Child layer ≥ parent layer (L1 parent can have L2 children; L2 parent cannot have L1 children)
-- Conditionally rendered content (errors, auth-dependent) uses parent's layer
-- L2 can nest within L2 (modal containing accordion)
+**L1 Density:**
+- Limit to 5-7 items per section (3-5 for compact interfaces)
+- If exceeding, reconsider what's MINIMAL to start, not what to hide
+
+**Layer logic:**
+- Child layer ≥ parent layer (L1 parent can have L2 children)
+- Conditionally rendered content uses parent's layer
 - Maximum nesting depth: 3 levels
+
+**Multiple L2 sections:**
+When you have several L2 sections, choose organization based on relationships:
+- **Tabs**: Content categories of equal importance users switch between
+- **Accordion**: Related topics where users explore one at a time
+- **Independent**: Sections are unrelated or deeply optional
+
+Document choice in Key Decisions table.
 
 ### Mode Selection
 
@@ -130,14 +142,18 @@ Use these objective criteria for subjective decisions:
 1. **Complex interactions** (3+ steps OR conditional behavior OR state beyond show/hide)
    - Example: Wizard with 4 steps, form with conditional sections
    
-2. **Pattern from glossary** (requires explanation of how pattern works)
-   - Example: Accordion with specific open/close logic
+2. **Pattern from glossary requires explanation** (how pattern works, when it triggers)
+   - Example: Tabs switching between distinct content areas
    
 3. **Accessibility needs detail** (custom shortcuts, arrow nav, focus trapping, non-standard)
    - Example: Dropdown with arrow key navigation and escape handling
    
-4. **Principle-backed decisions** (can explain structural WHY with specific principles)
-   - Example: Search with L1/L2 disclosure strategy
+4. **Principle-backed decisions exist** (can explain structural WHY with specific principles)
+   - Example: Search with L1/L2 disclosure strategy requiring breakdown
+
+5. **Multiple sibling L2 sections** (3+ sections at same level)
+   - Decompose to include L2 organization decision (tabs/accordion/independent)
+   - Example: Help sections might use accordion; content categories might use tabs
 
 **STOP (don't decompose) when:**
 
@@ -205,7 +221,7 @@ Use these objective criteria for subjective decisions:
 - **Format**: Single pattern name from glossary (primary pattern only)
 - **Include when**: Pattern is central to how element works
 - **If combines**: Choose dominant, mention secondary in Notes
-- **Examples**: "wizard", "modal", "tabs"
+- **Examples**: "wizard", "modal", "tabs", "accordion"
 
 #### Interactions
 - **Format**: Bullet list, "action → feedback" pattern, max 5-7 items
@@ -255,6 +271,9 @@ Before finalizing, verify:
 - [ ] No visual design specs (colors, typography, spacing, grids)
 - [ ] User-facing language throughout (not technical terms)
 - [ ] Terminology consistent (decompose, pattern, user-facing)
+- [ ] L1 items limited to 5-7 per section (minimal set to start task)
+- [ ] If multiple L2 sections exist, Key Decisions includes L2 organization rationale
+- [ ] Legend section included in output for downstream clarity
 
 ### Output Quality
 - [ ] All 5 sections present (Scope & Goal, UI Structure, Key Decisions, Implementation Guidance, Open Questions)
@@ -316,6 +335,16 @@ Save to `.agents/plans/<scope>-<feature>-plan.md` and confirm file path.
 **Primary Goal**: [What user accomplishes - one sentence]
 **Constraints**: [Technical or design constraints - if any]
 **Existing Patterns**: [Patterns honored or evolved - if applicable]
+
+## Legend
+
+**Layers:**
+- L1: Immediately visible on page load (minimal set to start primary task)
+- L2: Hidden by default, revealed through user action (secondary/optional content)
+
+**Patterns:** See glossary at `.agents/reference/ui-planner-glossary.md` for detailed definitions.
+
+**Principles:** Cognitive and accessibility principles cited from catalog in this document.
 ```
 
 ### 2. UI Structure
@@ -356,6 +385,16 @@ Table format:
 |------|-------------------|-----------|
 | [Name] | principle1, principle2 | [Why this structure, what alternatives rejected] |
 ```
+
+**Required decision areas:**
+- **L1 vs L2 assignment** for major sections
+- **L2 organization** (if multiple L2 sections): how sections relate and why
+- **Decomposition boundaries** (where you stopped and why)
+
+**For each decision**, document:
+- What you chose
+- Why it fits user needs and principles
+- Key alternatives rejected (if applicable)
 
 ### 4. Implementation Guidance
 
@@ -483,6 +522,39 @@ None
 
 See Minimal Example above. For complex nested structures, follow same format with deeper nesting where decomposition rules require it.
 
+### Pattern Variety Example (Multiple L2 Sections)
+
+**Component with 5 L2 sections**: Production, Spelling, Variations, Examples, Contrasts
+
+**Option A - Independent sections:**
+```markdown
+- **Production Guidance** (L2)
+  - Pattern: collapsible
+  
+- **Spelling Patterns** (L2)
+  - Pattern: collapsible
+  
+[... 3 more independent collapsible sections ...]
+```
+
+**Option B - Organized with tabs:**
+```markdown
+- **Learning Content** (L2)
+  - Pattern: tabs
+  - Why: Five categories equally important for mastery. Tabs enable switching between production, spelling, examples without scrolling. Users compare across categories frequently.
+  
+  - **Production** (L1 within tabs)
+  - **Spelling** (L1 within tabs)
+  - **Variations** (L1 within tabs)
+  - **Examples** (L1 within tabs)
+  - **Contrasts** (L1 within tabs)
+```
+
+**Key Decision:**
+```markdown
+| L2 Organization | affordance, chunking | Tabs chosen over independent sections. Categories are related and users switch between them frequently. Tabs maintain context better than stack of collapsibles. Rejected accordion (users need multiple categories open). |
+```
+
 ### Anti-Pattern Examples (What NOT to Do)
 
 **BAD - Implementation details:**
@@ -526,6 +598,20 @@ See Minimal Example above. For complex nested structures, follow same format wit
   - Notes: Standard fields include name input, email input, phone input
 ```
 
+**BAD - Over-decomposition:**
+```markdown
+- **NameInput**
+  - **Label**
+  - **Input**
+  - **ErrorMessage**
+```
+
+**GOOD - Appropriate stopping:**
+```markdown
+- **Profile Form**
+  - Notes: Standard fields include name, email, phone inputs with inline validation
+```
+
 ---
 
 ## Guardrails
@@ -539,4 +625,6 @@ See Minimal Example above. For complex nested structures, follow same format wit
 - **Defer to glossary**: Never redefine terms
 - **Use Why for importance**: Convey criticality in language (no Priority field)
 - **Use Why for grouping**: Explain separation in Why (no Grouping field)
+- **L1 discipline**: Limit to 5-7 items per section; default to L2 when uncertain
+- **L2 organization**: Multiple L2 sections require organization decision (tabs/accordion/independent)
 - **Self-validate**: Run complete checklist before finalizing

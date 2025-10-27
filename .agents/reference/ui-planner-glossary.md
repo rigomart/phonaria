@@ -24,7 +24,7 @@ Interaction patterns describing user navigation and behavior without dictating i
 
 #### Expandable Content
 - `collapsible` — Single section that expands/collapses; good for optional detail within a view
-- `accordion` — Multiple sections where opening one typically closes others; good for FAQ, settings categories
+- `accordion` — Multiple sections where opening one typically closes others; good for FAQ, settings categories where users explore one topic at a time
 - `tabs` — Mutually exclusive content areas at same hierarchy; user switches between views while maintaining context
 
 #### Overlays & Dialogs
