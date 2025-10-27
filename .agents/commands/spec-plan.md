@@ -177,6 +177,9 @@ Anything here is deferred to future work.
 ### Functional Requirements
 - **Format**: R1, R2, R3... numbered list
 - **Template**: "<Actor> can <action> <object> <condition>"
+- **Atomicity**: One capability per requirement. If using "and", consider splitting
+- **Length**: Aim for 150 chars. If over 200, check if describing multiple capabilities
+- **Compound pattern**: For multi-step workflows, use R5a, R5b, R5c
 - **Access control**: Write both positive and negative ("can" and "cannot")
 - **Avoid**: UI descriptions, implementation details, "nice to have"
 
@@ -232,6 +235,8 @@ Before finalizing spec:
 - [ ] All blocking questions in section 8 resolved (or section says "None")
 - [ ] No vague statements like "users happier" in evidence
 - [ ] No "should" or "ideally" in constraints (only "must" and "cannot")
+- [ ] No compound requirements cramming multiple capabilities into one
+- [ ] Most requirements under 200 characters (exceptions need clear justification)
 
 ## Examples
 
@@ -346,6 +351,15 @@ Before finalizing spec:
 **Example**: "Response time should be fast"
 **Fix**: "Response must complete within 200ms" or move to assumptions if not absolute
 
+### Compound Requirements
+**Problem**: Cramming multiple capabilities into single requirement
+**Example**: "R1. The Learner can view phoneme details, play audio with speed controls, see spelling patterns, and review contrast pairs"
+**Fix**: Split into atomic requirements:
+- R1. The Learner can view phoneme identity snapshot when component loads.
+- R2. The Learner can play audio with normal and slow speed controls.
+- R3. The Learner can review spelling patterns mapped to the phoneme.
+- R4. The Learner can view contrast pairs for frequently confused phonemes.
+
 ## Iteration Guidance
 
 Specs evolve through conversation. Common patterns:
@@ -376,7 +390,16 @@ Track significant changes if spec evolves:
 
 ## Output
 
+### File Location
+Save spec document to: `.agents/specs/[feature-name]-spec.md`
+
+File naming:
+- Use kebab-case
+- Be descriptive but concise
+- Examples: `phoneme-details-component-spec.md`, `project-collaborators-spec.md`, `audio-playback-controls-spec.md`
+
+### Deliverables
 After completing spec, provide:
-1. **Spec document** (complete markdown)
+1. **Spec document** saved to `.agents/specs/` (complete markdown)
 2. **Summary**: One paragraph covering problem, goal, key requirements
 3. **Next steps**: "Ready for UI planning" or "Blocking questions remain: ..."
