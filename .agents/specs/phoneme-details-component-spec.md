@@ -25,23 +25,21 @@ After this feature exists:
 - R5. The component displays a static production visual (e.g., sagittal diagram) with descriptive text so the ESL Learner can interpret the image.
 - R6. The ESL Learner can see at least one common mistake callout and one sensory cue that reinforce correct production for the phoneme.
 - R7. The ESL Learner can review high-frequency grapheme patterns that map to the phoneme, including highlighted notable exceptions.
-- R8. The ESL Learner can expand or collapse spelling bridge content when the list would otherwise overwhelm the default view.
-- R9. The ESL Learner can inspect documented variations or allophones, each with a short explanation and an indicator showing whether alternate audio is available.
-- R10. The ESL Learner can reveal additional variation entries via a “show more” mechanism whenever the host supplies more than a handful of variations.
-- R11. The ESL Learner can browse an example library showing distinct positional contexts (initial, medial, final when available) with each entry displaying the orthographic word, IPA fragment with stress, and audio playback when that word-level audio exists.
-- R12. When example word audio is missing, the component still shows the entry but omits the audio control rather than substituting the base phoneme audio.
-- R13. The component can optionally highlight a source word (provided by the host flow) without altering the core ordering of examples.
-- R14. The ESL Learner can view a contrast preview that lists frequently confused phonemes, each with a distinguishing cue and optional sample pair snippet.
-- R15. The ESL Learner can use a single handoff action that opens the dedicated contrast experience in an external destination configured by the host.
-- R16. The ESL Learner can explore each tip or micro-practice prompt individually so tips never overwhelm the initial layout.
-- R17. Whenever required content for a section is absent for a phoneme, the component hides that entire section so learners never see placeholder or “missing” states.
+- R8. The ESL Learner can inspect documented variations or allophones, each with a short explanation and an indicator showing whether alternate audio is available.
+- R9. The ESL Learner can reveal additional variation entries via a “show more” mechanism whenever the host supplies more than a handful of variations.
+- R10. The ESL Learner can browse an example library showing distinct positional contexts (initial, medial, final when available) with each entry displaying the orthographic word, IPA fragment with stress, and audio playback when that word-level audio exists.
+- R11. When example word audio is missing, the component still shows the entry but omits the audio control rather than substituting the base phoneme audio.
+- R12. The component can optionally highlight a source word (provided by the host flow) without altering the core ordering of examples.
+- R13. The ESL Learner can view a contrast preview that lists frequently confused phonemes, each with a distinguishing cue and optional sample pair snippet.
+- R14. The ESL Learner can use a single handoff action that opens the dedicated contrast experience in an external destination configured by the host.
+- R15. The ESL Learner can explore each tip or micro-practice prompt individually so tips never overwhelm the initial layout.
+- R16. Whenever required content for a section is absent for a phoneme, the component hides that entire section so learners never see placeholder or “missing” states.
 
 ## 5. Constraints & Rules
-- Hidden sections must not leave empty containers or placeholder text; the layout should collapse seamlessly when data is absent.
 - Audio controls must expose accessible labels, state changes, and are limited to studio-quality recordings supplied in the phoneme metadata.
 - Static visuals (e.g., sagittal diagrams) must include captions or descriptive text for screen-reader support.
 - Tone of all copy must remain instructional, calm, and jargon is defined inline or via tooltips.
-- Collapse/expand patterns must enforce progressive disclosure to prevent cognitive overload.
+- UI patterns must enforce progressive disclosure to prevent cognitive overload.
 - The contrast handoff link must open an external page provided by the host configuration (new tab or window as appropriate).
 - Component behavior must stay host-agnostic; no assumptions about surrounding navigation, lessons, or assessments.
 
@@ -54,14 +52,12 @@ After this feature exists:
 ## 7. Assumptions / Tradeoffs
 - We assume curated metadata (audio variants, production steps, spelling patterns, variations, examples, contrasts, tips, visuals) exists or will be produced outside this feature.
 - We assume the host flow supplies the configurable URL for the external contrast experience.
-- We assume per-section collapse thresholds (e.g., number of items before "show more") will be resolved in UX design later.
 - We accept that phoneme-specific customization (colors, bespoke layouts) is out of scope; the component uses a consistent structure across phonemes.
 
 ## 8. Open Questions (Blocking)
 None.
 
 ## 9. Out of Scope / Future Ideas
-- Defining exact UI patterns, microcopy, or visual design for collapse/expand controls.
 - Building authoring tools to create or edit the underlying phoneme metadata.
 - Running contrast drills or practice sessions within the component itself.
 - Auto-generating word-level audio when it is missing.
