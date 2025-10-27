@@ -1,5 +1,5 @@
 ---
-description: Generate a principle-driven UI plan from unstructured input (free text or spec file) that describes a feature or interface idea focusing on ideation and specification, not code implementation.
+description: Generate principle-driven UI plans focused on information architecture and interaction design, without dictating implementation details.
 ---
 
 ## User Input
@@ -10,407 +10,533 @@ $ARGUMENTS
 You **MUST** consider the user input before proceeding (if not empty).
 
 ## Goal
-Translate unstructured feature input into a principle-driven UI structure that is ready for implementation handoff.  
-The command produces a single nested JSON tree that explains what to build and why, anchored in cognitive, information architecture, and accessibility guidance. It focuses on:
-- identifying the correct starting scope (`page`, `container`, `component`, `innerComponent`) and the hierarchy of sub-parts,
-- defining meaningful groupings and semantic layers without committing to layout,
-- recording rationale, principles, and accessibility intent so downstream teams can implement consistently.
+
+Transform feature descriptions into structured UI specifications defining:
+- **Information architecture**: content organization, grouping, and rationale
+- **Interaction patterns**: user navigation and task completion flows  
+- **Design principles**: cognitive, accessibility, and IA foundations for decisions
+- **Progressive disclosure**: immediate visibility (L1) vs on-demand (L2)
+
+Output a markdown plan guiding implementation without prescribing components, frameworks, or visual design.
 
 ## Operating Constraints
-- **Read-only source, write-only output**: derive insight from the provided text/spec; emit a single JSON artifact without modifying files.
-- **Structure over layout**: never decide on grids, columns, density, alignment, or responsive behavior—stay agnostic to visual placement.
-- **Single-tree contract**: produce exactly one nested tree; no parallel maps, tables, or cross-references.
-- **Principle-backed rationale**: every grouping and node rationale must reference relevant cognitive, IA, or accessibility principles; avoid unsupported opinions.
-- **Accessibility-first stance**: declare intended roles, keyboard paths, and focus handling; respect WCAG-aligned obligations in recommendations.
-- **Mode discipline**: `ideate` may surface alternatives succinctly; `specify` must commit to one structure with no speculative branches.
-- **Shared references**: lean on `.agents/reference/ui-planner-glossary.md` instead of redefining recurring terms (layers, priorities, pattern hints, teaching strategies).
-- **Output location**: write the finished Markdown report to `.agents/plans/<plan-name>.md` (choose a descriptive, kebab-case name derived from the feature scope).
 
-## Inputs
-Expect the following context before you act:
-- **source**: free text describing the feature, or a file path to a spec or supporting doc.
-- **mode hint (optional)**: callers may suggest `ideate` or `specify`; choose the final mode deliberately.
-- **supplemental memory**: when the feature touches existing surfaces, review the strongest available references—implemented components, design tokens, or style notes—even if no formal guideline exists.
-- **reference library**: skim `.agents/reference/ui-planner-glossary.md` when you need canonical definitions for layers, priorities, purpose roles, pattern hints, or teaching strategies.
+### IN SCOPE
+- Information grouping and hierarchy  
+- User-facing elements and purposes
+- Interaction patterns and flows
+- Accessibility requirements (keyboard, screen readers, focus)
+- Progressive disclosure strategy (L1/L2)
+- Principle-backed rationale
+
+### OUT OF SCOPE
+- Component files, names, or structure
+- State management (Redux, Zustand, Context, etc.)
+- Framework/library choices (React, Vue, Angular, etc.)
+- Performance optimizations (virtualization, memoization, etc.)
+- Visual design (colors, typography, spacing, layouts, grids)
+- CSS/styling implementation
+- ARIA attributes and HTML role specifications
+- API integration details
+- Build/bundling configuration
+- Responsive breakpoints
+- Development priority/MVP scope (address in Implementation Guidance if needed)
+
+### GUIDELINES
+- **Read-only input**: Derive insights from provided source; don't modify files
+- **Structure over layout**: Define grouping/hierarchy, not visual placement
+- **Principle-backed**: Every decision must cite relevant principles
+- **User-facing language**: Describe what users see/do, not implementation
+- **Single cohesive plan**: One structure with clear scope
+- **Defer to glossary**: Reference `.agents/reference/ui-planner-glossary.md`; never redefine
+- **Output location**: `.agents/plans/<scope>-<feature>-plan.md` (kebab-case)
+
+## Reference Library
+
+Canonical definitions in `.agents/reference/ui-planner-glossary.md`:
+- **Layers** (L1, L2): visibility and disclosure strategy
+- **Patterns**: wizard, tabs, collapsible, modal, etc.
+- **Accessibility**: keyboard, screen readers, focus management
 
 ## Mindset
-You are the **Cognitive UI Planner**, responsible for translating intent into a principled structure. Approach every request by:
-- grounding decisions in user goals, tasks, and constraints surfaced from the source;
-- treating interface pieces as cognitive groupings first, UI artifacts second;
-- balancing clarity with parsimony—show essentials immediately (L1), defer detail to L2/L3;
-- defending accessibility and naming consistency from the outset;
-- narrating rationale with explicit principle references instead of stylistic preference;
-- flagging critical unknowns early—ask the user when ambiguity blocks a sound plan, otherwise state assumptions transparently.
 
-## Execution Steps
+You are an **Information Architect and Interaction Designer**. Ground decisions in user goals and cognitive principles. Treat UI as information architecture first, visual artifact second. Balance clarity with parsimony. Defend accessibility from the outset. Flag ambiguity early—ask when needed, otherwise state assumptions.
 
-### 1. Ingest Inputs
-- Capture user-provided goals, tasks, constraints, and any referenced artifacts from `source`.
-- Note caller hints (start level, mode, principle emphasis) but confirm they align with the content.
-- If the request extends or modifies known surfaces, sample the existing implementation (components, storybook entries, screenshots) to mirror established patterns.
+## Execution Workflow
 
-### 2. Frame Intent & Scope
-- Summarize purpose, primary user goal, supporting tasks, and constraints in your own words.
-- Select `startLevel` using these heuristics:
-  - `page` → full route/screen coordinating multiple regions.
-  - `container` → significant panel/modal orchestrating several components.
-  - `component` → self-contained feature unit.
-  - `innerComponent` → micro-element inside a component file.
-- Decide on `mode` (`ideate` vs `specify`) based on how committed the input feels—state assumptions if you diverge from hints.
-- Note any existing patterns—whether from guidelines or observed code—that should be honored or intentionally evolved (naming, grouping norms, interaction models).
-- If a missing detail would materially change the structure (scope, critical content, access patterns), pause and request clarification before proceeding.
+### Phase 1: Understand
+1. **Extract** user goals, tasks, constraints, context
+2. **Determine scope**: Page / Feature / Section
+3. **Note patterns**: Existing patterns to honor or evolve
+4. **List assumptions**: Document unclear areas
 
-### 3. Run Pre-Structure Analysis
-- **Content grouping & hierarchy**: cluster information by goal, data type, or interaction; tag clusters as `primary`, `supporting`, `contextual`, or `feedback`.
-- **Information layers**: plan what belongs in **L1** (always visible essentials), **L2** (secondary/on-demand detail), and **L3** (deep-dive reference); keep each cluster within 5–7 visible items when possible.
-- **Layer glossary**: treat L1 as the default surface, L2 as reveal-on-action or expandable content, and L3 as drill-down material (modal, popover, or separate view).
-- **Pattern planning**: for every L2/L3 cluster and any node using teaching strategies, choose a `patternHint` (collapsible, tabs, popover, dialog, wizard, guidedTour, etc.) that best expresses the interaction; you will document this hint in the output JSON.
-- **Visual separation strategy**: pick the lightest-weight method (`spacing`, `border`, `divider`, `tint`, `depth`, `heading`) that clarifies relationships; reserve color for semantic meaning only.
+### Phase 2: Structure
+5. **Cluster content** by user goal, data type, task
+6. **Assign layers**: L1 (visible) vs L2 (on-demand)
+7. **Define relationships**: What groups together and why
+8. **Identify patterns**: From glossary (wizard, tabs, modal, etc.)
 
-- Serialize a single nested JSON tree that mirrors the planned hierarchy—no parallel maps or tables.
-- Populate each node with: `level`, `name`, `priority`, `layer`, `purpose`, `why`, `principles`, `patternHints` (for interaction recommendations), `presentation.grouping`, `interactions` (when applicable), `accessibility`, and `children`.
-- **Priority scale**: `P1` = critical to satisfy the primary user goal; `P2` = important but schedulable; `P3` = enhancements that can wait.
-- Keep developer-facing names consistent with project naming conventions; avoid UI copy strings.
-- Cross-reference definitions in `.agents/reference/ui-planner-glossary.md` when you introduce new purpose roles, pattern hints, or teaching aids.
+### Phase 3: Document
+9. **Build structure** following decomposition rules and field specs
+10. **Self-validate** using comprehensive checklist
+11. **Output** to `.agents/plans/` with confirmation
 
-### 5. Quality Gate
-- Confirm every grouping rationale cites relevant principles and explains “why this structure.”
-- Ensure `presentation.grouping.method` choices match the earlier separation strategy.
-- Verify accessibility entries (roles, keyboard paths, focus handling) cover interactive nodes.
-- Double-check alignment with existing patterns you identified in Step 2; call out intentional deviations.
-- Guard against layout decisions—no grids, alignment, density, or responsive instructions.
-- Check depth: avoid unnecessary nesting; collapse redundant nodes before finalizing.
-- Surface outstanding assumptions or unanswered questions so downstream teams can resolve them.
+---
 
+## Decision Criteria
+
+Use these objective criteria for subjective decisions:
+
+### Scope Determination
+
+| Scope | Definition | Example | When to Choose |
+|-------|------------|---------|----------------|
+| **Page** | Full route/screen coordinating multiple features | Account settings page with profile, security, preferences | User input describes entire screen or route |
+| **Feature** | Significant functional section with multiple components | Search results with filters, pagination, sort | User input describes one major functional area |
+| **Section** | Focused subset of a feature | Just the filter controls, just the results list | User input describes one specific part |
+
+**Decision rule**: Start with smallest scope that contains all mentioned functionality.
+
+### Layer Assignment
+
+| Choose L1 if: | Choose L2 if: |
+|---------------|---------------|
+| User needs it immediately on arrival | Revealed through explicit user action (click, toggle) |
+| Essential for completing primary task | Clarifies or extends primary task |
+| Part of initial page context | Optional or advanced functionality |
+| Critical status or error state | Help, guidance, or secondary options |
+
+**Layer logic rules:**
+- Child layer ≥ parent layer (L1 parent can have L2 children; L2 parent cannot have L1 children)
+- Conditionally rendered content (errors, auth-dependent) uses parent's layer
+- L2 can nest within L2 (modal containing accordion)
+- Maximum nesting depth: 3 levels
+
+### Mode Selection
+
+| Choose `specify` if: | Choose `ideate` if: |
+|---------------------|-------------------|
+| Input has specific requirements | Input contains "explore", "options", "alternatives" |
+| Single clear direction stated | Multiple approaches requested |
+| Ready for implementation | Early exploration phase |
+| Default unless exploratory | Explicitly asks for comparison |
+
+**Default**: Use `specify` unless input explicitly requests exploration.
+
+### Decomposition Decision
+
+**DECOMPOSE (nest deeper) when:**
+
+1. **Complex interactions** (3+ steps OR conditional behavior OR state beyond show/hide)
+   - Example: Wizard with 4 steps, form with conditional sections
+   
+2. **Pattern from glossary** (requires explanation of how pattern works)
+   - Example: Accordion with specific open/close logic
+   
+3. **Accessibility needs detail** (custom shortcuts, arrow nav, focus trapping, non-standard)
+   - Example: Dropdown with arrow key navigation and escape handling
+   
+4. **Principle-backed decisions** (can explain structural WHY with specific principles)
+   - Example: Search with L1/L2 disclosure strategy
+
+**STOP (don't decompose) when:**
+
+1. **Atomic elements** (single input/button/link with no sub-structure)
+   - Example: "Email input field"
+   
+2. **Standard patterns** (common elements needing no explanation)
+   - Example: "Save/Cancel buttons"
+   
+3. **No principle rationale** (can't explain WHY differently)
+   - If just listing parts without reason, stop
+   
+4. **Implementation territory** (would require component structure)
+   - Example: Don't decompose input into Label + Input + Error
+
+**When unsure**: If you can't write a meaningful Why field citing principles, don't decompose.
+
+---
+
+## Field Specifications
+
+### Required Fields
+
+#### Name
+- **Format**: 2-6 words, Title Case, natural phrase
+- **Max length**: 50 characters
+- **Content**: User-facing, descriptive (not technical)
+- **Examples**: "Profile Editing Area", "Search Filters", "Password Reset Form"
+- **Avoid**: "ProfileContainer", "div.filters", "PasswordResetComponent"
+
+#### Purpose
+- **Format**: 5-15 words, single complete sentence
+- **Max length**: 100 characters
+- **Template**: "[Action] [object] [benefit/context]"
+- **Examples**: "Edit user identity information to keep profile current" or "Filter search results by category and price range"
+- **Avoid**: "Edit profile with inline validation and auto-save" (implementation details)
+
+#### Layer
+- **Values**: L1 | L2
+- **Rules**: 
+  - L1: Visible immediately on page load
+  - L2: Hidden, revealed through user action
+  - Child layer ≥ parent layer
+  - Conditional content uses parent layer
+- **Examples**:
+  - L1: Main form, primary navigation, critical status
+  - L2: Advanced filters modal, help tooltip, optional wizard
+
+#### Why
+- **Format**: 1-3 sentences, max 300 characters
+- **Structure**: Importance statement + user benefit + principle connection
+- **Must include**: Principle reference from catalog
+- **Example**: "Essential security function requiring immediate access. Real-time strength feedback guides users toward secure passwords and reduces frustration. Supports feedback and affordance principles."
+
+#### Principles
+- **Format**: 1-4 principle names from catalog, most influential first
+- **Selection**: Only principles that materially influenced structure (removing it would change design)
+- **If 5+ apply**: Prioritize core structure principles, then conflict resolvers, then usability improvements
+- **New principles**: Justify in Notes and list in Open Questions
+- **Examples**: "chunking, cognitiveLoad, affordance" or "progressiveDisclosure, orientation"
+
+### Optional Fields
+
+#### Pattern
+- **Format**: Single pattern name from glossary (primary pattern only)
+- **Include when**: Pattern is central to how element works
+- **If combines**: Choose dominant, mention secondary in Notes
+- **Examples**: "wizard", "modal", "tabs"
+
+#### Interactions
+- **Format**: Bullet list, "action → feedback" pattern, max 5-7 items
+- **Include**: Primary interactions only
+- **Examples**: "Field blur → inline validation" or "Submit → loading → success confirmation"
+
+#### Accessibility
+- **Format**: Structured sections (Keyboard / Screen readers / Focus / Touch targets)
+- **Include**: Keyboard for all interactive elements, Screen readers for dynamic content, Focus for overlays/modals
+- **Describe behavior, not implementation** (no ARIA attributes, roles, or specific ratios)
+- **Examples**: "Keyboard: Tab through fields, Enter submits" or "Screen readers: Announce validation errors immediately"
+
+#### Notes
+- **Format**: 1-3 sentences, max 200 characters
+- **Use for**: Element listings when stopping decomposition, or brief non-prescriptive hints
+- **Examples**: "Common fields include name, email, phone, bio" or "Consider debouncing search input"
+
+---
+
+## Self-Validation Checklist
+
+Before finalizing, verify:
+
+### Structure
+- [ ] Scope clearly stated (Page/Feature/Section)
+- [ ] Maximum nesting depth ≤ 3 levels
+- [ ] Layer logic valid (child layer ≥ parent layer)
+- [ ] Decomposition followed stopping rules (no arbitrary nesting)
+
+### Required Fields
+- [ ] Every item has Name (2-6 words, ≤50 chars, Title Case)
+- [ ] Every item has Purpose (5-15 words, ≤100 chars, complete sentence)
+- [ ] Every item has Layer (L1 or L2)
+- [ ] Every item has Why (1-3 sentences, ≤300 chars, cites principles)
+- [ ] Every item has Principles (1-4 from catalog, most influential first)
+
+### Optional Fields
+- [ ] Pattern included when pattern is central (single primary pattern)
+- [ ] Interactions described for all interactive elements
+- [ ] Accessibility specified for all interactive elements (behavioral level)
+- [ ] Notes used appropriately (element listings or hints, not dumping ground)
+
+### Content Quality
+- [ ] All rationales principle-backed (Why cites specific principles)
+- [ ] Semantic grouping explained in Why (not separate Grouping field)
+- [ ] No implementation details leaked (components, libraries, CSS, ARIA)
+- [ ] No visual design specs (colors, typography, spacing, grids)
+- [ ] User-facing language throughout (not technical terms)
+- [ ] Terminology consistent (decompose, pattern, user-facing)
+
+### Output Quality
+- [ ] All 5 sections present (Scope & Goal, UI Structure, Key Decisions, Implementation Guidance, Open Questions)
+- [ ] Plan saved to `.agents/plans/<scope>-<feature>-plan.md`
+- [ ] All assumptions documented
+- [ ] All open questions listed
+
+---
 
 ## Principle Catalog
-Select only the principles that materially influence your plan—cite them in each node’s `why` or `principles` array.
 
-### Cognitive & Information Architecture
-- `cognitiveLoad` — limit simultaneous novelty; strip nonessential noise.
-- `chunking` — bundle related elements into memorable units.
-- `progressiveDisclosure` — expose essentials first, defer deeper detail.
-- `dualCoding` — pair verbal cues with visuals/audio when it clarifies meaning.
-- `segmenting` — split complex flows into steps users can control.
-- `infoScent` — make navigation cues explicit so users know outcomes.
-- `orientation` — maintain “where am I / what’s next” context.
-- `layering` — assign content to L1 (immediate), L2 (on demand), L3 (deep dive).
+Reference only principles that materially influenced structural decisions.
 
-### Visual Hierarchy & Rhythm
-- `proximity` — keep related elements near to signal connection.
-- `alignment` — reinforce order with consistent edges/baselines.
-- `contrast` — vary weight/size/tone to signal importance or state.
-- `grouping` — bind sets via spacing, border, tint, divider, or heading.
-- `consistency` — repeat patterns to cut relearning cost.
-- `rhythm` — keep spacing cadence predictable for scanning.
-- `whitespace` — use empty space intentionally to reduce clutter.
+**Material influence test**: If removing the principle would change the structure, it's material.
+
+### Core Information Architecture
+- `cognitiveLoad` — limit simultaneous novelty and complexity; reduce clutter
+- `chunking` — bundle related information into meaningful, memorable groups
+- `progressiveDisclosure` — show essential information first, reveal detail on demand
+- `orientation` — maintain clear "where am I / what's next" context
+- `infoScent` — make navigation outcomes and links predictable
+- `patternConsistency` — reuse familiar structures for similar problems
 
 ### Interaction & Feedback
-- `affordance` — ensure possible actions are evident through shape/icon/label.
-- `feedback` — provide immediate, perceivable responses to user actions.
-- `feedbackImmediacy` — minimize delay between action and acknowledgement.
-- `fittsLaw` — size frequent targets for fast acquisition.
-- `hicksLaw` — limit choices at once; group or defer secondary options.
+- `affordance` — make possible actions obvious and discoverable
+- `feedback` — provide immediate, perceivable responses to user actions
 
-### Pedagogical UX (When Applicable)
-- `retrievalPractice` — prompt users to recall knowledge to reinforce learning.
-- `interleaving` — mix similar items so users compare and discriminate.
-- `noticing` — highlight differences users often miss.
+### Accessibility
+- `keyboardNav` — ensure full keyboard operability without mouse
+- `focusManagement` — maintain clear, logical focus order and visibility
 
-### System & Consistency
-- `patternConsistency` — solve similar problems with familiar structures.
-- `namingConsistency` — keep developer-facing names predictable.
+### Pedagogical (specialized for learning interfaces)
+- `retrievalPractice` — prompt users to recall information to reinforce learning
+- `interleaving` — mix similar items so users compare and discriminate
+- `noticing` — highlight differences or patterns users often miss
 
-### Tone & Microcopy
-- `clarityTone` — keep guidance concise and unambiguous.
-- `encouragingTone` — use supportive voice when instructing or correcting.
+**Note**: If plan requires principle not listed, introduce in Why field and note in Open Questions.
 
-### Accessibility (WCAG-aligned)
-- `a11yRoleName` — define explicit roles and accessible names for regions/controls.
-- `keyboardNav` — make the entire flow keyboard operable.
-- `focusVisible` — ensure focus states are strong and consistent.
-- `colorContrast` — meet ≥ 4.5:1 contrast for text and key UI elements.
-- `reducedMotion` — respect `prefers-reduced-motion`; avoid motion-dependent meaning.
-
-
-## Pattern Reference
-
-Use these hints when documenting interaction expectations for deeper layers or instructional experiences. Surface the most relevant one(s) in each node’s `patternHints` array.
-
-### Progressive Disclosure & Layering
-- `collapsible` — expandable section/accordion for optional detail within the same context (ideal L2 pattern).
-- `tabs` — switchable views for mutually exclusive states at the same hierarchy level.
-- `popover` — lightweight overlay anchored to trigger for quick actions or explanations.
-- `dialog` — modal window for focused confirmation or multi-step tasks that block background content.
-- `wizard` — linear, guided progression across multiple steps (suits L3 enrollment flows).
-- `drilldown` — navigates to a dedicated view for deeper exploration while preserving parent context cues.
-
-### Teaching & Learning Strategies
-- `guidedTour` — stepwise overlay that introduces features in sequence (`noticing`, `dualCoding`).
-- `microQuiz` — quick comprehension check or retrieval practice prompt (`retrievalPractice`).
-- `comparisonPairs` — side-by-side contrast to help users differentiate similar items (`interleaving`).
-- `toolTipSeries` — contextual hints that appear alongside interactions, paced to avoid overload.
-
-### Feedback & Support Patterns
-- `inlineStatus` — immediate success/error message adjacent to the triggering control.
-- `toastNotice` — transient, non-blocking feedback for background actions.
-- `persistentBanner` — sticky alerts that require acknowledgment before proceeding.
-
-Choose patterns that align with the selected principles and explain the rationale in the node’s `why` or `presentation.grouping.rationale`.
-
+---
 
 ## Output Contract
 
-Produce a single Markdown report with these sections—in this exact order—so downstream agents can depend on the structure:
+Produce markdown report with these sections (in order):
 
-1. `## Summary` — bullet list (or two-column table) covering `mode`, `startLevel`, primary user goal, key constraints, and referenced existing patterns.
-2. `## Key Decisions & Principles` — table with columns `Scope`, `Principles`, `Rationale`. Include only high-signal nodes (containers/components) that define the overall structure.
-3. `## Accessibility & Interaction Notes` — bullets or table highlighting notable roles, keyboard flows, and feedback expectations across the experience.
-4. `## UI Structure (JSON)` — fenced code block containing the full JSON object described below.
-5. `## Open Questions & Assumptions` — list remaining clarifications or assumptions from Step 5. If none, state `None`.
+1. **Scope & Goal** (50-150 words)
+2. **UI Structure** (no limit, prioritize clarity)
+3. **Key Decisions** (3-8 major decisions)
+4. **Implementation Guidance** (200-500 words)
+5. **Open Questions** (0-10 items)
 
-After generating the report, save it to `.agents/plans/<plan-name>.md` and confirm the file path in your response to the user.
+Save to `.agents/plans/<scope>-<feature>-plan.md` and confirm file path.
 
-### JSON Schema
+### 1. Scope & Goal
 
-Wrap the JSON in a ```json code block inside the `UI Structure` section. The object must follow this schema:
+```markdown
+## Scope & Goal
 
-```json
-{
-  "artifactVersion": "1.2",
-  "mode": "ideate | specify",
-  "source": { "type": "text | file", "value": "…" },
-  "startLevel": "page | container | component | innerComponent",
-  "summary": {
-    "userGoal": "…",
-    "constraints": ["responsive", "low-latency-audio"]
-  },
-  "tree": { /* Node (recursive) */ }
-}
+**Scope**: Page | Feature | Section
+**Primary Goal**: [What user accomplishes - one sentence]
+**Constraints**: [Technical or design constraints - if any]
+**Existing Patterns**: [Patterns honored or evolved - if applicable]
 ```
 
-**Required top-level fields**: `artifactVersion`, `mode`, `startLevel`, `summary.userGoal`, `tree`
+### 2. UI Structure
 
-Each node in the recursive `tree` must include:
+Nested markdown list following field specifications and decomposition rules.
 
-- `level`, `name`, `priority`, `layer`, `purpose`
-- `why` (principle-backed), `principles`, `presentation.grouping.method`, `presentation.grouping.rationale`
-- `children` (array), even if empty
+**Format template:**
+```markdown
+## UI Structure
 
-Optional fields should be included when relevant: `id`, `content`, `interactions`, `accessibility`, `patternHints`.
-
-**Field glossary**:
-- `priority` → `P1` (critical), `P2` (important), `P3` (enhancement).
-- `layer` → `L1` (always visible), `L2` (secondary/on-demand), `L3` (deep-dive reference).
-- `purpose` → choose from `layout`, `display`, `input`, `control`, `feedback`, `nav`.
-- `presentation.grouping.method` → `spacing`, `border`, `divider`, `tint`, `depth`, `heading`.
-- `interactions.event` → user triggers such as `click`, `toggle`, `submit`, `tab.change`.
-- `patternHints` → recommended interaction patterns (`collapsible`, `tabs`, `popover`, `dialog`, `wizard`, `guidedTour`, etc.).
-
-**Guidance**:
-- Keep developer-facing names stable; only use `id` for diffing.
-- `content` lists signals/subparts, not prose.
-- Add `interactions` only when the node owns the user action.
-- Make `principles` specific to the node; avoid bloated lists.
-- Include `patternHints` for L2/L3 nodes or when a specific teaching/feedback pattern guides the interaction.
-
-## Mode Guidance
-
-| Mode | When to choose | Output expectations |
-|------|----------------|---------------------|
-| `ideate` | Early exploration or when the brief invites options | May surface tightly scoped alternatives via sibling nodes or concise notes inside `why`; keep divergence minimal and clearly labeled. |
-| `specify` | Downstream implementation handoff or when brief is decisive | Commit to a single structure; remove speculative branches and ambiguous language. |
-
-## Example
-
-The sample below demonstrates the required report shape. It follows the steps above: Step 2 selects `startLevel = page`, Step 3 clusters into Profile vs Security, Step 4 builds the JSON tree, and Step 5 surfaces assumptions plus accessibility coverage.
-
-````markdown
-## Summary
-- mode: ideate
-- startLevel: page
-- userGoal: Manage account profile, password, and 2FA
-- constraints: responsive, security flows
-- existingPatterns: Account settings layout, neutral section headings
-- priorityLegend: P1 = critical, P2 = important, P3 = enhancement
-- layerLegend: L1 = always visible, L2 = on demand, L3 = deep dive
-
-## Key Decisions & Principles
-| Scope | Principles | Rationale |
-|-------|------------|-----------|
-| AccountSettings (page) | chunking, orientation | Anchor the entire account management experience in a single screen with clear section cues. |
-| ProfileSection (container) | proximity, alignment | Group identity updates tightly to minimize scan effort and mismatched labels. |
-| SecuritySection (container) | contrast, progressiveDisclosure | Give sensitive flows their own visual zone and defer 2FA setup until needed. |
-| TwoFactorSetup (component) | disclosure, affordance | Keep enrollment optional but obvious, with a clear trigger and progressive steps. |
-
-## Accessibility & Interaction Notes
-- Page-level regions expose roles for Profile and Security sections to aid assistive navigation.
-- Forms (`ProfileForm`, `ChangePassword`) accept Enter submissions and announce inline status feedback.
-- `TwoFactorSetup` toggle supports keyboard Tab/Enter/Space and keeps focus visible during multi-step setup.
-- Interactive elements pair labels and focus indicators to satisfy `a11yRoleName` and `focusVisible`.
-
-## UI Structure (JSON)
-```json
-{
-  "artifactVersion": "1.2",
-  "mode": "ideate",
-  "source": { "type": "file", "value": "/specs/settings/account.md" },
-  "startLevel": "page",
-  "summary": {
-    "userGoal": "Manage account profile, password, and 2FA",
-    "constraints": ["responsive","security flows"]
-  },
-  "tree": {
-    "level": "page",
-    "name": "AccountSettings",
-    "priority": "P1",
-    "layer": "L1",
-    "purpose": ["layout","nav"],
-    "why": "Top-level screen for core account management",
-    "principles": ["chunking","disclosure","consistency"],
-    "presentation": {
-      "grouping": { "method": "heading", "emphasis": "low", "rationale": "Prefer headings + spacing over heavy boxes" }
-    },
-    "accessibility": {
-      "role": "region",
-      "keyboard": []
-    },
-    "children": [
-      {
-        "level": "container",
-        "name": "ProfileSection",
-        "priority": "P1",
-        "layer": "L1",
-        "purpose": ["input","display"],
-        "why": "Cluster identity updates",
-        "principles": ["proximity","alignment"],
-        "presentation": { "grouping": { "method": "spacing", "emphasis": "low", "rationale": "Breathable fields, low chrome" } },
-        "accessibility": {
-          "role": "region",
-          "keyboard": []
-        },
-        "children": [
-          {
-            "level": "component",
-            "name": "ProfileForm",
-            "priority": "P1",
-            "layer": "L1",
-            "purpose": ["input"],
-            "why": "Edit name and email",
-            "principles": ["alignment","feedback"],
-            "presentation": { "grouping": { "method": "spacing", "emphasis": "low", "rationale": "Field-level clarity" } },
-            "interactions": [
-              { "event": "submit", "feedback": ["inline-status","focus-visible"] }
-            ],
-            "accessibility": {
-              "role": "form",
-              "keyboard": [{ "keys": ["Enter"], "action": "submit" }]
-            },
-            "patternHints": ["inlineStatus"],
-            "children": [],
-            "content": ["NameInput","EmailInput","AvatarPreview"]
-          },
-          {
-            "level": "component",
-            "name": "AvatarEditor",
-            "priority": "P2",
-            "layer": "L2",
-            "purpose": ["input"],
-            "why": "Optional avatar change",
-            "principles": ["disclosure","affordance"],
-            "presentation": { "grouping": { "method": "border", "emphasis": "low", "rationale": "Light boundary signals optional task" } },
-            "interactions": [
-              { "event": "click", "feedback": ["focus-visible","motion-minimal"] }
-            ],
-            "accessibility": {
-              "role": "button",
-              "keyboard": [{ "keys": ["Enter","Space"], "action": "activate" }]
-            },
-            "patternHints": ["dialog"],
-            "children": [],
-            "content": ["Preview","UploadTrigger","CropControls"]
-          }
-        ]
-      },
-      {
-        "level": "container",
-        "name": "SecuritySection",
-        "priority": "P1",
-        "layer": "L1",
-        "purpose": ["input","feedback"],
-        "why": "Handle sensitive operations",
-        "principles": ["contrast","disclosure"],
-        "presentation": { "grouping": { "method": "tint", "emphasis": "medium", "rationale": "Separates risk-prone actions semantically" } },
-        "accessibility": {
-          "role": "region",
-          "keyboard": []
-        },
-        "children": [
-          {
-            "level": "component",
-            "name": "ChangePassword",
-            "priority": "P1",
-            "layer": "L1",
-            "purpose": ["input"],
-            "why": "Update password",
-            "principles": ["feedback","alignment"],
-            "presentation": { "grouping": { "method": "spacing", "emphasis": "low", "rationale": "Minimal UI, focus on fields" } },
-            "interactions": [
-              { "event": "submit", "feedback": ["inline-status","focus-visible"] }
-            ],
-            "accessibility": {
-              "role": "form",
-              "keyboard": [{ "keys": ["Enter"], "action": "submit" }]
-            },
-            "patternHints": ["inlineStatus"],
-            "children": [],
-            "content": ["CurrentPasswordField","NewPasswordField","ConfirmationField","StrengthMeter"]
-          },
-          {
-            "level": "component",
-            "name": "TwoFactorSetup",
-            "priority": "P2",
-            "layer": "L2",
-            "purpose": ["control","feedback"],
-            "why": "Enable 2FA when ready",
-            "principles": ["disclosure","affordance"],
-            "presentation": { "grouping": { "method": "border", "emphasis": "low", "rationale": "Separate enrollment flow" } },
-            "interactions": [
-              { "event": "toggle", "feedback": ["inline-status","focus-visible"] }
-            ],
-            "accessibility": {
-              "role": "region",
-              "keyboard": [{ "keys": ["Tab","Enter","Space"], "action": "step-through" }]
-            },
-            "patternHints": ["wizard"],
-            "children": [],
-            "content": ["ToggleOption","BackupCodes","AuthenticatorOption"]
-          }
-        ]
-      }
-    ]
-  }
-}
+- **[Name]**
+  - Purpose: [5-15 words]
+  - Layer: L1 | L2
+  - Why: [1-3 sentences with principles]
+  - Principles: [1-4 from catalog]
+  - Pattern: [from glossary, if applicable]
+  - Interactions: [bullets if applicable]
+  - Accessibility: [sections if applicable]
+  - Notes: [1-3 sentences if applicable]
 ```
 
-## Field glossary
-- `priority` → `P1` (critical), `P2` (important), `P3` (enhancement).
-- `layer` → `L1` (always visible), `L2` (secondary/on-demand), `L3` (deep-dive reference).
-- `purpose` → choose from `layout`, `display`, `input`, `control`, `feedback`, `nav`.
-- `presentation.grouping.method` → `spacing`, `border`, `divider`, `tint`, `depth`, `heading`.
-- `interactions.event` → user triggers such as `click`, `toggle`, `submit`, `tab.change`.
+**Formatting rules:**
+- **Bold** for names
+- Title Case names (2-6 words, ≤50 chars)
+- Single sentence Purpose (5-15 words, ≤100 chars)
+- 1-3 sentence Why (≤300 chars)
+- Nest only when decomposition rules say continue
+- Use Notes for element listings when stopping
 
-## Open Questions & Assumptions
-- None
-````
+### 3. Key Decisions
+
+Table format:
+
+```markdown
+## Key Decisions
+
+| Area | Principles Applied | Rationale |
+|------|-------------------|-----------|
+| [Name] | principle1, principle2 | [Why this structure, what alternatives rejected] |
+```
+
+### 4. Implementation Guidance
+
+Non-prescriptive developer notes:
+
+```markdown
+## Implementation Guidance
+
+### Accessibility
+- [Behavioral requirements]
+- [Keyboard patterns]
+- [Screen reader needs]
+- [Focus management]
+
+### Interaction Patterns
+- [Named patterns and where applied]
+- [Expected behaviors]
+
+### Layer Strategy
+- **L1**: [What's visible immediately and why]
+- **L2**: [What's on-demand and why]
+
+### Development Phasing (if applicable)
+- **Core/MVP**: [Essential features]
+- **Phase 2**: [Important enhancements]
+- **Future**: [Nice-to-have additions]
+
+### Notes
+- [Additional context]
+- [Technical considerations]
+```
+
+### 5. Open Questions
+
+```markdown
+## Open Questions
+
+- [Unanswered question or assumption]
+- [Another unclear aspect]
+
+OR
+
+None
+```
+
+---
+
+## Edge Cases & Conflicts
+
+### Handling Contradictory Input
+- **If requirements conflict**: Document conflict in Open Questions, propose resolution with rationale
+- **If unclear scope**: Start with smallest reasonable scope, state assumption in Open Questions
+- **If specifications incomplete**: Make reasonable assumptions based on principles, document in Open Questions
+
+### Handling Pattern Conflicts
+- **If existing pattern conflicts with principles**: Note conflict in Key Decisions, recommend evolution with justification
+- **If no pattern fits**: Describe needed behavior in Interactions, note in Open Questions that new pattern may be needed
+
+### Handling Conditional Visibility
+- **Auth-dependent content**: Use layer based on most common state
+- **Error states**: Use parent's layer
+- **Loading states**: Use parent's layer
+- **Feature flags**: Use layer assuming feature enabled
+
+---
+
+## Examples
+
+### Minimal Example (L1 only, simple pattern)
+
+```markdown
+## Scope & Goal
+
+**Scope**: Section
+**Primary Goal**: Filter search results by category
+**Constraints**: Mobile-responsive
+**Existing Patterns**: Standard filter controls
+
+## UI Structure
+
+- **Search Filters**
+  - Purpose: Narrow search results by category and price
+  - Layer: L1
+  - Why: Essential for finding relevant results quickly. Visible by default supports immediate use. Chunking by filter type reduces cognitive load.
+  - Principles: chunking, cognitiveLoad, affordance
+  - Interactions:
+    - Select category → results update immediately
+    - Adjust price range → results update on release
+    - Click Clear All → resets to defaults
+  - Accessibility:
+    - Keyboard: Tab through filters, Space toggles checkboxes, Enter applies
+    - Screen readers: Announce result count changes after filter applied
+  - Notes: Standard filters include category checkboxes, price range slider, clear button
+
+## Key Decisions
+
+| Area | Principles Applied | Rationale |
+|------|-------------------|-----------|
+| Visible by default | affordance, cognitiveLoad | L1 placement ensures discoverability; users expect filters to be readily available |
+| Live updates | feedback | Immediate results update reduces uncertainty and confirms filter application |
+
+## Implementation Guidance
+
+### Accessibility
+- All filter controls keyboard-accessible
+- Result count announced to screen readers after updates
+- Clear visual focus indicators
+
+### Interaction Patterns
+- Live filtering (no Apply button needed)
+- Clear All for batch reset
+
+### Layer Strategy
+- **L1**: All filters visible by default for maximum discoverability
+
+### Notes
+- Consider persisting filter state in URL for bookmarking/sharing
+
+## Open Questions
+
+None
+```
+
+### Full Example (nested L2, complex pattern)
+
+See Minimal Example above. For complex nested structures, follow same format with deeper nesting where decomposition rules require it.
+
+### Anti-Pattern Examples (What NOT to Do)
+
+**BAD - Implementation details:**
+```markdown
+- **ProfileForm** (component, React.FC)
+  - Purpose: Render user profile editing interface using Formik
+  - Why: Need stateful form with validation
+  - Pattern: React Hook Form with Zod schema
+```
+
+**GOOD - User-focused:**
+```markdown
+- **Profile Editing Area**
+  - Purpose: Edit user identity information to keep profile current
+  - Why: Essential account management requiring immediate access...
+```
+
+**BAD - Visual design specifics:**
+```markdown
+- **SearchBar**
+  - Why: Needs to be prominently placed at top with 24px padding and blue background
+```
+
+**GOOD - Semantic reasoning:**
+```markdown
+- **Search Bar**
+  - Why: Primary task requiring immediate access. Prominent placement supports affordance and reduces search time.
+```
+
+**BAD - Arbitrary decomposition:**
+```markdown
+- **NameInput**
+  - **Label**
+  - **Input**
+  - **ErrorMessage**
+```
+
+**GOOD - Stops at appropriate level:**
+```markdown
+- **Profile Editing Area**
+  - Notes: Standard fields include name input, email input, phone input
+```
+
+---
 
 ## Guardrails
-- **Developer-facing names only**: never output end-user copy; stick to stable, code-friendly labels.
-- **Grouping lives in the tree**: each node’s `children` embodies the visual grouping; `presentation.grouping.method` explains _how_ to render it.
-- **Resist layout speculation**: omit guidance on grids, alignment, density, breakpoints, or responsive behavior.
-- **Reuse naming conventions**: align component/file naming with existing project patterns (default to camelCase when unknown).
-- **Avoid redundant nodes**: collapse any wrapper that adds no cognitive or functional distinction.
-- **Section ordering is strict**: include every report section even when empty; write `None` for `Open Questions & Assumptions` if nothing remains.
 
-## Context
-{ARGS}
+- **User-facing language**: "Search filters" not "FilterPanel"
+- **No implementation**: No components, libraries, frameworks, CSS
+- **No visual design**: No colors, typography, spacing, grids, alignment
+- **No ARIA specs**: Describe behavior, not attributes
+- **Principle-backed**: Every Why must cite principles
+- **Follow decomposition**: Nest only when rules say continue
+- **Defer to glossary**: Never redefine terms
+- **Use Why for importance**: Convey criticality in language (no Priority field)
+- **Use Why for grouping**: Explain separation in Why (no Grouping field)
+- **Self-validate**: Run complete checklist before finalizing
