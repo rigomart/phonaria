@@ -1,11 +1,27 @@
 "use client";
 
-import { ArrowRight, Info } from "lucide-react";
+import { ArrowRight, ChevronDown, Info } from "lucide-react";
+import { useState } from "react";
 import { AudioControls } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from "@/i18n/navigation";
+
+// Shared articulation definitions
+const ARTICULATION_DEFINITIONS = {
+	manner: {
+		fricative: "Air flows with friction through a narrow gap. Sound is continuous.",
+	},
+	voicing: {
+		voiceless: "Vocal cords don't vibrate. Touch your throat—you won't feel vibration.",
+		voiced: "Vocal cords vibrate. Touch your throat—you'll feel vibration.",
+	},
+	airflow: {
+		continuous: "Air flows steadily without stopping during the sound.",
+	},
+};
 
 // PHASE 2: Mock data with audio URLs
 const MOCK_DATA = {
@@ -25,9 +41,18 @@ const MOCK_DATA = {
 		"Do not vibrate vocal cords",
 	],
 	pitfalls: [
-		"Substituting /s/ - tongue too far back",
-		"Using /f/ - wrong articulator (lip vs tongue)",
-		"Adding voice - should be voiceless",
+		{
+			summary: "Substituting /s/ - tongue too far back",
+			tip: "Keep your tongue tip between your front teeth, not against the alveolar ridge. The position matters more than the airflow.",
+		},
+		{
+			summary: "Using /f/ - wrong articulator (lip vs tongue)",
+			tip: "Remember: /θ/ uses your tongue against your teeth, while /f/ uses your lower lip against your upper teeth. Feel the difference.",
+		},
+		{
+			summary: "Adding voice - should be voiceless",
+			tip: "Place your hand on your throat. If you feel vibration, you're voicing. For /θ/, your throat should be silent.",
+		},
 	],
 	voicingPair: {
 		symbol: "ð",
@@ -36,13 +61,21 @@ const MOCK_DATA = {
 		example: "this",
 		transcription: "ðɪs",
 	},
-	spellingPatterns: [
-		{
+	spellingPatterns: {
+		common: {
 			pattern: "th",
 			description: "Most common spelling",
 			examples: ["think", "bath", "month", "breath"],
 		},
-	],
+		uncommon: [
+			{
+				spelling: "t",
+				context: "In Greek-derived words",
+				example: "mathematics",
+				note: "Rare—mostly in academic terms",
+			},
+		],
+	},
 	examples: [
 		{ word: "think", transcription: "θɪŋk", audioUrl: "/audio/examples/think.mp3" },
 		{ word: "month", transcription: "mʌnθ", audioUrl: "/audio/examples/month.mp3" },
@@ -64,9 +97,19 @@ const MOCK_DATA = {
 	],
 	contrasts: [
 		{
+			partner: "ð",
+			category: "Voicing",
+			summary: "Voiceless /θ/ vs voiced /ð/—only the voicing changes",
+			tactileCue: "Only /ð/ vibrates your throat. Touch your neck to feel the difference.",
+			pairs: [
+				{ word: "think", transcription: "θɪŋk", audioUrl: "/audio/examples/think.mp3" },
+				{ word: "this", transcription: "ðɪs", audioUrl: "/audio/examples/this.mp3" },
+			],
+		},
+		{
 			partner: "s",
-			category: "Fricative",
-			summary: "Contrast dental /θ/ with alveolar /s/",
+			category: "Place",
+			summary: "Contrast dental /θ/ with alveolar /s/—tongue position differs",
 			pairs: [
 				{ word: "think", transcription: "θɪŋk", audioUrl: "/audio/examples/think.mp3" },
 				{ word: "sink", transcription: "sɪŋk", audioUrl: "/audio/examples/sink.mp3" },
@@ -75,7 +118,7 @@ const MOCK_DATA = {
 		{
 			partner: "t",
 			category: "Manner",
-			summary: "Distinguish fricative /θ/ from stop /t/",
+			summary: "Distinguish fricative /θ/ from stop /t/—friction vs blockage",
 			pairs: [
 				{ word: "thick", transcription: "θɪk", audioUrl: "/audio/examples/thick.mp3" },
 				{ word: "tick", transcription: "tɪk", audioUrl: "/audio/examples/tick.mp3" },
@@ -97,16 +140,18 @@ const MOCK_DATA = {
 };
 
 export function PhonemeDetails() {
+	const [expandedPitfalls, setExpandedPitfalls] = useState<number | null>(null);
+
 	return (
-		<div className="space-y-6">
+		<div className="space-y-4">
 			{/* Header */}
-			<div className="flex items-start justify-between gap-4">
-				<div className="flex-1 space-y-2">
-					<div className="flex items-center gap-2">
-						<div className="flex items-center gap-1 font-bold">
-							<span className="text-3xl text-muted-foreground/50">/</span>
-							<span className="text-5xl leading-none tracking-tight">{MOCK_DATA.symbol}</span>
-							<span className="text-3xl text-muted-foreground/50">/</span>
+			<div className="flex items-start justify-between gap-3">
+				<div className="flex-1 space-y-1">
+					<div className="flex items-center gap-1.5">
+						<div className="flex items-center gap-0.5 font-bold">
+							<span className="text-2xl text-muted-foreground/50">/</span>
+							<span className="text-4xl leading-none tracking-tight">{MOCK_DATA.symbol}</span>
+							<span className="text-2xl text-muted-foreground/50">/</span>
 						</div>
 						<Tooltip>
 							<TooltipTrigger asChild>
@@ -123,7 +168,7 @@ export function PhonemeDetails() {
 							</TooltipContent>
 						</Tooltip>
 					</div>
-					<p className="text-sm text-muted-foreground">{MOCK_DATA.description}</p>
+					<p className="text-xs text-muted-foreground">{MOCK_DATA.description}</p>
 				</div>
 				<div className="shrink-0">
 					<AudioControls
@@ -135,7 +180,7 @@ export function PhonemeDetails() {
 			</div>
 
 			{/* Production Guide - Responsive */}
-			<div className="pb-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+			<div className="pb-1 grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div className="flex items-start justify-center">
 					<div
 						className="rounded-lg border bg-muted/30 text-muted-foreground flex items-center justify-center select-none shrink-0"
@@ -145,30 +190,64 @@ export function PhonemeDetails() {
 					</div>
 				</div>
 
-				<div className="space-y-4">
-					<section className="space-y-2">
+				<div className="space-y-3">
+					<section className="space-y-1.5">
 						<h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 							Articulation
 						</h4>
-						<div className="flex flex-wrap gap-1.5">
-							<Badge variant="default" className="font-medium">
-								{MOCK_DATA.articulation.primary}
-							</Badge>
-							<Badge variant="secondary">{MOCK_DATA.articulation.voicing}</Badge>
-							<Badge variant="secondary">{MOCK_DATA.articulation.airflow}</Badge>
+						<div className="flex flex-wrap gap-1">
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Badge variant="default" className="font-medium cursor-help text-xs px-2 py-0.5">
+										{MOCK_DATA.articulation.primary}
+									</Badge>
+								</TooltipTrigger>
+								<TooltipContent className="max-w-xs">
+									<div className="space-y-1">
+										<p className="font-semibold text-xs">Manner</p>
+										<p className="text-xs">{ARTICULATION_DEFINITIONS.manner.fricative}</p>
+									</div>
+								</TooltipContent>
+							</Tooltip>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Badge variant="secondary" className="cursor-help text-xs px-2 py-0.5">
+										{MOCK_DATA.articulation.voicing}
+									</Badge>
+								</TooltipTrigger>
+								<TooltipContent className="max-w-xs">
+									<div className="space-y-1">
+										<p className="font-semibold text-xs">Voicing</p>
+										<p className="text-xs">{ARTICULATION_DEFINITIONS.voicing.voiceless}</p>
+									</div>
+								</TooltipContent>
+							</Tooltip>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Badge variant="secondary" className="cursor-help text-xs px-2 py-0.5">
+										{MOCK_DATA.articulation.airflow}
+									</Badge>
+								</TooltipTrigger>
+								<TooltipContent className="max-w-xs">
+									<div className="space-y-1">
+										<p className="font-semibold text-xs">Airflow</p>
+										<p className="text-xs">{ARTICULATION_DEFINITIONS.airflow.continuous}</p>
+									</div>
+								</TooltipContent>
+							</Tooltip>
 							<Badge variant="outline" className="text-xs">
 								{MOCK_DATA.articulation.difficulty}
 							</Badge>
 						</div>
 					</section>
 
-					<section className="space-y-2">
+					<section className="space-y-1.5">
 						<h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 							Step-by-Step
 						</h4>
-						<ol className="space-y-1.5 text-sm">
+						<ol className="space-y-1 text-xs">
 							{MOCK_DATA.steps.map((step, i) => (
-								<li key={step} className="flex gap-2">
+								<li key={step} className="flex gap-1.5">
 									<span className="text-primary font-semibold shrink-0">{i + 1}.</span>
 									<span className="text-foreground">{step}</span>
 								</li>
@@ -176,69 +255,48 @@ export function PhonemeDetails() {
 						</ol>
 					</section>
 
-					<section className="space-y-2">
+					<section className="space-y-1.5">
 						<h4 className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
 							Common Mistakes
 						</h4>
-						<ul className="space-y-1 text-xs">
-							{MOCK_DATA.pitfalls.map((pitfall) => (
-								<li key={pitfall} className="flex gap-1.5 items-start">
-									<span className="text-amber-600 dark:text-amber-500 shrink-0">⚠</span>
-									<span className="text-amber-900 dark:text-amber-200">{pitfall}</span>
-								</li>
+						<div className="space-y-1">
+							{MOCK_DATA.pitfalls.map((pitfall, idx) => (
+								<Collapsible
+									key={pitfall.summary}
+									open={expandedPitfalls === idx}
+									onOpenChange={(open) => setExpandedPitfalls(open ? idx : null)}
+								>
+									<CollapsibleTrigger asChild>
+										<button
+											type="button"
+											className="w-full text-left flex items-start gap-1.5 px-1.5 py-0.5 rounded hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors text-xs"
+										>
+											<span className="text-amber-600 dark:text-amber-500 shrink-0 mt-0.5">⚠</span>
+											<span className="text-amber-900 dark:text-amber-200 flex-1">
+												{pitfall.summary}
+											</span>
+											<ChevronDown
+												className="h-3.5 w-3.5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5 transition-transform"
+												style={{
+													transform: expandedPitfalls === idx ? "rotate(180deg)" : "rotate(0deg)",
+												}}
+											/>
+										</button>
+									</CollapsibleTrigger>
+									<CollapsibleContent className="text-xs text-amber-800 dark:text-amber-100 pl-4 py-1 border-l border-amber-200 dark:border-amber-800 ml-1">
+										<p>{pitfall.tip}</p>
+									</CollapsibleContent>
+								</Collapsible>
 							))}
-						</ul>
+						</div>
 					</section>
 				</div>
 			</div>
 
-			{/* Voicing Pair */}
-			<section className="space-y-3">
-				<div className="flex items-center gap-2">
-					<h3 className="text-sm font-semibold">Voicing Pair</h3>
-					<Popover>
-						<PopoverTrigger asChild>
-							<button
-								type="button"
-								className="inline-flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-								aria-label="Learn more about voicing pairs"
-							>
-								<Info className="h-4 w-4" />
-							</button>
-						</PopoverTrigger>
-						<PopoverContent className="w-64 text-sm">
-							<p>{MOCK_DATA.sectionInfo.voicingPair}</p>
-						</PopoverContent>
-					</Popover>
-				</div>
-				<div className="grid grid-cols-2 gap-3">
-					<div className="rounded-lg border bg-card p-4 space-y-2">
-						<div className="flex items-baseline gap-2">
-							<span className="text-2xl font-bold text-primary">/θ/</span>
-							<span className="text-xs text-muted-foreground">Voiceless</span>
-						</div>
-						<p className="text-xs text-muted-foreground">{MOCK_DATA.description}</p>
-						<div className="pt-2">
-							<AudioControls src={MOCK_DATA.audioUrl} label="θ" />
-						</div>
-					</div>
-					<div className="rounded-lg border bg-card p-4 space-y-2">
-						<div className="flex items-baseline gap-2">
-							<span className="text-2xl font-bold text-primary">/ð/</span>
-							<span className="text-xs text-muted-foreground">Voiced</span>
-						</div>
-						<p className="text-xs text-muted-foreground">{MOCK_DATA.voicingPair.description}</p>
-						<div className="pt-2">
-							<AudioControls src={MOCK_DATA.voicingPair.audioUrl} label="ð" />
-						</div>
-					</div>
-				</div>
-			</section>
-
 			{/* Spelling Patterns */}
-			<section className="space-y-3">
-				<div className="flex items-center gap-2">
-					<h3 className="text-sm font-semibold">Spelling Patterns</h3>
+			<section className="space-y-2">
+				<div className="flex items-center gap-1.5">
+					<h3 className="text-xs font-semibold">Spelling Patterns</h3>
 					<Popover>
 						<PopoverTrigger asChild>
 							<button
@@ -254,34 +312,63 @@ export function PhonemeDetails() {
 						</PopoverContent>
 					</Popover>
 				</div>
-				<div className="space-y-3">
-					{MOCK_DATA.spellingPatterns.map((pattern) => (
-						<div key={pattern.pattern} className="rounded-lg border bg-muted/30 p-4 space-y-2">
-							<div className="flex items-center gap-2">
-								<span className="inline-flex items-center justify-center rounded-md bg-primary px-2.5 py-1 text-sm font-semibold text-primary-foreground">
-									{pattern.pattern}
+				<div className="space-y-2">
+					<div className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
+						<div className="flex items-center gap-1.5">
+							<span className="inline-flex items-center justify-center rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+								{MOCK_DATA.spellingPatterns.common.pattern}
+							</span>
+							<span className="text-xs text-muted-foreground">
+								{MOCK_DATA.spellingPatterns.common.description}
+							</span>
+						</div>
+						<div className="flex flex-wrap gap-1.5">
+							{MOCK_DATA.spellingPatterns.common.examples.map((example) => (
+								<span
+									key={example}
+									className="inline-flex items-center rounded-md border bg-background px-2 py-0.5 text-xs font-medium"
+								>
+									{example}
 								</span>
-								<span className="text-xs text-muted-foreground">{pattern.description}</span>
+							))}
+						</div>
+					</div>
+
+					{MOCK_DATA.spellingPatterns.uncommon.length > 0 && (
+						<div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/20 p-3 space-y-1.5">
+							<div className="flex items-center gap-1.5">
+								<span className="text-xs font-semibold text-amber-900 dark:text-amber-100">
+									Also watch for
+								</span>
 							</div>
-							<div className="flex flex-wrap gap-2">
-								{pattern.examples.map((example) => (
-									<span
-										key={example}
-										className="inline-flex items-center rounded-md border bg-background px-2.5 py-1.5 text-xs font-medium"
-									>
-										{example}
-									</span>
+							<div className="space-y-1">
+								{MOCK_DATA.spellingPatterns.uncommon.map((rare) => (
+									<div key={rare.spelling} className="text-xs">
+										<div className="flex items-center gap-2">
+											<Badge
+												variant="outline"
+												className="text-[10px] bg-amber-100 dark:bg-amber-900 text-amber-900 dark:text-amber-100 border-amber-300 dark:border-amber-700"
+											>
+												Caution
+											</Badge>
+											<span className="font-medium">{rare.spelling}</span>
+											<span className="text-muted-foreground">({rare.context})</span>
+										</div>
+										<p className="text-muted-foreground mt-1">
+											Example: <span className="font-medium">{rare.example}</span> — {rare.note}
+										</p>
+									</div>
 								))}
 							</div>
 						</div>
-					))}
+					)}
 				</div>
 			</section>
 
 			{/* Examples */}
-			<section className="space-y-3">
-				<div className="flex items-center gap-2">
-					<h3 className="text-sm font-semibold">Examples</h3>
+			<section className="space-y-2">
+				<div className="flex items-center gap-1.5">
+					<h3 className="text-xs font-semibold">Examples</h3>
 					<Popover>
 						<PopoverTrigger asChild>
 							<button
@@ -297,15 +384,15 @@ export function PhonemeDetails() {
 						</PopoverContent>
 					</Popover>
 				</div>
-				<div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+				<div className="grid gap-1.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 					{MOCK_DATA.examples.map((example) => (
 						<div
 							key={example.word}
-							className="flex items-center justify-between gap-3 rounded-md border bg-card p-3"
+							className="flex items-center justify-between gap-2 rounded-md border bg-card p-2"
 						>
 							<div className="min-w-0 flex-1">
-								<div className="font-medium text-sm truncate">{example.word}</div>
-								<div className="text-xs text-muted-foreground">/{example.transcription}/</div>
+								<div className="font-medium text-xs truncate">{example.word}</div>
+								<div className="text-[11px] text-muted-foreground">/{example.transcription}/</div>
 							</div>
 							<AudioControls src={example.audioUrl} label={example.word} />
 						</div>
@@ -314,9 +401,9 @@ export function PhonemeDetails() {
 			</section>
 
 			{/* Practice Contrasts */}
-			<section className="space-y-3">
-				<div className="flex items-center gap-2">
-					<h3 className="text-sm font-semibold">Practice Contrasts</h3>
+			<section className="space-y-2">
+				<div className="flex items-center gap-1.5">
+					<h3 className="text-xs font-semibold">Practice Contrasts</h3>
 					<Popover>
 						<PopoverTrigger asChild>
 							<button
@@ -333,18 +420,27 @@ export function PhonemeDetails() {
 					</Popover>
 				</div>
 				<div className="space-y-3">
-					{MOCK_DATA.contrasts.map((contrast) => (
+					{MOCK_DATA.contrasts.map((contrast, idx) => (
 						<div
 							key={contrast.partner}
-							className="rounded-lg border border-dashed border-muted-foreground/30 bg-muted/10 p-4 space-y-3"
+							className={`rounded-lg border p-4 space-y-3 ${idx === 0 ? "border-solid border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20" : "border-dashed border-muted-foreground/30 bg-muted/10"}`}
 						>
 							<div className="flex items-center justify-between gap-3">
 								<div className="text-sm font-semibold">/θ/ vs /{contrast.partner}/</div>
-								<Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+								<Badge
+									variant={idx === 0 ? "default" : "outline"}
+									className="text-[10px] uppercase tracking-wide"
+								>
 									{contrast.category}
 								</Badge>
 							</div>
 							<p className="text-xs text-muted-foreground">{contrast.summary}</p>
+							{contrast.tactileCue && (
+								<div className="rounded-md bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-2.5 text-xs text-blue-900 dark:text-blue-100">
+									<span className="font-semibold">Quick tip: </span>
+									{contrast.tactileCue}
+								</div>
+							)}
 							<div className="grid grid-cols-2 gap-3">
 								{contrast.pairs.map((pair) => (
 									<div key={pair.word} className="rounded-md border bg-background p-3 space-y-2">
@@ -371,9 +467,9 @@ export function PhonemeDetails() {
 			</section>
 
 			{/* Allophones */}
-			<section className="space-y-3">
-				<div className="flex items-center gap-2">
-					<h3 className="text-sm font-semibold">Variations</h3>
+			<section className="space-y-2">
+				<div className="flex items-center gap-1.5">
+					<h3 className="text-xs font-semibold">Variations</h3>
 					<Popover>
 						<PopoverTrigger asChild>
 							<button
