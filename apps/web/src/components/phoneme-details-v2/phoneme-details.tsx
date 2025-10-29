@@ -2,12 +2,11 @@
 
 import { ArrowRight, ChevronDown, Info } from "lucide-react";
 import { useState } from "react";
-import { AudioControls } from "@/components/audio-button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Link } from "@/i18n/navigation";
+import { AudioControls } from "./audio-controls";
 
 // Shared articulation definitions
 const ARTICULATION_DEFINITIONS = {
@@ -153,29 +152,11 @@ export function PhonemeDetails() {
 							<span className="text-4xl leading-none tracking-tight">{MOCK_DATA.symbol}</span>
 							<span className="text-2xl text-muted-foreground/50">/</span>
 						</div>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<Link
-									href="/credits"
-									className="text-muted-foreground hover:text-foreground transition-colors"
-									aria-label="Audio credits"
-								>
-									<Info className="h-4 w-4" />
-								</Link>
-							</TooltipTrigger>
-							<TooltipContent>
-								<p className="text-xs">Audio credits</p>
-							</TooltipContent>
-						</Tooltip>
 					</div>
 					<p className="text-xs text-muted-foreground">{MOCK_DATA.description}</p>
 				</div>
 				<div className="shrink-0">
-					<AudioControls
-						src={MOCK_DATA.audioUrl}
-						label={`Phoneme ${MOCK_DATA.symbol}`}
-						variant="extended"
-					/>
+					<AudioControls src={MOCK_DATA.audioUrl} label={`Phoneme ${MOCK_DATA.symbol}`} />
 				</div>
 			</div>
 
