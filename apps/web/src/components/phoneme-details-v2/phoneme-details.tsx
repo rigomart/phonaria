@@ -26,7 +26,7 @@ const ARTICULATION_DEFINITIONS = {
 const MOCK_DATA = {
 	symbol: "θ",
 	description: "voiceless dental fricative",
-	audioUrl: "/audio/examples/think.mp3",
+	audioUrl: "https://assets.rigos.dev/phoneme-examples/about.mp3",
 	articulation: {
 		primary: "Dental Fricative",
 		voicing: "Voiceless",
