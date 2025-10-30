@@ -57,13 +57,6 @@ const MOCK_DATA = {
 			tip: "Place your hand on your throat. If you feel vibration, you're voicing. For /θ/, your throat should be silent.",
 		},
 	],
-	voicingPair: {
-		symbol: "ð",
-		description: "voiced dental fricative",
-		audioUrl: "/audio/examples/this.mp3",
-		example: "this",
-		transcription: "ðɪs",
-	},
 	spellingPatterns: [
 		{
 			pattern: "th",
@@ -72,8 +65,16 @@ const MOCK_DATA = {
 		},
 	],
 	examples: [
-		{ word: "think", transcription: "θɪŋk", audioUrl: "/audio/examples/think.mp3" },
-		{ word: "month", transcription: "mʌnθ", audioUrl: "/audio/examples/month.mp3" },
+		{
+			word: "think",
+			transcription: "θɪŋk",
+			audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
+		},
+		{
+			word: "month",
+			transcription: "mʌnθ",
+			audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
+		},
 	],
 	allophones: [
 		{

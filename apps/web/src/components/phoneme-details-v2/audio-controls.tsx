@@ -1,6 +1,6 @@
 import { Loader2, Play, Snail } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAudioPlayer } from "@/hooks/use-audio-player";
+import { useAudioManager } from "@/hooks/use-audio-manager";
 import { ButtonGroup } from "../ui/button-group";
 
 type Props = {
@@ -10,23 +10,18 @@ type Props = {
 };
 
 export function AudioControls({ src, label, className }: Props) {
-	const { playAudio, isLoading, isPlaying, currentSource } = useAudioPlayer();
-
-	const isActiveSource = currentSource === src;
-	const isBusy = isLoading || isPlaying;
+	const { play, status } = useAudioManager(src);
 
 	return (
 		<ButtonGroup className={className}>
 			<Button
 				size="sm"
-				onClick={() => playAudio(src, "normal")}
+				onClick={() => play()}
 				aria-label={`Play ${label}`}
-				disabled={isBusy && isActiveSource}
+				disabled={status === "loading" || status === "playing"}
 			>
-				{isLoading && isActiveSource ? (
+				{status === "loading" ? (
 					<Loader2 className="h-3 w-3 animate-spin" />
-				) : isPlaying && isActiveSource ? (
-					<Play className="h-3 w-3" />
 				) : (
 					<Play className="h-3 w-3" />
 				)}
@@ -35,11 +30,11 @@ export function AudioControls({ src, label, className }: Props) {
 			<Button
 				size="sm"
 				variant="outline"
-				onClick={() => playAudio(src, "slow")}
+				onClick={() => play(0.75)}
 				aria-label={`Play slow ${label}`}
-				disabled={isBusy && isActiveSource}
+				disabled={status === "loading" || status === "playing"}
 			>
-				{isLoading && isActiveSource ? (
+				{status === "loading" ? (
 					<Loader2 className="h-3 w-3 animate-spin" />
 				) : (
 					<Snail className="h-3 w-3" />
