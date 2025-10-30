@@ -1,7 +1,8 @@
-import { Loader2, Play, Snail } from "lucide-react";
+import { Play, Snail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAudioManager } from "@/hooks/use-audio-manager";
 import { ButtonGroup } from "../ui/button-group";
+import { Spinner } from "../ui/spinner";
 
 type Props = {
 	src: string;
@@ -20,11 +21,7 @@ export function AudioControls({ src, label, className }: Props) {
 				aria-label={`Play ${label}`}
 				disabled={status === "loading" || status === "playing"}
 			>
-				{status === "loading" ? (
-					<Loader2 className="h-3 w-3 animate-spin" />
-				) : (
-					<Play className="h-3 w-3" />
-				)}
+				{status === "loading" ? <Spinner /> : <Play className="h-3 w-3" />}
 				<span>Play</span>
 			</Button>
 			<Button
@@ -34,11 +31,7 @@ export function AudioControls({ src, label, className }: Props) {
 				aria-label={`Play slow ${label}`}
 				disabled={status === "loading" || status === "playing"}
 			>
-				{status === "loading" ? (
-					<Loader2 className="h-3 w-3 animate-spin" />
-				) : (
-					<Snail className="h-3 w-3" />
-				)}
+				{status === "loading" ? <Spinner /> : <Snail className="h-3 w-3" />}
 			</Button>
 		</ButtonGroup>
 	);
