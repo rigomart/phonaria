@@ -8,7 +8,7 @@ import {
 	PhonemeDetailsGuide,
 	PhonemeDetailsHeader,
 	PhonemeDetailsSagittalView,
-} from "@/components/phoneme-details";
+} from "@/components/phoneme-details-old";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useG2PStore } from "../_store/g2p-store";

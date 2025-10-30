@@ -9,7 +9,7 @@ import {
 	PhonemeDetailsGuide,
 	PhonemeDetailsHeader,
 	PhonemeDetailsSagittalView,
-} from "@/components/phoneme-details";
+} from "@/components/phoneme-details-old";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 

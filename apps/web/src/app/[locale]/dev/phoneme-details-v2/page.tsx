@@ -1,6 +1,6 @@
 "use client";
 
-import { PhonemeDetails } from "@/components/phoneme-details-v2/phoneme-details";
+import { PhonemeDetails } from "@/components/phoneme-details";
 import { Card } from "@/components/ui/card";
 
 export default function PhonemeDetailsV2TestPage() {

@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { AudioControls } from "../audio-controls";
 import { AspectRatio } from "../ui/aspect-ratio";
-import { AudioControls } from "./audio-controls";
 
 // Shared articulation definitions
 const ARTICULATION_DEFINITIONS = {

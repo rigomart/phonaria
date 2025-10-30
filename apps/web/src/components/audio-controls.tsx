@@ -1,8 +1,8 @@
 import { Play, Snail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAudioManager } from "@/hooks/use-audio-manager";
-import { ButtonGroup } from "../ui/button-group";
-import { Spinner } from "../ui/spinner";
+import { ButtonGroup } from "./ui/button-group";
+import { Spinner } from "./ui/spinner";
 
 type Props = {
 	src: string;
