@@ -3,9 +3,8 @@
 import { PhonemeAllophones } from "./phoneme-allophones";
 import { PhonemeArticulation } from "./phoneme-articulation";
 import { PhonemeContrasts } from "./phoneme-contrasts";
-import { PhonemeExampleWords } from "./phoneme-example-words";
+import { PhonemeExamples } from "./phoneme-examples";
 import { PhonemeHeader } from "./phoneme-header";
-import { PhonemeSpellingPatterns } from "./phoneme-spelling-patterns";
 
 const MOCK_DATA = {
 	symbol: "θ",
@@ -37,25 +36,21 @@ const MOCK_DATA = {
 			tip: "/θ/ uses your tongue against your teeth, while /f/ uses your lower lip against your upper teeth. Feel the difference.",
 		},
 	],
-	spellingPatterns: [
-		{
-			pattern: "th",
-			description: "Most common spelling",
-			examples: ["think", "bath", "month", "breath"],
-		},
-	],
-	examples: [
-		{
-			word: "think",
-			transcription: "θɪŋk",
-			audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
-		},
-		{
-			word: "month",
-			transcription: "mʌnθ",
-			audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
-		},
-	],
+	examples: {
+		pattern: "th",
+		words: [
+			{
+				word: "think",
+				transcription: "θɪŋk",
+				audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
+			},
+			{
+				word: "month",
+				transcription: "mʌnθ",
+				audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
+			},
+		],
+	},
 	allophones: [
 		{
 			variant: "θ̠",
@@ -115,9 +110,7 @@ export function PhonemeDetails() {
 				pitfalls={MOCK_DATA.pitfalls}
 			/>
 
-			<PhonemeSpellingPatterns patterns={MOCK_DATA.spellingPatterns} />
-
-			<PhonemeExampleWords examples={MOCK_DATA.examples} />
+			<PhonemeExamples examples={MOCK_DATA.examples} />
 
 			<PhonemeContrasts contrasts={MOCK_DATA.contrasts} />
 
