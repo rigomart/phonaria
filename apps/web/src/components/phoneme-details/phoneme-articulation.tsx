@@ -1,8 +1,7 @@
-import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Badge } from "../ui/badge";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 const ARTICULATION_DEFINITIONS = {
@@ -19,7 +18,10 @@ const ARTICULATION_DEFINITIONS = {
 };
 
 type Props = {
-	illustrationUrl: string;
+	illustration: {
+		url: string;
+		alt: string;
+	};
 	features: {
 		manner: string;
 		place: string;
@@ -32,28 +34,21 @@ type Props = {
 	}[];
 };
 
-export function PhonemeArticulation({ illustrationUrl, features, steps, pitfalls }: Props) {
+export function PhonemeArticulation({ illustration, features, steps, pitfalls }: Props) {
 	return (
-		<section className="space-y-2 px-3 sm:px-4">
-			<h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-				Articulation
-			</h4>
+		<section className="space-y-3 px-3 sm:px-4">
+			<h3 className="text-sm font-semibold uppercase">How to pronounce</h3>
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<div className="flex items-start justify-center">
 					<AspectRatio ratio={1}>
-						<Image
-							src={illustrationUrl}
-							alt="Articulation Illustration"
-							fill
-							className="object-contain"
-						/>
+						<Image src={illustration.url} alt={illustration.alt} fill className="object-contain" />
 					</AspectRatio>
 				</div>
 
 				<div className="space-y-3">
 					<div className="space-y-1.5">
-						<h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-							Features
+						<h4 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/60">
+							Articulation
 						</h4>
 						<div className="space-y-1.5">
 							<Tooltip>
@@ -114,7 +109,7 @@ export function PhonemeArticulation({ illustrationUrl, features, steps, pitfalls
 					</div>
 
 					<div className="space-y-1.5">
-						<h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+						<h4 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/60">
 							Step-by-Step
 						</h4>
 						<ol className="space-y-1 text-xs">
@@ -128,27 +123,25 @@ export function PhonemeArticulation({ illustrationUrl, features, steps, pitfalls
 					</div>
 
 					<div className="space-y-1.5">
-						<h4 className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+						<h4 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/60">
 							Common Mistakes
 						</h4>
 						<div className="space-y-1">
 							{pitfalls.map((pitfall) => (
-								<Collapsible key={pitfall.summary}>
-									<CollapsibleTrigger asChild>
+								<Popover key={pitfall.summary}>
+									<PopoverTrigger asChild>
 										<button
 											type="button"
-											className="w-full text-left flex items-start gap-1.5 px-1.5 py-0.5 rounded hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors text-xs"
+											className="w-full text-left px-2 py-1.5 rounded-md border hover:bg-muted/50 transition-colors text-xs flex items-center justify-between"
 										>
-											<span className="text-amber-900 dark:text-amber-200 flex-1">
-												{pitfall.summary}
-											</span>
-											<ChevronsUpDown className="size-3" />
+											<span className="text-foreground font-semibold">{pitfall.summary}</span>
+											<span className="text-muted-foreground/80">‣</span>
 										</button>
-									</CollapsibleTrigger>
-									<CollapsibleContent className="text-xs text-amber-800 dark:text-amber-100 pl-4 py-1 border-l border-amber-200 dark:border-amber-800 ml-1">
-										<p>{pitfall.tip}</p>
-									</CollapsibleContent>
-								</Collapsible>
+									</PopoverTrigger>
+									<PopoverContent className="w-80 text-xs" align="start">
+										<p className="text-muted-foreground">{pitfall.tip}</p>
+									</PopoverContent>
+								</Popover>
 							))}
 						</div>
 					</div>

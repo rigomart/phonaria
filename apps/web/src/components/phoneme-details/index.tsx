@@ -12,7 +12,10 @@ const MOCK_DATA = {
 	description: "Voiceless dental fricative",
 	audioUrl: "https://assets.rigos.dev/phoneme-examples/about.mp3",
 	articulation: {
-		illustrationUrl: "https://assets.rigos.dev/diagrams/Voiced_alveolar_approximant.svg",
+		illustration: {
+			url: "https://assets.rigos.dev/diagrams/Voiceless_dental_fricative_articulation%201.svg",
+			alt: "Voiceless dental fricative articulation",
+		},
 		features: {
 			manner: "Fricative",
 			place: "Dental",
@@ -20,18 +23,18 @@ const MOCK_DATA = {
 		},
 	},
 	steps: [
-		"Place tongue tip between teeth",
+		"Tongue tip between teeth",
 		"Teeth should be slightly apart",
 		"Blow air gently through the gap",
 	],
 	pitfalls: [
 		{
-			summary: "Substituting /s/ - tongue too far back",
+			summary: "Tongue too far back",
 			tip: "Keep your tongue tip between your front teeth, not against the alveolar ridge. The position matters more than the airflow.",
 		},
 		{
-			summary: "Using /f/ - wrong articulator (lip vs tongue)",
-			tip: "Remember: /θ/ uses your tongue against your teeth, while /f/ uses your lower lip against your upper teeth. Feel the difference.",
+			summary: "Articulating with the lips",
+			tip: "/θ/ uses your tongue against your teeth, while /f/ uses your lower lip against your upper teeth. Feel the difference.",
 		},
 	],
 	spellingPatterns: [
@@ -106,7 +109,7 @@ export function PhonemeDetails() {
 			/>
 
 			<PhonemeArticulation
-				illustrationUrl={MOCK_DATA.articulation.illustrationUrl}
+				illustration={MOCK_DATA.articulation.illustration}
 				features={MOCK_DATA.articulation.features}
 				steps={MOCK_DATA.steps}
 				pitfalls={MOCK_DATA.pitfalls}
