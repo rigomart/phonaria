@@ -10,6 +10,7 @@ type Props = {
 		context?: string;
 	}[];
 };
+
 export function PhonemeAllophones({ allophones }: Props) {
 	return (
 		<section className="space-y-2">

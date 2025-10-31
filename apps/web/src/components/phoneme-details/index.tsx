@@ -7,7 +7,6 @@ import { PhonemeExampleWords } from "./phoneme-example-words";
 import { PhonemeHeader } from "./phoneme-header";
 import { PhonemeSpellingPatterns } from "./phoneme-spelling-patterns";
 
-// PHASE 2: Mock data with audio URLs
 const MOCK_DATA = {
 	symbol: "θ",
 	description: "Voiceless dental fricative",
@@ -24,7 +23,6 @@ const MOCK_DATA = {
 		"Place tongue tip between teeth",
 		"Teeth should be slightly apart",
 		"Blow air gently through the gap",
-		"Do not vibrate vocal cords",
 	],
 	pitfalls: [
 		{
@@ -34,10 +32,6 @@ const MOCK_DATA = {
 		{
 			summary: "Using /f/ - wrong articulator (lip vs tongue)",
 			tip: "Remember: /θ/ uses your tongue against your teeth, while /f/ uses your lower lip against your upper teeth. Feel the difference.",
-		},
-		{
-			summary: "Adding voice - should be voiceless",
-			tip: "Place your hand on your throat. If you feel vibration, you're voicing. For /θ/, your throat should be silent.",
 		},
 	],
 	spellingPatterns: [

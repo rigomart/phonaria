@@ -5,33 +5,34 @@ import { ButtonGroup } from "./ui/button-group";
 import { Spinner } from "./ui/spinner";
 
 type Props = {
+	size?: "xs" | "sm" | "default" | "lg";
 	src: string;
 	label: string;
 	className?: string;
 };
 
-export function AudioControls({ src, label, className }: Props) {
+export function AudioControls({ src, label, className, size = "default" }: Props) {
 	const { play, status } = useAudioManager(src);
 
 	return (
 		<ButtonGroup className={className}>
 			<Button
-				size="sm"
+				size={size}
 				onClick={() => play()}
 				aria-label={`Play ${label}`}
 				disabled={status === "loading" || status === "playing"}
 			>
-				{status === "loading" ? <Spinner /> : <Play className="h-3 w-3" />}
-				<span>Play</span>
+				{status === "loading" ? <Spinner /> : <Play />}
+				Play
 			</Button>
 			<Button
-				size="sm"
+				size={size}
 				variant="outline"
 				onClick={() => play(0.75)}
 				aria-label={`Play slow ${label}`}
 				disabled={status === "loading" || status === "playing"}
 			>
-				{status === "loading" ? <Spinner /> : <Snail className="h-3 w-3" />}
+				{status === "loading" ? <Spinner /> : <Snail />}
 			</Button>
 		</ButtonGroup>
 	);

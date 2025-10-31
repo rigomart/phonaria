@@ -9,8 +9,7 @@
 		},
 		"dev": {
 			"persistent": true,
-			"cache": false,
-			"inputs": ["$TURBO_DEFAULT$", ".env*"]
+			"cache": false
 		},
 		"check-types": {
 			"dependsOn": ["^check-types"]

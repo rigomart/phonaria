@@ -1,7 +1,6 @@
 "use client";
 
 import { PhonemeDetails } from "@/components/phoneme-details";
-import { Card } from "@/components/ui/card";
 
 export default function PhonemeDetailsV2TestPage() {
 	return (
@@ -14,9 +13,9 @@ export default function PhonemeDetailsV2TestPage() {
 					</p>
 				</div>
 
-				<Card className="p-6">
+				<div className="bg-background-soft rounded-2xl">
 					<PhonemeDetails />
-				</Card>
+				</div>
 			</div>
 		</div>
 	);
