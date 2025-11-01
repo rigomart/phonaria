@@ -40,7 +40,7 @@ export function PhonemeArticulation({ illustration, features, steps, pitfalls }:
 			<h3 className="text-base font-bold">Pronunciation</h3>
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<div className="flex items-start justify-center">
-					<AspectRatio ratio={1}>
+					<AspectRatio ratio={1} className="bg-neutral-950/80 rounded-lg">
 						<Image src={illustration.url} alt={illustration.alt} fill className="object-contain" />
 					</AspectRatio>
 				</div>

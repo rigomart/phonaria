@@ -1,4 +1,4 @@
-import { Play, Snail } from "lucide-react";
+import { AudioLines, Turtle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAudioManager } from "@/hooks/use-audio-manager";
 import { ButtonGroup } from "./ui/button-group";
@@ -18,12 +18,13 @@ export function AudioControls({ src, label, className, size = "default" }: Props
 		<ButtonGroup className={className}>
 			<Button
 				size={size}
+				variant="secondary"
 				onClick={() => play()}
 				aria-label={`Play ${label}`}
 				disabled={status === "loading" || status === "playing"}
 			>
-				{status === "loading" ? <Spinner /> : <Play />}
-				Play
+				{status === "loading" ? <Spinner /> : <AudioLines />}
+				Listen
 			</Button>
 			<Button
 				size={size}
@@ -32,7 +33,7 @@ export function AudioControls({ src, label, className, size = "default" }: Props
 				aria-label={`Play slow ${label}`}
 				disabled={status === "loading" || status === "playing"}
 			>
-				{status === "loading" ? <Spinner /> : <Snail />}
+				{status === "loading" ? <Spinner /> : <Turtle />}
 			</Button>
 		</ButtonGroup>
 	);

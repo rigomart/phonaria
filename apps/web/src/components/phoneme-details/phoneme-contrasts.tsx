@@ -37,7 +37,7 @@ export function PhonemeContrasts({ contrasts }: Props) {
 			</div>
 			<div className="space-y-3">
 				{contrasts.map((contrast) => (
-					<div key={contrast.partner} className="space-y-3 border px-3 py-2 rounded-xl">
+					<div key={contrast.partner} className="space-y-3 px-3 py-2 rounded-xl shadow-sm">
 						<div className="space-y-1">
 							<div className="flex items-center justify-between gap-3">
 								<div className="flex items-center gap-3">
@@ -46,16 +46,16 @@ export function PhonemeContrasts({ contrasts }: Props) {
 										{contrast.category}
 									</Badge>
 								</div>
-								<Button variant="outline" size="xs">
+								<Button variant="ghost" size="xs">
 									Open contrast <ArrowUpRight className="size-4" />
 								</Button>
 							</div>
 							<p className="text-xs text-muted-foreground">{contrast.summary}</p>
 						</div>
 
-						<div className="grid grid-cols-2 gap-3">
+						<div className="grid sm:grid-cols-2 grid-cols-1 gap-3">
 							{contrast.pairs.map((pair) => (
-								<Item variant="outline" size="xs" key={pair.word} className="bg-background-strong">
+								<Item variant="outline" size="xs" key={pair.word}>
 									<ItemContent>
 										<ItemTitle className="text-xs">{pair.word}</ItemTitle>
 										<ItemDescription className="text-xs text-muted-foreground">

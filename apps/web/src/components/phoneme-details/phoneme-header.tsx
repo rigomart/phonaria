@@ -8,7 +8,7 @@ type Props = {
 
 export function PhonemeHeader({ symbol, description, audioUrl }: Props) {
 	return (
-		<div className="flex flex-col gap-1 bg-background-strong p-3 sm:p-4 rounded-xl">
+		<div className="flex flex-col gap-1 bg-background-strong p-3 sm:p-4 rounded-xl shadow-sm">
 			<div className="flex gap-6 items-center">
 				<div className="flex items-center gap-2 font-bold">
 					<span className="text-3xl text-muted-foreground/50">/</span>

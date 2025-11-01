@@ -21,7 +21,7 @@ export function PhonemeExamples({ examples }: Props) {
 						</Badge>
 					))}
 				</div>
-				<div className="grid gap-1.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+				<div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
 					{examples.words.map((example) => (
 						<Item variant="outline" size="xs" key={example.grapheme}>
 							<ItemContent>

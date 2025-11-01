@@ -1,9 +1,10 @@
 import { Info } from "lucide-react";
 import { AudioControls } from "../audio-controls";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 type Props = {
-	allophones: {
+	allophones?: {
 		variant: string;
 		description: string;
 		examples: { word: string; transcription: string; audioUrl: string }[];
@@ -12,10 +13,12 @@ type Props = {
 };
 
 export function PhonemeAllophones({ allophones }: Props) {
+	if (!allophones) return null;
+
 	return (
-		<section className="space-y-2">
+		<section className="space-y-2 px-3 sm:px-4">
 			<div className="flex items-center gap-1.5">
-				<h3 className="text-xs font-semibold">Variations</h3>
+				<h3 className="text-base font-bold">Variations</h3>
 				<Popover>
 					<PopoverTrigger asChild>
 						<button
@@ -26,34 +29,33 @@ export function PhonemeAllophones({ allophones }: Props) {
 							<Info className="h-4 w-4" />
 						</button>
 					</PopoverTrigger>
-					<PopoverContent className="w-64 text-sm">
-						<p>
-							Some sounds have variations (allophones) depending on context or accent. These
-							variants are pronounced slightly differently but represent the same phoneme.
-						</p>
+					<PopoverContent className="text-sm">
+						Some sounds have variations (allophones) depending on context or accent. These variants
+						are pronounced slightly differently but represent the same phoneme.
 					</PopoverContent>
 				</Popover>
 			</div>
 			<div className="space-y-4">
 				{allophones.map((allo) => (
-					<div key={allo.variant} className="space-y-2">
+					<div key={allo.variant} className="space-y-2 px-3 py-2 rounded-xl shadow-sm">
 						<div className="flex items-baseline gap-2">
 							<span className="font-medium text-sm">{allo.variant}</span>
 							<span className="text-xs text-muted-foreground">{allo.description}</span>
 						</div>
 						<p className="text-xs text-muted-foreground">Context: {allo.context}</p>
-						<div className="space-y-1.5">
+						<div className="grid sm:grid-cols-2 grid-cols-1 gap-2">
 							{allo.examples.map((ex) => (
-								<div
-									key={ex.word}
-									className="flex items-center justify-between gap-2 rounded border bg-card p-2"
-								>
-									<div>
-										<div className="text-xs font-medium">{ex.word}</div>
-										<div className="text-[10px] text-muted-foreground">/{ex.transcription}/</div>
-									</div>
-									<AudioControls src={ex.audioUrl} label={ex.word} />
-								</div>
+								<Item key={ex.word} variant="outline" size="xs">
+									<ItemContent>
+										<ItemTitle className="text-xs">{ex.word}</ItemTitle>
+										<ItemDescription className="text-xs text-muted-foreground">
+											/{ex.transcription}/
+										</ItemDescription>
+									</ItemContent>
+									<ItemActions>
+										<AudioControls size="xs" src={ex.audioUrl} label={ex.word} />
+									</ItemActions>
+								</Item>
 							))}
 						</div>
 					</div>

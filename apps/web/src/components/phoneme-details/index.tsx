@@ -51,17 +51,7 @@ const MOCK_DATA = {
 			},
 		],
 	},
-	allophones: [
-		{
-			variant: "θ̠",
-			description: "Retracted variant",
-			context: "Before back vowels",
-			examples: [
-				{ word: "thought", transcription: "θɔt", audioUrl: "/audio/examples/thought.mp3" },
-				{ word: "thaw", transcription: "θɔ", audioUrl: "/audio/examples/thaw.mp3" },
-			],
-		},
-	],
+
 	contrasts: [
 		{
 			partner: "ð",
@@ -81,13 +71,15 @@ const MOCK_DATA = {
 				{ word: "sink", transcription: "sɪŋk", audioUrl: "/audio/examples/sink.mp3" },
 			],
 		},
+	],
+	allophones: [
 		{
-			partner: "t",
-			category: "Manner",
-			summary: "Distinguish fricative /θ/ from stop /t/—friction vs blockage",
-			pairs: [
-				{ word: "thick", transcription: "θɪk", audioUrl: "/audio/examples/thick.mp3" },
-				{ word: "tick", transcription: "tɪk", audioUrl: "/audio/examples/tick.mp3" },
+			variant: "θ̠",
+			description: "Retracted variant",
+			context: "Before back vowels",
+			examples: [
+				{ word: "thought", transcription: "θɔt", audioUrl: "/audio/examples/thought.mp3" },
+				{ word: "thaw", transcription: "θɔ", audioUrl: "/audio/examples/thaw.mp3" },
 			],
 		},
 	],
@@ -95,7 +87,7 @@ const MOCK_DATA = {
 
 export function PhonemeDetails() {
 	return (
-		<div className="space-y-5">
+		<div className="space-y-5 pb-5">
 			<PhonemeHeader
 				symbol={MOCK_DATA.symbol}
 				description={MOCK_DATA.description}
