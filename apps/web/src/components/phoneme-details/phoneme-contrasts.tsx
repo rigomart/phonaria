@@ -57,7 +57,7 @@ export function PhonemeContrasts({ contrasts }: Props) {
 							{contrast.pairs.map((pair) => (
 								<Item variant="outline" size="xs" key={pair.word}>
 									<ItemContent>
-										<ItemTitle className="text-xs">{pair.word}</ItemTitle>
+										<ItemTitle className="text-sm">{pair.word}</ItemTitle>
 										<ItemDescription className="text-xs text-muted-foreground">
 											/{pair.transcription}/
 										</ItemDescription>

@@ -7,6 +7,7 @@ import { PhonemeExamples } from "./phoneme-examples";
 import { PhonemeHeader } from "./phoneme-header";
 
 const MOCK_DATA = {
+	slug: "voiceless-dental-fricative",
 	symbol: "θ",
 	description: "Voiceless dental fricative",
 	audioUrl: "https://assets.rigos.dev/phoneme-examples/about.mp3",
@@ -16,9 +17,9 @@ const MOCK_DATA = {
 			alt: "Voiceless dental fricative articulation",
 		},
 		features: {
-			manner: "Fricative",
-			place: "Dental",
-			voicing: "Voiceless",
+			manner: "fricative",
+			place: "dental",
+			voicing: "voiceless",
 		},
 	},
 	steps: [
@@ -40,13 +41,25 @@ const MOCK_DATA = {
 		patterns: ["th"],
 		words: [
 			{
-				grapheme: "think",
-				phonemic: "θɪŋk",
+				grapheme: {
+					chars: ["t", "h", "i", "n", "k"],
+					highlight: [0, 1],
+				},
+				phonemic: {
+					chars: ["θ", "ɪ", "ŋ", "k"],
+					highlight: [0],
+				},
 				audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
 			},
 			{
-				grapheme: "month",
-				phonemic: "mʌnθ",
+				grapheme: {
+					chars: ["m", "o", "n", "t", "h"],
+					highlight: [3, 4],
+				},
+				phonemic: {
+					chars: ["m", "ʌ", "n", "θ"],
+					highlight: [3],
+				},
 				audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
 			},
 		],
@@ -73,6 +86,7 @@ const MOCK_DATA = {
 		},
 	],
 	allophones: [
+		// optional: only include if there are any allophones. Below is an example, not really needed for this phoneme.
 		{
 			variant: "θ̠",
 			description: "Retracted variant",

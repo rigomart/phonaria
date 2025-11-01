@@ -47,7 +47,7 @@ export function PhonemeAllophones({ allophones }: Props) {
 							{allo.examples.map((ex) => (
 								<Item key={ex.word} variant="outline" size="xs">
 									<ItemContent>
-										<ItemTitle className="text-xs">{ex.word}</ItemTitle>
+										<ItemTitle className="text-sm">{ex.word}</ItemTitle>
 										<ItemDescription className="text-xs text-muted-foreground">
 											/{ex.transcription}/
 										</ItemDescription>
