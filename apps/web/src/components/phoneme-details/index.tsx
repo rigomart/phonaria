@@ -37,16 +37,16 @@ const MOCK_DATA = {
 		},
 	],
 	examples: {
-		pattern: "th",
+		patterns: ["th"],
 		words: [
 			{
-				word: "think",
-				transcription: "θɪŋk",
+				grapheme: "think",
+				phonemic: "θɪŋk",
 				audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
 			},
 			{
-				word: "month",
-				transcription: "mʌnθ",
+				grapheme: "month",
+				phonemic: "mʌnθ",
 				audioUrl: "https://assets.rigos.dev/phoneme-examples/ahead.mp3",
 			},
 		],

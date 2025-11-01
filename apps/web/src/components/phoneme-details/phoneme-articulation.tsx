@@ -132,10 +132,9 @@ export function PhonemeArticulation({ illustration, features, steps, pitfalls }:
 									<PopoverTrigger asChild>
 										<button
 											type="button"
-											className="w-full text-left px-2 py-1.5 rounded-md border hover:bg-muted/50 transition-colors text-xs flex items-center justify-between"
+											className="w-full text-left px-2 py-1.5 rounded-md border hover:bg-muted/50 transition-colors text-xs"
 										>
-											<span className="text-foreground font-semibold">{pitfall.summary}</span>
-											<span className="text-muted-foreground/80">‣</span>
+											<span className="text-foreground font-semibold">‣ {pitfall.summary}</span>
 										</button>
 									</PopoverTrigger>
 									<PopoverContent className="w-80 text-xs" align="start">
