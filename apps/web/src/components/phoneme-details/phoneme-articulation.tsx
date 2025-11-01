@@ -37,7 +37,7 @@ type Props = {
 export function PhonemeArticulation({ illustration, features, steps, pitfalls }: Props) {
 	return (
 		<section className="space-y-3 px-3 sm:px-4">
-			<h3 className="text-sm font-semibold uppercase">How to pronounce</h3>
+			<h3 className="text-base font-bold">Pronunciation</h3>
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<div className="flex items-start justify-center">
 					<AspectRatio ratio={1}>

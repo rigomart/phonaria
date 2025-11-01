@@ -67,7 +67,6 @@ const MOCK_DATA = {
 			partner: "ð",
 			category: "Voicing",
 			summary: "Voiceless /θ/ vs voiced /ð/—only the voicing changes",
-			tactileCue: "Only /ð/ vibrates your throat. Touch your neck to feel the difference.",
 			pairs: [
 				{ word: "think", transcription: "θɪŋk", audioUrl: "/audio/examples/think.mp3" },
 				{ word: "this", transcription: "ðɪs", audioUrl: "/audio/examples/this.mp3" },
@@ -96,7 +95,7 @@ const MOCK_DATA = {
 
 export function PhonemeDetails() {
 	return (
-		<div className="space-y-4">
+		<div className="space-y-5">
 			<PhonemeHeader
 				symbol={MOCK_DATA.symbol}
 				description={MOCK_DATA.description}
