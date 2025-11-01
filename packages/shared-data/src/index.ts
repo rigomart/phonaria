@@ -1,3 +1,4 @@
+export { ARPABET_TO_IPA, convertArpabetToIPA } from "./arpabet-to-ipa";
 export {
 	articulationRegistry,
 	consonantArticulationRegistry,
@@ -10,9 +11,8 @@ export {
 	getOrderedCategories,
 	PHONEME_CATEGORIES,
 } from "./category-config";
+export { normalizeCmuWord } from "./cmudict";
 export { consonants } from "./consonants";
-export { ARPABET_TO_IPA, convertArpabetToIPA } from "./phonetics/arpabet-to-ipa";
-export { normalizeCmuWord } from "./phonetics/cmudict";
 export {
 	type Allophone,
 	type AllophoneContext,
