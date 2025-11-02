@@ -21,6 +21,15 @@ export {
 } from "./phonetics/phoneme-allophones";
 export { getAssets, type PhonemeAssetUrls, phonemeAssets } from "./phonetics/phoneme-assets";
 export {
+	convertCmuTranscriptionToStandardArpa,
+	convertStandardArpaTranscriptionToCmu,
+	findPhonemeFromCmuArpabet,
+	fromCmuArpabet,
+	type ParsedCmuArpabet,
+	toCmuArpabet,
+	toCmuArpabetById,
+} from "./phonetics/phoneme-cmu-arpabet";
+export {
 	allPhonemesCore,
 	consonantPhonemesCore,
 	getPhonemeByArpaCore,

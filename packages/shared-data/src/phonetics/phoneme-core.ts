@@ -1,8 +1,15 @@
-type BasePhonemeCore<Id extends string> = {
+// Base types
+type BasePhonemeCore<
+	Id extends string,
+	Ipa extends string = string,
+	Arpa extends string = string,
+> = {
 	id: Id;
-	ipa: string;
-	arpa: string;
+	ipa: Ipa;
+	arpa: Arpa;
 };
+
+// Consonants
 
 export type ConsonantVoicing = "voiced" | "voiceless";
 export type ConsonantPlace =
@@ -19,7 +26,7 @@ export type ConsonantPlace =
 export type ConsonantManner = "stop" | "fricative" | "affricate" | "nasal" | "approximant";
 
 type ConsonantPhonemeIdPattern = `${ConsonantVoicing}-${ConsonantPlace}-${ConsonantManner}`;
-type ConsonantPhonemeCore = BasePhonemeCore<ConsonantPhonemeIdPattern>;
+type ConsonantPhonemeEntry = BasePhonemeCore<ConsonantPhonemeIdPattern>;
 
 export const consonantPhonemesCore = [
 	{ id: "voiceless-bilabial-stop", ipa: "p", arpa: "P" },
@@ -46,9 +53,14 @@ export const consonantPhonemesCore = [
 	{ id: "voiced-postalveolar-approximant", ipa: "ɹ", arpa: "R" },
 	{ id: "voiced-palatal-approximant", ipa: "j", arpa: "Y" },
 	{ id: "voiced-labial-velar-approximant", ipa: "w", arpa: "W" },
-] as const satisfies readonly ConsonantPhonemeCore[];
+] as const satisfies readonly ConsonantPhonemeEntry[];
 
-export type ConsonantPhonemeId = (typeof consonantPhonemesCore)[number]["id"];
+export type ConsonantPhonemeCore = (typeof consonantPhonemesCore)[number];
+export type ConsonantPhonemeId = ConsonantPhonemeCore["id"];
+export type ConsonantPhonemeIpa = ConsonantPhonemeCore["ipa"];
+export type ConsonantPhonemeArpa = ConsonantPhonemeCore["arpa"];
+
+// Vowels
 
 export type VowelHeight =
 	| "close"
@@ -62,8 +74,10 @@ export type VowelBackness = "front" | "near-front" | "central" | "near-back" | "
 export type VowelRoundness = "rounded" | "unrounded";
 export type VowelTenseness = "tense" | "lax";
 
+// Vowels - Monophthongs
+
 type MonophthongPhonemeIdPattern = `${VowelHeight}-${VowelBackness}-${VowelRoundness}`;
-type MonophthongPhonemeCore = BasePhonemeCore<MonophthongPhonemeIdPattern>;
+type MonophthongPhonemeEntry = BasePhonemeCore<MonophthongPhonemeIdPattern>;
 
 export const monophthongPhonemesCore = [
 	{ id: "close-front-unrounded", ipa: "i", arpa: "IY" },
@@ -76,11 +90,20 @@ export const monophthongPhonemesCore = [
 	{ id: "open-mid-back-rounded", ipa: "ɔ", arpa: "AO" },
 	{ id: "near-open-front-unrounded", ipa: "æ", arpa: "AE" },
 	{ id: "open-back-unrounded", ipa: "ɑ", arpa: "AA" },
-] as const satisfies readonly MonophthongPhonemeCore[];
+] as const satisfies readonly MonophthongPhonemeEntry[];
 
+export type MonophthongPhonemeCore = (typeof monophthongPhonemesCore)[number];
+export type MonophthongPhonemeId = MonophthongPhonemeCore["id"];
+export type MonophthongPhonemeIpa = MonophthongPhonemeCore["ipa"];
+export type MonophthongPhonemeArpa = MonophthongPhonemeCore["arpa"];
+
+// Vowels - Diphthongs
+
+//? Keep an eye on the definition of these types. They can hold a disproportionate amount of combinations.
+//? They are fine here for their purpose, but don't try to export them as they are.
 type DiphthongPhonemeIdPattern =
 	`${VowelHeight}-${VowelBackness}-${VowelRoundness}-to-${VowelHeight}-${VowelBackness}-${VowelRoundness}`;
-type DiphthongPhonemeCore = BasePhonemeCore<DiphthongPhonemeIdPattern>;
+type DiphthongPhonemeEntry = BasePhonemeCore<DiphthongPhonemeIdPattern>;
 
 export const diphthongPhonemesCore = [
 	{ id: "close-mid-front-unrounded-to-near-close-near-front-unrounded", ipa: "eɪ", arpa: "EY" },
@@ -88,39 +111,54 @@ export const diphthongPhonemesCore = [
 	{ id: "open-front-unrounded-to-near-close-near-front-unrounded", ipa: "aɪ", arpa: "AY" },
 	{ id: "open-front-unrounded-to-near-close-near-back-rounded", ipa: "aʊ", arpa: "AW" },
 	{ id: "open-mid-back-rounded-to-near-close-near-front-unrounded", ipa: "ɔɪ", arpa: "OY" },
-] as const satisfies readonly DiphthongPhonemeCore[];
+] as const satisfies readonly DiphthongPhonemeEntry[];
+
+export type DiphthongPhonemeCore = (typeof diphthongPhonemesCore)[number];
+export type DiphthongPhonemeId = DiphthongPhonemeCore["id"];
+export type DiphthongPhonemeIpa = DiphthongPhonemeCore["ipa"];
+export type DiphthongPhonemeArpa = DiphthongPhonemeCore["arpa"];
+
+// Vowels - Rhotic
 
 type RhoticPhonemeIdPattern = `${VowelHeight}-${VowelBackness}-rhotic-${VowelTenseness}`;
-type RhoticPhonemeCore = BasePhonemeCore<RhoticPhonemeIdPattern>;
+type RhoticPhonemeEntry = BasePhonemeCore<RhoticPhonemeIdPattern>;
 
 export const rhoticPhonemesCore = [
 	{ id: "mid-central-rhotic-tense", ipa: "ɝ", arpa: "ER" },
 	{ id: "mid-central-rhotic-lax", ipa: "ɚ", arpa: "ER" },
-] as const satisfies readonly RhoticPhonemeCore[];
+] as const satisfies readonly RhoticPhonemeEntry[];
+
+export type RhoticPhonemeCore = (typeof rhoticPhonemesCore)[number];
+export type RhoticPhonemeId = RhoticPhonemeCore["id"];
+export type RhoticPhonemeIpa = RhoticPhonemeCore["ipa"];
+export type RhoticPhonemeArpa = RhoticPhonemeCore["arpa"];
+
+// Vowels - All
 
 type VowelPhonemeIdPattern =
 	| MonophthongPhonemeIdPattern
 	| DiphthongPhonemeIdPattern
 	| RhoticPhonemeIdPattern;
-type VowelPhonemeCore = BasePhonemeCore<VowelPhonemeIdPattern>;
+type VowelPhonemeEntry = BasePhonemeCore<VowelPhonemeIdPattern>;
 
 export const vowelPhonemesCore = [
 	...monophthongPhonemesCore,
 	...diphthongPhonemesCore,
 	...rhoticPhonemesCore,
-] as const satisfies readonly VowelPhonemeCore[];
+] as const satisfies readonly VowelPhonemeEntry[];
 
-export type MonophthongPhonemeId = (typeof monophthongPhonemesCore)[number]["id"];
-export type DiphthongPhonemeId = (typeof diphthongPhonemesCore)[number]["id"];
-export type RhoticPhonemeId = (typeof rhoticPhonemesCore)[number]["id"];
-export type VowelPhonemeId = (typeof vowelPhonemesCore)[number]["id"];
-export type PhonemeId = ConsonantPhonemeId | VowelPhonemeId;
-export type PhonemeCore = BasePhonemeCore<PhonemeId>;
+export type VowelPhonemeCore = (typeof vowelPhonemesCore)[number];
+export type VowelPhonemeId = VowelPhonemeCore["id"];
+export type VowelPhonemeIpa = VowelPhonemeCore["ipa"];
+export type VowelPhonemeArpa = VowelPhonemeCore["arpa"];
 
-export const allPhonemesCore = [
-	...consonantPhonemesCore,
-	...vowelPhonemesCore,
-] as const satisfies readonly PhonemeCore[];
+// All
+export const allPhonemesCore = [...consonantPhonemesCore, ...vowelPhonemesCore] as const;
+
+export type PhonemeCore = (typeof allPhonemesCore)[number];
+export type PhonemeId = PhonemeCore["id"];
+export type PhonemeIpa = PhonemeCore["ipa"];
+export type PhonemeArpa = PhonemeCore["arpa"];
 
 const phonemeCoreById = new Map<PhonemeId, PhonemeCore>(allPhonemesCore.map((p) => [p.id, p]));
 
