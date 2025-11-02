@@ -14,37 +14,6 @@ export {
 export { normalizeCmuWord } from "./cmudict";
 export { consonants } from "./consonants";
 export {
-	type Allophone,
-	type AllophoneContext,
-	getAllophones,
-	phonemeAllophones,
-} from "./phonetics/phoneme-allophones";
-export {
-	allPhonemes,
-	type ConsonantPhoneme,
-	consonantPhonemes,
-	getPhonemeByArpa,
-	getPhonemeById,
-	getPhonemeByIpa,
-	isConsonant,
-	isVowel,
-	type Phoneme,
-	type PhonemeId,
-	type PhonemeManner,
-	type PhonemePlace,
-	type PhonemeVoicing,
-	type VowelFrontness,
-	type VowelHeight,
-	type VowelPhoneme,
-	type VowelRoundness,
-	type VowelTenseness,
-	vowelPhonemes,
-} from "./phonetics/phonemes";
-export {
-	convertCmuArpaToPhonemeId,
-	convertCmuArpaToStandardArpa,
-} from "./phonetics/symbols/cmu-mapper";
-export {
 	allPhonemeSymbols,
 	consonantPhonemeSymbols,
 	diphthongPhonemeSymbols,
@@ -52,7 +21,7 @@ export {
 	phonemeSymbolById,
 	rhoticPhonemeSymbols,
 	vowelPhonemeSymbols,
-} from "./phonetics/symbols/registry";
+} from "./phonetics/symbols-registry";
 export * from "./types";
 export * as phonariaUtils from "./utils/index";
 export { vowels } from "./vowels";
