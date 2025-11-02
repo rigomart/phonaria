@@ -19,17 +19,6 @@ export {
 	getAllophones,
 	phonemeAllophones,
 } from "./phonetics/phoneme-allophones";
-export { getAssets, type PhonemeAssetUrls, phonemeAssets } from "./phonetics/phoneme-assets";
-export {
-	getSpellingPatterns,
-	type PhonemeSpellingPattern,
-	phonemeSpellingPatterns,
-} from "./phonetics/phoneme-patterns";
-export {
-	type FullPhoneme,
-	getAllFullPhonemes,
-	getFullPhoneme,
-} from "./phonetics/phoneme-utils";
 export {
 	allPhonemes,
 	type ConsonantPhoneme,
