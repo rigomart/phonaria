@@ -18,6 +18,8 @@ export {
 	consonantPhonemeSymbols,
 	diphthongPhonemeSymbols,
 	monophthongPhonemeSymbols,
+	phonemeSymbolByArpa,
+	phonemeSymbolByCmuArpa,
 	phonemeSymbolById,
 	rhoticPhonemeSymbols,
 	vowelPhonemeSymbols,
