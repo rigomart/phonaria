@@ -1,6 +1,10 @@
+// Utilities for bridging standard ARPABET with CMUdict symbols that encode stress digits.
+// CMUDict uses additional symbols for stress digits, which are not part of regular ARPABET.
+
 import type { PhonemeSymbolArpa, PhonemeSymbolId } from "./registry";
 import { phonemeSymbolByArpa } from "./registry";
 
+// CMU-only representations that collapse to existing Phonaria symbols.
 const cmuArpaToStandardArpa: Record<string, PhonemeSymbolArpa> = {
 	AH0: "AX",
 	ER0: "ER",
@@ -11,7 +15,9 @@ const cmuArpaToPhonemeId: Record<string, PhonemeSymbolId> = {
 	ER0: "mid-central-rhotic-lax",
 };
 
-// Transforms <char><optional-char><optional-stress-digit> to <char><optional-char>
+/**
+ * Remove CMU stress digits and map CMU-only variants onto Phonaria-standard ARPABET.
+ */
 export function convertCmuArpaToStandardArpa(cmuSymbol: string): PhonemeSymbolArpa {
 	const override = cmuArpaToStandardArpa[cmuSymbol];
 	if (override) return override;
@@ -26,7 +32,9 @@ export function convertCmuArpaToStandardArpa(cmuSymbol: string): PhonemeSymbolAr
 	return phoneme.arpa;
 }
 
-// Transforms <char><optional-char><optional-stress-digit> to <phoneme-id>
+/**
+ * Resolve a CMUdict symbol to the canonical phoneme id used in the registry.
+ */
 export function convertCmuArpaToPhonemeId(cmuSymbol: string): PhonemeSymbolId {
 	const override = cmuArpaToPhonemeId[cmuSymbol];
 	if (override) return override;
