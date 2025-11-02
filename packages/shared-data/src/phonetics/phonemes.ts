@@ -1,5 +1,3 @@
-export * from "./phoneme-core";
-
 export type PhonemeVoicing = "voiced" | "voiceless";
 export type PhonemePlace =
 	| "bilabial"

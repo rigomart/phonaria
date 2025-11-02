@@ -21,24 +21,6 @@ export {
 } from "./phonetics/phoneme-allophones";
 export { getAssets, type PhonemeAssetUrls, phonemeAssets } from "./phonetics/phoneme-assets";
 export {
-	convertCmuTranscriptionToStandardArpa,
-	convertStandardArpaTranscriptionToCmu,
-	findPhonemeFromCmuArpabet,
-	fromCmuArpabet,
-	type ParsedCmuArpabet,
-	toCmuArpabet,
-	toCmuArpabetById,
-} from "./phonetics/phoneme-cmu-arpabet";
-export {
-	allPhonemesCore,
-	consonantPhonemesCore,
-	getPhonemeByArpaCore,
-	getPhonemeByIdCore,
-	getPhonemeByIpaCore,
-	type PhonemeCore,
-	vowelPhonemesCore,
-} from "./phonetics/phoneme-core";
-export {
 	getSpellingPatterns,
 	type PhonemeSpellingPattern,
 	phonemeSpellingPatterns,
@@ -69,6 +51,19 @@ export {
 	type VowelTenseness,
 	vowelPhonemes,
 } from "./phonetics/phonemes";
+export {
+	convertCmuArpaToPhonemeId,
+	convertCmuArpaToStandardArpa,
+} from "./phonetics/symbols/cmu-mapper";
+export {
+	allPhonemeSymbols,
+	consonantPhonemeSymbols,
+	diphthongPhonemeSymbols,
+	monophthongPhonemeSymbols,
+	phonemeSymbolById,
+	rhoticPhonemeSymbols,
+	vowelPhonemeSymbols,
+} from "./phonetics/symbols/registry";
 export * from "./types";
 export * as phonariaUtils from "./utils/index";
 export { vowels } from "./vowels";
