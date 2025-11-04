@@ -32,8 +32,8 @@ export const phonemeContrasts: PhonemeContrast[] = [
 				{ word: "bat", phonemic: "bæt" },
 			],
 			[
-				{ word: "rip", phonemic: "rɪp" },
-				{ word: "rib", phonemic: "rɪb" },
+				{ word: "rip", phonemic: "ɹɪp" },
+				{ word: "rib", phonemic: "ɹɪb" },
 			],
 		],
 	},
@@ -184,8 +184,8 @@ export const phonemeContrasts: PhonemeContrast[] = [
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
-				{ word: "breathe", phonemic: "brið" },
-				{ word: "breeze", phonemic: "briz" },
+				{ word: "breathe", phonemic: "bɹið" },
+				{ word: "breeze", phonemic: "bɹiz" },
 			],
 			[
 				{ word: "seethe", phonemic: "sið" },
@@ -241,11 +241,11 @@ export const phonemeContrasts: PhonemeContrast[] = [
 		minimalPairs: [
 			[
 				{ word: "led", phonemic: "lɛd" },
-				{ word: "red", phonemic: "rɛd" },
+				{ word: "red", phonemic: "ɹɛd" },
 			],
 			[
 				{ word: "light", phonemic: "laɪt" },
-				{ word: "right", phonemic: "raɪt" },
+				{ word: "right", phonemic: "ɹaɪt" },
 			],
 		],
 	},
@@ -268,8 +268,8 @@ export const phonemeContrasts: PhonemeContrast[] = [
 		contrastType: ["manner", "place"],
 		minimalPairs: [
 			[
-				{ word: "best", phonemic: "best" },
-				{ word: "vest", phonemic: "vest" },
+				{ word: "best", phonemic: "bɛst" },
+				{ word: "vest", phonemic: "vɛst" },
 			],
 		],
 	},
