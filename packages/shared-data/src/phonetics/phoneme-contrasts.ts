@@ -15,7 +15,7 @@ type PhonemeContrastType =
 	| "height";
 
 export type PhonemeContrast = {
-	phonemesIds: [PhonemeSymbolId, PhonemeSymbolId]; // The pair. e.g. ["voiced-bilabial-stop", "voiced-labiodental-fricative"]
+	phonemeIds: [PhonemeSymbolId, PhonemeSymbolId]; // The pair. e.g. ["voiced-bilabial-stop", "voiced-labiodental-fricative"]
 	contrastType: PhonemeContrastType[]; // Usually one, but can be multiple. e.g. ["manner", "place"]
 	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
 };
@@ -24,428 +24,463 @@ export type PhonemeContrast = {
 export const phonemeContrasts: PhonemeContrast[] = [
 	// Consonants: Voicing
 	{
-		phonemesIds: ["voiceless-bilabial-stop", "voiced-bilabial-stop"],
+		phonemeIds: ["voiceless-bilabial-stop", "voiced-bilabial-stop"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
-				{ word: "pat", phonemic: "/pæt/" },
-				{ word: "bat", phonemic: "/bæt/" },
+				{ word: "pat", phonemic: "pæt" },
+				{ word: "bat", phonemic: "bæt" },
 			],
 			[
-				{ word: "rip", phonemic: "/rɪp/" },
-				{ word: "rib", phonemic: "/rɪb/" },
+				{ word: "rip", phonemic: "rɪp" },
+				{ word: "rib", phonemic: "rɪb" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiceless-alveolar-stop", "voiced-alveolar-stop"],
+		phonemeIds: ["voiceless-alveolar-stop", "voiced-alveolar-stop"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
-				{ word: "ten", phonemic: "/tɛn/" },
-				{ word: "den", phonemic: "/dɛn/" },
+				{ word: "ten", phonemic: "tɛn" },
+				{ word: "den", phonemic: "dɛn" },
 			],
 			[
-				{ word: "seat", phonemic: "/siːt/" },
-				{ word: "seed", phonemic: "/siːd/" },
+				{ word: "seat", phonemic: "sit" },
+				{ word: "seed", phonemic: "sid" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiceless-velar-stop", "voiced-velar-stop"],
+		phonemeIds: ["voiceless-velar-stop", "voiced-velar-stop"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
-				{ word: "coat", phonemic: "/koʊt/" },
-				{ word: "goat", phonemic: "/goʊt/" },
+				{ word: "coat", phonemic: "koʊt" },
+				{ word: "goat", phonemic: "goʊt" },
 			],
 			[
-				{ word: "back", phonemic: "/bæk/" },
-				{ word: "bag", phonemic: "/bæɡ/" },
+				{ word: "back", phonemic: "bæk" },
+				{ word: "bag", phonemic: "bæɡ" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiceless-labiodental-fricative", "voiced-labiodental-fricative"],
+		phonemeIds: ["voiceless-labiodental-fricative", "voiced-labiodental-fricative"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
-				{ word: "fan", phonemic: "/fæn/" },
-				{ word: "van", phonemic: "/væn/" },
+				{ word: "fan", phonemic: "fæn" },
+				{ word: "van", phonemic: "væn" },
 			],
 			[
-				{ word: "safe", phonemic: "/seɪf/" },
-				{ word: "save", phonemic: "/seɪv/" },
+				{ word: "safe", phonemic: "seɪf" },
+				{ word: "save", phonemic: "seɪv" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiceless-alveolar-fricative", "voiced-alveolar-fricative"],
+		phonemeIds: ["voiceless-alveolar-fricative", "voiced-alveolar-fricative"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
-				{ word: "sip", phonemic: "/sɪp/" },
-				{ word: "zip", phonemic: "/zɪp/" },
+				{ word: "sip", phonemic: "sɪp" },
+				{ word: "zip", phonemic: "zɪp" },
 			],
 			[
-				{ word: "seal", phonemic: "/siːl/" },
-				{ word: "zeal", phonemic: "/ziːl/" },
+				{ word: "seal", phonemic: "sil" },
+				{ word: "zeal", phonemic: "zil" },
 			],
 		],
 	},
 
 	// Consonants: Place/Manner
 	{
-		phonemesIds: ["voiceless-alveolar-fricative", "voiceless-postalveolar-fricative"],
+		phonemeIds: ["voiceless-alveolar-fricative", "voiceless-postalveolar-fricative"],
 		contrastType: ["place"],
 		minimalPairs: [
 			[
-				{ word: "sip", phonemic: "/sɪp/" },
-				{ word: "ship", phonemic: "/ʃɪp/" },
+				{ word: "sip", phonemic: "sɪp" },
+				{ word: "ship", phonemic: "ʃɪp" },
 			],
 			[
-				{ word: "mess", phonemic: "/mɛs/" },
-				{ word: "mesh", phonemic: "/mɛʃ/" },
+				{ word: "mess", phonemic: "mɛs" },
+				{ word: "mesh", phonemic: "mɛʃ" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiceless-postalveolar-affricate", "voiceless-postalveolar-fricative"],
+		phonemeIds: ["voiceless-postalveolar-affricate", "voiceless-postalveolar-fricative"],
 		contrastType: ["manner"],
 		minimalPairs: [
 			[
-				{ word: "cheap", phonemic: "/tʃiːp/" },
-				{ word: "sheep", phonemic: "/ʃiːp/" },
+				{ word: "cheap", phonemic: "tʃip" },
+				{ word: "sheep", phonemic: "ʃip" },
 			],
 			[
-				{ word: "chin", phonemic: "/tʃɪn/" },
-				{ word: "shin", phonemic: "/ʃɪn/" },
+				{ word: "chin", phonemic: "tʃɪn" },
+				{ word: "shin", phonemic: "ʃɪn" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiceless-postalveolar-affricate", "voiced-postalveolar-affricate"],
+		phonemeIds: ["voiceless-postalveolar-affricate", "voiced-postalveolar-affricate"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
-				{ word: "cheap", phonemic: "/tʃiːp/" },
-				{ word: "jeep", phonemic: "/dʒiːp/" },
+				{ word: "cheap", phonemic: "tʃip" },
+				{ word: "jeep", phonemic: "dʒip" },
 			],
 			[
-				{ word: "chin", phonemic: "/tʃɪn/" },
-				{ word: "gin", phonemic: "/dʒɪn/" },
+				{ word: "chin", phonemic: "tʃɪn" },
+				{ word: "gin", phonemic: "dʒɪn" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiceless-dental-fricative", "voiceless-alveolar-stop"],
+		phonemeIds: ["voiceless-dental-fricative", "voiceless-alveolar-stop"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
-				{ word: "thin", phonemic: "/θɪn/" },
-				{ word: "tin", phonemic: "/tɪn/" },
+				{ word: "thin", phonemic: "θɪn" },
+				{ word: "tin", phonemic: "tɪn" },
 			],
 			[
-				{ word: "thank", phonemic: "/θæŋk/" },
-				{ word: "tank", phonemic: "/tæŋk/" },
+				{ word: "thank", phonemic: "θæŋk" },
+				{ word: "tank", phonemic: "tæŋk" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiceless-dental-fricative", "voiceless-alveolar-fricative"],
+		phonemeIds: ["voiceless-dental-fricative", "voiceless-alveolar-fricative"],
 		contrastType: ["place"],
 		minimalPairs: [
 			[
-				{ word: "thin", phonemic: "/θɪn/" },
-				{ word: "sin", phonemic: "/sɪn/" },
+				{ word: "thin", phonemic: "θɪn" },
+				{ word: "sin", phonemic: "sɪn" },
 			],
 			[
-				{ word: "think", phonemic: "/θɪŋk/" },
-				{ word: "sink", phonemic: "/sɪŋk/" },
+				{ word: "think", phonemic: "θɪŋk" },
+				{ word: "sink", phonemic: "sɪŋk" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiced-dental-fricative", "voiced-alveolar-stop"],
+		phonemeIds: ["voiced-dental-fricative", "voiced-alveolar-stop"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
-				{ word: "they", phonemic: "/ðeɪ/" },
-				{ word: "day", phonemic: "/deɪ/" },
+				{ word: "they", phonemic: "ðeɪ" },
+				{ word: "day", phonemic: "deɪ" },
 			],
 			[
-				{ word: "though", phonemic: "/ðoʊ/" },
-				{ word: "dough", phonemic: "/doʊ/" },
+				{ word: "though", phonemic: "ðoʊ" },
+				{ word: "dough", phonemic: "doʊ" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiced-dental-fricative", "voiced-alveolar-fricative"],
+		phonemeIds: ["voiced-dental-fricative", "voiced-alveolar-fricative"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
-				{ word: "breathe", phonemic: "/briːð/" },
-				{ word: "breeze", phonemic: "/briːz/" },
+				{ word: "breathe", phonemic: "brið" },
+				{ word: "breeze", phonemic: "briz" },
 			],
 			[
-				{ word: "seethe", phonemic: "/siːð/" },
-				{ word: "seize", phonemic: "/siːz/" },
+				{ word: "seethe", phonemic: "sið" },
+				{ word: "seize", phonemic: "siz" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiced-alveolar-nasal", "voiced-velar-nasal"],
+		phonemeIds: ["voiced-alveolar-nasal", "voiced-velar-nasal"],
 		contrastType: ["place"],
 		minimalPairs: [
 			[
-				{ word: "ban", phonemic: "/bæn/" },
-				{ word: "bang", phonemic: "/bæŋ/" },
+				{ word: "ban", phonemic: "bæn" },
+				{ word: "bang", phonemic: "bæŋ" },
 			],
 			[
-				{ word: "sun", phonemic: "/sʌn/" },
-				{ word: "sung", phonemic: "/sʌŋ/" },
+				{ word: "sun", phonemic: "sʌn" },
+				{ word: "sung", phonemic: "sʌŋ" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiced-bilabial-nasal", "voiced-alveolar-nasal"],
+		phonemeIds: ["voiced-bilabial-nasal", "voiced-alveolar-nasal"],
 		contrastType: ["place"],
 		minimalPairs: [
 			[
-				{ word: "sum", phonemic: "/sʌm/" },
-				{ word: "sun", phonemic: "/sʌn/" },
+				{ word: "sum", phonemic: "sʌm" },
+				{ word: "sun", phonemic: "sʌn" },
 			],
 			[
-				{ word: "ram", phonemic: "/ræm/" },
-				{ word: "ran", phonemic: "/ræn/" },
+				{ word: "ram", phonemic: "ræm" },
+				{ word: "ran", phonemic: "ræn" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiced-labial-velar-approximant", "voiced-labiodental-fricative"],
+		phonemeIds: ["voiced-labial-velar-approximant", "voiced-labiodental-fricative"],
 		contrastType: ["manner", "place"],
 		minimalPairs: [
 			[
-				{ word: "wine", phonemic: "/waɪn/" },
-				{ word: "vine", phonemic: "/vaɪn/" },
+				{ word: "wine", phonemic: "waɪn" },
+				{ word: "vine", phonemic: "vaɪn" },
 			],
 			[
-				{ word: "west", phonemic: "/wɛst/" },
-				{ word: "vest", phonemic: "/vɛst/" },
+				{ word: "west", phonemic: "wɛst" },
+				{ word: "vest", phonemic: "vɛst" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiced-alveolar-lateral-approximant", "voiced-postalveolar-approximant"],
+		phonemeIds: ["voiced-alveolar-lateral-approximant", "voiced-postalveolar-approximant"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
-				{ word: "led", phonemic: "/lɛd/" },
-				{ word: "red", phonemic: "/rɛd/" },
+				{ word: "led", phonemic: "lɛd" },
+				{ word: "red", phonemic: "rɛd" },
 			],
 			[
-				{ word: "light", phonemic: "/laɪt/" },
-				{ word: "right", phonemic: "/raɪt/" },
-			],
-		],
-	},
-	{
-		phonemesIds: ["voiced-palatal-approximant", "voiced-postalveolar-affricate"],
-		contrastType: ["manner", "place"],
-		minimalPairs: [
-			[
-				{ word: "yoke", phonemic: "/joʊk/" },
-				{ word: "joke", phonemic: "/dʒoʊk/" },
-			],
-			[
-				{ word: "year", phonemic: "/jɪr/" },
-				{ word: "jeer", phonemic: "/dʒɪr/" },
+				{ word: "light", phonemic: "laɪt" },
+				{ word: "right", phonemic: "raɪt" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["voiced-bilabial-stop", "voiced-labiodental-fricative"],
+		phonemeIds: ["voiced-palatal-approximant", "voiced-postalveolar-affricate"],
 		contrastType: ["manner", "place"],
 		minimalPairs: [
 			[
-				{ word: "best", phonemic: "/best/" },
-				{ word: "vest", phonemic: "/vest/" },
+				{ word: "yoke", phonemic: "joʊk" },
+				{ word: "joke", phonemic: "dʒoʊk" },
+			],
+			[
+				{ word: "year", phonemic: "jɪɹ" },
+				{ word: "jeer", phonemic: "dʒɪɹ" },
+			],
+		],
+	},
+	{
+		phonemeIds: ["voiced-bilabial-stop", "voiced-labiodental-fricative"],
+		contrastType: ["manner", "place"],
+		minimalPairs: [
+			[
+				{ word: "best", phonemic: "best" },
+				{ word: "vest", phonemic: "vest" },
 			],
 		],
 	},
 
 	// Vowels: Height/Backness/Roundness/Tenseness ---
 	{
-		phonemesIds: ["close-front-unrounded", "near-close-near-front-unrounded"], // /i/ vs /ɪ/
+		phonemeIds: ["close-front-unrounded", "near-close-near-front-unrounded"], // /i/ vs /ɪ/
 		contrastType: ["tenseness", "height"],
 		minimalPairs: [
 			[
-				{ word: "beet", phonemic: "/bit/" },
-				{ word: "bit", phonemic: "/bɪt/" },
+				{ word: "beet", phonemic: "bit" },
+				{ word: "bit", phonemic: "bɪt" },
 			],
 			[
-				{ word: "seat", phonemic: "/sit/" },
-				{ word: "sit", phonemic: "/sɪt/" },
+				{ word: "seat", phonemic: "sit" },
+				{ word: "sit", phonemic: "sɪt" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["close-back-rounded", "near-close-near-back-rounded"], // /u/ vs /ʊ/
+		phonemeIds: ["close-back-rounded", "near-close-near-back-rounded"], // /u/ vs /ʊ/
 		contrastType: ["tenseness", "height"],
 		minimalPairs: [
 			[
-				{ word: "pool", phonemic: "/pul/" },
-				{ word: "pull", phonemic: "/pʊl/" },
+				{ word: "pool", phonemic: "pul" },
+				{ word: "pull", phonemic: "pʊl" },
 			],
 			[
-				{ word: "Luke", phonemic: "/luk/" },
-				{ word: "look", phonemic: "/lʊk/" },
+				{ word: "Luke", phonemic: "luk" },
+				{ word: "look", phonemic: "lʊk" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["open-mid-front-unrounded", "near-open-front-unrounded"], // /ɛ/ vs /æ/
+		phonemeIds: ["open-mid-front-unrounded", "near-open-front-unrounded"], // /ɛ/ vs /æ/
 		contrastType: ["height"],
 		minimalPairs: [
 			[
-				{ word: "bet", phonemic: "/bɛt/" },
-				{ word: "bat", phonemic: "/bæt/" },
+				{ word: "bet", phonemic: "bɛt" },
+				{ word: "bat", phonemic: "bæt" },
 			],
 			[
-				{ word: "men", phonemic: "/mɛn/" },
-				{ word: "man", phonemic: "/mæn/" },
+				{ word: "men", phonemic: "mɛn" },
+				{ word: "man", phonemic: "mæn" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["near-close-near-back-rounded", "open-mid-back-unrounded"], // /ʊ/ vs /ʌ/
+		phonemeIds: ["near-close-near-back-rounded", "open-mid-back-unrounded"], // /ʊ/ vs /ʌ/
 		contrastType: ["height", "roundness"],
 		minimalPairs: [
 			[
-				{ word: "put", phonemic: "/pʊt/" },
-				{ word: "putt", phonemic: "/pʌt/" },
+				{ word: "put", phonemic: "pʊt" },
+				{ word: "putt", phonemic: "pʌt" },
 			],
 			[
-				{ word: "book", phonemic: "/bʊk/" },
-				{ word: "buck", phonemic: "/bʌk/" },
+				{ word: "book", phonemic: "bʊk" },
+				{ word: "buck", phonemic: "bʌk" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["open-mid-back-unrounded", "open-back-unrounded"], // /ʌ/ vs /ɑ/
+		phonemeIds: ["open-mid-back-unrounded", "open-back-unrounded"], // /ʌ/ vs /ɑ/
 		contrastType: ["height", "backness"],
 		minimalPairs: [
 			[
-				{ word: "cup", phonemic: "/kʌp/" },
-				{ word: "cop", phonemic: "/kɑp/" },
+				{ word: "cup", phonemic: "kʌp" },
+				{ word: "cop", phonemic: "kɑp" },
 			],
 			[
-				{ word: "luck", phonemic: "/lʌk/" },
-				{ word: "lock", phonemic: "/lɑk/" },
+				{ word: "luck", phonemic: "lʌk" },
+				{ word: "lock", phonemic: "lɑk" },
 			],
 		],
 	},
 
 	// Diphthong vs Monophthong: Tense–Lax/Height cues
 	{
-		phonemesIds: [
+		phonemeIds: [
 			"close-mid-front-unrounded-to-near-close-near-front-unrounded",
 			"open-mid-front-unrounded",
 		], // /eɪ/ vs /ɛ/
 		contrastType: ["tenseness", "height"],
 		minimalPairs: [
 			[
-				{ word: "bait", phonemic: "/beɪt/" },
-				{ word: "bet", phonemic: "/bɛt/" },
+				{ word: "bait", phonemic: "beɪt" },
+				{ word: "bet", phonemic: "bɛt" },
 			],
 			[
-				{ word: "late", phonemic: "/leɪt/" },
-				{ word: "let", phonemic: "/lɛt/" },
+				{ word: "late", phonemic: "leɪt" },
+				{ word: "let", phonemic: "lɛt" },
 			],
 		],
 	},
 	{
-		phonemesIds: ["close-mid-back-rounded-to-near-close-near-back-rounded", "open-back-unrounded"], // /oʊ/ vs /ɑ/
+		phonemeIds: ["close-mid-back-rounded-to-near-close-near-back-rounded", "open-back-unrounded"], // /oʊ/ vs /ɑ/
 		contrastType: ["roundness", "height"],
 		minimalPairs: [
 			[
-				{ word: "coat", phonemic: "/koʊt/" },
-				{ word: "cot", phonemic: "/kɑt/" },
+				{ word: "coat", phonemic: "koʊt" },
+				{ word: "cot", phonemic: "kɑt" },
 			],
 			[
-				{ word: "rode", phonemic: "/roʊd/" },
-				{ word: "rod", phonemic: "/rɑd/" },
+				{ word: "rode", phonemic: "roʊd" },
+				{ word: "rod", phonemic: "rɑd" },
 			],
 		],
 	},
 
 	// Diphthong vs Diphthong: Height cues
 	{
-		phonemesIds: [
+		phonemeIds: [
 			"open-front-unrounded-to-near-close-near-front-unrounded",
 			"close-mid-front-unrounded-to-near-close-near-front-unrounded",
 		], // /aɪ/ vs /eɪ/
 		contrastType: ["height"],
 		minimalPairs: [
 			[
-				{ word: "time", phonemic: "/taɪm/" },
-				{ word: "tame", phonemic: "/teɪm/" },
+				{ word: "time", phonemic: "taɪm" },
+				{ word: "tame", phonemic: "teɪm" },
 			],
 			[
-				{ word: "line", phonemic: "/laɪn/" },
-				{ word: "lane", phonemic: "/leɪn/" },
+				{ word: "line", phonemic: "laɪn" },
+				{ word: "lane", phonemic: "leɪn" },
 			],
 		],
 	},
 	{
-		phonemesIds: [
+		phonemeIds: [
 			"open-front-unrounded-to-near-close-near-front-unrounded",
 			"open-front-unrounded-to-near-close-near-back-rounded",
 		], // /aɪ/ vs /aʊ/
 		contrastType: ["roundness", "backness"],
 		minimalPairs: [
 			[
-				{ word: "file", phonemic: "/faɪl/" },
-				{ word: "foul", phonemic: "/faʊl/" },
+				{ word: "file", phonemic: "faɪl" },
+				{ word: "foul", phonemic: "faʊl" },
 			],
 			[
-				{ word: "buy", phonemic: "/baɪ/" },
-				{ word: "bough", phonemic: "/baʊ/" },
+				{ word: "buy", phonemic: "baɪ" },
+				{ word: "bough", phonemic: "baʊ" },
 			],
 		],
 	},
 	{
-		phonemesIds: [
+		phonemeIds: [
 			"close-mid-back-rounded-to-near-close-near-back-rounded",
 			"open-front-unrounded-to-near-close-near-back-rounded",
 		], // /oʊ/ vs /aʊ/
 		contrastType: ["height"],
 		minimalPairs: [
 			[
-				{ word: "know", phonemic: "/noʊ/" },
-				{ word: "now", phonemic: "/naʊ/" },
+				{ word: "know", phonemic: "noʊ" },
+				{ word: "now", phonemic: "naʊ" },
 			],
 			[
-				{ word: "coat", phonemic: "/koʊt/" },
-				{ word: "cow", phonemic: "/kaʊ/" },
+				{ word: "coat", phonemic: "koʊt" },
+				{ word: "cow", phonemic: "kaʊ" },
 			],
 		],
 	},
 	{
-		phonemesIds: [
+		phonemeIds: [
 			"open-mid-back-rounded-to-near-close-near-front-unrounded",
 			"close-mid-back-rounded-to-near-close-near-back-rounded",
 		], // /ɔɪ/ vs /oʊ/
 		contrastType: ["backness", "roundness"],
 		minimalPairs: [
 			[
-				{ word: "boil", phonemic: "/bɔɪl/" },
-				{ word: "bowl", phonemic: "/boʊl/" },
+				{ word: "boil", phonemic: "bɔɪl" },
+				{ word: "bowl", phonemic: "boʊl" },
 			],
 			[
-				{ word: "toil", phonemic: "/tɔɪl/" },
-				{ word: "toll", phonemic: "/toʊl/" },
+				{ word: "toil", phonemic: "tɔɪl" },
+				{ word: "toll", phonemic: "toʊl" },
 			],
 		],
 	},
 ];
+
+export type PhonemeContrastMatch = {
+	partnerId: PhonemeSymbolId;
+	contrastType: PhonemeContrastType[];
+	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
+};
+
+// Scoped map generation using IIFE for O(1) access in consumption
+export const contrastsByPhonemeId = (() => {
+	const map = new Map<PhonemeSymbolId, PhonemeContrastMatch[]>();
+
+	for (const contrast of phonemeContrasts) {
+		const [leftId, rightId] = contrast.phonemeIds;
+
+		const addEntry = (fromId: PhonemeSymbolId, toId: PhonemeSymbolId) => {
+			const entry: PhonemeContrastMatch = {
+				partnerId: toId,
+				contrastType: contrast.contrastType,
+				minimalPairs: contrast.minimalPairs,
+			};
+
+			const existing = map.get(fromId);
+			if (existing) {
+				existing.push(entry);
+			} else {
+				map.set(fromId, [entry]);
+			}
+		};
+
+		addEntry(leftId, rightId);
+		addEntry(rightId, leftId);
+	}
+
+	return map;
+})();
