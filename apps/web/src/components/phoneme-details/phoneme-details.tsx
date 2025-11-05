@@ -101,7 +101,7 @@ type Props = React.ComponentProps<"div"> & {
 	phonemeId: PhonemeSymbolId;
 };
 
-export function PhonemeDetails({ phonemeId, children, className, ...props }: Props) {
+export function PhonemeDetails({ phonemeId, className, ...props }: Props) {
 	return (
 		<PhonemeDetailsProvider phonemeId={phonemeId}>
 			<div className={cn("space-y-5 pb-5", className)} {...props} />

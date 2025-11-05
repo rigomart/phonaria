@@ -3,6 +3,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DM_Mono, Inter, Noto_Serif } from "next/font/google";
 import Providers from "./providers";
 import "./globals.css";
+import type { Metadata } from "next";
 import { setStaticParamsLocale } from "next-international/server";
 import { Header } from "@/components/header";
 import { I18nProviderClient } from "@/locales/client";
@@ -30,6 +31,12 @@ const dmMono = DM_Mono({
 export async function generateStaticParams() {
 	return getStaticParams();
 }
+
+export const metadata: Metadata = {
+	title: "Phonaria - Pronunciation toolkit for ESL learners",
+	description:
+		"Learner-first pronunciation toolkit for people studying English as a second language. Gathers the core resources learners need to understand how English sounds work, explore spelling and phoneme patterns, and connect what they read with how it should sound.",
+};
 
 export default async function RootLayout({
 	params,

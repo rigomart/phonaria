@@ -1,17 +1,16 @@
-import type { PhonemeSymbolId } from "shared-data";
-
-const phonemeDetails = {
-	"voiced-bilabial-stop": {
-		title: "Voiced Bilabial Stop",
-		description: "Voiced bilabial stop",
-	},
-	"voiced-bilabial-nasal": {
-		title: "Voiced Bilabial Nasal",
-		description: "Voiced bilabial nasal",
-	},
-} as const satisfies Partial<Record<PhonemeSymbolId, Record<string, string>>>;
+import { phonemeDetails } from "./phoneme-details";
 
 export default {
+	common: {
+		header: {
+			navigation: {
+				overview: "Overview",
+				transcription: "Transcription",
+				"ipa-chart": "IPA Reference",
+			},
+		},
+		"phoneme-details": { ...phonemeDetails },
+	},
 	"locale-layout": {
 		title: "Phonaria - English Phoneme Learning",
 		description: "Interactive tool for learning English phonemes with IPA transcription",
@@ -71,5 +70,4 @@ export default {
 				"Each tool focuses on a different aspect of pronunciation learning. Use them together or focus on the one that matches your current learning goal.",
 		},
 	},
-	"phoneme-details": { ...phonemeDetails },
 } as const;

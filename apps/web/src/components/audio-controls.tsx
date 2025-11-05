@@ -1,3 +1,5 @@
+"use client";
+
 import { AudioLines, Turtle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAudioManager } from "@/hooks/use-audio-manager";
