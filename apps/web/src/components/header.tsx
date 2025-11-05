@@ -1,6 +1,6 @@
 import { AudioLines } from "lucide-react";
+import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Link } from "@/i18n/navigation";
 
 const navigationLinks = [
 	{ href: "/overview", label: "Overview" },
@@ -8,7 +8,7 @@ const navigationLinks = [
 	{ href: "/ipa-chart", label: "IPA Reference" },
 ];
 
-export function Header() {
+export async function Header() {
 	return (
 		<header className="sticky top-0 z-40 border-b border-border bg-background">
 			<div className="container mx-auto px-4 py-3">
@@ -23,7 +23,6 @@ export function Header() {
 							</span>
 							<span className="text-base font-medium">Phonaria</span>
 						</Link>
-
 						<nav className="hidden items-center gap-5 md:flex">
 							{navigationLinks.map((link) => (
 								<Link

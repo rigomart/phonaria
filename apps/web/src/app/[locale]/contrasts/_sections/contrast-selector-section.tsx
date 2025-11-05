@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import {
 	LEARNING_STAGE_DESCRIPTIONS,
@@ -5,7 +6,6 @@ import {
 	LEARNING_STAGE_ORDER,
 	type MinimalPairSet,
 } from "@/data/contrasts";
-import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 interface ContrastSelectorSectionProps {

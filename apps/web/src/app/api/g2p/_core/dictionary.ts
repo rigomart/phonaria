@@ -1,5 +1,5 @@
-import cmudictData from "@data/cmudict.json";
 import { convertArpabetToIPA, normalizeCmuWord } from "shared-data";
+import cmudictData from "@/data/cmudict.json";
 
 type PreprocessedCmudict = Record<string, string[]>;
 

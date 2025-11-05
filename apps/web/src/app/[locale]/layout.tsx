@@ -1,46 +1,31 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { hasLocale, type Locale, NextIntlClientProvider } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setStaticParamsLocale } from "next-international/server";
+import type { ReactElement } from "react";
 import { Header } from "@/components/header";
-import { routing } from "@/i18n/routing";
+import { I18nProviderClient } from "@/locales/client";
+import { getStaticParams } from "@/locales/server";
 
 export function generateStaticParams() {
-	return routing.locales.map((locale) => ({ locale }));
+	return getStaticParams();
 }
 
-export async function generateMetadata(
-	props: Omit<LayoutProps<"/[locale]">, "children">,
-): Promise<Metadata> {
-	const { locale } = await props.params;
-
-	const t = await getTranslations({
-		locale: locale as Locale,
-		namespace: "LocaleLayout",
-	});
-
-	return {
-		title: t("title"),
-		description: t("description"),
-	};
-}
-
-export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
+export default async function LocaleLayout({
+	params,
+	children,
+}: {
+	params: Promise<{ locale: string }>;
+	children: ReactElement;
+}) {
 	// Ensure that the incoming `locale` is valid
 	const { locale } = await params;
-	if (!hasLocale(routing.locales, locale)) {
-		notFound();
-	}
 
-	// Enable static rendering
-	setRequestLocale(locale);
+	setStaticParamsLocale(locale);
 
 	return (
-		<NextIntlClientProvider>
+		<I18nProviderClient locale={locale}>
 			<div className="h-screen flex flex-col">
 				<Header />
 				{children}
 			</div>
-		</NextIntlClientProvider>
+		</I18nProviderClient>
 	);
 }

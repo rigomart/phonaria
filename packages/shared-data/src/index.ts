@@ -18,6 +18,7 @@ export {
 	consonantPhonemeSymbols,
 	diphthongPhonemeSymbols,
 	monophthongPhonemeSymbols,
+	type PhonemeSymbolId,
 	phonemeSymbolByArpa,
 	phonemeSymbolByCmuArpa,
 	phonemeSymbolById,
