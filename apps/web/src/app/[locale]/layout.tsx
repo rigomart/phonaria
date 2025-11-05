@@ -1,31 +1,65 @@
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { DM_Mono, Inter, Noto_Serif } from "next/font/google";
+import Providers from "./providers";
+import "./globals.css";
 import { setStaticParamsLocale } from "next-international/server";
-import type { ReactElement } from "react";
 import { Header } from "@/components/header";
 import { I18nProviderClient } from "@/locales/client";
 import { getStaticParams } from "@/locales/server";
 
-export function generateStaticParams() {
+const inter = Inter({
+	variable: "--font-inter",
+	subsets: ["latin"],
+	fallback: ["system-ui", "sans-serif"],
+});
+
+const notoSerif = Noto_Serif({
+	variable: "--font-noto-serif",
+	subsets: ["latin"],
+	fallback: ["system-ui", "serif"],
+});
+
+const dmMono = DM_Mono({
+	variable: "--font-dm-mono",
+	subsets: ["latin"],
+	weight: ["400"],
+	fallback: ["system-ui", "monospace"],
+});
+
+export async function generateStaticParams() {
 	return getStaticParams();
 }
 
-export default async function LocaleLayout({
+export default async function RootLayout({
 	params,
 	children,
-}: {
+}: Readonly<{
 	params: Promise<{ locale: string }>;
-	children: ReactElement;
-}) {
-	// Ensure that the incoming `locale` is valid
+	children: React.ReactNode;
+}>) {
 	const { locale } = await params;
 
 	setStaticParamsLocale(locale);
 
 	return (
-		<I18nProviderClient locale={locale}>
-			<div className="h-screen flex flex-col">
-				<Header />
-				{children}
-			</div>
-		</I18nProviderClient>
+		<html
+			lang="en"
+			suppressHydrationWarning
+			className={`${inter.variable} ${dmMono.variable} ${notoSerif.variable}`}
+		>
+			<body className={`antialiased`}>
+				<I18nProviderClient locale={locale}>
+					<Providers>
+						<div className="h-screen flex flex-col">
+							<Header />
+							{children}
+						</div>
+					</Providers>
+				</I18nProviderClient>
+				<Analytics />
+				<SpeedInsights />
+			</body>
+		</html>
 	);
 }
