@@ -6,13 +6,15 @@ import { Spinner } from "./ui/spinner";
 
 type Props = {
 	size?: "xs" | "sm" | "default" | "lg";
-	src: string;
+	path: string;
 	label: string;
 	className?: string;
 };
 
-export function AudioControls({ src, label, className, size = "default" }: Props) {
-	const { play, status } = useAudioManager(src);
+const baseUrl = process.env.NEXT_PUBLIC_BUCKET_URL;
+
+export function AudioControls({ path, label, className, size = "default" }: Props) {
+	const { play, status } = useAudioManager(`${baseUrl}/${path}`);
 
 	return (
 		<ButtonGroup className={className}>

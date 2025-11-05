@@ -6,7 +6,7 @@ type Props = {
 	audioUrl: string;
 };
 
-export function PhonemeHeader({ symbol, description, audioUrl }: Props) {
+export function PhonemeDetailsHeader({ symbol, description, audioUrl }: Props) {
 	return (
 		<div className="flex flex-col gap-1 bg-background-strong p-3 sm:p-4 rounded-xl shadow-sm">
 			<div className="flex gap-6 items-center">

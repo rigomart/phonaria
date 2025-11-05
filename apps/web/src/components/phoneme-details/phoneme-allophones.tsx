@@ -12,7 +12,7 @@ type Props = {
 	}[];
 };
 
-export function PhonemeAllophones({ allophones }: Props) {
+export function PhonemeDetailsAllophones({ allophones }: Props) {
 	if (!allophones) return null;
 
 	return (

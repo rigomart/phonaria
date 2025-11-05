@@ -34,7 +34,7 @@ type Props = {
 	}[];
 };
 
-export function PhonemeArticulation({ illustration, features, steps, pitfalls }: Props) {
+export function PhonemeDetailsArticulation({ illustration, features, steps, pitfalls }: Props) {
 	return (
 		<section className="space-y-3 px-3 sm:px-4">
 			<h3 className="text-base font-bold">Pronunciation</h3>

@@ -14,7 +14,7 @@ type Props = {
 	}[];
 };
 
-export function PhonemeContrasts({ contrasts }: Props) {
+export function PhonemeDetailsContrasts({ contrasts }: Props) {
 	return (
 		<section className="space-y-2 px-3 sm:px-4">
 			<div className="flex items-center gap-1.5">

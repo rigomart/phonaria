@@ -13,7 +13,7 @@ type Props = {
 	};
 };
 
-export function PhonemeExamples({ examples }: Props) {
+export function PhonemeDetailsExamples({ examples }: Props) {
 	return (
 		<section className="px-3 sm:px-4">
 			<div className="rounded-lg space-y-2">
