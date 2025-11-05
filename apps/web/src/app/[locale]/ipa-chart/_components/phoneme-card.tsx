@@ -1,8 +1,8 @@
-import { useTranslations } from "next-intl";
 import type { ConsonantPhoneme, IpaPhoneme, VowelPhoneme } from "shared-data";
 import { phonariaUtils } from "shared-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useScopedI18n } from "@/locales/client";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 const { toPhonemic } = phonariaUtils;
@@ -15,7 +15,7 @@ interface PhonemeCardProps<T extends IpaPhoneme> {
 export function PhonemeCard<T extends IpaPhoneme>({ phoneme, className }: PhonemeCardProps<T>) {
 	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
 	const handleClick = () => selectPhoneme(phoneme);
-	const t = useTranslations("IpaChart.Card");
+	const t = useScopedI18n("ipa-chart.card");
 
 	// Generate tooltip content
 	const tooltipContent = `${toPhonemic(phoneme.symbol)} ${phoneme.description}`;
@@ -53,7 +53,7 @@ export function PhonemeCard<T extends IpaPhoneme>({ phoneme, className }: Phonem
 							{primaryExample.word}
 						</div>
 					)}
-					<div className="text-[10px] text-muted-foreground mt-1">{t("tooltipHint")}</div>
+					<div className="text-[10px] text-muted-foreground mt-1">{t("tooltip-hint")}</div>
 				</div>
 			</TooltipContent>
 		</Tooltip>

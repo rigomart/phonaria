@@ -1,16 +1,6 @@
 "use client";
 
-import {
-	PhonemeDetails,
-	PhonemeDetailsAllophones,
-	PhonemeDetailsArticulation,
-	PhonemeDetailsExamples,
-	PhonemeDetailsGuide,
-	PhonemeDetailsHeader,
-	PhonemeDetailsSagittalView,
-} from "@/components/phoneme-details-old";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useG2PStore } from "../_store/g2p-store";
 
 export function PhonemeInspector() {
@@ -38,24 +28,5 @@ export function PhonemeInspector() {
 		);
 	}
 
-	return (
-		<PhonemeDetails phoneme={selectedPhoneme}>
-			<ScrollArea className="h-full">
-				<Card className="h-full flex flex-col rounded-none">
-					<CardHeader>
-						<PhonemeDetailsHeader />
-					</CardHeader>
-					<CardContent className="flex-1min-h-0">
-						<div className="space-y-6">
-							<PhonemeDetailsSagittalView />
-							<PhonemeDetailsArticulation />
-							<PhonemeDetailsExamples />
-							<PhonemeDetailsGuide />
-							<PhonemeDetailsAllophones />
-						</div>
-					</CardContent>
-				</Card>
-			</ScrollArea>
-		</PhonemeDetails>
-	);
+	return <>Phoneme Detals</>;
 }

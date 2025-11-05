@@ -1,9 +1,9 @@
-import { useTranslations } from "next-intl";
 import { consonants } from "shared-data";
+import { useScopedI18n } from "@/locales/client";
 import { PhonemeCategories } from "../_components/phoneme-categories";
 
 export function ConsonantsSection() {
-	const t = useTranslations("IpaChart.Sections.consonants");
+	const t = useScopedI18n("ipa-chart.sections.consonants");
 	return (
 		<div className="space-y-6">
 			<div>

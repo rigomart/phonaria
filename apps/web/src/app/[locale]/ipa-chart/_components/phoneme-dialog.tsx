@@ -1,15 +1,5 @@
 "use client";
 
-import {
-	PhonemeDetails,
-	PhonemeDetailsAllophones,
-	PhonemeDetailsArticulation,
-	PhonemeDetailsContrasts,
-	PhonemeDetailsExamples,
-	PhonemeDetailsGuide,
-	PhonemeDetailsHeader,
-	PhonemeDetailsSagittalView,
-} from "@/components/phoneme-details-old";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 
@@ -26,17 +16,7 @@ export function PhonemeDialog() {
 						<DialogHeader>
 							<DialogTitle className="sr-only">{`Phoneme /${selectedPhoneme.symbol}/`}</DialogTitle>
 						</DialogHeader>
-						<PhonemeDetails phoneme={selectedPhoneme}>
-							<div className="space-y-6">
-								<PhonemeDetailsHeader />
-								<PhonemeDetailsSagittalView />
-								<PhonemeDetailsArticulation />
-								<PhonemeDetailsGuide />
-								<PhonemeDetailsContrasts />
-								<PhonemeDetailsExamples />
-								<PhonemeDetailsAllophones />
-							</div>
-						</PhonemeDetails>
+						<>Phoneme Details</>
 					</>
 				) : null}
 			</DialogContent>
