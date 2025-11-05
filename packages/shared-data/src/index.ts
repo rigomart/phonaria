@@ -19,9 +19,6 @@ export {
 	diphthongPhonemeSymbols,
 	monophthongPhonemeSymbols,
 	type PhonemeSymbolId,
-	phonemeSymbolByArpa,
-	phonemeSymbolByCmuArpa,
-	phonemeSymbolById,
 	rhoticPhonemeSymbols,
 	vowelPhonemeSymbols,
 } from "./phonetics/symbols-registry";
