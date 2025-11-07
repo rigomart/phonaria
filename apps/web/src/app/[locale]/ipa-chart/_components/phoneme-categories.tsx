@@ -1,6 +1,6 @@
 "use client";
 
-import type { CategoryInfo, IpaPhoneme } from "shared-data";
+import type { CategoryInfo, IpaPhoneme } from "@/lib/phoneme-mocks";
 import { getAvailableCategories, getCategoryOrderMap } from "../_lib/category-config";
 import { filterPhonemesByCategory, sortPhonemesByCategory } from "../_lib/phoneme-filters";
 import { PhonemeCard } from "./phoneme-card";

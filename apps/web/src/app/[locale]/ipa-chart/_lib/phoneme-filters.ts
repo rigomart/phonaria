@@ -1,4 +1,4 @@
-import type { IpaPhoneme } from "shared-data";
+import type { IpaPhoneme } from "@/lib/phoneme-mocks";
 
 /**
  * Filter phonemes by category type

@@ -28,195 +28,99 @@ type ConsonantArticulation = PhonemeArticulationBase<"consonant", ConsonantArtic
 export const consonantArticulations: Record<ConsonantSymbolId, ConsonantArticulation> = {
 	"voiceless-bilabial-stop": {
 		category: "consonant",
-		features: {
-			manner: "stop",
-			place: "bilabial",
-			voicing: "voiceless",
-		},
+		features: { manner: "stop", place: "bilabial", voicing: "voiceless" },
 	},
 	"voiced-bilabial-stop": {
 		category: "consonant",
-		features: {
-			manner: "stop",
-			place: "bilabial",
-			voicing: "voiced",
-		},
+		features: { manner: "stop", place: "bilabial", voicing: "voiced" },
 	},
 	"voiceless-alveolar-stop": {
 		category: "consonant",
-		features: {
-			manner: "stop",
-			place: "alveolar",
-			voicing: "voiceless",
-		},
+		features: { manner: "stop", place: "alveolar", voicing: "voiceless" },
 	},
 	"voiced-alveolar-stop": {
 		category: "consonant",
-		features: {
-			manner: "stop",
-			place: "alveolar",
-			voicing: "voiced",
-		},
+		features: { manner: "stop", place: "alveolar", voicing: "voiced" },
 	},
 	"voiced-velar-stop": {
 		category: "consonant",
-		features: {
-			manner: "stop",
-			place: "velar",
-			voicing: "voiced",
-		},
+		features: { manner: "stop", place: "velar", voicing: "voiced" },
 	},
 	"voiceless-velar-stop": {
 		category: "consonant",
-		features: {
-			manner: "stop",
-			place: "velar",
-			voicing: "voiceless",
-		},
+		features: { manner: "stop", place: "velar", voicing: "voiceless" },
 	},
 	"voiced-dental-fricative": {
 		category: "consonant",
-		features: {
-			manner: "fricative",
-			place: "dental",
-			voicing: "voiced",
-		},
+		features: { manner: "fricative", place: "dental", voicing: "voiced" },
 	},
 	"voiceless-dental-fricative": {
 		category: "consonant",
-		features: {
-			manner: "fricative",
-			place: "dental",
-			voicing: "voiceless",
-		},
+		features: { manner: "fricative", place: "dental", voicing: "voiceless" },
 	},
 	"voiceless-labiodental-fricative": {
 		category: "consonant",
-		features: {
-			manner: "fricative",
-			place: "labiodental",
-			voicing: "voiceless",
-		},
+		features: { manner: "fricative", place: "labiodental", voicing: "voiceless" },
 	},
 	"voiced-labiodental-fricative": {
 		category: "consonant",
-		features: {
-			manner: "fricative",
-			place: "labiodental",
-			voicing: "voiced",
-		},
+		features: { manner: "fricative", place: "labiodental", voicing: "voiced" },
 	},
 	"voiceless-glottal-fricative": {
 		category: "consonant",
-		features: {
-			manner: "fricative",
-			place: "glottal",
-			voicing: "voiceless",
-		},
+		features: { manner: "fricative", place: "glottal", voicing: "voiceless" },
 	},
 	"voiceless-alveolar-fricative": {
 		category: "consonant",
-		features: {
-			manner: "fricative",
-			place: "alveolar",
-			voicing: "voiceless",
-		},
+		features: { manner: "fricative", place: "alveolar", voicing: "voiceless" },
 	},
 	"voiceless-postalveolar-fricative": {
 		category: "consonant",
-		features: {
-			manner: "fricative",
-			place: "postalveolar",
-			voicing: "voiceless",
-		},
+		features: { manner: "fricative", place: "postalveolar", voicing: "voiceless" },
 	},
 	"voiced-alveolar-fricative": {
 		category: "consonant",
-		features: {
-			manner: "fricative",
-			place: "alveolar",
-			voicing: "voiced",
-		},
+		features: { manner: "fricative", place: "alveolar", voicing: "voiced" },
 	},
 	"voiced-postalveolar-fricative": {
 		category: "consonant",
-		features: {
-			manner: "fricative",
-			place: "postalveolar",
-			voicing: "voiced",
-		},
+		features: { manner: "fricative", place: "postalveolar", voicing: "voiced" },
 	},
 	"voiced-postalveolar-affricate": {
 		category: "consonant",
-		features: {
-			manner: "affricate",
-			place: "postalveolar",
-			voicing: "voiced",
-		},
+		features: { manner: "affricate", place: "postalveolar", voicing: "voiced" },
 	},
 	"voiceless-postalveolar-affricate": {
 		category: "consonant",
-		features: {
-			manner: "affricate",
-			place: "postalveolar",
-			voicing: "voiceless",
-		},
+		features: { manner: "affricate", place: "postalveolar", voicing: "voiceless" },
 	},
 	"voiced-bilabial-nasal": {
 		category: "consonant",
-		features: {
-			manner: "nasal",
-			place: "bilabial",
-			voicing: "voiced",
-		},
+		features: { manner: "nasal", place: "bilabial", voicing: "voiced" },
 	},
 	"voiced-alveolar-nasal": {
 		category: "consonant",
-		features: {
-			manner: "nasal",
-			place: "alveolar",
-			voicing: "voiced",
-		},
+		features: { manner: "nasal", place: "alveolar", voicing: "voiced" },
 	},
 	"voiced-velar-nasal": {
 		category: "consonant",
-		features: {
-			manner: "nasal",
-			place: "velar",
-			voicing: "voiced",
-		},
+		features: { manner: "nasal", place: "velar", voicing: "voiced" },
 	},
 	"voiced-alveolar-lateral-approximant": {
 		category: "consonant",
-		features: {
-			manner: "approximant",
-			place: "alveolar-lateral",
-			voicing: "voiced",
-		},
+		features: { manner: "approximant", place: "alveolar-lateral", voicing: "voiced" },
 	},
 	"voiced-postalveolar-approximant": {
 		category: "consonant",
-		features: {
-			manner: "approximant",
-			place: "postalveolar",
-			voicing: "voiced",
-		},
+		features: { manner: "approximant", place: "postalveolar", voicing: "voiced" },
 	},
 	"voiced-palatal-approximant": {
 		category: "consonant",
-		features: {
-			manner: "approximant",
-			place: "palatal",
-			voicing: "voiced",
-		},
+		features: { manner: "approximant", place: "palatal", voicing: "voiced" },
 	},
 	"voiced-labial-velar-approximant": {
 		category: "consonant",
-		features: {
-			manner: "approximant",
-			place: "labial-velar",
-			voicing: "voiced",
-		},
+		features: { manner: "approximant", place: "labial-velar", voicing: "voiced" },
 	},
 };
 

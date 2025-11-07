@@ -1,5 +1,5 @@
-import type { ConsonantPhoneme, VowelPhoneme } from "shared-data";
-import { type CategoryInfo, getOrderedCategories } from "shared-data";
+import type { ConsonantPhoneme, VowelPhoneme } from "@/lib/phoneme-mocks";
+import { type CategoryInfo, getOrderedCategories } from "@/lib/phoneme-mocks";
 
 /**
  * Get category configuration for consonants

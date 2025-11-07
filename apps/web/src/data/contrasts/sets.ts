@@ -1,4 +1,4 @@
-import { phonariaUtils } from "shared-data";
+import { phonariaUtils } from "@/lib/phoneme-mocks";
 import type { MinimalPairSet } from "./types";
 
 const { getExampleAudioUrl } = phonariaUtils;

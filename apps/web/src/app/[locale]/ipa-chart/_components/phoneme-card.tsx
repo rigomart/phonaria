@@ -1,5 +1,5 @@
-import type { ConsonantPhoneme, IpaPhoneme, VowelPhoneme } from "shared-data";
-import { phonariaUtils } from "shared-data";
+import type { ConsonantPhoneme, IpaPhoneme, VowelPhoneme } from "@/lib/phoneme-mocks";
+import { phonariaUtils } from "@/lib/phoneme-mocks";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useScopedI18n } from "@/locales/client";

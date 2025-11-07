@@ -1,4 +1,4 @@
-import type { VowelPhoneme } from "shared-data";
+import type { VowelPhoneme } from "@/lib/phoneme-mocks";
 
 export const HEIGHT_ORDER: Array<VowelPhoneme["articulation"]["height"]> = [
 	"high",

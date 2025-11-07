@@ -1,4 +1,4 @@
-export { normalizeCmuWord } from "shared-data";
+export { normalizeCmuWord } from "@/lib/phoneme-mocks";
 
 export function tokenizeText(text: string): string[] {
 	return text

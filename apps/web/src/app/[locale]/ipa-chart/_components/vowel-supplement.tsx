@@ -1,6 +1,6 @@
 "use client";
 
-import type { VowelPhoneme } from "shared-data";
+import type { VowelPhoneme } from "@/lib/phoneme-mocks";
 import { PhonemeCard } from "./phoneme-card";
 
 interface SupplementalVowelGroupProps {

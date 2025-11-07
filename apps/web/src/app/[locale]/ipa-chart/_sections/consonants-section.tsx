@@ -1,4 +1,4 @@
-import { consonants } from "shared-data";
+import { consonants } from "@/lib/phoneme-mocks";
 import { useScopedI18n } from "@/locales/client";
 import { PhonemeCategories } from "../_components/phoneme-categories";
 

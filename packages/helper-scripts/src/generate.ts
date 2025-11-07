@@ -2,9 +2,15 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { ElevenLabsClient, ElevenLabsError } from "@elevenlabs/elevenlabs-js";
 import { config } from "dotenv";
-import { consonants, phonariaUtils, vowels } from "shared-data";
 
 config();
+
+/**
+ * Simple utility to slugify a word for file names
+ */
+function slugifyWord(word: string): string {
+	return word.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
 
 type GenerationResult = {
 	word: string;
@@ -23,45 +29,14 @@ const voiceId = "MFZUKuGQUsGJPQjTS4wC"; // Jon voice ID
 
 /**
  * Extract all unique example words from phonemes data
+ * TODO: This function is currently disabled as the old phoneme data structure
+ * has been removed. Re-implement when new phonetics system includes examples.
  */
 function extractExampleWords(): string[] {
-	const words = new Set<string>();
-
-	// Extract words from consonants
-	for (const phoneme of consonants) {
-		if (phoneme.examples) {
-			for (const example of phoneme.examples) {
-				words.add(example.word.toLowerCase());
-			}
-		}
-		// Also extract words from allophones if they exist
-		if (phoneme.allophones) {
-			for (const allophone of phoneme.allophones) {
-				for (const example of allophone.examples) {
-					words.add(example.word.toLowerCase());
-				}
-			}
-		}
-	}
-
-	// Extract words from vowels
-	for (const phoneme of vowels) {
-		if (phoneme.examples) {
-			for (const example of phoneme.examples) {
-				words.add(example.word.toLowerCase());
-			}
-		}
-		// Also extract words from allophones if they exist
-		if (phoneme.allophones) {
-			for (const allophone of phoneme.allophones) {
-				for (const example of allophone.examples) {
-					words.add(example.word.toLowerCase());
-				}
-			}
-		}
-	}
-
-	return Array.from(words).sort();
+	console.warn("⚠️  Example word extraction is currently disabled.");
+	console.warn("The phoneme data structure has been refactored.");
+	console.warn("Please update this script to use the new phonetics system.");
+	return [];
 }
 
 /**
@@ -79,7 +54,7 @@ function ensureOutputDirectory(): void {
  */
 async function generateWordAudio(word: string): Promise<GenerationResult> {
 	try {
-		const fileName = `${phonariaUtils.slugifyWord(word)}.mp3`;
+		const fileName = `${slugifyWord(word)}.mp3`;
 		const outputPath = path.join(outputDir, fileName);
 
 		if (fs.existsSync(outputPath)) {

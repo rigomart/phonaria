@@ -1,4 +1,4 @@
-import { phonariaUtils } from "shared-data";
+import { phonariaUtils } from "@/lib/phoneme-mocks";
 import { AudioControls } from "@/components/audio-button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { MinimalPairSet } from "@/data/contrasts";

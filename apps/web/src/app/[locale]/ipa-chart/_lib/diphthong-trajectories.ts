@@ -1,5 +1,5 @@
-import type { VowelArticulation, VowelPhoneme } from "shared-data";
-import { vowels } from "shared-data";
+import type { VowelArticulation, VowelPhoneme } from "@/lib/phoneme-mocks";
+import { vowels } from "@/lib/phoneme-mocks";
 
 function buildFallbackPosition(diphthong: VowelPhoneme): DiphthongEndPosition {
 	return {

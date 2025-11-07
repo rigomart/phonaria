@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useMemo } from "react";
-import type { VowelPhoneme } from "shared-data";
+import type { VowelPhoneme } from "@/lib/phoneme-mocks";
 import { cn } from "@/lib/utils";
 import {
 	FRONTNESS_LABELS,

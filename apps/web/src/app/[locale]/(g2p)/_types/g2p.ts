@@ -3,8 +3,6 @@
  * Mirrors the API types but includes frontend-specific extensions
  */
 
-import type { IpaPhoneme } from "shared-data";
-
 /**
  * G2P API request structure
  */
@@ -46,8 +44,6 @@ export interface TranscribedPhoneme {
 	wordIndex: number;
 	/** Index in the phoneme array */
 	phonemeIndex: number;
-	/** Reference to full phoneme data if found */
-	phonemeData?: IpaPhoneme;
 	/** Whether this phoneme exists in our phoneme database */
 	isKnown: boolean;
 }

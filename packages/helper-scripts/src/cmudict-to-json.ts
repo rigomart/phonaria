@@ -1,9 +1,16 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { config } from "dotenv";
-import { normalizeCmuWord } from "shared-data";
 
 config();
+
+/**
+ * Normalize CMU word entry (remove variant numbers and uppercase)
+ */
+function normalizeCmuWord(input: string): string {
+	const base = input.includes("(") ? input.replace(/\(\d+\)$/, "") : input;
+	return base.toUpperCase();
+}
 
 // Type for the compact JSON format
 type CompactCmudict = Record<string, string[]>;

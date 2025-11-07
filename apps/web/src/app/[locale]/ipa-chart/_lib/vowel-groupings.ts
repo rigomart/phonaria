@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import type { VowelPhoneme } from "shared-data";
-import { vowels } from "shared-data";
+import type { VowelPhoneme } from "@/lib/phoneme-mocks";
+import { vowels } from "@/lib/phoneme-mocks";
 
 export interface VowelGroupings {
 	monophthongs: VowelPhoneme[];

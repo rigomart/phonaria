@@ -1,7 +1,22 @@
-import type { IpaPhoneme } from "shared-data";
 import { create } from "zustand";
-import { getPhonemeBySymbol } from "../_lib/g2p-client";
 import type { TranscribedPhoneme } from "../_types/g2p";
+
+// TODO: Replace with proper IpaPhoneme type from shared-data once new phonetics system is ready
+type IpaPhoneme = {
+	symbol: string;
+	category: "consonant" | "vowel";
+	description: string;
+};
+
+// TODO: Replace with proper phoneme lookup once new phonetics system is ready
+function getPhonemeBySymbol(symbol: string): IpaPhoneme | null {
+	// Mock implementation - return basic data for any symbol
+	return {
+		symbol,
+		category: "consonant", // Simplified
+		description: `Phoneme ${symbol}`,
+	};
+}
 
 interface G2PStore {
 	// Selected phoneme state

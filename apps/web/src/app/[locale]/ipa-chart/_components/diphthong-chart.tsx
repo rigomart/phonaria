@@ -2,7 +2,7 @@
 
 import type { KeyboardEvent, RefObject } from "react";
 import { Fragment, useEffect, useId, useMemo, useRef, useState } from "react";
-import type { VowelPhoneme } from "shared-data";
+import type { VowelPhoneme } from "@/lib/phoneme-mocks";
 import { cn } from "@/lib/utils";
 import type { DiphthongTrajectory } from "../_lib/diphthong-trajectories";
 import { getDiphthongTrajectories } from "../_lib/diphthong-trajectories";
