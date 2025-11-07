@@ -1,12 +1,14 @@
-import type { PhonemeSymbolId } from "shared-data";
+import type { PhonemeArticulatoryFeatures, PhonemeSymbolId } from "shared-data";
 
-type PhonemeDetailsContent = {
+type PhonemeDetailsById = {
 	label: string;
+	steps?: string;
 };
 
-export const phonemeDetails: Record<PhonemeSymbolId, PhonemeDetailsContent> = {
+const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsById> = {
 	"voiceless-bilabial-stop": {
 		label: "Voiceless bilabial stop",
+		steps: "Step1|Step2|Step3",
 	},
 	"voiced-bilabial-stop": {
 		label: "Voiced bilabial stop",
@@ -128,4 +130,212 @@ export const phonemeDetails: Record<PhonemeSymbolId, PhonemeDetailsContent> = {
 	"mid-central-rhotic-lax": {
 		label: "Mid central rhotic lax vowel",
 	},
+};
+
+type ArticulatoryFeatures = {
+	label: string;
+	list: {
+		[K in keyof PhonemeArticulatoryFeatures]: {
+			label: string;
+			description: string;
+			list: Record<PhonemeArticulatoryFeatures[K], { label: string; description: string }>;
+		};
+	};
+};
+
+const articulatoryFeatures: ArticulatoryFeatures = {
+	label: "Features",
+	list: {
+		manner: {
+			label: "Manner",
+			description: "How airflow is modified to produce the sound",
+			list: {
+				stop: {
+					label: "Stop",
+					description: "Airflow fully stops then releases in a burst.",
+				},
+				fricative: {
+					label: "Fricative",
+					description: "Air flows through a tight gap creating turbulence.",
+				},
+				affricate: {
+					label: "Affricate",
+					description: "Stop closure releases straight into a fricative.",
+				},
+				nasal: {
+					label: "Nasal",
+					description: "Air is redirected through the nose while the mouth closes.",
+				},
+				approximant: {
+					label: "Approximant",
+					description: "Articulators approach without creating turbulence.",
+				},
+			},
+		},
+		place: {
+			label: "Place",
+			description: "Where in the mouth the sound is produced",
+			list: {
+				bilabial: {
+					label: "Bilabial",
+					description: "Both lips come together to shape the sound.",
+				},
+				labiodental: {
+					label: "Labiodental",
+					description: "Bottom lip makes gentle contact with upper teeth.",
+				},
+				dental: {
+					label: "Dental",
+					description: "Tongue touches or rests between the front teeth.",
+				},
+				alveolar: {
+					label: "Alveolar",
+					description: "Tongue contacts the ridge just behind the teeth.",
+				},
+				postalveolar: {
+					label: "Postalveolar",
+					description: "Tongue moves slightly behind the alveolar ridge.",
+				},
+				palatal: {
+					label: "Palatal",
+					description: "Tongue front raises toward the hard palate.",
+				},
+				velar: {
+					label: "Velar",
+					description: "Tongue back meets the soft palate (velum).",
+				},
+				glottal: {
+					label: "Glottal",
+					description: "Constriction forms at the vocal folds inside the larynx.",
+				},
+				"alveolar-lateral": {
+					label: "Alveolar lateral",
+					description: "Tongue tip stays at the alveolar ridge while air escapes round the sides.",
+				},
+				"labial-velar": {
+					label: "Labial-velar",
+					description: "Lips round while the tongue back approaches the velum.",
+				},
+			},
+		},
+		voicing: {
+			label: "Voicing",
+			description: "Whether the vocal folds vibrate during production",
+			list: {
+				voiceless: {
+					label: "Voiceless",
+					description: "Vocal folds stay open, so there is no vibration.",
+				},
+				voiced: {
+					label: "Voiced",
+					description: "Vocal folds vibrate, touch your throat to feel it.",
+				},
+			},
+		},
+		height: {
+			label: "Height",
+			description: "Vertical position of the tongue in the mouth",
+			list: {
+				close: {
+					label: "Close",
+					description: "Tongue is high in the mouth, jaw nearly closed.",
+				},
+				"near-close": {
+					label: "Near-close",
+					description: "Tongue sits just below the close position.",
+				},
+				"close-mid": {
+					label: "Close-mid",
+					description: "Tongue height between close and mid.",
+				},
+				mid: {
+					label: "Mid",
+					description: "Tongue rests halfway between high and low positions.",
+				},
+				"open-mid": {
+					label: "Open-mid",
+					description: "Tongue is lower than mid but not fully open.",
+				},
+				"near-open": {
+					label: "Near-open",
+					description: "Tongue approaches the fully open position.",
+				},
+				open: {
+					label: "Open",
+					description: "Tongue sits low, mouth is open wide.",
+				},
+			},
+		},
+		backness: {
+			label: "Backness",
+			description: "Horizontal position of the tongue in the mouth",
+			list: {
+				front: {
+					label: "Front",
+					description: "Tongue body shifts toward the front of the mouth.",
+				},
+				"near-front": {
+					label: "Near-front",
+					description: "Tongue is slightly retracted from the front position.",
+				},
+				central: {
+					label: "Central",
+					description: "Tongue body stays near the middle of the mouth.",
+				},
+				"near-back": {
+					label: "Near-back",
+					description: "Tongue advances slightly from a back position.",
+				},
+				back: {
+					label: "Back",
+					description: "Tongue body retracts toward the back of the mouth.",
+				},
+			},
+		},
+		roundness: {
+			label: "Roundness",
+			description: "Whether the lips are rounded during production",
+			list: {
+				rounded: {
+					label: "Rounded",
+					description: "Lips purse forward creating a rounded opening.",
+				},
+				unrounded: {
+					label: "Unrounded",
+					description: "Lips stay relaxed or spread without rounding.",
+				},
+			},
+		},
+		tenseness: {
+			label: "Tenseness",
+			description: "Muscle tension and duration of the vowel",
+			list: {
+				tense: {
+					label: "Tense",
+					description: "Tongue and lips hold a firmer, longer posture.",
+				},
+				lax: {
+					label: "Lax",
+					description: "Articulators stay looser with a shorter duration.",
+				},
+			},
+		},
+	},
+};
+
+export const phonemeDetails = {
+	common: {
+		articulation: {
+			pronunciation: "Pronunciation",
+			articulation: "Articulation",
+			"step-by-step": "Step by step",
+			"common-mistakes": "Common mistakes",
+			features: articulatoryFeatures,
+			pitfalls: {
+				summary: "Summary",
+				tip: "Tip",
+			},
+		},
+	},
+	phonemes: phonemeDetailsById,
 };

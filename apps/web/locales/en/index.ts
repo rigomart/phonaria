@@ -1,7 +1,7 @@
 import { phonemeDetails } from "./phoneme-details";
 
 export default {
-	common: {
+	components: {
 		header: {
 			navigation: {
 				overview: "Overview",
@@ -9,7 +9,8 @@ export default {
 				"ipa-chart": "IPA Reference",
 			},
 		},
-		"phoneme-details": { ...phonemeDetails },
+		"phoneme-details": phonemeDetails,
+		test: ["Step 1", "Step 2", "Step 3"],
 	},
 	"locale-layout": {
 		title: "Phonaria - English Phoneme Learning",

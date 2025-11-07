@@ -8,7 +8,7 @@ export function PhonemeDetailsHeader() {
 
 	const { ipa } = allPhonemeSymbols[phonemeId];
 
-	const t = useScopedI18n(`common.phoneme-details.${phonemeId}`);
+	const t = useScopedI18n(`components.phoneme-details.phonemes.${phonemeId}`);
 
 	return (
 		<div className="flex flex-col gap-1 bg-background-strong p-3 sm:p-4 rounded-xl shadow-sm">

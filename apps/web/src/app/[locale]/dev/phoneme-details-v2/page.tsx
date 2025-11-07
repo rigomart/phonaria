@@ -1,6 +1,10 @@
 "use client";
 
-import { PhonemeDetails, PhonemeDetailsHeader } from "@/components/phoneme-details";
+import {
+	PhonemeDetails,
+	PhonemeDetailsArticulation,
+	PhonemeDetailsHeader,
+} from "@/components/phoneme-details";
 
 export default function PhonemeDetailsV2TestPage() {
 	return (
@@ -14,8 +18,9 @@ export default function PhonemeDetailsV2TestPage() {
 				</div>
 
 				<div className="bg-background-soft rounded-2xl">
-					<PhonemeDetails phonemeId="voiced-labiodental-fricative">
+					<PhonemeDetails phonemeId="voiceless-bilabial-stop">
 						<PhonemeDetailsHeader />
+						<PhonemeDetailsArticulation />
 					</PhonemeDetails>
 				</div>
 			</div>

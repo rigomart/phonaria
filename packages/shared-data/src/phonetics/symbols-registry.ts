@@ -11,22 +11,24 @@ type PhonemeSymbolEntry<
 
 // Consonants
 
-export type ConsonantVoicing = "voiced" | "voiceless";
-export type ConsonantPlace =
-	| "bilabial"
-	| "alveolar"
-	| "velar"
-	| "labial-velar"
-	| "palatal"
-	| "labiodental"
-	| "glottal"
-	| "postalveolar"
-	| "dental"
-	| "alveolar-lateral";
-export type ConsonantManner = "stop" | "fricative" | "affricate" | "nasal" | "approximant";
+export type ConsonantArticulatoryFeatures = {
+	voicing: "voiced" | "voiceless";
+	place:
+		| "bilabial"
+		| "alveolar"
+		| "velar"
+		| "labial-velar"
+		| "palatal"
+		| "labiodental"
+		| "glottal"
+		| "postalveolar"
+		| "dental"
+		| "alveolar-lateral";
+	manner: "stop" | "fricative" | "affricate" | "nasal" | "approximant";
+};
 
-type ConsonantPhonemeIdPattern = `${ConsonantVoicing}-${ConsonantPlace}-${ConsonantManner}`;
-type ConsonantSymbolEntry = PhonemeSymbolEntry;
+type ConsonantPhonemeIdPattern =
+	`${ConsonantArticulatoryFeatures["voicing"]}-${ConsonantArticulatoryFeatures["place"]}-${ConsonantArticulatoryFeatures["manner"]}`;
 
 export const consonantPhonemeSymbols = {
 	"voiceless-bilabial-stop": { ipa: "p", arpa: "P", cmuArpa: ["P"] },
@@ -53,7 +55,7 @@ export const consonantPhonemeSymbols = {
 	"voiced-postalveolar-approximant": { ipa: "ɹ", arpa: "R", cmuArpa: ["R"] },
 	"voiced-palatal-approximant": { ipa: "j", arpa: "Y", cmuArpa: ["Y"] },
 	"voiced-labial-velar-approximant": { ipa: "w", arpa: "W", cmuArpa: ["W"] },
-} as const satisfies Partial<Record<ConsonantPhonemeIdPattern, ConsonantSymbolEntry>>;
+} as const satisfies Partial<Record<ConsonantPhonemeIdPattern, PhonemeSymbolEntry>>;
 
 export type ConsonantSymbolId = keyof typeof consonantPhonemeSymbols;
 export type ConsonantSymbol = (typeof consonantPhonemeSymbols)[ConsonantSymbolId];
@@ -63,22 +65,17 @@ export type ConsonantSymbolCmuArpa = ConsonantSymbol["cmuArpa"][number];
 
 // Vowels
 
-export type VowelHeight =
-	| "close"
-	| "near-close"
-	| "close-mid"
-	| "mid"
-	| "open-mid"
-	| "near-open"
-	| "open";
-export type VowelBackness = "front" | "near-front" | "central" | "near-back" | "back";
-export type VowelRoundness = "rounded" | "unrounded";
-export type VowelTenseness = "tense" | "lax";
+export type VowelArticulatoryFeatures = {
+	height: "close" | "near-close" | "close-mid" | "mid" | "open-mid" | "near-open" | "open";
+	backness: "front" | "near-front" | "central" | "near-back" | "back";
+	roundness: "rounded" | "unrounded";
+	tenseness: "tense" | "lax";
+};
 
 // Vowels - Monophthongs
 
-type MonophthongPhonemeIdPattern = `${VowelHeight}-${VowelBackness}-${VowelRoundness}`;
-type MonophthongSymbolEntry = PhonemeSymbolEntry;
+type MonophthongPhonemeIdPattern =
+	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}`;
 
 export const monophthongPhonemeSymbols = {
 	"close-front-unrounded": { ipa: "i", arpa: "IY", cmuArpa: ["IY0", "IY1", "IY2"] },
@@ -95,7 +92,7 @@ export const monophthongPhonemeSymbols = {
 	"open-mid-back-rounded": { ipa: "ɔ", arpa: "AO", cmuArpa: ["AO0", "AO1", "AO2"] },
 	"near-open-front-unrounded": { ipa: "æ", arpa: "AE", cmuArpa: ["AE0", "AE1", "AE2"] },
 	"open-back-unrounded": { ipa: "ɑ", arpa: "AA", cmuArpa: ["AA0", "AA1", "AA2"] },
-} as const satisfies Partial<Record<MonophthongPhonemeIdPattern, MonophthongSymbolEntry>>;
+} as const satisfies Partial<Record<MonophthongPhonemeIdPattern, PhonemeSymbolEntry>>;
 
 export type MonophthongSymbolId = keyof typeof monophthongPhonemeSymbols;
 export type MonophthongSymbol = (typeof monophthongPhonemeSymbols)[MonophthongSymbolId];
@@ -108,8 +105,7 @@ export type MonophthongSymbolCmuArpa = MonophthongSymbol["cmuArpa"][number];
 //? Keep an eye on the definition of these types. They can hold a disproportionate amount of combinations.
 //? They are fine here for their purpose as guards, but don't try to export them as they are.
 type DiphthongPhonemeIdPattern =
-	`${VowelHeight}-${VowelBackness}-${VowelRoundness}-to-${VowelHeight}-${VowelBackness}-${VowelRoundness}`;
-type DiphthongSymbolEntry = PhonemeSymbolEntry;
+	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}-to-${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}`;
 
 export const diphthongPhonemeSymbols = {
 	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
@@ -137,7 +133,7 @@ export const diphthongPhonemeSymbols = {
 		arpa: "OY",
 		cmuArpa: ["OY0", "OY1", "OY2"],
 	},
-} as const satisfies Partial<Record<DiphthongPhonemeIdPattern, DiphthongSymbolEntry>>;
+} as const satisfies Partial<Record<DiphthongPhonemeIdPattern, PhonemeSymbolEntry>>;
 
 export type DiphthongSymbolId = keyof typeof diphthongPhonemeSymbols;
 export type DiphthongSymbol = (typeof diphthongPhonemeSymbols)[DiphthongSymbolId];
@@ -147,13 +143,13 @@ export type DiphthongSymbolCmuArpa = DiphthongSymbol["cmuArpa"][number];
 
 // Vowels - Rhotic
 
-type RhoticPhonemeIdPattern = `${VowelHeight}-${VowelBackness}-rhotic-${VowelTenseness}`;
-type RhoticSymbolEntry = PhonemeSymbolEntry;
+type RhoticPhonemeIdPattern =
+	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-rhotic-${VowelArticulatoryFeatures["tenseness"]}`;
 
 export const rhoticPhonemeSymbols = {
 	"mid-central-rhotic-tense": { ipa: "ɝ", arpa: "ER", cmuArpa: ["ER1", "ER2"] },
 	"mid-central-rhotic-lax": { ipa: "ɚ", arpa: "ER", cmuArpa: ["ER0"] },
-} as const satisfies Partial<Record<RhoticPhonemeIdPattern, RhoticSymbolEntry>>;
+} as const satisfies Partial<Record<RhoticPhonemeIdPattern, PhonemeSymbolEntry>>;
 
 export type RhoticSymbolId = keyof typeof rhoticPhonemeSymbols;
 export type RhoticSymbol = (typeof rhoticPhonemeSymbols)[RhoticSymbolId];
@@ -167,13 +163,12 @@ type VowelPhonemeIdPattern =
 	| MonophthongPhonemeIdPattern
 	| DiphthongPhonemeIdPattern
 	| RhoticPhonemeIdPattern;
-type VowelSymbolEntry = PhonemeSymbolEntry;
 
 export const vowelPhonemeSymbols = {
 	...monophthongPhonemeSymbols,
 	...diphthongPhonemeSymbols,
 	...rhoticPhonemeSymbols,
-} as const satisfies Partial<Record<VowelPhonemeIdPattern, VowelSymbolEntry>>;
+} as const satisfies Partial<Record<VowelPhonemeIdPattern, PhonemeSymbolEntry>>;
 
 export type VowelSymbolId = keyof typeof vowelPhonemeSymbols;
 export type VowelSymbol = (typeof vowelPhonemeSymbols)[VowelSymbolId];
@@ -186,6 +181,8 @@ export const allPhonemeSymbols = {
 	...consonantPhonemeSymbols,
 	...vowelPhonemeSymbols,
 } as const;
+
+export type PhonemeArticulatoryFeatures = ConsonantArticulatoryFeatures & VowelArticulatoryFeatures;
 
 export type PhonemeSymbolId = keyof typeof allPhonemeSymbols;
 export type PhonemeSymbol = (typeof allPhonemeSymbols)[PhonemeSymbolId];
