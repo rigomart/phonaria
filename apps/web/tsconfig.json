@@ -20,7 +20,7 @@
 		],
 		"paths": {
 			"@/*": ["./src/*"],
-			"@/data/*": ["./data/*"],
+			"@/data/*": ["./src/data/*"],
 			"@/locales/*": ["./locales/*"]
 		}
 	},

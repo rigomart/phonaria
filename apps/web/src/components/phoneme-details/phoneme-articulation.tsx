@@ -4,6 +4,12 @@ import {
 	phonemeArticulations,
 	type VowelArticulatoryFeatures,
 } from "shared-data";
+import {
+	type ArticulatoryFeature,
+	consonantFeatureDefinitions,
+	phonemeDetailsById,
+	vowelFeatureDefinitions,
+} from "@/data/phoneme-details";
 import { useScopedI18n } from "@/locales/client";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Badge } from "../ui/badge";
@@ -18,10 +24,9 @@ export function PhonemeDetailsArticulation() {
 	const { phonemeId } = usePhonemeDetailsContext();
 
 	const articulation = phonemeArticulations[phonemeId];
+	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
 
-	const tc = useScopedI18n(`components.phoneme-details.common.articulation`);
-
-	const t = useScopedI18n(`components.phoneme-details.phonemes.${phonemeId}`);
+	const tc = useScopedI18n(`components.phoneme-details.articulation`);
 
 	function ArticulationFeatures() {
 		switch (articulation.category) {
@@ -40,7 +45,7 @@ export function PhonemeDetailsArticulation() {
 					<AspectRatio ratio={1} className="bg-neutral-950/80 rounded-lg">
 						<Image
 							src={`${bucketUrl}/${phonemeId}.svg`}
-							alt={`${t("label")} articulation`}
+							alt={`${phonemeLabel} articulation`}
 							fill
 							className="object-contain"
 						/>
@@ -50,7 +55,7 @@ export function PhonemeDetailsArticulation() {
 				<div className="space-y-3">
 					<div className="space-y-1.5">
 						<h4 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/60">
-							{tc("features-label")}
+							{tc("features")}
 						</h4>
 						<ArticulationFeatures />
 					</div>
@@ -102,111 +107,38 @@ export function PhonemeDetailsArticulation() {
 }
 
 function ConsonantArticulationFeatures({ features }: { features: ConsonantArticulatoryFeatures }) {
-	const t = useScopedI18n("components.phoneme-details.common.articulation.features.list");
-
-	const mannerLabel = t("manner.label");
-	const mannerDescription = t("manner.description");
-	const mannerValueLabel = t(`manner.list.${features.manner}.label`);
-	const mannerValueDescription = t(`manner.list.${features.manner}.description`);
-
-	const placeLabel = t("place.label");
-	const placeDescription = t("place.description");
-	const placeValueLabel = t(`place.list.${features.place}.label`);
-	const placeValueDescription = t(`place.list.${features.place}.description`);
-
-	const voicingLabel = t("voicing.label");
-	const voicingDescription = t("voicing.description");
-	const voicingValueLabel = t(`voicing.list.${features.voicing}.label`);
-	const voicingValueDescription = t(`voicing.list.${features.voicing}.description`);
-
 	return (
 		<div className="flex flex-col gap-2 w-30">
-			<FeatureRow
-				featureLabel={mannerLabel}
-				featureDescription={mannerDescription}
-				valueLabel={mannerValueLabel}
-				valueDescription={mannerValueDescription}
-			/>
-			<FeatureRow
-				featureLabel={placeLabel}
-				featureDescription={placeDescription}
-				valueLabel={placeValueLabel}
-				valueDescription={placeValueDescription}
-			/>
-			<FeatureRow
-				featureLabel={voicingLabel}
-				featureDescription={voicingDescription}
-				valueLabel={voicingValueLabel}
-				valueDescription={voicingValueDescription}
-			/>
+			<FeatureRow feature={consonantFeatureDefinitions.manner} valueKey={features.manner} />
+			<FeatureRow feature={consonantFeatureDefinitions.place} valueKey={features.place} />
+			<FeatureRow feature={consonantFeatureDefinitions.voicing} valueKey={features.voicing} />
 		</div>
 	);
 }
 
 function MonophthongArticulationFeatures({ features }: { features: VowelArticulatoryFeatures }) {
-	const t = useScopedI18n("components.phoneme-details.common.articulation.features.list");
-
-	const heightLabel = t("height.label");
-	const heightDescription = t("height.description");
-	const heightValueLabel = t(`height.list.${features.height}.label`);
-	const heightValueDescription = t(`height.list.${features.height}.description`);
-
-	const backnessLabel = t("backness.label");
-	const backnessDescription = t("backness.description");
-	const backnessValueLabel = t(`backness.list.${features.backness}.label`);
-	const backnessValueDescription = t(`backness.list.${features.backness}.description`);
-
-	const roundnessLabel = t("roundness.label");
-	const roundnessDescription = t("roundness.description");
-	const roundnessValueLabel = t(`roundness.list.${features.roundness}.label`);
-	const roundnessValueDescription = t(`roundness.list.${features.roundness}.description`);
-
-	const tensenessLabel = t("tenseness.label");
-	const tensenessDescription = t("tenseness.description");
-	const tensenessValueLabel = t(`tenseness.list.${features.tenseness}.label`);
-	const tensenessValueDescription = t(`tenseness.list.${features.tenseness}.description`);
-
 	return (
 		<div className="flex flex-col gap-2 w-30">
-			<FeatureRow
-				featureLabel={heightLabel}
-				featureDescription={heightDescription}
-				valueLabel={heightValueLabel}
-				valueDescription={heightValueDescription}
-			/>
-			<FeatureRow
-				featureLabel={backnessLabel}
-				featureDescription={backnessDescription}
-				valueLabel={backnessValueLabel}
-				valueDescription={backnessValueDescription}
-			/>
-			<FeatureRow
-				featureLabel={roundnessLabel}
-				featureDescription={roundnessDescription}
-				valueLabel={roundnessValueLabel}
-				valueDescription={roundnessValueDescription}
-			/>
-			<FeatureRow
-				featureLabel={tensenessLabel}
-				featureDescription={tensenessDescription}
-				valueLabel={tensenessValueLabel}
-				valueDescription={tensenessValueDescription}
-			/>
+			<FeatureRow feature={vowelFeatureDefinitions.height} valueKey={features.height} />
+			<FeatureRow feature={vowelFeatureDefinitions.backness} valueKey={features.backness} />
+			<FeatureRow feature={vowelFeatureDefinitions.roundness} valueKey={features.roundness} />
+			<FeatureRow feature={vowelFeatureDefinitions.tenseness} valueKey={features.tenseness} />
 		</div>
 	);
 }
 
-function FeatureRow({
-	featureLabel,
-	featureDescription,
-	valueLabel,
-	valueDescription,
+function FeatureRow<ValueKey extends string>({
+	feature,
+	valueKey,
 }: {
-	featureLabel: string;
-	featureDescription: string;
-	valueLabel: string;
-	valueDescription: string;
+	feature: ArticulatoryFeature<ValueKey>;
+	valueKey: ValueKey;
 }) {
+	const value = feature.values[valueKey];
+
+	if (!value) {
+		return null;
+	}
 
 	return (
 		<div className="flex flex-col">
@@ -219,23 +151,23 @@ function FeatureRow({
 							title="Open details"
 							aria-label="Open details"
 						>
-							{featureLabel}
+							{feature.label}
 						</Badge>
-						<span className="text-xs text-muted-foreground">{valueLabel}</span>
+						<span className="text-xs text-muted-foreground">{value.label}</span>
 					</Pressable>
 				</PopoverTrigger>
 				<PopoverContent className="p-2" align="start">
 					<dl className="space-y-2">
 						<div>
-							<dt className="font-semibold text-sm mb-1">{featureLabel}</dt>
-							<dd className="text-xs text-muted-foreground">{featureDescription}</dd>
+							<dt className="font-semibold text-sm mb-1">{feature.label}</dt>
+							<dd className="text-xs text-muted-foreground">{feature.description}</dd>
 						</div>
 
 						<Separator />
 
 						<div className="p-2 bg-primary/10 rounded-md border border-primary/10">
-							<dt className="text-xs font-semibold mb-1">{valueLabel}</dt>
-							<dd className="text-xs text-muted-foreground">{valueDescription}</dd>
+							<dt className="text-xs font-semibold mb-1">{value.label}</dt>
+							<dd className="text-xs text-muted-foreground">{value.description}</dd>
 						</div>
 					</dl>
 				</PopoverContent>

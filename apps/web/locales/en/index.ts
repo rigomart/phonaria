@@ -1,5 +1,3 @@
-import { phonemeDetails } from "./phoneme-details";
-
 export default {
 	components: {
 		header: {
@@ -9,8 +7,18 @@ export default {
 				"ipa-chart": "IPA Reference",
 			},
 		},
-		"phoneme-details": phonemeDetails,
-		test: ["Step 1", "Step 2", "Step 3"],
+		"phoneme-details": {
+			articulation: {
+				pronunciation: "Pronunciation",
+				features: "Features",
+				"step-by-step": "Step by step",
+				"common-mistakes": "Common mistakes",
+				pitfalls: {
+					summary: "Summary",
+					tip: "Tip",
+				},
+			},
+		},
 	},
 	"locale-layout": {
 		title: "Phonaria - English Phoneme Learning",

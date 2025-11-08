@@ -1,5 +1,5 @@
 import { allPhonemeSymbols } from "shared-data";
-import { useScopedI18n } from "@/locales/client";
+import { phonemeDetailsById } from "@/data/phoneme-details";
 import { AudioControls } from "../audio-controls";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 
@@ -7,8 +7,7 @@ export function PhonemeDetailsHeader() {
 	const { phonemeId } = usePhonemeDetailsContext();
 
 	const { ipa } = allPhonemeSymbols[phonemeId];
-
-	const t = useScopedI18n(`components.phoneme-details.phonemes.${phonemeId}`);
+	const { label } = phonemeDetailsById[phonemeId];
 
 	return (
 		<div className="flex flex-col gap-1 bg-background-strong p-3 sm:p-4 rounded-xl shadow-sm">
@@ -24,7 +23,7 @@ export function PhonemeDetailsHeader() {
 					label={`Play ${phonemeId}`}
 				/>
 			</div>
-			<p className="text-xs text-muted-foreground/80">{t("label")}</p>
+			<p className="text-xs text-muted-foreground/80">{label}</p>
 		</div>
 	);
 }
