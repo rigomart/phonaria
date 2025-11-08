@@ -1,5 +1,9 @@
 import Image from "next/image";
-import { type ConsonantArticulatoryFeatures, phonemeArticulations } from "shared-data";
+import {
+	type ConsonantArticulatoryFeatures,
+	phonemeArticulations,
+	type VowelArticulatoryFeatures,
+} from "shared-data";
 import { useScopedI18n } from "@/locales/client";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Badge } from "../ui/badge";
@@ -23,6 +27,8 @@ export function PhonemeDetailsArticulation() {
 		switch (articulation.category) {
 			case "consonant":
 				return <ConsonantArticulationFeatures features={articulation.features} />;
+			case "vowel/monophthong":
+				return <MonophthongArticulationFeatures features={articulation.features} />;
 		}
 	}
 
@@ -44,7 +50,7 @@ export function PhonemeDetailsArticulation() {
 				<div className="space-y-3">
 					<div className="space-y-1.5">
 						<h4 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/60">
-							{tc("articulation")}
+							{tc("features-label")}
 						</h4>
 						<ArticulationFeatures />
 					</div>
@@ -96,30 +102,111 @@ export function PhonemeDetailsArticulation() {
 }
 
 function ConsonantArticulationFeatures({ features }: { features: ConsonantArticulatoryFeatures }) {
+	const t = useScopedI18n("components.phoneme-details.common.articulation.features.list");
+
+	const mannerLabel = t("manner.label");
+	const mannerDescription = t("manner.description");
+	const mannerValueLabel = t(`manner.list.${features.manner}.label`);
+	const mannerValueDescription = t(`manner.list.${features.manner}.description`);
+
+	const placeLabel = t("place.label");
+	const placeDescription = t("place.description");
+	const placeValueLabel = t(`place.list.${features.place}.label`);
+	const placeValueDescription = t(`place.list.${features.place}.description`);
+
+	const voicingLabel = t("voicing.label");
+	const voicingDescription = t("voicing.description");
+	const voicingValueLabel = t(`voicing.list.${features.voicing}.label`);
+	const voicingValueDescription = t(`voicing.list.${features.voicing}.description`);
+
 	return (
 		<div className="flex flex-col gap-2 w-30">
-			<FeatureRow feature="manner" value={features.manner} />
-			<FeatureRow feature="place" value={features.place} />
-			<FeatureRow feature="voicing" value={features.voicing} />
+			<FeatureRow
+				featureLabel={mannerLabel}
+				featureDescription={mannerDescription}
+				valueLabel={mannerValueLabel}
+				valueDescription={mannerValueDescription}
+			/>
+			<FeatureRow
+				featureLabel={placeLabel}
+				featureDescription={placeDescription}
+				valueLabel={placeValueLabel}
+				valueDescription={placeValueDescription}
+			/>
+			<FeatureRow
+				featureLabel={voicingLabel}
+				featureDescription={voicingDescription}
+				valueLabel={voicingValueLabel}
+				valueDescription={voicingValueDescription}
+			/>
+		</div>
+	);
+}
+
+function MonophthongArticulationFeatures({ features }: { features: VowelArticulatoryFeatures }) {
+	const t = useScopedI18n("components.phoneme-details.common.articulation.features.list");
+
+	const heightLabel = t("height.label");
+	const heightDescription = t("height.description");
+	const heightValueLabel = t(`height.list.${features.height}.label`);
+	const heightValueDescription = t(`height.list.${features.height}.description`);
+
+	const backnessLabel = t("backness.label");
+	const backnessDescription = t("backness.description");
+	const backnessValueLabel = t(`backness.list.${features.backness}.label`);
+	const backnessValueDescription = t(`backness.list.${features.backness}.description`);
+
+	const roundnessLabel = t("roundness.label");
+	const roundnessDescription = t("roundness.description");
+	const roundnessValueLabel = t(`roundness.list.${features.roundness}.label`);
+	const roundnessValueDescription = t(`roundness.list.${features.roundness}.description`);
+
+	const tensenessLabel = t("tenseness.label");
+	const tensenessDescription = t("tenseness.description");
+	const tensenessValueLabel = t(`tenseness.list.${features.tenseness}.label`);
+	const tensenessValueDescription = t(`tenseness.list.${features.tenseness}.description`);
+
+	return (
+		<div className="flex flex-col gap-2 w-30">
+			<FeatureRow
+				featureLabel={heightLabel}
+				featureDescription={heightDescription}
+				valueLabel={heightValueLabel}
+				valueDescription={heightValueDescription}
+			/>
+			<FeatureRow
+				featureLabel={backnessLabel}
+				featureDescription={backnessDescription}
+				valueLabel={backnessValueLabel}
+				valueDescription={backnessValueDescription}
+			/>
+			<FeatureRow
+				featureLabel={roundnessLabel}
+				featureDescription={roundnessDescription}
+				valueLabel={roundnessValueLabel}
+				valueDescription={roundnessValueDescription}
+			/>
+			<FeatureRow
+				featureLabel={tensenessLabel}
+				featureDescription={tensenessDescription}
+				valueLabel={tensenessValueLabel}
+				valueDescription={tensenessValueDescription}
+			/>
 		</div>
 	);
 }
 
 function FeatureRow({
-	feature,
-	value,
+	featureLabel,
+	featureDescription,
+	valueLabel,
+	valueDescription,
 }: {
-	feature: keyof ConsonantArticulatoryFeatures;
-	value: ConsonantArticulatoryFeatures[keyof ConsonantArticulatoryFeatures];
+	featureLabel: string;
+	featureDescription: string;
+	valueLabel: string;
+	valueDescription: string;
 }) {
-	const t = useScopedI18n(
-		`components.phoneme-details.common.articulation.features.list.${feature}`,
-	);
-	const featureLabel = t("label");
-	const featureDescription = t("description");
-
-	const valueLabel = t(`list.${value}.label`);
-	const valueDescription = t(`list.${value}.description`);
 
 	return (
 		<div className="flex flex-col">

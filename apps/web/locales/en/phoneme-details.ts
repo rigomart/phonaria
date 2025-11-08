@@ -327,7 +327,7 @@ export const phonemeDetails = {
 	common: {
 		articulation: {
 			pronunciation: "Pronunciation",
-			articulation: "Articulation",
+			"features-label": "Features",
 			"step-by-step": "Step by step",
 			"common-mistakes": "Common mistakes",
 			features: articulatoryFeatures,

@@ -2,18 +2,22 @@ import { AudioControls } from "../audio-controls";
 import { Badge } from "../ui/badge";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 
-type Props = {
-	examples: {
-		patterns: string[];
-		words: {
-			grapheme: { chars: string[]; highlight: number[] };
-			phonemic: { chars: string[]; highlight: number[] };
-			audioUrl: string;
-		}[];
+export function PhonemeDetailsPatterns() {
+	const examples = {
+		patterns: ["th-", "ph"],
+		words: [
+			{
+				grapheme: { chars: ["t", "h", "i", "n", "k"], highlight: [0, 1] },
+				phonemic: { chars: ["θ", "ɪ", "ŋ", "k"], highlight: [0] },
+				audioUrl: "https://assets.rigos.dev/phoneme-examples/think.mp3",
+			},
+			{
+				grapheme: { chars: ["m", "o", "n", "t", "h"], highlight: [3, 4] },
+				phonemic: { chars: ["m", "ʌ", "n", "θ"], highlight: [3] },
+				audioUrl: "https://assets.rigos.dev/phoneme-examples/month.mp3",
+			},
+		],
 	};
-};
-
-export function PhonemeDetailsExamples({ examples }: Props) {
 	return (
 		<section className="px-3 sm:px-4">
 			<div className="rounded-lg space-y-2">
@@ -55,7 +59,7 @@ export function PhonemeDetailsExamples({ examples }: Props) {
 							<ItemActions>
 								<AudioControls
 									size="xs"
-									src={example.audioUrl}
+									path={example.audioUrl}
 									label={example.grapheme.chars.join("")}
 								/>
 							</ItemActions>
