@@ -3,7 +3,9 @@ import { type ConsonantArticulatoryFeatures, phonemeArticulations } from "shared
 import { useScopedI18n } from "@/locales/client";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Badge } from "../ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Pressable } from "../ui/pressable";
+import { Separator } from "../ui/separator";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 
 const bucketUrl = process.env.NEXT_PUBLIC_BUCKET_URL;
@@ -27,8 +29,8 @@ export function PhonemeDetailsArticulation() {
 	return (
 		<section className="space-y-3 px-3 sm:px-4">
 			<h3 className="text-base font-bold">{tc("pronunciation")}</h3>
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-				<div className="flex items-start justify-center">
+			<div className="gap-4 flex">
+				<div className="flex items-start justify-center flex-1">
 					<AspectRatio ratio={1} className="bg-neutral-950/80 rounded-lg">
 						<Image
 							src={`${bucketUrl}/${phonemeId}.svg`}
@@ -95,7 +97,7 @@ export function PhonemeDetailsArticulation() {
 
 function ConsonantArticulationFeatures({ features }: { features: ConsonantArticulatoryFeatures }) {
 	return (
-		<div className="space-y-1.5">
+		<div className="flex flex-col gap-2 w-30">
 			<FeatureRow feature="manner" value={features.manner} />
 			<FeatureRow feature="place" value={features.place} />
 			<FeatureRow feature="voicing" value={features.voicing} />
@@ -120,21 +122,37 @@ function FeatureRow({
 	const valueDescription = t(`list.${value}.description`);
 
 	return (
-		<Tooltip>
-			<div className="flex items-center gap-2">
-				<span className="text-xs text-muted-foreground/80 font-semibold w-20 shrink-0">
-					{featureLabel}:
-				</span>
-				<TooltipTrigger asChild>
-					<Badge variant="secondary" className="font-medium cursor-help text-xs px-2 py-0.5">
-						{valueLabel}
-					</Badge>
-				</TooltipTrigger>
-			</div>
-			<TooltipContent className="max-w-xs">
-				<p className="text-xs">{featureDescription}</p>
-				<p className="text-xs">{valueDescription}</p>
-			</TooltipContent>
-		</Tooltip>
+		<div className="flex flex-col">
+			<Popover>
+				<PopoverTrigger asChild>
+					<Pressable variant="outline" className="flex flex-col">
+						<Badge
+							variant="secondary"
+							className="font-medium cursor-pointer text-xs px-2 py-0.5 transition-colors"
+							title="Open details"
+							aria-label="Open details"
+						>
+							{featureLabel}
+						</Badge>
+						<span className="text-xs text-muted-foreground">{valueLabel}</span>
+					</Pressable>
+				</PopoverTrigger>
+				<PopoverContent className="p-2" align="start">
+					<dl className="space-y-2">
+						<div>
+							<dt className="font-semibold text-sm mb-1">{featureLabel}</dt>
+							<dd className="text-xs text-muted-foreground">{featureDescription}</dd>
+						</div>
+
+						<Separator />
+
+						<div className="p-2 bg-primary/10 rounded-md border border-primary/10">
+							<dt className="text-xs font-semibold mb-1">{valueLabel}</dt>
+							<dd className="text-xs text-muted-foreground">{valueDescription}</dd>
+						</div>
+					</dl>
+				</PopoverContent>
+			</Popover>
+		</div>
 	);
 }

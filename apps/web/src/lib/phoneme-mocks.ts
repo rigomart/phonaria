@@ -53,10 +53,16 @@ export const vowels: VowelPhoneme[] = [];
 // Mock utilities
 export const phonariaUtils = {
 	slugifyWord: (word: string): string => {
-		return word.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+		return word
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, "-")
+			.replace(/^-|-$/g, "");
 	},
 	getExampleAudioUrl: (word: string): string => {
-		const slug = word.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+		const slug = word
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, "-")
+			.replace(/^-|-$/g, "");
 		return `/audio/examples/${slug}.mp3`;
 	},
 	toPhonemic: (word: string): string => {

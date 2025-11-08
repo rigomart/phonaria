@@ -1,7 +1,7 @@
-import { phonariaUtils } from "@/lib/phoneme-mocks";
 import { AudioControls } from "@/components/audio-button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { MinimalPairSet } from "@/data/contrasts";
+import { phonariaUtils } from "@/lib/phoneme-mocks";
 
 const { toPhonemic } = phonariaUtils;
 

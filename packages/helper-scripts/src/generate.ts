@@ -9,7 +9,10 @@ config();
  * Simple utility to slugify a word for file names
  */
 function slugifyWord(word: string): string {
-	return word.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+	return word
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-|-$/g, "");
 }
 
 type GenerationResult = {

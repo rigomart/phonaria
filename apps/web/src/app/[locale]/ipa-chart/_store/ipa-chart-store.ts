@@ -1,5 +1,5 @@
-import type { IpaPhoneme } from "@/lib/phoneme-mocks";
 import { create } from "zustand";
+import type { IpaPhoneme } from "@/lib/phoneme-mocks";
 
 interface IpaChartState {
 	selectedPhoneme: IpaPhoneme | null;

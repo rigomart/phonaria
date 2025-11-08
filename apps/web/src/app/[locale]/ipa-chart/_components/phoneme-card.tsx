@@ -1,6 +1,6 @@
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { ConsonantPhoneme, IpaPhoneme, VowelPhoneme } from "@/lib/phoneme-mocks";
 import { phonariaUtils } from "@/lib/phoneme-mocks";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useScopedI18n } from "@/locales/client";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
