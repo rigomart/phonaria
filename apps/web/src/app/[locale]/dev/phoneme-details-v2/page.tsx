@@ -19,7 +19,7 @@ export default function PhonemeDetailsV2TestPage() {
 				</div>
 
 				<div className="bg-background-soft rounded-2xl">
-					<PhonemeDetails phonemeId="mid-central-unrounded">
+					<PhonemeDetails phonemeId="voiceless-dental-fricative">
 						<PhonemeDetailsHeader />
 						<PhonemeDetailsArticulation />
 						<PhonemeDetailsPatterns />

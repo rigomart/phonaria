@@ -1,6 +1,7 @@
 import Image from "next/image";
 import {
 	type ConsonantArticulatoryFeatures,
+	type PhonemeSymbolId,
 	phonemeArticulations,
 	type VowelArticulatoryFeatures,
 } from "shared-data";
@@ -24,7 +25,6 @@ export function PhonemeDetailsArticulation() {
 	const { phonemeId } = usePhonemeDetailsContext();
 
 	const articulation = phonemeArticulations[phonemeId];
-	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
 
 	const tc = useScopedI18n(`components.phoneme-details.articulation`);
 
@@ -37,31 +37,34 @@ export function PhonemeDetailsArticulation() {
 		}
 	}
 
+	function ArticulationIllustration() {
+		switch (articulation.category) {
+			case "consonant":
+				return <ConsonantArticulationIllustration phonemeId={phonemeId} />;
+			case "vowel/monophthong":
+				return <VowelArticulationIllustration phonemeId={phonemeId} />;
+		}
+	}
+
 	return (
-		<section className="space-y-3 px-3 sm:px-4">
+		<section className="space-y-2 px-3 sm:px-4">
 			<h3 className="text-base font-bold">{tc("pronunciation")}</h3>
-			<div className="gap-4 flex">
-				<div className="flex items-start justify-center flex-1">
-					<AspectRatio ratio={1} className="bg-neutral-950/80 rounded-lg">
-						<Image
-							src={`${bucketUrl}/${phonemeId}.svg`}
-							alt={`${phonemeLabel} articulation`}
-							fill
-							className="object-contain"
-						/>
-					</AspectRatio>
-				</div>
-
-				<div className="space-y-3">
-					<div className="space-y-1.5">
-						<h4 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/60">
-							{tc("features")}
-						</h4>
-						<ArticulationFeatures />
+			<div className="flex flex-col gap-2 w-full">
+				<ArticulationFeatures />
+				<div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-2">
+					<div className="col-span-2">
+						<ArticulationIllustration />
 					</div>
+					<div className="rounded-lg w-full col-span-1">
+						<p className="text-xs text-muted-foreground">
+							Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+						</p>
+					</div>
+				</div>
+			</div>
 
-					{/* //TODO: Add locale for steps */}
-					{/* <div className="space-y-1.5">
+			{/* //TODO: Add locale for steps */}
+			{/* <div className="space-y-1.5">
 						<h4 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/60">
 							{tc("step-by-step")}
 						</h4>
@@ -77,8 +80,8 @@ export function PhonemeDetailsArticulation() {
 						</ol>
 					</div> */}
 
-					{/* //TODO: Add locale for pitfalls */}
-					{/* <div className="space-y-1.5">
+			{/* //TODO: Add locale for pitfalls */}
+			{/* <div className="space-y-1.5">
 						<h4 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/60">
 							{tc("common-mistakes")}
 						</h4>
@@ -100,15 +103,45 @@ export function PhonemeDetailsArticulation() {
 							))}
 						</div>
 					</div> */}
-				</div>
-			</div>
 		</section>
+	);
+}
+
+type ConsonantArticulationIllustrationProps = {
+	phonemeId: PhonemeSymbolId;
+};
+
+function ConsonantArticulationIllustration({ phonemeId }: ConsonantArticulationIllustrationProps) {
+	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
+	return (
+		<AspectRatio ratio={1} className="bg-neutral-950/80 rounded-lg">
+			<Image
+				src={`${bucketUrl}/${phonemeId}.svg`}
+				alt={`${phonemeLabel} articulation`}
+				fill
+				className="object-cover"
+			/>
+		</AspectRatio>
+	);
+}
+
+type VowelArticulationIllustrationProps = {
+	phonemeId: PhonemeSymbolId;
+};
+
+function VowelArticulationIllustration({ phonemeId }: VowelArticulationIllustrationProps) {
+	return (
+		<div className="bg-neutral-950/80 rounded-lg">
+			<p className="text-xs text-muted-foreground">
+				Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+			</p>
+		</div>
 	);
 }
 
 function ConsonantArticulationFeatures({ features }: { features: ConsonantArticulatoryFeatures }) {
 	return (
-		<div className="flex flex-col gap-2 w-36">
+		<div className="flex flex-wrap gap-1">
 			<FeatureRow feature={consonantFeatureDefinitions.manner} valueKey={features.manner} />
 			<FeatureRow feature={consonantFeatureDefinitions.place} valueKey={features.place} />
 			<FeatureRow feature={consonantFeatureDefinitions.voicing} valueKey={features.voicing} />
@@ -118,7 +151,7 @@ function ConsonantArticulationFeatures({ features }: { features: ConsonantArticu
 
 function MonophthongArticulationFeatures({ features }: { features: VowelArticulatoryFeatures }) {
 	return (
-		<div className="flex flex-col gap-2 w-36">
+		<div className="flex flex-wrap gap-1">
 			<FeatureRow feature={vowelFeatureDefinitions.height} valueKey={features.height} />
 			<FeatureRow feature={vowelFeatureDefinitions.backness} valueKey={features.backness} />
 			<FeatureRow feature={vowelFeatureDefinitions.roundness} valueKey={features.roundness} />
@@ -136,24 +169,20 @@ function FeatureRow<ValueKey extends string>({
 }) {
 	const value = feature.values[valueKey];
 
-	if (!value) {
-		return null;
-	}
-
 	return (
 		<div className="flex flex-col">
 			<Popover>
 				<PopoverTrigger asChild>
-					<Pressable size="fit" variant="outline" className="flex rounded-full gap-2 justify-start">
+					<Pressable size="fit" variant="outline" className="flex rounded-full justify-start">
 						<Badge
 							className="text-xs font-semibold rounded-full"
 							variant="secondary"
 							title="Open details"
 							aria-label="Open details"
 						>
-							{feature.label}
+							{feature.label}:
 						</Badge>
-						<span className="text-xs text-muted-foreground">{value.label}</span>
+						<span className="text-xs text-muted-foreground px-2">{value.label}</span>
 					</Pressable>
 				</PopoverTrigger>
 				<PopoverContent className="p-2" align="start">

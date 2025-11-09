@@ -19,7 +19,6 @@ type PhonemeArticulationBase<
 > = {
 	category: Category;
 	features: Features;
-	pitfalls?: string[]; // ["tongue-too-far-back", "lips-vs-teeth"]
 };
 
 // Consonant articulations
