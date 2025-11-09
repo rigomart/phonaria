@@ -80,6 +80,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"voiced-dental-fricative": {
 		label: "Voiced dental fricative",
+		steps: [
+			"Place tongue tip against or between front teeth.",
+			"Start voicing first; feel steady throat buzz.",
+			"Let air pass through a narrow gap.",
+		],
 		pitfalls: [
 				{
 					summary: "No throat buzz",
@@ -93,6 +98,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"voiceless-dental-fricative": {
 		label: "Voiceless dental fricative",
+		steps: [
+			"Rest the tongue tip between the front teeth.",
+			"Keep teeth slightly apart; make a thin airflow.",
+			"No throat buzz; listen for a soft hiss.",
+		],
 		pitfalls: [
 			{
 				summary: "Tongue behind teeth",
@@ -138,6 +148,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"voiceless-postalveolar-fricative": {
 		label: "Voiceless postalveolar fricative",
+		steps: [
+			"Lift tongue blade toward the palate slightly back.",
+			"Add light lip rounding to focus the airflow.",
+			"Keep throat silent; hear a rich 'sh' hiss.",
+		],
 		pitfalls: [
 				{
 					summary: "Tongue too far forward",
@@ -167,6 +182,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"voiced-postalveolar-affricate": {
 		label: "Voiced postalveolar affricate",
+		steps: [
+			"Seal tongue tip just behind your top teeth.",
+			"Start voicing; release into a 'zh' airflow.",
+			"Keep it smooth; no extra 'uh' sound.",
+		],
 		pitfalls: [
 				{
 					summary: "No /d/ start",
@@ -180,6 +200,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"voiceless-postalveolar-affricate": {
 		label: "Voiceless postalveolar affricate",
+		steps: [
+			"Seal tongue tip just behind your top teeth.",
+			"Release straight into a 'sh' airflow.",
+			"Keep throat silent throughout.",
+		],
 		pitfalls: [
 				{
 					summary: "Tongue too flat",
@@ -199,6 +224,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"voiced-velar-nasal": {
 		label: "Voiced velar nasal",
+		steps: [
+			"Raise tongue back to the roof of the mouth.",
+			"Let sound pass through the nose only.",
+			"Hold the contact; no burst release.",
+		],
 		pitfalls: [
 			{
 				summary: "Adds a /g/",
@@ -212,6 +242,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"voiced-alveolar-lateral-approximant": {
 		label: "Voiced alveolar lateral approximant",
+		steps: [
+			"Touch tongue tip behind upper teeth.",
+			"Lower tongue sides so air flows around.",
+			"Keep voicing steady and clear.",
+		],
 		pitfalls: [
 				{
 					summary: "Slides into /w/",
@@ -225,6 +260,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"voiced-postalveolar-approximant": {
 		label: "Voiced postalveolar approximant",
+		steps: [
+			"Hover tongue just behind top teeth; no contact.",
+			"Pull tongue back slightly or bunch the middle.",
+			"Keep lips neutral; sustain gentle voicing.",
+		],
 		pitfalls: [
 				{
 					summary: "Tongue touches the teeth",
@@ -378,6 +418,10 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
 		label: "Close-mid front unrounded to near-close near-front unrounded diphthong",
+		steps: [
+			"Start mid-front; lips unrounded.",
+			"Glide smoothly higher toward ɪ; no pause.",
+		],
 		pitfalls: [
 			{
 				summary: "Two-beat vowel",
@@ -387,6 +431,10 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"close-mid-back-rounded-to-near-close-near-back-rounded": {
 		label: "Close-mid back rounded to near-close near-back rounded diphthong",
+		steps: [
+			"Start mid-back with light lip rounding.",
+			"Glide up and back; keep rounding to the end.",
+		],
 		pitfalls: [
 			{
 				summary: "Smile at end",
@@ -396,6 +444,10 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"open-front-unrounded-to-near-close-near-front-unrounded": {
 		label: "Open front unrounded to near-close near-front unrounded diphthong",
+		steps: [
+			"Start low and front with an open jaw.",
+			"Glide forward and up toward ɪ; one motion.",
+		],
 		pitfalls: [
 			{
 				summary: "Breaks into two",
@@ -405,6 +457,10 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"open-front-unrounded-to-near-close-near-back-rounded": {
 		label: "Open front unrounded to near-close near-back rounded diphthong",
+		steps: [
+			"Start low and front; lips unrounded.",
+			"Glide back and up toward ʊ; add rounding.",
+		],
 		pitfalls: [
 			{
 				summary: "Lips still flat",
@@ -414,6 +470,10 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"open-mid-back-rounded-to-near-close-near-front-unrounded": {
 		label: "Open-mid back rounded to near-close near-front unrounded diphthong",
+		steps: [
+			"Start mid-back with lip rounding.",
+			"Unround while moving forward to ɪ; one motion.",
+		],
 		pitfalls: [
 			{
 				summary: "Rounded at end",
@@ -423,6 +483,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"mid-central-rhotic-tense": {
 		label: "Mid central rhotic tense vowel",
+		steps: [
+			"Keep tongue central; add slight curl or bunch.",
+			"Sustain voicing; avoid lip rounding.",
+			"Maintain the R color; don’t flatten to schwa.",
+		],
 		pitfalls: [
 				{
 					summary: "R-color disappears",
@@ -436,6 +501,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"mid-central-rhotic-lax": {
 		label: "Mid central rhotic lax vowel",
+		steps: [
+			"Keep jaw and tongue relaxed and central.",
+			"Add a light R color without touching.",
+			"Keep it short; it’s usually unstressed.",
+		],
 		pitfalls: [
 				{
 					summary: "Too much stress",
