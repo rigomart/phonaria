@@ -108,7 +108,7 @@ export function PhonemeDetailsArticulation() {
 
 function ConsonantArticulationFeatures({ features }: { features: ConsonantArticulatoryFeatures }) {
 	return (
-		<div className="flex flex-col gap-2 w-30">
+		<div className="flex flex-col gap-2 w-36">
 			<FeatureRow feature={consonantFeatureDefinitions.manner} valueKey={features.manner} />
 			<FeatureRow feature={consonantFeatureDefinitions.place} valueKey={features.place} />
 			<FeatureRow feature={consonantFeatureDefinitions.voicing} valueKey={features.voicing} />
@@ -118,7 +118,7 @@ function ConsonantArticulationFeatures({ features }: { features: ConsonantArticu
 
 function MonophthongArticulationFeatures({ features }: { features: VowelArticulatoryFeatures }) {
 	return (
-		<div className="flex flex-col gap-2 w-30">
+		<div className="flex flex-col gap-2 w-36">
 			<FeatureRow feature={vowelFeatureDefinitions.height} valueKey={features.height} />
 			<FeatureRow feature={vowelFeatureDefinitions.backness} valueKey={features.backness} />
 			<FeatureRow feature={vowelFeatureDefinitions.roundness} valueKey={features.roundness} />
@@ -144,10 +144,10 @@ function FeatureRow<ValueKey extends string>({
 		<div className="flex flex-col">
 			<Popover>
 				<PopoverTrigger asChild>
-					<Pressable variant="outline" className="flex flex-col">
+					<Pressable size="fit" variant="outline" className="flex rounded-full gap-2 justify-start">
 						<Badge
+							className="text-xs font-semibold rounded-full"
 							variant="secondary"
-							className="font-medium cursor-pointer text-xs px-2 py-0.5 transition-colors"
 							title="Open details"
 							aria-label="Open details"
 						>

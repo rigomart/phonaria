@@ -18,7 +18,7 @@ export function PhonemeDetailsHeader() {
 					<span className="text-3xl text-muted-foreground/50">/</span>
 				</div>
 				<AudioControls
-					size="xs"
+					size="sm"
 					path={`/audio/phonemes/${phonemeId}.mp3`}
 					label={`Play ${phonemeId}`}
 				/>

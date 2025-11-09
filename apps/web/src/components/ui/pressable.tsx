@@ -12,11 +12,13 @@ const pressableVariants = cva(
 				outline:
 					"border border-border bg-transparent hover:bg-accent/50 active:bg-accent/70 focus-visible:bg-accent/50",
 				muted: "bg-muted/50 hover:bg-muted active:bg-muted/80 focus-visible:bg-muted",
+				ghost: "hover:bg-accent/50 active:bg-accent/70 focus-visible:bg-accent/50",
 			},
 			size: {
 				default: "p-2 gap-2",
 				sm: "p-1 gap-1",
 				lg: "p-3 gap-3",
+				fit: "p-0 gap-0",
 			},
 		},
 		defaultVariants: {

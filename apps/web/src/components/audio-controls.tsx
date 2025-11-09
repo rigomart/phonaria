@@ -22,7 +22,7 @@ export function AudioControls({ path, label, className, size = "default" }: Prop
 		<ButtonGroup className={className}>
 			<Button
 				size={size}
-				variant="secondary"
+				variant="outline"
 				onClick={() => play()}
 				aria-label={`Play ${label}`}
 				disabled={status === "loading" || status === "playing"}
