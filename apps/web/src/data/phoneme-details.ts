@@ -29,6 +29,7 @@ export type PhonemeDetailsEntry = {
 	pitfalls?: { summary: string; tip: string }[];
 };
 
+// TODO: Refine pitfalls and steps before wiring to the UI
 export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = {
 	"voiceless-bilabial-stop": {
 		label: "Voiceless bilabial stop",
@@ -86,10 +87,10 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			"Let air pass through a narrow gap.",
 		],
 		pitfalls: [
-				{
-					summary: "No throat buzz",
+			{
+				summary: "No throat buzz",
 				tip: "Touch your throat and feel a steady buzz. Once it fades you are producing the voiceless /θ/ instead.",
-				},
+			},
 			{
 				summary: "Sounds like /z/",
 				tip: "Place the tongue on the teeth, not just behind them, to avoid /z/.",
@@ -117,14 +118,14 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	"voiceless-labiodental-fricative": {
 		label: "Voiceless labiodental fricative",
 		pitfalls: [
-				{
-					summary: "Lip blocks airflow",
-					tip: "Only the inner edge of the lower lip should touch the top teeth so air still slips through.",
-				},
-				{
-					summary: "Throat starts buzzing",
-					tip: "If your throat vibrates you are saying /v/. Relax the vocal folds for a quiet airflow.",
-				},
+			{
+				summary: "Lip blocks airflow",
+				tip: "Only the inner edge of the lower lip should touch the top teeth so air still slips through.",
+			},
+			{
+				summary: "Throat starts buzzing",
+				tip: "If your throat vibrates you are saying /v/. Relax the vocal folds for a quiet airflow.",
+			},
 		],
 	},
 	"voiced-labiodental-fricative": {
@@ -134,10 +135,10 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 				summary: "No throat buzz",
 				tip: "Rest a finger on your neck; /v/ needs constant vibration unlike /f/.",
 			},
-				{
-					summary: "Lip folded in",
-					tip: "Keep the lower lip relaxed so just the rim touches the teeth; folding it under blocks the buzz.",
-				},
+			{
+				summary: "Lip folded in",
+				tip: "Keep the lower lip relaxed so just the rim touches the teeth; folding it under blocks the buzz.",
+			},
 		],
 	},
 	"voiceless-glottal-fricative": {
@@ -154,14 +155,14 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			"Keep throat silent; hear a rich 'sh' hiss.",
 		],
 		pitfalls: [
-				{
-					summary: "Tongue too far forward",
-					tip: "Pull the tongue slightly back so it doesn’t sound like /s/.",
-				},
-				{
-					summary: "No lip rounding",
-					tip: "Add a light rounding to focus the air; flat lips make the hiss thin and sharp.",
-				},
+			{
+				summary: "Tongue too far forward",
+				tip: "Pull the tongue slightly back so it doesn’t sound like /s/.",
+			},
+			{
+				summary: "No lip rounding",
+				tip: "Add a light rounding to focus the air; flat lips make the hiss thin and sharp.",
+			},
 		],
 	},
 	"voiced-alveolar-fricative": {
@@ -170,14 +171,14 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	"voiced-postalveolar-fricative": {
 		label: "Voiced postalveolar fricative",
 		pitfalls: [
-				{
-					summary: "Starts with /d/",
-					tip: "Begin with smooth airflow; a stop closure turns it into /dʒ/.",
-				},
-				{
-					summary: "Buzz fades out",
-					tip: "Keep gentle throat vibration all the way through so it does not drop to /ʃ/.",
-				},
+			{
+				summary: "Starts with /d/",
+				tip: "Begin with smooth airflow; a stop closure turns it into /dʒ/.",
+			},
+			{
+				summary: "Buzz fades out",
+				tip: "Keep gentle throat vibration all the way through so it does not drop to /ʃ/.",
+			},
 		],
 	},
 	"voiced-postalveolar-affricate": {
@@ -188,14 +189,14 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			"Keep it smooth; no extra 'uh' sound.",
 		],
 		pitfalls: [
-				{
-					summary: "No /d/ start",
-					tip: "Start with a quick /d/ closure before releasing into the buzzing /ʒ/ portion.",
-				},
-				{
-					summary: "Ends like /tʃ/",
-					tip: "Carry voicing through the release so it does not fade into /tʃ/.",
-				},
+			{
+				summary: "No /d/ start",
+				tip: "Start with a quick /d/ closure before releasing into the buzzing /ʒ/ portion.",
+			},
+			{
+				summary: "Ends like /tʃ/",
+				tip: "Carry voicing through the release so it does not fade into /tʃ/.",
+			},
 		],
 	},
 	"voiceless-postalveolar-affricate": {
@@ -206,10 +207,10 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			"Keep throat silent throughout.",
 		],
 		pitfalls: [
-				{
-					summary: "Tongue too flat",
-						tip: "Lift the tongue blade toward the palate to get the fuller 'sh' sound.",
-				},
+			{
+				summary: "Tongue too flat",
+				tip: "Lift the tongue blade toward the palate to get the fuller 'sh' sound.",
+			},
 			{
 				summary: "Turns into /ts/",
 				tip: "Keep the tongue blade slightly back; too far forward sharpens it into /ts/.",
@@ -234,10 +235,10 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 				summary: "Adds a /g/",
 				tip: "Keep the back of the tongue raised but do not release it; the burst is what creates /g/.",
 			},
-				{
-					summary: "Tongue too forward",
-					tip: "Lift the back of your tongue; if air escapes through the mouth you’re making /n/.",
-				},
+			{
+				summary: "Tongue too forward",
+				tip: "Lift the back of your tongue; if air escapes through the mouth you’re making /n/.",
+			},
 		],
 	},
 	"voiced-alveolar-lateral-approximant": {
@@ -248,14 +249,14 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			"Keep voicing steady and clear.",
 		],
 		pitfalls: [
-				{
-					summary: "Slides into /w/",
-					tip: "Anchor the tongue tip just behind your top teeth so the sound stays clear, not rounded.",
-				},
-				{
-					summary: "Sides sealed",
-					tip: "Lower the tongue sides slightly; sealing them traps the air and dulls the consonant.",
-				},
+			{
+				summary: "Slides into /w/",
+				tip: "Anchor the tongue tip just behind your top teeth so the sound stays clear, not rounded.",
+			},
+			{
+				summary: "Sides sealed",
+				tip: "Lower the tongue sides slightly; sealing them traps the air and dulls the consonant.",
+			},
 		],
 	},
 	"voiced-postalveolar-approximant": {
@@ -266,23 +267,23 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			"Keep lips neutral; sustain gentle voicing.",
 		],
 		pitfalls: [
-				{
-					summary: "Tongue touches the teeth",
-					tip: "Keep the tongue hovering just behind your top teeth; touching creates a quick tap.",
-				},
-				{
-					summary: "Sounds like /w/",
-					tip: "Pull the tongue back for the R sound instead of rounding the lips.",
-				},
+			{
+				summary: "Tongue touches the teeth",
+				tip: "Keep the tongue hovering just behind your top teeth; touching creates a quick tap.",
+			},
+			{
+				summary: "Sounds like /w/",
+				tip: "Pull the tongue back for the R sound instead of rounding the lips.",
+			},
 		],
 	},
 	"voiced-palatal-approximant": {
 		label: "Voiced palatal approximant",
 		pitfalls: [
-				{
-					summary: "Sounds like /w/",
-					tip: "Keep the lips neutral and let the tongue body move forward to create the glide.",
-				},
+			{
+				summary: "Sounds like /w/",
+				tip: "Keep the lips neutral and let the tongue body move forward to create the glide.",
+			},
 		],
 	},
 	"voiced-labial-velar-approximant": {
@@ -292,32 +293,32 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 				summary: "Sounds like /v/",
 				tip: "Avoid touching the teeth with the lower lip; just round both lips softly together.",
 			},
-				{
-					summary: "Too much rounding",
-					tip: "Use a quick, light rounding so the glide moves smoothly into the vowel.",
-				},
+			{
+				summary: "Too much rounding",
+				tip: "Use a quick, light rounding so the glide moves smoothly into the vowel.",
+			},
 		],
 	},
 	"close-front-unrounded": {
 		label: "Close front unrounded vowel",
 		pitfalls: [
-				{
-					summary: "Drops to /ɪ/",
-					tip: "Keep the tongue high and tense; once it relaxes the vowel shortens into /ɪ/.",
-				},
+			{
+				summary: "Drops to /ɪ/",
+				tip: "Keep the tongue high and tense; once it relaxes the vowel shortens into /ɪ/.",
+			},
 		],
 	},
 	"close-back-rounded": {
 		label: "Close back rounded vowel",
 		pitfalls: [
-				{
-					summary: "Not enough rounding",
-					tip: "Shape a small tube with both lips; a flat mouth makes it sound like /ʊ/.",
-				},
-				{
-					summary: "Tongue moves forward",
-					tip: "Keep the tongue high and back; sliding forward adds a ‘y’ sound (/ju/).",
-				},
+			{
+				summary: "Not enough rounding",
+				tip: "Shape a small tube with both lips; a flat mouth makes it sound like /ʊ/.",
+			},
+			{
+				summary: "Tongue moves forward",
+				tip: "Keep the tongue high and back; sliding forward adds a ‘y’ sound (/ju/).",
+			},
 		],
 	},
 	"near-close-near-front-unrounded": {
@@ -329,99 +330,96 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			},
 			{
 				summary: "Held too long",
-					tip: "Keep it quick. Drawing it out causes it to merge with /i/.",
+				tip: "Keep it quick. Drawing it out causes it to merge with /i/.",
 			},
 		],
 	},
 	"near-close-near-back-rounded": {
 		label: "Near-close near-back rounded vowel",
 		pitfalls: [
-				{
-					summary: "Too much rounding",
-					tip: "Use only a mild rounding; exaggerating it pushes the vowel up to /u/.",
-				},
-				{
-					summary: "Tongue too high",
-					tip: "Let the back of the tongue drop a bit so it stays distinct from /u/.",
-				},
+			{
+				summary: "Too much rounding",
+				tip: "Use only a mild rounding; exaggerating it pushes the vowel up to /u/.",
+			},
+			{
+				summary: "Tongue too high",
+				tip: "Let the back of the tongue drop a bit so it stays distinct from /u/.",
+			},
 		],
 	},
 	"mid-central-unrounded": {
 		label: "Mid central unrounded vowel",
 		pitfalls: [
-				{
-					summary: "Too much stress",
-					tip: "Keep it short and relaxed; stressing it removes the neutral vowel sound.",
-				},
+			{
+				summary: "Too much stress",
+				tip: "Keep it short and relaxed; stressing it removes the neutral vowel sound.",
+			},
 		],
 	},
 	"open-mid-front-unrounded": {
 		label: "Open-mid front unrounded vowel",
 		pitfalls: [
-				{
-					summary: "Jaw drops too far",
-					tip: "Don’t drop your jaw as far. Use a medium opening.",
-				},
-				{
-					summary: "Tongue moves back",
-					tip: "Keep the tongue body forward so it does not darken into /ʌ/.",
-				},
+			{
+				summary: "Jaw drops too far",
+				tip: "Don’t drop your jaw as far. Use a medium opening.",
+			},
+			{
+				summary: "Tongue moves back",
+				tip: "Keep the tongue body forward so it does not darken into /ʌ/.",
+			},
 		],
 	},
 	"open-mid-back-unrounded": {
 		label: "Open-mid back unrounded vowel",
 		pitfalls: [
-				{
-					summary: "Accidental rounding",
-					tip: "Leave the lips relaxed; rounding them moves the vowel toward /ɔ/.",
-				},
+			{
+				summary: "Accidental rounding",
+				tip: "Leave the lips relaxed; rounding them moves the vowel toward /ɔ/.",
+			},
 		],
 	},
 	"open-mid-back-rounded": {
 		label: "Open-mid back rounded vowel",
 		pitfalls: [
-				{
-					summary: "No lip rounding",
-					tip: "Maintain gentle rounding throughout; flat lips make it sound like /ɑ/.",
-				},
-				{
-					summary: "Jaw too open",
-					tip: "Keep a medium opening so the vowel stays tighter than the fully open /ɑ/.",
-				},
+			{
+				summary: "No lip rounding",
+				tip: "Maintain gentle rounding throughout; flat lips make it sound like /ɑ/.",
+			},
+			{
+				summary: "Jaw too open",
+				tip: "Keep a medium opening so the vowel stays tighter than the fully open /ɑ/.",
+			},
 		],
 	},
 	"near-open-front-unrounded": {
 		label: "Near-open front unrounded vowel",
 		pitfalls: [
-				{
-					summary: "Jaw not low enough",
-					tip: "Drop the jaw so the tongue sits low in front; otherwise it blends with /ɛ/.",
-				},
-				{
-					summary: "Tongue too far back",
-					tip: "Keep the tongue pressed slightly forward to avoid drifting toward /ɑ/.",
-				},
+			{
+				summary: "Jaw not low enough",
+				tip: "Drop the jaw so the tongue sits low in front; otherwise it blends with /ɛ/.",
+			},
+			{
+				summary: "Tongue too far back",
+				tip: "Keep the tongue pressed slightly forward to avoid drifting toward /ɑ/.",
+			},
 		],
 	},
 	"open-back-unrounded": {
 		label: "Open back unrounded vowel",
 		pitfalls: [
-				{
-					summary: "Rounding appears",
-					tip: "Keep the lips wide open; any rounding shifts it toward /ɔ/.",
-				},
-				{
-					summary: "Tongue too forward",
-					tip: "Keep it low and back so it doesn’t shift toward a front ‘a’.",
-				},
+			{
+				summary: "Rounding appears",
+				tip: "Keep the lips wide open; any rounding shifts it toward /ɔ/.",
+			},
+			{
+				summary: "Tongue too forward",
+				tip: "Keep it low and back so it doesn’t shift toward a front ‘a’.",
+			},
 		],
 	},
 	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
 		label: "Close-mid front unrounded to near-close near-front unrounded diphthong",
-		steps: [
-			"Start mid-front; lips unrounded.",
-			"Glide smoothly higher toward ɪ; no pause.",
-		],
+		steps: ["Start mid-front; lips unrounded.", "Glide smoothly higher toward ɪ; no pause."],
 		pitfalls: [
 			{
 				summary: "Two-beat vowel",
@@ -444,10 +442,7 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"open-front-unrounded-to-near-close-near-front-unrounded": {
 		label: "Open front unrounded to near-close near-front unrounded diphthong",
-		steps: [
-			"Start low and front with an open jaw.",
-			"Glide forward and up toward ɪ; one motion.",
-		],
+		steps: ["Start low and front with an open jaw.", "Glide forward and up toward ɪ; one motion."],
 		pitfalls: [
 			{
 				summary: "Breaks into two",
@@ -457,10 +452,7 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"open-front-unrounded-to-near-close-near-back-rounded": {
 		label: "Open front unrounded to near-close near-back rounded diphthong",
-		steps: [
-			"Start low and front; lips unrounded.",
-			"Glide back and up toward ʊ; add rounding.",
-		],
+		steps: ["Start low and front; lips unrounded.", "Glide back and up toward ʊ; add rounding."],
 		pitfalls: [
 			{
 				summary: "Lips still flat",
@@ -470,10 +462,7 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 	"open-mid-back-rounded-to-near-close-near-front-unrounded": {
 		label: "Open-mid back rounded to near-close near-front unrounded diphthong",
-		steps: [
-			"Start mid-back with lip rounding.",
-			"Unround while moving forward to ɪ; one motion.",
-		],
+		steps: ["Start mid-back with lip rounding.", "Unround while moving forward to ɪ; one motion."],
 		pitfalls: [
 			{
 				summary: "Rounded at end",
@@ -489,14 +478,14 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			"Maintain the R color; don’t flatten to schwa.",
 		],
 		pitfalls: [
-				{
-					summary: "R-color disappears",
-					tip: "Curl or bunch the tongue slightly while keeping it central; if it flattens you get plain /ə/.",
-				},
-				{
-					summary: "Jaw too tense",
-					tip: "Keep the jaw relaxed so the resonance stays centered instead of drifting forward.",
-				},
+			{
+				summary: "R-color disappears",
+				tip: "Curl or bunch the tongue slightly while keeping it central; if it flattens you get plain /ə/.",
+			},
+			{
+				summary: "Jaw too tense",
+				tip: "Keep the jaw relaxed so the resonance stays centered instead of drifting forward.",
+			},
 		],
 	},
 	"mid-central-rhotic-lax": {
@@ -507,14 +496,14 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			"Keep it short; it’s usually unstressed.",
 		],
 		pitfalls: [
-				{
-					summary: "Too much stress",
-					tip: "Keep it short and light. This vowel usually sits in unstressed syllables.",
-				},
-				{
-						summary: "Tongue touches roof",
-						tip: "Let the tongue hover without contact; touching gives a quick tap instead of a vowel.",
-				},
+			{
+				summary: "Too much stress",
+				tip: "Keep it short and light. This vowel usually sits in unstressed syllables.",
+			},
+			{
+				summary: "Tongue touches roof",
+				tip: "Let the tongue hover without contact; touching gives a quick tap instead of a vowel.",
+			},
 		],
 	},
 };
