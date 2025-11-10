@@ -6,6 +6,7 @@ export {
 	phonemeArticulations,
 	rhoticVowelArticulations,
 } from "./phonetics/phoneme-articulations";
+export { phonemeSpellingPatterns } from "./phonetics/phoneme-patterns";
 export type {
 	ConsonantArticulatoryFeatures,
 	PhonemeArticulatoryFeatures,

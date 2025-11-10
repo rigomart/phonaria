@@ -1,66 +1,45 @@
+import { phonemeSpellingPatterns } from "shared-data";
 import { AudioControls } from "../audio-controls";
 import { Badge } from "../ui/badge";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
+import { usePhonemeDetailsContext } from "./phoneme-details-context";
+
+const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export function PhonemeDetailsPatterns() {
-	const examples = {
-		patterns: ["th-", "ph"],
-		words: [
-			{
-				grapheme: { chars: ["t", "h", "i", "n", "k"], highlight: [0, 1] },
-				phonemic: { chars: ["θ", "ɪ", "ŋ", "k"], highlight: [0] },
-				audioUrl: "https://assets.rigos.dev/phoneme-examples/think.mp3",
-			},
-			{
-				grapheme: { chars: ["m", "o", "n", "t", "h"], highlight: [3, 4] },
-				phonemic: { chars: ["m", "ʌ", "n", "θ"], highlight: [3] },
-				audioUrl: "https://assets.rigos.dev/phoneme-examples/month.mp3",
-			},
-		],
-	};
+	const { phonemeId } = usePhonemeDetailsContext();
+
+	const spellingData = phonemeSpellingPatterns[phonemeId];
+
+	if (!spellingData) {
+		return null;
+	}
+
 	return (
-		<section className="px-3 sm:px-4">
-			<div className="rounded-lg space-y-2">
+		<section className="space-y-2 px-3 sm:px-4">
+			<h3 className="text-base font-bold">Common Spelling Patterns</h3>
+			<div className="rounded-lg space-y-3">
 				<div className="flex items-center gap-1.5 flex-wrap">
-					<span className="text-xs text-muted-foreground">Common spelling patterns:</span>
-					{examples.patterns.map((pattern) => (
-						<Badge key={pattern} variant="secondary">
+					{spellingData.patterns.map((pattern) => (
+						<Badge key={pattern} variant="secondary" className="font-mono">
 							{pattern}
 						</Badge>
 					))}
 				</div>
 				<div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
-					{examples.words.map((example) => (
-						<Item variant="outline" size="xs" key={example.grapheme.chars.join("")}>
+					{spellingData.examples.map((example) => (
+						<Item variant="outline" size="xs" key={example.word}>
 							<ItemContent>
-								<ItemTitle className="text-sm flex items-center gap-0">
-									{example.grapheme.chars.map((char, index) => (
-										<span
-											key={char}
-											className={example.grapheme.highlight.includes(index) ? "text-primary" : ""}
-										>
-											{char}
-										</span>
-									))}
-								</ItemTitle>
-								<ItemDescription className="text-xs text-muted-foreground">
-									/
-									{example.phonemic.chars.map((char, index) => (
-										<span
-											key={char}
-											className={example.phonemic.highlight.includes(index) ? "text-primary" : ""}
-										>
-											{char}
-										</span>
-									))}
-									/
+								<ItemTitle className="text-sm font-semibold">{example.word}</ItemTitle>
+								<ItemDescription className="text-xs text-muted-foreground font-mono">
+									/{example.phonemic}/
 								</ItemDescription>
 							</ItemContent>
 							<ItemActions>
 								<AudioControls
 									size="xs"
-									path={example.audioUrl}
-									label={example.grapheme.chars.join("")}
+									path={`${BUCKET_URL}/phoneme-examples/${example.word}.mp3`}
+									label={example.word}
 								/>
 							</ItemActions>
 						</Item>
