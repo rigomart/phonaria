@@ -3,6 +3,7 @@
 import {
 	PhonemeDetails,
 	PhonemeDetailsArticulation,
+	PhonemeDetailsContrasts,
 	PhonemeDetailsHeader,
 	PhonemeDetailsPatterns,
 } from "@/components/phoneme-details";
@@ -23,6 +24,7 @@ export default function PhonemeDetailsV2TestPage() {
 						<PhonemeDetailsHeader />
 						<PhonemeDetailsArticulation />
 						<PhonemeDetailsPatterns />
+						<PhonemeDetailsContrasts />
 					</PhonemeDetails>
 				</div>
 			</div>

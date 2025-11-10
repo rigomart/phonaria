@@ -18,6 +18,17 @@ export default {
 					tip: "Tip",
 				},
 			},
+				contrasts: {
+					title: "Contrasts",
+					"learn-more-aria": "Learn more about practice contrasts",
+					"info-text":
+						"Practice distinguishing this sound from similar-sounding phonemes. These minimal pairs help train your ear to hear the difference.",
+					"open-contrast": "Open contrast",
+				},
+				patterns: {
+					title: "Spelling Patterns",
+					"most-common": "Most commonly spelled as:",
+				},
 		},
 	},
 	"locale-layout": {
