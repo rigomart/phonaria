@@ -17,10 +17,10 @@ export function PhonemeDetailsPatterns() {
 
 	return (
 		<section className="space-y-2 px-3 sm:px-4">
-				<h3 className="text-base font-bold">{t("title")}</h3>
+			<h3 className="text-base font-bold">{t("title")}</h3>
 			<div className="rounded-lg space-y-3">
 				<div className="flex items-center gap-1.5 flex-wrap">
-						<span className="text-xs text-muted-foreground">{t("most-common")}</span>
+					<span className="text-xs text-muted-foreground">{t("most-common")}</span>
 					{spellingData.patterns.map((pattern) => (
 						<Badge key={pattern} variant="secondary" className="font-mono">
 							{pattern}

@@ -4,7 +4,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { getScopedI18n } from "@/locales/server";
 
 export async function Header() {
-	const t = await getScopedI18n("common.header.navigation");
+	const t = await getScopedI18n("components.header.navigation");
 
 	const navigationLinks = [
 		{ href: "/overview", label: t("overview") },

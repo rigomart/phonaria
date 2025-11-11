@@ -2,9 +2,8 @@ import Image from "next/image";
 import { type PhonemeArticulation, type PhonemeSymbolId, phonemeArticulations } from "shared-data";
 import {
 	type ArticulatoryFeature,
-	consonantFeatureDefinitions,
+	featureDefinitions,
 	phonemeDetailsById,
-	vowelFeatureDefinitions,
 } from "@/data/phoneme-details";
 import { useScopedI18n } from "@/locales/client";
 import { AspectRatio } from "../ui/aspect-ratio";
@@ -85,18 +84,9 @@ function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 	if (articulation.category === "consonant") {
 		return (
 			<div className="flex flex-wrap gap-x-2 gap-y-3">
-				<FeatureRow
-					feature={consonantFeatureDefinitions.manner}
-					valueKey={articulation.features.manner}
-				/>
-				<FeatureRow
-					feature={consonantFeatureDefinitions.place}
-					valueKey={articulation.features.place}
-				/>
-				<FeatureRow
-					feature={consonantFeatureDefinitions.voicing}
-					valueKey={articulation.features.voicing}
-				/>
+				<FeatureRow feature={featureDefinitions.manner} valueKey={articulation.features.manner} />
+				<FeatureRow feature={featureDefinitions.place} valueKey={articulation.features.place} />
+				<FeatureRow feature={featureDefinitions.voicing} valueKey={articulation.features.voicing} />
 			</div>
 		);
 	}
@@ -104,20 +94,17 @@ function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 	if (articulation.category === "vowel/monophthong" || articulation.category === "vowel/rhotic") {
 		return (
 			<div className="flex flex-wrap gap-x-2 gap-y-3">
+				<FeatureRow feature={featureDefinitions.height} valueKey={articulation.features.height} />
 				<FeatureRow
-					feature={vowelFeatureDefinitions.height}
-					valueKey={articulation.features.height}
-				/>
-				<FeatureRow
-					feature={vowelFeatureDefinitions.backness}
+					feature={featureDefinitions.backness}
 					valueKey={articulation.features.backness}
 				/>
 				<FeatureRow
-					feature={vowelFeatureDefinitions.roundness}
+					feature={featureDefinitions.roundness}
 					valueKey={articulation.features.roundness}
 				/>
 				<FeatureRow
-					feature={vowelFeatureDefinitions.tenseness}
+					feature={featureDefinitions.tenseness}
 					valueKey={articulation.features.tenseness}
 				/>
 			</div>

@@ -1,8 +1,4 @@
-import type {
-	ConsonantArticulatoryFeatures,
-	PhonemeSymbolId,
-	VowelArticulatoryFeatures,
-} from "shared-data";
+import type { PhonemeArticulatoryFeatures, PhonemeSymbolId } from "shared-data";
 
 export type FeatureValueDefinition = {
 	label: string;
@@ -15,12 +11,8 @@ export type ArticulatoryFeature<ValueKey extends string> = {
 	values: Record<ValueKey, FeatureValueDefinition>;
 };
 
-type ConsonantFeatureDefinitions = {
-	[K in keyof ConsonantArticulatoryFeatures]: ArticulatoryFeature<ConsonantArticulatoryFeatures[K]>;
-};
-
-type VowelFeatureDefinitions = {
-	[K in keyof VowelArticulatoryFeatures]: ArticulatoryFeature<VowelArticulatoryFeatures[K]>;
+type FeatureDefinitions = {
+	[K in keyof PhonemeArticulatoryFeatures]: ArticulatoryFeature<PhonemeArticulatoryFeatures[K]>;
 };
 
 export type PhonemeDetailsEntry = {
@@ -508,7 +500,7 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 };
 
-export const consonantFeatureDefinitions: ConsonantFeatureDefinitions = {
+export const featureDefinitions: FeatureDefinitions = {
 	manner: {
 		label: "Manner",
 		description: "How airflow is modified to produce the sound",
@@ -595,9 +587,6 @@ export const consonantFeatureDefinitions: ConsonantFeatureDefinitions = {
 			},
 		},
 	},
-};
-
-export const vowelFeatureDefinitions: VowelFeatureDefinitions = {
 	height: {
 		label: "Height",
 		description: "Vertical position of the tongue in the mouth",
