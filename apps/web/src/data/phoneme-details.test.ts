@@ -1,10 +1,19 @@
+import type { PhonemeArticulatoryFeatures } from "shared-data";
 import { phonemeArticulations } from "shared-data";
 import { describe, expect, it } from "vitest";
-import {
-	consonantFeatureDefinitions,
-	phonemeDetailsById,
-	vowelFeatureDefinitions,
-} from "./phoneme-details";
+import { featureDefinitions, phonemeDetailsById } from "./phoneme-details";
+
+type FeatureKey = keyof PhonemeArticulatoryFeatures;
+
+const allFeatureKeys = Object.keys(featureDefinitions) as FeatureKey[];
+
+const getFeatureValueDefinition = <K extends FeatureKey>(
+	featureKey: K,
+	valueKey: PhonemeArticulatoryFeatures[K] | undefined,
+) => {
+	if (!valueKey) return null;
+	return featureDefinitions[featureKey].values[valueKey];
+};
 
 describe("phoneme details data", () => {
 	it("exposes details for every articulated phoneme", () => {
@@ -15,31 +24,14 @@ describe("phoneme details data", () => {
 
 	it("covers every articulation feature with definitions", () => {
 		for (const articulation of Object.values(phonemeArticulations)) {
-			if (articulation.category === "consonant") {
-				expect(
-					consonantFeatureDefinitions.manner.values[articulation.features.manner],
-				).toBeDefined();
-				expect(consonantFeatureDefinitions.place.values[articulation.features.place]).toBeDefined();
-				expect(
-					consonantFeatureDefinitions.voicing.values[articulation.features.voicing],
-				).toBeDefined();
-				continue;
-			}
+			const features = articulation.features as Partial<PhonemeArticulatoryFeatures>;
 
-			if (
-				articulation.category === "vowel/monophthong" ||
-				articulation.category === "vowel/rhotic"
-			) {
-				expect(vowelFeatureDefinitions.height.values[articulation.features.height]).toBeDefined();
-				expect(
-					vowelFeatureDefinitions.backness.values[articulation.features.backness],
-				).toBeDefined();
-				expect(
-					vowelFeatureDefinitions.roundness.values[articulation.features.roundness],
-				).toBeDefined();
-				expect(
-					vowelFeatureDefinitions.tenseness.values[articulation.features.tenseness],
-				).toBeDefined();
+			for (const featureKey of allFeatureKeys) {
+				const featureValue = features[featureKey];
+				if (!featureValue) continue;
+
+				const valueDefinition = getFeatureValueDefinition(featureKey, featureValue);
+				expect(valueDefinition).toBeDefined();
 			}
 		}
 	});
