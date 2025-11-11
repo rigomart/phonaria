@@ -1,3 +1,4 @@
+import { EllipsisVerticalIcon } from "lucide-react";
 import Image from "next/image";
 import { type PhonemeArticulation, type PhonemeSymbolId, phonemeArticulations } from "shared-data";
 import {
@@ -127,7 +128,7 @@ function FeatureRow<ValueKey extends string>({
 		<div className="flex flex-col">
 			<Popover>
 				<PopoverTrigger asChild>
-					<Pressable size="fit" variant="outline" className="flex rounded-full justify-start">
+					<Pressable size="fit" variant="outline" className="flex rounded-full justify-start gap-2">
 						<Badge
 							className="text-xs font-semibold rounded-full"
 							variant="secondary"
@@ -136,7 +137,8 @@ function FeatureRow<ValueKey extends string>({
 						>
 							{feature.label}:
 						</Badge>
-						<span className="text-xs text-muted-foreground px-2">{value.label}</span>
+						<span className="text-xs text-muted-foreground">{value.label}</span>
+						<EllipsisVerticalIcon className="size-3 mr-1" />
 					</Pressable>
 				</PopoverTrigger>
 				<PopoverContent className="p-2" align="start">

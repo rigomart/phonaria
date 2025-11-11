@@ -21,7 +21,7 @@ export default {
 			contrasts: {
 				title: "Contrasts",
 				"learn-more-aria": "Learn more about practice contrasts",
-				"info-text":
+				description:
 					"Practice distinguishing this sound from similar-sounding phonemes. These minimal pairs help train your ear to hear the difference.",
 				"open-contrast": "Open contrast",
 				vs: "vs",
