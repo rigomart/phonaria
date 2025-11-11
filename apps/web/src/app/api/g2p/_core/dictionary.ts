@@ -1,4 +1,4 @@
-import cmudictData from "@/data/cmudict.json";
+import cmudictData from "@/data/dict/cmudict.json";
 import { convertArpabetToIPA, normalizeCmuWord } from "@/lib/phoneme-mocks";
 
 type PreprocessedCmudict = Record<string, string[]>;

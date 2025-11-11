@@ -39,7 +39,7 @@ The script skips words that already have audio. To experiment with a smaller bat
 `cmudict-to-json.ts` downloads the raw CMU Pronouncing Dictionary, normalizes entries, and writes a JSON payload with metadata and a compact map of uppercase words to sanitized ARPAbet variants used by the web API.
 
 1. Configure `CMUDICT_SRC_URL` (see `.env` example above).
-2. Optionally set `CMUDICT_JSON_PATH`; otherwise the output defaults to `apps/web/data/cmudict.json`.
+2. Optionally set `CMUDICT_JSON_PATH`; otherwise the output defaults to `apps/web/data/dict/cmudict.json`.
 3. Run `pnpm -C packages/helper-scripts cmudict-to-json`.
 
 The generated JSON has the following structure:
