@@ -1,22 +1,20 @@
-import type { PhonemeSymbolId } from "./symbols-registry";
+import type {
+	ConsonantArticulatoryFeatures,
+	PhonemeArticulatoryFeatureKey,
+	PhonemeSymbolId,
+	VowelArticulatoryFeatures,
+} from "./symbols-registry";
 
 type PhonemeContrastPair = {
 	word: string;
 	phonemic: string;
 };
 
-type PhonemeContrastType =
-	| "voicing"
-	| "place"
-	| "manner"
-	| "tenseness"
-	| "backness"
-	| "roundness"
-	| "height";
+type PhonemeContrastType = keyof ConsonantArticulatoryFeatures | keyof VowelArticulatoryFeatures;
 
 export type PhonemeContrast = {
 	phonemeIds: [PhonemeSymbolId, PhonemeSymbolId]; // The pair. e.g. ["voiced-bilabial-stop", "voiced-labiodental-fricative"]
-	contrastType: PhonemeContrastType[]; // Usually one, but can be multiple. e.g. ["manner", "place"]
+	contrastType: PhonemeArticulatoryFeatureKey[]; // Usually one, but can be multiple. e.g. ["manner", "place"]
 	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
 };
 
@@ -346,39 +344,6 @@ export const phonemeContrasts: PhonemeContrast[] = [
 		],
 	},
 
-	// Diphthong vs Monophthong: Tense–Lax/Height cues
-	{
-		phonemeIds: [
-			"close-mid-front-unrounded-to-near-close-near-front-unrounded",
-			"open-mid-front-unrounded",
-		], // /eɪ/ vs /ɛ/
-		contrastType: ["tenseness", "height"],
-		minimalPairs: [
-			[
-				{ word: "bait", phonemic: "beɪt" },
-				{ word: "bet", phonemic: "bɛt" },
-			],
-			[
-				{ word: "late", phonemic: "leɪt" },
-				{ word: "let", phonemic: "lɛt" },
-			],
-		],
-	},
-	{
-		phonemeIds: ["close-mid-back-rounded-to-near-close-near-back-rounded", "open-back-unrounded"], // /oʊ/ vs /ɑ/
-		contrastType: ["roundness", "height"],
-		minimalPairs: [
-			[
-				{ word: "coat", phonemic: "koʊt" },
-				{ word: "cot", phonemic: "kɑt" },
-			],
-			[
-				{ word: "rode", phonemic: "roʊd" },
-				{ word: "rod", phonemic: "rɑd" },
-			],
-		],
-	},
-
 	// Diphthong vs Diphthong: Height cues
 	{
 		phonemeIds: [
@@ -399,23 +364,6 @@ export const phonemeContrasts: PhonemeContrast[] = [
 	},
 	{
 		phonemeIds: [
-			"open-front-unrounded-to-near-close-near-front-unrounded",
-			"open-front-unrounded-to-near-close-near-back-rounded",
-		], // /aɪ/ vs /aʊ/
-		contrastType: ["roundness", "backness"],
-		minimalPairs: [
-			[
-				{ word: "file", phonemic: "faɪl" },
-				{ word: "foul", phonemic: "faʊl" },
-			],
-			[
-				{ word: "buy", phonemic: "baɪ" },
-				{ word: "bough", phonemic: "baʊ" },
-			],
-		],
-	},
-	{
-		phonemeIds: [
 			"close-mid-back-rounded-to-near-close-near-back-rounded",
 			"open-front-unrounded-to-near-close-near-back-rounded",
 		], // /oʊ/ vs /aʊ/
@@ -431,23 +379,6 @@ export const phonemeContrasts: PhonemeContrast[] = [
 			],
 		],
 	},
-	{
-		phonemeIds: [
-			"open-mid-back-rounded-to-near-close-near-front-unrounded",
-			"close-mid-back-rounded-to-near-close-near-back-rounded",
-		], // /ɔɪ/ vs /oʊ/
-		contrastType: ["backness", "roundness"],
-		minimalPairs: [
-			[
-				{ word: "boil", phonemic: "bɔɪl" },
-				{ word: "bowl", phonemic: "boʊl" },
-			],
-			[
-				{ word: "toil", phonemic: "tɔɪl" },
-				{ word: "toll", phonemic: "toʊl" },
-			],
-		],
-	},
 ];
 
 export type PhonemeContrastMatch = {
@@ -456,31 +387,32 @@ export type PhonemeContrastMatch = {
 	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
 };
 
-// Scoped map generation using IIFE for O(1) access in consumption
-export const contrastsByPhonemeId = (() => {
-	const map = new Map<PhonemeSymbolId, PhonemeContrastMatch[]>();
+// Scoped record generation using IIFE for O(1) access in consumption
+export const contrastsByPhonemeId: Partial<Record<PhonemeSymbolId, PhonemeContrastMatch[]>> =
+	(() => {
+		const record: Partial<Record<PhonemeSymbolId, PhonemeContrastMatch[]>> = {};
 
-	for (const contrast of phonemeContrasts) {
-		const [leftId, rightId] = contrast.phonemeIds;
+		for (const contrast of phonemeContrasts) {
+			const [leftId, rightId] = contrast.phonemeIds;
 
-		const addEntry = (fromId: PhonemeSymbolId, toId: PhonemeSymbolId) => {
-			const entry: PhonemeContrastMatch = {
-				partnerId: toId,
-				contrastType: contrast.contrastType,
-				minimalPairs: contrast.minimalPairs,
+			const addEntry = (fromId: PhonemeSymbolId, toId: PhonemeSymbolId) => {
+				const entry: PhonemeContrastMatch = {
+					partnerId: toId,
+					contrastType: contrast.contrastType,
+					minimalPairs: contrast.minimalPairs,
+				};
+
+				const existing = record[fromId];
+				if (existing) {
+					existing.push(entry);
+				} else {
+					record[fromId] = [entry];
+				}
 			};
 
-			const existing = map.get(fromId);
-			if (existing) {
-				existing.push(entry);
-			} else {
-				map.set(fromId, [entry]);
-			}
-		};
+			addEntry(leftId, rightId);
+			addEntry(rightId, leftId);
+		}
 
-		addEntry(leftId, rightId);
-		addEntry(rightId, leftId);
-	}
-
-	return map;
-})();
+		return record;
+	})();

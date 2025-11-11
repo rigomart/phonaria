@@ -1,6 +1,7 @@
 export {
 	consonantArticulations,
 	diphthongVowelArticulations,
+	featureValueByPhoneme,
 	monophthongVowelArticulations,
 	type PhonemeArticulation,
 	phonemeArticulations,
@@ -10,9 +11,13 @@ export { contrastsByPhonemeId, type PhonemeContrast } from "./phonetics/phoneme-
 export { phonemeSpellingPatterns } from "./phonetics/phoneme-patterns";
 export type {
 	ConsonantArticulatoryFeatures,
+	ConsonantPhonemeArticulatoryFeatureKey,
+	PhonemeArticulatoryFeatureKey,
 	PhonemeArticulatoryFeatures,
+	PhonemeCategory,
 	PhonemeSymbolId,
 	VowelArticulatoryFeatures,
+	VowelPhonemeArticulatoryFeatureKey,
 } from "./phonetics/symbols-registry";
 export {
 	allPhonemeSymbols,

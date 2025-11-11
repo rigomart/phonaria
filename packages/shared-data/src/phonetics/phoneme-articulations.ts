@@ -3,18 +3,16 @@ import type {
 	ConsonantSymbolId,
 	DiphthongSymbolId,
 	MonophthongSymbolId,
+	PhonemeArticulatoryFeatureKey,
+	PhonemeArticulatoryFeatures,
+	PhonemeCategory,
+	PhonemeSymbolId,
 	RhoticSymbolId,
 	VowelArticulatoryFeatures,
 } from "./symbols-registry";
 
-type PhonemeArticulationCategory =
-	| "consonant"
-	| "vowel/monophthong"
-	| "vowel/diphthong"
-	| "vowel/rhotic";
-
 type PhonemeArticulationBase<
-	Category extends PhonemeArticulationCategory,
+	Category extends PhonemeCategory,
 	Features extends Record<string, string>,
 > = {
 	category: Category;
@@ -231,9 +229,9 @@ export const monophthongVowelArticulations: Record<
 type DiphthongVowelArticulation = PhonemeArticulationBase<
 	"vowel/diphthong",
 	{
-		startHeight: VowelArticulatoryFeatures["height"];
-		startBackness: VowelArticulatoryFeatures["backness"];
-		startRoundness: VowelArticulatoryFeatures["roundness"];
+		height: VowelArticulatoryFeatures["height"];
+		backness: VowelArticulatoryFeatures["backness"];
+		roundness: VowelArticulatoryFeatures["roundness"];
 		targetHeight: VowelArticulatoryFeatures["height"];
 		targetBackness: VowelArticulatoryFeatures["backness"];
 		targetRoundness: VowelArticulatoryFeatures["roundness"];
@@ -244,9 +242,9 @@ export const diphthongVowelArticulations: Record<DiphthongSymbolId, DiphthongVow
 	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
 		category: "vowel/diphthong",
 		features: {
-			startHeight: "close-mid",
-			startBackness: "front",
-			startRoundness: "unrounded",
+			height: "close-mid",
+			backness: "front",
+			roundness: "unrounded",
 			targetHeight: "near-close",
 			targetBackness: "near-front",
 			targetRoundness: "unrounded",
@@ -255,9 +253,9 @@ export const diphthongVowelArticulations: Record<DiphthongSymbolId, DiphthongVow
 	"close-mid-back-rounded-to-near-close-near-back-rounded": {
 		category: "vowel/diphthong",
 		features: {
-			startHeight: "close-mid",
-			startBackness: "back",
-			startRoundness: "rounded",
+			height: "close-mid",
+			backness: "back",
+			roundness: "rounded",
 			targetHeight: "near-close",
 			targetBackness: "near-back",
 			targetRoundness: "rounded",
@@ -266,9 +264,9 @@ export const diphthongVowelArticulations: Record<DiphthongSymbolId, DiphthongVow
 	"open-front-unrounded-to-near-close-near-front-unrounded": {
 		category: "vowel/diphthong",
 		features: {
-			startHeight: "open",
-			startBackness: "front",
-			startRoundness: "unrounded",
+			height: "open",
+			backness: "front",
+			roundness: "unrounded",
 			targetHeight: "near-close",
 			targetBackness: "near-front",
 			targetRoundness: "unrounded",
@@ -277,9 +275,9 @@ export const diphthongVowelArticulations: Record<DiphthongSymbolId, DiphthongVow
 	"open-front-unrounded-to-near-close-near-back-rounded": {
 		category: "vowel/diphthong",
 		features: {
-			startHeight: "open",
-			startBackness: "front",
-			startRoundness: "unrounded",
+			height: "open",
+			backness: "front",
+			roundness: "unrounded",
 			targetHeight: "near-close",
 			targetBackness: "near-back",
 			targetRoundness: "rounded",
@@ -288,9 +286,9 @@ export const diphthongVowelArticulations: Record<DiphthongSymbolId, DiphthongVow
 	"open-mid-back-rounded-to-near-close-near-front-unrounded": {
 		category: "vowel/diphthong",
 		features: {
-			startHeight: "open-mid",
-			startBackness: "back",
-			startRoundness: "rounded",
+			height: "open-mid",
+			backness: "back",
+			roundness: "rounded",
 			targetHeight: "near-close",
 			targetBackness: "near-front",
 			targetRoundness: "unrounded",
@@ -328,10 +326,56 @@ export const phonemeArticulations = {
 	...monophthongVowelArticulations,
 	...diphthongVowelArticulations,
 	...rhoticVowelArticulations,
-};
+} as const satisfies Record<PhonemeSymbolId, PhonemeArticulation>;
 
 export type PhonemeArticulation =
 	| ConsonantArticulation
 	| MonophthongVowelArticulation
 	| DiphthongVowelArticulation
 	| RhoticVowelArticulation;
+
+type FeatureValueLookup = {
+	[K in PhonemeArticulatoryFeatureKey]: Partial<
+		Record<PhonemeSymbolId, PhonemeArticulatoryFeatures[K]>
+	>;
+};
+
+const buildFeatureValueByPhoneme = (): FeatureValueLookup => {
+	const lookup: FeatureValueLookup = {
+		voicing: {},
+		place: {},
+		manner: {},
+		height: {},
+		backness: {},
+		roundness: {},
+		tenseness: {},
+	};
+
+	const assignFeatureValue = <K extends PhonemeArticulatoryFeatureKey>(
+		key: K,
+		phonemeId: PhonemeSymbolId,
+		value: PhonemeArticulatoryFeatures[K] | undefined,
+	) => {
+		if (!value) return;
+		lookup[key][phonemeId] = value;
+	};
+
+	for (const [phonemeId, articulation] of Object.entries(phonemeArticulations) as [
+		PhonemeSymbolId,
+		PhonemeArticulation,
+	][]) {
+		const features = articulation.features as Partial<PhonemeArticulatoryFeatures>;
+
+		assignFeatureValue("voicing", phonemeId, features.voicing);
+		assignFeatureValue("place", phonemeId, features.place);
+		assignFeatureValue("manner", phonemeId, features.manner);
+		assignFeatureValue("height", phonemeId, features.height);
+		assignFeatureValue("backness", phonemeId, features.backness);
+		assignFeatureValue("roundness", phonemeId, features.roundness);
+		assignFeatureValue("tenseness", phonemeId, features.tenseness);
+	}
+
+	return lookup;
+};
+
+export const featureValueByPhoneme = buildFeatureValueByPhoneme();
