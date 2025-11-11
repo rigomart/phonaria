@@ -76,12 +76,12 @@ export function PhonemeDetailsContrasts() {
 												<TooltipContent>
 													<div className="flex gap-2">
 														<div className="flex flex-col gap-1 max-w-32">
-															<p>{phonemeValueDef.label}</p>
+															<p className="text-xs font-semibold">{phonemeValueDef.label}</p>
 															<p>{phonemeValueDef.description}</p>
 														</div>
 														<LabelSeparator label={vsLabel} orientation="vertical" />
 														<div className="flex flex-col gap-1 max-w-32">
-															<p>{partnerValueDef.label}</p>
+															<p className="text-xs font-semibold">{partnerValueDef.label}</p>
 															<p>{partnerValueDef.description}</p>
 														</div>
 													</div>
