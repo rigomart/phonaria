@@ -2,6 +2,7 @@
 
 import {
 	PhonemeDetails,
+	PhonemeDetailsAllophones,
 	PhonemeDetailsArticulation,
 	PhonemeDetailsContrasts,
 	PhonemeDetailsHeader,
@@ -20,11 +21,12 @@ export default function PhonemeDetailsV2TestPage() {
 				</div>
 
 				<div className="bg-background-soft rounded-2xl">
-					<PhonemeDetails phonemeId="voiceless-dental-fricative">
+					<PhonemeDetails phonemeId="voiceless-bilabial-stop">
 						<PhonemeDetailsHeader />
 						<PhonemeDetailsArticulation />
 						<PhonemeDetailsPatterns />
 						<PhonemeDetailsContrasts />
+						<PhonemeDetailsAllophones />
 					</PhonemeDetails>
 				</div>
 			</div>

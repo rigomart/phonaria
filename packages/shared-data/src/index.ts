@@ -1,4 +1,9 @@
 export {
+	type PhonemeAllophone,
+	type PhonemeAllophoneContextKey,
+	phonemeAllophones,
+} from "./phonetics/phoneme-allophones";
+export {
 	consonantArticulations,
 	diphthongVowelArticulations,
 	featureValueByPhoneme,

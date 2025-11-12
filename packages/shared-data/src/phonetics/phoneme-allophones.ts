@@ -5,13 +5,13 @@ type AllophoneExample = {
 	phonemic: string;
 };
 
-export type PhonemeAllophone = {
+type BasePhonemeAllophone<ContextKey extends string = string> = {
 	ipaVariant: string; // e.g., ɾ, ʔ, tʰ, ɫ, etc.
-	contextKey: string; // e.g., "stressed-syllable-onset", "after-s-in-onset"
-	examples: AllophoneExample[];
+	contextKey: ContextKey; // e.g., "stressed-syllable-onset", "after-s-in-onset"
+	examples: ReadonlyArray<AllophoneExample>;
 };
 
-export const phonemeAllophones: Partial<Record<PhonemeSymbolId, PhonemeAllophone[]>> = {
+const phonemeAllophonesData = {
 	// Voiceless stops: aspiration vs s-clusters; plus key /t/ variants
 	"voiceless-bilabial-stop": [
 		{
@@ -125,4 +125,13 @@ export const phonemeAllophones: Partial<Record<PhonemeSymbolId, PhonemeAllophone
 			],
 		},
 	],
-};
+} as const;
+
+type AllophoneCollections = (typeof phonemeAllophonesData)[keyof typeof phonemeAllophonesData];
+
+export type PhonemeAllophoneContextKey = AllophoneCollections[number]["contextKey"];
+
+export type PhonemeAllophone = BasePhonemeAllophone<PhonemeAllophoneContextKey>;
+
+export const phonemeAllophones: Partial<Record<PhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>> =
+	phonemeAllophonesData;

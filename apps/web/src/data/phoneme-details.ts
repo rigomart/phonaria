@@ -1,4 +1,8 @@
-import type { PhonemeArticulatoryFeatures, PhonemeSymbolId } from "shared-data";
+import type {
+	PhonemeAllophoneContextKey,
+	PhonemeArticulatoryFeatures,
+	PhonemeSymbolId,
+} from "shared-data";
 
 export type FeatureValueDefinition = {
 	label: string;
@@ -674,5 +678,52 @@ export const featureDefinitions: FeatureDefinitions = {
 				description: "Articulators stay looser with a shorter duration.",
 			},
 		},
+	},
+};
+
+export type AllophoneContextDefinition = {
+	name: string;
+	description: string;
+	when: string;
+};
+
+export const allophoneContextDefinitions: Record<
+	PhonemeAllophoneContextKey,
+	AllophoneContextDefinition
+> = {
+	"stressed-onset-aspirated": {
+		name: "Aspirated",
+		description: "Released with a puff of air",
+		when: "At the start of stressed syllables",
+	},
+	"after-s-onset-unaspirated": {
+		name: "Unaspirated",
+		description: "Released without the puff of air",
+		when: "After /s/ at the start of syllables",
+	},
+	"vowel-to-vowel-flap": {
+		name: "Flap",
+		description: "Quick tap of the tongue",
+		when: "Between vowels in casual speech",
+	},
+	"t-before-syllabic-n-glottal": {
+		name: "Glottal stop",
+		description: "Brief closure in the throat",
+		when: "Before syllabic /n/ (as in 'button')",
+	},
+	"coda-dark-l": {
+		name: "Dark L",
+		description: "Produced with back of tongue raised",
+		when: "At the end of syllables or before consonants",
+	},
+	"pre-voiced-coda-lengthened": {
+		name: "Lengthened",
+		description: "Held slightly longer",
+		when: "Before voiced consonants like /d/, /b/, /v/",
+	},
+	"pre-voiceless-coda-shorter": {
+		name: "Shortened",
+		description: "Held slightly shorter",
+		when: "Before voiceless consonants like /t/, /p/, /f/",
 	},
 };
