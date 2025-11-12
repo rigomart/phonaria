@@ -15,6 +15,13 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../u
 import { LabelSeparator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
+import {
+	PhonemeSection,
+	PhonemeSectionContent,
+	PhonemeSectionDescription,
+	PhonemeSectionHeader,
+	PhonemeSectionTitle,
+} from "./phoneme-section";
 
 function getFeatureValueDefinition<K extends PhonemeArticulatoryFeatureKey>(
 	featureKey: K,
@@ -41,12 +48,12 @@ export function PhonemeDetailsContrasts() {
 	}
 
 	return (
-		<section className="space-y-4 px-3 sm:px-4">
-			<div className="flex flex-col gap-1">
-				<h3 className="text-base font-bold">{t("title")}</h3>
-				<p className="text-xs text-muted-foreground">{t("description")}</p>
-			</div>
-			<div className="space-y-4">
+		<PhonemeSection>
+			<PhonemeSectionHeader>
+				<PhonemeSectionTitle>{t("title")}</PhonemeSectionTitle>
+				<PhonemeSectionDescription>{t("description")}</PhonemeSectionDescription>
+			</PhonemeSectionHeader>
+			<PhonemeSectionContent>
 				{contrasts.map((contrast) => {
 					const partnerIpa = allPhonemeSymbols[contrast.partnerId].ipa;
 					// Limit to first pair
@@ -81,14 +88,14 @@ export function PhonemeDetailsContrasts() {
 												</TooltipTrigger>
 												<TooltipContent>
 													<div className="flex gap-2">
-														<div className="flex flex-col gap-1 max-w-32">
-															<p className="text-xs font-semibold">{phonemeValueDef.label}</p>
-															<p>{phonemeValueDef.description}</p>
+														<div className="flex flex-col gap-1 max-w-32 text-xs">
+															<p className="font-semibold">{phonemeValueDef.label}</p>
+															<p className="leading-tight">{phonemeValueDef.description}</p>
 														</div>
 														<LabelSeparator label={vsLabel} orientation="vertical" />
-														<div className="flex flex-col gap-1 max-w-32">
-															<p className="text-xs font-semibold">{partnerValueDef.label}</p>
-															<p>{partnerValueDef.description}</p>
+														<div className="flex flex-col gap-1 max-w-32 text-xs">
+															<p className="font-semibold">{partnerValueDef.label}</p>
+															<p className="leading-tight">{partnerValueDef.description}</p>
 														</div>
 													</div>
 												</TooltipContent>
@@ -120,8 +127,8 @@ export function PhonemeDetailsContrasts() {
 						</div>
 					);
 				})}
-			</div>
-		</section>
+			</PhonemeSectionContent>
+		</PhonemeSection>
 	);
 }
 

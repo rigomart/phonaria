@@ -9,7 +9,8 @@ export default {
 		},
 		"phoneme-details": {
 			articulation: {
-				pronunciation: "Pronunciation",
+				title: "Pronunciation",
+				description: "How this sound is produced using your vocal tract.",
 				features: "Features",
 				"step-by-step": "Step by step",
 				"common-mistakes": "Common mistakes",
@@ -21,8 +22,7 @@ export default {
 			contrasts: {
 				title: "Contrasts",
 				"learn-more-aria": "Learn more about practice contrasts",
-				description:
-					"Practice distinguishing this sound from similar-sounding phonemes. These minimal pairs help train your ear to hear the difference.",
+				description: "Minimal pairs that highlight how this sound differs from similar phonemes.",
 				"open-contrast": "Open contrast",
 				"differs-in": "Differs in",
 				vs: "vs",
@@ -33,9 +33,8 @@ export default {
 			},
 			allophones: {
 				title: "Variations",
-				"learn-more-aria": "Learn more about variations",
 				description:
-					"Some sounds have variations (allophones) depending on context or accent. These variants are pronounced slightly differently but represent the same phoneme.",
+					"This sound has slight variations depending on where it appears in a word or your accent.",
 			},
 		},
 	},

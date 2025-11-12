@@ -13,6 +13,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Pressable } from "../ui/pressable";
 import { Separator } from "../ui/separator";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
+import {
+	PhonemeSection,
+	PhonemeSectionContent,
+	PhonemeSectionDescription,
+	PhonemeSectionHeader,
+	PhonemeSectionTitle,
+} from "./phoneme-section";
 
 export function PhonemeDetailsArticulation() {
 	const { phonemeId } = usePhonemeDetailsContext();
@@ -22,9 +29,12 @@ export function PhonemeDetailsArticulation() {
 	const t = useScopedI18n(`components.phoneme-details.articulation`);
 
 	return (
-		<section className="space-y-2 px-3 sm:px-4">
-			<h3 className="text-base font-bold">{t("pronunciation")}</h3>
-			<div className="flex flex-col gap-2 w-full">
+		<PhonemeSection>
+			<PhonemeSectionHeader>
+				<PhonemeSectionTitle>{t("title")}</PhonemeSectionTitle>
+				<PhonemeSectionDescription>{t("description")}</PhonemeSectionDescription>
+			</PhonemeSectionHeader>
+			<PhonemeSectionContent>
 				<div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-x-3 gap-y-2">
 					<div className="col-span-2">
 						<ArticulationIllustration category={articulation.category} phonemeId={phonemeId} />
@@ -34,10 +44,10 @@ export function PhonemeDetailsArticulation() {
 						<ArticulatoryFeatures articulation={articulation} />
 					</div>
 				</div>
-			</div>
+			</PhonemeSectionContent>
 
 			{/* // TODO: Add steps and pitfalls after refining */}
-		</section>
+		</PhonemeSection>
 	);
 }
 
