@@ -24,11 +24,18 @@ export default {
 				description:
 					"Practice distinguishing this sound from similar-sounding phonemes. These minimal pairs help train your ear to hear the difference.",
 				"open-contrast": "Open contrast",
+				"differs-in": "Differs in",
 				vs: "vs",
 			},
 			patterns: {
 				title: "Spelling Patterns",
 				"most-common": "Most commonly spelled as:",
+			},
+			allophones: {
+				title: "Variations",
+				"learn-more-aria": "Learn more about variations",
+				description:
+					"Some sounds have variations (allophones) depending on context or accent. These variants are pronounced slightly differently but represent the same phoneme.",
 			},
 		},
 	},

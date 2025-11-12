@@ -1,3 +1,4 @@
+import { Info } from "lucide-react";
 import {
 	allPhonemeSymbols,
 	contrastsByPhonemeId,
@@ -53,8 +54,8 @@ export function PhonemeDetailsContrasts() {
 
 					return (
 						<div key={contrast.partnerId} className="flex flex-col">
-							<div className="flex items-center border rounded-t-lg py-1 px-2 gap-2">
-								<span className="text-xs text-muted-foreground">Contrasts in:</span>
+							<div className="flex items-center border rounded-t-lg py-1.5 px-3 gap-2">
+								<span className="text-xs text-muted-foreground">{t("differs-in")}</span>
 								<div className="flex gap-1">
 									{contrast.contrastType.map((type) => {
 										const phonemeValueKey = featureValueByPhoneme[type][phonemeId];
@@ -69,8 +70,13 @@ export function PhonemeDetailsContrasts() {
 										return (
 											<Tooltip key={type}>
 												<TooltipTrigger asChild>
-													<Badge variant="secondary" key={type} className="capitalize cursor-help">
+													<Badge
+														variant="secondary"
+														key={type}
+														className="capitalize cursor-help gap-1"
+													>
 														{type}
+														<Info className="h-3 w-3 opacity-60" />
 													</Badge>
 												</TooltipTrigger>
 												<TooltipContent>
