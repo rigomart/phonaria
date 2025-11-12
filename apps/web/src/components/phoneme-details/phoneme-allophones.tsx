@@ -2,7 +2,6 @@ import { phonemeAllophones } from "shared-data";
 import { allophoneContextDefinitions } from "@/data/phoneme-details";
 import { useScopedI18n } from "@/locales/client";
 import { AudioControls } from "../audio-controls";
-import { Badge } from "../ui/badge";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
@@ -31,25 +30,25 @@ export function PhonemeDetailsAllophones() {
 					const contextCopy = allophoneContextDefinitions[allo.contextKey];
 
 					return (
-						<div key={allo.ipaVariant} className="space-y-2">
-							<div className="flex flex-col gap-1.5">
+						<article key={allo.ipaVariant} className="space-y-3">
+							<header className="flex flex-col gap-2">
 								<div className="flex items-center gap-2">
-									<Badge variant="outline" className="text-base font-mono px-2.5 py-0.5">
-										{allo.ipaVariant}
-									</Badge>
-									<span className="text-sm font-semibold">{contextCopy.name}</span>
+									<span className="text-muted-foreground/60">[</span>
+									<span className="text-base font-mono font-semibold">{allo.ipaVariant}</span>
+									<span className="text-muted-foreground/60">]</span>
+									<h4 className="text-base font-semibold">{contextCopy.name}</h4>
 								</div>
-								<p className="text-sm text-muted-foreground pl-1">{contextCopy.description}</p>
-								<p className="text-xs text-muted-foreground pl-1 flex items-center gap-1">
-									<span className="text-muted-foreground/60">→</span>
+								<p className="text-sm text-muted-foreground">{contextCopy.description}</p>
+								<p className="text-xs text-muted-foreground/80 flex items-center gap-1">
+									<span>→</span>
 									{contextCopy.when}
 								</p>
-							</div>
-							<div className="grid sm:grid-cols-2 grid-cols-1 gap-2">
+							</header>
+							<ul className="grid sm:grid-cols-2 grid-cols-1 gap-2">
 								{allo.examples.map((ex) => (
 									<Item key={ex.word} variant="outline" size="xs">
 										<ItemContent>
-											<ItemTitle className="text-sm">{ex.word}</ItemTitle>
+											<ItemTitle>{ex.word}</ItemTitle>
 											<ItemDescription className="text-xs text-muted-foreground">
 												/{ex.phonemic}/
 											</ItemDescription>
@@ -63,8 +62,8 @@ export function PhonemeDetailsAllophones() {
 										</ItemActions>
 									</Item>
 								))}
-							</div>
-						</div>
+							</ul>
+						</article>
 					);
 				})}
 			</PhonemeSectionContent>

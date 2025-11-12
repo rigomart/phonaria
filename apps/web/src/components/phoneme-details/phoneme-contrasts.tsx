@@ -60,9 +60,9 @@ export function PhonemeDetailsContrasts() {
 					const displayPairs = contrast.minimalPairs[0];
 
 					return (
-						<div key={contrast.partnerId} className="flex flex-col">
-							<div className="flex items-center border rounded-t-lg py-1.5 px-3 gap-2">
-								<span className="text-xs text-muted-foreground">{t("differs-in")}</span>
+						<article key={contrast.partnerId} className="flex flex-col">
+							<header className="flex items-center border rounded-t-lg py-2 px-3 gap-2">
+								<span className="text-sm text-muted-foreground">{t("differs-in")}</span>
 								<div className="flex gap-1">
 									{contrast.contrastType.map((type) => {
 										const phonemeValueKey = featureValueByPhoneme[type][phonemeId];
@@ -88,14 +88,14 @@ export function PhonemeDetailsContrasts() {
 												</TooltipTrigger>
 												<TooltipContent>
 													<div className="flex gap-2">
-														<div className="flex flex-col gap-1 max-w-32 text-xs">
-															<p className="font-semibold">{phonemeValueDef.label}</p>
-															<p className="leading-tight">{phonemeValueDef.description}</p>
+														<div className="flex flex-col gap-1 max-w-32">
+															<p className="font-semibold text-sm">{phonemeValueDef.label}</p>
+															<p className="text-xs leading-tight">{phonemeValueDef.description}</p>
 														</div>
 														<LabelSeparator label={vsLabel} orientation="vertical" />
-														<div className="flex flex-col gap-1 max-w-32 text-xs">
-															<p className="font-semibold">{partnerValueDef.label}</p>
-															<p className="leading-tight">{partnerValueDef.description}</p>
+														<div className="flex flex-col gap-1 max-w-32">
+															<p className="font-semibold text-sm">{partnerValueDef.label}</p>
+															<p className="text-xs leading-tight">{partnerValueDef.description}</p>
 														</div>
 													</div>
 												</TooltipContent>
@@ -103,9 +103,9 @@ export function PhonemeDetailsContrasts() {
 										);
 									})}
 								</div>
-							</div>
+							</header>
 
-							<div className="flex sm:flex-row flex-col p-2 rounded-b-lg border gap-2">
+							<div className="flex sm:flex-row flex-col p-3 rounded-b-lg border gap-2">
 								<ExampleItem
 									ipa={currentIpa}
 									word={displayPairs[0].word}
@@ -124,7 +124,7 @@ export function PhonemeDetailsContrasts() {
 									phonemic={displayPairs[1].phonemic}
 								/>
 							</div>
-						</div>
+						</article>
 					);
 				})}
 			</PhonemeSectionContent>
@@ -143,9 +143,9 @@ function ExampleItem({ ipa, word, phonemic, className }: ExampleItemProps) {
 	return (
 		<div className={cn("flex rounded-lg flex-1", className)}>
 			<div className="flex items-center px-2 sm:px-3">
-				<span className="text-sm font-semibold text-muted-foreground/60">/</span>
-				<span className="text-lg font-semibold">{ipa}</span>
-				<span className="text-sm font-semibold text-muted-foreground/60">/</span>
+				<span className="text-xs font-semibold text-muted-foreground/60">/</span>
+				<span className="text-base font-semibold">{ipa}</span>
+				<span className="text-xs font-semibold text-muted-foreground/60">/</span>
 			</div>
 
 			<Item variant="outline" size="xs" className="flex-1 bg-background-strong">

@@ -35,12 +35,12 @@ export function PhonemeDetailsArticulation() {
 				<PhonemeSectionDescription>{t("description")}</PhonemeSectionDescription>
 			</PhonemeSectionHeader>
 			<PhonemeSectionContent>
-				<div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-x-3 gap-y-2">
+				<div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
 					<div className="col-span-2">
 						<ArticulationIllustration category={articulation.category} phonemeId={phonemeId} />
 					</div>
-					<div className="rounded-lg w-full col-span-1 space-y-2">
-						<h4 className="text-sm font-bold">{t("features")}</h4>
+					<div className="rounded-lg w-full col-span-1 space-y-3">
+						<h4 className="text-base font-semibold">{t("features")}</h4>
 						<ArticulatoryFeatures articulation={articulation} />
 					</div>
 				</div>
@@ -94,7 +94,7 @@ type ArticulatoryFeaturesProps = {
 function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 	if (articulation.category === "consonant") {
 		return (
-			<div className="flex flex-wrap gap-x-2 gap-y-3">
+			<div className="flex flex-wrap gap-2">
 				<FeatureRow feature={featureDefinitions.manner} valueKey={articulation.features.manner} />
 				<FeatureRow feature={featureDefinitions.place} valueKey={articulation.features.place} />
 				<FeatureRow feature={featureDefinitions.voicing} valueKey={articulation.features.voicing} />
@@ -104,7 +104,7 @@ function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 
 	if (articulation.category === "vowel/monophthong" || articulation.category === "vowel/rhotic") {
 		return (
-			<div className="flex flex-wrap gap-x-2 gap-y-3">
+			<div className="flex flex-wrap gap-2">
 				<FeatureRow feature={featureDefinitions.height} valueKey={articulation.features.height} />
 				<FeatureRow
 					feature={featureDefinitions.backness}
@@ -147,22 +147,22 @@ function FeatureRow<ValueKey extends string>({
 						>
 							{feature.label}:
 						</Badge>
-						<span className="text-xs text-muted-foreground">{value.label}</span>
+						<span className="text-sm text-muted-foreground">{value.label}</span>
 						<EllipsisVerticalIcon className="size-3 mr-1" />
 					</Pressable>
 				</PopoverTrigger>
-				<PopoverContent className="p-2" align="start">
-					<dl className="space-y-2">
-						<div>
-							<dt className="font-semibold text-sm mb-1">{feature.label}</dt>
-							<dd className="text-xs text-muted-foreground">{feature.description}</dd>
+				<PopoverContent className="p-3" align="start">
+					<dl className="space-y-3">
+						<div className="space-y-1">
+							<dt className="font-semibold text-sm">{feature.label}</dt>
+							<dd className="text-sm text-muted-foreground">{feature.description}</dd>
 						</div>
 
 						<Separator />
 
-						<div className="p-2 bg-primary/10 rounded-md border border-primary/10">
-							<dt className="text-xs font-semibold mb-1">{value.label}</dt>
-							<dd className="text-xs text-muted-foreground">{value.description}</dd>
+						<div className="p-2 bg-primary/10 rounded-md border border-primary/10 space-y-1">
+							<dt className="text-sm font-semibold">{value.label}</dt>
+							<dd className="text-sm text-muted-foreground">{value.description}</dd>
 						</div>
 					</dl>
 				</PopoverContent>

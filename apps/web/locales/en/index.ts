@@ -34,7 +34,7 @@ export default {
 			allophones: {
 				title: "Variations",
 				description:
-					"This sound has slight variations depending on where it appears in a word or your accent.",
+					"This sound has slight variations depending on where it appears in a word or accent.",
 			},
 		},
 	},

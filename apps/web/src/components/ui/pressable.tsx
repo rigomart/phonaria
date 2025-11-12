@@ -34,8 +34,9 @@ function Pressable({
 	size,
 	asChild = false,
 	...props
-}: React.ComponentProps<"div"> & VariantProps<typeof pressableVariants> & { asChild?: boolean }) {
-	const Comp = asChild ? Slot : "div";
+}: React.ComponentProps<"button"> &
+	VariantProps<typeof pressableVariants> & { asChild?: boolean }) {
+	const Comp = asChild ? Slot : "button";
 	return (
 		<Comp
 			data-slot="pressable"
