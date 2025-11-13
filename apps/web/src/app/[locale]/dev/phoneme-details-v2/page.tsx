@@ -21,7 +21,7 @@ export default function PhonemeDetailsV2TestPage() {
 				</div>
 
 				<div className="bg-background-soft rounded-2xl">
-					<PhonemeDetails phonemeId="voiceless-bilabial-stop">
+					<PhonemeDetails phonemeId="mid-central-unrounded">
 						<PhonemeDetailsHeader />
 						<PhonemeDetailsArticulation />
 						<PhonemeDetailsPatterns />
