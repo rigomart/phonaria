@@ -1,6 +1,7 @@
 import { EllipsisVerticalIcon } from "lucide-react";
 import Image from "next/image";
 import {
+	allPhonemeSymbols,
 	type PhonemeArticulation,
 	type PhonemeSymbolId,
 	phonemeArticulations,
@@ -66,6 +67,7 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 // TODO: Add the illustrations for the remaining categories
 function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllustrationProps) {
 	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
+	const { ipa: phonemeIpa } = allPhonemeSymbols[phonemeId];
 
 	if (articulation.category === "consonant") {
 		return (
@@ -85,6 +87,7 @@ function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllus
 			<VowelChartCard
 				chartId={phonemeId}
 				phonemeLabel={phonemeLabel}
+				phonemeIpa={phonemeIpa}
 				category={articulation.category}
 				features={articulation.features}
 			/>
@@ -96,6 +99,7 @@ function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllus
 			<VowelChartCard
 				chartId={phonemeId}
 				phonemeLabel={phonemeLabel}
+				phonemeIpa={phonemeIpa}
 				category={articulation.category}
 				features={articulation.features}
 			/>
@@ -204,12 +208,14 @@ type VowelChartCardProps =
 	| {
 			category: "vowel/monophthong" | "vowel/rhotic";
 			phonemeLabel: string;
+			phonemeIpa: string;
 			features: StaticVowelFeatures;
 			chartId: string;
 	  }
 	| {
 			category: "vowel/diphthong";
 			phonemeLabel: string;
+			phonemeIpa: string;
 			features: DiphthongVowelFeatures;
 			chartId: string;
 	  };
@@ -230,6 +236,7 @@ function VowelChartCard(props: VowelChartCardProps) {
 			<VowelQuadrilateral
 				chartId={props.chartId}
 				label={props.phonemeLabel}
+				ipa={props.phonemeIpa}
 				start={startPoint}
 				target={targetPoint}
 				roundness={{ start: startRoundness, target: targetRoundness }}
@@ -266,8 +273,8 @@ const heightIndex: Record<VowelHeight, number> = {
 
 const CHART_TOP = 12;
 const CHART_BOTTOM = 110;
-const CHART_LEFT = 44;
-const CHART_RIGHT = 140;
+const CHART_LEFT = 32;
+const CHART_RIGHT = 150;
 const CHART_HEIGHT = CHART_BOTTOM - CHART_TOP;
 
 const VOWEL_HEIGHT_POSITIONS = vowelHeightOrder.reduce<Record<VowelHeight, number>>(
@@ -280,7 +287,7 @@ const VOWEL_HEIGHT_POSITIONS = vowelHeightOrder.reduce<Record<VowelHeight, numbe
 );
 
 const FRONT_TOP_X = CHART_LEFT;
-const FRONT_BOTTOM_X = CHART_LEFT + 30;
+const FRONT_BOTTOM_X = CHART_LEFT + 32;
 const BACK_X = CHART_RIGHT;
 
 const backnessRatios: Record<VowelBackness, number> = {
@@ -297,6 +304,12 @@ const GRID_LINE_COLOR = "rgba(255,255,255,0.2)";
 const OUTLINE_COLOR = "rgba(255,255,255,0.7)";
 const LABEL_COLOR = "rgba(255,255,255,0.6)";
 const LABEL_FONT_SIZE = 4.4;
+const IPA_LABEL_COLOR = "rgba(17,24,39,0.95)";
+const IPA_LABEL_BG = "rgba(248,250,252,0.95)";
+const IPA_LABEL_FONT_SIZE = 7;
+const IPA_LABEL_PADDING_X = 4;
+const IPA_LABEL_PADDING_Y = 2;
+const IPA_LABEL_OFFSET_X = 10;
 
 type ChartPoint = { x: number; y: number };
 
@@ -321,12 +334,20 @@ function getLeftBoundaryX(height: VowelHeight) {
 type VowelQuadrilateralProps = {
 	chartId: string;
 	label: string;
+	ipa: string;
 	start: ChartPoint;
 	target: ChartPoint | null;
 	roundness: { start: VowelRoundness; target?: VowelRoundness };
 };
 
-function VowelQuadrilateral({ chartId, label, start, target, roundness }: VowelQuadrilateralProps) {
+function VowelQuadrilateral({
+	chartId,
+	label,
+	ipa,
+	start,
+	target,
+	roundness,
+}: VowelQuadrilateralProps) {
 	const arrowId = `vowel-arrow-${chartId}`;
 	const topHeight = vowelHeightOrder[0];
 	const bottomHeight = vowelHeightOrder[vowelHeightOrder.length - 1];
@@ -366,7 +387,7 @@ function VowelQuadrilateral({ chartId, label, start, target, roundness }: VowelQ
 
 			<MinimalGrid />
 
-			<ChartMarker point={start} rounded={roundness.start} variant="start" />
+			<ChartMarker point={start} rounded={roundness.start} variant="start" label={ipa} />
 
 			{target ? (
 				<>
@@ -524,9 +545,10 @@ type ChartMarkerProps = {
 	point: ChartPoint;
 	rounded: VowelRoundness;
 	variant: "start" | "target";
+	label?: string;
 };
 
-function ChartMarker({ point, rounded, variant }: ChartMarkerProps) {
+function ChartMarker({ point, rounded, variant, label }: ChartMarkerProps) {
 	const radius = variant === "start" ? 4 : 3;
 	const fillColor =
 		rounded === "rounded"
@@ -536,15 +558,52 @@ function ChartMarker({ point, rounded, variant }: ChartMarkerProps) {
 			: "rgba(14,165,233,0.1)";
 
 	const strokeColor = variant === "start" ? PRIMARY_MARKER_COLOR : PRIMARY_MARKER_SOFT;
+	const labelWidth = label ? measureApproximateLabel(label) : 0;
+	const totalWidth = labelWidth + IPA_LABEL_PADDING_X * 2;
+	const shouldFlip = point.x + IPA_LABEL_OFFSET_X + totalWidth > BACK_X;
+	const rectX = shouldFlip
+		? point.x - IPA_LABEL_OFFSET_X - totalWidth
+		: point.x + IPA_LABEL_OFFSET_X;
+	const rectY = point.y - (IPA_LABEL_FONT_SIZE + IPA_LABEL_PADDING_Y * 2) / 2;
 
 	return (
-		<circle
-			cx={point.x}
-			cy={point.y}
-			r={radius}
-			fill={fillColor}
-			stroke={strokeColor}
-			strokeWidth={rounded === "rounded" ? 1.2 : 1.5}
-		/>
+		<>
+			<circle
+				cx={point.x}
+				cy={point.y}
+				r={radius}
+				fill={fillColor}
+				stroke={strokeColor}
+				strokeWidth={rounded === "rounded" ? 1.2 : 1.5}
+			/>
+			{label ? (
+				<>
+					<rect
+						x={rectX}
+						y={rectY}
+						width={totalWidth}
+						height={IPA_LABEL_FONT_SIZE + IPA_LABEL_PADDING_Y * 2}
+						fill={IPA_LABEL_BG}
+						rx={4}
+						opacity={0.95}
+					/>
+					<text
+						x={rectX + totalWidth / 2}
+						y={point.y}
+						fill={IPA_LABEL_COLOR}
+						fontSize={IPA_LABEL_FONT_SIZE}
+						fontWeight={600}
+						textAnchor="middle"
+						dominantBaseline="middle"
+					>
+						{label}
+					</text>
+				</>
+			) : null}
+		</>
 	);
+}
+
+function measureApproximateLabel(label: string) {
+	return label.length * (IPA_LABEL_FONT_SIZE * 0.7);
 }

@@ -21,7 +21,7 @@ export default function PhonemeDetailsV2TestPage() {
 				</div>
 
 				<div className="bg-background-soft rounded-2xl">
-					<PhonemeDetails phonemeId="mid-central-unrounded">
+					<PhonemeDetails phonemeId="close-mid-back-rounded-to-near-close-near-back-rounded">
 						<PhonemeDetailsHeader />
 						<PhonemeDetailsArticulation />
 						<PhonemeDetailsPatterns />
