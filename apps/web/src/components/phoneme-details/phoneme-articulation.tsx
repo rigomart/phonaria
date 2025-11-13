@@ -13,6 +13,7 @@ import {
 	phonemeDetailsById,
 } from "@/data/phoneme-details";
 import { useScopedI18n } from "@/locales/client";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Pressable } from "../ui/pressable";
@@ -68,10 +69,11 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllustrationProps) {
 	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
 	const { ipa: phonemeIpa } = allPhonemeSymbols[phonemeId];
+	const t = useScopedI18n(`components.phoneme-details.articulation.diagram`);
 
 	if (articulation.category === "consonant") {
 		return (
-			<div className="space-y-3">
+			<div className="space-y-1">
 				<AspectRatio ratio={1} className="bg-neutral-900/60 rounded-lg overflow-hidden">
 					<Image
 						src={`${BUCKET_URL}/diagrams/${phonemeId}.svg`}
@@ -80,13 +82,14 @@ function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllus
 						className="object-cover"
 					/>
 				</AspectRatio>
+				<DiagramExplanation title={t("consonant.title")} description={t("consonant.description")} />
 			</div>
 		);
 	}
 
 	if (articulation.category === "vowel/monophthong" || articulation.category === "vowel/rhotic") {
 		return (
-			<div className="space-y-3">
+			<div className="space-y-1">
 				<VowelChartCard
 					chartId={phonemeId}
 					phonemeLabel={phonemeLabel}
@@ -94,13 +97,14 @@ function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllus
 					category={articulation.category}
 					features={articulation.features}
 				/>
+				<DiagramExplanation title={t("vowel.title")} description={t("vowel.description")} />
 			</div>
 		);
 	}
 
 	if (articulation.category === "vowel/diphthong") {
 		return (
-			<div className="space-y-3">
+			<div className="space-y-1">
 				<VowelChartCard
 					chartId={phonemeId}
 					phonemeLabel={phonemeLabel}
@@ -108,6 +112,7 @@ function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllus
 					category={articulation.category}
 					features={articulation.features}
 				/>
+				<DiagramExplanation title={t("diphthong.title")} description={t("diphthong.description")} />
 			</div>
 		);
 	}
@@ -220,20 +225,16 @@ function FeatureRow<ValueKey extends string>({
 					<span className="text-xs font-medium">{value.label}</span>
 				</Pressable>
 			</PopoverTrigger>
-			<PopoverContent className="p-3 max-w-xs" align="start">
-				<dl className="space-y-3">
-					<div>
-						<dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-							{feature.label}
-						</dt>
-						<dd className="text-xs text-muted-foreground/80 leading-relaxed">
-							{feature.description}
-						</dd>
+			<PopoverContent className="p-1" align="start">
+				<dl className="space-y-2">
+					<div className="bg-accent/20 rounded-lg p-2">
+						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>
+						<dd className="text-xs leading-relaxed">{feature.description}</dd>
 					</div>
 					<Separator />
-					<div className="bg-accent/30 rounded-md p-2.5 -mx-0.5">
-						<dt className="text-xs font-semibold mb-1.5">{value.label}</dt>
-						<dd className="text-xs text-muted-foreground leading-relaxed">{value.description}</dd>
+					<div className="rounded-lg p-2">
+						<dt className="text-xs font-semibold mb-1">{value.label}</dt>
+						<dd className="text-xs leading-relaxed">{value.description}</dd>
 					</div>
 				</dl>
 			</PopoverContent>
@@ -273,18 +274,14 @@ function DiphthongFeatureRow<ValueKey extends string>({
 					</div>
 				</Pressable>
 			</PopoverTrigger>
-			<PopoverContent className="p-2" align="start">
-				<dl className="space-y-3">
-					<div>
-						<dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-							{feature.label}
-						</dt>
-						<dd className="text-xs text-muted-foreground/80 leading-relaxed">
-							{feature.description}
-						</dd>
+			<PopoverContent className="p-1">
+				<dl className="space-y-2">
+					<div className="bg-accent/20 rounded-lg p-2">
+						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>
+						<dd className="text-xs leading-relaxed">{feature.description}</dd>
 					</div>
 					<Separator />
-					<div className="bg-accent/20 rounded-lg p-2 space-y-2">
+					<div className="rounded-lg p-2 space-y-2">
 						<div>
 							<dt className="text-xs font-semibold mb-1">{startValue.label}</dt>
 							<dd className="text-xs text-muted-foreground leading-relaxed">
@@ -304,5 +301,14 @@ function DiphthongFeatureRow<ValueKey extends string>({
 				</dl>
 			</PopoverContent>
 		</Popover>
+	);
+}
+
+function DiagramExplanation({ title, description }: { title: string; description: string }) {
+	return (
+		<Alert>
+			<AlertTitle>{title}</AlertTitle>
+			<AlertDescription className="text-xs">{description}</AlertDescription>
+		</Alert>
 	);
 }
