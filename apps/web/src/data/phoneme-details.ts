@@ -15,8 +15,14 @@ export type ArticulatoryFeature<ValueKey extends string> = {
 	values: Record<ValueKey, FeatureValueDefinition>;
 };
 
-type FeatureDefinitions = {
+type BaseFeatureDefinitions = {
 	[K in keyof PhonemeArticulatoryFeatures]: ArticulatoryFeature<PhonemeArticulatoryFeatures[K]>;
+};
+
+type DiphthongTargetFeatureDefinitions = {
+	targetHeight: ArticulatoryFeature<PhonemeArticulatoryFeatures["height"]>;
+	targetBackness: ArticulatoryFeature<PhonemeArticulatoryFeatures["backness"]>;
+	targetRoundness: ArticulatoryFeature<PhonemeArticulatoryFeatures["roundness"]>;
 };
 
 export type PhonemeDetailsEntry = {
@@ -504,7 +510,7 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 };
 
-export const featureDefinitions: FeatureDefinitions = {
+export const featureDefinitions: BaseFeatureDefinitions = {
 	manner: {
 		label: "Manner",
 		description: "How airflow is modified to produce the sound",
@@ -676,6 +682,83 @@ export const featureDefinitions: FeatureDefinitions = {
 			lax: {
 				label: "Lax",
 				description: "Articulators stay looser with a shorter duration.",
+			},
+		},
+	},
+};
+
+export const diphthongTargetDefinitions: DiphthongTargetFeatureDefinitions = {
+	targetHeight: {
+		label: "Height",
+		description: "Vertical position of the tongue at the end of the diphthong",
+		values: {
+			close: {
+				label: "Close",
+				description: "Tongue is high in the mouth, jaw nearly closed.",
+			},
+			"near-close": {
+				label: "Near-close",
+				description: "Tongue sits just below the close position.",
+			},
+			"close-mid": {
+				label: "Close-mid",
+				description: "Tongue height between close and mid.",
+			},
+			mid: {
+				label: "Mid",
+				description: "Tongue rests halfway between high and low positions.",
+			},
+			"open-mid": {
+				label: "Open-mid",
+				description: "Tongue is lower than mid but not fully open.",
+			},
+			"near-open": {
+				label: "Near-open",
+				description: "Tongue approaches the fully open position.",
+			},
+			open: {
+				label: "Open",
+				description: "Tongue sits low, mouth is open wide.",
+			},
+		},
+	},
+	targetBackness: {
+		label: "Backness",
+		description: "Horizontal position of the tongue at the end of the diphthong",
+		values: {
+			front: {
+				label: "Front",
+				description: "Tongue body shifts toward the front of the mouth.",
+			},
+			"near-front": {
+				label: "Near-front",
+				description: "Tongue is slightly retracted from the front position.",
+			},
+			central: {
+				label: "Central",
+				description: "Tongue body stays near the middle of the mouth.",
+			},
+			"near-back": {
+				label: "Near-back",
+				description: "Tongue advances slightly from a back position.",
+			},
+			back: {
+				label: "Back",
+				description: "Tongue body retracts toward the back of the mouth.",
+			},
+		},
+	},
+	targetRoundness: {
+		label: "Roundness",
+		description: "Lip rounding at the end of the diphthong",
+		values: {
+			rounded: {
+				label: "Rounded",
+				description: "Lips purse forward creating a rounded opening.",
+			},
+			unrounded: {
+				label: "Unrounded",
+				description: "Lips stay relaxed or spread without rounding.",
 			},
 		},
 	},

@@ -31,7 +31,9 @@ function getFeatureValueDefinition<K extends PhonemeArticulatoryFeatureKey>(
 		return null;
 	}
 
-	return featureDefinitions[featureKey].values[valueKey];
+	const feature = featureDefinitions[featureKey];
+	const value = feature.values[valueKey];
+	return value ?? null;
 }
 
 export function PhonemeDetailsContrasts() {

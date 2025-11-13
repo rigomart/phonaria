@@ -12,7 +12,9 @@ const getFeatureValueDefinition = <K extends FeatureKey>(
 	valueKey: PhonemeArticulatoryFeatures[K] | undefined,
 ) => {
 	if (!valueKey) return null;
-	return featureDefinitions[featureKey].values[valueKey];
+	const feature = featureDefinitions[featureKey];
+	const value = feature.values[valueKey];
+	return value ?? null;
 };
 
 describe("phoneme details data", () => {
