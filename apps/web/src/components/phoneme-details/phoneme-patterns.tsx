@@ -7,6 +7,7 @@ import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
 	PhonemeSection,
 	PhonemeSectionContent,
+	PhonemeSectionDescription,
 	PhonemeSectionHeader,
 	PhonemeSectionTitle,
 } from "./phoneme-section";
@@ -25,6 +26,7 @@ export function PhonemeDetailsPatterns() {
 		<PhonemeSection>
 			<PhonemeSectionHeader>
 				<PhonemeSectionTitle>{t("title")}</PhonemeSectionTitle>
+				<PhonemeSectionDescription>{t("description")}</PhonemeSectionDescription>
 			</PhonemeSectionHeader>
 			<PhonemeSectionContent>
 				<div className="rounded-lg space-y-3">
