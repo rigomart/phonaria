@@ -32,3 +32,11 @@ export {
 	rhoticPhonemeSymbols,
 	vowelPhonemeSymbols,
 } from "./phonetics/symbols-registry";
+export {
+	type CmuPhonemeMapping,
+	type CmuTokenMappingResult,
+	getAllCmuTokenMappings,
+	getPhonemeForCmuToken,
+	mapCmuSequenceToPhonemes,
+	normalizeCmuToken,
+} from "./phonetics/cmu-lookup";
