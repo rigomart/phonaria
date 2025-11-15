@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -18,22 +18,23 @@ import { useG2PStore } from "../../_store/g2p-store";
 import type { TranscribedPhoneme, TranscribedWord } from "../../_types/g2p";
 import { EmptyState } from "./empty-state";
 
-interface WordColumnProps {
-	word: TranscribedWord;
-	onPhonemeClick: (phoneme: TranscribedPhoneme) => void;
-}
-
 interface ClickablePhonemeProps {
 	phoneme: TranscribedPhoneme;
 	onClick: (phoneme: TranscribedPhoneme) => void;
+	selectedSymbol: string | null;
+}
+
+interface WordColumnProps {
+	word: TranscribedWord;
+	onPhonemeClick: (phoneme: TranscribedPhoneme) => void;
+	selectedSymbol: string | null;
 }
 
 /**
  * Individual clickable phoneme with minimal styling
  */
-function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
-	const isKnown = phoneme.isKnown;
-	const selectedSymbol = useG2PStore((s) => s.selectedPhoneme?.symbol);
+function ClickablePhoneme({ phoneme, onClick, selectedSymbol }: ClickablePhonemeProps) {
+	const isKnown = Boolean(phoneme.phonemeId);
 	const isSelected = selectedSymbol === phoneme.symbol;
 
 	const handleClick = () => {
@@ -69,7 +70,7 @@ function ClickablePhoneme({ phoneme, onClick }: ClickablePhonemeProps) {
 /**
  * Word column showing original word above IPA transcription
  */
-function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
+function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 	const { selectedVariants, setVariant } = useG2PStore();
 	const { setSelectedWord } = useDictionaryStore();
 	const selected = selectedVariants[word.wordIndex] ?? 0;
@@ -94,6 +95,7 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 							key={`${phoneme.symbol}-${word.wordIndex}-${phonemeIndex}`}
 							phoneme={phoneme}
 							onClick={onPhonemeClick}
+							selectedSymbol={selectedSymbol}
 						/>
 					))}
 				</div>
@@ -125,15 +127,35 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 }
 
 export function TranscriptionDisplay() {
-	const { selectPhoneme } = useG2PStore();
+	const selectPhoneme = useG2PStore((s) => s.selectPhoneme);
 	const { data: result } = useCurrentTranscription();
+	const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
+	const resultTimestamp = result?.timestamp?.valueOf();
+
+	useEffect(() => {
+		if (resultTimestamp === undefined) {
+			setSelectedSymbol(null);
+			return;
+		}
+		setSelectedSymbol(null);
+	}, [resultTimestamp]);
+
+	const handlePhonemeClick = (phoneme: TranscribedPhoneme) => {
+		setSelectedSymbol(phoneme.symbol);
+		selectPhoneme(phoneme.phonemeId ?? null);
+	};
 
 	if (!result) return <EmptyState />;
 
 	return (
 		<div className="flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto bg-muted/20 border border-border/40 p-4 md:p-6">
 			{result.words.map((word, wordIndex) => (
-				<WordColumn key={`${word.word}-${wordIndex}`} word={word} onPhonemeClick={selectPhoneme} />
+				<WordColumn
+					key={`${word.word}-${wordIndex}`}
+					word={word}
+					onPhonemeClick={handlePhonemeClick}
+					selectedSymbol={selectedSymbol}
+				/>
 			))}
 		</div>
 	);

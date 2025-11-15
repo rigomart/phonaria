@@ -38,13 +38,12 @@ export interface G2PError {
 
 export type G2PPhoneme =
 	| {
-			isKnown: true;
 			ipa: string;
-			phonemeId: string;
+			phonemeId: PhonemeSymbolId;
 			cmuToken: string;
 	  }
 	| {
-			isKnown: false;
+			phonemeId: null;
 			cmuToken: string;
 	  };
 
@@ -64,8 +63,6 @@ export interface TranscribedPhoneme {
 	wordIndex: number;
 	/** Index in the phoneme array */
 	phonemeIndex: number;
-	/** Whether this phoneme exists in our phoneme database */
-	isKnown: boolean;
 }
 
 /**

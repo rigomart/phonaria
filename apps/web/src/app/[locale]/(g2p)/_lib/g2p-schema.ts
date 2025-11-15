@@ -18,18 +18,18 @@ export const g2pRequestSchema = z.object({
 		),
 });
 
-const g2pPhonemeSchema = z.discriminatedUnion("isKnown", [
-	z.object({
-		isKnown: z.literal(true),
-		ipa: z.string(),
-		phonemeId: z.string().min(1),
-		cmuToken: z.string(),
-	}),
-	z.object({
-		isKnown: z.literal(false),
-		cmuToken: z.string(),
-	}),
-]);
+const knownPhonemeSchema = z.object({
+	ipa: z.string(),
+	phonemeId: z.string().min(1),
+	cmuToken: z.string(),
+});
+
+const unknownPhonemeSchema = z.object({
+	phonemeId: z.null(),
+	cmuToken: z.string(),
+});
+
+const g2pPhonemeSchema = z.union([knownPhonemeSchema, unknownPhonemeSchema]);
 
 /**
  * G2P word schema

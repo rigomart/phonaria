@@ -65,7 +65,7 @@ export class FallbackG2P {
 	private createUnknown(token: string): G2PPhoneme {
 		return {
 			cmuToken: token,
-			isKnown: false,
+			phonemeId: null,
 		};
 	}
 

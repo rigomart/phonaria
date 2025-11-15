@@ -8,14 +8,13 @@ import {
 	PhonemeDetailsHeader,
 	PhonemeDetailsPatterns,
 } from "@/components/phoneme-details";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useG2PStore } from "../_store/g2p-store";
 
 export function PhonemeInspector() {
-	const { selectedPhoneme } = useG2PStore();
+	const { selectedPhonemeId, hasSelection } = useG2PStore();
 
-	if (!selectedPhoneme) {
+	if (!hasSelection) {
 		return (
 			<Card className="h-full rounded-none">
 				<CardHeader className="py-3">
@@ -37,7 +36,7 @@ export function PhonemeInspector() {
 		);
 	}
 
-	if (!selectedPhoneme.isKnown || !selectedPhoneme.phonemeId) {
+	if (!selectedPhonemeId) {
 		return (
 			<Card className="h-full rounded-none">
 				<CardHeader className="py-3">
@@ -45,12 +44,6 @@ export function PhonemeInspector() {
 				</CardHeader>
 				<CardContent className="h-[calc(100%-44px)] p-0">
 					<div className="h-full flex items-center justify-center px-6 text-center space-y-3">
-						<div className="flex items-center justify-center gap-2 text-lg font-semibold">
-							<Badge variant="outline" className="font-mono text-base">
-								{selectedPhoneme.symbol}
-							</Badge>
-							<span className="text-muted-foreground">Not in database yet</span>
-						</div>
 						<p className="text-sm text-muted-foreground">
 							This CMU token doesn’t map to a phoneme in our dataset. Try another symbol or update
 							the shared data mappings.
@@ -62,7 +55,7 @@ export function PhonemeInspector() {
 	}
 
 	return (
-		<PhonemeDetails phonemeId={selectedPhoneme.phonemeId} className="p-2">
+		<PhonemeDetails phonemeId={selectedPhonemeId} className="p-2">
 			<PhonemeDetailsHeader />
 			<PhonemeDetailsArticulation />
 			<PhonemeDetailsPatterns />

@@ -84,7 +84,7 @@ function mapPhonemeToTranscribed(
 	wordIndex: number,
 	phonemeIndex: number,
 ): TranscribedPhoneme {
-	if (phoneme.isKnown) {
+	if ("ipa" in phoneme && phoneme.phonemeId) {
 		return {
 			symbol: phoneme.ipa,
 			ipa: phoneme.ipa,
@@ -92,7 +92,6 @@ function mapPhonemeToTranscribed(
 			phonemeId: phoneme.phonemeId as PhonemeSymbolId,
 			wordIndex,
 			phonemeIndex,
-			isKnown: true,
 		};
 	}
 
@@ -102,6 +101,5 @@ function mapPhonemeToTranscribed(
 		phonemeId: null,
 		wordIndex,
 		phonemeIndex,
-		isKnown: false,
 	};
 }

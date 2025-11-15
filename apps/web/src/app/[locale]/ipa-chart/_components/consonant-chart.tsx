@@ -103,7 +103,7 @@ export function ConsonantChart() {
 										{hasPhonemes ? (
 											<ConsonantPairCard voiceless={cell.voiceless} voiced={cell.voiced} />
 										) : (
-											<div className="text-muted-foreground/30">•</div>
+											<div className="text-muted-foreground/30 text-lg">•</div>
 										)}
 									</div>
 								);

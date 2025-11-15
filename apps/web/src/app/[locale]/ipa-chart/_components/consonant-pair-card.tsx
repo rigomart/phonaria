@@ -3,7 +3,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { cn } from "@/lib/utils";
 import { useScopedI18n } from "@/locales/client";
 import type { MannerOfArticulation, PlaceOfArticulation, Voicing } from "../_lib/consonant-grid";
-import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 interface ConsonantPhoneme {
 	id: ConsonantSymbolId;

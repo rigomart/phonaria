@@ -1,9 +1,10 @@
+import type { PhonemeSymbolId } from "shared-data";
 import { create } from "zustand";
-import type { TranscribedPhoneme } from "../_types/g2p";
 
 interface G2PStore {
 	// Selected phoneme state
-	selectedPhoneme: TranscribedPhoneme | null;
+	selectedPhonemeId: PhonemeSymbolId | null;
+	hasSelection: boolean;
 
 	// Per-word selected variant indices (aligned with current result)
 	selectedVariants: number[];
@@ -11,13 +12,14 @@ interface G2PStore {
 	// Actions
 	resetVariants: (wordCount: number) => void;
 	clearResult: () => void;
-	selectPhoneme: (transcribedPhoneme: TranscribedPhoneme) => void;
+	selectPhoneme: (phonemeId: PhonemeSymbolId | null) => void;
 	setVariant: (wordIndex: number, variantIndex: number) => void;
 }
 
 export const useG2PStore = create<G2PStore>((set) => ({
 	// Initial state
-	selectedPhoneme: null,
+	selectedPhonemeId: null,
+	hasSelection: false,
 	selectedVariants: [],
 
 	// Actions
@@ -27,13 +29,14 @@ export const useG2PStore = create<G2PStore>((set) => ({
 
 	clearResult: () => {
 		set({
-			selectedPhoneme: null,
+			selectedPhonemeId: null,
+			hasSelection: false,
 			selectedVariants: [],
 		});
 	},
 
-	selectPhoneme: (transcribedPhoneme: TranscribedPhoneme) => {
-		set({ selectedPhoneme: transcribedPhoneme });
+	selectPhoneme: (phonemeId: PhonemeSymbolId | null) => {
+		set({ selectedPhonemeId: phonemeId, hasSelection: true });
 	},
 
 	setVariant: (wordIndex: number, variantIndex: number) => {

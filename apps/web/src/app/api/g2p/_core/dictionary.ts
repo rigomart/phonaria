@@ -68,7 +68,7 @@ class CMUDict {
 				if (!symbolId) {
 					return {
 						cmuToken: token,
-						isKnown: false,
+						phonemeId: null,
 					};
 				}
 
@@ -78,7 +78,6 @@ class CMUDict {
 					ipa: symbol.ipa,
 					phonemeId: symbolId,
 					cmuToken: token,
-					isKnown: true,
 				};
 			});
 
