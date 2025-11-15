@@ -1,5 +1,6 @@
 import type { PhonemeArticulation, VowelArticulatoryFeatures } from "shared-data";
 import { featureDefinitions } from "@/data/phoneme-details";
+import { cn } from "@/lib/utils";
 
 type StaticVowelFeatures = Extract<
 	PhonemeArticulation,
@@ -41,7 +42,7 @@ export function VowelChartCard(props: VowelChartCardProps) {
 	const targetRoundness = isDiphthong ? props.features.targetRoundness : undefined;
 
 	return (
-		<section className="rounded-lg border bg-card p-4">
+		<section className="rounded-lg border bg-background-soft p-2">
 			<div className="aspect-square w-full">
 				<VowelQuadrilateral
 					chartId={props.chartId}
@@ -56,7 +57,7 @@ export function VowelChartCard(props: VowelChartCardProps) {
 	);
 }
 
-const VOWEL_CHART_VIEWBOX = { width: 160, height: 120 };
+const VOWEL_CHART_VIEWBOX = { width: 160, height: 160 };
 
 const vowelHeightOrder: VowelArticulatoryFeatures["height"][] = [
 	"close",
@@ -82,8 +83,8 @@ const heightIndex: Record<VowelHeight, number> = {
 	open: 6,
 };
 
-const CHART_TOP = 12;
-const CHART_BOTTOM = 110;
+const CHART_TOP = 32;
+const CHART_BOTTOM = 130;
 const CHART_LEFT = 32;
 const CHART_RIGHT = 150;
 const CHART_HEIGHT = CHART_BOTTOM - CHART_TOP;
@@ -109,15 +110,8 @@ const backnessRatios: Record<VowelBackness, number> = {
 	back: 1,
 };
 
-const PRIMARY_MARKER_COLOR = "hsl(var(--primary))";
-const PRIMARY_MARKER_SOFT = "hsl(var(--primary) / 0.5)";
-const GRID_LINE_COLOR = "hsl(var(--border) / 0.6)";
-const OUTLINE_COLOR = "hsl(var(--border))";
-const LABEL_COLOR = "hsl(var(--muted-foreground))";
-const LABEL_FONT_SIZE = 5.2;
-const IPA_LABEL_COLOR = "hsl(var(--primary-foreground))";
-const IPA_LABEL_BG = "hsl(var(--primary))";
-const IPA_LABEL_FONT_SIZE = 7;
+const LABEL_FONT_SIZE = 6;
+const IPA_LABEL_FONT_SIZE = 8;
 const IPA_LABEL_PADDING_X = 4;
 const IPA_LABEL_PADDING_Y = 2;
 const IPA_LABEL_OFFSET_X = 10;
@@ -180,7 +174,7 @@ function VowelQuadrilateral({
 					markerHeight="5"
 					orient="auto-start-reverse"
 				>
-					<path d="M 0 0 L 10 5 L 0 10 z" fill={PRIMARY_MARKER_SOFT} />
+					<path d="M 0 0 L 10 5 L 0 10 z" className="fill-primary" />
 				</marker>
 			</defs>
 
@@ -191,8 +185,7 @@ function VowelQuadrilateral({
 					`${BACK_X},${VOWEL_HEIGHT_POSITIONS[bottomHeight]}`,
 					`${BACK_X},${VOWEL_HEIGHT_POSITIONS[topHeight]}`,
 				].join(" ")}
-				fill="hsl(var(--muted) / 0.3)"
-				stroke={OUTLINE_COLOR}
+				className="fill-muted/20 stroke-border"
 				strokeWidth={1.5}
 			/>
 
@@ -202,13 +195,7 @@ function VowelQuadrilateral({
 
 			{target ? (
 				<>
-					<path
-						d={`M ${start.x} ${start.y} L ${target.x} ${target.y}`}
-						stroke={PRIMARY_MARKER_SOFT}
-						strokeWidth={2}
-						fill="none"
-						markerEnd={`url(#${arrowId})`}
-					/>
+					<DiphthongArrow start={start} target={target} arrowId={arrowId} />
 					<ChartMarker
 						point={target}
 						rounded={roundness.target ?? roundness.start}
@@ -217,6 +204,38 @@ function VowelQuadrilateral({
 				</>
 			) : null}
 		</svg>
+	);
+}
+
+type DiphthongArrowProps = {
+	start: ChartPoint;
+	target: ChartPoint;
+	arrowId: string;
+};
+
+function DiphthongArrow({ start, target, arrowId }: DiphthongArrowProps) {
+	// Calculate the direction vector from start to target
+	const dx = target.x - start.x;
+	const dy = target.y - start.y;
+	const distance = Math.sqrt(dx * dx + dy * dy);
+
+	// Normalize the direction vector
+	const unitX = dx / distance;
+	const unitY = dy / distance;
+
+	// Shorten the line by the radius of the target circle (4) plus a small gap (2)
+	const gap = 8;
+	const endX = target.x - unitX * gap;
+	const endY = target.y - unitY * gap;
+
+	return (
+		<path
+			d={`M ${start.x} ${start.y} L ${endX} ${endY}`}
+			className="stroke-primary"
+			strokeWidth={2}
+			fill="none"
+			markerEnd={`url(#${arrowId})`}
+		/>
 	);
 }
 
@@ -232,7 +251,7 @@ function TextLabel({ x, y, text, align = "start" }: TextLabelProps) {
 		<text
 			x={x}
 			y={y}
-			fill={LABEL_COLOR}
+			className="fill-muted-foreground"
 			fontSize={LABEL_FONT_SIZE}
 			textAnchor={align === "start" ? "start" : align === "end" ? "end" : "middle"}
 		>
@@ -304,7 +323,7 @@ function ColumnPath({ points }: { points: ChartPoint[] }) {
 		.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
 		.join(" ");
 
-	return <path d={d} stroke={GRID_LINE_COLOR} strokeWidth={0.6} fill="none" />;
+	return <path d={d} className="stroke-border/60" strokeWidth={0.6} fill="none" />;
 }
 
 function MinimalGrid() {
@@ -330,7 +349,7 @@ function MinimalGrid() {
 				x2={getBacknessPosition("central", bottomHeight)}
 				y1={VOWEL_HEIGHT_POSITIONS[topHeight]}
 				y2={VOWEL_HEIGHT_POSITIONS[bottomHeight]}
-				stroke={GRID_LINE_COLOR}
+				className="stroke-border/60"
 				strokeWidth={0.6}
 			/>
 			<line
@@ -338,7 +357,7 @@ function MinimalGrid() {
 				x2={BACK_X}
 				y1={closeMidY}
 				y2={closeMidY}
-				stroke={GRID_LINE_COLOR}
+				className="stroke-border/60"
 				strokeWidth={0.6}
 			/>
 			<line
@@ -346,7 +365,7 @@ function MinimalGrid() {
 				x2={BACK_X}
 				y1={openMidY}
 				y2={openMidY}
-				stroke={GRID_LINE_COLOR}
+				className="stroke-border/60"
 				strokeWidth={0.6}
 			/>
 			<AxisLabels />
@@ -362,15 +381,9 @@ type ChartMarkerProps = {
 };
 
 function ChartMarker({ point, rounded, variant, label }: ChartMarkerProps) {
-	const radius = variant === "start" ? 4 : 3;
-	const fillColor =
-		rounded === "rounded"
-			? variant === "start"
-				? PRIMARY_MARKER_COLOR
-				: PRIMARY_MARKER_SOFT
-			: "hsl(var(--primary) / 0.1)";
+	const isRounded = rounded === "rounded";
+	const isStart = variant === "start";
 
-	const strokeColor = variant === "start" ? PRIMARY_MARKER_COLOR : PRIMARY_MARKER_SOFT;
 	const labelWidth = label ? measureApproximateLabel(label) : 0;
 	const totalWidth = labelWidth + IPA_LABEL_PADDING_X * 2;
 	const shouldFlip = point.x + IPA_LABEL_OFFSET_X + totalWidth > BACK_X;
@@ -379,15 +392,18 @@ function ChartMarker({ point, rounded, variant, label }: ChartMarkerProps) {
 		: point.x + IPA_LABEL_OFFSET_X;
 	const rectY = point.y - (IPA_LABEL_FONT_SIZE + IPA_LABEL_PADDING_Y * 2) / 2;
 
+	// Determine fill and stroke classes
+	const fillClass = isRounded ? (isStart ? "fill-primary" : "fill-primary/50") : "fill-primary/10";
+	const strokeClass = isStart ? "stroke-primary" : "stroke-primary/50";
+
 	return (
 		<>
 			<circle
 				cx={point.x}
 				cy={point.y}
-				r={radius}
-				fill={fillColor}
-				stroke={strokeColor}
-				strokeWidth={rounded === "rounded" ? 1.2 : 1.5}
+				r={4}
+				className={cn(fillClass, strokeClass)}
+				strokeWidth={isRounded ? 1.2 : 1.5}
 			/>
 			{label ? (
 				<>
@@ -396,14 +412,14 @@ function ChartMarker({ point, rounded, variant, label }: ChartMarkerProps) {
 						y={rectY}
 						width={totalWidth}
 						height={IPA_LABEL_FONT_SIZE + IPA_LABEL_PADDING_Y * 2}
-						fill={IPA_LABEL_BG}
+						className="fill-primary"
 						rx={4}
 						opacity={0.95}
 					/>
 					<text
 						x={rectX + totalWidth / 2}
 						y={point.y}
-						fill={IPA_LABEL_COLOR}
+						className="fill-primary-foreground"
 						fontSize={IPA_LABEL_FONT_SIZE}
 						fontWeight={600}
 						textAnchor="middle"

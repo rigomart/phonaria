@@ -33,7 +33,7 @@ export function PhonemeDetailsPatterns() {
 					<div className="flex items-center gap-1.5 flex-wrap">
 						<span className="text-xs text-muted-foreground">{t("most-common")}</span>
 						{spellingData.patterns.map((pattern) => (
-							<Badge key={pattern} variant="secondary" className="font-mono">
+							<Badge key={pattern} variant="accent" className="font-mono">
 								{pattern}
 							</Badge>
 						))}

@@ -80,7 +80,7 @@ export function PhonemeDetailsContrasts() {
 											<Tooltip key={type}>
 												<TooltipTrigger asChild>
 													<Badge
-														variant="secondary"
+														variant="accent"
 														key={type}
 														className="capitalize cursor-help gap-1"
 													>

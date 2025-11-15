@@ -20,7 +20,7 @@ export default function Index() {
 					</div>
 
 					{/* Right Column: Stacked summary blocks */}
-					<div className="lg:col-span-5 space-y-6 border flex-1 flex flex-col min-h-0 overflow-hidden">
+					<div className="lg:col-span-5 flex-1 flex flex-col min-h-0 lg:border-l bg-background-soft">
 						<PhonemeInspector />
 					</div>
 				</div>
