@@ -22,6 +22,7 @@ export { phonemeSpellingPatterns } from "./phonetics/phoneme-patterns";
 export type {
 	ConsonantArticulatoryFeatures,
 	ConsonantPhonemeArticulatoryFeatureKey,
+	ConsonantSymbolId,
 	PhonemeArticulatoryFeatureKey,
 	PhonemeArticulatoryFeatures,
 	PhonemeCategory,

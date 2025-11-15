@@ -1,6 +1,5 @@
-import { consonants } from "@/lib/phoneme-mocks";
 import { useScopedI18n } from "@/locales/client";
-import { PhonemeCategories } from "../_components/phoneme-categories";
+import { ConsonantChart } from "../_components/consonant-chart";
 
 export function ConsonantsSection() {
 	const t = useScopedI18n("ipa-chart.sections.consonants");
@@ -10,7 +9,7 @@ export function ConsonantsSection() {
 				<h2 className="text-xl font-medium">{t("title")}</h2>
 				<p className="text-sm text-muted-foreground">{t("description")}</p>
 			</div>
-			<PhonemeCategories phonemes={consonants} type="consonant" />
+			<ConsonantChart />
 		</div>
 	);
 }
