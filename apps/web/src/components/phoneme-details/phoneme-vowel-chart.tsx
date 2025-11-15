@@ -41,15 +41,17 @@ export function VowelChartCard(props: VowelChartCardProps) {
 	const targetRoundness = isDiphthong ? props.features.targetRoundness : undefined;
 
 	return (
-		<section className="rounded-lg border border-white/5 bg-neutral-950/80 p-4">
-			<VowelQuadrilateral
-				chartId={props.chartId}
-				label={props.phonemeLabel}
-				ipa={props.phonemeIpa}
-				start={startPoint}
-				target={targetPoint}
-				roundness={{ start: startRoundness, target: targetRoundness }}
-			/>
+		<section className="rounded-lg border bg-card p-4">
+			<div className="aspect-square w-full">
+				<VowelQuadrilateral
+					chartId={props.chartId}
+					label={props.phonemeLabel}
+					ipa={props.phonemeIpa}
+					start={startPoint}
+					target={targetPoint}
+					roundness={{ start: startRoundness, target: targetRoundness }}
+				/>
+			</div>
 		</section>
 	);
 }
@@ -107,14 +109,14 @@ const backnessRatios: Record<VowelBackness, number> = {
 	back: 1,
 };
 
-const PRIMARY_MARKER_COLOR = "#0ea5e9";
-const PRIMARY_MARKER_SOFT = "rgba(14,165,233,0.5)";
-const GRID_LINE_COLOR = "rgba(255,255,255,0.2)";
-const OUTLINE_COLOR = "rgba(255,255,255,0.7)";
-const LABEL_COLOR = "rgba(255,255,255,0.6)";
-const LABEL_FONT_SIZE = 4.4;
-const IPA_LABEL_COLOR = "rgba(17,24,39,0.95)";
-const IPA_LABEL_BG = "rgba(248,250,252,0.95)";
+const PRIMARY_MARKER_COLOR = "hsl(var(--primary))";
+const PRIMARY_MARKER_SOFT = "hsl(var(--primary) / 0.5)";
+const GRID_LINE_COLOR = "hsl(var(--border) / 0.6)";
+const OUTLINE_COLOR = "hsl(var(--border))";
+const LABEL_COLOR = "hsl(var(--muted-foreground))";
+const LABEL_FONT_SIZE = 5.2;
+const IPA_LABEL_COLOR = "hsl(var(--primary-foreground))";
+const IPA_LABEL_BG = "hsl(var(--primary))";
 const IPA_LABEL_FONT_SIZE = 7;
 const IPA_LABEL_PADDING_X = 4;
 const IPA_LABEL_PADDING_Y = 2;
@@ -189,7 +191,7 @@ function VowelQuadrilateral({
 					`${BACK_X},${VOWEL_HEIGHT_POSITIONS[bottomHeight]}`,
 					`${BACK_X},${VOWEL_HEIGHT_POSITIONS[topHeight]}`,
 				].join(" ")}
-				fill="rgba(255,255,255,0.03)"
+				fill="hsl(var(--muted) / 0.3)"
 				stroke={OUTLINE_COLOR}
 				strokeWidth={1.5}
 			/>
@@ -366,7 +368,7 @@ function ChartMarker({ point, rounded, variant, label }: ChartMarkerProps) {
 			? variant === "start"
 				? PRIMARY_MARKER_COLOR
 				: PRIMARY_MARKER_SOFT
-			: "rgba(14,165,233,0.1)";
+			: "hsl(var(--primary) / 0.1)";
 
 	const strokeColor = variant === "start" ? PRIMARY_MARKER_COLOR : PRIMARY_MARKER_SOFT;
 	const labelWidth = label ? measureApproximateLabel(label) : 0;
