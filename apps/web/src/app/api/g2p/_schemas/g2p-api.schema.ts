@@ -11,9 +11,19 @@ export const g2pRequestSchema = z.object({
 		),
 });
 
+const g2pPhonemeSchema = z.discriminatedUnion("isKnown", [
+	z.object({
+		isKnown: z.literal(true),
+		ipa: z.string(),
+		phonemeId: z.string().min(1),
+		cmuToken: z.string(),
+	}),
+	z.object({ isKnown: z.literal(false), cmuToken: z.string() }),
+]);
+
 export const g2pWordSchema = z.object({
 	word: z.string(),
-	variants: z.array(z.array(z.string())),
+	variants: z.array(z.array(g2pPhonemeSchema)),
 	source: z.enum(["cmudict", "fallback"]),
 });
 
@@ -22,5 +32,6 @@ export const g2pResponseSchema = z.object({
 });
 
 export type G2PRequest = z.infer<typeof g2pRequestSchema>;
+export type G2PPhoneme = z.infer<typeof g2pPhonemeSchema>;
 export type G2PWord = z.infer<typeof g2pWordSchema>;
 export type G2PResponse = z.infer<typeof g2pResponseSchema>;

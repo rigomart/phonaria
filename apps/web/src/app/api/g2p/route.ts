@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "../_lib/rate-limit";
 import { cmudict } from "./_core/dictionary";
 import { fallbackG2P } from "./_core/phoneme-generator";
-import type { G2PResponse, G2PWord } from "./_schemas/g2p-api.schema";
+import type { G2PPhoneme, G2PResponse, G2PWord } from "./_schemas/g2p-api.schema";
 import { tokenizeText } from "./_utils/text-processing";
 import { isValidText, validateRequest } from "./_utils/validation";
 
@@ -52,20 +52,20 @@ export async function POST(request: NextRequest) {
 			if (word.length === 0) continue;
 
 			const variants = cmudict.lookup(word);
-			let ipaVariants: string[][];
+			let phonemeVariants: G2PPhoneme[][];
 			let source: G2PWord["source"];
 
 			if (variants && variants.length > 0) {
-				ipaVariants = variants;
+				phonemeVariants = variants;
 				source = "cmudict";
 			} else {
-				ipaVariants = [fallbackG2P.generatePronunciation(word)];
+				phonemeVariants = [fallbackG2P.generatePronunciation(word)];
 				source = "fallback";
 			}
 
 			results.push({
 				word: word.toLowerCase(),
-				variants: ipaVariants,
+				variants: phonemeVariants,
 				source,
 			});
 		}

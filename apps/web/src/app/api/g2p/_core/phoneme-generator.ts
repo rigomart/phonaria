@@ -1,4 +1,10 @@
+import type { PhonemeSymbolId } from "shared-data";
+import { allPhonemeSymbols } from "shared-data";
+import type { G2PPhoneme } from "../_schemas/g2p-api.schema";
+
 export class FallbackG2P {
+	private readonly ipaToPhonemeId = new Map<string, PhonemeSymbolId>();
+
 	private basicConsonantMap: Record<string, string> = {
 		b: "b",
 		c: "k",
@@ -31,17 +37,47 @@ export class FallbackG2P {
 		u: "ʌ",
 	};
 
-	generatePronunciation(word: string): string[] {
-		const result: string[] = [];
+	constructor() {
+		for (const [phonemeId, symbol] of Object.entries(allPhonemeSymbols) as [
+			PhonemeSymbolId,
+			{ ipa: string },
+		][]) {
+			if (!this.ipaToPhonemeId.has(symbol.ipa)) {
+				this.ipaToPhonemeId.set(symbol.ipa, phonemeId);
+			}
+		}
+	}
+
+	private createPhoneme(ipa: string, token: string): G2PPhoneme {
+		const phonemeId = this.ipaToPhonemeId.get(ipa) ?? null;
+		return {
+			ipa,
+			phonemeId,
+			cmuToken: token,
+			isKnown: Boolean(phonemeId),
+		};
+	}
+
+	private createUnknown(token: string): G2PPhoneme {
+		return {
+			ipa: token,
+			phonemeId: null,
+			cmuToken: token,
+			isKnown: false,
+		};
+	}
+
+	generatePronunciation(word: string): G2PPhoneme[] {
+		const result: G2PPhoneme[] = [];
 		const letters = word.toLowerCase().split("");
 
 		for (const letter of letters) {
 			if (this.basicConsonantMap[letter]) {
-				result.push(this.basicConsonantMap[letter]);
+				result.push(this.createPhoneme(this.basicConsonantMap[letter], letter));
 			} else if (this.basicVowelMap[letter]) {
-				result.push(this.basicVowelMap[letter]);
+				result.push(this.createPhoneme(this.basicVowelMap[letter], letter));
 			} else {
-				result.push(letter);
+				result.push(this.createUnknown(letter));
 			}
 		}
 

@@ -1,14 +1,17 @@
+import { allPhonemeSymbols, getSymbolIdForCmuToken } from "shared-data";
 import cmudictData from "@/data/dict/cmudict.json";
-import { convertArpabetToIPA, normalizeCmuWord } from "@/lib/phoneme-mocks";
+import type { G2PPhoneme } from "../_schemas/g2p-api.schema";
+import { normalizeCmuWord } from "../_utils/text-processing";
 
-type PreprocessedCmudict = Record<string, string[]>;
+type PreprocessedCmudict = Record<string, string[] | undefined>;
+type CmudictVariant = G2PPhoneme[];
+type CmudictLookupResult = CmudictVariant[] | undefined;
 
-// Type for the new CMUDict JSON format with metadata
 type CmudictJson = { meta: unknown; data: Record<string, string[]> };
 
 class CMUDict {
 	private data: PreprocessedCmudict | null = null;
-	private cache = new Map<string, string[][]>();
+	private cache = new Map<string, CmudictVariant[]>();
 	private loaded = false;
 	private loadPromise: Promise<void> | null = null;
 
@@ -30,34 +33,60 @@ class CMUDict {
 		return this.loadPromise;
 	}
 
-	lookup(rawWord: string): string[][] | undefined {
+	lookup(rawWord: string): CmudictLookupResult {
 		if (!this.loaded || !this.data) {
 			throw new Error("Dictionary not loaded");
 		}
 
-		const normalizedWord = normalizeCmuWord(rawWord);
+		const normalizedWord = normalizeCmuWord(rawWord); // e.g. "record"
+
 		const cached = this.cache.get(normalizedWord);
 		if (cached) {
 			return cached;
 		}
 
-		const variants = this.data[normalizedWord];
+		const variants = this.data[normalizedWord]; // e.g. ["R AH0 K AO1 R D","R EH1 K ER0 D","R IH0 K AO1 R D"] | undefined
 		if (!variants) {
 			return undefined;
 		}
 
-		const ipaVariants: string[][] = [];
+		const mappedVariants: CmudictVariant[] = [];
+
 		for (const variant of variants) {
-			const sanitized = typeof variant === "string" ? variant.trim() : "";
-			if (!sanitized) continue;
-			const tokens = sanitized.split(" ");
-			const ipa = convertArpabetToIPA(tokens);
-			if (ipa.length === 0) continue;
-			ipaVariants.push(ipa);
+			if (typeof variant !== "string") continue;
+
+			const tokens = variant
+				.split(" ")
+				.map((token) => token.trim())
+				.filter((token) => token.length > 0); // e.g. ["R", "AH0", "K", "AO1", "R", "D"]
+
+			if (tokens.length === 0) continue;
+
+			const mappedVariant: G2PPhoneme[] = tokens.map((token) => {
+				const symbolId = getSymbolIdForCmuToken(token); // e.g. "voiceless-bilabial-stop"
+
+				if (!symbolId) {
+					return {
+						cmuToken: token,
+						isKnown: false,
+					};
+				}
+
+				const symbol = allPhonemeSymbols[symbolId];
+
+				return {
+					ipa: symbol.ipa,
+					phonemeId: symbolId,
+					cmuToken: token,
+					isKnown: true,
+				};
+			});
+
+			mappedVariants.push(mappedVariant);
 		}
 
-		this.cache.set(normalizedWord, ipaVariants);
-		return ipaVariants;
+		this.cache.set(normalizedWord, mappedVariants);
+		return mappedVariants;
 	}
 }
 

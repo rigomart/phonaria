@@ -1,4 +1,9 @@
 export {
+	CMU_TO_SYMBOL_ID,
+	type CmuArpaToken,
+	getSymbolIdForCmuToken,
+} from "./phonetics/cmu-lookup";
+export {
 	type PhonemeAllophone,
 	type PhonemeAllophoneContextKey,
 	phonemeAllophones,
@@ -32,11 +37,3 @@ export {
 	rhoticPhonemeSymbols,
 	vowelPhonemeSymbols,
 } from "./phonetics/symbols-registry";
-export {
-	type CmuPhonemeMapping,
-	type CmuTokenMappingResult,
-	getAllCmuTokenMappings,
-	getPhonemeForCmuToken,
-	mapCmuSequenceToPhonemes,
-	normalizeCmuToken,
-} from "./phonetics/cmu-lookup";
