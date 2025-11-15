@@ -109,10 +109,10 @@ function WordColumn({ word, onPhonemeClick }: WordColumnProps) {
 							<DropdownMenuLabel>Variants</DropdownMenuLabel>
 							<DropdownMenuSeparator />
 							{word.variants.map((v, i) => {
-								const key = v.map((p) => (typeof p === "string" ? p : p.symbol)).join("");
+								const key = v.map((p) => p.symbol).join("");
 								return (
 									<DropdownMenuItem key={key} onClick={() => setVariant(word.wordIndex, i)}>
-										{`/${v.map((p) => (typeof p === "string" ? p : p.symbol)).join(" ")}/`}
+										{`/${v.map((p) => p.symbol).join(" ")}/`}
 									</DropdownMenuItem>
 								);
 							})}

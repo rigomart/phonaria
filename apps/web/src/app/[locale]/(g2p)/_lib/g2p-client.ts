@@ -2,7 +2,9 @@
  * G2P API client and utilities
  */
 
+import type { PhonemeSymbolId } from "shared-data";
 import type {
+	G2PPhoneme,
 	TranscribedPhoneme,
 	TranscribedWord,
 	TranscriptionResult,
@@ -19,11 +21,11 @@ import {
  * G2P API client instance
  */
 const g2pApiClient = createApiClient({
-	baseUrl: "", // Use relative URLs for internal API routes
+	baseUrl: "",
 	defaultHeaders: {
 		"Content-Type": "application/json",
 	},
-	timeout: 15000, // 15 seconds for G2P processing
+	timeout: 15000,
 });
 
 /**
@@ -42,14 +44,9 @@ function transformG2PResponse(
 ): TranscriptionResult {
 	const words: TranscribedWord[] = response.words.map((word, wordIndex) => {
 		const variants: TranscribedPhoneme[][] = word.variants.map((variant) =>
-			variant.map((symbol, phonemeIndex) => {
-				return {
-					symbol,
-					wordIndex,
-					phonemeIndex,
-					isKnown: true, // Simplified: assume all phonemes from API are known
-				};
-			}),
+			variant.map((phoneme, phonemeIndex) =>
+				mapPhonemeToTranscribed(phoneme, wordIndex, phonemeIndex),
+			),
 		);
 
 		return {
@@ -80,4 +77,31 @@ export async function transcribeText(text: string): Promise<TranscriptionResult>
 	const request: G2PRequestData = { text: text.trim() };
 	const response = await callG2PAPI(request);
 	return transformG2PResponse(response, text);
+}
+
+function mapPhonemeToTranscribed(
+	phoneme: G2PPhoneme,
+	wordIndex: number,
+	phonemeIndex: number,
+): TranscribedPhoneme {
+	if (phoneme.isKnown) {
+		return {
+			symbol: phoneme.ipa,
+			ipa: phoneme.ipa,
+			cmuToken: phoneme.cmuToken,
+			phonemeId: phoneme.phonemeId as PhonemeSymbolId,
+			wordIndex,
+			phonemeIndex,
+			isKnown: true,
+		};
+	}
+
+	return {
+		symbol: phoneme.cmuToken,
+		cmuToken: phoneme.cmuToken,
+		phonemeId: null,
+		wordIndex,
+		phonemeIndex,
+		isKnown: false,
+	};
 }

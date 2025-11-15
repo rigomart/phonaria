@@ -16,7 +16,7 @@ export function PhonemeDialog() {
 						<DialogHeader>
 							<DialogTitle className="sr-only">{`Phoneme /${selectedPhoneme.symbol}/`}</DialogTitle>
 						</DialogHeader>
-						<>Phoneme Details</>
+						<div>Phoneme Details</div>
 					</>
 				) : null}
 			</DialogContent>

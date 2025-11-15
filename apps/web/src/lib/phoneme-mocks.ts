@@ -71,7 +71,7 @@ export const phonariaUtils = {
 	},
 };
 
-export function getOrderedCategories(category?: string): CategoryInfo[] {
+export function getOrderedCategories(_category?: string): CategoryInfo[] {
 	return [];
 }
 
