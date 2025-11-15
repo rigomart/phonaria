@@ -49,19 +49,21 @@ export class FallbackG2P {
 	}
 
 	private createPhoneme(ipa: string, token: string): G2PPhoneme {
-		const phonemeId = this.ipaToPhonemeId.get(ipa) ?? null;
+		const phonemeId = this.ipaToPhonemeId.get(ipa);
+		if (!phonemeId) {
+			return this.createUnknown(token);
+		}
+
 		return {
 			ipa,
 			phonemeId,
 			cmuToken: token,
-			isKnown: Boolean(phonemeId),
+			isKnown: true,
 		};
 	}
 
 	private createUnknown(token: string): G2PPhoneme {
 		return {
-			ipa: token,
-			phonemeId: null,
 			cmuToken: token,
 			isKnown: false,
 		};
