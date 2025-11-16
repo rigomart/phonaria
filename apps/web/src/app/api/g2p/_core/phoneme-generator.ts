@@ -58,7 +58,6 @@ export class FallbackG2P {
 			ipa,
 			phonemeId,
 			cmuToken: token,
-			isKnown: true,
 		};
 	}
 

@@ -1,4 +1,5 @@
 import type { PhonemeSymbolId } from "shared-data";
+import type { G2PPhonemeData } from "../_lib/g2p-schema";
 
 /**
  * Frontend types for G2P (Grapheme-to-Phoneme) functionality
@@ -36,16 +37,7 @@ export interface G2PError {
 	message: string;
 }
 
-export type G2PPhoneme =
-	| {
-			ipa: string;
-			phonemeId: PhonemeSymbolId;
-			cmuToken: string;
-	  }
-	| {
-			phonemeId: null;
-			cmuToken: string;
-	  };
+export type G2PPhoneme = G2PPhonemeData;
 
 /**
  * Frontend-specific: Enhanced phoneme with metadata for UI display

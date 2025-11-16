@@ -3,6 +3,7 @@
  */
 
 import type { PhonemeSymbolId } from "shared-data";
+import { PhonemeSymbolRegistry } from "shared-data";
 import type {
 	G2PPhoneme,
 	TranscribedPhoneme,
@@ -84,12 +85,12 @@ function mapPhonemeToTranscribed(
 	wordIndex: number,
 	phonemeIndex: number,
 ): TranscribedPhoneme {
-	if ("ipa" in phoneme && phoneme.phonemeId) {
+	if (isKnownPhoneme(phoneme)) {
 		return {
 			symbol: phoneme.ipa,
 			ipa: phoneme.ipa,
 			cmuToken: phoneme.cmuToken,
-			phonemeId: phoneme.phonemeId as PhonemeSymbolId,
+			phonemeId: phoneme.phonemeId,
 			wordIndex,
 			phonemeIndex,
 		};
@@ -102,4 +103,13 @@ function mapPhonemeToTranscribed(
 		wordIndex,
 		phonemeIndex,
 	};
+}
+
+function isKnownPhoneme(
+	phoneme: G2PPhoneme,
+): phoneme is G2PPhoneme & { phonemeId: PhonemeSymbolId; ipa: string } {
+	if (typeof phoneme.phonemeId !== "string") {
+		return false;
+	}
+	return phoneme.phonemeId in PhonemeSymbolRegistry;
 }
