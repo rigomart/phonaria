@@ -1,6 +1,15 @@
 import type { PhonemeArticulation, VowelArticulatoryFeatures } from "shared-data";
 import { featureDefinitions } from "@/data/phoneme-details";
 import { cn } from "@/lib/utils";
+import {
+	type ChartPoint,
+	getBacknessPosition,
+	getHeightPosition,
+	getLeftBoundaryX,
+	getVowelPoint,
+	SMALL_VOWEL_CHART_LAYOUT,
+	VOWEL_HEIGHT_ORDER,
+} from "@/lib/vowel-chart-geometry";
 
 type StaticVowelFeatures = Extract<
 	PhonemeArticulation,
@@ -32,10 +41,11 @@ export type VowelChartCardProps =
 
 export function VowelChartCard(props: VowelChartCardProps) {
 	const isDiphthong = props.category === "vowel/diphthong";
+	const layout = SMALL_VOWEL_CHART_LAYOUT;
 
-	const startPoint = getVowelPoint(props.features.height, props.features.backness);
+	const startPoint = getVowelPoint(props.features.height, props.features.backness, layout);
 	const targetPoint = isDiphthong
-		? getVowelPoint(props.features.targetHeight, props.features.targetBackness)
+		? getVowelPoint(props.features.targetHeight, props.features.targetBackness, layout)
 		: null;
 
 	const startRoundness = props.features.roundness;
@@ -57,84 +67,13 @@ export function VowelChartCard(props: VowelChartCardProps) {
 	);
 }
 
-const VOWEL_CHART_VIEWBOX = { width: 160, height: 160 };
-
-const vowelHeightOrder: VowelArticulatoryFeatures["height"][] = [
-	"close",
-	"near-close",
-	"close-mid",
-	"mid",
-	"open-mid",
-	"near-open",
-	"open",
-] as const;
-
-type VowelHeight = VowelArticulatoryFeatures["height"];
-type VowelBackness = VowelArticulatoryFeatures["backness"];
 type VowelRoundness = VowelArticulatoryFeatures["roundness"];
-
-const heightIndex: Record<VowelHeight, number> = {
-	close: 0,
-	"near-close": 1,
-	"close-mid": 2,
-	mid: 3,
-	"open-mid": 4,
-	"near-open": 5,
-	open: 6,
-};
-
-const CHART_TOP = 32;
-const CHART_BOTTOM = 130;
-const CHART_LEFT = 32;
-const CHART_RIGHT = 150;
-const CHART_HEIGHT = CHART_BOTTOM - CHART_TOP;
-
-const VOWEL_HEIGHT_POSITIONS = vowelHeightOrder.reduce<Record<VowelHeight, number>>(
-	(acc, height) => {
-		const index = heightIndex[height];
-		acc[height] = CHART_TOP + (index / (vowelHeightOrder.length - 1)) * CHART_HEIGHT;
-		return acc;
-	},
-	{} as Record<VowelHeight, number>,
-);
-
-const FRONT_TOP_X = CHART_LEFT;
-const FRONT_BOTTOM_X = CHART_LEFT + 32;
-const BACK_X = CHART_RIGHT;
-
-const backnessRatios: Record<VowelBackness, number> = {
-	front: 0,
-	"near-front": 0.18,
-	central: 0.5,
-	"near-back": 0.82,
-	back: 1,
-};
 
 const LABEL_FONT_SIZE = 6;
 const IPA_LABEL_FONT_SIZE = 8;
 const IPA_LABEL_PADDING_X = 4;
 const IPA_LABEL_PADDING_Y = 2;
 const IPA_LABEL_OFFSET_X = 10;
-
-type ChartPoint = { x: number; y: number };
-
-function getVowelPoint(height: VowelHeight, backness: VowelBackness): ChartPoint {
-	return {
-		x: getBacknessPosition(backness, height),
-		y: VOWEL_HEIGHT_POSITIONS[height],
-	};
-}
-
-function getBacknessPosition(backness: VowelBackness, height: VowelHeight) {
-	const left = getLeftBoundaryX(height);
-	const span = BACK_X - left;
-	return left + span * backnessRatios[backness];
-}
-
-function getLeftBoundaryX(height: VowelHeight) {
-	const normalizedIndex = heightIndex[height] / (vowelHeightOrder.length - 1);
-	return FRONT_TOP_X + (FRONT_BOTTOM_X - FRONT_TOP_X) * normalizedIndex;
-}
 
 type VowelQuadrilateralProps = {
 	chartId: string;
@@ -154,12 +93,13 @@ function VowelQuadrilateral({
 	roundness,
 }: VowelQuadrilateralProps) {
 	const arrowId = `vowel-arrow-${chartId}`;
-	const topHeight = vowelHeightOrder[0];
-	const bottomHeight = vowelHeightOrder[vowelHeightOrder.length - 1];
+	const topHeight = VOWEL_HEIGHT_ORDER[0];
+	const bottomHeight = VOWEL_HEIGHT_ORDER[VOWEL_HEIGHT_ORDER.length - 1];
+	const layout = SMALL_VOWEL_CHART_LAYOUT;
 
 	return (
 		<svg
-			viewBox={`0 0 ${VOWEL_CHART_VIEWBOX.width} ${VOWEL_CHART_VIEWBOX.height}`}
+			viewBox={`0 0 ${layout.viewBoxWidth} ${layout.viewBoxHeight}`}
 			role="img"
 			aria-label={`${label} vowel placement`}
 			className="w-full"
@@ -180,10 +120,10 @@ function VowelQuadrilateral({
 
 			<polygon
 				points={[
-					`${getLeftBoundaryX(topHeight)},${VOWEL_HEIGHT_POSITIONS[topHeight]}`,
-					`${getLeftBoundaryX(bottomHeight)},${VOWEL_HEIGHT_POSITIONS[bottomHeight]}`,
-					`${BACK_X},${VOWEL_HEIGHT_POSITIONS[bottomHeight]}`,
-					`${BACK_X},${VOWEL_HEIGHT_POSITIONS[topHeight]}`,
+					`${getLeftBoundaryX(topHeight, layout)},${getHeightPosition(topHeight, layout)}`,
+					`${getLeftBoundaryX(bottomHeight, layout)},${getHeightPosition(bottomHeight, layout)}`,
+					`${layout.backX},${getHeightPosition(bottomHeight, layout)}`,
+					`${layout.backX},${getHeightPosition(topHeight, layout)}`,
 				].join(" ")}
 				className="fill-muted/20 stroke-border"
 				strokeWidth={1.5}
@@ -261,54 +201,55 @@ function TextLabel({ x, y, text, align = "start" }: TextLabelProps) {
 }
 
 function AxisLabels() {
-	const topHeight = vowelHeightOrder[0];
-	const topY = VOWEL_HEIGHT_POSITIONS[topHeight];
+	const topHeight = VOWEL_HEIGHT_ORDER[0];
+	const topY = getHeightPosition(topHeight, SMALL_VOWEL_CHART_LAYOUT);
 	const rowLabelOffset = 8;
-	const closeY = VOWEL_HEIGHT_POSITIONS.close;
-	const closeMidY = VOWEL_HEIGHT_POSITIONS["close-mid"];
-	const openMidY = VOWEL_HEIGHT_POSITIONS["open-mid"];
-	const openY = VOWEL_HEIGHT_POSITIONS.open;
+	const layout = SMALL_VOWEL_CHART_LAYOUT;
+	const closeY = getHeightPosition("close", layout);
+	const closeMidY = getHeightPosition("close-mid", layout);
+	const openMidY = getHeightPosition("open-mid", layout);
+	const openY = getHeightPosition("open", layout);
 
 	return (
 		<>
 			<TextLabel
-				x={getBacknessPosition("front", topHeight)}
+				x={getBacknessPosition("front", topHeight, layout)}
 				y={topY - 6}
 				text={featureDefinitions.backness.values.front.label}
 				align="start"
 			/>
 			<TextLabel
-				x={getBacknessPosition("central", topHeight)}
+				x={getBacknessPosition("central", topHeight, layout)}
 				y={topY - 6}
 				text={featureDefinitions.backness.values.central.label}
 				align="middle"
 			/>
 			<TextLabel
-				x={getBacknessPosition("back", topHeight)}
+				x={getBacknessPosition("back", topHeight, layout)}
 				y={topY - 6}
 				text={featureDefinitions.backness.values.back.label}
 				align="end"
 			/>
 			<TextLabel
-				x={getLeftBoundaryX("close") - rowLabelOffset}
+				x={getLeftBoundaryX("close", layout) - rowLabelOffset}
 				y={closeY - 1}
 				text={featureDefinitions.height.values.close.label}
 				align="end"
 			/>
 			<TextLabel
-				x={getLeftBoundaryX("close-mid") - rowLabelOffset}
+				x={getLeftBoundaryX("close-mid", layout) - rowLabelOffset}
 				y={closeMidY - 1}
 				text={featureDefinitions.height.values["close-mid"].label}
 				align="end"
 			/>
 			<TextLabel
-				x={getLeftBoundaryX("open-mid") - rowLabelOffset}
+				x={getLeftBoundaryX("open-mid", layout) - rowLabelOffset}
 				y={openMidY - 1}
 				text={featureDefinitions.height.values["open-mid"].label}
 				align="end"
 			/>
 			<TextLabel
-				x={getLeftBoundaryX("open") - rowLabelOffset}
+				x={getLeftBoundaryX("open", layout) - rowLabelOffset}
 				y={openY - 1}
 				text={featureDefinitions.height.values.open.label}
 				align="end"
@@ -327,42 +268,46 @@ function ColumnPath({ points }: { points: ChartPoint[] }) {
 }
 
 function MinimalGrid() {
-	const closeMidY = VOWEL_HEIGHT_POSITIONS["close-mid"];
-	const openMidY = VOWEL_HEIGHT_POSITIONS["open-mid"];
-	const topHeight = vowelHeightOrder[0];
-	const bottomHeight = vowelHeightOrder[vowelHeightOrder.length - 1];
+	const layout = SMALL_VOWEL_CHART_LAYOUT;
+	const closeMidY = getHeightPosition("close-mid", layout);
+	const openMidY = getHeightPosition("open-mid", layout);
+	const topHeight = VOWEL_HEIGHT_ORDER[0];
+	const bottomHeight = VOWEL_HEIGHT_ORDER[VOWEL_HEIGHT_ORDER.length - 1];
 
 	return (
 		<>
 			<ColumnPath
 				points={[
-					{ x: getBacknessPosition("front", topHeight), y: VOWEL_HEIGHT_POSITIONS[topHeight] },
 					{
-						x: getBacknessPosition("front", bottomHeight),
-						y: VOWEL_HEIGHT_POSITIONS[bottomHeight],
+						x: getBacknessPosition("front", topHeight, layout),
+						y: getHeightPosition(topHeight, layout),
+					},
+					{
+						x: getBacknessPosition("front", bottomHeight, layout),
+						y: getHeightPosition(bottomHeight, layout),
 					},
 				]}
 			/>
 
 			<line
-				x1={getBacknessPosition("central", topHeight)}
-				x2={getBacknessPosition("central", bottomHeight)}
-				y1={VOWEL_HEIGHT_POSITIONS[topHeight]}
-				y2={VOWEL_HEIGHT_POSITIONS[bottomHeight]}
+				x1={getBacknessPosition("central", topHeight, layout)}
+				x2={getBacknessPosition("central", bottomHeight, layout)}
+				y1={getHeightPosition(topHeight, layout)}
+				y2={getHeightPosition(bottomHeight, layout)}
 				className="stroke-border/60"
 				strokeWidth={0.6}
 			/>
 			<line
-				x1={getBacknessPosition("front", "close-mid")}
-				x2={BACK_X}
+				x1={getBacknessPosition("front", "close-mid", layout)}
+				x2={layout.backX}
 				y1={closeMidY}
 				y2={closeMidY}
 				className="stroke-border/60"
 				strokeWidth={0.6}
 			/>
 			<line
-				x1={getBacknessPosition("front", "open-mid")}
-				x2={BACK_X}
+				x1={getBacknessPosition("front", "open-mid", layout)}
+				x2={layout.backX}
 				y1={openMidY}
 				y2={openMidY}
 				className="stroke-border/60"
@@ -386,7 +331,7 @@ function ChartMarker({ point, rounded, variant, label }: ChartMarkerProps) {
 
 	const labelWidth = label ? measureApproximateLabel(label) : 0;
 	const totalWidth = labelWidth + IPA_LABEL_PADDING_X * 2;
-	const shouldFlip = point.x + IPA_LABEL_OFFSET_X + totalWidth > BACK_X;
+	const shouldFlip = point.x + IPA_LABEL_OFFSET_X + totalWidth > SMALL_VOWEL_CHART_LAYOUT.backX;
 	const rectX = shouldFlip
 		? point.x - IPA_LABEL_OFFSET_X - totalWidth
 		: point.x + IPA_LABEL_OFFSET_X;

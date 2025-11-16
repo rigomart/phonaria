@@ -91,7 +91,22 @@ export default {
 			vowels: {
 				title: "Vowel Phonemes",
 				description:
-					"Vowel sounds organized by type and characteristics. Click any phoneme for pronunciation details.",
+					"Vowel sounds plotted by tongue height, backness, and rounding. Select any marker to open articulation details.",
+				monophthongs: {
+					title: "Monophthongs & Rhotic Vowels",
+					description:
+						"Single steady vowels organized by their tongue position. Filled markers show rounded lips.",
+				},
+				diphthongs: {
+					title: "Diphthongs",
+					description:
+						"Two-part vowels that glide from a starting position to an ending position. The arrow follows the glide.",
+				},
+				legend: {
+					rounded: "Tinted marker = rounded",
+					unrounded: "Outline marker = unrounded",
+					diphthong: "Arrow = glide path",
+				},
 			},
 		},
 		dialog: {
