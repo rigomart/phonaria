@@ -3,6 +3,7 @@ import { setStaticParamsLocale } from "next-international/server";
 import { getScopedI18n } from "@/locales/server";
 import { G2PPreview } from "./_components/g2p-preview";
 import { IpaChartPreview } from "./_components/ipa-chart-preview";
+import { PhonemeDetailsPreview } from "./_components/phoneme-details-preview";
 import { ToolSection } from "./_components/tool-section";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,12 +23,10 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 	return (
 		<div className="flex flex-1 flex-col bg-background">
 			<div className="border-b border-border/60 bg-muted/30">
-				<div className="container mx-auto px-4 py-12 lg:px-6">
+				<div className="container mx-auto px-4 py-8 lg:px-6">
 					<div className="max-w-2xl">
-						<h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>
-						<p className="mt-3 text-base text-muted-foreground leading-relaxed">
-							{t("description")}
-						</p>
+						<h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+						<p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t("description")}</p>
 					</div>
 				</div>
 			</div>
@@ -60,6 +59,22 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 				linkText={t("tools.ipa-chart.link-text")}
 				preview={<IpaChartPreview />}
 				isReversed
+			/>
+
+			<ToolSection
+				title={t("tools.phoneme-details.title")}
+				description={t("tools.phoneme-details.description")}
+				whatYouGet={t("tools.phoneme-details.what-you-get")}
+				features={[
+					t("tools.phoneme-details.features.articulation"),
+					t("tools.phoneme-details.features.audio"),
+					t("tools.phoneme-details.features.patterns"),
+					t("tools.phoneme-details.features.contrasts"),
+				]}
+				linkHref="/"
+				linkText=""
+				preview={<PhonemeDetailsPreview />}
+				hideLink
 			/>
 		</div>
 	);

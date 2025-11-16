@@ -1,60 +1,55 @@
 export function IpaChartPreview() {
-	const vowelSamples = [
-		{ symbol: "i", word: "see" },
-		{ symbol: "ɪ", word: "sit" },
-		{ symbol: "eɪ", word: "say" },
-		{ symbol: "æ", word: "cat" },
-		{ symbol: "ɑ", word: "father" },
-		{ symbol: "ɔ", word: "thought" },
-	];
-	const consonantSamples = [
-		{ symbol: "p", word: "pen" },
-		{ symbol: "b", word: "big" },
-		{ symbol: "t", word: "top" },
-		{ symbol: "d", word: "dog" },
-		{ symbol: "k", word: "cat" },
-		{ symbol: "ʃ", word: "ship" },
-		{ symbol: "θ", word: "think" },
-		{ symbol: "ŋ", word: "sing" },
+	// Consonant pairs showing voiceless/voiced contrast
+	const consonantPairs = [
+		{ voiceless: "p", voiced: "b" },
+		{ voiceless: "t", voiced: "d" },
+		{ voiceless: "k", voiced: "g" },
+		{ voiceless: "f", voiced: "v" },
+		{ voiceless: "θ", voiced: "ð" },
+		{ voiceless: "s", voiced: "z" },
 	];
 
+	const vowels = ["i", "ɪ", "eɪ", "ɛ", "æ", "ɑ", "ɔ", "oʊ", "ʊ", "u"];
+
 	return (
-		<div className="rounded-lg border border-border bg-card">
-			<div className="border-b border-border bg-muted/30 px-4 py-3">
-				<p className="text-xs font-medium text-muted-foreground">Sample phonemes</p>
+		<div className="space-y-3 rounded-lg border border-border/40 bg-background p-3">
+			<div>
+				<h3 className="text-xs font-medium text-muted-foreground mb-2">Consonants</h3>
+				<div className="grid grid-cols-3 gap-2">
+					{consonantPairs.map(({ voiceless, voiced }) => (
+						<div
+							key={`${voiceless}-${voiced}`}
+							className="flex items-center justify-center gap-1.5"
+						>
+							<button
+								type="button"
+								className="min-w-[2rem] min-h-[2rem] px-2 py-1 rounded-md border border-border bg-background opacity-80 hover:opacity-100 hover:border-primary hover:bg-primary/5 transition-all text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							>
+								{voiceless}
+							</button>
+							<button
+								type="button"
+								className="min-w-[2rem] min-h-[2rem] px-2 py-1 rounded-md border border-primary/20 bg-primary/5 font-semibold hover:border-primary hover:bg-primary/10 transition-all text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							>
+								{voiced}
+							</button>
+						</div>
+					))}
+				</div>
 			</div>
-			<div className="p-4 space-y-4">
-				<div>
-					<h3 className="text-xs font-semibold text-foreground mb-2">Vowels</h3>
-					<div className="grid grid-cols-3 gap-2">
-						{vowelSamples.map(({ symbol, word }) => (
-							<div
-								key={symbol}
-								className="flex flex-col items-center gap-1 p-2 rounded border border-border bg-background hover:bg-accent hover:border-primary/50 cursor-pointer transition-colors"
-							>
-								<span className="text-lg font-mono">{symbol}</span>
-								<span className="text-[10px] text-muted-foreground">{word}</span>
-							</div>
-						))}
-					</div>
+			<div>
+				<h3 className="text-xs font-medium text-muted-foreground mb-2">Vowels</h3>
+				<div className="flex flex-wrap gap-1.5">
+					{vowels.map((symbol) => (
+						<button
+							key={symbol}
+							type="button"
+							className="min-w-[2rem] min-h-[2rem] px-2 py-1 rounded-md border border-border bg-background hover:border-primary hover:bg-primary/5 transition-all text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						>
+							{symbol}
+						</button>
+					))}
 				</div>
-				<div>
-					<h3 className="text-xs font-semibold text-foreground mb-2">Consonants</h3>
-					<div className="grid grid-cols-4 gap-2">
-						{consonantSamples.map(({ symbol, word }) => (
-							<div
-								key={symbol}
-								className="flex flex-col items-center gap-1 p-2 rounded border border-border bg-background hover:bg-accent hover:border-primary/50 cursor-pointer transition-colors"
-							>
-								<span className="text-lg font-mono">{symbol}</span>
-								<span className="text-[10px] text-muted-foreground">{word}</span>
-							</div>
-						))}
-					</div>
-				</div>
-				<p className="text-xs text-muted-foreground">
-					Click any phoneme to hear it and see how it's produced
-				</p>
 			</div>
 		</div>
 	);

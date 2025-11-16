@@ -138,6 +138,18 @@ export default {
 				},
 				"link-text": "Open IPA chart",
 			},
+			"phoneme-details": {
+				title: "Phoneme Detail Panels",
+				description:
+					"Available throughout the app when you click a phoneme. Each panel shows how the sound is produced, common spelling patterns, and sounds that learners often confuse.",
+				"what-you-get": "What you get",
+				features: {
+					articulation: "Step-by-step production guidance with diagrams",
+					audio: "Audio examples and playback controls",
+					patterns: "Common spelling patterns for the sound",
+					contrasts: "Minimal pairs with frequently confused sounds",
+				},
+			},
 		},
 	},
 } as const;

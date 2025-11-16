@@ -1,28 +1,28 @@
 export function G2PPreview() {
-	const phonemes = ["ð", "ə", "ˈ", "θ", "ɔ", "t", "f", "ə", "l", "|", "ˈ", "l", "ɝ", "n", "ɚ"];
+	// Correct transcription: thoughtful = /ˈθɔtfəl/ | learner = /ˈlɜrnɚ/
+	const word1 = { word: "thoughtful", phonemes: ["ˈ", "θ", "ɔ", "t", "f", "ə", "l"] };
+	const word2 = { word: "learner", phonemes: ["ˈ", "l", "ɜ", "r", "n", "ɚ"] };
 
 	return (
-		<div className="rounded-lg border border-border bg-card">
-			<div className="border-b border-border bg-muted/30 px-4 py-3">
-				<p className="text-xs font-medium text-muted-foreground">Input</p>
-				<p className="mt-1 text-sm text-foreground">thoughtful learner</p>
-			</div>
-			<div className="p-4">
-				<p className="text-xs font-medium text-muted-foreground mb-3">IPA transcription</p>
-				<div className="flex flex-wrap gap-1.5">
-					{phonemes.map((symbol, index) => (
-						<span
-							key={`phoneme-${index}-${symbol}`}
-							className="inline-flex items-center justify-center min-w-[28px] h-7 px-1.5 rounded border border-border bg-background text-sm font-mono hover:bg-accent hover:border-primary/50 cursor-pointer transition-colors"
-						>
-							{symbol}
-						</span>
-					))}
+		<div className="flex flex-wrap items-start justify-center gap-6 bg-muted/20 border border-border/40 rounded-lg p-4">
+			{[word1, word2].map((word) => (
+				<div key={word.word} className="flex flex-col items-center text-center">
+					<div className="text-base text-muted-foreground font-normal mb-2 px-2 py-1 rounded hover:bg-muted/50 cursor-pointer transition-colors">
+						{word.word}
+					</div>
+					<div className="flex items-center gap-0.5">
+						{word.phonemes.map((symbol, index) => (
+							<button
+								key={`${word.word}-${index}-${symbol}`}
+								type="button"
+								className="font-mono text-2xl bg-transparent border-none p-1.5 rounded hover:text-primary hover:bg-primary/5 cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+							>
+								{symbol}
+							</button>
+						))}
+					</div>
 				</div>
-				<p className="mt-4 text-xs text-muted-foreground">
-					Click any phoneme to see articulation details
-				</p>
-			</div>
+			))}
 		</div>
 	);
 }
