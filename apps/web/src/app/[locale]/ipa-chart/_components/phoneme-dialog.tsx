@@ -1,24 +1,38 @@
 "use client";
 
+import {
+	PhonemeDetails,
+	PhonemeDetailsAllophones,
+	PhonemeDetailsArticulation,
+	PhonemeDetailsContrasts,
+	PhonemeDetailsHeader,
+	PhonemeDetailsPatterns,
+} from "@/components/phoneme-details";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 export function PhonemeDialog() {
 	const dialogOpen = useIpaChartStore((s) => s.dialogOpen);
 	const setDialogOpen = useIpaChartStore((s) => s.setDialogOpen);
-	const selectedPhoneme = useIpaChartStore((s) => s.selectedPhoneme);
+	const selectedPhonemeId = useIpaChartStore((s) => s.selectedPhonemeId);
+
+	if (!selectedPhonemeId) {
+		return null;
+	}
 
 	return (
 		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 			<DialogContent className="max-w-3xl max-h-[min(85vh,calc(100dvh-2rem))] overflow-y-auto">
-				{selectedPhoneme ? (
-					<>
-						<DialogHeader>
-							<DialogTitle className="sr-only">{`Phoneme /${selectedPhoneme.symbol}/`}</DialogTitle>
-						</DialogHeader>
-						<div>Phoneme Details</div>
-					</>
-				) : null}
+				<DialogHeader>
+					<DialogTitle className="sr-only">Phoneme details</DialogTitle>
+				</DialogHeader>
+				<PhonemeDetails phonemeId={selectedPhonemeId} className="p-2">
+					<PhonemeDetailsHeader />
+					<PhonemeDetailsArticulation />
+					<PhonemeDetailsPatterns />
+					<PhonemeDetailsContrasts />
+					<PhonemeDetailsAllophones />
+				</PhonemeDetails>
 			</DialogContent>
 		</Dialog>
 	);

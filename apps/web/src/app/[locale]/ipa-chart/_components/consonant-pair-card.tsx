@@ -3,6 +3,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { cn } from "@/lib/utils";
 import { useScopedI18n } from "@/locales/client";
 import type { MannerOfArticulation, PlaceOfArticulation, Voicing } from "../_lib/consonant-grid";
+import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 interface ConsonantPhoneme {
 	id: ConsonantSymbolId;
@@ -60,8 +61,11 @@ function ConsonantButton({
 	phoneme: ConsonantPhoneme;
 	isVoiceless: boolean;
 }) {
+	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
 	const t = useScopedI18n("ipa-chart.card");
-	const handleClick = () => {}; // TODO: Implement selection
+	const handleClick = () => {
+		selectPhoneme(phoneme.id);
+	};
 	const tooltipContent = `/${phoneme.symbol}/ - ${phoneme.voicing} ${phoneme.place} ${phoneme.manner}`;
 	const ariaLabel = `${phoneme.symbol}`;
 
