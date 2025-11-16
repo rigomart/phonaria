@@ -1,35 +1,28 @@
-import { Waves } from "lucide-react";
-
 export function G2PPreview() {
-	const phonemes = ["ð", "ə", "ˈ", "θ", "ɔ", "t", "f", "əl", "|", "ˈ", "l", "ɝ", "n", "ɚ"];
+	// Correct transcription: thoughtful = /ˈθɔtfəl/ | learner = /ˈlɜrnɚ/
+	const word1 = { word: "thoughtful", phonemes: ["ˈ", "θ", "ɔ", "t", "f", "ə", "l"] };
+	const word2 = { word: "learner", phonemes: ["ˈ", "l", "ɜ", "r", "n", "ɚ"] };
 
 	return (
-		<div className="space-y-3">
-			<div className="rounded-xl border border-border/70 bg-background/70 p-3 shadow-xs">
-				<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-					Input text
-				</p>
-				<p className="text-sm font-medium text-foreground">thoughtful learner</p>
-			</div>
-			<div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-background p-3 shadow-inner">
-				<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
-					IPA transcription
-				</p>
-				<div className="mt-2 flex flex-wrap gap-1.5 text-base font-semibold text-primary">
-					{phonemes.map((symbol, index) => (
-						<span
-							key={`phoneme-${index}-${symbol}`}
-							className="rounded-lg border border-primary/30 bg-background/90 px-2 py-1 text-primary shadow-sm"
-						>
-							{symbol}
-						</span>
-					))}
+		<div className="flex flex-wrap items-start justify-center gap-6 bg-muted/20 border border-border/40 rounded-lg p-4">
+			{[word1, word2].map((word) => (
+				<div key={word.word} className="flex flex-col items-center text-center">
+					<div className="text-lg text-muted-foreground font-normal mb-2 px-2 py-1 rounded hover:bg-muted/50 cursor-pointer transition-colors">
+						{word.word}
+					</div>
+					<div className="flex items-center gap-0.5">
+						{word.phonemes.map((symbol, index) => (
+							<button
+								key={`${word.word}-${index}-${symbol}`}
+								type="button"
+								className="font-mono text-3xl bg-transparent border-none p-1.5 rounded hover:text-primary hover:bg-primary/5 cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+							>
+								{symbol}
+							</button>
+						))}
+					</div>
 				</div>
-			</div>
-			<div className="flex items-center gap-2 text-xs font-medium text-primary">
-				<Waves className="size-4" aria-hidden="true" />
-				Tap any phoneme to open detailed articulation insights
-			</div>
+			))}
 		</div>
 	);
 }

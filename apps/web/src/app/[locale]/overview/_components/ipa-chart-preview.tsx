@@ -1,43 +1,55 @@
-import { Badge } from "@/components/ui/badge";
-
 export function IpaChartPreview() {
-	const vowelSamples = ["i", "ɪ", "eɪ", "æ"]; // truncated for brevity
-	const consonantSamples = ["ʃ", "tʃ", "θ", "ŋ"];
+	// Consonant pairs showing voiceless/voiced contrast
+	const consonantPairs = [
+		{ voiceless: "p", voiced: "b" },
+		{ voiceless: "t", voiced: "d" },
+		{ voiceless: "k", voiced: "g" },
+		{ voiceless: "f", voiced: "v" },
+		{ voiceless: "θ", voiced: "ð" },
+		{ voiceless: "s", voiced: "z" },
+	];
+
+	const vowels = ["i", "ɪ", "eɪ", "ɛ", "æ", "ɑ", "ɔ", "oʊ", "ʊ", "u"];
 
 	return (
-		<div className="space-y-3">
-			<div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-				<span>Interactive cells</span>
-				<span>Audio-ready</span>
-			</div>
-			<div className="grid grid-cols-2 gap-2">
-				<div className="rounded-xl border border-border/70 bg-background/70 p-3 shadow-xs">
-					<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-						Vowels
-					</p>
-					<div className="mt-2 flex flex-wrap gap-1">
-						{vowelSamples.map((symbol) => (
-							<Badge key={symbol} variant="secondary" className="rounded-full px-2 py-1 text-xs">
-								{symbol}
-							</Badge>
-						))}
-					</div>
-				</div>
-				<div className="rounded-xl border border-border/70 bg-background/70 p-3 shadow-xs">
-					<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-						Consonants
-					</p>
-					<div className="mt-2 flex flex-wrap gap-1">
-						{consonantSamples.map((symbol) => (
-							<Badge key={symbol} variant="outline" className="rounded-full px-2 py-1 text-xs">
-								{symbol}
-							</Badge>
-						))}
-					</div>
+		<div className="space-y-3 rounded-lg border border-border/40 bg-background p-3">
+			<div>
+				<h3 className="text-sm font-medium text-muted-foreground mb-2">Consonants</h3>
+				<div className="grid grid-cols-3 gap-2">
+					{consonantPairs.map(({ voiceless, voiced }) => (
+						<div
+							key={`${voiceless}-${voiced}`}
+							className="flex items-center justify-center gap-1.5"
+						>
+							<button
+								type="button"
+								className="min-w-[2rem] min-h-[2rem] px-2 py-1 rounded-md border border-border bg-background opacity-80 hover:opacity-100 hover:border-primary hover:bg-primary/5 transition-all text-base font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							>
+								{voiceless}
+							</button>
+							<button
+								type="button"
+								className="min-w-[2rem] min-h-[2rem] px-2 py-1 rounded-md border border-primary/20 bg-primary/5 font-semibold hover:border-primary hover:bg-primary/10 transition-all text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							>
+								{voiced}
+							</button>
+						</div>
+					))}
 				</div>
 			</div>
-			<div className="rounded-xl border border-dashed border-primary/40 bg-primary/5 p-3 text-xs text-muted-foreground">
-				Click a tile to surface articulatory diagrams, keywords, and playable audio.
+			<div>
+				<h3 className="text-sm font-medium text-muted-foreground mb-2">Vowels</h3>
+				<div className="flex flex-wrap gap-1.5">
+					{vowels.map((symbol) => (
+						<button
+							key={symbol}
+							type="button"
+							className="min-w-[2rem] min-h-[2rem] px-2 py-1 rounded-md border border-border bg-background hover:border-primary hover:bg-primary/5 transition-all text-base font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						>
+							{symbol}
+						</button>
+					))}
+				</div>
 			</div>
 		</div>
 	);
