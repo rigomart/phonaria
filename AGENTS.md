@@ -19,10 +19,10 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 - Articulation guidance that couples production notes, diagrams, and accessible descriptions.
 - Word-level example library with audio so learners can hear each sound in context.
 
-### Sound Contrast Explorer
-- Minimal pair collections that focus on frequently confused sounds.
-- Listening-first drills to compare audio, IPA transcriptions, and learner notes.
-- Articulation cross-references that reinforce distinctions between target phonemes.
+### Phoneme Contrasts & Minimal Pairs
+- Integrated contrast information within phoneme detail dialogs to highlight frequently confused sounds.
+- Minimal pair examples embedded in articulation guidance for direct comparison.
+- Contrast preview available in the overview page to guide learners toward common confusion areas.
 
 ### Dictionary Lookup
 - In-context definitions available without leaving the workspace.
@@ -30,42 +30,75 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 - Clear empty, retry, and error states tuned for quick iteration.
 
 ## Project Structure & Module Organization
-- `apps/web`: Next.js App Router project that ships the learner experience and API routes. UI primitives live in `src/components`, hooks in `src/hooks`, shared utilities in `src/lib`, global datasets in `src/data`, and localized content helpers in `src/i18n`. Feature-specific data should stay co-located under its route (e.g. `src/app/**/data`).
-- `packages/shared-data`: Source of truth for typed phoneme metadata exported from `src/index.ts`; extend here before consuming new fields in the web app or scripts.
-- `packages/helper-scripts`: TypeScript CMUDict and audio utilities that read `.env` config and emit assets into `apps/web/data` or `apps/web/public/audio`.
-- `docs`: Product briefs, project overviews, and technical design notes that keep the roadmap and UX rationale documented.
+- `apps/web`: Next.js 15 App Router project with internationalization via `[locale]` dynamic routes. Feature-specific code uses route groups (e.g. `(g2p)`) and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`) to co-locate related code. UI primitives live in `src/components`, shared utilities in `src/lib`, and global datasets in `src/data`.
+- `packages/shared-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. All types and registries are exported from `src/index.ts`. Key exports include:
+  - `PhonemeSymbolRegistry`: Complete phoneme catalog with IPA symbols, categories, and metadata
+  - `PhonemeArticulationRegistry`: Articulatory features and production guidance for each phoneme
+  - `ContrastsByPhonemeIdRegistry`: Minimal pairs and contrast information
+  - `PhonemeSpellingPatternRegistry`: Common spelling patterns for each phoneme
+  - `PhonemeAllophoneRegistry`: Allophonic variations with context keys
+  - `CmuSymbolRegistry`: Mapping between CMU ARPABET and IPA symbols
+- `packages/helper-scripts`: TypeScript utilities for ElevenLabs audio generation and CMUDict JSON conversion. Scripts read `.env` config and emit assets into `apps/web/data` or `apps/web/public/audio`.
+- `docs`: Product briefs, project overviews, enhancement plans, and feature deep-dives organized in `enhancements/` and `features/` subdirectories.
+
+## App Routes & Organization
+The web app uses Next.js App Router with internationalization:
+- `app/[locale]/`: Base layout with locale-based routing (e.g. `/en`, `/es`)
+  - `(g2p)/`: Route group for grapheme-to-phoneme transcription tool (renders at `/{locale}`)
+  - `ipa-chart/`: Interactive IPA chart with consonants and vowels
+  - `overview/`: Landing page with feature previews and navigation
+  - `dev/`: Development utilities and testing pages (development only)
+- `app/api/`: API routes for server-side functionality
+  - `g2p/`: Grapheme-to-phoneme transcription endpoint
+  - `dictionary/`: Dictionary lookup with rate limiting
+- Feature-specific code lives in prefixed directories within each route (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`)
 
 ## Build, Test, and Development Commands
 - `pnpm install`: Install workspace dependencies once per environment.
-- `pnpm dev`: Launch Turborepo dev servers (Next.js at `http://localhost:3000`); use `pnpm -C apps/web dev` for a focused UI loop.
-- `pnpm build`: Execute workspace builds before any production verification.
-- `pnpm lint`: Run Biome formatting/linting; commits should land with no follow-up edits.
-- `pnpm check-types`: Run `tsc --noEmit` across packages to keep strict typings.
-- `pnpm test`: Trigger Vitest suites via Turborepo; use `pnpm --filter web test --run` for targeted runs.
-- `pnpm -C packages/helper-scripts generate`: Regenerate pronunciation audio once ElevenLabs credentials are set.
-- `pnpm -C packages/helper-scripts cmudict-to-json`: Convert a CMUDict plaintext export into the JSON consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH` as needed).
+- `pnpm dev`: Launch Turborepo dev servers with Next.js Turbopack at `http://localhost:3000`; use `pnpm -C apps/web dev` for a focused UI loop.
+- `pnpm build`: Execute workspace builds with Turbopack before production deployment.
+- `pnpm lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
+- `pnpm check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
+- `pnpm test`: Execute Vitest test suites via Turborepo; use `pnpm --filter web test` for targeted runs.
+- `pnpm -C packages/helper-scripts generate`: Regenerate ElevenLabs pronunciation audio (requires `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env`).
+- `pnpm -C packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
 
 ## Technical Philosophy
 ### Modern Web Standards
-- Performance-first, low-latency interactions that stay responsive on desktop and mobile.
+- Performance-first, low-latency interactions using Next.js 15 with Turbopack for fast builds and HMR.
 - Responsive surfaces that adapt naturally from phones to large displays.
-- Audio-first experience built on Next.js, React, Tailwind CSS, and shadcn/ui.
+- Audio-first experience built on React 19, Next.js App Router, Tailwind CSS v4, and shadcn/ui components.
+- Internationalization via next-international with locale-based routing.
+- Data fetching and caching with TanStack Query; client state management with Zustand.
+- API rate limiting via Upstash Redis; analytics via Vercel Analytics and Speed Insights.
+
+### Key Dependencies
+- **UI Framework**: React 19.1.0 with Next.js 15.5.5 App Router
+- **Styling**: Tailwind CSS v4 with shadcn/ui components built on Radix UI primitives
+- **State Management**: Zustand for client state, TanStack Query for server state
+- **Data Validation**: Zod schemas for runtime type safety
+- **Internationalization**: next-international for locale-based routing and content
+- **Developer Tools**: Biome for linting/formatting, TypeScript 5 for type checking, Vitest for testing
+- **Build Tools**: Turborepo for monorepo orchestration, pnpm for package management
 
 ### Development Standards
-- Monorepo architecture keeps shared data, helper scripts, and the web app aligned.
-- Strict TypeScript adoption to maintain end-to-end type safety.
-- Composable UI patterns and data-driven layouts prevent duplication.
-- Modern tooling and reusable components power every surface in the app.
+- Monorepo architecture (pnpm workspaces + Turborepo) keeps shared data, helper scripts, and the web app aligned.
+- Strict TypeScript adoption across all packages to maintain end-to-end type safety.
+- Composable UI patterns with Radix UI primitives and data-driven layouts to prevent duplication.
+- Co-located feature code using route groups and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`).
 
 ## Coding Style & Naming Conventions
-- Biome formats with tab indentation (visual width two) and double quotes—accept formatter output instead of hand-tuning.
+- Biome formats with tab indentation (visual width 2), 100-character line width, double quotes, and automatic import organization—accept formatter output instead of hand-tuning.
 - Prefer TypeScript modules with named exports; React components export PascalCase symbols even if the file name is kebab-case.
-- Keep shared utilities under `apps/web/src/lib` and reuse path aliases (`@/components/...`) rather than relative dot paths.
+- Use path aliases (`@/components/...`, `@/lib/...`, `@/data/...`) instead of relative dot paths for better maintainability.
+- Feature-specific code should be co-located under route directories using prefixed folders: `_components` for UI, `_hooks` for logic, `_lib` for utilities, `_store` for state, `_types` for types, `_schemas` for validation, `_sections` for page sections.
+- Route groups (e.g. `(g2p)`) share layouts without affecting URL structure.
 
 ## Testing Guidelines
-- Vitest drives `apps/web` tests; co-locate specs using `.test.ts` (see `apps/web/src/app/api/dictionary/_services/dictionary-service.test.ts`).
-- Favor fast unit coverage on API helpers and hooks; integration tests should mock network boundaries.
-- Before pushing, run `pnpm --filter web test` and resolve snapshots or type failures alongside lints.
+- Vitest drives `apps/web` tests; co-locate specs using `.test.ts` suffix (e.g. `apps/web/src/data/phoneme-details.test.ts`).
+- Favor fast unit coverage on data transformations, API helpers, and utilities; integration tests should mock network boundaries.
+- Test shared-data packages separately to ensure metadata integrity.
+- Before pushing, run `pnpm test`, `pnpm lint`, and `pnpm check-types` to catch issues early.
 
 ## Commit & Pull Request Guidelines
 - Follow the Conventional Commit style: `type(scope): summary` (e.g. `feat(api): add g2p fallback`).
@@ -74,7 +107,11 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 
 ## Environment & Configuration Tips
 - Never commit secrets. Keep runtime credentials in `apps/web/.env.local` and ElevenLabs keys in `packages/helper-scripts/.env`.
-- When updating CMUDict assets, use the helper scripts (`cmudict-to-json`, `generate`) and commit outputs under `apps/web/data` or `apps/web/public/audio` so deployments stay deterministic.
+- Required environment variables for `apps/web`:
+  - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` for API rate limiting
+  - `CMUDICT_SRC_URL` (optional) for CMUDict source location during builds
+- When updating CMUDict assets, use the helper scripts (`cmudict-to-json`) and commit JSON outputs under `apps/web/data/dict` so deployments stay deterministic.
+- Generated audio files from `packages/helper-scripts generate` are committed to `apps/web/public/audio/examples` for consistent deployments.
 
 ## Design & UX Patterns
 
