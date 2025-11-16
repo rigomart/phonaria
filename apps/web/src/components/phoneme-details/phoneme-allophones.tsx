@@ -1,4 +1,4 @@
-import { phonemeAllophones } from "shared-data";
+import { PhonemeAllophoneRegistry } from "shared-data";
 import { allophoneContextDefinitions } from "@/data/phoneme-details";
 import { useScopedI18n } from "@/locales/client";
 import { AudioControls } from "../audio-controls";
@@ -15,7 +15,7 @@ import {
 export function PhonemeDetailsAllophones() {
 	const { phonemeId } = usePhonemeDetailsContext();
 	const t = useScopedI18n("components.phoneme-details.allophones");
-	const allophones = phonemeAllophones[phonemeId];
+	const allophones = PhonemeAllophoneRegistry[phonemeId];
 
 	if (!allophones) return null;
 

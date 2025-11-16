@@ -133,5 +133,6 @@ export type PhonemeAllophoneContextKey = AllophoneCollections[number]["contextKe
 
 export type PhonemeAllophone = BasePhonemeAllophone<PhonemeAllophoneContextKey>;
 
-export const phonemeAllophones: Partial<Record<PhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>> =
-	phonemeAllophonesData;
+export const PhonemeAllophoneRegistry: Partial<
+	Record<PhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>
+> = phonemeAllophonesData;

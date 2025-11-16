@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo } from "react";
 import type { ConsonantSymbolId } from "shared-data";
-import { consonantArticulations, consonantPhonemeSymbols } from "shared-data";
+import { ConsonantArticulationRegistry, ConsonantSymbolRegistry } from "shared-data";
 import { cn } from "@/lib/utils";
 import {
 	getCellKey,
@@ -28,8 +28,8 @@ export function ConsonantChart() {
 	const consonants = useMemo(() => {
 		const phonemes: ConsonantPhoneme[] = [];
 
-		for (const [id, articulation] of Object.entries(consonantArticulations)) {
-			const symbolEntry = consonantPhonemeSymbols[id as keyof typeof consonantPhonemeSymbols];
+		for (const [id, articulation] of Object.entries(ConsonantArticulationRegistry)) {
+			const symbolEntry = ConsonantSymbolRegistry[id as keyof typeof ConsonantSymbolRegistry];
 			if (!symbolEntry) continue;
 
 			phonemes.push({

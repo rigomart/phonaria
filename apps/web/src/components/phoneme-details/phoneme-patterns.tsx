@@ -1,4 +1,4 @@
-import { phonemeSpellingPatterns } from "shared-data";
+import { PhonemeSpellingPatternRegistry } from "shared-data";
 import { useScopedI18n } from "@/locales/client";
 import { AudioControls } from "../audio-controls";
 import { Badge } from "../ui/badge";
@@ -16,7 +16,7 @@ export function PhonemeDetailsPatterns() {
 	const { phonemeId } = usePhonemeDetailsContext();
 	const t = useScopedI18n("components.phoneme-details.patterns");
 
-	const spellingData = phonemeSpellingPatterns[phonemeId];
+	const spellingData = PhonemeSpellingPatternRegistry[phonemeId];
 
 	if (!spellingData) {
 		return null;

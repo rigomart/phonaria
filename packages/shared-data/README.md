@@ -10,18 +10,20 @@ Canonical phoneme metadata for the Phonaria workspace. Everything in this packag
 
 ## Exports at a glance
 
+All canonical phonetics datasets use PascalCase `*Registry` names (or `*Catalog` for arrays) to signal their role as source-of-truth data exports from `shared-data`. This naming convention makes it visually obvious that these are global data registries, not local constants.
+
 ```ts
 import {
-  allPhonemeSymbols,
-  consonantPhonemeSymbols,
-  vowelPhonemeSymbols,
-  phonemeArticulations,
-  consonantArticulations,
-  monophthongVowelArticulations,
-  diphthongVowelArticulations,
-  rhoticVowelArticulations,
-  contrastsByPhonemeId,
-  phonemeSpellingPatterns,
+  PhonemeSymbolRegistry,
+  ConsonantSymbolRegistry,
+  VowelSymbolRegistry,
+  PhonemeArticulationRegistry,
+  ConsonantArticulationRegistry,
+  MonophthongVowelArticulationRegistry,
+  DiphthongVowelArticulationRegistry,
+  RhoticVowelArticulationRegistry,
+  ContrastsByPhonemeIdRegistry,
+  PhonemeSpellingPatternRegistry,
   type ConsonantArticulatoryFeatures,
   type VowelArticulatoryFeatures,
   type PhonemeArticulatoryFeatures,
@@ -35,7 +37,7 @@ import {
 | --- | --- |
 | `symbols-registry.ts` | Typed registries of every consonant, vowel, diphthong, and rhotic symbol plus helper type exports. |
 | `phoneme-articulations.ts` | Maps each `PhonemeSymbolId` to its articulatory feature set (manner/place/voicing or height/backness/etc.). |
-| `phoneme-contrasts.ts` | Minimal-pair style relationships (`contrastsByPhonemeId`) that highlight challenging sound pairs. |
+| `phoneme-contrasts.ts` | Minimal-pair style relationships (`ContrastsByPhonemeIdRegistry`) that highlight challenging sound pairs. |
 | `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. |
 | `index.ts` | Barrel re-export for all of the above so consumers import from `shared-data`. |
 
@@ -44,18 +46,18 @@ import {
 Render IPA info in the web app:
 
 ```ts
-import { allPhonemeSymbols, phonemeArticulations } from "shared-data";
+import { PhonemeSymbolRegistry, PhonemeArticulationRegistry } from "shared-data";
 
-const ipa = allPhonemeSymbols[phonemeId].ipa;
-const articulation = phonemeArticulations[phonemeId];
+const ipa = PhonemeSymbolRegistry[phonemeId].ipa;
+const articulation = PhonemeArticulationRegistry[phonemeId];
 ```
 
 Build spelling-pattern cards:
 
 ```ts
-import { phonemeSpellingPatterns } from "shared-data";
+import { PhonemeSpellingPatternRegistry } from "shared-data";
 
-const patterns = phonemeSpellingPatterns[phonemeId]?.patterns ?? [];
+const patterns = PhonemeSpellingPatternRegistry[phonemeId]?.patterns ?? [];
 ```
 
 ## Contribution guide

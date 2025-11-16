@@ -1,4 +1,4 @@
-import { allPhonemeSymbols, getSymbolIdForCmuToken } from "shared-data";
+import { getSymbolIdForCmuToken, PhonemeSymbolRegistry } from "shared-data";
 import cmudictData from "@/data/dict/cmudict.json";
 import type { G2PPhoneme } from "../_schemas/g2p-api.schema";
 import { normalizeCmuWord } from "../_utils/text-processing";
@@ -72,7 +72,7 @@ class CMUDict {
 					};
 				}
 
-				const symbol = allPhonemeSymbols[symbolId];
+				const symbol = PhonemeSymbolRegistry[symbolId];
 
 				return {
 					ipa: symbol.ipa,

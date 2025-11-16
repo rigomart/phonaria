@@ -4,7 +4,7 @@ import type { PhonemeSymbolId } from "./symbols-registry";
  * Maps CMU ARPA tokens to phoneme symbol IDs.
  * Each stress variant (0, 1, 2) for vowels maps to the same base phoneme ID.
  */
-export const CMU_TO_SYMBOL_ID = {
+export const CmuSymbolRegistry = {
 	// Consonants
 	P: "voiceless-bilabial-stop",
 	B: "voiced-bilabial-stop",
@@ -83,7 +83,7 @@ export const CMU_TO_SYMBOL_ID = {
 	ER2: "mid-central-rhotic-tense",
 } as const satisfies Record<string, PhonemeSymbolId>;
 
-export type CmuArpaToken = keyof typeof CMU_TO_SYMBOL_ID;
+export type CmuArpaToken = keyof typeof CmuSymbolRegistry;
 
 /**
  * Safely maps a CMU ARPA token to a phoneme symbol ID.
@@ -95,5 +95,5 @@ export type CmuArpaToken = keyof typeof CMU_TO_SYMBOL_ID;
  * getSymbolIdForCmuToken("UNKNOWN") // undefined
  */
 export function getSymbolIdForCmuToken(token: string): PhonemeSymbolId | undefined {
-	return CMU_TO_SYMBOL_ID[token as CmuArpaToken];
+	return CmuSymbolRegistry[token as CmuArpaToken];
 }

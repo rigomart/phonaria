@@ -22,7 +22,7 @@ type PhonemeArticulationBase<
 // Consonant articulations
 type ConsonantArticulation = PhonemeArticulationBase<"consonant", ConsonantArticulatoryFeatures>;
 
-export const consonantArticulations: Record<ConsonantSymbolId, ConsonantArticulation> = {
+export const ConsonantArticulationRegistry: Record<ConsonantSymbolId, ConsonantArticulation> = {
 	"voiceless-bilabial-stop": {
 		category: "consonant",
 		features: { manner: "stop", place: "bilabial", voicing: "voiceless" },
@@ -128,7 +128,7 @@ type MonophthongVowelArticulation = PhonemeArticulationBase<
 	VowelArticulatoryFeatures
 >;
 
-export const monophthongVowelArticulations: Record<
+export const MonophthongVowelArticulationRegistry: Record<
 	MonophthongSymbolId,
 	MonophthongVowelArticulation
 > = {
@@ -238,7 +238,10 @@ type DiphthongVowelArticulation = PhonemeArticulationBase<
 	}
 >;
 
-export const diphthongVowelArticulations: Record<DiphthongSymbolId, DiphthongVowelArticulation> = {
+export const DiphthongVowelArticulationRegistry: Record<
+	DiphthongSymbolId,
+	DiphthongVowelArticulation
+> = {
 	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
 		category: "vowel/diphthong",
 		features: {
@@ -300,7 +303,7 @@ export const diphthongVowelArticulations: Record<DiphthongSymbolId, DiphthongVow
 
 type RhoticVowelArticulation = PhonemeArticulationBase<"vowel/rhotic", VowelArticulatoryFeatures>;
 
-export const rhoticVowelArticulations: Record<RhoticSymbolId, RhoticVowelArticulation> = {
+export const RhoticVowelArticulationRegistry: Record<RhoticSymbolId, RhoticVowelArticulation> = {
 	"mid-central-rhotic-tense": {
 		category: "vowel/rhotic",
 		features: {
@@ -321,11 +324,11 @@ export const rhoticVowelArticulations: Record<RhoticSymbolId, RhoticVowelArticul
 	},
 };
 
-export const phonemeArticulations = {
-	...consonantArticulations,
-	...monophthongVowelArticulations,
-	...diphthongVowelArticulations,
-	...rhoticVowelArticulations,
+export const PhonemeArticulationRegistry = {
+	...ConsonantArticulationRegistry,
+	...MonophthongVowelArticulationRegistry,
+	...DiphthongVowelArticulationRegistry,
+	...RhoticVowelArticulationRegistry,
 } as const satisfies Record<PhonemeSymbolId, PhonemeArticulation>;
 
 export type PhonemeArticulation =
@@ -360,7 +363,7 @@ const buildFeatureValueByPhoneme = (): FeatureValueLookup => {
 		lookup[key][phonemeId] = value;
 	};
 
-	for (const [phonemeId, articulation] of Object.entries(phonemeArticulations) as [
+	for (const [phonemeId, articulation] of Object.entries(PhonemeArticulationRegistry) as [
 		PhonemeSymbolId,
 		PhonemeArticulation,
 	][]) {
@@ -378,4 +381,4 @@ const buildFeatureValueByPhoneme = (): FeatureValueLookup => {
 	return lookup;
 };
 
-export const featureValueByPhoneme = buildFeatureValueByPhoneme();
+export const FeatureValueByPhonemeRegistry = buildFeatureValueByPhoneme();

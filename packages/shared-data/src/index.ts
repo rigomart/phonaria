@@ -1,24 +1,24 @@
 export {
-	CMU_TO_SYMBOL_ID,
 	type CmuArpaToken,
+	CmuSymbolRegistry,
 	getSymbolIdForCmuToken,
 } from "./phonetics/cmu-lookup";
 export {
 	type PhonemeAllophone,
 	type PhonemeAllophoneContextKey,
-	phonemeAllophones,
+	PhonemeAllophoneRegistry,
 } from "./phonetics/phoneme-allophones";
 export {
-	consonantArticulations,
-	diphthongVowelArticulations,
-	featureValueByPhoneme,
-	monophthongVowelArticulations,
+	ConsonantArticulationRegistry,
+	DiphthongVowelArticulationRegistry,
+	FeatureValueByPhonemeRegistry,
+	MonophthongVowelArticulationRegistry,
 	type PhonemeArticulation,
-	phonemeArticulations,
-	rhoticVowelArticulations,
+	PhonemeArticulationRegistry,
+	RhoticVowelArticulationRegistry,
 } from "./phonetics/phoneme-articulations";
-export { contrastsByPhonemeId, type PhonemeContrast } from "./phonetics/phoneme-contrasts";
-export { phonemeSpellingPatterns } from "./phonetics/phoneme-patterns";
+export { ContrastsByPhonemeIdRegistry, type PhonemeContrast } from "./phonetics/phoneme-contrasts";
+export { PhonemeSpellingPatternRegistry } from "./phonetics/phoneme-patterns";
 export type {
 	ConsonantArticulatoryFeatures,
 	ConsonantPhonemeArticulatoryFeatureKey,
@@ -31,10 +31,10 @@ export type {
 	VowelPhonemeArticulatoryFeatureKey,
 } from "./phonetics/symbols-registry";
 export {
-	allPhonemeSymbols,
-	consonantPhonemeSymbols,
-	diphthongPhonemeSymbols,
-	monophthongPhonemeSymbols,
-	rhoticPhonemeSymbols,
-	vowelPhonemeSymbols,
+	ConsonantSymbolRegistry,
+	DiphthongSymbolRegistry,
+	MonophthongSymbolRegistry,
+	PhonemeSymbolRegistry,
+	RhoticSymbolRegistry,
+	VowelSymbolRegistry,
 } from "./phonetics/symbols-registry";

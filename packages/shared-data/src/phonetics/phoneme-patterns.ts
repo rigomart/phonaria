@@ -12,7 +12,7 @@ type SpellingPattern = {
 	}[];
 };
 
-export const phonemeSpellingPatterns: Partial<Record<PhonemeSymbolId, SpellingPattern>> = {
+export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, SpellingPattern>> = {
 	// Consonants
 	"voiceless-velar-stop": {
 		patterns: ["ck", "ke", "ki", "ky", "ca", "co", "cu"],

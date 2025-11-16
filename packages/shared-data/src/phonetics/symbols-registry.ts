@@ -35,7 +35,7 @@ export type ConsonantPhonemeArticulatoryFeatureKey = keyof ConsonantArticulatory
 type ConsonantPhonemeIdPattern =
 	`${ConsonantArticulatoryFeatures["voicing"]}-${ConsonantArticulatoryFeatures["place"]}-${ConsonantArticulatoryFeatures["manner"]}`;
 
-export const consonantPhonemeSymbols = {
+export const ConsonantSymbolRegistry = {
 	"voiceless-bilabial-stop": { ipa: "p", arpa: "P", category: "consonant" },
 	"voiced-bilabial-stop": { ipa: "b", arpa: "B", category: "consonant" },
 	"voiceless-alveolar-stop": { ipa: "t", arpa: "T", category: "consonant" },
@@ -78,8 +78,8 @@ export const consonantPhonemeSymbols = {
 	"voiced-labial-velar-approximant": { ipa: "w", arpa: "W", category: "consonant" },
 } as const satisfies Partial<Record<ConsonantPhonemeIdPattern, PhonemeSymbolEntry>>;
 
-export type ConsonantSymbolId = keyof typeof consonantPhonemeSymbols;
-export type ConsonantSymbol = (typeof consonantPhonemeSymbols)[ConsonantSymbolId];
+export type ConsonantSymbolId = keyof typeof ConsonantSymbolRegistry;
+export type ConsonantSymbol = (typeof ConsonantSymbolRegistry)[ConsonantSymbolId];
 export type ConsonantSymbolIpa = ConsonantSymbol["ipa"];
 export type ConsonantSymbolArpa = ConsonantSymbol["arpa"];
 
@@ -99,7 +99,7 @@ export type VowelPhonemeArticulatoryFeatureKey = keyof VowelArticulatoryFeatures
 type MonophthongPhonemeIdPattern =
 	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}`;
 
-export const monophthongPhonemeSymbols = {
+export const MonophthongSymbolRegistry = {
 	"close-front-unrounded": {
 		ipa: "i",
 		arpa: "IY",
@@ -152,8 +152,8 @@ export const monophthongPhonemeSymbols = {
 	},
 } as const satisfies Partial<Record<MonophthongPhonemeIdPattern, PhonemeSymbolEntry>>;
 
-export type MonophthongSymbolId = keyof typeof monophthongPhonemeSymbols;
-export type MonophthongSymbol = (typeof monophthongPhonemeSymbols)[MonophthongSymbolId];
+export type MonophthongSymbolId = keyof typeof MonophthongSymbolRegistry;
+export type MonophthongSymbol = (typeof MonophthongSymbolRegistry)[MonophthongSymbolId];
 export type MonophthongSymbolIpa = MonophthongSymbol["ipa"];
 export type MonophthongSymbolArpa = MonophthongSymbol["arpa"];
 
@@ -164,7 +164,7 @@ export type MonophthongSymbolArpa = MonophthongSymbol["arpa"];
 type DiphthongPhonemeIdPattern =
 	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}-to-${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}`;
 
-export const diphthongPhonemeSymbols = {
+export const DiphthongSymbolRegistry = {
 	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
 		ipa: "eɪ",
 		arpa: "EY",
@@ -192,8 +192,8 @@ export const diphthongPhonemeSymbols = {
 	},
 } as const satisfies Partial<Record<DiphthongPhonemeIdPattern, PhonemeSymbolEntry>>;
 
-export type DiphthongSymbolId = keyof typeof diphthongPhonemeSymbols;
-export type DiphthongSymbol = (typeof diphthongPhonemeSymbols)[DiphthongSymbolId];
+export type DiphthongSymbolId = keyof typeof DiphthongSymbolRegistry;
+export type DiphthongSymbol = (typeof DiphthongSymbolRegistry)[DiphthongSymbolId];
 export type DiphthongSymbolIpa = DiphthongSymbol["ipa"];
 export type DiphthongSymbolArpa = DiphthongSymbol["arpa"];
 
@@ -202,7 +202,7 @@ export type DiphthongSymbolArpa = DiphthongSymbol["arpa"];
 type RhoticPhonemeIdPattern =
 	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-rhotic-${VowelArticulatoryFeatures["tenseness"]}`;
 
-export const rhoticPhonemeSymbols = {
+export const RhoticSymbolRegistry = {
 	"mid-central-rhotic-tense": {
 		ipa: "ɝ",
 		arpa: "ER",
@@ -211,8 +211,8 @@ export const rhoticPhonemeSymbols = {
 	"mid-central-rhotic-lax": { ipa: "ɚ", arpa: "ER", category: "vowel/rhotic" },
 } as const satisfies Partial<Record<RhoticPhonemeIdPattern, PhonemeSymbolEntry>>;
 
-export type RhoticSymbolId = keyof typeof rhoticPhonemeSymbols;
-export type RhoticSymbol = (typeof rhoticPhonemeSymbols)[RhoticSymbolId];
+export type RhoticSymbolId = keyof typeof RhoticSymbolRegistry;
+export type RhoticSymbol = (typeof RhoticSymbolRegistry)[RhoticSymbolId];
 export type RhoticSymbolIpa = RhoticSymbol["ipa"];
 export type RhoticSymbolArpa = RhoticSymbol["arpa"];
 
@@ -223,21 +223,21 @@ type VowelPhonemeIdPattern =
 	| DiphthongPhonemeIdPattern
 	| RhoticPhonemeIdPattern;
 
-export const vowelPhonemeSymbols = {
-	...monophthongPhonemeSymbols,
-	...diphthongPhonemeSymbols,
-	...rhoticPhonemeSymbols,
+export const VowelSymbolRegistry = {
+	...MonophthongSymbolRegistry,
+	...DiphthongSymbolRegistry,
+	...RhoticSymbolRegistry,
 } as const satisfies Partial<Record<VowelPhonemeIdPattern, PhonemeSymbolEntry>>;
 
-export type VowelSymbolId = keyof typeof vowelPhonemeSymbols;
-export type VowelSymbol = (typeof vowelPhonemeSymbols)[VowelSymbolId];
+export type VowelSymbolId = keyof typeof VowelSymbolRegistry;
+export type VowelSymbol = (typeof VowelSymbolRegistry)[VowelSymbolId];
 export type VowelSymbolIpa = VowelSymbol["ipa"];
 export type VowelSymbolArpa = VowelSymbol["arpa"];
 
 // All
-export const allPhonemeSymbols = {
-	...consonantPhonemeSymbols,
-	...vowelPhonemeSymbols,
+export const PhonemeSymbolRegistry = {
+	...ConsonantSymbolRegistry,
+	...VowelSymbolRegistry,
 } as const;
 
 export type PhonemeArticulatoryFeatures = ConsonantArticulatoryFeatures & VowelArticulatoryFeatures;
@@ -245,7 +245,7 @@ export type PhonemeArticulatoryFeatureKey =
 	| ConsonantPhonemeArticulatoryFeatureKey
 	| VowelPhonemeArticulatoryFeatureKey;
 
-export type PhonemeSymbolId = keyof typeof allPhonemeSymbols;
-export type PhonemeSymbol = (typeof allPhonemeSymbols)[PhonemeSymbolId];
+export type PhonemeSymbolId = keyof typeof PhonemeSymbolRegistry;
+export type PhonemeSymbol = (typeof PhonemeSymbolRegistry)[PhonemeSymbolId];
 export type PhonemeSymbolIpa = PhonemeSymbol["ipa"];
 export type PhonemeSymbolArpa = PhonemeSymbol["arpa"];

@@ -1,5 +1,5 @@
 import type { PhonemeSymbolId } from "shared-data";
-import { allPhonemeSymbols } from "shared-data";
+import { PhonemeSymbolRegistry } from "shared-data";
 import type { G2PPhoneme } from "../_schemas/g2p-api.schema";
 
 export class FallbackG2P {
@@ -38,7 +38,7 @@ export class FallbackG2P {
 	};
 
 	constructor() {
-		for (const [phonemeId, symbol] of Object.entries(allPhonemeSymbols) as [
+		for (const [phonemeId, symbol] of Object.entries(PhonemeSymbolRegistry) as [
 			PhonemeSymbolId,
 			{ ipa: string },
 		][]) {

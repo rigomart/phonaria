@@ -19,7 +19,7 @@ export type PhonemeContrast = {
 };
 
 // TODO: Refine the contrasts for accuracy and completeness.
-export const phonemeContrasts: PhonemeContrast[] = [
+export const PhonemeContrastCatalog: PhonemeContrast[] = [
 	// Consonants: Voicing
 	{
 		phonemeIds: ["voiceless-bilabial-stop", "voiced-bilabial-stop"],
@@ -388,31 +388,32 @@ export type PhonemeContrastMatch = {
 };
 
 // Scoped record generation using IIFE for O(1) access in consumption
-export const contrastsByPhonemeId: Partial<Record<PhonemeSymbolId, PhonemeContrastMatch[]>> =
-	(() => {
-		const record: Partial<Record<PhonemeSymbolId, PhonemeContrastMatch[]>> = {};
+export const ContrastsByPhonemeIdRegistry: Partial<
+	Record<PhonemeSymbolId, PhonemeContrastMatch[]>
+> = (() => {
+	const record: Partial<Record<PhonemeSymbolId, PhonemeContrastMatch[]>> = {};
 
-		for (const contrast of phonemeContrasts) {
-			const [leftId, rightId] = contrast.phonemeIds;
+	for (const contrast of PhonemeContrastCatalog) {
+		const [leftId, rightId] = contrast.phonemeIds;
 
-			const addEntry = (fromId: PhonemeSymbolId, toId: PhonemeSymbolId) => {
-				const entry: PhonemeContrastMatch = {
-					partnerId: toId,
-					contrastType: contrast.contrastType,
-					minimalPairs: contrast.minimalPairs,
-				};
-
-				const existing = record[fromId];
-				if (existing) {
-					existing.push(entry);
-				} else {
-					record[fromId] = [entry];
-				}
+		const addEntry = (fromId: PhonemeSymbolId, toId: PhonemeSymbolId) => {
+			const entry: PhonemeContrastMatch = {
+				partnerId: toId,
+				contrastType: contrast.contrastType,
+				minimalPairs: contrast.minimalPairs,
 			};
 
-			addEntry(leftId, rightId);
-			addEntry(rightId, leftId);
-		}
+			const existing = record[fromId];
+			if (existing) {
+				existing.push(entry);
+			} else {
+				record[fromId] = [entry];
+			}
+		};
 
-		return record;
-	})();
+		addEntry(leftId, rightId);
+		addEntry(rightId, leftId);
+	}
+
+	return record;
+})();

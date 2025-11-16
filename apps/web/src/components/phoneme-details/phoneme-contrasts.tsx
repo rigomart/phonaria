@@ -1,10 +1,10 @@
 import { Info } from "lucide-react";
 import {
-	allPhonemeSymbols,
-	contrastsByPhonemeId,
-	featureValueByPhoneme,
+	ContrastsByPhonemeIdRegistry,
+	FeatureValueByPhonemeRegistry,
 	type PhonemeArticulatoryFeatureKey,
 	type PhonemeArticulatoryFeatures,
+	PhonemeSymbolRegistry,
 } from "shared-data";
 import { type FeatureValueDefinition, featureDefinitions } from "@/data/phoneme-details";
 import { cn } from "@/lib/utils";
@@ -41,8 +41,8 @@ export function PhonemeDetailsContrasts() {
 
 	const t = useScopedI18n(`components.phoneme-details.contrasts`);
 
-	const contrasts = contrastsByPhonemeId[phonemeId];
-	const currentIpa = allPhonemeSymbols[phonemeId].ipa;
+	const contrasts = ContrastsByPhonemeIdRegistry[phonemeId];
+	const currentIpa = PhonemeSymbolRegistry[phonemeId].ipa;
 	const vsLabel = t("vs");
 
 	if (!contrasts || contrasts.length === 0) {
@@ -57,7 +57,7 @@ export function PhonemeDetailsContrasts() {
 			</PhonemeSectionHeader>
 			<PhonemeSectionContent>
 				{contrasts.map((contrast) => {
-					const partnerIpa = allPhonemeSymbols[contrast.partnerId].ipa;
+					const partnerIpa = PhonemeSymbolRegistry[contrast.partnerId].ipa;
 					// Limit to first pair
 					const displayPairs = contrast.minimalPairs[0];
 
@@ -67,8 +67,8 @@ export function PhonemeDetailsContrasts() {
 								<span className="text-sm text-muted-foreground">{t("differs-in")}</span>
 								<div className="flex gap-1">
 									{contrast.contrastType.map((type) => {
-										const phonemeValueKey = featureValueByPhoneme[type][phonemeId];
-										const partnerValueKey = featureValueByPhoneme[type][contrast.partnerId];
+										const phonemeValueKey = FeatureValueByPhonemeRegistry[type][phonemeId];
+										const partnerValueKey = FeatureValueByPhonemeRegistry[type][contrast.partnerId];
 										const phonemeValueDef = getFeatureValueDefinition(type, phonemeValueKey);
 										const partnerValueDef = getFeatureValueDefinition(type, partnerValueKey);
 

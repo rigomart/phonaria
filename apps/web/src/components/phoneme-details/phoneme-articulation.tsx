@@ -1,10 +1,10 @@
 import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import {
-	allPhonemeSymbols,
 	type PhonemeArticulation,
+	PhonemeArticulationRegistry,
 	type PhonemeSymbolId,
-	phonemeArticulations,
+	PhonemeSymbolRegistry,
 } from "shared-data";
 import {
 	type ArticulatoryFeature,
@@ -31,7 +31,7 @@ import { VowelChartCard } from "./phoneme-vowel-chart";
 export function PhonemeDetailsArticulation() {
 	const { phonemeId } = usePhonemeDetailsContext();
 
-	const articulation = phonemeArticulations[phonemeId];
+	const articulation = PhonemeArticulationRegistry[phonemeId];
 
 	const t = useScopedI18n(`components.phoneme-details.articulation`);
 
@@ -68,7 +68,7 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 // TODO: Add the illustrations for the remaining categories
 function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllustrationProps) {
 	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
-	const { ipa: phonemeIpa } = allPhonemeSymbols[phonemeId];
+	const { ipa: phonemeIpa } = PhonemeSymbolRegistry[phonemeId];
 	const t = useScopedI18n(`components.phoneme-details.articulation.diagram`);
 
 	if (articulation.category === "consonant") {
