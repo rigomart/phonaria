@@ -1,14 +1,17 @@
 import { AudioLines } from "lucide-react";
+import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Link } from "@/i18n/navigation";
+import { getScopedI18n } from "@/locales/server";
 
-const navigationLinks = [
-	{ href: "/overview", label: "Overview" },
-	{ href: "/", label: "Transcription" },
-	{ href: "/ipa-chart", label: "IPA Reference" },
-];
+export async function Header() {
+	const t = await getScopedI18n("components.header.navigation");
 
-export function Header() {
+	const navigationLinks = [
+		{ href: "/overview", label: t("overview") },
+		{ href: "/", label: t("transcription") },
+		{ href: "/ipa-chart", label: t("ipa-chart") },
+	];
+
 	return (
 		<header className="sticky top-0 z-40 border-b border-border bg-background">
 			<div className="container mx-auto px-4 py-3">
@@ -23,7 +26,6 @@ export function Header() {
 							</span>
 							<span className="text-base font-medium">Phonaria</span>
 						</Link>
-
 						<nav className="hidden items-center gap-5 md:flex">
 							{navigationLinks.map((link) => (
 								<Link

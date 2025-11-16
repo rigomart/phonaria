@@ -1,11 +1,10 @@
-import type { IpaPhoneme } from "shared-data";
+import type { PhonemeSymbolId } from "shared-data";
 import { create } from "zustand";
-import { getPhonemeBySymbol } from "../_lib/g2p-client";
-import type { TranscribedPhoneme } from "../_types/g2p";
 
 interface G2PStore {
 	// Selected phoneme state
-	selectedPhoneme: IpaPhoneme | null;
+	selectedPhonemeId: PhonemeSymbolId | null;
+	hasSelection: boolean;
 
 	// Per-word selected variant indices (aligned with current result)
 	selectedVariants: number[];
@@ -13,14 +12,14 @@ interface G2PStore {
 	// Actions
 	resetVariants: (wordCount: number) => void;
 	clearResult: () => void;
-	selectPhoneme: (transcribedPhoneme: TranscribedPhoneme) => void;
-	closePhonemePanel: () => void;
+	selectPhoneme: (phonemeId: PhonemeSymbolId | null) => void;
 	setVariant: (wordIndex: number, variantIndex: number) => void;
 }
 
 export const useG2PStore = create<G2PStore>((set) => ({
 	// Initial state
-	selectedPhoneme: null,
+	selectedPhonemeId: null,
+	hasSelection: false,
 	selectedVariants: [],
 
 	// Actions
@@ -30,24 +29,14 @@ export const useG2PStore = create<G2PStore>((set) => ({
 
 	clearResult: () => {
 		set({
-			selectedPhoneme: null,
+			selectedPhonemeId: null,
+			hasSelection: false,
 			selectedVariants: [],
 		});
 	},
 
-	selectPhoneme: (transcribedPhoneme: TranscribedPhoneme) => {
-		const phonemeData = getPhonemeBySymbol(transcribedPhoneme.symbol);
-
-		if (phonemeData) {
-			set({ selectedPhoneme: phonemeData });
-		} else {
-			console.log(`Phoneme /${transcribedPhoneme.symbol}/ not found in database`);
-			set({ selectedPhoneme: null });
-		}
-	},
-
-	closePhonemePanel: () => {
-		set({ selectedPhoneme: null });
+	selectPhoneme: (phonemeId: PhonemeSymbolId | null) => {
+		set({ selectedPhonemeId: phonemeId, hasSelection: true });
 	},
 
 	setVariant: (wordIndex: number, variantIndex: number) => {

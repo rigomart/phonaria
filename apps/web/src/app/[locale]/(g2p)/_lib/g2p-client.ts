@@ -2,8 +2,10 @@
  * G2P API client and utilities
  */
 
-import { consonants, type IpaPhoneme, vowels } from "shared-data";
+import type { PhonemeSymbolId } from "shared-data";
+import { PhonemeSymbolRegistry } from "shared-data";
 import type {
+	G2PPhoneme,
 	TranscribedPhoneme,
 	TranscribedWord,
 	TranscriptionResult,
@@ -16,21 +18,15 @@ import {
 	g2pResponseSchema,
 } from "./g2p-schema";
 
-// Create phoneme lookup map for quick access
-const phonemeMap = new Map<string, IpaPhoneme>();
-[...consonants, ...vowels].forEach((phoneme) => {
-	phonemeMap.set(phoneme.symbol, phoneme);
-});
-
 /**
  * G2P API client instance
  */
 const g2pApiClient = createApiClient({
-	baseUrl: "", // Use relative URLs for internal API routes
+	baseUrl: "",
 	defaultHeaders: {
 		"Content-Type": "application/json",
 	},
-	timeout: 15000, // 15 seconds for G2P processing
+	timeout: 15000,
 });
 
 /**
@@ -49,16 +45,9 @@ function transformG2PResponse(
 ): TranscriptionResult {
 	const words: TranscribedWord[] = response.words.map((word, wordIndex) => {
 		const variants: TranscribedPhoneme[][] = word.variants.map((variant) =>
-			variant.map((symbol, phonemeIndex) => {
-				const phonemeData = phonemeMap.get(symbol);
-				return {
-					symbol,
-					wordIndex,
-					phonemeIndex,
-					phonemeData,
-					isKnown: !!phonemeData,
-				};
-			}),
+			variant.map((phoneme, phonemeIndex) =>
+				mapPhonemeToTranscribed(phoneme, wordIndex, phonemeIndex),
+			),
 		);
 
 		return {
@@ -91,30 +80,36 @@ export async function transcribeText(text: string): Promise<TranscriptionResult>
 	return transformG2PResponse(response, text);
 }
 
-/**
- * Get phoneme data by IPA symbol
- */
-export function getPhonemeBySymbol(symbol: string): IpaPhoneme | undefined {
-	return phonemeMap.get(symbol);
+function mapPhonemeToTranscribed(
+	phoneme: G2PPhoneme,
+	wordIndex: number,
+	phonemeIndex: number,
+): TranscribedPhoneme {
+	if (isKnownPhoneme(phoneme)) {
+		return {
+			symbol: phoneme.ipa,
+			ipa: phoneme.ipa,
+			cmuToken: phoneme.cmuToken,
+			phonemeId: phoneme.phonemeId,
+			wordIndex,
+			phonemeIndex,
+		};
+	}
+
+	return {
+		symbol: phoneme.cmuToken,
+		cmuToken: phoneme.cmuToken,
+		phonemeId: null,
+		wordIndex,
+		phonemeIndex,
+	};
 }
 
-/**
- * Check if a phoneme exists in our database
- */
-export function isKnownPhoneme(symbol: string): boolean {
-	return phonemeMap.has(symbol);
-}
-
-/**
- * Get all available phonemes for reference
- */
-export function getAllPhonemes(): IpaPhoneme[] {
-	return [...consonants, ...vowels];
-}
-
-/**
- * Update G2P API base URL (useful for different environments)
- */
-export function setG2PApiUrl(baseUrl: string): void {
-	g2pApiClient.setBaseUrl(baseUrl);
+function isKnownPhoneme(
+	phoneme: G2PPhoneme,
+): phoneme is G2PPhoneme & { phonemeId: PhonemeSymbolId; ipa: string } {
+	if (typeof phoneme.phonemeId !== "string") {
+		return false;
+	}
+	return phoneme.phonemeId in PhonemeSymbolRegistry;
 }

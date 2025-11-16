@@ -1,4 +1,8 @@
-export { normalizeCmuWord } from "shared-data";
+export function normalizeCmuWord(input: string): string {
+	const trimmed = input.trim();
+	const withoutVariant = trimmed.replace(/\(\d+\)$/, "");
+	return withoutVariant.toUpperCase();
+}
 
 export function tokenizeText(text: string): string[] {
 	return text

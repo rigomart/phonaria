@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { cmudict } from "./dictionary";
 
-vi.mock("@data/cmudict.json", () => ({
+vi.mock("@/data/dict/cmudict.json", () => ({
 	default: {
 		meta: {
 			formatVersion: 1,

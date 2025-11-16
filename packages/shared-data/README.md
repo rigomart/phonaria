@@ -1,74 +1,84 @@
-# Shared Data
+# shared-data
 
-This package defines the canonical phoneme catalog, articulation metadata, and helper utilities consumed by both the web application and helper scripts.
+Canonical phoneme metadata for the Phonaria workspace. Everything in this package is structured data: IPA symbols, articulatory feature maps, contrast sets, and spelling patterns that other packages render into UI copy on their own. Do **not** store prose, learner-facing descriptions, or localized strings here—apps import the metadata and generate copy in their respective locales.
+
+## Purpose
+
+- Single source of truth for phoneme symbols and their relationships.
+- Typed datasets that can be consumed by `apps/web`, helper scripts, or future tooling without duplication.
+- Metadata only. Consumers are responsible for presenting text, translations, or UX copy.
 
 ## Exports at a glance
 
+All canonical phonetics datasets use PascalCase `*Registry` names (or `*Catalog` for arrays) to signal their role as source-of-truth data exports from `shared-data`. This naming convention makes it visually obvious that these are global data registries, not local constants.
+
 ```ts
 import {
-  consonants,
-  vowels,
-  articulationRegistry,
-  consonantArticulationRegistry,
-  vowelArticulationRegistry,
-  PHONEME_CATEGORIES,
-  getCategoryInfo,
-  phonariaUtils,
-  type ConsonantPhoneme,
-  type VowelPhoneme,
+  PhonemeSymbolRegistry,
+  ConsonantSymbolRegistry,
+  VowelSymbolRegistry,
+  PhonemeArticulationRegistry,
+  ConsonantArticulationRegistry,
+  MonophthongVowelArticulationRegistry,
+  DiphthongVowelArticulationRegistry,
+  RhoticVowelArticulationRegistry,
+  ContrastsByPhonemeIdRegistry,
+  PhonemeSpellingPatternRegistry,
+  type ConsonantArticulatoryFeatures,
+  type VowelArticulatoryFeatures,
+  type PhonemeArticulatoryFeatures,
+  type PhonemeSymbolId,
 } from "shared-data";
 ```
 
-### Core modules
+## Module map (`src/phonetics`)
 
-| Module | Purpose |
+| File | Purpose |
 | --- | --- |
-| `src/consonants.ts` | 24 consonant phonemes (with pedagogical allophones where useful). |
-| `src/vowels.ts` | 16 vowel phonemes (10 monophthongs, 5 diphthongs, 1 rhotic vowel). |
-| `src/articulation.ts` | Registries describing articulation places, manners, and vowel dimensions. |
-| `src/category-config.ts` | Category groupings and helpers for chart organization. |
-| `src/utils/` | Utility helpers: audio path builders, IPA formatting, slug helpers, etc. |
-| `src/types.ts` | Strongly-typed interfaces for phonemes, articulation metadata, and example words. |
-| `src/index.ts` | Barrel that exposes the modules above to consumers. |
+| `symbols-registry.ts` | Typed registries of every consonant, vowel, diphthong, and rhotic symbol plus helper type exports. |
+| `phoneme-articulations.ts` | Maps each `PhonemeSymbolId` to its articulatory feature set (manner/place/voicing or height/backness/etc.). |
+| `phoneme-contrasts.ts` | Minimal-pair style relationships (`ContrastsByPhonemeIdRegistry`) that highlight challenging sound pairs. |
+| `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. |
+| `index.ts` | Barrel re-export for all of the above so consumers import from `shared-data`. |
 
-## Phoneme structure
+## Usage examples
 
-Every phoneme entry shares a common schema:
+Render IPA info in the web app:
 
 ```ts
-interface BasePhoneme {
-  symbol: string;              // IPA symbol, no slashes
-  category: "consonant" | "vowel";
-  type: string;                // e.g. "stop", "monophthong"
-  description: string;         // pedagogical summary
-  guide: string;               // learner-facing production tips
-  examples: ExampleWord[];     // see below
-  allophones?: Allophone[];    // optional contextual variants
-}
+import { PhonemeSymbolRegistry, PhonemeArticulationRegistry } from "shared-data";
 
-interface ExampleWord {
-  word: string;                // orthographic form (lowercase)
-  ipa: string;                 // transcription without surrounding slashes
-}
+const ipa = PhonemeSymbolRegistry[phonemeId].ipa;
+const articulation = PhonemeArticulationRegistry[phonemeId];
 ```
 
-Utilities such as `phonariaUtils.getExampleAudioUrl(word)` and `phonariaUtils.toPhonemic(ipa)` keep formatting consistent between packages.
+Build spelling-pattern cards:
 
-## Adding or updating phonemes
+```ts
+import { PhonemeSpellingPatternRegistry } from "shared-data";
 
-1. Update the relevant source file (`consonants.ts`, `vowels.ts`, or articulation registries).
-2. Ensure examples are high-frequency, learner-friendly words and store IPA transcriptions without surrounding slashes.
-3. When introducing new metadata fields, extend the interfaces in `types.ts` and re-export them via `src/index.ts`.
-4. Run package checks:
+const patterns = PhonemeSpellingPatternRegistry[phonemeId]?.patterns ?? [];
+```
+
+## Contribution guide
+
+1. **Edit the right module**:  
+   - New phoneme symbol → `symbols-registry.ts`  
+   - Articulation metadata → `phoneme-articulations.ts`  
+   - Contrast pairs → `phoneme-contrasts.ts`  
+   - Spelling patterns → `phoneme-patterns.ts`
+2. **Stay data-only**: no prose strings, learner copy, or localization text. Keep values constrained to typed enums/objects so consuming apps can translate separately.
+3. **Update types when needed**: extend the relevant type definitions and re-export through `src/index.ts`.
+4. **Validate**:
    ```bash
    pnpm -C packages/shared-data lint
    pnpm -C packages/shared-data check-types
    ```
-5. If example words change, regenerate ElevenLabs audio so the frontend stays in sync.
+5. **Coordinate downstream assets**: if a change affects audio generation or web UI expectations, follow the workflows in `packages/helper-scripts` or `apps/web` to regenerate assets.
 
 ## Design principles
 
-- **Pedagogical focus** – Content targets intermediate-to-advanced ESL learners aiming for General American intelligibility.
-- **Consistent IPA** – `/ɹ/` and `/ɡ/` are used for accuracy; slashes are added at render time, not stored in data.
-- **Meaningful allophones** – Only contextually important variants are included (e.g., flap /ɾ/, glottal stop /ʔ/, dark /ɫ/).
-- **Reusability** – Utilities and registries are structured for cross-package consumption (web UI, helper scripts, future tooling).
+- **Canonical + immutable**: treat this package as a data store, not a rendering layer.
+- **Typed metadata**: every field is described via TypeScript so consumers get compile-time guarantees.
+- **No prose**: apps derive copy from their own locale dictionaries to keep translation workflows isolated.
+- **Reusability**: datasets must be neutral and flexible enough for multiple surfaces (IPA chart, G2P studio, contrast explorer). 

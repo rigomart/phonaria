@@ -1,9 +1,10 @@
+import type { PhonemeSymbolId } from "shared-data";
+import type { G2PPhonemeData } from "../_lib/g2p-schema";
+
 /**
  * Frontend types for G2P (Grapheme-to-Phoneme) functionality
  * Mirrors the API types but includes frontend-specific extensions
  */
-
-import type { IpaPhoneme } from "shared-data";
 
 /**
  * G2P API request structure
@@ -17,7 +18,7 @@ export interface G2PRequest {
  */
 export interface G2PWord {
 	word: string;
-	variants: string[][];
+	variants: G2PPhoneme[][];
 	source: "cmudict" | "fallback";
 }
 
@@ -36,20 +37,24 @@ export interface G2PError {
 	message: string;
 }
 
+export type G2PPhoneme = G2PPhonemeData;
+
 /**
  * Frontend-specific: Enhanced phoneme with metadata for UI display
  */
 export interface TranscribedPhoneme {
-	/** IPA symbol */
+	/** Symbol shown in the UI (IPA if known, CMU token otherwise) */
 	symbol: string;
+	/** Direct IPA string when available */
+	ipa?: string;
+	/** Original CMU token this phoneme came from */
+	cmuToken: string;
+	/** Canonical phoneme ID when the token is known */
+	phonemeId: PhonemeSymbolId | null;
 	/** Index in the original word */
 	wordIndex: number;
 	/** Index in the phoneme array */
 	phonemeIndex: number;
-	/** Reference to full phoneme data if found */
-	phonemeData?: IpaPhoneme;
-	/** Whether this phoneme exists in our phoneme database */
-	isKnown: boolean;
 }
 
 /**

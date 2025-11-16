@@ -1,18 +1,17 @@
 import type { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
 
 const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline';
     style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data:;
+    img-src 'self' blob: data: https://assets.rigos.dev;
     font-src 'self';
     object-src 'none';
     base-uri 'self';
     form-action 'self';
     frame-ancestors 'none';
     upgrade-insecure-requests;
-    media-src 'self' https://api.dictionaryapi.dev;
+    media-src 'self' https://api.dictionaryapi.dev https://assets.rigos.dev;
 `;
 
 const nextConfig: NextConfig = {
@@ -26,5 +25,4 @@ const nextConfig: NextConfig = {
 	},
 };
 
-const withNextIntl = createNextIntlPlugin();
-export default withNextIntl(nextConfig);
+export default nextConfig;

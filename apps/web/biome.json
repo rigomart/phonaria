@@ -8,6 +8,6 @@
 		}
 	},
 	"files": {
-		"includes": ["**", "!node_modules", "!dist", "!build", "!public", "!data"]
+		"includes": ["**", "!node_modules", "!dist", "!build", "!public", "!data", "!src/data/dict"]
 	}
 }

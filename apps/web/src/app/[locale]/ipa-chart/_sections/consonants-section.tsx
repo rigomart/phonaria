@@ -1,16 +1,15 @@
-import { useTranslations } from "next-intl";
-import { consonants } from "shared-data";
-import { PhonemeCategories } from "../_components/phoneme-categories";
+import { useScopedI18n } from "@/locales/client";
+import { ConsonantChart } from "../_components/consonant-chart";
 
 export function ConsonantsSection() {
-	const t = useTranslations("IpaChart.Sections.consonants");
+	const t = useScopedI18n("ipa-chart.sections.consonants");
 	return (
 		<div className="space-y-6">
 			<div>
 				<h2 className="text-xl font-medium">{t("title")}</h2>
 				<p className="text-sm text-muted-foreground">{t("description")}</p>
 			</div>
-			<PhonemeCategories phonemes={consonants} type="consonant" />
+			<ConsonantChart />
 		</div>
 	);
 }

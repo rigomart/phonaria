@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-type PlaybackSpeed = "slow" | "normal" | "fast" | number;
+export type PlaybackSpeed = "slow" | "normal" | "fast" | number;
 
 const playbackRateMap: Record<PlaybackSpeed, number> = {
 	slow: 0.5,
@@ -8,14 +8,13 @@ const playbackRateMap: Record<PlaybackSpeed, number> = {
 	fast: 1.5,
 };
 
-type PlaybackStatus = "idle" | "loading" | "playing" | "error";
+export type PlaybackStatus = "idle" | "loading" | "playing" | "error";
 
 export function useAudioPlayer() {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [status, setStatus] = useState<PlaybackStatus>("idle");
 	const [currentSource, setCurrentSource] = useState<string | null>(null);
 
-	// Effect to create and cleanup the audio element
 	useEffect(() => {
 		const audio = new Audio();
 		audioRef.current = audio;

@@ -21,7 +21,7 @@ export function PhonemeBadge({
 	disabled = false,
 }: PhonemeBadgeProps) {
 	const isClickable = !!onClick && !disabled;
-	const isKnown = phoneme.isKnown;
+	const isKnown = Boolean(phoneme.phonemeId);
 
 	// Determine badge variant based on phoneme status
 	const badgeVariant = variant || (isKnown ? "default" : "outline");
