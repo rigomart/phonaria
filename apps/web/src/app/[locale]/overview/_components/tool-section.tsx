@@ -32,15 +32,15 @@ export function ToolSection({
 				>
 					<div className={`space-y-4 ${isReversed ? "lg:col-start-2" : ""}`}>
 						<div className="space-y-2">
-							<h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-							<p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+							<h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+							<p className="text-base text-muted-foreground leading-relaxed">{description}</p>
 						</div>
 
 						<div className="space-y-2">
-							<h3 className="text-xs font-semibold text-foreground">{whatYouGet}</h3>
+							<h3 className="text-sm font-semibold text-foreground">{whatYouGet}</h3>
 							<ul className="space-y-1.5">
 								{features.map((feature) => (
-									<li key={feature} className="flex gap-2.5 text-xs text-muted-foreground">
+									<li key={feature} className="flex gap-2.5 text-sm text-muted-foreground">
 										<span className="text-primary" aria-hidden="true">
 											•
 										</span>
