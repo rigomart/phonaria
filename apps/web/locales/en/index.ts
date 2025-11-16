@@ -81,6 +81,8 @@ export default {
 		"nav-tabs": {
 			consonants: "Consonants",
 			vowels: "Vowels",
+			monophthongs: "Vowels · Monophthongs",
+			diphthongs: "Vowels · Diphthongs",
 		},
 		sections: {
 			consonants: {

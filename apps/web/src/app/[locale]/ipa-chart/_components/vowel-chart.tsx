@@ -106,20 +106,7 @@ function VowelGrid() {
 				strokeWidth={1.2}
 			/>
 			{VOWEL_BACKNESS_ORDER.map((backness) => (
-				<line
-					key={backness}
-					x1={getBacknessPosition(backness, topHeight, layout)}
-					x2={getBacknessPosition(backness, bottomHeight, layout)}
-					y1={getHeightPosition(topHeight, layout)}
-					y2={getHeightPosition(bottomHeight, layout)}
-					className={cn(
-						"stroke-border/60",
-						backness === "front" || backness === "back" ? "stroke-2" : "stroke-[1px]",
-					)}
-					strokeDasharray={
-						backness === "near-front" || backness === "near-back" ? "4 4" : undefined
-					}
-				/>
+				<BacknessColumn key={backness} backness={backness} />
 			))}
 			{VOWEL_HEIGHT_ORDER.map((height) => (
 				<line
@@ -140,11 +127,35 @@ function VowelGrid() {
 	);
 }
 
+function BacknessColumn({ backness }: { backness: VowelArticulatoryFeatures["backness"] }) {
+	const points = VOWEL_HEIGHT_ORDER.map((height) => ({
+		x: getBacknessPosition(backness, height, layout),
+		y: getHeightPosition(height, layout),
+	}));
+
+	const d = points
+		.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+		.join(" ");
+
+	return (
+		<path
+			d={d}
+			className={cn(
+				"stroke-border/60",
+				backness === "front" || backness === "back" ? "stroke-2" : "stroke-[1px]",
+			)}
+			fill="none"
+			strokeDasharray={backness === "near-front" || backness === "near-back" ? "4 4" : undefined}
+		/>
+	);
+}
+
 function AxisLabels() {
 	const tBackness = featureDefinitions.backness;
 	const tHeight = featureDefinitions.height;
 	const topLabelY = layout.chartTop - 10;
 	const rowLabelOffset = 14;
+	const labelClass = "fill-muted-foreground uppercase text-[8px] sm:text-[6px]";
 
 	return (
 		<>
@@ -153,7 +164,8 @@ function AxisLabels() {
 					key={backness}
 					x={getBacknessPosition(backness, VOWEL_HEIGHT_ORDER[0], layout)}
 					y={topLabelY}
-					className="fill-muted-foreground text-[10px] font-semibold uppercase tracking-wide"
+					className={labelClass}
+					fontWeight={600}
 					textAnchor={
 						index === 0 ? "start" : index === VOWEL_BACKNESS_ORDER.length - 1 ? "end" : "middle"
 					}
@@ -166,7 +178,8 @@ function AxisLabels() {
 					key={height}
 					x={getLeftBoundaryX(height, layout) - rowLabelOffset}
 					y={getHeightPosition(height, layout) + 3}
-					className="fill-muted-foreground text-[10px] font-semibold uppercase tracking-wide"
+					className={labelClass}
+					fontWeight={600}
 					textAnchor="end"
 				>
 					{tHeight.values[height].label}

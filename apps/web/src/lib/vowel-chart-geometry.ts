@@ -60,9 +60,9 @@ export const LARGE_VOWEL_CHART_LAYOUT: VowelChartLayout = {
 
 export const VOWEL_BACKNESS_RATIOS: Record<VowelArticulatoryFeatures["backness"], number> = {
 	front: 0,
-	"near-front": 0.18,
+	"near-front": 0.25,
 	central: 0.5,
-	"near-back": 0.82,
+	"near-back": 0.75,
 	back: 1,
 };
 
