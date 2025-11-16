@@ -103,16 +103,107 @@ export default {
 			"tooltip-hint": "Click for articulation details",
 		},
 	},
+
 	"overview-page": {
 		meta: {
-			title: "Phonaria tools overview",
+			title: "Current Phonaria tools",
 			description:
-				"Preview the grapheme-to-phoneme workspace, IPA reference chart, and sound contrast activities available in Phonaria.",
+				"Preview the transcription studio, phoneme inspector, and IPA reference that are available today.",
 		},
 		"core-modules-section": {
-			title: "Pronunciation learning tools",
+			title: "Explore the active modules",
 			description:
-				"Each tool focuses on a different aspect of pronunciation learning. Use them together or focus on the one that matches your current learning goal.",
+				"Each card shows what the tool does right now. Open the link below any card to jump straight to the workspace.",
+			"action-label": "Open workspace",
+			"feature-cards": {
+				g2p: {
+					name: "Transcription studio",
+					tagline: "Paste text, inspect IPA",
+					description:
+						"Turn any sentence into a clean IPA line with stress marks, clickable phonemes, and quick dictionary checks.",
+					highlights: {
+						input: "Accepts multi-sentence passages and trims stray formatting.",
+						selection: "Tap a phoneme chip to read articulation, spelling, and contrast notes.",
+						dictionary: "Select a word to open dictionary audio and definitions in a side drawer.",
+					},
+					preview: {
+						"input-label": "Input text",
+						"input-example": "thoughtful learner",
+						"output-label": "IPA transcription",
+						"tap-hint": "Tap a phoneme to inspect articulation, spelling, and contrast info.",
+					},
+				},
+				inspector: {
+					name: "Phoneme inspector",
+					tagline: "Articulation, spelling, contrasts",
+					description:
+						"Explains whichever phoneme you clicked in the transcript with diagrams, spelling cues, and minimal pairs.",
+					highlights: {
+						articulation: "Summarizes place, manner, voicing, and airflow cues for each selection.",
+						patterns: "Lists reliable spelling patterns so you can search for extra examples.",
+						contrasts: "Links to contrast sets whenever the dataset includes them.",
+					},
+					preview: {
+						"selected-label": "Selected phoneme",
+						"keywords-label": "Keywords",
+						"keywords-example": "learn, word, nurse",
+						"articulation-label": "Articulation notes",
+						articulation: {
+							first: "Mid-central r-colored vowel with steady tongue root tension.",
+							second: "Keep the tip low while the back of the tongue lifts toward the palate.",
+						},
+						"patterns-label": "Common spellings",
+						patterns: {
+							first: "er",
+							second: "ir",
+							third: "ur",
+						},
+						"note": "Use contrast links in the inspector when you want to compare nearby sounds.",
+					},
+				},
+				"ipa-chart": {
+					name: "IPA reference",
+					tagline: "Interactive chart with audio",
+					description:
+						"Browse the General American consonant and vowel grid with audio, diagrams, and keyword cues.",
+					highlights: {
+						layout: "Switch between vowel and consonant layouts to narrow your focus.",
+						cells: "Click any symbol to read articulation diagrams and hear sample audio.",
+						keywords: "Skim quick keyword lists before returning to your own transcript.",
+					},
+					preview: {
+						"feature-left": "Interactive cells",
+						"feature-right": "Audio ready",
+						"vowels-label": "Vowels",
+						"consonants-label": "Consonants",
+						"hint": "Click a tile to open diagrams, keywords, and audio.",
+					},
+				},
+			},
+		},
+		"tool-combination-section": {
+			title: "Practical study loops",
+			description: "Use these routines to connect the transcription studio and IPA reference.",
+			suggestions: {
+				"transcript-to-chart": {
+					title: "Start in the transcription studio, confirm with the chart",
+					description:
+						"Paste a sentence, note which phonemes feel unsure, then open the IPA reference to review the same sounds in isolation.",
+					links: {
+						transcription: "Open transcription workspace",
+						"ipa-chart": "Check the IPA chart",
+					},
+				},
+				"chart-to-examples": {
+					title: "Use the chart to pick a target, then collect your own examples",
+					description:
+						"Choose a phoneme in the chart, read its spelling cues, then build a list of words in the transcription studio to hear it in context.",
+					links: {
+						"ipa-chart": "Browse the IPA reference",
+						transcription: "Test the sentence or word list",
+					},
+				},
+			},
 		},
 	},
 } as const;

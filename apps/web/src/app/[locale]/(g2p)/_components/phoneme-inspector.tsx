@@ -13,10 +13,11 @@ import { useG2PStore } from "../_store/g2p-store";
 
 export function PhonemeInspector() {
 	const { selectedPhonemeId, hasSelection } = useG2PStore();
+	const inspectorAnchorId = "phoneme-inspector";
 
 	if (!hasSelection) {
 		return (
-			<Card className="h-full rounded-none">
+			<Card className="h-full rounded-none" id={inspectorAnchorId}>
 				<CardHeader className="py-3">
 					<div className="text-xs font-medium">Phoneme</div>
 				</CardHeader>
@@ -38,7 +39,7 @@ export function PhonemeInspector() {
 
 	if (!selectedPhonemeId) {
 		return (
-			<Card className="h-full rounded-none">
+			<Card className="h-full rounded-none" id={inspectorAnchorId}>
 				<CardHeader className="py-3">
 					<div className="text-xs font-medium">Phoneme</div>
 				</CardHeader>
@@ -55,7 +56,7 @@ export function PhonemeInspector() {
 	}
 
 	return (
-		<PhonemeDetails phonemeId={selectedPhonemeId} className="p-2">
+		<PhonemeDetails phonemeId={selectedPhonemeId} className="p-2" id={inspectorAnchorId}>
 			<PhonemeDetailsHeader />
 			<PhonemeDetailsArticulation />
 			<PhonemeDetailsPatterns />

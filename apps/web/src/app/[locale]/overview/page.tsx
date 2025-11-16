@@ -1,13 +1,27 @@
 import type { Metadata } from "next";
 import { setStaticParamsLocale } from "next-international/server";
+
+import { getScopedI18n } from "@/locales/server";
+
 import { CoreModulesSection } from "./_components/core-modules-section";
 import { ToolCombinationSection } from "./_components/tool-combination-section";
 
-export const metadata: Metadata = {
-	title: "Phonaria tools overview",
-	description:
-		"Preview the grapheme-to-phoneme workspace, IPA reference chart, and sound contrast activities available in Phonaria.",
+export async function generateMetadata({
+params,
+}: {
+params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+const { locale } = await params;
+
+setStaticParamsLocale(locale);
+
+const t = await getScopedI18n("overview-page.meta");
+
+return {
+title: t("title"),
+description: t("description"),
 };
+}
 
 export default async function FeaturesRoute({ params }: { params: Promise<{ locale: string }> }) {
 	const { locale } = await params;
