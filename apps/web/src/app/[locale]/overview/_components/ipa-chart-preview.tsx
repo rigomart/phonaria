@@ -1,43 +1,60 @@
-import { Badge } from "@/components/ui/badge";
-
 export function IpaChartPreview() {
-	const vowelSamples = ["i", "ɪ", "eɪ", "æ"]; // truncated for brevity
-	const consonantSamples = ["ʃ", "tʃ", "θ", "ŋ"];
+	const vowelSamples = [
+		{ symbol: "i", word: "see" },
+		{ symbol: "ɪ", word: "sit" },
+		{ symbol: "eɪ", word: "say" },
+		{ symbol: "æ", word: "cat" },
+		{ symbol: "ɑ", word: "father" },
+		{ symbol: "ɔ", word: "thought" },
+	];
+	const consonantSamples = [
+		{ symbol: "p", word: "pen" },
+		{ symbol: "b", word: "big" },
+		{ symbol: "t", word: "top" },
+		{ symbol: "d", word: "dog" },
+		{ symbol: "k", word: "cat" },
+		{ symbol: "ʃ", word: "ship" },
+		{ symbol: "θ", word: "think" },
+		{ symbol: "ŋ", word: "sing" },
+	];
 
 	return (
-		<div className="space-y-3">
-			<div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-				<span>Interactive cells</span>
-				<span>Audio-ready</span>
+		<div className="rounded-lg border border-border bg-card">
+			<div className="border-b border-border bg-muted/30 px-4 py-3">
+				<p className="text-xs font-medium text-muted-foreground">Sample phonemes</p>
 			</div>
-			<div className="grid grid-cols-2 gap-2">
-				<div className="rounded-xl border border-border/70 bg-background/70 p-3 shadow-xs">
-					<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-						Vowels
-					</p>
-					<div className="mt-2 flex flex-wrap gap-1">
-						{vowelSamples.map((symbol) => (
-							<Badge key={symbol} variant="secondary" className="rounded-full px-2 py-1 text-xs">
-								{symbol}
-							</Badge>
+			<div className="p-4 space-y-4">
+				<div>
+					<h3 className="text-xs font-semibold text-foreground mb-2">Vowels</h3>
+					<div className="grid grid-cols-3 gap-2">
+						{vowelSamples.map(({ symbol, word }) => (
+							<div
+								key={symbol}
+								className="flex flex-col items-center gap-1 p-2 rounded border border-border bg-background hover:bg-accent hover:border-primary/50 cursor-pointer transition-colors"
+							>
+								<span className="text-lg font-mono">{symbol}</span>
+								<span className="text-[10px] text-muted-foreground">{word}</span>
+							</div>
 						))}
 					</div>
 				</div>
-				<div className="rounded-xl border border-border/70 bg-background/70 p-3 shadow-xs">
-					<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-						Consonants
-					</p>
-					<div className="mt-2 flex flex-wrap gap-1">
-						{consonantSamples.map((symbol) => (
-							<Badge key={symbol} variant="outline" className="rounded-full px-2 py-1 text-xs">
-								{symbol}
-							</Badge>
+				<div>
+					<h3 className="text-xs font-semibold text-foreground mb-2">Consonants</h3>
+					<div className="grid grid-cols-4 gap-2">
+						{consonantSamples.map(({ symbol, word }) => (
+							<div
+								key={symbol}
+								className="flex flex-col items-center gap-1 p-2 rounded border border-border bg-background hover:bg-accent hover:border-primary/50 cursor-pointer transition-colors"
+							>
+								<span className="text-lg font-mono">{symbol}</span>
+								<span className="text-[10px] text-muted-foreground">{word}</span>
+							</div>
 						))}
 					</div>
 				</div>
-			</div>
-			<div className="rounded-xl border border-dashed border-primary/40 bg-primary/5 p-3 text-xs text-muted-foreground">
-				Click a tile to surface articulatory diagrams, keywords, and playable audio.
+				<p className="text-xs text-muted-foreground">
+					Click any phoneme to hear it and see how it's produced
+				</p>
 			</div>
 		</div>
 	);

@@ -105,14 +105,39 @@ export default {
 	},
 	"overview-page": {
 		meta: {
-			title: "Phonaria tools overview",
+			title: "Phonaria",
 			description:
-				"Preview the grapheme-to-phoneme workspace, IPA reference chart, and sound contrast activities available in Phonaria.",
+				"Pronunciation toolkit for English learners. Convert text to IPA transcription and explore phoneme articulation details.",
 		},
-		"core-modules-section": {
-			title: "Pronunciation learning tools",
-			description:
-				"Each tool focuses on a different aspect of pronunciation learning. Use them together or focus on the one that matches your current learning goal.",
+		title: "Pronunciation Toolkit",
+		description:
+			"Phonaria provides two core tools for understanding English pronunciation. Use them separately or together as you work with unfamiliar words and sounds.",
+		tools: {
+			g2p: {
+				title: "Text to IPA Transcription",
+				description:
+					"Paste any English text to see its IPA pronunciation with stress markers. Click phonemes for articulation details and example words.",
+				"what-you-get": "What you get",
+				features: {
+					transcription: "IPA transcription with primary and secondary stress marked",
+					phonemes: "Click any phoneme to see how it's produced",
+					dictionary: "Dictionary definitions when available",
+				},
+				"link-text": "Open transcription tool",
+			},
+			"ipa-chart": {
+				title: "IPA Reference Chart",
+				description:
+					"Browse all General American English phonemes organized by type. Click any symbol to hear it and see articulation guidance.",
+				"what-you-get": "What you get",
+				features: {
+					chart: "Complete consonant and vowel charts",
+					audio: "Audio pronunciation for each phoneme",
+					details: "Articulation diagrams and production steps",
+					examples: "Example words showing each sound",
+				},
+				"link-text": "Open IPA chart",
+			},
 		},
 	},
 } as const;
