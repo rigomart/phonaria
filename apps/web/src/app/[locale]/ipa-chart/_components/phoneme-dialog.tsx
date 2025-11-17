@@ -22,11 +22,11 @@ export function PhonemeDialog() {
 
 	return (
 		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-			<DialogContent className="max-w-3xl max-h-[min(85vh,calc(100dvh-2rem))] overflow-y-auto">
+			<DialogContent className="max-w-3xl max-h-[min(95vh,calc(100dvh-2rem))] overflow-y-auto p-2">
 				<DialogHeader>
 					<DialogTitle className="sr-only">Phoneme details</DialogTitle>
 				</DialogHeader>
-				<PhonemeDetails phonemeId={selectedPhonemeId} className="p-2">
+				<PhonemeDetails phonemeId={selectedPhonemeId}>
 					<PhonemeDetailsHeader />
 					<PhonemeDetailsArticulation />
 					<PhonemeDetailsPatterns />

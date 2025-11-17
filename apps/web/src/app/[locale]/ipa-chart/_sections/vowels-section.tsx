@@ -21,13 +21,13 @@ export function VowelChartSection({ variant, className }: Props) {
 	const entries = entriesByVariant[variant];
 
 	return (
-		<section className={cn("space-y-4", className)}>
+		<section className={cn("space-y-4 max-w-3xl mx-auto", className)}>
 			<div>
 				<h2 className="text-lg font-semibold">{t(`${variant}.title`)}</h2>
 				<p className="text-sm text-muted-foreground">{t(`${variant}.description`)}</p>
 			</div>
 			<div className="space-y-3">
-				<div className="rounded-2xl border bg-card/60 p-4 shadow-sm">
+				<div className="rounded-lg border bg-background-soft p-1 shadow-sm">
 					<VowelChart entries={entries} />
 				</div>
 				<VowelChartLegend />

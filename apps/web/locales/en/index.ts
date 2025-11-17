@@ -72,8 +72,7 @@ export default {
 		"hero-section": {
 			title: "English Phoneme Reference",
 			short: "Interactive IPA Chart",
-			description:
-				"Reference tool for understanding English phonemes. Click on any symbol to see articulation details, example words, and audio pronunciation.",
+			description: "Reference tool for understanding English phonemes.",
 			phonemes: "phonemes",
 			vowels: "vowels",
 			consonants: "consonants",
@@ -96,17 +95,15 @@ export default {
 					"Vowel sounds plotted by tongue height, backness, and rounding. Select any marker to open articulation details.",
 				monophthongs: {
 					title: "Monophthongs & Rhotic Vowels",
-					description:
-						"Single steady vowels organized by their tongue position. Filled markers show rounded lips.",
+					description: "Single steady vowels organized by their tongue position.",
 				},
 				diphthongs: {
 					title: "Diphthongs",
-					description:
-						"Two-part vowels that glide from a starting position to an ending position. The arrow follows the glide.",
+					description: "Two-part vowels that glide from a starting position to an ending position.",
 				},
 				legend: {
-					rounded: "Tinted marker = rounded",
-					unrounded: "Outline marker = unrounded",
+					rounded: "Rounded",
+					unrounded: "Unrounded",
 					diphthong: "Arrow = glide path",
 				},
 			},

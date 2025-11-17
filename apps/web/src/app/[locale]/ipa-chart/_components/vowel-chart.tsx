@@ -51,7 +51,7 @@ export function VowelChart({ entries }: VowelChartProps) {
 		<div className="relative w-full" style={{ aspectRatio }}>
 			<svg
 				viewBox={`0 0 ${layout.viewBoxWidth} ${layout.viewBoxHeight}`}
-				className="absolute inset-0 h-full w-full"
+				className="h-full w-full"
 				aria-hidden
 			>
 				<title>Vowel chart grid</title>
@@ -155,7 +155,6 @@ function AxisLabels() {
 	const tHeight = featureDefinitions.height;
 	const topLabelY = layout.chartTop - 10;
 	const rowLabelOffset = 14;
-	const labelClass = "fill-muted-foreground uppercase text-[8px] sm:text-[6px]";
 
 	return (
 		<>
@@ -164,7 +163,7 @@ function AxisLabels() {
 					key={backness}
 					x={getBacknessPosition(backness, VOWEL_HEIGHT_ORDER[0], layout)}
 					y={topLabelY}
-					className={labelClass}
+					className="fill-muted-foreground uppercase text-[9px] sm:text-[6px] odd:hidden sm:odd:block"
 					fontWeight={600}
 					textAnchor={
 						index === 0 ? "start" : index === VOWEL_BACKNESS_ORDER.length - 1 ? "end" : "middle"
@@ -178,7 +177,7 @@ function AxisLabels() {
 					key={height}
 					x={getLeftBoundaryX(height, layout) - rowLabelOffset}
 					y={getHeightPosition(height, layout) + 3}
-					className={labelClass}
+					className="fill-muted-foreground uppercase text-[9px] sm:text-[6px]"
 					fontWeight={600}
 					textAnchor="end"
 				>
@@ -200,15 +199,16 @@ function VowelMarker({ marker }: VowelMarkerProps) {
 	const handleSelect = () => selectPhoneme(marker.entry.id);
 	const leftPercent = (marker.start.x / layout.viewBoxWidth) * 100;
 	const topPercent = (marker.start.y / layout.viewBoxHeight) * 100;
-	const roundedClass = getRoundedClass(marker.entry);
-	const tooltip = buildTooltip(marker.entry);
 	const ariaLabel = `${marker.entry.label} (${marker.entry.ipa})`;
 	const styles: CSSProperties = {
 		left: `calc(${leftPercent}% - ${markerSize / 2}px)`,
 		top: `calc(${topPercent}% - ${markerSize / 2}px)`,
-		width: markerSize,
-		height: markerSize,
 	};
+
+	const isRounded =
+		marker.entry.category === "vowel/diphthong"
+			? marker.entry.features.roundness === "rounded"
+			: marker.entry.features.roundness === "rounded";
 
 	return (
 		<Tooltip>
@@ -217,9 +217,11 @@ function VowelMarker({ marker }: VowelMarkerProps) {
 					type="button"
 					onClick={handleSelect}
 					className={cn(
-						"absolute grid place-items-center rounded-full border text-lg font-semibold text-foreground",
-						"transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-						roundedClass,
+						"absolute grid place-items-center border text-sm sm:text-lg font-semibold",
+						"transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ",
+						isRounded
+							? "border-primary text-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10"
+							: "bg-primary text-primary-foreground rounded-sm w-8 h-8 sm:w-9 sm:h-9",
 					)}
 					style={styles}
 					aria-label={ariaLabel}
@@ -228,38 +230,12 @@ function VowelMarker({ marker }: VowelMarkerProps) {
 				</button>
 			</TooltipTrigger>
 			<TooltipContent side="top" align="center">
-				<div className="max-w-[16rem] text-pretty text-xs leading-snug">
-					<div className="font-semibold">{tooltip}</div>
-					<div className="text-[10px] text-muted-foreground mt-1">{marker.entry.label}</div>
+				<div className="max-w-[16rem] text-pretty text-xs leading-snug font-semibold">
+					{marker.entry.label}
 				</div>
 			</TooltipContent>
 		</Tooltip>
 	);
-}
-
-function getRoundedClass(entry: VowelChartEntry) {
-	const isRounded =
-		entry.category === "vowel/diphthong"
-			? entry.features.roundness === "rounded"
-			: entry.features.roundness === "rounded";
-
-	return isRounded ? "bg-primary/10 border-primary/60" : "bg-background border-border/70";
-}
-
-function buildTooltip(entry: VowelChartEntry) {
-	const { height, backness, roundness } = entry.features;
-	const heightLabel = featureDefinitions.height.values[height].label;
-	const backnessLabel = featureDefinitions.backness.values[backness].label;
-	const roundnessLabel = featureDefinitions.roundness.values[roundness].label;
-
-	if (entry.category === "vowel/diphthong") {
-		const targetHeightLabel = featureDefinitions.height.values[entry.features.targetHeight].label;
-		const targetBacknessLabel =
-			featureDefinitions.backness.values[entry.features.targetBackness].label;
-		return `${entry.ipa}: ${heightLabel} ${backnessLabel} → ${targetHeightLabel} ${targetBacknessLabel}`;
-	}
-
-	return `${entry.ipa}: ${heightLabel} · ${backnessLabel} · ${roundnessLabel}`;
 }
 
 type DiphthongPathProps = {
@@ -321,16 +297,16 @@ export function VowelChartLegend() {
 	const t = useScopedI18n("ipa-chart.sections.vowels.legend");
 
 	return (
-		<div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-			<div className="flex items-center gap-2">
-				<span className="size-3 rounded-full bg-primary" />
-				<span>{t("rounded")}</span>
-			</div>
-			<div className="flex items-center gap-2">
-				<span className="size-3 rounded-full border border-primary/50" />
+		<div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+			<div className="flex items-center gap-1">
+				<span className="size-3 rounded-xs bg-primary" />
 				<span>{t("unrounded")}</span>
 			</div>
-			<div className="flex items-center gap-2">
+			<div className="flex items-center gap-1">
+				<span className="size-3 rounded-full border border-primary/50" />
+				<span>{t("rounded")}</span>
+			</div>
+			<div className="flex items-center gap-1">
 				<span className="h-0.5 w-6 bg-primary" />
 				<span>{t("diphthong")}</span>
 			</div>

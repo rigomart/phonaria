@@ -27,7 +27,6 @@ export function G2PInputForm({
 	const hasText = inputText.trim().length > 0;
 	const characterCount = inputText.length;
 
-	// Handle "start typing anywhere" functionality
 	const { isMobileDevice } = useStartTypingAnywhere({
 		inputRef,
 		disabled: isLoading,
@@ -49,7 +48,6 @@ export function G2PInputForm({
 				</div>
 			)}
 
-			{/* Input Section with integrated character counter */}
 			<div className="space-y-2">
 				<form onSubmit={handleSubmit} className="flex gap-3">
 					<div className="flex-1 relative">
@@ -59,11 +57,10 @@ export function G2PInputForm({
 							onChange={(e) => setInputText(e.target.value)}
 							placeholder={placeholder}
 							disabled={isLoading}
-							className="flex-1 h-12 text-base px-4 pr-16 py-2"
+							className="flex-1 h-12 text-base px-4 pr-16 py-2 shadow-md"
 							maxLength={maxLength}
 							aria-label="Text to transcribe"
 						/>
-						{/* Character counter positioned inside input */}
 						<div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
 							<span
 								className={`text-xs transition-colors ${

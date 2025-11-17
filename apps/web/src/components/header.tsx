@@ -13,7 +13,7 @@ export async function Header() {
 	];
 
 	return (
-		<header className="sticky top-0 z-40 border-b border-border bg-background">
+		<header className="sticky top-0 z-40 border-b border-border bg-background-soft">
 			<div className="container mx-auto px-4 py-3">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-6">

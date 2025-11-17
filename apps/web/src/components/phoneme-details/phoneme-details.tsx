@@ -9,7 +9,7 @@ type Props = React.ComponentProps<"div"> & {
 export function PhonemeDetails({ phonemeId, className, ...props }: Props) {
 	return (
 		<PhonemeDetailsProvider phonemeId={phonemeId}>
-			<div className={cn("space-y-6 pb-5 overflow-y-auto", className)} {...props} />
+			<div className={cn("space-y-6 overflow-y-auto", className)} {...props} />
 		</PhonemeDetailsProvider>
 	);
 }
