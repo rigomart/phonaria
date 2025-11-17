@@ -200,15 +200,14 @@ export type DiphthongSymbolArpa = DiphthongSymbol["arpa"];
 // Vowels - Rhotic
 
 type RhoticPhonemeIdPattern =
-	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-rhotic-${VowelArticulatoryFeatures["tenseness"]}`;
+	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-rhotic`;
 
 export const RhoticSymbolRegistry = {
-	"mid-central-rhotic-tense": {
+	"mid-central-rhotic": {
 		ipa: "ɝ",
 		arpa: "ER",
 		category: "vowel/rhotic",
 	},
-	"mid-central-rhotic-lax": { ipa: "ɚ", arpa: "ER", category: "vowel/rhotic" },
 } as const satisfies Partial<Record<RhoticPhonemeIdPattern, PhonemeSymbolEntry>>;
 
 export type RhoticSymbolId = keyof typeof RhoticSymbolRegistry;
