@@ -1,7 +1,12 @@
 import { cn } from "@/lib/utils";
 import { useScopedI18n } from "@/locales/client";
-import { VowelChart, VowelChartLegend } from "../_components/vowel-chart";
-import type { VowelChartEntry } from "../_lib/vowel-chart-data";
+import { DiphthongVowelChart } from "../_components/diphthong-chart";
+import { MonophthongVowelChart, VowelChartLegend } from "../_components/vowel-chart";
+import type {
+	DiphthongVowelChartEntry,
+	StaticVowelChartEntry,
+	VowelChartEntry,
+} from "../_lib/vowel-chart-data";
 import { diphthongVowelEntries, staticVowelEntries } from "../_lib/vowel-chart-data";
 
 type Variant = "monophthongs" | "diphthongs";
@@ -28,7 +33,11 @@ export function VowelChartSection({ variant, className }: Props) {
 			</div>
 			<div className="space-y-3">
 				<div className="rounded-lg border bg-background-soft p-1 shadow-sm">
-					<VowelChart entries={entries} />
+					{variant === "monophthongs" ? (
+						<MonophthongVowelChart entries={entries as StaticVowelChartEntry[]} />
+					) : (
+						<DiphthongVowelChart entries={entries as DiphthongVowelChartEntry[]} />
+					)}
 				</div>
 				<VowelChartLegend />
 			</div>
