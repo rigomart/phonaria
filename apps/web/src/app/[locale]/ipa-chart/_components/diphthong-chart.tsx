@@ -7,10 +7,10 @@ import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
 import type { DiphthongVowelChartEntry } from "../_lib/vowel-chart-data";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 import {
-    getMarkerPercentPosition,
-    VowelChartSurface,
-    vowelChartLayout,
-    vowelMarkerButtonBaseClass,
+	getMarkerPercentPosition,
+	VowelChartSurface,
+	vowelChartLayout,
+	vowelMarkerButtonBaseClass,
 } from "./vowel-chart-surface";
 
 type DiphthongGeometry = {
@@ -138,7 +138,11 @@ function DiphthongPath({
 	start,
 	target,
 	markerId,
-}: { start: ChartPoint; target: ChartPoint; markerId: string }) {
+}: {
+	start: ChartPoint;
+	target: ChartPoint;
+	markerId: string;
+}) {
 	const end = getShortenedLineEnd(start, target);
 
 	return (
