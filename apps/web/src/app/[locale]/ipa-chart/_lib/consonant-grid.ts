@@ -12,7 +12,7 @@ export type Voicing = ConsonantArticulatoryFeatures["voicing"];
  * Groups similar sounds together: plosives first, then continuants
  */
 export const MANNER_ORDER: MannerOfArticulation[] = [
-	"stop",
+	"plosive",
 	"nasal",
 	"fricative",
 	"affricate",
@@ -40,7 +40,7 @@ export const PLACE_ORDER: PlaceOfArticulation[] = [
  * Human-readable labels for manner of articulation
  */
 export const MANNER_LABELS: Record<MannerOfArticulation, string> = {
-	stop: "Stop",
+	plosive: "Plosive",
 	nasal: "Nasal",
 	fricative: "Fricative",
 	affricate: "Affricate",

@@ -13,7 +13,7 @@ type PhonemeContrastPair = {
 type PhonemeContrastType = keyof ConsonantArticulatoryFeatures | keyof VowelArticulatoryFeatures;
 
 export type PhonemeContrast = {
-	phonemeIds: [PhonemeSymbolId, PhonemeSymbolId]; // The pair. e.g. ["voiced-bilabial-stop", "voiced-labiodental-fricative"]
+	phonemeIds: [PhonemeSymbolId, PhonemeSymbolId]; // The pair. e.g. ["voiced-bilabial-plosive", "voiced-labiodental-fricative"]
 	contrastType: PhonemeArticulatoryFeatureKey[]; // Usually one, but can be multiple. e.g. ["manner", "place"]
 	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
 };
@@ -22,7 +22,7 @@ export type PhonemeContrast = {
 export const PhonemeContrastCatalog: PhonemeContrast[] = [
 	// Consonants: Voicing
 	{
-		phonemeIds: ["voiceless-bilabial-stop", "voiced-bilabial-stop"],
+		phonemeIds: ["voiceless-bilabial-plosive", "voiced-bilabial-plosive"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
@@ -36,7 +36,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-alveolar-stop", "voiced-alveolar-stop"],
+		phonemeIds: ["voiceless-alveolar-plosive", "voiced-alveolar-plosive"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
@@ -50,7 +50,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-velar-stop", "voiced-velar-stop"],
+		phonemeIds: ["voiceless-velar-plosive", "voiced-velar-plosive"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
@@ -136,7 +136,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-dental-fricative", "voiceless-alveolar-stop"],
+		phonemeIds: ["voiceless-dental-fricative", "voiceless-alveolar-plosive"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
@@ -164,7 +164,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-dental-fricative", "voiced-alveolar-stop"],
+		phonemeIds: ["voiced-dental-fricative", "voiced-alveolar-plosive"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
@@ -262,7 +262,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-bilabial-stop", "voiced-labiodental-fricative"],
+		phonemeIds: ["voiced-bilabial-plosive", "voiced-labiodental-fricative"],
 		contrastType: ["manner", "place"],
 		minimalPairs: [
 			[

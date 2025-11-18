@@ -6,12 +6,12 @@ import type { PhonemeSymbolId } from "./symbols-registry";
  */
 export const CmuSymbolRegistry = {
 	// Consonants
-	P: "voiceless-bilabial-stop",
-	B: "voiced-bilabial-stop",
-	T: "voiceless-alveolar-stop",
-	D: "voiced-alveolar-stop",
-	K: "voiceless-velar-stop",
-	G: "voiced-velar-stop",
+	P: "voiceless-bilabial-plosive",
+	B: "voiced-bilabial-plosive",
+	T: "voiceless-alveolar-plosive",
+	D: "voiced-alveolar-plosive",
+	K: "voiceless-velar-plosive",
+	G: "voiced-velar-plosive",
 	F: "voiceless-labiodental-fricative",
 	V: "voiced-labiodental-fricative",
 	TH: "voiceless-dental-fricative",
@@ -90,7 +90,7 @@ export type CmuArpaToken = keyof typeof CmuSymbolRegistry;
  * @param token - The CMU ARPA token string to map.
  * @returns The phoneme symbol ID, or undefined if the token is not found.
  * @example
- * getSymbolIdForCmuToken("R") // "voiceless-bilabial-stop"
+ * getSymbolIdForCmuToken("P") // "voiceless-bilabial-plosive"
  * getSymbolIdForCmuToken("AH0") // "open-mid-back-unrounded"
  * getSymbolIdForCmuToken("UNKNOWN") // undefined
  */

@@ -33,8 +33,8 @@ export type PhonemeDetailsEntry = {
 
 // TODO: Refine pitfalls and steps before wiring to the UI
 export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = {
-	"voiceless-bilabial-stop": {
-		label: "Voiceless bilabial stop",
+	"voiceless-bilabial-plosive": {
+		label: "Voiceless bilabial plosive",
 		pitfalls: [
 			{
 				summary: "No puff at start",
@@ -46,11 +46,11 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			},
 		],
 	},
-	"voiced-bilabial-stop": {
-		label: "Voiced bilabial stop",
+	"voiced-bilabial-plosive": {
+		label: "Voiced bilabial plosive",
 	},
-	"voiceless-alveolar-stop": {
-		label: "Voiceless alveolar stop",
+	"voiceless-alveolar-plosive": {
+		label: "Voiceless alveolar plosive",
 		pitfalls: [
 			{
 				summary: "No puff at start",
@@ -62,14 +62,14 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			},
 		],
 	},
-	"voiced-alveolar-stop": {
-		label: "Voiced alveolar stop",
+	"voiced-alveolar-plosive": {
+		label: "Voiced alveolar plosive",
 	},
-	"voiced-velar-stop": {
-		label: "Voiced velar stop",
+	"voiced-velar-plosive": {
+		label: "Voiced velar plosive",
 	},
-	"voiceless-velar-stop": {
-		label: "Voiceless velar stop",
+	"voiceless-velar-plosive": {
+		label: "Voiceless velar plosive",
 		pitfalls: [
 			{
 				summary: "Sounds like /g/",
@@ -515,8 +515,8 @@ export const featureDefinitions: BaseFeatureDefinitions = {
 		label: "Manner",
 		description: "How airflow is modified to produce the sound",
 		values: {
-			stop: {
-				label: "Stop",
+			plosive: {
+				label: "Plosive",
 				description: "Airflow fully stops then releases in a burst.",
 			},
 			fricative: {

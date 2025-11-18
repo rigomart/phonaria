@@ -23,29 +23,29 @@ type PhonemeArticulationBase<
 type ConsonantArticulation = PhonemeArticulationBase<"consonant", ConsonantArticulatoryFeatures>;
 
 export const ConsonantArticulationRegistry: Record<ConsonantSymbolId, ConsonantArticulation> = {
-	"voiceless-bilabial-stop": {
+	"voiceless-bilabial-plosive": {
 		category: "consonant",
-		features: { manner: "stop", place: "bilabial", voicing: "voiceless" },
+		features: { manner: "plosive", place: "bilabial", voicing: "voiceless" },
 	},
-	"voiced-bilabial-stop": {
+	"voiced-bilabial-plosive": {
 		category: "consonant",
-		features: { manner: "stop", place: "bilabial", voicing: "voiced" },
+		features: { manner: "plosive", place: "bilabial", voicing: "voiced" },
 	},
-	"voiceless-alveolar-stop": {
+	"voiceless-alveolar-plosive": {
 		category: "consonant",
-		features: { manner: "stop", place: "alveolar", voicing: "voiceless" },
+		features: { manner: "plosive", place: "alveolar", voicing: "voiceless" },
 	},
-	"voiced-alveolar-stop": {
+	"voiced-alveolar-plosive": {
 		category: "consonant",
-		features: { manner: "stop", place: "alveolar", voicing: "voiced" },
+		features: { manner: "plosive", place: "alveolar", voicing: "voiced" },
 	},
-	"voiced-velar-stop": {
+	"voiced-velar-plosive": {
 		category: "consonant",
-		features: { manner: "stop", place: "velar", voicing: "voiced" },
+		features: { manner: "plosive", place: "velar", voicing: "voiced" },
 	},
-	"voiceless-velar-stop": {
+	"voiceless-velar-plosive": {
 		category: "consonant",
-		features: { manner: "stop", place: "velar", voicing: "voiceless" },
+		features: { manner: "plosive", place: "velar", voicing: "voiceless" },
 	},
 	"voiced-dental-fricative": {
 		category: "consonant",

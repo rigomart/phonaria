@@ -12,8 +12,8 @@ type BasePhonemeAllophone<ContextKey extends string = string> = {
 };
 
 const phonemeAllophonesData = {
-	// Voiceless stops: aspiration vs s-clusters; plus key /t/ variants
-	"voiceless-bilabial-stop": [
+	// Voiceless plosives: aspiration vs s-clusters; plus key /t/ variants
+	"voiceless-bilabial-plosive": [
 		{
 			ipaVariant: "pʰ",
 			contextKey: "stressed-onset-aspirated",
@@ -31,7 +31,7 @@ const phonemeAllophonesData = {
 			],
 		},
 	],
-	"voiceless-alveolar-stop": [
+	"voiceless-alveolar-plosive": [
 		{
 			ipaVariant: "tʰ",
 			contextKey: "stressed-onset-aspirated",
@@ -57,7 +57,7 @@ const phonemeAllophonesData = {
 			],
 		},
 	],
-	"voiceless-velar-stop": [
+	"voiceless-velar-plosive": [
 		{
 			ipaVariant: "kʰ",
 			contextKey: "stressed-onset-aspirated",

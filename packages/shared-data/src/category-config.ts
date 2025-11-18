@@ -16,9 +16,9 @@ export interface CategoryConfig {
  */
 export const PHONEME_CATEGORIES: CategoryConfig = {
 	consonant: {
-		stop: {
-			key: "stop",
-			label: "Stops",
+		plosive: {
+			key: "plosive",
+			label: "Plosives",
 			description: "Complete blockage then release",
 			order: 1,
 		},

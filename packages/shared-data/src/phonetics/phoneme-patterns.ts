@@ -14,7 +14,7 @@ type SpellingPattern = {
 
 export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, SpellingPattern>> = {
 	// Consonants
-	"voiceless-velar-stop": {
+	"voiceless-velar-plosive": {
 		patterns: ["ck", "ke", "ki", "ky", "ca", "co", "cu"],
 		examples: [
 			{ word: "back", phonemic: "bæk" },
@@ -22,7 +22,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "cat", phonemic: "kæt" },
 		],
 	},
-	"voiced-velar-stop": {
+	"voiced-velar-plosive": {
 		patterns: ["gue", "gui", "gg"],
 		examples: [
 			{ word: "guest", phonemic: "ɡɛst" },

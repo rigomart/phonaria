@@ -27,7 +27,7 @@ export type ConsonantArticulatoryFeatures = {
 		| "postalveolar"
 		| "dental"
 		| "alveolar-lateral";
-	manner: "stop" | "fricative" | "affricate" | "nasal" | "approximant";
+	manner: "plosive" | "fricative" | "affricate" | "nasal" | "approximant";
 };
 
 export type ConsonantPhonemeArticulatoryFeatureKey = keyof ConsonantArticulatoryFeatures;
@@ -36,12 +36,12 @@ type ConsonantPhonemeIdPattern =
 	`${ConsonantArticulatoryFeatures["voicing"]}-${ConsonantArticulatoryFeatures["place"]}-${ConsonantArticulatoryFeatures["manner"]}`;
 
 export const ConsonantSymbolRegistry = {
-	"voiceless-bilabial-stop": { ipa: "p", arpa: "P", category: "consonant" },
-	"voiced-bilabial-stop": { ipa: "b", arpa: "B", category: "consonant" },
-	"voiceless-alveolar-stop": { ipa: "t", arpa: "T", category: "consonant" },
-	"voiced-alveolar-stop": { ipa: "d", arpa: "D", category: "consonant" },
-	"voiced-velar-stop": { ipa: "ɡ", arpa: "G", category: "consonant" },
-	"voiceless-velar-stop": { ipa: "k", arpa: "K", category: "consonant" },
+	"voiceless-bilabial-plosive": { ipa: "p", arpa: "P", category: "consonant" },
+	"voiced-bilabial-plosive": { ipa: "b", arpa: "B", category: "consonant" },
+	"voiceless-alveolar-plosive": { ipa: "t", arpa: "T", category: "consonant" },
+	"voiced-alveolar-plosive": { ipa: "d", arpa: "D", category: "consonant" },
+	"voiced-velar-plosive": { ipa: "ɡ", arpa: "G", category: "consonant" },
+	"voiceless-velar-plosive": { ipa: "k", arpa: "K", category: "consonant" },
 	"voiced-dental-fricative": { ipa: "ð", arpa: "DH", category: "consonant" },
 	"voiceless-dental-fricative": { ipa: "θ", arpa: "TH", category: "consonant" },
 	"voiceless-labiodental-fricative": { ipa: "f", arpa: "F", category: "consonant" },

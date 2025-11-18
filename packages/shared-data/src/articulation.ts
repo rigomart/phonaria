@@ -69,9 +69,9 @@ export const consonantArticulationRegistry: Record<string, ArticulationEntry> = 
 	},
 
 	// Manners
-	stop: {
-		key: "stop",
-		label: "Stop (Plosive)",
+	plosive: {
+		key: "plosive",
+		label: "Plosive",
 		short: "Complete closure then release of airflow.",
 		airflow: "Blocked then released explosively.",
 		category: "Manner",
