@@ -203,7 +203,7 @@ type RhoticPhonemeIdPattern =
 	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-rhotic`;
 
 export const RhoticSymbolRegistry = {
-	"mid-central-rhotic": {
+	"open-mid-central-rhotic": {
 		ipa: "ɝ",
 		arpa: "ER",
 		category: "vowel/rhotic",

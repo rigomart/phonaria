@@ -197,7 +197,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Rhotics
-	"mid-central-rhotic": {
+	"open-mid-central-rhotic": {
 		patterns: ["-er"],
 		examples: [
 			{ word: "teacher", phonemic: "ˈtitʃɚ" },

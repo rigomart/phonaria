@@ -3,12 +3,12 @@
 import type { CSSProperties } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { getVowelPoint, type ChartPoint } from "@/lib/vowel-chart-geometry";
+import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
 import type { DiphthongVowelChartEntry } from "../_lib/vowel-chart-data";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 import {
-	VowelChartSurface,
 	getMarkerPercentPosition,
+	VowelChartSurface,
 	vowelChartLayout,
 	vowelMarkerButtonBaseClass,
 } from "./vowel-chart-surface";
@@ -19,33 +19,27 @@ type DiphthongGeometry = {
 	target: ChartPoint;
 };
 
-const diphthongStartSize = 8;
-const diphthongTargetSize = 28;
 const diphthongArrowGap = 14;
 
 export function DiphthongVowelChart({ entries }: { entries: DiphthongVowelChartEntry[] }) {
 	const geometries: DiphthongGeometry[] = entries.map((entry) => ({
 		entry,
 		start: getVowelPoint(entry.features.height, entry.features.backness, vowelChartLayout),
-		target: getVowelPoint(entry.features.targetHeight, entry.features.targetBackness, vowelChartLayout),
+		target: getVowelPoint(
+			entry.features.targetHeight,
+			entry.features.targetBackness,
+			vowelChartLayout,
+		),
 	}));
 
 	return (
 		<VowelChartSurface
-			svgOverlay={
-				<>
-					{geometries.map((geometry) => (
-						<DiphthongPath key={geometry.entry.id} start={geometry.start} target={geometry.target} />
-					))}
-				</>
-			}
-			overlay={
-				<>
-					{geometries.map((geometry) => (
-						<DiphthongMarker key={geometry.entry.id} geometry={geometry} />
-					))}
-				</>
-			}
+			svgOverlay={geometries.map((geometry) => (
+				<DiphthongPath key={geometry.entry.id} start={geometry.start} target={geometry.target} />
+			))}
+			overlay={geometries.map((geometry) => (
+				<DiphthongMarker key={geometry.entry.id} geometry={geometry} />
+			))}
 		/>
 	);
 }
@@ -65,28 +59,25 @@ function DiphthongMarker({ geometry }: { geometry: DiphthongGeometry }) {
 	const startRounded = geometry.entry.features.roundness === "rounded";
 	const targetRounded = geometry.entry.features.targetRoundness === "rounded";
 	const startStyles: CSSProperties = {
-		left: `calc(${startPercents.leftPercent}% - ${diphthongStartSize / 2}px)`,
-		top: `calc(${startPercents.topPercent}% - ${diphthongStartSize / 2}px)`,
-		width: diphthongStartSize,
-		height: diphthongStartSize,
+		left: `calc(${startPercents.leftPercent}% - 12px)`,
+		top: `calc(${startPercents.topPercent}% - 12px)`,
 	};
 	const buttonStyles: CSSProperties = {
-		left: `calc(${midPercents.leftPercent}% - ${markerSize / 2}px)`,
-		top: `calc(${midPercents.topPercent}% - ${markerSize / 2}px)`,
+		left: `calc(${midPercents.leftPercent}% - 18px)`,
+		top: `calc(${midPercents.topPercent}% - 18px)`,
 	};
 	const targetStyles: CSSProperties = {
-		left: `calc(${targetPercents.leftPercent}% - ${diphthongTargetSize / 2}px)`,
-		top: `calc(${targetPercents.topPercent}% - ${diphthongTargetSize / 2}px)`,
-		width: diphthongTargetSize,
-		height: diphthongTargetSize,
+		left: `calc(${targetPercents.leftPercent}% - 12px)`,
+		top: `calc(${targetPercents.topPercent}% - 12px)`,
 	};
-	const buttonClasses =
-		"border-primary/70 bg-background text-foreground rounded-full shadow-sm w-8 h-8 sm:w-10 sm:h-10";
 
 	return (
 		<>
 			<div
-				className={cn("absolute shadow-sm", getRoundedIndicatorClasses(startRounded))}
+				className={cn("absolute shadow-sm rounded-full size-5 sm:size-6", {
+					"bg-primary text-primary-foreground": startRounded,
+					"border border-primary bg-background text-foreground": !startRounded,
+				})}
 				style={startStyles}
 				aria-hidden
 			/>
@@ -95,7 +86,10 @@ function DiphthongMarker({ geometry }: { geometry: DiphthongGeometry }) {
 					<button
 						type="button"
 						onClick={handleSelect}
-						className={cn(vowelMarkerButtonBaseClass, buttonClasses)}
+						className={cn(
+							vowelMarkerButtonBaseClass,
+							"border-primary/70 bg-background text-foreground rounded-full shadow-sm size-6 sm:size-9",
+						)}
 						style={buttonStyles}
 						aria-label={ariaLabel}
 					>
@@ -109,7 +103,10 @@ function DiphthongMarker({ geometry }: { geometry: DiphthongGeometry }) {
 				</TooltipContent>
 			</Tooltip>
 			<div
-				className={cn("absolute shadow-sm", getRoundedIndicatorClasses(targetRounded))}
+				className={cn("absolute shadow-sm rounded-full size-5 sm:size-6", {
+					"bg-primary text-primary-foreground": targetRounded,
+					"border border-primary bg-background text-foreground": !targetRounded,
+				})}
 				style={targetStyles}
 				aria-hidden
 			/>
@@ -144,13 +141,3 @@ function getShortenedLineEnd(start: ChartPoint, target: ChartPoint) {
 		y: target.y - unitY * diphthongArrowGap,
 	};
 }
-
-function getRoundedIndicatorClasses(isRounded: boolean) {
-	return cn(
-		"border border-transparent",
-		isRounded ? "rounded-full border-primary bg-background" : "rounded-sm bg-primary",
-	);
-}
-
-const markerSize = 44;
-

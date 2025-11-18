@@ -104,6 +104,7 @@ export default {
 				legend: {
 					rounded: "Rounded",
 					unrounded: "Unrounded",
+					rhotic: "Rhotic",
 					diphthong: "Arrow = glide path",
 				},
 			},

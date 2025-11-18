@@ -3,13 +3,13 @@
 import type { CSSProperties } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { getVowelPoint, type ChartPoint } from "@/lib/vowel-chart-geometry";
+import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
 import { useScopedI18n } from "@/locales/client";
 import type { StaticVowelChartEntry } from "../_lib/vowel-chart-data";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 import {
-	VowelChartSurface,
 	getMarkerPercentPosition,
+	VowelChartSurface,
 	vowelChartLayout,
 	vowelMarkerButtonBaseClass,
 } from "./vowel-chart-surface";
@@ -31,13 +31,7 @@ export function MonophthongVowelChart({ entries }: MonophthongVowelChartProps) {
 
 	return (
 		<VowelChartSurface
-			overlay={
-				<>
-					{markers.map((marker) => (
-						<VowelMarker key={marker.entry.id} marker={marker} />
-					))}
-				</>
-			}
+			overlay={markers.map((marker) => <VowelMarker key={marker.entry.id} marker={marker} />)}
 		/>
 	);
 }
@@ -47,16 +41,12 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 	const handleSelect = () => selectPhoneme(marker.entry.id);
 	const { leftPercent, topPercent } = getMarkerPercentPosition(marker.start, vowelChartLayout);
 	const buttonStyles: CSSProperties = {
-		left: `calc(${leftPercent}% - ${markerSize / 2}px)`,
-		top: `calc(${topPercent}% - ${markerSize / 2}px)`,
+		left: `calc(${leftPercent}% - 16px)`,
+		top: `calc(${topPercent}% - 16px)`,
 	};
 	const ariaLabel = `${marker.entry.label} (${marker.entry.ipa})`;
 	const isRounded = marker.entry.features.roundness === "rounded";
-	const roundedButtonClasses =
-		"border-primary bg-background text-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10";
-	const unroundedButtonClasses =
-		"border-transparent bg-primary text-primary-foreground rounded-sm w-8 h-8 sm:w-9 sm:h-9";
-	const buttonClasses = isRounded ? roundedButtonClasses : unroundedButtonClasses;
+	const isRhotic = marker.entry.category === "vowel/rhotic";
 
 	return (
 		<Tooltip>
@@ -64,7 +54,14 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 				<button
 					type="button"
 					onClick={handleSelect}
-					className={cn(vowelMarkerButtonBaseClass, buttonClasses)}
+					className={cn(vowelMarkerButtonBaseClass, {
+						"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9":
+							isRounded && !isRhotic,
+						"border-primary bg-background text-foreground rounded-full size-6 sm:size-9":
+							!isRounded && !isRhotic,
+						"border-dashed border-primary bg-background text-foreground rounded-full size-6 sm:size-9":
+							isRhotic,
+					})}
 					style={buttonStyles}
 					aria-label={ariaLabel}
 				>
@@ -72,7 +69,7 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 				</button>
 			</TooltipTrigger>
 			<TooltipContent side="top" align="center">
-				<div className="max-w-[16rem] text-pretty text-xs leading-snug font-semibold">
+				<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">
 					{marker.entry.label}
 				</div>
 			</TooltipContent>
@@ -80,20 +77,22 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 	);
 }
 
-const markerSize = 44;
-
 export function VowelChartLegend() {
 	const t = useScopedI18n("ipa-chart.sections.vowels.legend");
 
 	return (
 		<div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
 			<div className="flex items-center gap-1">
-				<span className="size-3 rounded-xs bg-primary" />
+				<span className="size-3 rounded-full border border-primary" />
 				<span>{t("unrounded")}</span>
 			</div>
 			<div className="flex items-center gap-1">
-				<span className="size-3 rounded-full border border-primary/50" />
+				<span className="size-3 rounded-full bg-primary" />
 				<span>{t("rounded")}</span>
+			</div>
+			<div className="flex items-center gap-1">
+				<span className="size-3 rounded-full border border-dashed border-primary" />
+				<span>{t("rhotic")}</span>
 			</div>
 			<div className="flex items-center gap-1">
 				<span className="h-0.5 w-6 bg-primary" />
@@ -102,4 +101,3 @@ export function VowelChartLegend() {
 		</div>
 	);
 }
-

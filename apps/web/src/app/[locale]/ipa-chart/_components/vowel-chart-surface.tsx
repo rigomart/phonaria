@@ -5,13 +5,13 @@ import type { VowelArticulatoryFeatures } from "shared-data";
 import { featureDefinitions } from "@/data/phoneme-details";
 import { cn } from "@/lib/utils";
 import {
+	type ChartPoint,
 	getBacknessPosition,
 	getHeightPosition,
 	getLeftBoundaryX,
 	LARGE_VOWEL_CHART_LAYOUT,
 	VOWEL_BACKNESS_ORDER,
 	VOWEL_HEIGHT_ORDER,
-	type ChartPoint,
 	type VowelChartLayout,
 } from "@/lib/vowel-chart-geometry";
 
@@ -155,7 +155,10 @@ function AxisLabels() {
 export const vowelMarkerButtonBaseClass =
 	"absolute grid place-items-center border text-sm sm:text-lg font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-export function getMarkerPercentPosition(point: ChartPoint, layout: VowelChartLayout = vowelChartLayout) {
+export function getMarkerPercentPosition(
+	point: ChartPoint,
+	layout: VowelChartLayout = vowelChartLayout,
+) {
 	return {
 		leftPercent: (point.x / layout.viewBoxWidth) * 100,
 		topPercent: (point.y / layout.viewBoxHeight) * 100,

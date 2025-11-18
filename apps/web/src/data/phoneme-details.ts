@@ -472,8 +472,8 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			},
 		],
 	},
-	"mid-central-rhotic": {
-		label: "Mid central rhotic tense vowel",
+	"open-mid-central-rhotic": {
+		label: "Open-mid central rhotic tense vowel",
 		steps: [
 			"Keep tongue central; add slight curl or bunch.",
 			"Sustain voicing; avoid lip rounding.",

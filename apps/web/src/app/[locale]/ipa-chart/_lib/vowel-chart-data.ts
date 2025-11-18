@@ -38,10 +38,6 @@ export type DiphthongVowelChartEntry = {
 
 export type VowelChartEntry = StaticVowelChartEntry | DiphthongVowelChartEntry;
 
-function buildLabel(phonemeId: PhonemeSymbolId, ipa: string) {
-	return phonemeDetailsById[phonemeId]?.label ?? `/${ipa}/ vowel`;
-}
-
 function mapMonophthongs() {
 	return Object.entries(MonophthongVowelArticulationRegistry).map(([id, articulation]) => {
 		const symbolEntry = MonophthongSymbolRegistry[id as keyof typeof MonophthongSymbolRegistry];
@@ -50,7 +46,7 @@ function mapMonophthongs() {
 		return {
 			id: phonemeId,
 			ipa: symbolEntry.ipa,
-			label: buildLabel(phonemeId, symbolEntry.ipa),
+			label: phonemeDetailsById[phonemeId].label,
 			category: articulation.category,
 			features: articulation.features,
 		} satisfies StaticVowelChartEntry;
@@ -65,7 +61,7 @@ function mapRhotics() {
 		return {
 			id: phonemeId,
 			ipa: symbolEntry.ipa,
-			label: buildLabel(phonemeId, symbolEntry.ipa),
+			label: phonemeDetailsById[phonemeId].label,
 			category: articulation.category,
 			features: articulation.features,
 		} satisfies StaticVowelChartEntry;
@@ -82,7 +78,7 @@ function mapDiphthongs() {
 		return {
 			id: phonemeId,
 			ipa: symbolEntry.ipa,
-			label: buildLabel(phonemeId, symbolEntry.ipa),
+			label: phonemeDetailsById[phonemeId].label,
 			category: articulation.category,
 			features: articulation.features,
 		} satisfies DiphthongVowelChartEntry;
