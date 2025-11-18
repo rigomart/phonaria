@@ -791,4 +791,14 @@ export const allophoneContextDefinitions: Record<
 		description: "Held slightly shorter",
 		when: "Before voiceless consonants like /t/, /p/, /f/",
 	},
+	"stressed-r-colored": {
+		name: "Stressed R-colored",
+		description: "Stressed rhotic vowel with full R-coloring",
+		when: "In stressed syllables",
+	},
+	"unstressed-r-colored": {
+		name: "Unstressed R-colored",
+		description: "Reduced rhotic vowel with lighter R-coloring",
+		when: "In unstressed syllables (particularly word-final -er)",
+	},
 };

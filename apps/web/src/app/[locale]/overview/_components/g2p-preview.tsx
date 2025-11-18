@@ -1,7 +1,7 @@
 export function G2PPreview() {
-	// Correct transcription: thoughtful = /ˈθɔtfəl/ | learner = /ˈlɜrnɚ/
+	// Correct transcription: thoughtful = /ˈθɔtfəl/ | learner = /ˈlɝnɝ/
 	const word1 = { word: "thoughtful", phonemes: ["ˈ", "θ", "ɔ", "t", "f", "ə", "l"] };
-	const word2 = { word: "learner", phonemes: ["ˈ", "l", "ɜ", "r", "n", "ɚ"] };
+	const word2 = { word: "learner", phonemes: ["ˈ", "l", "ɝ", "n", "ɝ"] };
 
 	return (
 		<div className="flex flex-wrap items-start justify-center gap-6 bg-muted/20 border border-border/40 rounded-lg p-4">

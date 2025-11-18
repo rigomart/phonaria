@@ -19,7 +19,7 @@ const phonemeAllophonesData = {
 			contextKey: "stressed-onset-aspirated",
 			examples: [
 				{ word: "pin", phonemic: "pɪn" },
-				{ word: "paper", phonemic: "ˈpeɪpɚ" },
+				{ word: "paper", phonemic: "ˈpeɪpɝ" },
 			],
 		},
 		{
@@ -44,7 +44,7 @@ const phonemeAllophonesData = {
 			ipaVariant: "ɾ",
 			contextKey: "vowel-to-vowel-flap",
 			examples: [
-				{ word: "water", phonemic: "ˈwɔtɚ" },
+				{ word: "water", phonemic: "ˈwɔtɝ" },
 				{ word: "city", phonemic: "ˈsɪti" },
 			],
 		},
@@ -122,6 +122,26 @@ const phonemeAllophonesData = {
 			examples: [
 				{ word: "bat", phonemic: "bæt" },
 				{ word: "cap", phonemic: "kæp" },
+			],
+		},
+	],
+
+	// Rhotic vowel stress variants
+	"open-mid-central-rhotic": [
+		{
+			ipaVariant: "ɝ",
+			contextKey: "stressed-r-colored",
+			examples: [
+				{ word: "bird", phonemic: "bɝd" },
+				{ word: "first", phonemic: "fɝst" },
+			],
+		},
+		{
+			ipaVariant: "ɚ",
+			contextKey: "unstressed-r-colored",
+			examples: [
+				{ word: "teacher", phonemic: "ˈtitʃɝ" },
+				{ word: "water", phonemic: "ˈwɔtɝ" },
 			],
 		},
 	],
