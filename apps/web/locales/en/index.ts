@@ -71,10 +71,8 @@ export default {
 				title: "Consonant Phonemes",
 				description:
 					"Consonant sounds organized by type and characteristics. Click any phoneme for detailed pronunciation information.",
-				diagram: {
-					description:
-						"Side view of how the sound is formed. Look for: place (where airflow narrows), manner (how it narrows or releases), voicing (wavy lines show throat vibration), and nasal airflow (soft palate open for nasals).",
-				},
+				diagram:
+					"Side view of how the sound is formed. Look for: place (where airflow narrows), manner (how it narrows or releases), voicing (wavy lines show throat vibration), and nasal airflow (soft palate open for nasals).",
 			},
 			vowels: {
 				title: "Vowel Phonemes",
@@ -83,18 +81,13 @@ export default {
 				monophthongs: {
 					title: "Monophthongs & Rhotic Vowels",
 					description: "Single steady vowels organized by their tongue position.",
-					diagram: {
-						description:
-							"The marker shows the tongue's height (vertical) and position (horizontal) for this vowel. Filled circles are rounded, outlined circles are unrounded, and dashed circles are rhotic.",
-					},
+					diagram:
+						"The marker shows the tongue's height (vertical) and position (horizontal) for this vowel.",
 				},
 				diphthongs: {
 					title: "Diphthongs",
 					description: "Two-part vowels that glide from a starting position to an ending position.",
-					diagram: {
-						description:
-							"The two markers show the start and end positions of the diphthong. The arrow shows the glide between them. Filled circles are rounded, outlined circles are unrounded.",
-					},
+					diagram: "The two markers show the start and end positions of the diphthong.",
 				},
 				legend: {
 					rounded: "Rounded",

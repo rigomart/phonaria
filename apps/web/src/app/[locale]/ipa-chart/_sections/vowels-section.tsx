@@ -34,7 +34,7 @@ export function VowelChartSection({ variant, className }: Props) {
 			<div className="space-y-3">
 				<div className="rounded-lg border bg-background-soft p-1 shadow-sm">
 					<div className="text-xs text-muted-foreground p-2 border rounded-lg bg-accent/10">
-						{t(`${variant}.diagram.description`)}
+						{t(`${variant}.diagram`)}
 					</div>
 					{variant === "monophthongs" ? (
 						<MonophthongVowelChart entries={entries as StaticVowelChartEntry[]} />

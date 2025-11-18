@@ -11,7 +11,7 @@ export function ConsonantsSection() {
 			</div>
 			<div className="space-y-3 rounded-lg border bg-background-soft p-1 shadow-sm">
 				<div className="text-xs text-muted-foreground p-2 border rounded-lg bg-accent/10">
-					{t("diagram.description")}
+					{t("diagram")}
 				</div>
 				<ConsonantChart />
 			</div>
