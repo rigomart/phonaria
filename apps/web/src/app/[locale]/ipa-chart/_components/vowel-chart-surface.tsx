@@ -23,7 +23,7 @@ type VowelChartSurfaceProps = {
 	svgOverlay?: ReactNode;
 };
 
-export function VowelChartSurface({ overlay, svgOverlay }: VowelChartSurfaceProps) {
+export function VowelChartSurface({ overlay, svgOverlay, arrowMarkerId }: VowelChartSurfaceProps & { arrowMarkerId?: string }) {
 	return (
 		<div className="relative w-full" style={{ aspectRatio }}>
 			<svg
@@ -34,7 +34,7 @@ export function VowelChartSurface({ overlay, svgOverlay }: VowelChartSurfaceProp
 				<title>Vowel chart grid</title>
 				<defs>
 					<marker
-						id="vowel-arrow-head"
+						id={arrowMarkerId ?? "vowel-arrow-head"}
 						viewBox="0 0 10 10"
 						refX="5"
 						refY="5"
