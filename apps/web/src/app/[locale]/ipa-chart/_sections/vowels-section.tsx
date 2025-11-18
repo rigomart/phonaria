@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useScopedI18n } from "@/locales/client";
+import { ChartInfoButton } from "../_components/chart-info-button";
 import { DiphthongVowelChart } from "../_components/diphthong-chart";
 import { MonophthongVowelChart, VowelChartLegend } from "../_components/vowel-chart";
 import type {
@@ -21,6 +22,11 @@ const entriesByVariant: Record<Variant, VowelChartEntry[]> = {
 	diphthongs: diphthongVowelEntries,
 };
 
+const ariaLabelsByVariant: Record<Variant, string> = {
+	monophthongs: "How to read the monophthong vowel chart",
+	diphthongs: "How to read the diphthong vowel chart",
+};
+
 export function VowelChartSection({ variant, className }: Props) {
 	const t = useScopedI18n("ipa-chart.sections.vowels");
 	const entries = entriesByVariant[variant];
@@ -32,10 +38,11 @@ export function VowelChartSection({ variant, className }: Props) {
 				<p className="text-sm text-muted-foreground">{t(`${variant}.description`)}</p>
 			</div>
 			<div className="space-y-3">
-				<div className="rounded-lg border bg-background-soft p-1 shadow-sm">
-					<div className="text-xs text-muted-foreground p-2 border rounded-lg bg-accent/10">
-						{t(`${variant}.diagram`)}
-					</div>
+				<div className="relative rounded-lg border bg-background-soft p-1 shadow-sm">
+					<ChartInfoButton
+						content={t(`${variant}.diagram`)}
+						ariaLabel={ariaLabelsByVariant[variant]}
+					/>
 					{variant === "monophthongs" ? (
 						<MonophthongVowelChart entries={entries as StaticVowelChartEntry[]} />
 					) : (
