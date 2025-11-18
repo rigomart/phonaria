@@ -31,9 +31,9 @@ export function Header() {
 									<span className="sr-only">Toggle menu</span>
 								</Button>
 							</SheetTrigger>
-							<SheetContent side="left" className="w-[280px] sm:w-[320px]">
-								{/* Logo at the top of the sheet */}
-								<div className="flex items-center gap-2 mb-8">
+							<SheetContent side="left" className="w-[280px] sm:w-[320px] pt-3 px-4">
+								{/* Logo at the top of the sheet - positioned to match header */}
+								<div className="flex items-center gap-2 mb-6 py-3">
 									<span className="flex size-6 items-center justify-center">
 										<AudioLines className="size-4" aria-hidden="true" />
 									</span>
@@ -41,13 +41,13 @@ export function Header() {
 								</div>
 
 								{/* Navigation links */}
-								<nav className="flex flex-col gap-1">
+								<nav className="flex flex-col gap-1 px-2">
 									{navigationLinks.map((link) => (
 										<Link
 											key={link.href}
 											href={link.href}
 											onClick={() => setOpen(false)}
-											className="flex items-center rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-muted transition-colors"
+											className="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
 										>
 											{link.label}
 										</Link>
