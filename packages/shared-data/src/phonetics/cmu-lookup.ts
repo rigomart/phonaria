@@ -78,9 +78,9 @@ export const CmuSymbolRegistry = {
 	OY2: "open-mid-back-rounded-to-near-close-near-front-unrounded",
 
 	// Rhotic vowels
-	ER0: "mid-central-rhotic-lax",
-	ER1: "mid-central-rhotic-tense",
-	ER2: "mid-central-rhotic-tense",
+	ER0: "open-mid-central-rhotic",
+	ER1: "open-mid-central-rhotic",
+	ER2: "open-mid-central-rhotic",
 } as const satisfies Record<string, PhonemeSymbolId>;
 
 export type CmuArpaToken = keyof typeof CmuSymbolRegistry;

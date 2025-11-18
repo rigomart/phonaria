@@ -18,23 +18,6 @@ export default {
 					summary: "Summary",
 					tip: "Tip",
 				},
-				diagram: {
-					vowel: {
-						title: "Vowel diagram",
-						description:
-							"The marker shows the tongue's height (up/down) and position (front/back) for this vowel. A filled marker means it’s rounded.",
-					},
-					diphthong: {
-						title: "Vowel diagram",
-						description:
-							"The two markers show the start and end positions of the diphthong. The arrow shows the glide between them. Filled markers indicate rounding.",
-					},
-					consonant: {
-						title: "Vocal tract side view",
-						description:
-							"Side view of how the sound is formed. Look for: place (where airflow narrows), manner (how it narrows or releases), voicing (wavy lines show throat vibration), and nasal airflow (soft palate open for nasals).",
-					},
-				},
 			},
 			contrasts: {
 				title: "Contrasts",
@@ -72,8 +55,7 @@ export default {
 		"hero-section": {
 			title: "English Phoneme Reference",
 			short: "Interactive IPA Chart",
-			description:
-				"Reference tool for understanding English phonemes. Click on any symbol to see articulation details, example words, and audio pronunciation.",
+			description: "Reference tool for understanding English phonemes.",
 			phonemes: "phonemes",
 			vowels: "vowels",
 			consonants: "consonants",
@@ -81,17 +63,38 @@ export default {
 		"nav-tabs": {
 			consonants: "Consonants",
 			vowels: "Vowels",
+			monophthongs: "Vowels · Monophthongs",
+			diphthongs: "Vowels · Diphthongs",
 		},
 		sections: {
 			consonants: {
 				title: "Consonant Phonemes",
 				description:
 					"Consonant sounds organized by type and characteristics. Click any phoneme for detailed pronunciation information.",
+				diagram:
+					"Side view of how the sound is formed. Look for: place (where airflow narrows), manner (how it narrows or releases), voicing (wavy lines show throat vibration), and nasal airflow (soft palate open for nasals).",
 			},
 			vowels: {
 				title: "Vowel Phonemes",
 				description:
-					"Vowel sounds organized by type and characteristics. Click any phoneme for pronunciation details.",
+					"Vowel sounds plotted by tongue height, backness, and rounding. Select any marker to open articulation details.",
+				monophthongs: {
+					title: "Monophthongs & Rhotic Vowels",
+					description: "Single steady vowels organized by their tongue position.",
+					diagram:
+						"The marker shows the tongue's height (vertical) and position (horizontal) for this vowel.",
+				},
+				diphthongs: {
+					title: "Diphthongs",
+					description: "Two-part vowels that glide from a starting position to an ending position.",
+					diagram: "The two markers show the start and end positions of the diphthong.",
+				},
+				legend: {
+					rounded: "Rounded",
+					unrounded: "Unrounded",
+					rhotic: "Rhotic",
+					diphthong: "Arrow = glide path",
+				},
 			},
 		},
 		dialog: {

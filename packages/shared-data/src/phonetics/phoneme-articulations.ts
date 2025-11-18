@@ -304,22 +304,13 @@ export const DiphthongVowelArticulationRegistry: Record<
 type RhoticVowelArticulation = PhonemeArticulationBase<"vowel/rhotic", VowelArticulatoryFeatures>;
 
 export const RhoticVowelArticulationRegistry: Record<RhoticSymbolId, RhoticVowelArticulation> = {
-	"mid-central-rhotic-tense": {
+	"open-mid-central-rhotic": {
 		category: "vowel/rhotic",
 		features: {
-			height: "mid",
+			height: "open-mid",
 			backness: "central",
 			roundness: "unrounded",
 			tenseness: "tense",
-		},
-	},
-	"mid-central-rhotic-lax": {
-		category: "vowel/rhotic",
-		features: {
-			height: "mid",
-			backness: "central",
-			roundness: "unrounded",
-			tenseness: "lax",
 		},
 	},
 };

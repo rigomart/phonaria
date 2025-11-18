@@ -1,6 +1,15 @@
 import type { PhonemeArticulation, VowelArticulatoryFeatures } from "shared-data";
 import { featureDefinitions } from "@/data/phoneme-details";
 import { cn } from "@/lib/utils";
+import {
+	type ChartPoint,
+	getBacknessPosition,
+	getHeightPosition,
+	getLeftBoundaryX,
+	getVowelPoint,
+	SMALL_VOWEL_CHART_LAYOUT,
+	VOWEL_HEIGHT_ORDER,
+} from "@/lib/vowel-chart-geometry";
 
 type StaticVowelFeatures = Extract<
 	PhonemeArticulation,
@@ -32,14 +41,16 @@ export type VowelChartCardProps =
 
 export function VowelChartCard(props: VowelChartCardProps) {
 	const isDiphthong = props.category === "vowel/diphthong";
+	const layout = SMALL_VOWEL_CHART_LAYOUT;
 
-	const startPoint = getVowelPoint(props.features.height, props.features.backness);
+	const startPoint = getVowelPoint(props.features.height, props.features.backness, layout);
 	const targetPoint = isDiphthong
-		? getVowelPoint(props.features.targetHeight, props.features.targetBackness)
+		? getVowelPoint(props.features.targetHeight, props.features.targetBackness, layout)
 		: null;
 
 	const startRoundness = props.features.roundness;
 	const targetRoundness = isDiphthong ? props.features.targetRoundness : undefined;
+	const isRhotic = props.category === "vowel/rhotic";
 
 	return (
 		<section className="rounded-lg border bg-background-soft p-2">
@@ -51,90 +62,19 @@ export function VowelChartCard(props: VowelChartCardProps) {
 					start={startPoint}
 					target={targetPoint}
 					roundness={{ start: startRoundness, target: targetRoundness }}
+					isRhotic={isRhotic}
 				/>
 			</div>
 		</section>
 	);
 }
 
-const VOWEL_CHART_VIEWBOX = { width: 160, height: 160 };
-
-const vowelHeightOrder: VowelArticulatoryFeatures["height"][] = [
-	"close",
-	"near-close",
-	"close-mid",
-	"mid",
-	"open-mid",
-	"near-open",
-	"open",
-] as const;
-
-type VowelHeight = VowelArticulatoryFeatures["height"];
-type VowelBackness = VowelArticulatoryFeatures["backness"];
 type VowelRoundness = VowelArticulatoryFeatures["roundness"];
 
-const heightIndex: Record<VowelHeight, number> = {
-	close: 0,
-	"near-close": 1,
-	"close-mid": 2,
-	mid: 3,
-	"open-mid": 4,
-	"near-open": 5,
-	open: 6,
-};
-
-const CHART_TOP = 32;
-const CHART_BOTTOM = 130;
-const CHART_LEFT = 32;
-const CHART_RIGHT = 150;
-const CHART_HEIGHT = CHART_BOTTOM - CHART_TOP;
-
-const VOWEL_HEIGHT_POSITIONS = vowelHeightOrder.reduce<Record<VowelHeight, number>>(
-	(acc, height) => {
-		const index = heightIndex[height];
-		acc[height] = CHART_TOP + (index / (vowelHeightOrder.length - 1)) * CHART_HEIGHT;
-		return acc;
-	},
-	{} as Record<VowelHeight, number>,
-);
-
-const FRONT_TOP_X = CHART_LEFT;
-const FRONT_BOTTOM_X = CHART_LEFT + 32;
-const BACK_X = CHART_RIGHT;
-
-const backnessRatios: Record<VowelBackness, number> = {
-	front: 0,
-	"near-front": 0.18,
-	central: 0.5,
-	"near-back": 0.82,
-	back: 1,
-};
-
-const LABEL_FONT_SIZE = 6;
 const IPA_LABEL_FONT_SIZE = 8;
 const IPA_LABEL_PADDING_X = 4;
 const IPA_LABEL_PADDING_Y = 2;
 const IPA_LABEL_OFFSET_X = 10;
-
-type ChartPoint = { x: number; y: number };
-
-function getVowelPoint(height: VowelHeight, backness: VowelBackness): ChartPoint {
-	return {
-		x: getBacknessPosition(backness, height),
-		y: VOWEL_HEIGHT_POSITIONS[height],
-	};
-}
-
-function getBacknessPosition(backness: VowelBackness, height: VowelHeight) {
-	const left = getLeftBoundaryX(height);
-	const span = BACK_X - left;
-	return left + span * backnessRatios[backness];
-}
-
-function getLeftBoundaryX(height: VowelHeight) {
-	const normalizedIndex = heightIndex[height] / (vowelHeightOrder.length - 1);
-	return FRONT_TOP_X + (FRONT_BOTTOM_X - FRONT_TOP_X) * normalizedIndex;
-}
 
 type VowelQuadrilateralProps = {
 	chartId: string;
@@ -143,6 +83,7 @@ type VowelQuadrilateralProps = {
 	start: ChartPoint;
 	target: ChartPoint | null;
 	roundness: { start: VowelRoundness; target?: VowelRoundness };
+	isRhotic: boolean;
 };
 
 function VowelQuadrilateral({
@@ -152,14 +93,16 @@ function VowelQuadrilateral({
 	start,
 	target,
 	roundness,
+	isRhotic,
 }: VowelQuadrilateralProps) {
 	const arrowId = `vowel-arrow-${chartId}`;
-	const topHeight = vowelHeightOrder[0];
-	const bottomHeight = vowelHeightOrder[vowelHeightOrder.length - 1];
+	const topHeight = VOWEL_HEIGHT_ORDER[0];
+	const bottomHeight = VOWEL_HEIGHT_ORDER[VOWEL_HEIGHT_ORDER.length - 1];
+	const layout = SMALL_VOWEL_CHART_LAYOUT;
 
 	return (
 		<svg
-			viewBox={`0 0 ${VOWEL_CHART_VIEWBOX.width} ${VOWEL_CHART_VIEWBOX.height}`}
+			viewBox={`0 0 ${layout.viewBoxWidth} ${layout.viewBoxHeight}`}
 			role="img"
 			aria-label={`${label} vowel placement`}
 			className="w-full"
@@ -174,24 +117,30 @@ function VowelQuadrilateral({
 					markerHeight="5"
 					orient="auto-start-reverse"
 				>
-					<path d="M 0 0 L 10 5 L 0 10 z" className="fill-primary" />
+					<path d="M 0 0 L 10 5 L 0 10 z" className="fill-primary/80" />
 				</marker>
 			</defs>
 
 			<polygon
 				points={[
-					`${getLeftBoundaryX(topHeight)},${VOWEL_HEIGHT_POSITIONS[topHeight]}`,
-					`${getLeftBoundaryX(bottomHeight)},${VOWEL_HEIGHT_POSITIONS[bottomHeight]}`,
-					`${BACK_X},${VOWEL_HEIGHT_POSITIONS[bottomHeight]}`,
-					`${BACK_X},${VOWEL_HEIGHT_POSITIONS[topHeight]}`,
+					`${getLeftBoundaryX(topHeight, layout)},${getHeightPosition(topHeight, layout)}`,
+					`${getLeftBoundaryX(bottomHeight, layout)},${getHeightPosition(bottomHeight, layout)}`,
+					`${layout.backX},${getHeightPosition(bottomHeight, layout)}`,
+					`${layout.backX},${getHeightPosition(topHeight, layout)}`,
 				].join(" ")}
 				className="fill-muted/20 stroke-border"
-				strokeWidth={1.5}
+				strokeWidth={1.2}
 			/>
 
-			<MinimalGrid />
+			<VowelGrid />
 
-			<ChartMarker point={start} rounded={roundness.start} variant="start" label={ipa} />
+			<ChartMarker
+				point={start}
+				rounded={roundness.start}
+				variant="start"
+				label={ipa}
+				isRhotic={isRhotic}
+			/>
 
 			{target ? (
 				<>
@@ -200,6 +149,7 @@ function VowelQuadrilateral({
 						point={target}
 						rounded={roundness.target ?? roundness.start}
 						variant="target"
+						isRhotic={false}
 					/>
 				</>
 			) : null}
@@ -231,7 +181,7 @@ function DiphthongArrow({ start, target, arrowId }: DiphthongArrowProps) {
 	return (
 		<path
 			d={`M ${start.x} ${start.y} L ${endX} ${endY}`}
-			className="stroke-primary"
+			className="stroke-primary/80"
 			strokeWidth={2}
 			fill="none"
 			markerEnd={`url(#${arrowId})`}
@@ -239,135 +189,91 @@ function DiphthongArrow({ start, target, arrowId }: DiphthongArrowProps) {
 	);
 }
 
-type TextLabelProps = {
-	x: number;
-	y: number;
-	text: string;
-	align?: "start" | "middle" | "end";
-};
-
-function TextLabel({ x, y, text, align = "start" }: TextLabelProps) {
-	return (
-		<text
-			x={x}
-			y={y}
-			className="fill-muted-foreground"
-			fontSize={LABEL_FONT_SIZE}
-			textAnchor={align === "start" ? "start" : align === "end" ? "end" : "middle"}
-		>
-			{text}
-		</text>
-	);
-}
-
 function AxisLabels() {
-	const topHeight = vowelHeightOrder[0];
-	const topY = VOWEL_HEIGHT_POSITIONS[topHeight];
+	const layout = SMALL_VOWEL_CHART_LAYOUT;
+	const topHeight = VOWEL_HEIGHT_ORDER[0];
+	const topLabelY = layout.chartTop - 6;
 	const rowLabelOffset = 8;
-	const closeY = VOWEL_HEIGHT_POSITIONS.close;
-	const closeMidY = VOWEL_HEIGHT_POSITIONS["close-mid"];
-	const openMidY = VOWEL_HEIGHT_POSITIONS["open-mid"];
-	const openY = VOWEL_HEIGHT_POSITIONS.open;
+	const tBackness = featureDefinitions.backness;
+	const tHeight = featureDefinitions.height;
+	const mainBackness = ["front", "central", "back"] as const satisfies ReadonlyArray<
+		VowelArticulatoryFeatures["backness"]
+	>;
+	const mainHeights = ["close", "close-mid", "open-mid", "open"] as const satisfies ReadonlyArray<
+		VowelArticulatoryFeatures["height"]
+	>;
 
 	return (
 		<>
-			<TextLabel
-				x={getBacknessPosition("front", topHeight)}
-				y={topY - 6}
-				text={featureDefinitions.backness.values.front.label}
-				align="start"
-			/>
-			<TextLabel
-				x={getBacknessPosition("central", topHeight)}
-				y={topY - 6}
-				text={featureDefinitions.backness.values.central.label}
-				align="middle"
-			/>
-			<TextLabel
-				x={getBacknessPosition("back", topHeight)}
-				y={topY - 6}
-				text={featureDefinitions.backness.values.back.label}
-				align="end"
-			/>
-			<TextLabel
-				x={getLeftBoundaryX("close") - rowLabelOffset}
-				y={closeY - 1}
-				text={featureDefinitions.height.values.close.label}
-				align="end"
-			/>
-			<TextLabel
-				x={getLeftBoundaryX("close-mid") - rowLabelOffset}
-				y={closeMidY - 1}
-				text={featureDefinitions.height.values["close-mid"].label}
-				align="end"
-			/>
-			<TextLabel
-				x={getLeftBoundaryX("open-mid") - rowLabelOffset}
-				y={openMidY - 1}
-				text={featureDefinitions.height.values["open-mid"].label}
-				align="end"
-			/>
-			<TextLabel
-				x={getLeftBoundaryX("open") - rowLabelOffset}
-				y={openY - 1}
-				text={featureDefinitions.height.values.open.label}
-				align="end"
-			/>
+			{mainBackness.map((backness, index) => (
+				<text
+					key={backness}
+					x={getBacknessPosition(backness, topHeight, layout)}
+					y={topLabelY}
+					className="fill-muted-foreground uppercase text-[6px]"
+					fontWeight={600}
+					textAnchor={index === 0 ? "start" : index === mainBackness.length - 1 ? "end" : "middle"}
+				>
+					{tBackness.values[backness].label}
+				</text>
+			))}
+			{mainHeights.map((height) => (
+				<text
+					key={height}
+					x={getLeftBoundaryX(height, layout) - rowLabelOffset}
+					y={getHeightPosition(height, layout) + 2}
+					className="fill-muted-foreground uppercase text-[6px]"
+					fontWeight={600}
+					textAnchor="end"
+				>
+					{tHeight.values[height].label}
+				</text>
+			))}
 		</>
 	);
 }
 
-function ColumnPath({ points }: { points: ChartPoint[] }) {
-	if (points.length === 0) return null;
-	const d = points
-		.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
-		.join(" ");
+function BacknessColumn({ backness }: { backness: VowelArticulatoryFeatures["backness"] }) {
+	const layout = SMALL_VOWEL_CHART_LAYOUT;
+	const topHeight = VOWEL_HEIGHT_ORDER[0];
+	const bottomHeight = VOWEL_HEIGHT_ORDER[VOWEL_HEIGHT_ORDER.length - 1];
 
-	return <path d={d} className="stroke-border/60" strokeWidth={0.6} fill="none" />;
+	return (
+		<line
+			x1={getBacknessPosition(backness, topHeight, layout)}
+			x2={getBacknessPosition(backness, bottomHeight, layout)}
+			y1={getHeightPosition(topHeight, layout)}
+			y2={getHeightPosition(bottomHeight, layout)}
+			className="stroke-border/60 stroke-[1.2px]"
+			fill="none"
+		/>
+	);
 }
 
-function MinimalGrid() {
-	const closeMidY = VOWEL_HEIGHT_POSITIONS["close-mid"];
-	const openMidY = VOWEL_HEIGHT_POSITIONS["open-mid"];
-	const topHeight = vowelHeightOrder[0];
-	const bottomHeight = vowelHeightOrder[vowelHeightOrder.length - 1];
+function VowelGrid() {
+	const layout = SMALL_VOWEL_CHART_LAYOUT;
+	const mainBackness = ["front", "central", "back"] as const satisfies ReadonlyArray<
+		VowelArticulatoryFeatures["backness"]
+	>;
+	const mainHeights = ["close", "close-mid", "open-mid", "open"] as const satisfies ReadonlyArray<
+		VowelArticulatoryFeatures["height"]
+	>;
 
 	return (
 		<>
-			<ColumnPath
-				points={[
-					{ x: getBacknessPosition("front", topHeight), y: VOWEL_HEIGHT_POSITIONS[topHeight] },
-					{
-						x: getBacknessPosition("front", bottomHeight),
-						y: VOWEL_HEIGHT_POSITIONS[bottomHeight],
-					},
-				]}
-			/>
-
-			<line
-				x1={getBacknessPosition("central", topHeight)}
-				x2={getBacknessPosition("central", bottomHeight)}
-				y1={VOWEL_HEIGHT_POSITIONS[topHeight]}
-				y2={VOWEL_HEIGHT_POSITIONS[bottomHeight]}
-				className="stroke-border/60"
-				strokeWidth={0.6}
-			/>
-			<line
-				x1={getBacknessPosition("front", "close-mid")}
-				x2={BACK_X}
-				y1={closeMidY}
-				y2={closeMidY}
-				className="stroke-border/60"
-				strokeWidth={0.6}
-			/>
-			<line
-				x1={getBacknessPosition("front", "open-mid")}
-				x2={BACK_X}
-				y1={openMidY}
-				y2={openMidY}
-				className="stroke-border/60"
-				strokeWidth={0.6}
-			/>
+			{mainBackness.map((backness) => (
+				<BacknessColumn key={backness} backness={backness} />
+			))}
+			{mainHeights.map((height) => (
+				<line
+					key={height}
+					x1={getBacknessPosition("front", height, layout)}
+					x2={layout.backX}
+					y1={getHeightPosition(height, layout)}
+					y2={getHeightPosition(height, layout)}
+					className="stroke-border/60 stroke-[1.2px]"
+				/>
+			))}
 			<AxisLabels />
 		</>
 	);
@@ -378,23 +284,47 @@ type ChartMarkerProps = {
 	rounded: VowelRoundness;
 	variant: "start" | "target";
 	label?: string;
+	isRhotic?: boolean;
 };
 
-function ChartMarker({ point, rounded, variant, label }: ChartMarkerProps) {
+function ChartMarker({
+	point,
+	rounded,
+	variant: _variant,
+	label,
+	isRhotic = false,
+}: ChartMarkerProps) {
 	const isRounded = rounded === "rounded";
-	const isStart = variant === "start";
 
 	const labelWidth = label ? measureApproximateLabel(label) : 0;
 	const totalWidth = labelWidth + IPA_LABEL_PADDING_X * 2;
-	const shouldFlip = point.x + IPA_LABEL_OFFSET_X + totalWidth > BACK_X;
+	const shouldFlip = point.x + IPA_LABEL_OFFSET_X + totalWidth > SMALL_VOWEL_CHART_LAYOUT.backX;
 	const rectX = shouldFlip
 		? point.x - IPA_LABEL_OFFSET_X - totalWidth
 		: point.x + IPA_LABEL_OFFSET_X;
 	const rectY = point.y - (IPA_LABEL_FONT_SIZE + IPA_LABEL_PADDING_Y * 2) / 2;
 
-	// Determine fill and stroke classes
-	const fillClass = isRounded ? (isStart ? "fill-primary" : "fill-primary/50") : "fill-primary/10";
-	const strokeClass = isStart ? "stroke-primary" : "stroke-primary/50";
+	let fillClass: string;
+	let strokeClass: string;
+	let strokeWidth: number;
+	let strokeDasharray: string | undefined;
+
+	if (isRhotic) {
+		fillClass = "fill-primary/10";
+		strokeClass = "stroke-primary";
+		strokeWidth = 1.5;
+		strokeDasharray = "2 2";
+	} else if (isRounded) {
+		fillClass = "fill-primary";
+		strokeClass = "stroke-transparent";
+		strokeWidth = 0;
+		strokeDasharray = undefined;
+	} else {
+		fillClass = "fill-none";
+		strokeClass = "stroke-primary";
+		strokeWidth = 1.5;
+		strokeDasharray = undefined;
+	}
 
 	return (
 		<>
@@ -403,7 +333,8 @@ function ChartMarker({ point, rounded, variant, label }: ChartMarkerProps) {
 				cy={point.y}
 				r={4}
 				className={cn(fillClass, strokeClass)}
-				strokeWidth={isRounded ? 1.2 : 1.5}
+				strokeWidth={strokeWidth}
+				strokeDasharray={strokeDasharray}
 			/>
 			{label ? (
 				<>

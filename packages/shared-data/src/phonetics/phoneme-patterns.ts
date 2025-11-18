@@ -197,15 +197,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Rhotics
-	"mid-central-rhotic-tense": {
-		patterns: ["er", "ir", "ur"],
-		examples: [
-			{ word: "her", phonemic: "hɝ" },
-			{ word: "bird", phonemic: "bɝd" },
-			{ word: "turn", phonemic: "tɝn" },
-		],
-	},
-	"mid-central-rhotic-lax": {
+	"open-mid-central-rhotic": {
 		patterns: ["-er"],
 		examples: [
 			{ word: "teacher", phonemic: "ˈtitʃɚ" },

@@ -472,8 +472,8 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			},
 		],
 	},
-	"mid-central-rhotic-tense": {
-		label: "Mid central rhotic tense vowel",
+	"open-mid-central-rhotic": {
+		label: "Open-mid central rhotic tense vowel",
 		steps: [
 			"Keep tongue central; add slight curl or bunch.",
 			"Sustain voicing; avoid lip rounding.",
@@ -487,24 +487,6 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			{
 				summary: "Jaw too tense",
 				tip: "Keep the jaw relaxed so the resonance stays centered instead of drifting forward.",
-			},
-		],
-	},
-	"mid-central-rhotic-lax": {
-		label: "Mid central rhotic lax vowel",
-		steps: [
-			"Keep jaw and tongue relaxed and central.",
-			"Add a light R color without touching.",
-			"Keep it short; it’s usually unstressed.",
-		],
-		pitfalls: [
-			{
-				summary: "Too much stress",
-				tip: "Keep it short and light. This vowel usually sits in unstressed syllables.",
-			},
-			{
-				summary: "Tongue touches roof",
-				tip: "Let the tongue hover without contact; touching gives a quick tap instead of a vowel.",
 			},
 		],
 	},
