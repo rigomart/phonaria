@@ -125,6 +125,26 @@ const phonemeAllophonesData = {
 			],
 		},
 	],
+
+	// Rhotic vowel stress variants
+	"open-mid-central-rhotic": [
+		{
+			ipaVariant: "ɝ",
+			contextKey: "stressed-r-colored",
+			examples: [
+				{ word: "bird", phonemic: "bɝd" },
+				{ word: "first", phonemic: "fɝst" },
+			],
+		},
+		{
+			ipaVariant: "ɚ",
+			contextKey: "unstressed-r-colored",
+			examples: [
+				{ word: "teacher", phonemic: "ˈtitʃɚ" },
+				{ word: "water", phonemic: "ˈwɔtɚ" },
+			],
+		},
+	],
 } as const;
 
 type AllophoneCollections = (typeof phonemeAllophonesData)[keyof typeof phonemeAllophonesData];
