@@ -19,7 +19,7 @@ const phonemeAllophonesData = {
 			contextKey: "stressed-onset-aspirated",
 			examples: [
 				{ word: "pin", phonemic: "pɪn" },
-				{ word: "paper", phonemic: "ˈpeɪpɚ" },
+				{ word: "paper", phonemic: "ˈpeɪpɝ" },
 			],
 		},
 		{
@@ -44,7 +44,7 @@ const phonemeAllophonesData = {
 			ipaVariant: "ɾ",
 			contextKey: "vowel-to-vowel-flap",
 			examples: [
-				{ word: "water", phonemic: "ˈwɔtɚ" },
+				{ word: "water", phonemic: "ˈwɔtɝ" },
 				{ word: "city", phonemic: "ˈsɪti" },
 			],
 		},
@@ -140,8 +140,8 @@ const phonemeAllophonesData = {
 			ipaVariant: "ɚ",
 			contextKey: "unstressed-r-colored",
 			examples: [
-				{ word: "teacher", phonemic: "ˈtitʃɚ" },
-				{ word: "water", phonemic: "ˈwɔtɚ" },
+				{ word: "teacher", phonemic: "ˈtitʃɝ" },
+				{ word: "water", phonemic: "ˈwɔtɝ" },
 			],
 		},
 	],

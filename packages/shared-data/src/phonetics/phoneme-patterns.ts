@@ -27,7 +27,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		examples: [
 			{ word: "guest", phonemic: "ɡɛst" },
 			{ word: "guide", phonemic: "ɡaɪd" },
-			{ word: "bigger", phonemic: "ˈbɪɡɚ" },
+			{ word: "bigger", phonemic: "ˈbɪɡɝ" },
 		],
 	},
 	"voiceless-postalveolar-affricate": {
@@ -145,7 +145,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		patterns: ["aw", "au"],
 		examples: [
 			{ word: "saw", phonemic: "sɔ" },
-			{ word: "author", phonemic: "ˈɔθɚ" },
+			{ word: "author", phonemic: "ˈɔθɝ" },
 		],
 	},
 	"mid-central-unrounded": {
@@ -198,10 +198,11 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 
 	// Rhotics
 	"open-mid-central-rhotic": {
-		patterns: ["-er"],
+		patterns: ["ir", "er", "ur", "ear", "wor"],
 		examples: [
-			{ word: "teacher", phonemic: "ˈtitʃɚ" },
-			{ word: "water", phonemic: "ˈwɔtɚ" },
+			{ word: "bird", phonemic: "bɝd" },
+			{ word: "her", phonemic: "hɝ" },
+			{ word: "turn", phonemic: "tɝn" },
 		],
 	},
 };
