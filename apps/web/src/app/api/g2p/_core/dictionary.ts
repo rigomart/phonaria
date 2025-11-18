@@ -63,7 +63,7 @@ class CMUDict {
 			if (tokens.length === 0) continue;
 
 			const mappedVariant: G2PPhoneme[] = tokens.map((token) => {
-				const symbolId = getSymbolIdForCmuToken(token); // e.g. "voiceless-bilabial-stop"
+				const symbolId = getSymbolIdForCmuToken(token); // e.g. "voiceless-bilabial-plosive"
 
 				if (!symbolId) {
 					return {
