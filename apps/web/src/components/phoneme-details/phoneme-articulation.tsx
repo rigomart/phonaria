@@ -13,7 +13,6 @@ import {
 	phonemeDetailsById,
 } from "@/data/phoneme-details";
 import { useScopedI18n } from "@/locales/client";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Pressable } from "../ui/pressable";
@@ -65,55 +64,44 @@ type ArticulationIllustrationProps = {
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-// TODO: Add the illustrations for the remaining categories
 function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllustrationProps) {
 	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
 	const { ipa: phonemeIpa } = PhonemeSymbolRegistry[phonemeId];
-	const t = useScopedI18n(`components.phoneme-details.articulation.diagram`);
 
 	if (articulation.category === "consonant") {
 		return (
-			<div className="space-y-1">
-				<AspectRatio ratio={1} className="bg-neutral-900/60 rounded-lg overflow-hidden">
-					<Image
-						src={`${BUCKET_URL}/diagrams/${phonemeId}.svg`}
-						alt={`${phonemeLabel} articulation`}
-						fill
-						className="object-cover"
-					/>
-				</AspectRatio>
-				<DiagramExplanation title={t("consonant.title")} description={t("consonant.description")} />
-			</div>
+			<AspectRatio ratio={1} className="bg-neutral-900/60 rounded-lg overflow-hidden">
+				<Image
+					src={`${BUCKET_URL}/diagrams/${phonemeId}.svg`}
+					alt={`${phonemeLabel} articulation`}
+					fill
+					className="object-cover"
+				/>
+			</AspectRatio>
 		);
 	}
 
 	if (articulation.category === "vowel/monophthong" || articulation.category === "vowel/rhotic") {
 		return (
-			<div className="space-y-1">
-				<VowelChartCard
-					chartId={phonemeId}
-					phonemeLabel={phonemeLabel}
-					phonemeIpa={phonemeIpa}
-					category={articulation.category}
-					features={articulation.features}
-				/>
-				<DiagramExplanation title={t("vowel.title")} description={t("vowel.description")} />
-			</div>
+			<VowelChartCard
+				chartId={phonemeId}
+				phonemeLabel={phonemeLabel}
+				phonemeIpa={phonemeIpa}
+				category={articulation.category}
+				features={articulation.features}
+			/>
 		);
 	}
 
 	if (articulation.category === "vowel/diphthong") {
 		return (
-			<div className="space-y-1">
-				<VowelChartCard
-					chartId={phonemeId}
-					phonemeLabel={phonemeLabel}
-					phonemeIpa={phonemeIpa}
-					category={articulation.category}
-					features={articulation.features}
-				/>
-				<DiagramExplanation title={t("diphthong.title")} description={t("diphthong.description")} />
-			</div>
+			<VowelChartCard
+				chartId={phonemeId}
+				phonemeLabel={phonemeLabel}
+				phonemeIpa={phonemeIpa}
+				category={articulation.category}
+				features={articulation.features}
+			/>
 		);
 	}
 
@@ -215,9 +203,9 @@ function FeatureRow<ValueKey extends string>({
 		<Popover>
 			<PopoverTrigger asChild>
 				<Pressable
-					size="fit"
+					size="default"
 					variant="outline"
-					className="flex flex-col rounded-lg p-2 gap-1 min-w-24"
+					className="sm:flex-col items-start gap-1 sm:w-full"
 				>
 					<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
 						{feature.label}
@@ -301,14 +289,5 @@ function DiphthongFeatureRow<ValueKey extends string>({
 				</dl>
 			</PopoverContent>
 		</Popover>
-	);
-}
-
-function DiagramExplanation({ title, description }: { title: string; description: string }) {
-	return (
-		<Alert>
-			<AlertTitle>{title}</AlertTitle>
-			<AlertDescription className="text-xs">{description}</AlertDescription>
-		</Alert>
 	);
 }

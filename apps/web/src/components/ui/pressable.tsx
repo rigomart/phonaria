@@ -4,7 +4,7 @@ import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 const pressableVariants = cva(
-	"inline-flex items-center justify-center text-sm transition-all outline-none cursor-pointer focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 select-none",
+	"flex text-sm rounded-lg transition-all outline-none cursor-pointer focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 select-none",
 	{
 		variants: {
 			variant: {

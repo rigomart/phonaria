@@ -88,7 +88,7 @@ function DiphthongMarker({ geometry }: { geometry: DiphthongGeometry }) {
 						onClick={handleSelect}
 						className={cn(
 							vowelMarkerButtonBaseClass,
-							"border-primary/70 bg-background text-foreground rounded-full shadow-sm size-6 sm:size-9",
+							"border bg-secondary text-foreground rounded-full shadow-sm size-6 sm:size-9",
 						)}
 						style={buttonStyles}
 						aria-label={ariaLabel}
@@ -123,8 +123,8 @@ function DiphthongPath({ start, target }: { start: ChartPoint; target: ChartPoin
 			y1={start.y}
 			x2={end.x}
 			y2={end.y}
-			className="stroke-primary/80"
-			strokeWidth={2}
+			className="stroke-primary/70"
+			strokeWidth={1}
 			markerEnd="url(#vowel-arrow-head)"
 		/>
 	);

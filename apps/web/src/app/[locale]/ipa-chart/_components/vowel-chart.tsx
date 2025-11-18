@@ -59,7 +59,7 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 							isRounded && !isRhotic,
 						"border-primary bg-background text-foreground rounded-full size-6 sm:size-9":
 							!isRounded && !isRhotic,
-						"border-dashed border-primary bg-background text-foreground rounded-full size-6 sm:size-9":
+						"border-dashed border-primary bg-primary/10 text-foreground rounded-full size-6 sm:size-9":
 							isRhotic,
 					})}
 					style={buttonStyles}
@@ -91,7 +91,7 @@ export function VowelChartLegend() {
 				<span>{t("rounded")}</span>
 			</div>
 			<div className="flex items-center gap-1">
-				<span className="size-3 rounded-full border border-dashed border-primary" />
+				<span className="size-3 rounded-full border border-dashed border-primary bg-primary/10" />
 				<span>{t("rhotic")}</span>
 			</div>
 			<div className="flex items-center gap-1">
