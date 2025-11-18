@@ -21,13 +21,42 @@ type MonophthongVowelChartProps = {
 type VowelMarkerData = {
 	entry: StaticVowelChartEntry;
 	start: ChartPoint;
+	offset: MarkerOffset;
 };
 
+type MarkerOffset = {
+	x: number;
+	y: number;
+};
+
+const BASE_MARKER_OFFSET: MarkerOffset = { x: 0, y: 0 };
+const MARKER_OFFSET_RADIUS = 14;
+
 export function MonophthongVowelChart({ entries }: MonophthongVowelChartProps) {
-	const markers: VowelMarkerData[] = entries.map((entry) => ({
-		entry,
-		start: getVowelPoint(entry.features.height, entry.features.backness, vowelChartLayout),
-	}));
+	const keyCounts = new Map<string, number>();
+	for (const entry of entries) {
+		const key = getMarkerGroupKey(entry);
+		keyCounts.set(key, (keyCounts.get(key) ?? 0) + 1);
+	}
+
+	const groupOffsets = new Map<string, MarkerOffset[]>();
+	for (const [key, count] of keyCounts.entries()) {
+		groupOffsets.set(key, getMarkerOffsets(count));
+	}
+
+	const groupUsageIndex = new Map<string, number>();
+	const markers: VowelMarkerData[] = entries.map((entry) => {
+		const key = getMarkerGroupKey(entry);
+		const offsets = groupOffsets.get(key) ?? [BASE_MARKER_OFFSET];
+		const index = groupUsageIndex.get(key) ?? 0;
+		groupUsageIndex.set(key, index + 1);
+
+		return {
+			entry,
+			start: getVowelPoint(entry.features.height, entry.features.backness, vowelChartLayout),
+			offset: offsets[index] ?? BASE_MARKER_OFFSET,
+		};
+	});
 
 	return (
 		<VowelChartSurface
@@ -40,9 +69,13 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
 	const handleSelect = () => selectPhoneme(marker.entry.id);
 	const { leftPercent, topPercent } = getMarkerPercentPosition(marker.start, vowelChartLayout);
-	const buttonStyles: CSSProperties = {
-		left: `calc(${leftPercent}% - 16px)`,
-		top: `calc(${topPercent}% - 16px)`,
+	const offsetX = marker.offset?.x ?? 0;
+	const offsetY = marker.offset?.y ?? 0;
+	const buttonStyles = {
+		"--marker-left": `${leftPercent}%`,
+		"--marker-top": `${topPercent}%`,
+		"--marker-offset-x": `${offsetX}px`,
+		"--marker-offset-y": `${offsetY}px`,
 	};
 	const ariaLabel = `${marker.entry.label} (${marker.entry.ipa})`;
 	const isRounded = marker.entry.features.roundness === "rounded";
@@ -54,15 +87,20 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 				<button
 					type="button"
 					onClick={handleSelect}
-					className={cn(vowelMarkerButtonBaseClass, {
-						"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9":
-							isRounded && !isRhotic,
-						"border-primary bg-background text-foreground rounded-full size-6 sm:size-9":
-							!isRounded && !isRhotic,
-						"border-dashed border-primary bg-primary/10 text-foreground rounded-full size-6 sm:size-9":
-							isRhotic,
-					})}
-					style={buttonStyles}
+					className={cn(
+						vowelMarkerButtonBaseClass,
+						"left-[calc(var(--marker-left)-0.75rem+var(--marker-offset-x))] top-[calc(var(--marker-top)-0.75rem+var(--marker-offset-y))]",
+						"sm:left-[calc(var(--marker-left)-1.125rem+var(--marker-offset-x))] sm:top-[calc(var(--marker-top)-1.125rem+var(--marker-offset-y))]",
+						{
+							"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9":
+								isRounded && !isRhotic,
+							"border-primary bg-background text-foreground rounded-full size-6 sm:size-9":
+								!isRounded && !isRhotic,
+							"border-dashed border-primary bg-primary/10 text-foreground rounded-full size-6 sm:size-9":
+								isRhotic,
+						},
+					)}
+					style={buttonStyles as CSSProperties}
 					aria-label={ariaLabel}
 				>
 					{marker.entry.ipa}
@@ -75,6 +113,41 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 			</TooltipContent>
 		</Tooltip>
 	);
+}
+
+function getMarkerGroupKey(entry: StaticVowelChartEntry) {
+	return `${entry.features.height}-${entry.features.backness}`;
+}
+
+function getMarkerOffsets(count: number): MarkerOffset[] {
+	if (count <= 1) return [BASE_MARKER_OFFSET];
+
+	if (count === 2) {
+		return [
+			{ x: -MARKER_OFFSET_RADIUS, y: 0 },
+			{ x: MARKER_OFFSET_RADIUS, y: 0 },
+		];
+	}
+
+	if (count === 3) {
+		return [
+			{ x: -MARKER_OFFSET_RADIUS, y: 8 },
+			{ x: MARKER_OFFSET_RADIUS, y: 8 },
+			{ x: 0, y: -MARKER_OFFSET_RADIUS },
+		];
+	}
+
+	const offsets: MarkerOffset[] = [];
+	const angleOffset = -Math.PI / 2;
+	for (let index = 0; index < count; index++) {
+		const angle = angleOffset + (index * (2 * Math.PI)) / count;
+		offsets.push({
+			x: Math.cos(angle) * MARKER_OFFSET_RADIUS,
+			y: Math.sin(angle) * MARKER_OFFSET_RADIUS,
+		});
+	}
+
+	return offsets;
 }
 
 export function VowelChartLegend() {
