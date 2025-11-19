@@ -22,7 +22,9 @@ class CMUDict {
 		this.loadPromise = Promise.resolve()
 			.then(() => {
 				if (this.loaded) return;
-				this.data = (cmudictData as CmudictJson).data;
+				// Type assertion with runtime check or schema validation would be better here if we didn't trust the JSON file
+				const json = cmudictData as unknown as CmudictJson;
+				this.data = json.data;
 				this.loaded = true;
 			})
 			.catch((error) => {

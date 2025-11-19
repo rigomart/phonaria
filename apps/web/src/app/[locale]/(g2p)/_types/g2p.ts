@@ -1,5 +1,10 @@
 import type { PhonemeSymbolId } from "shared-data";
-import type { G2PPhonemeData } from "../_lib/g2p-schema";
+import type {
+	G2PPhoneme,
+	G2PStress,
+	G2PSyllable,
+	G2PWord,
+} from "@/app/api/g2p/_schemas/g2p-api.schema";
 
 /**
  * Frontend types for G2P (Grapheme-to-Phoneme) functionality
@@ -13,19 +18,8 @@ export interface G2PRequest {
 	text: string;
 }
 
-/**
- * Single word with its phonemic transcription
- */
-export interface G2PWord {
-	word: string;
-	variants: G2PSyllable[][];
-	source: "cmudict" | "fallback";
-}
-
-export interface G2PSyllable {
-	phonemes: G2PPhoneme[];
-	stress: "primary" | "secondary" | "none";
-}
+// Re-export core types from the schema to ensure alignment
+export type { G2PWord, G2PSyllable, G2PPhoneme, G2PStress };
 
 /**
  * G2P API response structure
@@ -42,8 +36,6 @@ export interface G2PError {
 	message: string;
 }
 
-export type G2PPhoneme = G2PPhonemeData;
-
 /**
  * Frontend-specific: Enhanced phoneme with metadata for UI display
  */
@@ -58,13 +50,13 @@ export interface TranscribedPhoneme {
 	phonemeId: PhonemeSymbolId | null;
 	/** Index in the original word */
 	wordIndex: number;
-	/** Index in the phoneme array (global within the word or syllable? Let's keep it unique per word for keys) */
+	/** Index in the phoneme array */
 	phonemeIndex: number;
 }
 
 export interface TranscribedSyllable {
 	phonemes: TranscribedPhoneme[];
-	stress: "primary" | "secondary" | "none";
+	stress: G2PStress;
 }
 
 /**
