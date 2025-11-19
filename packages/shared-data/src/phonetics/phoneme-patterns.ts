@@ -13,179 +13,318 @@ type SpellingPattern = {
 };
 
 export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, SpellingPattern>> = {
-	// Consonants
-	"voiceless-velar-plosive": {
-		patterns: ["ck", "ke", "ki", "ky", "ca", "co", "cu"],
+	// ============================================================================
+	// CONSONANTS - Plosives
+	// ============================================================================
+
+	"voiceless-bilabial-plosive": {
+		patterns: ["p", "pp"],
 		examples: [
-			{ word: "back", phonemic: "bæk" },
-			{ word: "kite", phonemic: "kaɪt" },
+			{ word: "pen", phonemic: "pɛn" },
+			{ word: "happy", phonemic: "ˈhæpi" },
+		],
+	},
+	"voiced-bilabial-plosive": {
+		patterns: ["b", "bb"],
+		examples: [
+			{ word: "big", phonemic: "bɪɡ" },
+			{ word: "rabbit", phonemic: "ˈɹæbɪt" },
+		],
+	},
+	"voiceless-alveolar-plosive": {
+		patterns: ["t", "tt", "-ed"],
+		examples: [
+			{ word: "top", phonemic: "tɑp" },
+			{ word: "letter", phonemic: "ˈlɛtɝ" },
+			{ word: "jumped", phonemic: "dʒʌmpt" },
+		],
+	},
+	"voiced-alveolar-plosive": {
+		patterns: ["d", "dd", "-ed"],
+		examples: [
+			{ word: "dog", phonemic: "dɔɡ" },
+			{ word: "ladder", phonemic: "ˈlædɝ" },
+			{ word: "loved", phonemic: "lʌvd" },
+		],
+	},
+	"voiceless-velar-plosive": {
+		patterns: ["c", "k", "ck"],
+		examples: [
 			{ word: "cat", phonemic: "kæt" },
+			{ word: "keep", phonemic: "kip" },
+			{ word: "back", phonemic: "bæk" },
 		],
 	},
 	"voiced-velar-plosive": {
-		patterns: ["gue", "gui", "gg"],
+		patterns: ["g", "gg"],
 		examples: [
-			{ word: "guest", phonemic: "ɡɛst" },
-			{ word: "guide", phonemic: "ɡaɪd" },
+			{ word: "go", phonemic: "ɡoʊ" },
 			{ word: "bigger", phonemic: "ˈbɪɡɝ" },
 		],
 	},
-	"voiceless-postalveolar-affricate": {
-		patterns: ["tch", "ch"],
+
+	// ============================================================================
+	// CONSONANTS - Nasals
+	// ============================================================================
+
+	"voiced-bilabial-nasal": {
+		patterns: ["m", "mm"],
 		examples: [
-			{ word: "catch", phonemic: "kætʃ" },
-			{ word: "chair", phonemic: "tʃɛɹ" },
+			{ word: "moon", phonemic: "mun" },
+			{ word: "summer", phonemic: "ˈsʌmɝ" },
 		],
 	},
-	"voiced-postalveolar-affricate": {
-		patterns: ["dge", "j-", "-ge"],
+	"voiced-alveolar-nasal": {
+		patterns: ["n", "nn", "kn-"],
 		examples: [
-			{ word: "edge", phonemic: "ɛdʒ" },
-			{ word: "jam", phonemic: "dʒæm" },
-			{ word: "page", phonemic: "peɪdʒ" },
+			{ word: "sun", phonemic: "sʌn" },
+			{ word: "dinner", phonemic: "ˈdɪnɝ" },
+			{ word: "know", phonemic: "noʊ" },
+		],
+	},
+	"voiced-velar-nasal": {
+		patterns: ["-ng", "n"],
+		examples: [
+			{ word: "sing", phonemic: "sɪŋ" },
+			{ word: "long", phonemic: "lɔŋ" },
+			{ word: "think", phonemic: "θɪŋk" },
+		],
+	},
+
+	// ============================================================================
+	// CONSONANTS - Liquids & Approximants
+	// ============================================================================
+
+	"voiced-alveolar-lateral-approximant": {
+		patterns: ["l", "ll"],
+		examples: [
+			{ word: "let", phonemic: "lɛt" },
+			{ word: "hello", phonemic: "hɛˈloʊ" },
+		],
+	},
+	"voiced-postalveolar-approximant": {
+		patterns: ["r", "rr", "wr-"],
+		examples: [
+			{ word: "red", phonemic: "ɹɛd" },
+			{ word: "sorry", phonemic: "ˈsɑɹi" },
+			{ word: "write", phonemic: "ɹaɪt" },
+		],
+	},
+	"voiced-labial-velar-approximant": {
+		patterns: ["w"],
+		examples: [
+			{ word: "we", phonemic: "wi" },
+			{ word: "away", phonemic: "əˈweɪ" },
+		],
+	},
+	"voiced-palatal-approximant": {
+		patterns: ["y"],
+		examples: [
+			{ word: "yes", phonemic: "jɛs" },
+			{ word: "you", phonemic: "ju" },
+		],
+	},
+
+	// ============================================================================
+	// CONSONANTS - Fricatives
+	// ============================================================================
+
+	"voiceless-labiodental-fricative": {
+		patterns: ["f", "ff", "ph"],
+		examples: [
+			{ word: "fish", phonemic: "fɪʃ" },
+			{ word: "off", phonemic: "ɔf" },
+			{ word: "phone", phonemic: "foʊn" },
+		],
+	},
+	"voiced-labiodental-fricative": {
+		patterns: ["v"],
+		examples: [
+			{ word: "very", phonemic: "ˈvɛɹi" },
+			{ word: "love", phonemic: "lʌv" },
+		],
+	},
+	"voiceless-dental-fricative": {
+		patterns: ["th"],
+		examples: [
+			{ word: "think", phonemic: "θɪŋk" },
+			{ word: "math", phonemic: "mæθ" },
+		],
+	},
+	"voiced-dental-fricative": {
+		patterns: ["th"],
+		examples: [
+			{ word: "this", phonemic: "ðɪs" },
+			{ word: "mother", phonemic: "ˈmʌðɝ" },
+		],
+	},
+	"voiceless-alveolar-fricative": {
+		patterns: ["s", "ss", "c"],
+		examples: [
+			{ word: "sun", phonemic: "sʌn" },
+			{ word: "pass", phonemic: "pæs" },
+			{ word: "city", phonemic: "ˈsɪti" },
+		],
+	},
+	"voiced-alveolar-fricative": {
+		patterns: ["z", "-s", "zz"],
+		examples: [
+			{ word: "zoo", phonemic: "zu" },
+			{ word: "dogs", phonemic: "dɔɡz" },
+			{ word: "buzz", phonemic: "bʌz" },
 		],
 	},
 	"voiceless-postalveolar-fricative": {
-		patterns: ["sh", "tion", "cial", "cient", "ssion"],
+		patterns: ["sh", "-tion", "-sion"],
 		examples: [
-			{ word: "ship", phonemic: "ʃɪp" },
+			{ word: "shop", phonemic: "ʃɑp" },
 			{ word: "nation", phonemic: "ˈneɪʃən" },
 			{ word: "special", phonemic: "ˈspɛʃəl" },
 		],
 	},
-	"voiceless-alveolar-fricative": {
-		patterns: ["ss", "ce", "ci", "cy"],
+	"voiced-postalveolar-fricative": {
+		patterns: ["-sion", "-sure"],
 		examples: [
-			{ word: "pass", phonemic: "pæs" },
-			{ word: "city", phonemic: "ˈsɪti" },
-			{ word: "cycle", phonemic: "ˈsaɪkəl" },
+			{ word: "vision", phonemic: "ˈvɪʒən" },
+			{ word: "measure", phonemic: "ˈmɛʒɝ" },
 		],
 	},
-	"voiced-alveolar-fricative": {
-		patterns: ["zz"],
+	"voiceless-glottal-fricative": {
+		patterns: ["h"],
 		examples: [
-			{ word: "buzz", phonemic: "bʌz" },
-			{ word: "fuzzy", phonemic: "ˈfʌzi" },
-		],
-	},
-	"voiceless-dental-fricative": {
-		patterns: ["th-"],
-		examples: [
-			{ word: "think", phonemic: "θɪŋk" },
-			{ word: "thin", phonemic: "θɪn" },
-		],
-	},
-	"voiced-velar-nasal": {
-		patterns: ["-ng"],
-		examples: [
-			{ word: "sing", phonemic: "sɪŋ" },
-			{ word: "long", phonemic: "lɔŋ" },
-		],
-	},
-	"voiced-alveolar-nasal": {
-		patterns: ["kn-", "gn-"],
-		examples: [
-			{ word: "know", phonemic: "noʊ" },
-			{ word: "gnome", phonemic: "noʊm" },
-		],
-	},
-	"voiced-postalveolar-approximant": {
-		patterns: ["wr-"],
-		examples: [
-			{ word: "write", phonemic: "ɹaɪt" },
-			{ word: "wrist", phonemic: "ɹɪst" },
-		],
-	},
-	"voiceless-labiodental-fricative": {
-		patterns: ["ph"],
-		examples: [
-			{ word: "phone", phonemic: "foʊn" },
-			{ word: "elephant", phonemic: "ˈɛləfənt" },
-		],
-	},
-	"voiced-labiodental-fricative": {
-		patterns: ["-ve"],
-		examples: [
-			{ word: "have", phonemic: "hæv" },
-			{ word: "give", phonemic: "ɡɪv" },
-		],
-	},
-	"voiced-labial-velar-approximant": {
-		patterns: ["wh-"],
-		examples: [
-			{ word: "what", phonemic: "wʌt" },
-			{ word: "white", phonemic: "waɪt" },
-		],
-	},
-	"voiced-palatal-approximant": {
-		patterns: ["y-"],
-		examples: [
-			{ word: "yes", phonemic: "jɛs" },
-			{ word: "yoga", phonemic: "ˈjoʊɡə" },
+			{ word: "house", phonemic: "haʊs" },
+			{ word: "hello", phonemic: "hɛˈloʊ" },
 		],
 	},
 
-	// Monophthongs
-	"close-front-unrounded": {
-		patterns: ["ee", "e-e", "-y"],
+	// ============================================================================
+	// CONSONANTS - Affricates
+	// ============================================================================
+
+	"voiceless-postalveolar-affricate": {
+		patterns: ["ch", "tch"],
 		examples: [
-			{ word: "see", phonemic: "si" },
-			{ word: "these", phonemic: "ðiz" },
+			{ word: "chair", phonemic: "tʃɛɹ" },
+			{ word: "catch", phonemic: "kætʃ" },
+		],
+	},
+	"voiced-postalveolar-affricate": {
+		patterns: ["j", "-dge", "-ge"],
+		examples: [
+			{ word: "jump", phonemic: "dʒʌmp" },
+			{ word: "bridge", phonemic: "bɹɪdʒ" },
+			{ word: "page", phonemic: "peɪdʒ" },
+		],
+	},
+
+	// ============================================================================
+	// MONOPHTHONGS - High Vowels
+	// ============================================================================
+
+	"close-front-unrounded": {
+		patterns: ["ee", "ea", "-y", "e"],
+		examples: [
+			{ word: "tree", phonemic: "tɹi" },
+			{ word: "sea", phonemic: "si" },
 			{ word: "happy", phonemic: "ˈhæpi" },
+			{ word: "be", phonemic: "bi" },
+		],
+	},
+	"near-close-near-front-unrounded": {
+		patterns: ["i"],
+		examples: [
+			{ word: "sit", phonemic: "sɪt" },
+			{ word: "big", phonemic: "bɪɡ" },
 		],
 	},
 	"close-back-rounded": {
-		patterns: ["-ue", "ui"],
+		patterns: ["oo", "u-e", "ew"],
 		examples: [
-			{ word: "blue", phonemic: "blu" },
-			{ word: "fruit", phonemic: "fɹut" },
+			{ word: "food", phonemic: "fud" },
+			{ word: "rude", phonemic: "ɹud" },
+			{ word: "new", phonemic: "nu" },
 		],
 	},
-	"open-mid-back-rounded": {
-		patterns: ["aw", "au"],
+	"near-close-near-back-rounded": {
+		patterns: ["oo", "u"],
 		examples: [
-			{ word: "saw", phonemic: "sɔ" },
-			{ word: "author", phonemic: "ˈɔθɝ" },
-		],
-	},
-	"mid-central-unrounded": {
-		patterns: ["-a"],
-		examples: [
-			{ word: "sofa", phonemic: "ˈsoʊfə" },
-			{ word: "panda", phonemic: "ˈpændə" },
+			{ word: "book", phonemic: "bʊk" },
+			{ word: "put", phonemic: "pʊt" },
 		],
 	},
 
-	// Diphthongs
-	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
-		patterns: ["ai", "-ay", "a-e", "eigh"],
+	// ============================================================================
+	// MONOPHTHONGS - Mid Vowels
+	// ============================================================================
+
+	"open-mid-front-unrounded": {
+		patterns: ["e", "ea"],
 		examples: [
-			{ word: "rain", phonemic: "ɹeɪn" },
-			{ word: "day", phonemic: "deɪ" },
-			{ word: "name", phonemic: "neɪm" },
-			{ word: "eight", phonemic: "eɪt" },
+			{ word: "bed", phonemic: "bɛd" },
+			{ word: "bread", phonemic: "bɹɛd" },
 		],
 	},
-	"close-mid-back-rounded-to-near-close-near-back-rounded": {
-		patterns: ["oa", "o-e", "-ow"],
+	"mid-central-unrounded": {
+		patterns: ["a", "e", "o"],
 		examples: [
-			{ word: "boat", phonemic: "boʊt" },
-			{ word: "home", phonemic: "hoʊm" },
-			{ word: "snow", phonemic: "snoʊ" },
+			{ word: "sofa", phonemic: "ˈsoʊfə" },
+			{ word: "problem", phonemic: "ˈpɹɑbləm" },
+			{ word: "lemon", phonemic: "ˈlɛmən" },
+		],
+	},
+	"open-mid-back-unrounded": {
+		patterns: ["u", "o"],
+		examples: [
+			{ word: "cup", phonemic: "kʌp" },
+			{ word: "love", phonemic: "lʌv" },
+		],
+	},
+	"open-mid-back-rounded": {
+		patterns: ["aw", "au", "al"],
+		examples: [
+			{ word: "saw", phonemic: "sɔ" },
+			{ word: "because", phonemic: "bɪˈkɔz" },
+			{ word: "talk", phonemic: "tɔk" },
+		],
+	},
+
+	// ============================================================================
+	// MONOPHTHONGS - Low Vowels
+	// ============================================================================
+
+	"near-open-front-unrounded": {
+		patterns: ["a"],
+		examples: [
+			{ word: "cat", phonemic: "kæt" },
+			{ word: "back", phonemic: "bæk" },
+		],
+	},
+	"open-back-unrounded": {
+		patterns: ["o", "a"],
+		examples: [
+			{ word: "hot", phonemic: "hɑt" },
+			{ word: "father", phonemic: "ˈfɑðɝ" },
+		],
+	},
+
+	// ============================================================================
+	// DIPHTHONGS
+	// ============================================================================
+
+	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
+		patterns: ["a-e", "ai", "-ay"],
+		examples: [
+			{ word: "make", phonemic: "meɪk" },
+			{ word: "rain", phonemic: "ɹeɪn" },
+			{ word: "day", phonemic: "deɪ" },
 		],
 	},
 	"open-front-unrounded-to-near-close-near-front-unrounded": {
-		patterns: ["i-e", "igh"],
+		patterns: ["i-e", "igh", "-y"],
 		examples: [
 			{ word: "time", phonemic: "taɪm" },
 			{ word: "night", phonemic: "naɪt" },
-		],
-	},
-	"open-front-unrounded-to-near-close-near-back-rounded": {
-		patterns: ["ou"],
-		examples: [
-			{ word: "out", phonemic: "aʊt" },
-			{ word: "cloud", phonemic: "klaʊd" },
+			{ word: "my", phonemic: "maɪ" },
 		],
 	},
 	"open-mid-back-rounded-to-near-close-near-front-unrounded": {
@@ -195,14 +334,33 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "boy", phonemic: "bɔɪ" },
 		],
 	},
-
-	// Rhotics
-	"open-mid-central-rhotic": {
-		patterns: ["ir", "er", "ur", "ear", "wor"],
+	"close-mid-back-rounded-to-near-close-near-back-rounded": {
+		patterns: ["o", "oa", "o-e"],
 		examples: [
-			{ word: "bird", phonemic: "bɝd" },
+			{ word: "go", phonemic: "ɡoʊ" },
+			{ word: "boat", phonemic: "boʊt" },
+			{ word: "home", phonemic: "hoʊm" },
+		],
+	},
+	"open-front-unrounded-to-near-close-near-back-rounded": {
+		patterns: ["ou", "ow"],
+		examples: [
+			{ word: "out", phonemic: "aʊt" },
+			{ word: "now", phonemic: "naʊ" },
+		],
+	},
+
+	// ============================================================================
+	// RHOTICS
+	// ============================================================================
+
+	"open-mid-central-rhotic": {
+		patterns: ["er", "ir", "ur", "or"],
+		examples: [
 			{ word: "her", phonemic: "hɝ" },
+			{ word: "bird", phonemic: "bɝd" },
 			{ word: "turn", phonemic: "tɝn" },
+			{ word: "work", phonemic: "wɝk" },
 		],
 	},
 };
