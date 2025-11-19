@@ -1,5 +1,10 @@
 import type { PhonemeSymbolId } from "shared-data";
-import type { G2PPhonemeData } from "../_lib/g2p-schema";
+import type {
+	G2PPhoneme,
+	G2PStress,
+	G2PSyllable,
+	G2PWord,
+} from "@/app/api/g2p/_schemas/g2p-api.schema";
 
 /**
  * Frontend types for G2P (Grapheme-to-Phoneme) functionality
@@ -13,14 +18,8 @@ export interface G2PRequest {
 	text: string;
 }
 
-/**
- * Single word with its phonemic transcription
- */
-export interface G2PWord {
-	word: string;
-	variants: G2PPhoneme[][];
-	source: "cmudict" | "fallback";
-}
+// Re-export core types from the schema to ensure alignment
+export type { G2PWord, G2PSyllable, G2PPhoneme, G2PStress };
 
 /**
  * G2P API response structure
@@ -36,8 +35,6 @@ export interface G2PError {
 	error: string;
 	message: string;
 }
-
-export type G2PPhoneme = G2PPhonemeData;
 
 /**
  * Frontend-specific: Enhanced phoneme with metadata for UI display
@@ -57,6 +54,11 @@ export interface TranscribedPhoneme {
 	phonemeIndex: number;
 }
 
+export interface TranscribedSyllable {
+	phonemes: TranscribedPhoneme[];
+	stress: G2PStress;
+}
+
 /**
  * Frontend-specific: Enhanced word with transcription metadata
  */
@@ -64,7 +66,7 @@ export interface TranscribedWord {
 	/** Original word text */
 	word: string;
 	/** Variants with enriched phoneme metadata */
-	variants: TranscribedPhoneme[][];
+	variants: TranscribedSyllable[][];
 	/** Currently selected variant index */
 	selectedVariantIndex: number;
 	/** Index in the original text */

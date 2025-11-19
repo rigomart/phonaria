@@ -7,6 +7,7 @@ import { PhonemeSymbolRegistry } from "shared-data";
 import type {
 	G2PPhoneme,
 	TranscribedPhoneme,
+	TranscribedSyllable,
 	TranscribedWord,
 	TranscriptionResult,
 } from "@/app/[locale]/(g2p)/_types/g2p";
@@ -44,11 +45,21 @@ function transformG2PResponse(
 	originalText: string,
 ): TranscriptionResult {
 	const words: TranscribedWord[] = response.words.map((word, wordIndex) => {
-		const variants: TranscribedPhoneme[][] = word.variants.map((variant) =>
-			variant.map((phoneme, phonemeIndex) =>
-				mapPhonemeToTranscribed(phoneme, wordIndex, phonemeIndex),
-			),
-		);
+		const variants: TranscribedSyllable[][] = word.variants.map((variant) => {
+			let globalPhonemeIndex = 0;
+			return variant.map((syllable) => {
+				const transcribedPhonemes = syllable.phonemes.map((phoneme) => {
+					const transcribed = mapPhonemeToTranscribed(phoneme, wordIndex, globalPhonemeIndex);
+					globalPhonemeIndex++;
+					return transcribed;
+				});
+
+				return {
+					phonemes: transcribedPhonemes,
+					stress: syllable.stress,
+				};
+			});
+		});
 
 		return {
 			word: word.word,
