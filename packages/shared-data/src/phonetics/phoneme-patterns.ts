@@ -13,10 +13,7 @@ type SpellingPattern = {
 };
 
 export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, SpellingPattern>> = {
-	// ============================================================================
-	// CONSONANTS - Plosives
-	// ============================================================================
-
+	// Plosives
 	"voiceless-bilabial-plosive": {
 		patterns: ["p", "pp"],
 		examples: [
@@ -63,10 +60,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// ============================================================================
-	// CONSONANTS - Nasals
-	// ============================================================================
-
+	// Nasals
 	"voiced-bilabial-nasal": {
 		patterns: ["m", "mm"],
 		examples: [
@@ -91,10 +85,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// ============================================================================
-	// CONSONANTS - Liquids & Approximants
-	// ============================================================================
-
+	// Liquids & Approximants
 	"voiced-alveolar-lateral-approximant": {
 		patterns: ["l", "ll"],
 		examples: [
@@ -125,10 +116,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// ============================================================================
-	// CONSONANTS - Fricatives
-	// ============================================================================
-
+	// Fricatives
 	"voiceless-labiodental-fricative": {
 		patterns: ["f", "ff", "ph"],
 		examples: [
@@ -197,10 +185,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// ============================================================================
-	// CONSONANTS - Affricates
-	// ============================================================================
-
+	// Affricates
 	"voiceless-postalveolar-affricate": {
 		patterns: ["ch", "tch"],
 		examples: [
@@ -217,10 +202,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// ============================================================================
-	// MONOPHTHONGS - High Vowels
-	// ============================================================================
-
+	// Monophthongs - High Vowels
 	"close-front-unrounded": {
 		patterns: ["ee", "ea", "-y", "e"],
 		examples: [
@@ -253,10 +235,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// ============================================================================
-	// MONOPHTHONGS - Mid Vowels
-	// ============================================================================
-
+	// Monophthongs - Mid Vowels
 	"open-mid-front-unrounded": {
 		patterns: ["e", "ea"],
 		examples: [
@@ -288,10 +267,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// ============================================================================
-	// MONOPHTHONGS - Low Vowels
-	// ============================================================================
-
+	// Monophthongs - Low Vowels
 	"near-open-front-unrounded": {
 		patterns: ["a"],
 		examples: [
@@ -307,10 +283,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// ============================================================================
-	// DIPHTHONGS
-	// ============================================================================
-
+	// Diphthongs
 	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
 		patterns: ["a-e", "ai", "-ay"],
 		examples: [
@@ -350,10 +323,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// ============================================================================
-	// RHOTICS
-	// ============================================================================
-
+	// Rhotics
 	"open-mid-central-rhotic": {
 		patterns: ["er", "ir", "ur", "or"],
 		examples: [
