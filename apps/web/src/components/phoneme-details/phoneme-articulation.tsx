@@ -1,5 +1,6 @@
 import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import {
 	type PhonemeArticulation,
 	PhonemeArticulationRegistry,
@@ -14,6 +15,7 @@ import {
 } from "@/data/phoneme-details";
 import { useScopedI18n } from "@/locales/client";
 import { AspectRatio } from "../ui/aspect-ratio";
+import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Pressable } from "../ui/pressable";
 import { Separator } from "../ui/separator";
@@ -41,14 +43,22 @@ export function PhonemeDetailsArticulation() {
 				<PhonemeSectionDescription>{t("description")}</PhonemeSectionDescription>
 			</PhonemeSectionHeader>
 			<PhonemeSectionContent>
-				<div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
-					<div className="col-span-2">
-						<ArticulationIllustration phonemeId={phonemeId} articulation={articulation} />
+				<div className="flex flex-col items-start gap-1">
+					<div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
+						<div className="col-span-2">
+							<ArticulationIllustration phonemeId={phonemeId} articulation={articulation} />
+						</div>
+						<div className="rounded-lg w-full col-span-1 space-y-3">
+							<h4 className="text-base font-semibold">{t("features")}</h4>
+							<ArticulatoryFeatures articulation={articulation} />
+						</div>
 					</div>
-					<div className="rounded-lg w-full col-span-1 space-y-3">
-						<h4 className="text-base font-semibold">{t("features")}</h4>
-						<ArticulatoryFeatures articulation={articulation} />
-					</div>
+					<Button size="xs" variant="link" asChild>
+						<Link href="/ipa-chart">
+							{t("ipa-chart-link")}
+							<ArrowRightIcon className="size-4" aria-hidden="true" />
+						</Link>
+					</Button>
 				</div>
 			</PhonemeSectionContent>
 

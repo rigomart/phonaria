@@ -12,6 +12,7 @@ export default {
 				title: "Pronunciation",
 				description: "How this sound is produced using your vocal tract.",
 				features: "Features",
+				"ipa-chart-link": "View on the IPA chart",
 				"step-by-step": "Step by step",
 				"common-mistakes": "Common mistakes",
 				pitfalls: {
