@@ -1,6 +1,6 @@
 import type { PhonemeSymbolId } from "shared-data";
 import { PhonemeSymbolRegistry } from "shared-data";
-import type { G2PPhoneme } from "../_schemas/g2p-api.schema";
+import type { G2PPhoneme, G2PSyllable } from "../_schemas/g2p-api.schema";
 
 export class FallbackG2P {
 	private readonly ipaToPhonemeId = new Map<string, PhonemeSymbolId>();
@@ -68,21 +68,27 @@ export class FallbackG2P {
 		};
 	}
 
-	generatePronunciation(word: string): G2PPhoneme[] {
-		const result: G2PPhoneme[] = [];
+	generatePronunciation(word: string): G2PSyllable[] {
+		const phonemes: G2PPhoneme[] = [];
 		const letters = word.toLowerCase().split("");
 
 		for (const letter of letters) {
 			if (this.basicConsonantMap[letter]) {
-				result.push(this.createPhoneme(this.basicConsonantMap[letter], letter));
+				phonemes.push(this.createPhoneme(this.basicConsonantMap[letter], letter));
 			} else if (this.basicVowelMap[letter]) {
-				result.push(this.createPhoneme(this.basicVowelMap[letter], letter));
+				phonemes.push(this.createPhoneme(this.basicVowelMap[letter], letter));
 			} else {
-				result.push(this.createUnknown(letter));
+				phonemes.push(this.createUnknown(letter));
 			}
 		}
 
-		return result;
+		// Return as a single syllable with no stress
+		return [
+			{
+				phonemes,
+				stress: "none",
+			},
+		];
 	}
 }
 

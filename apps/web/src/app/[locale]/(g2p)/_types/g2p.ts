@@ -18,8 +18,13 @@ export interface G2PRequest {
  */
 export interface G2PWord {
 	word: string;
-	variants: G2PPhoneme[][];
+	variants: G2PSyllable[][];
 	source: "cmudict" | "fallback";
+}
+
+export interface G2PSyllable {
+	phonemes: G2PPhoneme[];
+	stress: "primary" | "secondary" | "none";
 }
 
 /**
@@ -53,8 +58,13 @@ export interface TranscribedPhoneme {
 	phonemeId: PhonemeSymbolId | null;
 	/** Index in the original word */
 	wordIndex: number;
-	/** Index in the phoneme array */
+	/** Index in the phoneme array (global within the word or syllable? Let's keep it unique per word for keys) */
 	phonemeIndex: number;
+}
+
+export interface TranscribedSyllable {
+	phonemes: TranscribedPhoneme[];
+	stress: "primary" | "secondary" | "none";
 }
 
 /**
@@ -64,7 +74,7 @@ export interface TranscribedWord {
 	/** Original word text */
 	word: string;
 	/** Variants with enriched phoneme metadata */
-	variants: TranscribedPhoneme[][];
+	variants: TranscribedSyllable[][];
 	/** Currently selected variant index */
 	selectedVariantIndex: number;
 	/** Index in the original text */

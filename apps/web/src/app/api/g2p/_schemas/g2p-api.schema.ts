@@ -24,9 +24,14 @@ const unknownPhonemeSchema = z.object({
 
 const g2pPhonemeSchema = z.union([knownPhonemeSchema, unknownPhonemeSchema]);
 
+const g2pSyllableSchema = z.object({
+	phonemes: z.array(g2pPhonemeSchema),
+	stress: z.enum(["primary", "secondary", "none"]),
+});
+
 export const g2pWordSchema = z.object({
 	word: z.string(),
-	variants: z.array(z.array(g2pPhonemeSchema)),
+	variants: z.array(z.array(g2pSyllableSchema)),
 	source: z.enum(["cmudict", "fallback"]),
 });
 
@@ -36,5 +41,6 @@ export const g2pResponseSchema = z.object({
 
 export type G2PRequest = z.infer<typeof g2pRequestSchema>;
 export type G2PPhoneme = z.infer<typeof g2pPhonemeSchema>;
+export type G2PSyllable = z.infer<typeof g2pSyllableSchema>;
 export type G2PWord = z.infer<typeof g2pWordSchema>;
 export type G2PResponse = z.infer<typeof g2pResponseSchema>;

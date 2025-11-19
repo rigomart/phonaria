@@ -45,7 +45,7 @@ function ClickablePhoneme({ phoneme, onClick, selectedSymbol }: ClickablePhoneme
 		<button
 			type="button"
 			className={cn(
-				"font-mono text-3xl md:text-4xl bg-transparent border-none p-2 m-0 rounded-md",
+				"font-mono text-3xl md:text-4xl bg-transparent border-none p-1 m-0 rounded-md",
 				"cursor-pointer transition-all duration-100 ease-out",
 				"hover:text-primary hover:bg-primary/5 hover:shadow-sm",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:rounded-md",
@@ -89,14 +89,30 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 			</button>
 
 			<div className="flex items-center gap-2">
-				<div className="leading-normal whitespace-nowrap flex items-center gap-1">
-					{currentVariant.map((phoneme, phonemeIndex) => (
-						<ClickablePhoneme
-							key={`${phoneme.symbol}-${word.wordIndex}-${phonemeIndex}`}
-							phoneme={phoneme}
-							onClick={onPhonemeClick}
-							selectedSymbol={selectedSymbol}
-						/>
+				<div className="leading-normal whitespace-nowrap flex items-center gap-0.5">
+					{currentVariant.map((syllable, syllableIndex) => (
+						<div key={`syllable-${word.wordIndex}-${syllableIndex}`} className="flex items-center">
+							{syllable.stress === "primary" && (
+								<span className="text-2xl md:text-3xl text-muted-foreground/70 select-none mr-0.5">
+									ˈ
+								</span>
+							)}
+							{syllable.stress === "secondary" && (
+								<span className="text-2xl md:text-3xl text-muted-foreground/70 select-none mr-0.5">
+									ˌ
+								</span>
+							)}
+							{syllable.phonemes.map((phoneme, phonemeIndex) => (
+								<ClickablePhoneme
+									key={`${phoneme.symbol}-${word.wordIndex}-${syllableIndex}-${phonemeIndex}`}
+									phoneme={phoneme}
+									onClick={onPhonemeClick}
+									selectedSymbol={selectedSymbol}
+								/>
+							))}
+							{/* Add a small spacer between syllables if not the last one */}
+							{syllableIndex < currentVariant.length - 1 && <span className="w-1" />}
+						</div>
 					))}
 				</div>
 
@@ -111,10 +127,11 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 							<DropdownMenuLabel>Variants</DropdownMenuLabel>
 							<DropdownMenuSeparator />
 							{word.variants.map((v, i) => {
-								const key = v.map((p) => p.symbol).join("");
+								const flatPhonemes = v.flatMap((s) => s.phonemes);
+								const key = flatPhonemes.map((p) => p.symbol).join("");
 								return (
 									<DropdownMenuItem key={key} onClick={() => setVariant(word.wordIndex, i)}>
-										{`/${v.map((p) => p.symbol).join(" ")}/`}
+										{`/${flatPhonemes.map((p) => p.symbol).join(" ")}/`}
 									</DropdownMenuItem>
 								);
 							})}

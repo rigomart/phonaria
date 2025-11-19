@@ -1,10 +1,10 @@
-import { getSymbolIdForCmuToken, PhonemeSymbolRegistry } from "shared-data";
 import cmudictData from "@/data/dict/cmudict.json";
-import type { G2PPhoneme } from "../_schemas/g2p-api.schema";
+import type { G2PSyllable } from "../_schemas/g2p-api.schema";
 import { normalizeCmuWord } from "../_utils/text-processing";
+import { syllabify } from "./syllabifier";
 
 type PreprocessedCmudict = Record<string, string[] | undefined>;
-type CmudictVariant = G2PPhoneme[];
+type CmudictVariant = G2PSyllable[];
 type CmudictLookupResult = CmudictVariant[] | undefined;
 
 type CmudictJson = { meta: unknown; data: Record<string, string[]> };
@@ -62,26 +62,8 @@ class CMUDict {
 
 			if (tokens.length === 0) continue;
 
-			const mappedVariant: G2PPhoneme[] = tokens.map((token) => {
-				const symbolId = getSymbolIdForCmuToken(token); // e.g. "voiceless-bilabial-plosive"
-
-				if (!symbolId) {
-					return {
-						cmuToken: token,
-						phonemeId: null,
-					};
-				}
-
-				const symbol = PhonemeSymbolRegistry[symbolId];
-
-				return {
-					ipa: symbol.ipa,
-					phonemeId: symbolId,
-					cmuToken: token,
-				};
-			});
-
-			mappedVariants.push(mappedVariant);
+			const syllables = syllabify(tokens);
+			mappedVariants.push(syllables);
 		}
 
 		this.cache.set(normalizedWord, mappedVariants);
