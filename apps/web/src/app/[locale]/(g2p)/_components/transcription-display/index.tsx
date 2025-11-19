@@ -75,69 +75,100 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 	const { setSelectedWord } = useDictionaryStore();
 	const selected = selectedVariants[word.wordIndex] ?? 0;
 	const currentVariant = useMemo(() => word.variants[selected] ?? [], [word.variants, selected]);
+	const isUnknown = word.source === "fallback";
 
 	return (
 		<div className="flex flex-col items-center text-center min-w-0">
 			<button
 				type="button"
-				className="text-lg md:text-xl text-muted-foreground font-normal mb-3 whitespace-nowrap px-3 py-1 rounded-md hover:bg-muted/50 hover:text-foreground transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-				onClick={() => setSelectedWord(word.word)}
-				aria-label={`Show definition for ${word.word}`}
-				title={`Click to see definition for ${word.word}`}
+				className={cn(
+					"text-lg md:text-xl font-normal mb-3 whitespace-nowrap px-3 py-1 rounded-md transition-colors duration-200",
+					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+					isUnknown
+						? "text-muted-foreground/50 cursor-default"
+						: "text-muted-foreground hover:bg-muted/50 hover:text-foreground cursor-pointer",
+				)}
+				onClick={() => !isUnknown && setSelectedWord(word.word)}
+				aria-label={
+					isUnknown
+						? `Word "${word.word}" not found in dictionary`
+						: `Show definition for ${word.word}`
+				}
+				title={
+					isUnknown
+						? `"${word.word}" not found in pronunciation dictionary`
+						: `Click to see definition for ${word.word}`
+				}
 			>
 				{word.word}
 			</button>
 
-			<div className="flex items-center gap-2">
-				<div className="leading-normal whitespace-nowrap flex items-center gap-0.5">
-					{currentVariant.map((syllable, syllableIndex) => (
-						<div key={`syllable-${word.wordIndex}-${syllableIndex}`} className="flex items-center">
-							{syllable.stress === "primary" && (
-								<span className="text-2xl md:text-3xl text-muted-foreground/70 select-none mr-0.5">
-									ˈ
-								</span>
-							)}
-							{syllable.stress === "secondary" && (
-								<span className="text-2xl md:text-3xl text-muted-foreground/70 select-none mr-0.5">
-									ˌ
-								</span>
-							)}
-							{syllable.phonemes.map((phoneme, phonemeIndex) => (
-								<ClickablePhoneme
-									key={`${phoneme.symbol}-${word.wordIndex}-${syllableIndex}-${phonemeIndex}`}
-									phoneme={phoneme}
-									onClick={onPhonemeClick}
-									selectedSymbol={selectedSymbol}
-								/>
+			<div className="flex items-center gap-2 min-h-[3rem]">
+				{isUnknown ? (
+					<div
+						className="flex items-center justify-center text-muted-foreground/60 text-xs font-medium uppercase tracking-wider border border-dashed border-muted-foreground/30 rounded px-2 py-1 h-8 select-none"
+						title="Pronunciation not found in dictionary"
+					>
+						Not found
+					</div>
+				) : (
+					<>
+						<div className="leading-normal whitespace-nowrap flex items-center">
+							{currentVariant.map((syllable, syllableIndex) => (
+								<div
+									key={`syllable-${word.wordIndex}-${syllableIndex}`}
+									className="flex items-center"
+								>
+									{syllable.stress === "primary" && (
+										<span className="text-lg md:text-xl text-muted-foreground/80 select-none -mr-0.5 mb-2">
+											ˈ
+										</span>
+									)}
+									{syllable.stress === "secondary" && (
+										<span className="text-lg md:text-xl text-muted-foreground/80 select-none -mr-0.5 -mb-2">
+											ˌ
+										</span>
+									)}
+									{syllable.phonemes.map((phoneme, phonemeIndex) => (
+										<ClickablePhoneme
+											key={`${phoneme.symbol}-${word.wordIndex}-${syllableIndex}-${phonemeIndex}`}
+											phoneme={phoneme}
+											onClick={onPhonemeClick}
+											selectedSymbol={selectedSymbol}
+										/>
+									))}
+									{syllableIndex < currentVariant.length - 1 && (
+										<span className="text-muted-foreground/30 select-none text-xl md:text-2xl mx-0.5">
+											·
+										</span>
+									)}
+								</div>
 							))}
-							{syllableIndex < currentVariant.length - 1 && (
-								<span className="text-muted-foreground/50 select-none text-2xl md:text-3xl">·</span>
-							)}
 						</div>
-					))}
-				</div>
 
-				{word.variants.length > 1 && (
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-muted/50">
-								<ChevronDown className="h-4 w-4" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="start">
-							<DropdownMenuLabel>Variants</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							{word.variants.map((v, i) => {
-								const flatPhonemes = v.flatMap((s) => s.phonemes);
-								const key = flatPhonemes.map((p) => p.symbol).join("");
-								return (
-									<DropdownMenuItem key={key} onClick={() => setVariant(word.wordIndex, i)}>
-										{`/${flatPhonemes.map((p) => p.symbol).join(" ")}/`}
-									</DropdownMenuItem>
-								);
-							})}
-						</DropdownMenuContent>
-					</DropdownMenu>
+						{word.variants.length > 1 && (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-muted/50">
+										<ChevronDown className="h-4 w-4" />
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="start">
+									<DropdownMenuLabel>Variants</DropdownMenuLabel>
+									<DropdownMenuSeparator />
+									{word.variants.map((v, i) => {
+										const flatPhonemes = v.flatMap((s) => s.phonemes);
+										const key = flatPhonemes.map((p) => p.symbol).join("");
+										return (
+											<DropdownMenuItem key={key} onClick={() => setVariant(word.wordIndex, i)}>
+												{`/${flatPhonemes.map((p) => p.symbol).join(" ")}/`}
+											</DropdownMenuItem>
+										);
+									})}
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
+					</>
 				)}
 			</div>
 		</div>
