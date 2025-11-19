@@ -6,24 +6,29 @@ import { useAudioManager } from "@/hooks/use-audio-manager";
 import { ButtonGroup } from "./ui/button-group";
 import { Spinner } from "./ui/spinner";
 
+type SourceProps =
+	| {
+			src: string;
+			path?: never;
+	  }
+	| {
+			path: string;
+			src?: never;
+	  };
+
 type Props = {
 	size?: "xs" | "sm" | "default" | "lg";
 	variant?: "default" | "compact";
-	path: string;
 	label: string;
 	className?: string;
-};
+} & SourceProps;
 
 const baseUrl = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export function AudioControls({
-	path,
-	label,
-	className,
-	size = "default",
-	variant = "default",
-}: Props) {
-	const { play, status } = useAudioManager(`${baseUrl}/${path}`);
+export function AudioControls(props: Props) {
+	const { label, className, size = "default", variant = "default", src, path } = props;
+	const resolvedSrc = src ? src : `${baseUrl}/${path}`;
+	const { play, status } = useAudioManager(resolvedSrc);
 
 	return (
 		<ButtonGroup className={className}>

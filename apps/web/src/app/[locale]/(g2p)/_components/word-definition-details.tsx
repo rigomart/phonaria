@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, Loader2 } from "lucide-react";
-import { AudioControls } from "@/components/audio-button";
+import { AudioControls } from "@/components/audio-controls";
 import { Badge } from "@/components/ui/badge";
 import type { WordDefinition } from "../_schemas/dictionary";
 
@@ -15,7 +15,7 @@ function WordDefinitionDetailsHeader({ word, audioUrl }: WordDefinitionDetailsHe
 		<div className="flex items-end justify-between">
 			<div className="flex items-end gap-3">
 				<div className="space-y-1">
-					<div className="text-xs text-muted-foreground mt-1">Dictionary</div>
+					<div className="text-xs text-muted-foreground mt-1">Definition for</div>
 					<div className="text-xl font-semibold">{word}</div>
 				</div>
 				{audioUrl && <WordDefinitionDetailsAudio audioUrl={audioUrl} word={word} />}
@@ -34,6 +34,7 @@ function WordDefinitionDetailsAudio({ audioUrl, word }: WordDefinitionDetailsAud
 		<AudioControls
 			src={audioUrl}
 			label={`Pronunciation for ${word}`}
+			size="sm"
 			variant="default"
 			className="ml-3"
 		/>
