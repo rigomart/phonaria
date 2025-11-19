@@ -110,8 +110,9 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 									selectedSymbol={selectedSymbol}
 								/>
 							))}
-							{/* Add a small spacer between syllables if not the last one */}
-							{syllableIndex < currentVariant.length - 1 && <span className="w-1" />}
+							{syllableIndex < currentVariant.length - 1 && (
+								<span className="text-muted-foreground/50 select-none text-2xl md:text-3xl">·</span>
+							)}
 						</div>
 					))}
 				</div>
