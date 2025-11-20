@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-media-query";
 import { useCurrentTranscription } from "../../_hooks/use-g2p";
 import { useDictionaryStore } from "../../_store/dictionary-store";
 import { useG2PStore } from "../../_store/g2p-store";
@@ -81,7 +82,9 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 }
 
 export function TranscriptionDisplay() {
-	const selectPhoneme = useG2PStore((s) => s.selectPhoneme);
+	const selectPhoneme = useG2PStore((state) => state.selectPhoneme);
+	const setPhonemeDialogOpen = useG2PStore((state) => state.setPhonemeDialogOpen);
+	const isMobile = useIsMobile();
 	const { data: result } = useCurrentTranscription();
 	const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
 	const resultTimestamp = result?.timestamp?.valueOf();
@@ -97,6 +100,9 @@ export function TranscriptionDisplay() {
 	const handlePhonemeClick = (phoneme: TranscribedPhoneme) => {
 		setSelectedSymbol(phoneme.symbol);
 		selectPhoneme(phoneme.phonemeId ?? null);
+		if (isMobile) {
+			setPhonemeDialogOpen(true);
+		}
 	};
 
 	if (!result) return <EmptyState />;

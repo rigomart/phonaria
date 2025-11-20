@@ -1,4 +1,5 @@
 import { G2PInputForm } from "./_components/g2p-input-form";
+import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { PhonemeInspector } from "./_components/phoneme-inspector";
 import { TranscriptionDisplay } from "./_components/transcription-display";
 import { WordDefinitionDialog } from "./_components/word-definition-dialog";
@@ -20,10 +21,11 @@ export default function Index() {
 					</div>
 
 					{/* Right Column: Stacked summary blocks */}
-					<div className="lg:col-span-5 flex-1 flex flex-col min-h-0 lg:border-l bg-background-soft">
+					<div className="hidden lg:col-span-5 lg:flex lg:flex-1 lg:flex-col min-h-0 lg:border-l bg-background-soft">
 						<PhonemeInspector />
 					</div>
 				</div>
+				<PhonemeDialog />
 				<WordDefinitionDialog />
 			</div>
 		</div>
