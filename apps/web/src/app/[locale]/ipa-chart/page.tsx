@@ -1,5 +1,6 @@
 "use client";
 
+import { parseAsStringEnum, useQueryState } from "nuqs";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScopedI18n } from "@/locales/client";
@@ -7,9 +8,17 @@ import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { ConsonantsSection } from "./_sections/consonants-section";
 import { VowelChartSection } from "./_sections/vowels-section";
 
+const IPA_CHART_TABS = ["monophthongs", "diphthongs", "consonants"] as const;
+type IpaChartTab = (typeof IPA_CHART_TABS)[number];
+
 export default function IpaChartPage() {
 	const hero = useScopedI18n("ipa-chart.hero-section");
 	const tabs = useScopedI18n("ipa-chart.nav-tabs");
+
+	const [activeTab, setActiveTab] = useQueryState(
+		"tab",
+		parseAsStringEnum<IpaChartTab>([...IPA_CHART_TABS]).withDefault("monophthongs"),
+	);
 
 	return (
 		<div className="flex-1 min-h-0 bg-background">
@@ -21,7 +30,11 @@ export default function IpaChartPage() {
 					</div>
 
 					<div className="p-3 sm:p-6">
-						<Tabs defaultValue="monophthongs" className="gap-5">
+						<Tabs
+							value={activeTab}
+							onValueChange={(value) => setActiveTab(value as IpaChartTab)}
+							className="gap-5"
+						>
 							<ScrollArea>
 								<TabsList className="">
 									<TabsTrigger value="monophthongs">{tabs("monophthongs")}</TabsTrigger>
