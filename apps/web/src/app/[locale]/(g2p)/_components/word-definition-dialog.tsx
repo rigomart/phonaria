@@ -12,6 +12,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { useDictionary } from "../_hooks/use-dictionary";
 import { useDictionaryStore } from "../_store/dictionary-store";
 import {
@@ -60,6 +61,9 @@ export function WordDefinitionDialog() {
 					{isLoading && <WordDefinitionDetailsContentLoading />}
 					{error && <WordDefinitionDetailsContentNotFound />}
 				</ScrollArea>
+
+				<Separator />
+
 				{dictionaryFallbackLinks.length > 0 && (
 					<DialogFooter className="items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
 						<p className="text-xs text-muted-foreground">You can also check this word in:</p>
