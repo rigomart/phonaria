@@ -25,8 +25,8 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 			<div className="border-b border-border/60 bg-linear-120 from-background-strong to-background">
 				<div className="container mx-auto px-4 py-8 lg:px-6">
 					<div className="max-w-2xl">
-						<h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>
-						<p className="mt-2 text-base text-muted-foreground leading-relaxed">
+						<h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{t("title")}</h1>
+						<p className="mt-2 text-sm md:text-base text-muted-foreground leading-relaxed">
 							{t("description")}
 						</p>
 					</div>
