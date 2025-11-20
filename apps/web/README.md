@@ -28,20 +28,20 @@ This package hosts the primary Phonaria experience: a Next.js 15 App Router proj
 ## Running locally
 
 ```bash
-pnpm install             # once per workspace
-pnpm -C apps/web dev     # start Next.js at http://localhost:3000
+bun install             # once per workspace
+bun --cwd apps/web dev     # start Next.js at http://localhost:3000
 ```
 
-The root `pnpm dev` will also start this project if you prefer Turborepo orchestration.
+The root `bun dev` will also start this project if you prefer Turborepo orchestration.
 
 ### Useful scripts
 
 ```bash
-pnpm -C apps/web lint            # biome check --write
-pnpm -C apps/web check-types     # tsc --noEmit
-pnpm -C apps/web test            # vitest run
-pnpm -C apps/web build           # next build --turbopack
-pnpm -C apps/web start           # next start (after build)
+bun --cwd apps/web lint            # biome check --write
+bun --cwd apps/web check-types     # tsc --noEmit
+bun --cwd apps/web test            # vitest run
+bun --cwd apps/web build           # next build --turbopack
+bun --cwd apps/web start           # next start (after build)
 ```
 
 ## Directory structure
@@ -119,14 +119,14 @@ apps/web
 
 ## Data dependencies
 
-- **CMU Pronouncing Dictionary** – Located at `src/data/dict/cmudict.json` with metadata (source URL, generation timestamp, entry counts) and dictionary data. Regenerate via `pnpm -C packages/helper-scripts cmudict-to-json` (see helper-scripts README).
+- **CMU Pronouncing Dictionary** – Located at `src/data/dict/cmudict.json` with metadata (source URL, generation timestamp, entry counts) and dictionary data. Regenerate via `bun --cwd packages/helper-scripts cmudict-to-json` (see helper-scripts README).
 - **Phoneme metadata** – Sourced from `packages/shared-data` package, including:
   - Phoneme symbols, categories, and IPA representations
   - Articulatory features and production guidance
   - Minimal pairs and contrast information
   - Spelling patterns and allophones
   - CMU ARPABET to IPA symbol mappings
-- **Example audio** – Optional `.mp3` files under `public/audio/examples`. Generated with `pnpm -C packages/helper-scripts generate` once `ELEVENLABS_API_KEY` is configured in `packages/helper-scripts/.env`.
+- **Example audio** – Optional `.mp3` files under `public/audio/examples`. Generated with `bun --cwd packages/helper-scripts generate` once `ELEVENLABS_API_KEY` is configured in `packages/helper-scripts/.env`.
 
 ## Environment variables
 
@@ -143,7 +143,7 @@ CMUDICT_SRC_URL=https://example.com/cmudict.dict
 
 ## Testing guidance
 
-Unit tests live alongside the code they cover using `.test.ts` suffix (e.g., `src/data/phoneme-details.test.ts`, `src/app/api/dictionary/_services/dictionary-service.test.ts`). Run `pnpm -C apps/web test` locally or rely on the root `pnpm test` command for workspace-wide coverage.
+Unit tests live alongside the code they cover using `.test.ts` suffix (e.g., `src/data/phoneme-details.test.ts`, `src/app/api/dictionary/_services/dictionary-service.test.ts`). Run `bun --cwd apps/web test` locally or rely on the root `bun test` command for workspace-wide coverage.
 
 ## Security
 

@@ -71,8 +71,8 @@ const patterns = PhonemeSpellingPatternRegistry[phonemeId]?.patterns ?? [];
 3. **Update types when needed**: extend the relevant type definitions and re-export through `src/index.ts`.
 4. **Validate**:
    ```bash
-   pnpm -C packages/shared-data lint
-   pnpm -C packages/shared-data check-types
+   bun --cwd packages/shared-data lint
+   bun --cwd packages/shared-data check-types
    ```
 5. **Coordinate downstream assets**: if a change affects audio generation or web UI expectations, follow the workflows in `packages/helper-scripts` or `apps/web` to regenerate assets.
 

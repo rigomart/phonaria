@@ -22,25 +22,25 @@ Phonaria is a phoneme-first ESL pronunciation project built around a modern Next
 
 ### Prerequisites
 
-- [pnpm](https://pnpm.io/) 10+
+- [Bun](https://bun.sh/) 1.3+
 - Node.js 18.18 or newer (matching the Next.js support matrix)
 
 ### Installation & local development
 
 ```bash
-pnpm install            # install workspace dependencies once
-pnpm -C apps/web dev    # launch the learner experience at http://localhost:3000
+bun install            # install workspace dependencies once
+bun --cwd apps/web dev    # launch the learner experience at http://localhost:3000
 ```
 
-The root `pnpm dev` command delegates to Turborepo and will start every package with a `dev` script. Use package-specific commands (shown above) for a focused workflow.
+The root `bun dev` command delegates to Turborepo and will start every package with a `dev` script. Use package-specific commands (shown above) for a focused workflow.
 
 ## Common workspace tasks
 
 ```bash
-pnpm lint         # run Biome across packages
-pnpm check-types  # run TypeScript in --noEmit mode
-pnpm test         # execute Vitest suites (filtered via Turborepo)
-pnpm build        # build all packages for production
+bun lint         # run Biome across packages
+bun check-types  # run TypeScript in --noEmit mode
+bun test         # execute Vitest suites (filtered via Turborepo)
+bun build        # build all packages for production
 ```
 
 All commits should pass linting, type checking, and relevant tests.
@@ -51,12 +51,12 @@ Phonaria ships with pre-generated assets but also supports regeneration when sou
 
 - **CMU Pronouncing Dictionary** – Stored at `apps/web/data/dict/cmudict.json` and bundled with the API for fast lookups. The JSON includes metadata (source, generation timestamp, counts) and the dictionary data. Regenerate with:
   ```bash
-  CMUDICT_SRC_URL="<remote .dict file>" pnpm -C packages/helper-scripts cmudict-to-json
+  CMUDICT_SRC_URL="<remote .dict file>" bun --cwd packages/helper-scripts cmudict-to-json
   ```
   Use `CMUDICT_JSON_PATH` to override the default output location.
 - **Example audio** – ElevenLabs powered `.mp3` files saved to `apps/web/public/audio/examples`. Provide an `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env` and run:
   ```bash
-  pnpm -C packages/helper-scripts generate
+  bun --cwd packages/helper-scripts generate
   ```
 
 Generated assets are committed so deployments remain deterministic.

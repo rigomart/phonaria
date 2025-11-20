@@ -37,4 +37,4 @@ Touches the G2P API route and schema, the web client's G2P API client/types, and
 1. Land backend schema + route changes with tests.
 2. Update frontend types, client transformation, and stores.
 3. Implement high-level UI adjustments in the transcription display and word details dialog.
-4. Verify end-to-end in development, then run `pnpm lint`, `pnpm check-types`, and relevant Vitest suites before shipping.
+4. Verify end-to-end in development, then run `bun lint`, `bun check-types`, and relevant Vitest suites before shipping.

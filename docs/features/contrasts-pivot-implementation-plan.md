@@ -41,7 +41,7 @@
 - Verify the “Differentiate with…” section in phoneme details still links to the correct route and reflects the new naming.
 
 ### 5. Validation & Follow-up
-- Run `pnpm lint`, `pnpm check-types`, and the relevant Vitest suites after refactors.
+- Run `bun lint`, `bun check-types`, and the relevant Vitest suites after refactors.
 - Add lightweight unit tests for contrast resolution helpers.
 - Capture screenshots for the team once spacing and grouping settle (optional but useful for design alignment).
 

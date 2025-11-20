@@ -19,11 +19,7 @@ export function IpaSequence({
 			{syllables.map((syllable, syllableIndex) => {
 				const syllableKey = syllable.phonemes.map((p) => p.symbol).join("-");
 				return (
-					<div
-						// biome-ignore lint/suspicious/noArrayIndexKey: Syllables are not reordered by the user
-						key={`${syllableKey}-${wordIndex}-${syllableIndex}`}
-						className="flex items-center"
-					>
+					<div key={`${syllableKey}-${wordIndex}-${syllableIndex}`} className="flex items-center">
 						{syllable.stress === "primary" && (
 							<span className="text-lg md:text-xl text-muted-foreground/80 select-none -mr-0.5 mb-2">
 								ˈ
