@@ -167,7 +167,11 @@ async function generateAllAudio(): Promise<void> {
 
 	if (failed > 0) {
 		console.log("\n❌ Failed words:");
-		results.filter((r) => !r.success).forEach((r) => console.log(`  - ${r.word}: ${r.error}`));
+		results
+			.filter((r) => !r.success)
+			.forEach((r) => {
+				console.log(`  - ${r.word}: ${r.error}`);
+			});
 	}
 
 	console.log("\n🎉 Audio generation complete!");

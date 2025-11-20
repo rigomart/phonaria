@@ -4,7 +4,7 @@ Utility scripts that back the Phonaria web application. They generate reusable a
 
 ## Prerequisites
 
-- `pnpm install` at the workspace root
+- `bun install` at the workspace root
 - Node.js 18+
 - Optional: `.env` file in this directory for API keys and overrides
 
@@ -18,10 +18,10 @@ CMUDICT_SRC_URL=https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/ma
 ## Available commands
 
 ```bash
-pnpm -C packages/helper-scripts lint            # biome check --write
-pnpm -C packages/helper-scripts check-types     # tsc --noEmit
-pnpm -C packages/helper-scripts generate        # ElevenLabs example audio generation
-pnpm -C packages/helper-scripts cmudict-to-json # Download & compact CMUDict into JSON
+bun --cwd packages/helper-scripts lint            # biome check --write
+bun --cwd packages/helper-scripts check-types     # tsc --noEmit
+bun --cwd packages/helper-scripts generate        # ElevenLabs example audio generation
+bun --cwd packages/helper-scripts cmudict-to-json # Download & compact CMUDict into JSON
 ```
 
 ## Audio generation workflow
@@ -29,7 +29,7 @@ pnpm -C packages/helper-scripts cmudict-to-json # Download & compact CMUDict int
 `generate.ts` scans the shared phoneme metadata for unique example words and creates `.mp3` files using the ElevenLabs API.
 
 1. Supply an `ELEVENLABS_API_KEY` in `.env`.
-2. Run `pnpm -C packages/helper-scripts generate`.
+2. Run `bun --cwd packages/helper-scripts generate`.
 3. Audio is written to `apps/web/public/audio/examples/<word>.mp3` (directories are created automatically).
 
 The script skips words that already have audio. To experiment with a smaller batch, temporarily adjust the `extractExampleWords()` call inside `src/generate.ts`.
@@ -40,7 +40,7 @@ The script skips words that already have audio. To experiment with a smaller bat
 
 1. Configure `CMUDICT_SRC_URL` (see `.env` example above).
 2. Optionally set `CMUDICT_JSON_PATH`; otherwise the output defaults to `apps/web/data/dict/cmudict.json`.
-3. Run `pnpm -C packages/helper-scripts cmudict-to-json`.
+3. Run `bun --cwd packages/helper-scripts cmudict-to-json`.
 
 The generated JSON has the following structure:
 ```json

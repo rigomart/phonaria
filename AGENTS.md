@@ -54,14 +54,14 @@ The web app uses Next.js App Router with internationalization:
 - Feature-specific code lives in prefixed directories within each route (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`)
 
 ## Build, Test, and Development Commands
-- `pnpm install`: Install workspace dependencies once per environment.
-- `pnpm dev`: Launch Turborepo dev servers with Next.js Turbopack at `http://localhost:3000`; use `pnpm -C apps/web dev` for a focused UI loop.
-- `pnpm build`: Execute workspace builds with Turbopack before production deployment.
-- `pnpm lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
-- `pnpm check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
-- `pnpm test`: Execute Vitest test suites via Turborepo; use `pnpm --filter web test` for targeted runs.
-- `pnpm -C packages/helper-scripts generate`: Regenerate ElevenLabs pronunciation audio (requires `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env`).
-- `pnpm -C packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
+- `bun install`: Install workspace dependencies once per environment.
+- `bun dev`: Launch Turborepo dev servers with Next.js Turbopack at `http://localhost:3000`; use `bun --cwd apps/web dev` for a focused UI loop.
+- `bun build`: Execute workspace builds with Turbopack before production deployment.
+- `bun lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
+- `bun check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
+- `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter web test` for targeted runs.
+- `bun --cwd packages/helper-scripts generate`: Regenerate ElevenLabs pronunciation audio (requires `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env`).
+- `bun --cwd packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
 
 ## Technical Philosophy
 ### Modern Web Standards
@@ -79,10 +79,10 @@ The web app uses Next.js App Router with internationalization:
 - **Data Validation**: Zod schemas for runtime type safety
 - **Internationalization**: next-international for locale-based routing and content
 - **Developer Tools**: Biome for linting/formatting, TypeScript 5 for type checking, Vitest for testing
-- **Build Tools**: Turborepo for monorepo orchestration, pnpm for package management
+- **Build Tools**: Turborepo for monorepo orchestration, Bun for package management and runtime
 
 ### Development Standards
-- Monorepo architecture (pnpm workspaces + Turborepo) keeps shared data, helper scripts, and the web app aligned.
+- Monorepo architecture (Bun workspaces + Turborepo) keeps shared data, helper scripts, and the web app aligned.
 - Strict TypeScript adoption across all packages to maintain end-to-end type safety.
 - Composable UI patterns with Radix UI primitives and data-driven layouts to prevent duplication.
 - Co-located feature code using route groups and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`).
@@ -98,12 +98,12 @@ The web app uses Next.js App Router with internationalization:
 - Vitest drives `apps/web` tests; co-locate specs using `.test.ts` suffix (e.g. `apps/web/src/data/phoneme-details.test.ts`).
 - Favor fast unit coverage on data transformations, API helpers, and utilities; integration tests should mock network boundaries.
 - Test shared-data packages separately to ensure metadata integrity.
-- Before pushing, run `pnpm test`, `pnpm lint`, and `pnpm check-types` to catch issues early.
+- Before pushing, run `bun test`, `bun lint`, and `bun check-types` to catch issues early.
 
 ## Commit & Pull Request Guidelines
 - Follow the Conventional Commit style: `type(scope): summary` (e.g. `feat(api): add g2p fallback`).
 - Squash fixups locally and keep scopes aligned with the touched package (`web`, `helper-scripts`, etc.).
-- PRs need a short summary, linked issue or task, and confirmation of `pnpm lint`, `pnpm check-types`, and `pnpm test`. Add UI screenshots or API samples when behavior changes.
+- PRs need a short summary, linked issue or task, and confirmation of `bun lint`, `bun check-types`, and `bun test`. Add UI screenshots or API samples when behavior changes.
 
 ## Environment & Configuration Tips
 - Never commit secrets. Keep runtime credentials in `apps/web/.env.local` and ElevenLabs keys in `packages/helper-scripts/.env`.
