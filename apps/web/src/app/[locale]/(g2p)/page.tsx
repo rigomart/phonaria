@@ -11,7 +11,7 @@ export default function Index() {
 					{/* Main Content Area */}
 					<div className="lg:col-span-7 min-h-0 overflow-y-auto">
 						{/* Input Section */}
-						<div className="border-b bg-background-soft p-6">
+						<div className="border-b bg-background-soft p-4">
 							<G2PInputForm />
 						</div>
 
