@@ -108,6 +108,17 @@ export default {
 			"tooltip-hint": "Click for articulation details",
 		},
 	},
+	"g2p-page": {
+		"empty-state": {
+			"visual-example": {
+				text: "the quick brown fox",
+				ipa: "ðə kwɪk braʊn fɑks",
+			},
+			description: "Click phonemes to hear sounds and view articulation details",
+			"try-example": "Or try an example",
+			examples: ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"],
+		},
+	},
 	"overview-page": {
 		meta: {
 			title: "Phonaria",
