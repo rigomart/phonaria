@@ -22,7 +22,7 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">
-			<div className="border-b border-border/60 bg-muted/30">
+			<div className="border-b border-border/60 bg-linear-120 from-background-strong to-background">
 				<div className="container mx-auto px-4 py-8 lg:px-6">
 					<div className="max-w-2xl">
 						<h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>

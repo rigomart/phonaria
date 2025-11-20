@@ -1,5 +1,6 @@
 "use client";
 
+import { InfoIcon, MousePointerClickIcon } from "lucide-react";
 import {
 	PhonemeDetails,
 	PhonemeDetailsAllophones,
@@ -8,6 +9,13 @@ import {
 	PhonemeDetailsHeader,
 	PhonemeDetailsPatterns,
 } from "@/components/phoneme-details";
+import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "@/components/ui/empty";
 import { useG2PStore } from "../_store/g2p-store";
 
 export function PhonemeInspector() {
@@ -15,27 +23,31 @@ export function PhonemeInspector() {
 
 	if (!hasSelection) {
 		return (
-			<div className="h-full flex items-center justify-center">
-				<div className="text-center space-y-2 px-6">
-					<div className="text-base text-muted-foreground">
-						Select a phoneme from the transcription.
-					</div>
-					<div className="text-sm text-muted-foreground">
-						Click any symbol like /aɪ/ to explore details.
-					</div>
-				</div>
-			</div>
+			<Empty className="h-full border-0 bg-linear-120 from-background-strong to-background">
+				<EmptyHeader>
+					<EmptyMedia variant="icon">
+						<MousePointerClickIcon />
+					</EmptyMedia>
+					<EmptyTitle>Select a phoneme from the transcription</EmptyTitle>
+					<EmptyDescription>Click any symbol like /aɪ/ to explore details.</EmptyDescription>
+				</EmptyHeader>
+			</Empty>
 		);
 	}
 
 	if (!selectedPhonemeId) {
 		return (
-			<div className="h-full flex items-center justify-center px-6 text-center space-y-3">
-				<p className="text-sm text-muted-foreground">
-					This CMU token doesn’t map to a phoneme in our dataset. Try another symbol or update the
-					shared data mappings.
-				</p>
-			</div>
+			<Empty className="h-full border-0 bg-linear-120 from-background-strong to-background">
+				<EmptyHeader>
+					<EmptyMedia variant="icon">
+						<InfoIcon />
+					</EmptyMedia>
+					<EmptyDescription>
+						This CMU token doesn't map to a phoneme in our dataset. Try another symbol or update the
+						shared data mappings.
+					</EmptyDescription>
+				</EmptyHeader>
+			</Empty>
 		);
 	}
 
