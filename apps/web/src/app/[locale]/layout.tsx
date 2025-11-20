@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DM_Mono, Inter, Noto_Serif } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import Providers from "./providers";
 import "./globals.css";
 import type { Metadata } from "next";
@@ -57,12 +58,14 @@ export default async function RootLayout({
 		>
 			<body className={`antialiased`}>
 				<I18nProviderClient locale={locale}>
-					<Providers>
-						<div className="h-screen flex flex-col">
-							<Header />
-							{children}
-						</div>
-					</Providers>
+					<NuqsAdapter>
+						<Providers>
+							<div className="h-screen flex flex-col">
+								<Header />
+								{children}
+							</div>
+						</Providers>
+					</NuqsAdapter>
 				</I18nProviderClient>
 				<Analytics />
 				<SpeedInsights />
