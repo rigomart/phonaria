@@ -34,7 +34,7 @@ export function PhonemeDetailsAllophones() {
 							<header className="flex flex-col gap-2">
 								<div className="flex items-center gap-2">
 									<span className="text-muted-foreground/60">[</span>
-									<span className="text-base font-mono font-semibold">{allo.ipaVariant}</span>
+									<span className="text-base font-semibold">{allo.ipaVariant}</span>
 									<span className="text-muted-foreground/60">]</span>
 									<h4 className="text-base font-semibold">{contextCopy.name}</h4>
 								</div>

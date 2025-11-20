@@ -22,7 +22,7 @@ export function ClickablePhoneme({ phoneme, onClick, selectedSymbol }: Clickable
 		<button
 			type="button"
 			className={cn(
-				"font-mono text-3xl md:text-4xl bg-transparent border-none p-1 m-0 rounded-md",
+				"text-3xl md:text-4xl bg-transparent border-none p-1 m-0 rounded-md",
 				"cursor-pointer transition-all duration-100 ease-out",
 				"hover:text-primary hover:bg-primary/5 hover:shadow-sm",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:rounded-md",

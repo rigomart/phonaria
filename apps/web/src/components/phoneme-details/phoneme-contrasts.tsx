@@ -153,9 +153,7 @@ function ExampleItem({ ipa, word, phonemic, className }: ExampleItemProps) {
 			<Item variant="outline" size="xs" className="flex-1 bg-background-strong">
 				<ItemContent>
 					<ItemTitle>{word}</ItemTitle>
-					<ItemDescription className="text-xs text-muted-foreground font-mono">
-						/{phonemic}/
-					</ItemDescription>
+					<ItemDescription className="text-xs text-muted-foreground">/{phonemic}/</ItemDescription>
 				</ItemContent>
 				<ItemActions>
 					<AudioControls

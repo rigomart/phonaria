@@ -38,7 +38,7 @@ export function PhonemeDetailsPreview() {
 				<div className="rounded-lg border border-border/40 bg-background p-2.5">
 					<h4 className="text-sm font-semibold mb-1.5">Spelling Patterns</h4>
 					<div className="flex flex-wrap gap-1">
-						<span className="rounded px-1.5 py-0.5 bg-muted text-xs font-mono">th</span>
+						<span className="rounded px-1.5 py-0.5 bg-muted text-xs">th</span>
 						<span className="text-xs text-muted-foreground">think, path, both</span>
 					</div>
 				</div>

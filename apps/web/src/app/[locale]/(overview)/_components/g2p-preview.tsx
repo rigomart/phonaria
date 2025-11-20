@@ -15,7 +15,7 @@ export function G2PPreview() {
 							<button
 								key={`${word.word}-${index}-${symbol}`}
 								type="button"
-								className="font-mono text-3xl bg-transparent border-none p-1.5 rounded hover:text-primary hover:bg-primary/5 cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+								className="text-3xl bg-transparent border-none p-1.5 rounded hover:text-primary hover:bg-primary/5 cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
 							>
 								{symbol}
 							</button>

@@ -30,9 +30,7 @@ export function EmptyState() {
 						<ChevronDownIcon className="size-4 text-muted-foreground/40" />
 						<div className="flex items-center gap-2">
 							<AudioWaveformIcon className="size-4 text-muted-foreground/40" />
-							<div className="font-mono text-lg text-foreground tracking-wide">
-								{t("visual-example.ipa")}
-							</div>
+							<div className="text-lg text-foreground tracking-wide">{t("visual-example.ipa")}</div>
 						</div>
 					</div>
 					<p className="text-xs text-muted-foreground">{t("description")}</p>
