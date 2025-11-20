@@ -10,7 +10,7 @@ import type {
 	TranscribedSyllable,
 	TranscribedWord,
 	TranscriptionResult,
-} from "@/app/[locale]/(g2p)/_types/g2p";
+} from "@/app/[locale]/transcription/_types/g2p";
 import { createApiClient } from "@/lib/api/api-client";
 import {
 	type G2PRequestData,
