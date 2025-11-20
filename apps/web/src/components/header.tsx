@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
 	Sheet,
 	SheetContent,
+	SheetDescription,
 	SheetFooter,
 	SheetHeader,
 	SheetTitle,
@@ -47,6 +48,7 @@ export function Header() {
 										<SheetTitle>
 											<span className="text-base font-medium">Phonaria</span>
 										</SheetTitle>
+										<SheetDescription className="sr-only">Sidebar navigation</SheetDescription>
 									</div>
 								</SheetHeader>
 
