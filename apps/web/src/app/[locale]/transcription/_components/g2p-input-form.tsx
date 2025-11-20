@@ -14,7 +14,7 @@ interface G2PInputFormProps {
 }
 
 export function G2PInputForm({
-	placeholder = "Enter text to see phonemic transcription...",
+	placeholder = "Enter text to transcribe...",
 	maxLength = 200,
 }: G2PInputFormProps) {
 	const [inputText, setInputText] = useState("");

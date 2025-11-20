@@ -22,13 +22,12 @@ export function ClickablePhoneme({ phoneme, onClick, selectedSymbol }: Clickable
 		<button
 			type="button"
 			className={cn(
-				"text-3xl md:text-4xl bg-transparent border-none p-1 m-0 rounded-md",
+				"text-2xl md:text-4xl bg-transparent border-none p-1 m-0 rounded-md",
 				"cursor-pointer transition-all duration-100 ease-out",
 				"hover:text-primary hover:bg-primary/5 hover:shadow-sm",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:rounded-md",
 				!isKnown && "opacity-60 underline decoration-dotted underline-offset-4 hover:opacity-80",
-				isSelected &&
-					"text-primary bg-primary/10 underline underline-offset-4 ring-2 ring-primary/40 rounded-md shadow-sm",
+				isSelected && "text-primary bg-primary/10 ring-2 ring-primary/40 rounded-md shadow-sm",
 			)}
 			onClick={handleClick}
 			aria-current={isSelected ? "true" : undefined}

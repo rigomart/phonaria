@@ -29,7 +29,7 @@ export function PhonemeInspector() {
 						<MousePointerClickIcon />
 					</EmptyMedia>
 					<EmptyTitle>Select a phoneme from the transcription</EmptyTitle>
-					<EmptyDescription>Click any symbol like /aɪ/ to explore details.</EmptyDescription>
+					<EmptyDescription>Click any symbol like /ə/ to explore details.</EmptyDescription>
 				</EmptyHeader>
 			</Empty>
 		);

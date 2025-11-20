@@ -3,7 +3,7 @@
 import { AudioLines, Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { ModeToggle } from "@/components/mode-toggle";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import {
 	Sheet,
@@ -68,7 +68,7 @@ export function Header() {
 									<div className="border-t border-border pt-4">
 										<div className="flex items-center justify-between">
 											<span className="text-sm font-medium text-muted-foreground">Theme</span>
-											<ModeToggle />
+											<ThemeSwitcher />
 										</div>
 									</div>
 								</SheetFooter>
@@ -100,7 +100,7 @@ export function Header() {
 
 					{/* Desktop mode toggle */}
 					<div className="hidden md:flex items-center gap-2">
-						<ModeToggle />
+						<ThemeSwitcher />
 					</div>
 				</div>
 			</div>
