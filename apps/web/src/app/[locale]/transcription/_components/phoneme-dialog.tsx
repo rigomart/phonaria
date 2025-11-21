@@ -2,15 +2,8 @@
 
 import { InfoIcon } from "lucide-react";
 import { useEffect } from "react";
-import {
-	PhonemeDetails,
-	PhonemeDetailsAllophones,
-	PhonemeDetailsArticulation,
-	PhonemeDetailsContrasts,
-	PhonemeDetailsHeader,
-	PhonemeDetailsPatterns,
-} from "@/components/phoneme-details";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PhonemeDetailsDialog } from "@/components/phoneme-details";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from "@/components/ui/empty";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-media-query";
@@ -41,39 +34,39 @@ export function PhonemeDialog() {
 
 	const open = isMobile && phonemeDialogOpen;
 
+	// Show empty state when there's a selection but no phonemeId (unmapped CMU token)
+	if (!selectedPhonemeId) {
+		const emptyState = (
+			<Empty className="border-0 bg-linear-120 from-background-strong to-background">
+				<EmptyHeader>
+					<EmptyMedia variant="icon">
+						<InfoIcon />
+					</EmptyMedia>
+					<EmptyDescription>
+						This CMU token doesn&apos;t map to a phoneme in our dataset. Try another symbol or
+						update the shared data mappings.
+					</EmptyDescription>
+				</EmptyHeader>
+			</Empty>
+		);
+
+		return (
+			<Dialog open={open} onOpenChange={setPhonemeDialogOpen}>
+				<DialogContent className="p-0 gap-0">
+					<ScrollArea className="max-h-[min(85vh,calc(100dvh-2rem))]">
+						{emptyState}
+						<ScrollBar orientation="vertical" />
+					</ScrollArea>
+				</DialogContent>
+			</Dialog>
+		);
+	}
+
 	return (
-		<Dialog open={open} onOpenChange={setPhonemeDialogOpen}>
-			<DialogContent>
-				<ScrollArea className="max-h-[min(90vh,calc(100dvh-2rem))]">
-					<DialogHeader>
-						<DialogTitle className="sr-only">Phoneme details</DialogTitle>
-					</DialogHeader>
-
-					{selectedPhonemeId ? (
-						<PhonemeDetails phonemeId={selectedPhonemeId}>
-							<PhonemeDetailsHeader />
-							<PhonemeDetailsArticulation />
-							<PhonemeDetailsPatterns />
-							<PhonemeDetailsContrasts />
-							<PhonemeDetailsAllophones />
-						</PhonemeDetails>
-					) : (
-						<Empty className="border-0 bg-linear-120 from-background-strong to-background">
-							<EmptyHeader>
-								<EmptyMedia variant="icon">
-									<InfoIcon />
-								</EmptyMedia>
-								<EmptyDescription>
-									This CMU token doesn&apos;t map to a phoneme in our dataset. Try another symbol or
-									update the shared data mappings.
-								</EmptyDescription>
-							</EmptyHeader>
-						</Empty>
-					)}
-
-					<ScrollBar orientation="vertical" />
-				</ScrollArea>
-			</DialogContent>
-		</Dialog>
+		<PhonemeDetailsDialog
+			open={open}
+			onOpenChange={setPhonemeDialogOpen}
+			phonemeId={selectedPhonemeId}
+		/>
 	);
 }

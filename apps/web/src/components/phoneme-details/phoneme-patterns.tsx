@@ -50,6 +50,7 @@ export function PhonemeDetailsPatterns() {
 								<ItemActions>
 									<AudioControls
 										size="xs"
+										variant="compact"
 										path={`/phoneme-examples/${example.word}.mp3`}
 										label={example.word}
 									/>

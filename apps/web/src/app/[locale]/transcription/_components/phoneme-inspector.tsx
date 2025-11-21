@@ -5,6 +5,7 @@ import {
 	PhonemeDetails,
 	PhonemeDetailsAllophones,
 	PhonemeDetailsArticulation,
+	PhonemeDetailsContent,
 	PhonemeDetailsContrasts,
 	PhonemeDetailsHeader,
 	PhonemeDetailsPatterns,
@@ -52,12 +53,14 @@ export function PhonemeInspector() {
 	}
 
 	return (
-		<PhonemeDetails phonemeId={selectedPhonemeId} className="p-2">
+		<PhonemeDetails phonemeId={selectedPhonemeId}>
 			<PhonemeDetailsHeader />
-			<PhonemeDetailsArticulation />
-			<PhonemeDetailsPatterns />
-			<PhonemeDetailsContrasts />
-			<PhonemeDetailsAllophones />
+			<PhonemeDetailsContent>
+				<PhonemeDetailsArticulation />
+				<PhonemeDetailsPatterns />
+				<PhonemeDetailsContrasts />
+				<PhonemeDetailsAllophones />
+			</PhonemeDetailsContent>
 		</PhonemeDetails>
 	);
 }
