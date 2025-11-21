@@ -53,7 +53,7 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 				{word.word}
 			</button>
 
-			<div className="flex items-center gap-2 min-h-[3rem]">
+			<div className="flex items-center gap-2 min-h-12">
 				{isUnknown ? (
 					<div
 						className="flex items-center justify-center text-muted-foreground/60 text-xs font-medium uppercase tracking-wider border border-dashed border-muted-foreground/30 rounded px-2 py-1 h-8 select-none"

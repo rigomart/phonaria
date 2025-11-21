@@ -67,27 +67,28 @@ export default {
 			monophthongs: "Vowels · Monophthongs",
 			diphthongs: "Vowels · Diphthongs",
 		},
+		"info-button": {
+			label: "How to read this chart",
+			"label-short": "Guide",
+			"aria-consonants": "How to read the consonant chart",
+			"aria-monophthongs": "How to read the monophthong vowel chart",
+			"aria-diphthongs": "How to read the diphthong vowel chart",
+		},
 		sections: {
 			consonants: {
-				title: "Consonant Phonemes",
-				description:
-					"Consonant sounds organized by type and characteristics. Click any phoneme for detailed pronunciation information.",
 				diagram:
 					"Consonants organized by manner (rows: how the sound is made) and place (columns: where in the mouth). Within each cell: voiceless left, voiced right.",
+				legend: {
+					voiceless: "Voiceless",
+					voiced: "Voiced",
+				},
 			},
 			vowels: {
-				title: "Vowel Phonemes",
-				description:
-					"Vowel sounds plotted by tongue height, backness, and rounding. Select any marker to open articulation details.",
 				monophthongs: {
-					title: "Monophthongs & Rhotic Vowels",
-					description: "Single steady vowels organized by their tongue position.",
 					diagram:
 						"Vowels plotted by tongue position. Vertical axis shows tongue height (high to low). Horizontal axis shows tongue backness (front to back).",
 				},
 				diphthongs: {
-					title: "Diphthongs",
-					description: "Two-part vowels that glide from a starting position to an ending position.",
 					diagram:
 						"Vowels that glide between two positions. Each arrow traces the tongue's movement from start to end.",
 				},

@@ -31,7 +31,7 @@ export function ConsonantPairCard({ voiceless, voiced, className }: ConsonantPai
 	}
 
 	return (
-		<div className={cn("flex items-center justify-center gap-2", className)}>
+		<div className={cn("flex items-center justify-center gap-1", className)}>
 			<ConsonantButton phoneme={voiceless} isVoiceless />
 			<ConsonantButton phoneme={voiced} isVoiceless={false} />
 		</div>
@@ -78,7 +78,7 @@ function ConsonantButton({
 					aria-label={ariaLabel}
 					className={cn(
 						"group relative grid place-items-center text-center",
-						"min-w-[2.5rem] min-h-[2.5rem] px-2 py-1.5 rounded-md border",
+						"min-w-10 min-h-10 px-2 py-1.5 rounded-md border",
 						"hover:border-primary hover:bg-primary/5 transition-all duration-150",
 						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
 						"active:scale-[0.98]",
@@ -93,9 +93,9 @@ function ConsonantButton({
 				</button>
 			</TooltipTrigger>
 			<TooltipContent side="top" align="center">
-				<div className="max-w-[14rem] text-pretty text-xs leading-snug">
+				<div className="max-w-56 text-pretty text-xs leading-snug">
 					<div className="font-medium">{tooltipContent}</div>
-					<div className="text-[10px] text-muted-foreground mt-1">{t("tooltip-hint")}</div>
+					<div className="text-[10px] text-muted mt-1">{t("tooltip-hint")}</div>
 				</div>
 			</TooltipContent>
 		</Tooltip>

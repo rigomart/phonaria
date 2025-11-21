@@ -5,19 +5,28 @@ import { ConsonantChart } from "../_components/consonant-chart";
 
 export function ConsonantsSection() {
 	const t = useScopedI18n("ipa-chart.sections.consonants");
+	const ariaT = useScopedI18n("ipa-chart.info-button");
 	return (
-		<div className="space-y-6">
-			<div>
-				<h2 className="text-xl font-medium">{t("title")}</h2>
-				<p className="text-sm text-muted-foreground">{t("description")}</p>
+		<div className="space-y-3 rounded-lg bg-background-soft shadow-sm p-2 sm:p-3 md:p-4">
+			<div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
+				<div className="flex flex-wrap gap-2 sm:gap-3 text-[10px] sm:text-xs text-muted-foreground">
+					<div className="flex items-center gap-1 sm:gap-1.5">
+						<span className="size-2.5 sm:size-3 rounded border border-border bg-background opacity-80" />
+						<span>{t("legend.voiceless")}</span>
+					</div>
+					<div className="flex items-center gap-1 sm:gap-1.5">
+						<span className="size-2.5 sm:size-3 rounded border border-primary/20 bg-primary/5 font-semibold" />
+						<span>{t("legend.voiced")}</span>
+					</div>
+				</div>
+				<ChartInfoButton content={t("diagram")} ariaLabel={ariaT("aria-consonants")} />
 			</div>
-			<div className="relative space-y-3 rounded-lg border bg-background-soft  shadow-sm">
-				<ChartInfoButton content={t("diagram")} ariaLabel="How to read the consonant chart" />
-				<ScrollArea className="p-2 sm:p-4">
+			<ScrollArea className="-mx-1">
+				<div className="px-1">
 					<ConsonantChart />
-					<ScrollBar orientation="horizontal" />
-				</ScrollArea>
-			</div>
+				</div>
+				<ScrollBar orientation="horizontal" />
+			</ScrollArea>
 		</div>
 	);
 }
