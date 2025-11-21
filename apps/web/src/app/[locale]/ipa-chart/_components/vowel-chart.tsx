@@ -155,7 +155,7 @@ export function VowelChartLegend() {
 	const t = useScopedI18n("ipa-chart.sections.vowels.legend");
 
 	return (
-		<div className="flex flex-wrap gap-2 sm:gap-3 text-[10px] sm:text-xs text-muted-foreground">
+		<div className="flex flex-wrap gap-2 sm:gap-3 text-xs text-muted-foreground">
 			<div className="flex items-center gap-1 sm:gap-1.5">
 				<span className="size-2.5 sm:size-3 rounded-full border border-primary" />
 				<span>{t("unrounded")}</span>
@@ -167,10 +167,6 @@ export function VowelChartLegend() {
 			<div className="flex items-center gap-1 sm:gap-1.5">
 				<span className="size-2.5 sm:size-3 rounded-full border border-dashed border-primary bg-primary/10" />
 				<span>{t("rhotic")}</span>
-			</div>
-			<div className="flex items-center gap-1 sm:gap-1.5">
-				<span className="h-0.5 w-5 sm:w-6 bg-primary" />
-				<span>{t("diphthong")}</span>
 			</div>
 		</div>
 	);

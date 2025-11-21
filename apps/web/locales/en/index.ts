@@ -96,7 +96,6 @@ export default {
 					rounded: "Rounded",
 					unrounded: "Unrounded",
 					rhotic: "Rhotic",
-					diphthong: "Arrow = glide path",
 				},
 			},
 		},
