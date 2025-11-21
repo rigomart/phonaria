@@ -66,15 +66,15 @@ export function ConsonantChart() {
 
 	return (
 		<div className="inline-grid w-full min-w-max gap-1.5 grid-cols-[auto_repeat(10,minmax(4.5rem,1fr))]">
-				<div />
-				{PLACE_ORDER.map((place) => (
-					<div
-						key={place}
-						className="px-1.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-					>
-						{PLACE_LABELS[place]}
-					</div>
-				))}
+			<div />
+			{PLACE_ORDER.map((place) => (
+				<div
+					key={place}
+					className="px-1.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+				>
+					{PLACE_LABELS[place]}
+				</div>
+			))}
 
 			{MANNER_ORDER.map((manner) => (
 				<Fragment key={manner}>

@@ -26,8 +26,8 @@ type PhonemeSectionTitleProps = React.ComponentProps<"h3">;
 export function PhonemeSectionTitle({ className, children, ...props }: PhonemeSectionTitleProps) {
 	return (
 		<div className="flex items-center gap-2">
-			<div className="h-5 w-0.5 bg-primary flex-shrink-0" />
-			<h3 className={cn("text-lg font-bold", className)} {...props}>
+			<div className="h-5 w-0.5 bg-primary shrink-0" />
+			<h3 className={cn("text-base sm:text-lg font-bold", className)} {...props}>
 				{children}
 			</h3>
 		</div>

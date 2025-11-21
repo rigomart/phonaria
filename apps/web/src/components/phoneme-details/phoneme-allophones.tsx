@@ -36,9 +36,11 @@ export function PhonemeDetailsAllophones() {
 									<span className="text-muted-foreground/60">[</span>
 									<span className="text-base font-semibold">{allo.ipaVariant}</span>
 									<span className="text-muted-foreground/60">]</span>
-									<h4 className="text-base font-semibold">{contextCopy.name}</h4>
+									<h4 className="text-sm sm:text-base font-semibold">{contextCopy.name}</h4>
 								</div>
-								<p className="text-sm text-muted-foreground">{contextCopy.description}</p>
+								<p className="text-xs sm:text-sm text-muted-foreground">
+									{contextCopy.description}
+								</p>
 								<p className="text-xs text-muted-foreground/80 flex items-center gap-1">
 									<span>→</span>
 									{contextCopy.when}

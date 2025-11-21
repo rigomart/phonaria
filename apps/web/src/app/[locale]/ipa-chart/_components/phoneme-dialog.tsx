@@ -4,6 +4,7 @@ import {
 	PhonemeDetails,
 	PhonemeDetailsAllophones,
 	PhonemeDetailsArticulation,
+	PhonemeDetailsContent,
 	PhonemeDetailsContrasts,
 	PhonemeDetailsHeader,
 	PhonemeDetailsPatterns,
@@ -23,21 +24,23 @@ export function PhonemeDialog() {
 
 	return (
 		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-			<DialogContent className="max-w-3xl p-2">
-				<ScrollArea className="max-h-[min(95vh,calc(100dvh-2rem))]">
+			<PhonemeDetails phonemeId={selectedPhonemeId}>
+				<DialogContent className="max-w-3xl p-0 gap-0">
 					<DialogHeader>
+						<PhonemeDetailsHeader />
 						<DialogTitle className="sr-only">Phoneme details</DialogTitle>
 					</DialogHeader>
-					<PhonemeDetails phonemeId={selectedPhonemeId}>
-						<PhonemeDetailsHeader />
-						<PhonemeDetailsArticulation />
-						<PhonemeDetailsPatterns />
-						<PhonemeDetailsContrasts />
-						<PhonemeDetailsAllophones />
-					</PhonemeDetails>
-					<ScrollBar orientation="vertical" />
-				</ScrollArea>
-			</DialogContent>
+					<ScrollArea className="max-h-[min(85vh,calc(100dvh-2rem))]">
+						<PhonemeDetailsContent>
+							<PhonemeDetailsArticulation />
+							<PhonemeDetailsPatterns />
+							<PhonemeDetailsContrasts />
+							<PhonemeDetailsAllophones />
+						</PhonemeDetailsContent>
+						<ScrollBar orientation="vertical" />
+					</ScrollArea>
+				</DialogContent>
+			</PhonemeDetails>
 		</Dialog>
 	);
 }
