@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { setStaticParamsLocale } from "next-international/server";
 import { getScopedI18n } from "@/locales/server";
+import { FeatureHighlight } from "./_components/feature-highlight";
 import { G2PPreview } from "./_components/g2p-preview";
 import { IpaChartPreview } from "./_components/ipa-chart-preview";
 import { PhonemeDetailsPreview } from "./_components/phoneme-details-preview";
@@ -35,8 +36,6 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 
 			<ToolSection
 				title={t("tools.g2p.title")}
-				description={t("tools.g2p.description")}
-				whatYouGet={t("tools.g2p.what-you-get")}
 				features={[
 					t("tools.g2p.features.transcription"),
 					t("tools.g2p.features.phonemes"),
@@ -49,13 +48,10 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 
 			<ToolSection
 				title={t("tools.ipa-chart.title")}
-				description={t("tools.ipa-chart.description")}
-				whatYouGet={t("tools.ipa-chart.what-you-get")}
 				features={[
 					t("tools.ipa-chart.features.chart"),
 					t("tools.ipa-chart.features.audio"),
 					t("tools.ipa-chart.features.details"),
-					t("tools.ipa-chart.features.examples"),
 				]}
 				linkHref="/ipa-chart"
 				linkText={t("tools.ipa-chart.link-text")}
@@ -63,20 +59,11 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 				isReversed
 			/>
 
-			<ToolSection
+			<FeatureHighlight
 				title={t("tools.phoneme-details.title")}
 				description={t("tools.phoneme-details.description")}
-				whatYouGet={t("tools.phoneme-details.what-you-get")}
-				features={[
-					t("tools.phoneme-details.features.articulation"),
-					t("tools.phoneme-details.features.audio"),
-					t("tools.phoneme-details.features.patterns"),
-					t("tools.phoneme-details.features.contrasts"),
-				]}
-				linkHref="/"
-				linkText=""
+				badge={t("tools.phoneme-details.badge")}
 				preview={<PhonemeDetailsPreview />}
-				hideLink
 			/>
 		</div>
 	);

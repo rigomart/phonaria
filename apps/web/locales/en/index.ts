@@ -126,45 +126,31 @@ export default {
 				"Pronunciation toolkit for English learners. Convert text to IPA transcription and explore phoneme articulation details.",
 		},
 		title: "Pronunciation Toolkit",
-		description:
-			"Phonaria provides two core tools for understanding English pronunciation. Use them separately or together as you work with unfamiliar words and sounds.",
+		description: "Two tools for understanding English pronunciation. Use them together or separately.",
 		tools: {
 			g2p: {
 				title: "Text to IPA Transcription",
-				description:
-					"Paste any English text to see its IPA pronunciation with stress markers. Click phonemes for articulation details and example words.",
-				"what-you-get": "What you get",
 				features: {
-					transcription: "IPA transcription with primary and secondary stress marked",
-					phonemes: "Click any phoneme to see how it's produced",
-					dictionary: "Dictionary definitions when available",
+					transcription: "Convert text to IPA with stress markers",
+					phonemes: "Explore phoneme details and audio",
+					dictionary: "Look up dictionary definitions",
 				},
 				"link-text": "Open transcription tool",
 			},
 			"ipa-chart": {
 				title: "IPA Reference Chart",
-				description:
-					"Browse all General American English phonemes organized by type. Click any symbol to hear it and see articulation guidance.",
-				"what-you-get": "What you get",
 				features: {
-					chart: "Complete consonant and vowel charts",
-					audio: "Audio pronunciation for each phoneme",
-					details: "Articulation diagrams and production steps",
-					examples: "Example words showing each sound",
+					chart: "Browse consonants and vowels by articulation",
+					audio: "Hear audio pronunciation for each phoneme",
+					details: "View production diagrams and examples",
 				},
 				"link-text": "Open IPA chart",
 			},
 			"phoneme-details": {
-				title: "Phoneme Detail Panels",
+				title: "Detailed Phoneme Information",
 				description:
-					"Available throughout the app when you click a phoneme. Each panel shows how the sound is produced, common spelling patterns, and sounds that learners often confuse.",
-				"what-you-get": "What you get",
-				features: {
-					articulation: "Step-by-step production guidance with diagrams",
-					audio: "Audio examples and playback controls",
-					patterns: "Common spelling patterns for the sound",
-					contrasts: "Minimal pairs with frequently confused sounds",
-				},
+					"Click any phoneme in either tool to explore articulation steps, spelling patterns, audio examples, and minimal pair contrasts.",
+				badge: "Available in both tools",
 			},
 		},
 	},
