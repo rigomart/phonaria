@@ -20,7 +20,7 @@ export function G2PPreviewStatic() {
 			<div className="bg-background-soft p-3 shrink-0">
 				<form className="flex gap-3">
 					<div className="flex-1 flex items-center relative">
-						<div className="flex-1 text-sm px-4 py-2 shadow-md bg-muted-foreground/5 rounded-xl text-muted-foreground">
+						<div className="flex-1 text-sm px-4 py-2 bg-muted-foreground/5 rounded-xl text-muted-foreground">
 							clear sky
 						</div>
 						<div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">

@@ -31,7 +31,7 @@ export default {
 			patterns: {
 				title: "Spelling Patterns",
 				description: "Common letter combinations that represent this sound in English spelling.",
-				"most-common": "Most commonly spelled as:",
+				"most-common": "Spellings:",
 			},
 			allophones: {
 				title: "Variations",
