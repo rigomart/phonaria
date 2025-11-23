@@ -142,20 +142,16 @@ export default {
 				},
 			},
 		},
-		tools: {
-			transcription: {
-				title: "Text to IPA Transcription",
-				description:
-					"Convert any text to phonetic transcription with stress markers and syllable breaks.",
-				bullets: ["Instant conversion", "Dictionary lookup", "Audio examples"],
-				cta: "Start transcribing",
+		launchpad: {
+			g2p: {
+				title: "Transcription Studio",
+				description: "Type any text to see its pronunciation.",
+				action: "Open Studio",
 			},
-			reference: {
-				title: "IPA Reference Chart",
-				description:
-					"Browse all English phonemes organized by articulation features with audio and examples.",
-				bullets: ["Browse by articulation", "Hear pronunciations", "Compare sounds"],
-				cta: "Browse phonemes",
+			"ipa-chart": {
+				title: "IPA Reference",
+				description: "Browse the standard American English sound inventory.",
+				action: "View Chart",
 			},
 		},
 	},

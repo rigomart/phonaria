@@ -60,7 +60,7 @@ export function HeroPhonemeDemo() {
 	return (
 		<div className="space-y-4">
 			{/* Demo Container */}
-			<div className="flex flex-col items-center justify-center rounded-xl border border-border/40 bg-background-soft/50 backdrop-blur-sm p-4 sm:p-6 shadow-sm gap-6">
+			<div className="flex flex-col items-center justify-center rounded-xl border border-border/40 bg-background-soft/50 backdrop-blur-sm p-8 shadow-sm gap-6">
 				{/* IPA Transcription - Clickable Phonemes */}
 				<div className="flex flex-wrap justify-center gap-x-6 gap-y-4">
 					{SENTENCE_DATA.map((word) => (
