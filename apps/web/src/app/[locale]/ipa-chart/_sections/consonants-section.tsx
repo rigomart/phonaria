@@ -15,7 +15,7 @@ export function ConsonantsSection() {
 						<span>{t("legend.voiceless")}</span>
 					</div>
 					<div className="flex items-center gap-1 sm:gap-1.5">
-						<span className="size-2.5 sm:size-3 rounded border border-primary/20 bg-primary/5 font-semibold" />
+						<span className="size-2.5 sm:size-3 rounded border border-primary/20 bg-primary/15 font-semibold" />
 						<span>{t("legend.voiced")}</span>
 					</div>
 				</div>

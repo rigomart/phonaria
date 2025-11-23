@@ -8,7 +8,7 @@ import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { ConsonantsSection } from "./_sections/consonants-section";
 import { VowelChartSection } from "./_sections/vowels-section";
 
-const IPA_CHART_TABS = ["monophthongs", "diphthongs", "consonants"] as const;
+const IPA_CHART_TABS = ["consonants", "monophthongs", "diphthongs"] as const;
 type IpaChartTab = (typeof IPA_CHART_TABS)[number];
 
 export default function IpaChartPage() {
@@ -17,7 +17,7 @@ export default function IpaChartPage() {
 
 	const [activeTab, setActiveTab] = useQueryState(
 		"tab",
-		parseAsStringEnum<IpaChartTab>([...IPA_CHART_TABS]).withDefault("monophthongs"),
+		parseAsStringEnum<IpaChartTab>([...IPA_CHART_TABS]).withDefault("consonants"),
 	);
 
 	return (
@@ -37,21 +37,21 @@ export default function IpaChartPage() {
 						>
 							<ScrollArea>
 								<TabsList className="">
+									<TabsTrigger value="consonants">{tabs("consonants")}</TabsTrigger>
 									<TabsTrigger value="monophthongs">{tabs("monophthongs")}</TabsTrigger>
 									<TabsTrigger value="diphthongs">{tabs("diphthongs")}</TabsTrigger>
-									<TabsTrigger value="consonants">{tabs("consonants")}</TabsTrigger>
 								</TabsList>
 								<ScrollBar orientation="horizontal" className="hidden" />
 							</ScrollArea>
 
+							<TabsContent value="consonants">
+								<ConsonantsSection />
+							</TabsContent>
 							<TabsContent value="monophthongs">
 								<VowelChartSection variant="monophthongs" />
 							</TabsContent>
 							<TabsContent value="diphthongs">
 								<VowelChartSection variant="diphthongs" />
-							</TabsContent>
-							<TabsContent value="consonants">
-								<ConsonantsSection />
 							</TabsContent>
 						</Tabs>
 					</div>

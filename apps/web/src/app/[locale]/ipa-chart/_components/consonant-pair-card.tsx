@@ -84,7 +84,7 @@ function ConsonantButton({
 						"active:scale-[0.98]",
 						isVoiceless
 							? "bg-background border-border opacity-80 hover:opacity-100"
-							: "bg-primary/5 border-primary/20 font-semibold",
+							: "bg-primary/15 border-primary/20 font-semibold",
 					)}
 				>
 					<div className="text-base sm:text-lg font-medium leading-none tracking-tight">
