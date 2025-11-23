@@ -1,7 +1,3 @@
-/**
- * G2P API client and utilities
- */
-
 import type { PhonemeSymbolId } from "shared-data";
 import { PhonemeSymbolRegistry } from "shared-data";
 import type {
@@ -29,13 +25,6 @@ const g2pApiClient = createApiClient({
 	},
 	timeout: 15000,
 });
-
-/**
- * Make a validated request to the G2P API
- */
-async function callG2PAPI(request: G2PRequestData): Promise<G2PResponseData> {
-	return g2pApiClient.post("/api/g2p", g2pRequestSchema, g2pResponseSchema, request);
-}
 
 /**
  * Transform API response into enriched frontend format
@@ -87,7 +76,12 @@ export async function transcribeText(text: string): Promise<TranscriptionResult>
 	}
 
 	const request: G2PRequestData = { text: text.trim() };
-	const response = await callG2PAPI(request);
+	const response = await g2pApiClient.post(
+		"/api/g2p",
+		g2pRequestSchema,
+		g2pResponseSchema,
+		request,
+	);
 	return transformG2PResponse(response, text);
 }
 

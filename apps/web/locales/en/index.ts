@@ -125,32 +125,37 @@ export default {
 			description:
 				"Pronunciation toolkit for English learners. Convert text to IPA transcription and explore phoneme articulation details.",
 		},
-		title: "Pronunciation Toolkit",
-		description: "Two tools for understanding English pronunciation. Use them together or separately.",
+		hero: {
+			title: "Phoneme based pronunciation toolkit",
+			description:
+				"A collection of tools designed to decode English spelling. Transcribe text to IPA, explore the sound inventory, and study articulation details.",
+			hint: "Click any symbol to explore details",
+			examples: {
+				"common-phrase": {
+					label: "Common phrase",
+				},
+				fricatives: {
+					label: "Fricatives",
+				},
+				affricates: {
+					label: "Affricates",
+				},
+			},
+		},
 		tools: {
-			g2p: {
+			transcription: {
 				title: "Text to IPA Transcription",
-				features: {
-					transcription: "Convert text to IPA with stress markers",
-					phonemes: "Explore phoneme details and audio",
-					dictionary: "Look up dictionary definitions",
-				},
-				"link-text": "Open transcription tool",
-			},
-			"ipa-chart": {
-				title: "IPA Reference Chart",
-				features: {
-					chart: "Browse consonants and vowels by articulation",
-					audio: "Hear audio pronunciation for each phoneme",
-					details: "View production diagrams and examples",
-				},
-				"link-text": "Open IPA chart",
-			},
-			"phoneme-details": {
-				title: "Detailed Phoneme Information",
 				description:
-					"Click any phoneme in either tool to explore articulation steps, spelling patterns, audio examples, and minimal pair contrasts.",
-				badge: "Available in both tools",
+					"Convert any text to phonetic transcription with stress markers and syllable breaks.",
+				bullets: ["Instant conversion", "Dictionary lookup", "Audio examples"],
+				cta: "Start transcribing",
+			},
+			reference: {
+				title: "IPA Reference Chart",
+				description:
+					"Browse all English phonemes organized by articulation features with audio and examples.",
+				bullets: ["Browse by articulation", "Hear pronunciations", "Compare sounds"],
+				cta: "Browse phonemes",
 			},
 		},
 	},

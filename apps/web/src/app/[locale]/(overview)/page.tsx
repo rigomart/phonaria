@@ -1,11 +1,11 @@
+import { BookOpen, MessageSquareText } from "lucide-react";
 import type { Metadata } from "next";
 import { setStaticParamsLocale } from "next-international/server";
 import { getScopedI18n } from "@/locales/server";
-import { FeatureHighlight } from "./_components/feature-highlight";
-import { G2PPreview } from "./_components/g2p-preview";
+import { HeroSection } from "./_components/hero-section";
 import { IpaChartPreview } from "./_components/ipa-chart-preview";
-import { PhonemeDetailsPreview } from "./_components/phoneme-details-preview";
-import { ToolSection } from "./_components/tool-section";
+import { ToolCard } from "./_components/tool-card";
+import { TranscriptionPreview } from "./_components/transcription-preview";
 
 export async function generateMetadata(): Promise<Metadata> {
 	const t = await getScopedI18n("overview-page.meta");
@@ -19,52 +19,41 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 	const { locale } = await params;
 	setStaticParamsLocale(locale);
 
-	const t = await getScopedI18n("overview-page");
+	const t = await getScopedI18n("overview-page.tools");
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">
-			<div className="border-b border-border/60 bg-linear-120 from-background-strong to-background">
-				<div className="container mx-auto px-4 py-8 lg:px-6">
-					<div className="max-w-2xl">
-						<h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{t("title")}</h1>
-						<p className="mt-2 text-sm md:text-base text-muted-foreground leading-relaxed">
-							{t("description")}
-						</p>
-					</div>
+			{/* Hero Section with Interactive Demo */}
+			<HeroSection />
+
+			{/* Tool Cards */}
+			<section className="container mx-auto px-4 py-6 lg:px-6 lg:py-8">
+				<div className="grid gap-6 lg:grid-cols-2 lg:gap-8 max-w-6xl mx-auto">
+					<ToolCard
+						title={t("transcription.title")}
+						description={t("transcription.description")}
+						bullets={[
+							t("transcription.bullets.0"),
+							t("transcription.bullets.1"),
+							t("transcription.bullets.2"),
+						]}
+						cta={t("transcription.cta")}
+						href="/transcription"
+						icon={<MessageSquareText className="h-6 w-6" />}
+						preview={<TranscriptionPreview />}
+					/>
+
+					<ToolCard
+						title={t("reference.title")}
+						description={t("reference.description")}
+						bullets={[t("reference.bullets.0"), t("reference.bullets.1"), t("reference.bullets.2")]}
+						cta={t("reference.cta")}
+						href="/ipa-chart"
+						icon={<BookOpen className="h-6 w-6" />}
+						preview={<IpaChartPreview />}
+					/>
 				</div>
-			</div>
-
-			<ToolSection
-				title={t("tools.g2p.title")}
-				features={[
-					t("tools.g2p.features.transcription"),
-					t("tools.g2p.features.phonemes"),
-					t("tools.g2p.features.dictionary"),
-				]}
-				linkHref="/"
-				linkText={t("tools.g2p.link-text")}
-				preview={<G2PPreview />}
-			/>
-
-			<ToolSection
-				title={t("tools.ipa-chart.title")}
-				features={[
-					t("tools.ipa-chart.features.chart"),
-					t("tools.ipa-chart.features.audio"),
-					t("tools.ipa-chart.features.details"),
-				]}
-				linkHref="/ipa-chart"
-				linkText={t("tools.ipa-chart.link-text")}
-				preview={<IpaChartPreview />}
-				isReversed
-			/>
-
-			<FeatureHighlight
-				title={t("tools.phoneme-details.title")}
-				description={t("tools.phoneme-details.description")}
-				badge={t("tools.phoneme-details.badge")}
-				preview={<PhonemeDetailsPreview />}
-			/>
+			</section>
 		</div>
 	);
 }
