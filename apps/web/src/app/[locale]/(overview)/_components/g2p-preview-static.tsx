@@ -1,8 +1,14 @@
 "use client";
 
 import { BookA, SendHorizonal } from "lucide-react";
+import type { PhonemeSymbolIpa } from "shared-data";
 
-const PREVIEW_DATA = [
+type PreviewItem = {
+	word: string;
+	phonemes: PhonemeSymbolIpa[];
+};
+
+const PREVIEW_DATA: PreviewItem[] = [
 	{
 		word: "clear",
 		phonemes: ["k", "l", "ɪ", "ɹ"],

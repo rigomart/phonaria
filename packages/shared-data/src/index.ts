@@ -23,12 +23,17 @@ export type {
 	ConsonantArticulatoryFeatures,
 	ConsonantPhonemeArticulatoryFeatureKey,
 	ConsonantSymbolId,
+	ConsonantSymbolIpa,
+	DiphthongSymbolIpa,
 	PhonemeArticulatoryFeatureKey,
 	PhonemeArticulatoryFeatures,
 	PhonemeCategory,
 	PhonemeSymbolId,
+	PhonemeSymbolIpa,
+	RhoticSymbolIpa,
 	VowelArticulatoryFeatures,
 	VowelPhonemeArticulatoryFeatureKey,
+	VowelSymbolIpa,
 } from "./phonetics/symbols-registry";
 export {
 	ConsonantSymbolRegistry,

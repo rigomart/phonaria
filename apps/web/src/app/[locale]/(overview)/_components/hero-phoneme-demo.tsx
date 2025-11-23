@@ -2,14 +2,14 @@
 
 import { MousePointerClick } from "lucide-react";
 import { useState } from "react";
-import type { PhonemeSymbolId } from "shared-data";
+import type { PhonemeSymbolId, PhonemeSymbolIpa } from "shared-data";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details/phoneme-details-dialog";
 import { cn } from "@/lib/utils";
 import { useScopedI18n } from "@/locales/client";
 
 type ExamplePhoneme = {
 	id: PhonemeSymbolId;
-	symbol: string;
+	symbol: PhonemeSymbolIpa;
 };
 
 const SENTENCE_DATA: { text: string; phonemes: ExamplePhoneme[] }[] = [
@@ -26,7 +26,7 @@ const SENTENCE_DATA: { text: string; phonemes: ExamplePhoneme[] }[] = [
 		text: "through",
 		phonemes: [
 			{ id: "voiceless-dental-fricative", symbol: "θ" },
-			{ id: "voiced-postalveolar-approximant", symbol: "r" },
+			{ id: "voiced-postalveolar-approximant", symbol: "ɹ" },
 			{ id: "close-back-rounded", symbol: "u" },
 		],
 	},

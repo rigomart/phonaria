@@ -62,16 +62,16 @@ const PREVIEW_CONSONANTS: PreviewConsonant[] = Object.entries(ConsonantSymbolReg
 
 export function IpaChartPreviewStatic() {
 	return (
-		<div className="w-full h-full space-y-3 select-none flex flex-col min-h-0">
+		<div className="w-full h-full space-y-2 select-none flex flex-col min-h-0">
 			{/* Vowels Section */}
 			<div className="rounded-xl bg-background-soft p-2 sm:p-3 shadow-sm space-y-3 flex-1 flex flex-col min-h-0">
 				<div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap shrink-0">
-					<div className="flex flex-wrap gap-2 sm:gap-3 text-xs text-muted-foreground">
-						<div className="flex items-center gap-1 sm:gap-1.5">
+					<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+						<div className="flex items-center gap-1">
 							<span className="size-2.5 sm:size-3 rounded-full border border-primary" />
 							<span>Unrounded</span>
 						</div>
-						<div className="flex items-center gap-1 sm:gap-1.5">
+						<div className="flex items-center gap-1">
 							<span className="size-2.5 sm:size-3 rounded-full bg-primary" />
 							<span>Rounded</span>
 						</div>
@@ -100,13 +100,13 @@ export function IpaChartPreviewStatic() {
 			{/* Consonants Section */}
 			<div className="space-y-3 rounded-xl bg-background-soft shadow-sm p-2 sm:p-3 flex-1 flex flex-col min-h-0">
 				<div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap shrink-0">
-					<div className="flex flex-wrap gap-2 sm:gap-3 text-xs text-muted-foreground">
-						<div className="flex items-center gap-1 sm:gap-1.5">
+					<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+						<div className="flex items-center gap-1">
 							<span className="size-2.5 sm:size-3 rounded border border-border bg-background opacity-80" />
 							<span>Voiceless</span>
 						</div>
-						<div className="flex items-center gap-1 sm:gap-1.5">
-							<span className="size-2.5 sm:size-3 rounded border border-primary/20 bg-primary/5 font-semibold" />
+						<div className="flex items-center gap-1">
+							<span className="size-2.5 sm:size-3 rounded border border-primary/20 bg-primary/20 font-semibold" />
 							<span>Voiced</span>
 						</div>
 					</div>
@@ -117,7 +117,7 @@ export function IpaChartPreviewStatic() {
 							key={c.id}
 							className={`size-8 flex items-center justify-center rounded-lg border text-sm font-medium ${
 								c.voiced
-									? "border-primary/20 bg-primary/5"
+									? "border-primary/20 bg-primary/20"
 									: "border-border bg-background opacity-80"
 							}`}
 						>
