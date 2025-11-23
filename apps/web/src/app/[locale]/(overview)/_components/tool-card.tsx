@@ -15,7 +15,7 @@ export function ToolCard({ title, description, href, icon, preview }: ToolCardPr
 			href={href}
 			className="
 				group relative flex flex-col w-full h-full
-				rounded-lg border border-border/40 bg-card
+				rounded-2xl border border-border/40 bg-background-soft
 				hover:border-primary/20 hover:bg-accent/50
 				transition-all duration-200 ease-out
 				focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
@@ -43,8 +43,8 @@ export function ToolCard({ title, description, href, icon, preview }: ToolCardPr
 
 			{/* Preview Area - Separated by subtle border */}
 			{preview && (
-				<div className="mt-auto border-t border-border/40 bg-muted/20 p-4 rounded-b-lg">
-					{preview}
+				<div className="mt-auto border-t border-border/40 bg-muted/20 p-4 rounded-b-lg flex-1 flex flex-col min-h-0">
+					<div className="flex-1 flex flex-col min-h-0">{preview}</div>
 				</div>
 			)}
 		</Link>

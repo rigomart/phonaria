@@ -26,14 +26,14 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 			<HeroSection />
 
 			{/* LAUNCHPAD GRID */}
-			<section className="py-8 lg:py-12 bg-muted/10">
+			<section className="py-6 lg:py-8">
 				<div className="container mx-auto px-4 lg:px-6">
-					<div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+					<div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto items-stretch">
 						{/* G2P CARD */}
 						<ToolCard
 							title={t("launchpad.g2p.title")}
 							description={t("launchpad.g2p.description")}
-							href="/"
+							href="/transcription"
 							icon={<Mic className="size-5" />}
 							preview={<G2PPreviewStatic />}
 						/>

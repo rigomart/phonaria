@@ -9,7 +9,7 @@ export async function HeroSection() {
 			<div className="container mx-auto px-4 py-6 lg:px-6 lg:py-8">
 				<div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center max-w-7xl mx-auto">
 					<div className="space-y-3 lg:space-y-4">
-						<h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight">
+						<h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-tight">
 							{t("title")}
 						</h1>
 						<p className="text-sm sm:text-base text-muted-foreground leading-relaxed">

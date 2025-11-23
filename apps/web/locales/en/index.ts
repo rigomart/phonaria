@@ -130,27 +130,16 @@ export default {
 			description:
 				"A collection of tools designed to decode English spelling. Transcribe text to IPA, explore the sound inventory, and study articulation details.",
 			hint: "Click any symbol to explore details",
-			examples: {
-				"common-phrase": {
-					label: "Common phrase",
-				},
-				fricatives: {
-					label: "Fricatives",
-				},
-				affricates: {
-					label: "Affricates",
-				},
-			},
 		},
 		launchpad: {
 			g2p: {
 				title: "Transcription Studio",
-				description: "Type any text to see its pronunciation.",
+				description: "Type any text to see its pronunciation represented in IPA phonemes.",
 				action: "Open Studio",
 			},
 			"ipa-chart": {
 				title: "IPA Reference",
-				description: "Browse the standard American English sound inventory.",
+				description: "Browse the General American English sound inventory.",
 				action: "View Chart",
 			},
 		},
