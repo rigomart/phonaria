@@ -31,8 +31,7 @@ export function TranscriptionInfoButton() {
 						<ul className="list-disc list-inside space-y-1 ml-2">
 							<li>{t("limitations.newer-words")}</li>
 							<li>{t("limitations.proper-nouns")}</li>
-							<li>{t("limitations.no-pos")}</li>
-							<li>{t("limitations.fallback-note")}</li>
+							<li>{t("limitations.homographs")}</li>
 						</ul>
 					</div>
 				</div>

@@ -138,8 +138,7 @@ export default {
 				limitations: {
 					"newer-words": "Newer words, slang, and specialized terms may not be included",
 					"proper-nouns": "Proper nouns and brand names often missing",
-					"no-pos": "No part-of-speech distinction (homographs show multiple variants)",
-					"fallback-note": 'Words marked "Not found" use a fallback pronunciation generator',
+					homographs: "Homographs show multiple variants",
 				},
 			},
 		},
