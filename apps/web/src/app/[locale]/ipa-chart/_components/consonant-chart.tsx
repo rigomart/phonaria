@@ -78,7 +78,7 @@ export function ConsonantChart() {
 
 			{MANNER_ORDER.map((manner) => (
 				<Fragment key={manner}>
-					<div className="flex items-center justify-end pr-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+					<div className="flex items-center justify-end pr-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 						{MANNER_LABELS[manner]}
 					</div>
 					{PLACE_ORDER.map((place) => {
@@ -90,7 +90,7 @@ export function ConsonantChart() {
 							<div
 								key={place}
 								className={cn(
-									"flex min-h-16 items-center justify-center rounded-lg border px-2 py-1.5 transition-all duration-100",
+									"flex min-h-16 items-center justify-center rounded-lg border p-2 transition-all duration-100",
 									hasPhonemes ? "bg-card/50 hover:bg-primary/10" : "border-border/50",
 								)}
 							>

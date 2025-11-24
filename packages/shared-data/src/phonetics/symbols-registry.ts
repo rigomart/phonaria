@@ -248,3 +248,17 @@ export type PhonemeSymbolId = keyof typeof PhonemeSymbolRegistry;
 export type PhonemeSymbol = (typeof PhonemeSymbolRegistry)[PhonemeSymbolId];
 export type PhonemeSymbolIpa = PhonemeSymbol["ipa"];
 export type PhonemeSymbolArpa = PhonemeSymbol["arpa"];
+
+// Phoneme counts
+export const PhonemeCount = {
+	consonants: Object.keys(ConsonantSymbolRegistry).length,
+	monophthongs: Object.keys(MonophthongSymbolRegistry).length,
+	diphthongs: Object.keys(DiphthongSymbolRegistry).length,
+	rhotics: Object.keys(RhoticSymbolRegistry).length,
+	get vowels() {
+		return this.monophthongs + this.diphthongs + this.rhotics;
+	},
+	get total() {
+		return this.consonants + this.vowels;
+	},
+} as const;

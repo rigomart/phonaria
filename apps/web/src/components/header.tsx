@@ -21,7 +21,6 @@ export function Header() {
 	const t = useScopedI18n("components.header.navigation");
 
 	const navigationLinks = [
-		{ href: "/", label: t("overview") },
 		{ href: "/transcription", label: t("transcription") },
 		{ href: "/ipa-chart", label: t("ipa-chart") },
 	];

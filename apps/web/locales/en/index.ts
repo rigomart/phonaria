@@ -74,6 +74,10 @@ export default {
 			"aria-monophthongs": "How to read the monophthong vowel chart",
 			"aria-diphthongs": "How to read the diphthong vowel chart",
 		},
+		hint: {
+			sounds: "sounds",
+			"click-for-details": "Click on a phoneme for details",
+		},
 		sections: {
 			consonants: {
 				diagram:

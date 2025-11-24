@@ -39,6 +39,7 @@ export {
 	ConsonantSymbolRegistry,
 	DiphthongSymbolRegistry,
 	MonophthongSymbolRegistry,
+	PhonemeCount,
 	PhonemeSymbolRegistry,
 	RhoticSymbolRegistry,
 	VowelSymbolRegistry,
