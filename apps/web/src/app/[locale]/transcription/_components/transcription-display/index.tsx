@@ -9,6 +9,8 @@ import { useG2PStore } from "../../_store/g2p-store";
 import type { TranscribedPhoneme, TranscribedWord } from "../../_types/g2p";
 import { EmptyState } from "./empty-state";
 import { IpaSequence } from "./ipa-sequence";
+import { TranscriptionCopyButton } from "./transcription-copy-button";
+import { TranscriptionInfoButton } from "./transcription-info-button";
 import { VariantSelector } from "./variant-selector";
 
 interface WordColumnProps {
@@ -103,7 +105,12 @@ export function TranscriptionDisplay() {
 	if (!result) return <EmptyState />;
 
 	return (
-		<div className="flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto bg-muted/20 border border-border/40 p-4 md:p-6">
+		<div className="relative flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto bg-muted/20 border border-border/40 p-4 md:p-6">
+			<div className="absolute top-2 right-2 flex items-center gap-1">
+				<TranscriptionInfoButton />
+				<TranscriptionCopyButton result={result} />
+			</div>
+
 			{result.words.map((word, wordIndex) => (
 				<WordColumn
 					key={`${word.word}-${wordIndex}`}

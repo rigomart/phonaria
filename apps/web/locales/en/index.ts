@@ -122,6 +122,26 @@ export default {
 			"try-example": "Or try an example",
 			examples: ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"],
 		},
+		"transcription-display": {
+			"copy-button": {
+				"aria-label": "Copy transcription to clipboard",
+				"toast-success": "Copied to clipboard",
+				"toast-error": "No transcription to copy",
+				"toast-error-failed": "Failed to copy to clipboard",
+			},
+			"info-button": {
+				"aria-label": "Transcription information",
+				title: "About This Transcription",
+				description:
+					"Pronunciations are obtained from the CMU Pronouncing Dictionary, which contains over 134,000 North American English words.",
+				"limitations-title": "Known limitations:",
+				limitations: {
+					"newer-words": "Newer words, slang, and specialized terms may not be included",
+					"proper-nouns": "Proper nouns and brand names often missing",
+					homographs: "Homographs show multiple variants",
+				},
+			},
+		},
 	},
 	"overview-page": {
 		meta: {
