@@ -133,7 +133,7 @@ export default {
 				"aria-label": "Transcription information",
 				title: "About This Transcription",
 				description:
-					"Pronunciations are provided by the CMU Pronouncing Dictionary, which contains over 134,000 North American English words.",
+					"Pronunciations are obtained from the CMU Pronouncing Dictionary, which contains over 134,000 North American English words.",
 				"limitations-title": "Known limitations:",
 				limitations: {
 					"newer-words": "Newer words, slang, and specialized terms may not be included",
