@@ -21,20 +21,22 @@ export function ToolCard({ title, description, href, icon, preview }: ToolCardPr
 				focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
 			"
 		>
-			<div className="flex items-start p-5 gap-4">
+			<div className="flex items-start p-2 sm:p-4 gap-3">
 				{icon && (
-					<div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary mt-0.5">
+					<div className="shrink-0 flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary mt-0.5">
 						{icon}
 					</div>
 				)}
 
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center justify-between gap-2">
-						<h3 className="text-lg font-semibold tracking-tight text-foreground">{title}</h3>
-						<ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:text-primary" />
+						<h3 className="text-base sm:text-lg font-semibold tracking-tight text-foreground">
+							{title}
+						</h3>
+						<ArrowRight className="size-4 text-muted-foreground/50 transition-transform group-hover:text-primary" />
 					</div>
 
-					<p className="text-sm text-muted-foreground line-clamp-2 mt-1.5 leading-relaxed">
+					<p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-1.5 leading-relaxed">
 						{description}
 					</p>
 				</div>

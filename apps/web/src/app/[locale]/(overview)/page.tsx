@@ -25,28 +25,23 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 		<div className="flex flex-1 flex-col bg-background">
 			<HeroSection />
 
-			{/* LAUNCHPAD GRID */}
-			<section className="py-6 lg:py-8">
-				<div className="container mx-auto px-4 lg:px-6">
-					<div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto items-stretch">
-						{/* G2P CARD */}
-						<ToolCard
-							title={t("launchpad.g2p.title")}
-							description={t("launchpad.g2p.description")}
-							href="/transcription"
-							icon={<Mic className="size-5" />}
-							preview={<G2PPreviewStatic />}
-						/>
+			<section className="container mx-auto p-3 py-6 sm:p-4 lg:p-6">
+				<div className="grid gap-4 sm:gap-6 md:grid-cols-2 max-w-4xl mx-auto items-stretch">
+					<ToolCard
+						title={t("launchpad.g2p.title")}
+						description={t("launchpad.g2p.description")}
+						href="/transcription"
+						icon={<Mic className="size-5" />}
+						preview={<G2PPreviewStatic />}
+					/>
 
-						{/* IPA CHART CARD */}
-						<ToolCard
-							title={t("launchpad.ipa-chart.title")}
-							description={t("launchpad.ipa-chart.description")}
-							href="/ipa-chart"
-							icon={<BookOpen className="size-5" />}
-							preview={<IpaChartPreviewStatic />}
-						/>
-					</div>
+					<ToolCard
+						title={t("launchpad.ipa-chart.title")}
+						description={t("launchpad.ipa-chart.description")}
+						href="/ipa-chart"
+						icon={<BookOpen className="size-5" />}
+						preview={<IpaChartPreviewStatic />}
+					/>
 				</div>
 			</section>
 		</div>
