@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useIsMobile } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { useCurrentTranscription } from "../../_hooks/use-g2p";
 import { useDictionaryStore } from "../../_store/dictionary-store";
@@ -52,7 +53,7 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 				{word.word}
 			</button>
 
-			<div className="flex items-center gap-2 min-h-[3rem]">
+			<div className="flex items-center gap-2 min-h-12">
 				{isUnknown ? (
 					<div
 						className="flex items-center justify-center text-muted-foreground/60 text-xs font-medium uppercase tracking-wider border border-dashed border-muted-foreground/30 rounded px-2 py-1 h-8 select-none"
@@ -81,7 +82,9 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 }
 
 export function TranscriptionDisplay() {
-	const selectPhoneme = useG2PStore((s) => s.selectPhoneme);
+	const selectPhoneme = useG2PStore((state) => state.selectPhoneme);
+	const setPhonemeDialogOpen = useG2PStore((state) => state.setPhonemeDialogOpen);
+	const isMobile = useIsMobile();
 	const { data: result } = useCurrentTranscription();
 	const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
 	const resultTimestamp = result?.timestamp?.valueOf();
@@ -97,6 +100,9 @@ export function TranscriptionDisplay() {
 	const handlePhonemeClick = (phoneme: TranscribedPhoneme) => {
 		setSelectedSymbol(phoneme.symbol);
 		selectPhoneme(phoneme.phonemeId ?? null);
+		if (isMobile) {
+			setPhonemeDialogOpen(true);
+		}
 	};
 
 	if (!result) return <EmptyState />;

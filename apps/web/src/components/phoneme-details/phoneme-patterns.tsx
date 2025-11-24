@@ -33,7 +33,7 @@ export function PhonemeDetailsPatterns() {
 					<div className="flex items-center gap-1.5 flex-wrap">
 						<span className="text-xs text-muted-foreground">{t("most-common")}</span>
 						{spellingData.patterns.map((pattern) => (
-							<Badge key={pattern} variant="accent" className="font-mono">
+							<Badge key={pattern} variant="accent">
 								{pattern}
 							</Badge>
 						))}
@@ -43,13 +43,14 @@ export function PhonemeDetailsPatterns() {
 							<Item variant="outline" size="xs" key={example.word}>
 								<ItemContent>
 									<ItemTitle className="text-sm font-semibold">{example.word}</ItemTitle>
-									<ItemDescription className="text-xs text-muted-foreground font-mono">
+									<ItemDescription className="text-xs text-muted-foreground">
 										/{example.phonemic}/
 									</ItemDescription>
 								</ItemContent>
 								<ItemActions>
 									<AudioControls
 										size="xs"
+										variant="compact"
 										path={`/phoneme-examples/${example.word}.mp3`}
 										label={example.word}
 									/>

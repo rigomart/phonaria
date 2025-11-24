@@ -5,6 +5,7 @@ interface G2PStore {
 	// Selected phoneme state
 	selectedPhonemeId: PhonemeSymbolId | null;
 	hasSelection: boolean;
+	phonemeDialogOpen: boolean;
 
 	// Per-word selected variant indices (aligned with current result)
 	selectedVariants: number[];
@@ -14,12 +15,14 @@ interface G2PStore {
 	clearResult: () => void;
 	selectPhoneme: (phonemeId: PhonemeSymbolId | null) => void;
 	setVariant: (wordIndex: number, variantIndex: number) => void;
+	setPhonemeDialogOpen: (open: boolean) => void;
 }
 
 export const useG2PStore = create<G2PStore>((set) => ({
 	// Initial state
 	selectedPhonemeId: null,
 	hasSelection: false,
+	phonemeDialogOpen: false,
 	selectedVariants: [],
 
 	// Actions
@@ -31,6 +34,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 		set({
 			selectedPhonemeId: null,
 			hasSelection: false,
+			phonemeDialogOpen: false,
 			selectedVariants: [],
 		});
 	},
@@ -45,5 +49,9 @@ export const useG2PStore = create<G2PStore>((set) => ({
 			next[wordIndex] = variantIndex;
 			return { selectedVariants: next };
 		});
+	},
+
+	setPhonemeDialogOpen: (open: boolean) => {
+		set({ phonemeDialogOpen: open });
 	},
 }));

@@ -495,33 +495,33 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 export const featureDefinitions: BaseFeatureDefinitions = {
 	manner: {
 		label: "Manner",
-		description: "How airflow is modified to produce the sound",
+		description: "How airflow is shaped to make the sound",
 		values: {
 			plosive: {
 				label: "Plosive",
-				description: "Airflow fully stops then releases in a burst.",
+				description: "Airflow stops completely, then bursts out.",
 			},
 			fricative: {
 				label: "Fricative",
-				description: "Air flows through a tight gap creating turbulence.",
+				description: "Air squeezes through a tight gap, making a hiss.",
 			},
 			affricate: {
 				label: "Affricate",
-				description: "Stop closure releases straight into a fricative.",
+				description: "Starts by completely blocking air, then releases into a tight squeeze.",
 			},
 			nasal: {
 				label: "Nasal",
-				description: "Air is redirected through the nose while the mouth closes.",
+				description: "Air flows through the nose instead of the mouth.",
 			},
 			approximant: {
 				label: "Approximant",
-				description: "Articulators approach without creating turbulence.",
+				description: "Air flows smoothly without friction, like a vowel.",
 			},
 		},
 	},
 	place: {
 		label: "Place",
-		description: "Where in the mouth the sound is produced",
+		description: "Where in the mouth the sound is made",
 		values: {
 			bilabial: {
 				label: "Bilabial",
@@ -529,141 +529,141 @@ export const featureDefinitions: BaseFeatureDefinitions = {
 			},
 			labiodental: {
 				label: "Labiodental",
-				description: "Bottom lip makes gentle contact with upper teeth.",
+				description: "Top teeth meet the bottom lip.",
 			},
 			dental: {
 				label: "Dental",
-				description: "Tongue touches or rests between the front teeth.",
+				description: "Tongue tip moves to the edge of the upper teeth.",
 			},
 			alveolar: {
 				label: "Alveolar",
-				description: "Tongue contacts the ridge just behind the teeth.",
+				description: "Tongue moves to the bumpy ridge behind the upper teeth.",
 			},
 			postalveolar: {
 				label: "Postalveolar",
-				description: "Tongue moves slightly behind the alveolar ridge.",
+				description: "Tongue lifts to the area just behind the tooth ridge.",
 			},
 			palatal: {
 				label: "Palatal",
-				description: "Tongue front raises toward the hard palate.",
+				description: "Body of the tongue lifts to the hard roof of the mouth.",
 			},
 			velar: {
 				label: "Velar",
-				description: "Tongue back meets the soft palate (velum).",
+				description: "Back of the tongue lifts to the soft part of the roof.",
 			},
 			glottal: {
 				label: "Glottal",
-				description: "Constriction forms at the vocal folds inside the larynx.",
+				description: "Sound is made in the gap between the vocal cords.",
 			},
 			"alveolar-lateral": {
 				label: "Alveolar lateral",
-				description: "Tongue tip stays at the alveolar ridge while air escapes round the sides.",
+				description: "Tongue tip touches the tooth ridge, but air flows around the sides.",
 			},
 			"labial-velar": {
 				label: "Labial-velar",
-				description: "Lips round while the tongue back approaches the velum.",
+				description: "Lips round while the back of the tongue lifts.",
 			},
 		},
 	},
 	voicing: {
 		label: "Voicing",
-		description: "Whether the vocal folds vibrate during production",
+		description: "Whether the vocal cords vibrate",
 		values: {
 			voiceless: {
 				label: "Voiceless",
-				description: "Vocal folds stay open, so there is no vibration.",
+				description: "Vocal cords are silent; only air passes through.",
 			},
 			voiced: {
 				label: "Voiced",
-				description: "Vocal folds vibrate, touch your throat to feel it.",
+				description: "Vocal cords vibrate; you can feel a buzz.",
 			},
 		},
 	},
 	height: {
 		label: "Height",
-		description: "Vertical position of the tongue in the mouth",
+		description: "How high the tongue sits in the mouth",
 		values: {
 			close: {
 				label: "Close",
-				description: "Tongue is high in the mouth, jaw nearly closed.",
+				description: "Tongue is high; jaw is nearly closed.",
 			},
 			"near-close": {
 				label: "Near-close",
-				description: "Tongue sits just below the close position.",
+				description: "Jaw relaxes slightly from the closed position.",
 			},
 			"close-mid": {
 				label: "Close-mid",
-				description: "Tongue height between close and mid.",
+				description: "Jaw opens a little more than closed.",
 			},
 			mid: {
 				label: "Mid",
-				description: "Tongue rests halfway between high and low positions.",
+				description: "Jaw is in a neutral, resting position.",
 			},
 			"open-mid": {
 				label: "Open-mid",
-				description: "Tongue is lower than mid but not fully open.",
+				description: "Jaw drops to a medium-low position.",
 			},
 			"near-open": {
 				label: "Near-open",
-				description: "Tongue approaches the fully open position.",
+				description: "Jaw is almost fully open.",
 			},
 			open: {
 				label: "Open",
-				description: "Tongue sits low, mouth is open wide.",
+				description: "Jaw drops low; mouth is wide open.",
 			},
 		},
 	},
 	backness: {
 		label: "Backness",
-		description: "Horizontal position of the tongue in the mouth",
+		description: "How far back the tongue is",
 		values: {
 			front: {
 				label: "Front",
-				description: "Tongue body shifts toward the front of the mouth.",
+				description: "Tongue pushes forward in the mouth.",
 			},
 			"near-front": {
 				label: "Near-front",
-				description: "Tongue is slightly retracted from the front position.",
+				description: "Tongue is slightly back from the front.",
 			},
 			central: {
 				label: "Central",
-				description: "Tongue body stays near the middle of the mouth.",
+				description: "Tongue rests in the middle of the mouth.",
 			},
 			"near-back": {
 				label: "Near-back",
-				description: "Tongue advances slightly from a back position.",
+				description: "Tongue pulls slightly back.",
 			},
 			back: {
 				label: "Back",
-				description: "Tongue body retracts toward the back of the mouth.",
+				description: "Tongue pulls far back into the throat.",
 			},
 		},
 	},
 	roundness: {
 		label: "Roundness",
-		description: "Whether the lips are rounded during production",
+		description: "Whether the lips are rounded",
 		values: {
 			rounded: {
 				label: "Rounded",
-				description: "Lips purse forward creating a rounded opening.",
+				description: "Lips form a circle.",
 			},
 			unrounded: {
 				label: "Unrounded",
-				description: "Lips stay relaxed or spread without rounding.",
+				description: "Lips are relaxed or smiling.",
 			},
 		},
 	},
 	tenseness: {
 		label: "Tenseness",
-		description: "Muscle tension and duration of the vowel",
+		description: "How tight the muscles are",
 		values: {
 			tense: {
 				label: "Tense",
-				description: "Tongue and lips hold a firmer, longer posture.",
+				description: "Muscles are tight; sound is longer.",
 			},
 			lax: {
 				label: "Lax",
-				description: "Articulators stay looser with a shorter duration.",
+				description: "Muscles are relaxed; sound is shorter.",
 			},
 		},
 	},
@@ -676,31 +676,31 @@ export const diphthongTargetDefinitions: DiphthongTargetFeatureDefinitions = {
 		values: {
 			close: {
 				label: "Close",
-				description: "Tongue is high in the mouth, jaw nearly closed.",
+				description: "Tongue is high near the roof; jaw is nearly closed.",
 			},
 			"near-close": {
 				label: "Near-close",
-				description: "Tongue sits just below the close position.",
+				description: "Tongue is high but relaxed; jaw is slightly open.",
 			},
 			"close-mid": {
 				label: "Close-mid",
-				description: "Tongue height between close and mid.",
+				description: "Tongue sits in the upper middle part of the mouth.",
 			},
 			mid: {
 				label: "Mid",
-				description: "Tongue rests halfway between high and low positions.",
+				description: "Jaw is in a neutral, resting position.",
 			},
 			"open-mid": {
 				label: "Open-mid",
-				description: "Tongue is lower than mid but not fully open.",
+				description: "Jaw drops to a medium-low position.",
 			},
 			"near-open": {
 				label: "Near-open",
-				description: "Tongue approaches the fully open position.",
+				description: "Jaw is almost fully open.",
 			},
 			open: {
 				label: "Open",
-				description: "Tongue sits low, mouth is open wide.",
+				description: "Tongue lies low; jaw drops wide open.",
 			},
 		},
 	},
@@ -710,23 +710,23 @@ export const diphthongTargetDefinitions: DiphthongTargetFeatureDefinitions = {
 		values: {
 			front: {
 				label: "Front",
-				description: "Tongue body shifts toward the front of the mouth.",
+				description: "Tongue pushes forward in the mouth.",
 			},
 			"near-front": {
 				label: "Near-front",
-				description: "Tongue is slightly retracted from the front position.",
+				description: "Tongue is forward, but slightly retracted.",
 			},
 			central: {
 				label: "Central",
-				description: "Tongue body stays near the middle of the mouth.",
+				description: "Tongue rests in the middle of the mouth.",
 			},
 			"near-back": {
 				label: "Near-back",
-				description: "Tongue advances slightly from a back position.",
+				description: "Tongue is back, but not fully retracted.",
 			},
 			back: {
 				label: "Back",
-				description: "Tongue body retracts toward the back of the mouth.",
+				description: "Tongue pulls back toward the soft palate.",
 			},
 		},
 	},
@@ -736,11 +736,11 @@ export const diphthongTargetDefinitions: DiphthongTargetFeatureDefinitions = {
 		values: {
 			rounded: {
 				label: "Rounded",
-				description: "Lips purse forward creating a rounded opening.",
+				description: "Lips form a circle.",
 			},
 			unrounded: {
 				label: "Unrounded",
-				description: "Lips stay relaxed or spread without rounding.",
+				description: "Lips are relaxed or smiling.",
 			},
 		},
 	},

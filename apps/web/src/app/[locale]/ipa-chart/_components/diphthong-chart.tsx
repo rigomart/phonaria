@@ -104,6 +104,7 @@ function DiphthongMarker({ geometry }: { geometry: DiphthongGeometry }) {
 							"border bg-secondary text-foreground rounded-full shadow-sm size-6 sm:size-9",
 							"left-[calc(var(--marker-left)-0.75rem)] top-[calc(var(--marker-top)-0.75rem)]",
 							"sm:left-[calc(var(--marker-left)-1.125rem)] sm:top-[calc(var(--marker-top)-1.125rem)]",
+							"hover:scale-110 hover:z-10 active:scale-95 hover:bg-secondary/80 hover:border-primary/60",
 						)}
 						style={buttonStyles as CSSProperties}
 						aria-label={ariaLabel}

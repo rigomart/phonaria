@@ -10,12 +10,12 @@ export function PhonemeDetailsHeader() {
 	const { label } = phonemeDetailsById[phonemeId];
 
 	return (
-		<div className="flex flex-col gap-1 bg-background-strong p-3 sm:p-4 rounded-xl shadow-sm">
+		<div className="flex flex-col gap-1 bg-background-strong py-3 px-4 shadow-sm">
 			<div className="flex gap-6 items-center">
-				<div className="flex items-center gap-2 font-bold">
-					<span className="text-3xl text-muted-foreground/50">/</span>
-					<span className="text-5xl leading-none tracking-tight">{ipa}</span>
-					<span className="text-3xl text-muted-foreground/50">/</span>
+				<div className="flex items-baseline gap-2">
+					<span className="text-2xl sm:text-4xl text-muted-foreground/50 font-semibold">/</span>
+					<span className="text-3xl sm:text-5xl leading-none font-bold">{ipa}</span>
+					<span className="text-2xl sm:text-4xl text-muted-foreground/50 font-semibold">/</span>
 				</div>
 				<AudioControls
 					size="sm"
@@ -23,7 +23,7 @@ export function PhonemeDetailsHeader() {
 					label={`Play ${phonemeId}`}
 				/>
 			</div>
-			<p className="text-xs text-muted-foreground/80">{label}</p>
+			<p className="text-xs sm:text-sm text-left text-muted-foreground/80">{label}</p>
 		</div>
 	);
 }

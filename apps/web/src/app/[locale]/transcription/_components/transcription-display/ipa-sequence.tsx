@@ -21,14 +21,10 @@ export function IpaSequence({
 				return (
 					<div key={`${syllableKey}-${wordIndex}-${syllableIndex}`} className="flex items-center">
 						{syllable.stress === "primary" && (
-							<span className="text-lg md:text-xl text-muted-foreground/80 select-none -mr-0.5 mb-2">
-								ˈ
-							</span>
+							<span className="text-2xl md:text-4xl text-muted-foreground select-none">ˈ</span>
 						)}
 						{syllable.stress === "secondary" && (
-							<span className="text-lg md:text-xl text-muted-foreground/80 select-none -mr-0.5 -mb-2">
-								ˌ
-							</span>
+							<span className="text-2xl md:text-4xl text-muted-foreground select-none">ˌ</span>
 						)}
 						{syllable.phonemes.map((phoneme, phonemeIndex) => (
 							<ClickablePhoneme

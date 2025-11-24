@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Utility function to detect if the device is likely mobile/touch-based
@@ -34,22 +34,23 @@ export function useStartTypingAnywhere({
 	disabled = false,
 	preventDefault = true,
 }: UseStartTypingAnywhereOptions) {
+	const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+	useEffect(() => {
+		setIsMobile(isMobileDevice());
+	}, []);
+
 	useEffect(() => {
 		// Skip on mobile devices to avoid keyboard popup issues
-		if (isMobileDevice() || disabled) return;
+		if (isMobile !== false || disabled) return;
 
 		const handleTyping = (e: KeyboardEvent) => {
-			// Only focus if:
-			// 1. Input ref is available and not already focused
-			// 2. The target is not an input/textarea itself
-			// 3. It's a character key (not ctrl, alt, etc.)
-			// 4. Input element is not disabled
 			const inputElement = inputRef.current;
 			if (
 				!inputElement ||
 				document.activeElement === inputElement ||
 				["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName || "") ||
-				e.key.length !== 1 || // Only character keys
+				e.key.length !== 1 ||
 				e.ctrlKey ||
 				e.metaKey ||
 				e.altKey ||
@@ -58,7 +59,6 @@ export function useStartTypingAnywhere({
 				return;
 			}
 
-			// Focus the input and capture the character
 			inputElement.focus();
 			onTyping(e.key);
 
@@ -69,7 +69,7 @@ export function useStartTypingAnywhere({
 
 		document.addEventListener("keydown", handleTyping);
 		return () => document.removeEventListener("keydown", handleTyping);
-	}, [onTyping, inputRef, disabled, preventDefault]);
+	}, [disabled, inputRef, isMobile, onTyping, preventDefault]);
 
-	return { isMobileDevice: isMobileDevice() };
+	return { isMobileDevice: isMobile };
 }

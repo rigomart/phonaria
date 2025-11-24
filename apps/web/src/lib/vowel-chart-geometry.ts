@@ -51,11 +51,11 @@ export const SMALL_VOWEL_CHART_LAYOUT: VowelChartLayout = {
 export const LARGE_VOWEL_CHART_LAYOUT: VowelChartLayout = {
 	viewBoxWidth: 360,
 	viewBoxHeight: 260,
-	chartTop: 36,
-	chartBottom: 230,
-	frontTopX: 90,
-	frontBottomX: 140,
-	backX: 330,
+	chartTop: 20,
+	chartBottom: 238,
+	frontTopX: 72,
+	frontBottomX: 120,
+	backX: 340,
 };
 
 export const VOWEL_BACKNESS_RATIOS: Record<VowelArticulatoryFeatures["backness"], number> = {

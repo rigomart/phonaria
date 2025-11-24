@@ -43,7 +43,7 @@ export function PhonemeBadge({
 		<Badge
 			variant={badgeVariant}
 			className={cn(
-				"font-mono text-sm",
+				"text-sm",
 				isClickable && [
 					"cursor-pointer transition-all duration-200",
 					"hover:scale-105 hover:shadow-sm",

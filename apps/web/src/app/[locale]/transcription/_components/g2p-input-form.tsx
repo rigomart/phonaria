@@ -4,6 +4,7 @@ import { Loader2, SendHorizonal } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { useTranscribe } from "../_hooks/use-g2p";
 import { useStartTypingAnywhere } from "../_hooks/use-start-typing-anywhere";
 
@@ -12,11 +13,8 @@ interface G2PInputFormProps {
 	maxLength?: number;
 }
 
-/**
- * Enhanced G2P Input Form with Character Limit Visualization
- */
 export function G2PInputForm({
-	placeholder = "Enter text to see phonemic transcription...",
+	placeholder = "Enter text to transcribe...",
 	maxLength = 200,
 }: G2PInputFormProps) {
 	const [inputText, setInputText] = useState("");
@@ -41,12 +39,19 @@ export function G2PInputForm({
 	};
 
 	return (
-		<div className="w-full max-w-3xl mx-auto space-y-3">
-			{!isMobileDevice && (
-				<div className="text-xs text-muted-foreground/40 text-center">
-					Type anywhere to begin transcribing
-				</div>
-			)}
+		<div className="w-full space-y-1">
+			<div
+				className={cn(
+					"text-xs text-muted-foreground/40 text-center opacity-0 transition-opacity duration-150",
+					{
+						"opacity-100": isMobileDevice === false,
+						"pointer-events-none select-none": isMobileDevice === null || isMobileDevice,
+					},
+				)}
+				aria-hidden={Boolean(isMobileDevice === null || !isMobileDevice)}
+			>
+				Type anywhere to begin transcribing
+			</div>
 
 			<div className="space-y-2">
 				<form onSubmit={handleSubmit} className="flex gap-3">
@@ -57,7 +62,7 @@ export function G2PInputForm({
 							onChange={(e) => setInputText(e.target.value)}
 							placeholder={placeholder}
 							disabled={isLoading}
-							className="flex-1 h-12 text-base px-4 pr-16 py-2 shadow-md"
+							className="flex-1 h-12 text-base px-4 pr-16 py-2"
 							maxLength={maxLength}
 							aria-label="Text to transcribe"
 						/>

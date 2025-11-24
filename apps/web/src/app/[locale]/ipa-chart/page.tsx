@@ -1,60 +1,101 @@
 "use client";
 
 import { parseAsStringEnum, useQueryState } from "nuqs";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { PhonemeCount } from "shared-data";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { useScopedI18n } from "@/locales/client";
 import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { ConsonantsSection } from "./_sections/consonants-section";
 import { VowelChartSection } from "./_sections/vowels-section";
 
-const IPA_CHART_TABS = ["monophthongs", "diphthongs", "consonants"] as const;
+const IPA_CHART_TABS = ["consonants", "monophthongs", "diphthongs"] as const;
 type IpaChartTab = (typeof IPA_CHART_TABS)[number];
 
+const COUNT_BY_TAB = {
+	consonants: PhonemeCount.consonants,
+	monophthongs: PhonemeCount.monophthongs,
+	diphthongs: PhonemeCount.diphthongs,
+} as const;
+
 export default function IpaChartPage() {
-	const hero = useScopedI18n("ipa-chart.hero-section");
 	const tabs = useScopedI18n("ipa-chart.nav-tabs");
+	const hint = useScopedI18n("ipa-chart.hint");
+	const isDesktop = useMediaQuery("(min-width: 640px)");
 
 	const [activeTab, setActiveTab] = useQueryState(
 		"tab",
-		parseAsStringEnum<IpaChartTab>([...IPA_CHART_TABS]).withDefault("monophthongs"),
+		parseAsStringEnum<IpaChartTab>([...IPA_CHART_TABS]).withDefault("consonants"),
 	);
+
+	const activeCount = COUNT_BY_TAB[activeTab];
 
 	return (
 		<div className="flex-1 min-h-0 bg-background">
 			<div className="container mx-auto min-h-0">
-				<div className="min-h-0 border">
-					<div className="space-y-2 p-3 sm:p-6 bg-background-soft">
-						<h1 className="text-2xl font-medium text-foreground">{hero("short")}</h1>
-						<p className="text-sm text-muted-foreground">{hero("description")}</p>
-					</div>
-
-					<div className="p-3 sm:p-6">
-						<Tabs
-							value={activeTab}
-							onValueChange={(value) => setActiveTab(value as IpaChartTab)}
-							className="gap-5"
-						>
-							<ScrollArea>
-								<TabsList className="">
-									<TabsTrigger value="monophthongs">{tabs("monophthongs")}</TabsTrigger>
-									<TabsTrigger value="diphthongs">{tabs("diphthongs")}</TabsTrigger>
-									<TabsTrigger value="consonants">{tabs("consonants")}</TabsTrigger>
+				<div className="min-h-0">
+					<Tabs
+						value={activeTab}
+						onValueChange={(value) => setActiveTab(value as IpaChartTab)}
+						className="gap-3 p-2"
+					>
+						<div className="flex flex-col gap-2">
+							{isDesktop ? (
+								<TabsList className="bg-background-strong self-center">
+									<TabsTrigger className="rounded-xl px-4" value="consonants">
+										{tabs("consonants")} ({PhonemeCount.consonants})
+									</TabsTrigger>
+									<TabsTrigger className="rounded-xl px-4" value="monophthongs">
+										{tabs("monophthongs")} ({PhonemeCount.monophthongs})
+									</TabsTrigger>
+									<TabsTrigger className="rounded-xl px-4" value="diphthongs">
+										{tabs("diphthongs")} ({PhonemeCount.diphthongs})
+									</TabsTrigger>
 								</TabsList>
-								<ScrollBar orientation="horizontal" className="hidden" />
-							</ScrollArea>
+							) : (
+								<Select
+									value={activeTab}
+									onValueChange={(value) => setActiveTab(value as IpaChartTab)}
+								>
+									<SelectTrigger className="w-full sm:w-auto bg-background-soft">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="consonants">
+											{tabs("consonants")} ({PhonemeCount.consonants})
+										</SelectItem>
+										<SelectItem value="monophthongs">
+											{tabs("monophthongs")} ({PhonemeCount.monophthongs})
+										</SelectItem>
+										<SelectItem value="diphthongs">
+											{tabs("diphthongs")} ({PhonemeCount.diphthongs})
+										</SelectItem>
+									</SelectContent>
+								</Select>
+							)}
 
-							<TabsContent value="monophthongs">
-								<VowelChartSection variant="monophthongs" />
-							</TabsContent>
-							<TabsContent value="diphthongs">
-								<VowelChartSection variant="diphthongs" />
-							</TabsContent>
-							<TabsContent value="consonants">
-								<ConsonantsSection />
-							</TabsContent>
-						</Tabs>
-					</div>
+							<p className="text-xs text-muted-foreground text-center">
+								{activeCount} {hint("sounds")} · {hint("click-for-details")}
+							</p>
+						</div>
+
+						<TabsContent value="consonants">
+							<ConsonantsSection />
+						</TabsContent>
+						<TabsContent value="monophthongs">
+							<VowelChartSection variant="monophthongs" />
+						</TabsContent>
+						<TabsContent value="diphthongs">
+							<VowelChartSection variant="diphthongs" />
+						</TabsContent>
+					</Tabs>
 				</div>
 				<PhonemeDialog />
 			</div>

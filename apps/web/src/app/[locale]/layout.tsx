@@ -1,6 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { DM_Mono, Inter, Noto_Serif } from "next/font/google";
+import { Noto_Sans, Noto_Sans_Mono, Noto_Serif } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import Providers from "./providers";
 import "./globals.css";
@@ -10,22 +10,21 @@ import { Header } from "@/components/header";
 import { I18nProviderClient } from "@/locales/client";
 import { getStaticParams } from "@/locales/server";
 
-const inter = Inter({
-	variable: "--font-inter",
-	subsets: ["latin"],
-	fallback: ["system-ui", "sans-serif"],
-});
-
 const notoSerif = Noto_Serif({
 	variable: "--font-noto-serif",
 	subsets: ["latin"],
 	fallback: ["system-ui", "serif"],
 });
 
-const dmMono = DM_Mono({
-	variable: "--font-dm-mono",
+const notoSans = Noto_Sans({
+	variable: "--font-noto-sans",
 	subsets: ["latin"],
-	weight: ["400"],
+	fallback: ["system-ui", "sans-serif"],
+});
+
+const notoSansMono = Noto_Sans_Mono({
+	variable: "--font-noto-sans-mono",
+	subsets: ["latin"],
 	fallback: ["system-ui", "monospace"],
 });
 
@@ -54,7 +53,7 @@ export default async function RootLayout({
 		<html
 			lang="en"
 			suppressHydrationWarning
-			className={`${inter.variable} ${dmMono.variable} ${notoSerif.variable}`}
+			className={`${notoSerif.variable} ${notoSans.variable} ${notoSansMono.variable}`}
 		>
 			<body className={`antialiased`}>
 				<I18nProviderClient locale={locale}>

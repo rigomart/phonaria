@@ -91,12 +91,13 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 						vowelMarkerButtonBaseClass,
 						"left-[calc(var(--marker-left)-0.75rem+var(--marker-offset-x))] top-[calc(var(--marker-top)-0.75rem+var(--marker-offset-y))]",
 						"sm:left-[calc(var(--marker-left)-1.125rem+var(--marker-offset-x))] sm:top-[calc(var(--marker-top)-1.125rem+var(--marker-offset-y))]",
+						"hover:scale-110 hover:z-10 active:scale-95",
 						{
-							"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9":
+							"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary/90":
 								isRounded && !isRhotic,
-							"border-primary bg-background text-foreground rounded-full size-6 sm:size-9":
+							"border-primary bg-background text-foreground rounded-full size-6 sm:size-9 hover:bg-primary/5 hover:border-primary/80":
 								!isRounded && !isRhotic,
-							"border-dashed border-primary bg-primary/10 text-foreground rounded-full size-6 sm:size-9":
+							"border-dashed border-primary bg-primary/10 text-foreground rounded-full size-6 sm:size-9 hover:bg-primary/20 hover:border-primary/80":
 								isRhotic,
 						},
 					)}
@@ -154,22 +155,18 @@ export function VowelChartLegend() {
 	const t = useScopedI18n("ipa-chart.sections.vowels.legend");
 
 	return (
-		<div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-			<div className="flex items-center gap-1">
-				<span className="size-3 rounded-full border border-primary" />
+		<div className="flex flex-wrap gap-2 sm:gap-3 text-xs text-muted-foreground">
+			<div className="flex items-center gap-1 sm:gap-1.5">
+				<span className="size-2.5 sm:size-3 rounded-full border border-primary" />
 				<span>{t("unrounded")}</span>
 			</div>
-			<div className="flex items-center gap-1">
-				<span className="size-3 rounded-full bg-primary" />
+			<div className="flex items-center gap-1 sm:gap-1.5">
+				<span className="size-2.5 sm:size-3 rounded-full bg-primary" />
 				<span>{t("rounded")}</span>
 			</div>
-			<div className="flex items-center gap-1">
-				<span className="size-3 rounded-full border border-dashed border-primary bg-primary/10" />
+			<div className="flex items-center gap-1 sm:gap-1.5">
+				<span className="size-2.5 sm:size-3 rounded-full border border-dashed border-primary bg-primary/10" />
 				<span>{t("rhotic")}</span>
-			</div>
-			<div className="flex items-center gap-1">
-				<span className="h-0.5 w-6 bg-primary" />
-				<span>{t("diphthong")}</span>
 			</div>
 		</div>
 	);

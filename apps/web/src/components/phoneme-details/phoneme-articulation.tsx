@@ -49,7 +49,7 @@ export function PhonemeDetailsArticulation() {
 							<ArticulationIllustration phonemeId={phonemeId} articulation={articulation} />
 						</div>
 						<div className="rounded-lg w-full col-span-1 space-y-3">
-							<h4 className="text-base font-semibold">{t("features")}</h4>
+							<h4 className="text-sm sm:text-base font-semibold">{t("features")}</h4>
 							<ArticulatoryFeatures articulation={articulation} />
 						</div>
 					</div>
@@ -258,11 +258,11 @@ function DiphthongFeatureRow<ValueKey extends string>({
 		<Popover>
 			<PopoverTrigger asChild>
 				<Pressable
-					size="fit"
+					size="default"
 					variant="outline"
-					className="flex flex-col items-start rounded-lg p-2 gap-1 min-w-24"
+					className="sm:flex-col items-start gap-1 sm:w-full"
 				>
-					<span className="text-xs font-semibold text-muted-foreground tracking-wide">
+					<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
 						{feature.label}
 					</span>
 					<div className="flex items-center gap-1 text-xs font-medium">
@@ -272,7 +272,7 @@ function DiphthongFeatureRow<ValueKey extends string>({
 					</div>
 				</Pressable>
 			</PopoverTrigger>
-			<PopoverContent className="p-1">
+			<PopoverContent className="p-1" align="start">
 				<dl className="space-y-2">
 					<div className="bg-accent/20 rounded-lg p-2">
 						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>

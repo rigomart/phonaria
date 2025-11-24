@@ -29,12 +29,24 @@ export function VariantSelector({ variants, wordIndex, onSelect }: VariantSelect
 			<DropdownMenuContent align="start">
 				<DropdownMenuLabel>Variants</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				{variants.map((v, i) => {
-					const flatPhonemes = v.flatMap((s) => s.phonemes);
-					const key = flatPhonemes.map((p) => p.symbol).join("");
+				{variants.map((variant, index) => {
+					// Format the display string with stress markers and syllable separators
+					const displayString = variant
+						.map((syllable) => {
+							const stressMark =
+								syllable.stress === "primary" ? "ˈ" : syllable.stress === "secondary" ? "ˌ" : "";
+
+							const phonemesStr = syllable.phonemes.map((p) => p.symbol).join(" ");
+							return `${stressMark}${phonemesStr}`;
+						})
+						.join(" · ");
+
 					return (
-						<DropdownMenuItem key={key} onClick={() => onSelect(wordIndex, i)}>
-							{`/${flatPhonemes.map((p) => p.symbol).join(" ")}/`}
+						<DropdownMenuItem
+							key={`${wordIndex}-${index}`}
+							onClick={() => onSelect(wordIndex, index)}
+						>
+							{`/${displayString}/`}
 						</DropdownMenuItem>
 					);
 				})}
