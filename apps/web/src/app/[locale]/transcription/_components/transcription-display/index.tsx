@@ -34,19 +34,14 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 				className={cn(
 					"text-lg md:text-xl font-normal mb-3 whitespace-nowrap px-3 py-1 rounded-md transition-colors duration-200",
 					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-					isUnknown
-						? "text-muted-foreground/50 cursor-default"
-						: "text-muted-foreground hover:bg-muted/50 hover:text-foreground cursor-pointer",
+					"cursor-pointer hover:bg-muted/50 hover:text-foreground",
+					isUnknown ? "text-muted-foreground/50" : "text-muted-foreground",
 				)}
-				onClick={() => !isUnknown && setSelectedWord(word.word)}
-				aria-label={
-					isUnknown
-						? `Word "${word.word}" not found in dictionary`
-						: `Show definition for ${word.word}`
-				}
+				onClick={() => setSelectedWord(word.word)}
+				aria-label={`Show definition for ${word.word}`}
 				title={
 					isUnknown
-						? `"${word.word}" not found in pronunciation dictionary`
+						? `Click to see definition for ${word.word} (pronunciation not in dictionary)`
 						: `Click to see definition for ${word.word}`
 				}
 			>
