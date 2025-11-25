@@ -21,18 +21,21 @@ def setup_logging(verbose: bool = False) -> None:
 def main() -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="Generate MP3 audio files for phoneme example words using Chatterbox TTS",
+        description="Generate MP3 audio files for phoneme example words using Piper TTS",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   # Generate audio to default location
-  audio-gen generate
+  audio-gen generate --voice-url https://github.com/rhasspy/piper/releases/download/v1.2.0/en_US-ryan-high.onnx --voice-config-url https://github.com/rhasspy/piper/releases/download/v1.2.0/en_US-ryan-high.onnx.json
 
   # Generate with custom output directory
   audio-gen generate --output-dir ./audio
 
   # Regenerate all files (ignore existing)
   audio-gen generate --force
+
+  # Use locally downloaded voice files
+  audio-gen generate --voice-path ./models/en_US-ryan-high.onnx --voice-config-path ./models/en_US-ryan-high.onnx.json
 
   # List words that would be generated
   audio-gen list
@@ -80,17 +83,40 @@ Examples:
         help="Disable progress bar",
     )
     gen_parser.add_argument(
-        "--device",
-        type=str,
-        choices=["cuda", "cpu"],
-        default=None,
-        help="PyTorch device (default: auto-detect)",
-    )
-    gen_parser.add_argument(
         "--json-path",
         type=Path,
         default=None,
         help="Custom path to example-words.json",
+    )
+    gen_parser.add_argument(
+        "--voice-path",
+        type=Path,
+        default=None,
+        help="Path to Piper ONNX voice model",
+    )
+    gen_parser.add_argument(
+        "--voice-config-path",
+        type=Path,
+        default=None,
+        help="Path to Piper voice JSON config",
+    )
+    gen_parser.add_argument(
+        "--voice-url",
+        type=str,
+        default=None,
+        help="URL to download Piper ONNX voice if missing (default: en_US-ryan-high)",
+    )
+    gen_parser.add_argument(
+        "--voice-config-url",
+        type=str,
+        default=None,
+        help="URL to download Piper voice config if missing",
+    )
+    gen_parser.add_argument(
+        "--voice-cache-dir",
+        type=Path,
+        default=None,
+        help="Cache directory for Piper voices (default: packages/audio-generation/.piper)",
     )
 
     # List command
@@ -136,17 +162,27 @@ Examples:
         generator = AudioGenerator(
             output_dir=args.output_dir,
             json_path=args.json_path,
-            device=args.device,
+            voice_name=None,
+            voice_path=args.voice_path,
+            voice_config_path=args.voice_config_path,
+            voice_url=args.voice_url,
+            voice_config_url=args.voice_config_url,
+            voice_cache_dir=args.voice_cache_dir,
         )
 
         print(f"Output directory: {args.output_dir}")
         print(f"Force regenerate: {args.force}")
         print()
 
-        summary = generator.generate_all(
-            force=args.force,
-            progress=not args.no_progress,
-        )
+        try:
+            summary = generator.generate_all(
+                force=args.force,
+                progress=not args.no_progress,
+            )
+        except RuntimeError as e:
+            logging.error("Generation aborted: %s", e)
+            return 1
+
         summary.print_summary()
 
         return 0 if summary.failed == 0 else 1

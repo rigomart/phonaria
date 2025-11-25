@@ -1,9 +1,11 @@
 """Audio file generator with incremental generation support."""
 
+import hashlib
 import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Final
 
 from tqdm import tqdm
 
@@ -11,6 +13,7 @@ from audio_generation.data_loader import get_words_to_generate
 from audio_generation.tts_engine import TTSEngine
 
 logger = logging.getLogger(__name__)
+MIN_AUDIO_FILE_BYTES: Final[int] = 512  # Rough guardrail to catch empty/corrupt outputs
 
 
 def slugify(word: str) -> str:
@@ -86,7 +89,12 @@ class AudioGenerator:
         self,
         output_dir: Path,
         json_path: Path | None = None,
-        device: str | None = None,
+        voice_name: str | None = None,
+        voice_path: Path | None = None,
+        voice_config_path: Path | None = None,
+        voice_url: str | None = None,
+        voice_config_url: str | None = None,
+        voice_cache_dir: Path | None = None,
     ) -> None:
         """
         Initialize the generator.
@@ -94,23 +102,67 @@ class AudioGenerator:
         Args:
             output_dir: Directory to save generated audio files.
             json_path: Optional custom path to example-words.json.
-            device: PyTorch device for TTS ('cuda', 'cpu', or None for auto).
+            voice_name: Piper voice name (used for defaults).
+            voice_path: Path to ONNX model.
+            voice_config_path: Path to ONNX JSON config.
+            voice_url: URL to download ONNX model if missing.
+            voice_config_url: URL to download config if missing.
+            voice_cache_dir: Directory to cache voice assets.
         """
         self.output_dir = Path(output_dir)
         self.json_path = json_path
         self._engine: TTSEngine | None = None
-        self._device = device
+        self._voice_name = voice_name
+        self._voice_path = voice_path
+        self._voice_config_path = voice_config_path
+        self._voice_url = voice_url
+        self._voice_config_url = voice_config_url
+        self._voice_cache_dir = voice_cache_dir
+        self._slug_cache: dict[str, str] = {}
+        self._slug_to_word: dict[str, str] = {}
 
     @property
     def engine(self) -> TTSEngine:
         """Lazy-load the TTS engine."""
         if self._engine is None:
-            self._engine = TTSEngine(device=self._device)
+            self._engine = TTSEngine(
+                voice_name=self._voice_name or "en_US-ryan-high",
+                voice_path=self._voice_path,
+                voice_config_path=self._voice_config_path,
+                voice_url=self._voice_url,
+                voice_config_url=self._voice_config_url,
+                cache_dir=self._voice_cache_dir,
+            )
         return self._engine
 
     def get_output_path(self, word: str) -> Path:
         """Get the output file path for a word."""
-        return self.output_dir / f"{slugify(word)}.mp3"
+        return self.output_dir / f"{self.get_slug(word)}.mp3"
+
+    def get_slug(self, word: str) -> str:
+        """Get a deterministic slug, disambiguating collisions with a short hash."""
+        if word in self._slug_cache:
+            return self._slug_cache[word]
+
+        base_slug = slugify(word)
+        slug = base_slug
+
+        digest = hashlib.sha1(word.encode("utf-8")).hexdigest()
+        suffix_length = 6
+        counter = 1
+
+        # If another word already claimed this slug, append a short hash until unique
+        while slug in self._slug_to_word and self._slug_to_word[slug] != word:
+            slug = f"{base_slug}-{digest[:suffix_length]}"
+            if suffix_length < len(digest):
+                suffix_length = min(len(digest), suffix_length + 2)
+            else:
+                slug = f"{slug}-{counter}"
+                counter += 1
+
+        self._slug_cache[word] = slug
+        self._slug_to_word[slug] = word
+        return slug
 
     def file_exists(self, word: str) -> bool:
         """Check if audio file already exists for a word."""
@@ -136,10 +188,20 @@ class AudioGenerator:
 
         try:
             self.engine.synthesize_to_mp3(word, output_path)
+            if output_path.stat().st_size < MIN_AUDIO_FILE_BYTES:
+                raise ValueError("Generated file too small; treating as failed generation.")
+
             logger.info(f"Generated: {output_path.name}")
             return GenerationResult(word=word, success=True)
         except Exception as e:  # noqa: BLE001 - Catch all TTS errors gracefully
             logger.error(f"Failed to generate '{word}': {e}")
+            if output_path.exists():
+                try:
+                    output_path.unlink()
+                except OSError as cleanup_error:
+                    logger.warning(
+                        "Unable to remove partial file for '%s': %s", word, cleanup_error
+                    )
             return GenerationResult(word=word, success=False, error=str(e))
 
     def generate_all(
@@ -162,6 +224,9 @@ class AudioGenerator:
 
         # Ensure output directory exists
         self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Verify ffmpeg availability early to fail fast with a clear message
+        self.engine.ensure_dependencies_ready()
 
         # Process words with optional progress bar
         iterator = tqdm(words, desc="Generating audio", disable=not progress)
