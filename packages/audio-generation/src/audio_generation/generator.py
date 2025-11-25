@@ -138,7 +138,7 @@ class AudioGenerator:
             self.engine.synthesize_to_mp3(word, output_path)
             logger.info(f"Generated: {output_path.name}")
             return GenerationResult(word=word, success=True)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - Catch all TTS errors gracefully
             logger.error(f"Failed to generate '{word}': {e}")
             return GenerationResult(word=word, success=False, error=str(e))
 

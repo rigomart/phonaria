@@ -3,7 +3,7 @@
 import io
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import torch
 from pydub import AudioSegment
@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from chatterbox.tts import ChatterboxTTS
 
 logger = logging.getLogger(__name__)
+
+AudioFormat = Literal["mp3", "wav"]
 
 
 class TTSEngine:
@@ -37,7 +39,7 @@ class TTSEngine:
         """Lazy-load the TTS model on first access."""
         if self._model is None:
             logger.info("Loading Chatterbox TTS model...")
-            from chatterbox.tts import ChatterboxTTS
+            from chatterbox.tts import ChatterboxTTS  # noqa: PLC0415 - Lazy import
 
             self._model = ChatterboxTTS.from_pretrained(device=self._device)
             logger.info("Model loaded successfully")
@@ -91,13 +93,13 @@ class TTSEngine:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         audio_segment.export(str(output_path), format="mp3", bitrate=bitrate)
 
-    def synthesize_to_bytes(self, text: str, audio_format: str = "mp3") -> bytes:
+    def synthesize_to_bytes(self, text: str, audio_format: AudioFormat = "mp3") -> bytes:
         """
         Synthesize text and return as bytes.
 
         Args:
             text: Text to synthesize.
-            audio_format: Audio format ('mp3', 'wav').
+            audio_format: Audio format.
 
         Returns:
             Audio data as bytes.

@@ -5,10 +5,10 @@ description = "TTS script for generating MP3 audio from phoneme example words us
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "chatterbox-tts>=0.1.0",
-    "pydantic>=2.0.0",
-    "tqdm>=4.0.0",
-    "pydub>=0.25.0",
+    "chatterbox-tts~=0.1.4",
+    "pydantic~=2.9.0",
+    "tqdm~=4.66.0",
+    "pydub~=0.25.1",
 ]
 
 [project.scripts]
@@ -16,8 +16,8 @@ audio-gen = "audio_generation.main:main"
 
 [dependency-groups]
 dev = [
-    "ruff>=0.8.0",
-    "pyright>=1.1.0",
+    "ruff~=0.14.0",
+    "pyright~=1.1.0",
 ]
 
 [build-system]
@@ -56,3 +56,5 @@ indent-style = "space"
 [tool.pyright]
 pythonVersion = "3.10"
 typeCheckingMode = "strict"
+reportMissingImports = "error"
+reportUndefinedVariable = "error"
