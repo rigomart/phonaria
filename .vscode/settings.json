@@ -12,8 +12,6 @@
 	"[python]": {
 		"editor.defaultFormatter": "charliermarsh.ruff"
 	},
-	"chat.tools.autoApprove": true,
-	"chat.agent.maxRequests": 100,
 	"chatgpt.openOnStartup": true,
-	"python.languageServer": "None"
+	"python.defaultInterpreterPath": "${workspaceFolder}/packages/audio-generation/.venv/bin/python"
 }
