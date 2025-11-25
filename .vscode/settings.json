@@ -11,5 +11,6 @@
 	},
 	"chat.tools.autoApprove": true,
 	"chat.agent.maxRequests": 100,
-	"chatgpt.openOnStartup": true
+	"chatgpt.openOnStartup": true,
+	"python.languageServer": "None"
 }
