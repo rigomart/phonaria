@@ -9,6 +9,9 @@
 	"[json]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
+	"[python]": {
+		"editor.defaultFormatter": "charliermarsh.ruff"
+	},
 	"chat.tools.autoApprove": true,
 	"chat.agent.maxRequests": 100,
 	"chatgpt.openOnStartup": true,

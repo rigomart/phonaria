@@ -32,11 +32,10 @@ def load_example_words(json_path: Path | None = None) -> ExampleWordsData:
 
     if not path.exists():
         raise FileNotFoundError(
-            f"Example words JSON not found at {path}. "
-            f"Expected location: {SHARED_DATA_PATH}"
+            f"Example words JSON not found at {path}. Expected location: {SHARED_DATA_PATH}"
         )
 
-    with open(path, "r", encoding="utf-8") as f:
+    with path.open(encoding="utf-8") as f:
         raw_data = json.load(f)
 
     # Remove $schema key if present (JSON schema reference, not data)
@@ -60,6 +59,6 @@ def get_words_to_generate(json_path: Path | None = None) -> list[str]:
     Returns:
         Sorted list of unique words.
     """
+
     data = load_example_words(json_path)
     return sorted(data.extract_unique_words())
-

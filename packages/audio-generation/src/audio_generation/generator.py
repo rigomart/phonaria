@@ -186,4 +186,3 @@ class AudioGenerator:
     def list_missing(self) -> list[str]:
         """Get list of words that don't have generated audio files."""
         return [word for word in self.list_words() if not self.file_exists(word)]
-

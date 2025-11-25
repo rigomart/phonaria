@@ -1,6 +1,7 @@
 """Pydantic models for phoneme example words data."""
 
 from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -86,9 +87,7 @@ class ExampleWordsData(BaseModel):
     contrasts: list[PhonemeContrast] = Field(
         ..., description="Minimal pair contrasts between phonemes"
     )
-    patterns: dict[str, SpellingPattern] = Field(
-        ..., description="Spelling patterns by phoneme ID"
-    )
+    patterns: dict[str, SpellingPattern] = Field(..., description="Spelling patterns by phoneme ID")
     allophones: dict[str, list[AllophoneEntry]] = Field(
         ..., description="Allophone variants by phoneme ID"
     )
@@ -115,4 +114,3 @@ class ExampleWordsData(BaseModel):
                     words.add(example.word)
 
         return words
-

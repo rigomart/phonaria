@@ -14,6 +14,12 @@ dependencies = [
 [project.scripts]
 audio-gen = "audio_generation.main:main"
 
+[dependency-groups]
+dev = [
+    "ruff>=0.8.0",
+    "pyright>=1.1.0",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -23,6 +29,29 @@ packages = ["src/audio_generation"]
 
 [tool.uv.extra-build-dependencies]
 pkuseg = ["numpy"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "B", "C4", "UP", "ARG", "SIM", "TCH", "PTH", "RUF",
+    "A",   # flake8-builtins
+    "BLE", # flake8-blind-except
+    "PIE", # flake8-pie
+    "PL",  # pylint (selective)
+    "TID", # flake8-tidy-imports
+    "ERA", # eradicate commented-out code
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["audio_generation"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.pyright]
 pythonVersion = "3.10"

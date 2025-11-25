@@ -25,6 +25,22 @@ cd packages/audio-generation
 uv sync
 ```
 
+## Development
+
+```bash
+# Format code
+uv run ruff format src
+
+# Lint code
+uv run ruff check src
+
+# Lint and auto-fix
+uv run ruff check --fix src
+
+# Type check
+uv run pyright src
+```
+
 ## Usage
 
 ### Generate Audio Files

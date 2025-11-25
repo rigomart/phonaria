@@ -28,7 +28,7 @@ class TTSEngine:
         Args:
             device: PyTorch device ('cuda', 'cpu', or None for auto-detect).
         """
-        self._model: "ChatterboxTTS | None" = None
+        self._model: ChatterboxTTS | None = None
         self._device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         logger.info(f"TTS engine will use device: {self._device}")
 
@@ -91,13 +91,13 @@ class TTSEngine:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         audio_segment.export(str(output_path), format="mp3", bitrate=bitrate)
 
-    def synthesize_to_bytes(self, text: str, format: str = "mp3") -> bytes:
+    def synthesize_to_bytes(self, text: str, audio_format: str = "mp3") -> bytes:
         """
         Synthesize text and return as bytes.
 
         Args:
             text: Text to synthesize.
-            format: Audio format ('mp3', 'wav').
+            audio_format: Audio format ('mp3', 'wav').
 
         Returns:
             Audio data as bytes.
@@ -114,6 +114,5 @@ class TTSEngine:
         )
 
         buffer = io.BytesIO()
-        audio_segment.export(buffer, format=format)
+        audio_segment.export(buffer, format=audio_format)
         return buffer.getvalue()
-

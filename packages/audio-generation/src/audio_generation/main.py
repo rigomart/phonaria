@@ -43,7 +43,8 @@ Examples:
     )
 
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Enable verbose logging",
     )
@@ -56,7 +57,8 @@ Examples:
         help="Generate audio files for all words",
     )
     gen_parser.add_argument(
-        "-o", "--output-dir",
+        "-o",
+        "--output-dir",
         type=Path,
         default=Path(__file__).parent.parent.parent.parent.parent
         / "apps"
@@ -67,7 +69,8 @@ Examples:
         help="Output directory for MP3 files (default: apps/web/public/audio/examples)",
     )
     gen_parser.add_argument(
-        "-f", "--force",
+        "-f",
+        "--force",
         action="store_true",
         help="Regenerate files even if they already exist",
     )
@@ -108,7 +111,8 @@ Examples:
         help="List words that don't have generated audio files",
     )
     missing_parser.add_argument(
-        "-o", "--output-dir",
+        "-o",
+        "--output-dir",
         type=Path,
         default=Path(__file__).parent.parent.parent.parent.parent
         / "apps"
@@ -149,7 +153,7 @@ Examples:
 
     elif args.command == "list":
         generator = AudioGenerator(
-            output_dir=Path("."),  # Not used for list
+            output_dir=Path(),  # Not used for list
             json_path=args.json_path,
         )
         words = generator.list_words()
@@ -177,4 +181,3 @@ Examples:
 
 if __name__ == "__main__":
     sys.exit(main())
-
