@@ -3,7 +3,6 @@
 import io
 import logging
 import shutil
-import urllib.request
 import wave
 from pathlib import Path
 from typing import Literal
@@ -16,7 +15,6 @@ logger = logging.getLogger(__name__)
 AudioFormat = Literal["mp3", "wav"]
 
 DEFAULT_VOICE = "en_US-ryan-high"
-DEFAULT_VOICE_BASE_URL = "https://github.com/rhasspy/piper/releases/download/v1.2.0"
 
 
 def _default_cache_dir() -> Path:
@@ -44,8 +42,6 @@ class TTSEngine:
         voice_name: str = DEFAULT_VOICE,
         voice_path: Path | None = None,
         voice_config_path: Path | None = None,
-        voice_url: str | None = None,
-        voice_config_url: str | None = None,
         cache_dir: Path | None = None,
     ) -> None:
         """
@@ -56,8 +52,6 @@ class TTSEngine:
             voice_path: Path to the Piper ONNX model. Defaults to cache_dir/voice_name.onnx.
             voice_config_path: Path to the Piper voice JSON config.
                 Defaults to cache_dir/voice_name.onnx.json.
-            voice_url: URL to download the ONNX model if missing.
-            voice_config_url: URL to download the JSON config if missing.
             cache_dir: Directory to cache the voice files.
         """
         self.voice_name = voice_name
@@ -66,9 +60,6 @@ class TTSEngine:
         self.voice_config_path = (
             Path(voice_config_path) if voice_config_path else self.voice_path.with_suffix(".onnx.json")
         )
-
-        self.voice_url = voice_url or f"{DEFAULT_VOICE_BASE_URL}/{voice_name}.onnx"
-        self.voice_config_url = voice_config_url or f"{DEFAULT_VOICE_BASE_URL}/{voice_name}.onnx.json"
 
         self._voice: PiperVoice | None = None
 

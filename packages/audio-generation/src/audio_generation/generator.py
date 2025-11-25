@@ -92,8 +92,6 @@ class AudioGenerator:
         voice_name: str | None = None,
         voice_path: Path | None = None,
         voice_config_path: Path | None = None,
-        voice_url: str | None = None,
-        voice_config_url: str | None = None,
         voice_cache_dir: Path | None = None,
     ) -> None:
         """
@@ -105,8 +103,6 @@ class AudioGenerator:
             voice_name: Piper voice name (used for defaults).
             voice_path: Path to ONNX model.
             voice_config_path: Path to ONNX JSON config.
-            voice_url: URL to download ONNX model if missing.
-            voice_config_url: URL to download config if missing.
             voice_cache_dir: Directory to cache voice assets.
         """
         self.output_dir = Path(output_dir)
@@ -115,8 +111,6 @@ class AudioGenerator:
         self._voice_name = voice_name
         self._voice_path = voice_path
         self._voice_config_path = voice_config_path
-        self._voice_url = voice_url
-        self._voice_config_url = voice_config_url
         self._voice_cache_dir = voice_cache_dir
         self._slug_cache: dict[str, str] = {}
         self._slug_to_word: dict[str, str] = {}
@@ -129,8 +123,6 @@ class AudioGenerator:
                 voice_name=self._voice_name or "en_US-ryan-high",
                 voice_path=self._voice_path,
                 voice_config_path=self._voice_config_path,
-                voice_url=self._voice_url,
-                voice_config_url=self._voice_config_url,
                 cache_dir=self._voice_cache_dir,
             )
         return self._engine

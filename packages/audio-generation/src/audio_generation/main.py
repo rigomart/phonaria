@@ -26,16 +26,13 @@ def main() -> int:
         epilog="""
 Examples:
   # Generate audio to default location
-  audio-gen generate --voice-url https://github.com/rhasspy/piper/releases/download/v1.2.0/en_US-ryan-high.onnx --voice-config-url https://github.com/rhasspy/piper/releases/download/v1.2.0/en_US-ryan-high.onnx.json
+  audio-gen generate --voice-path ./models/en_US-ryan-high.onnx --voice-config-path ./models/en_US-ryan-high.onnx.json
 
   # Generate with custom output directory
   audio-gen generate --output-dir ./audio
 
   # Regenerate all files (ignore existing)
   audio-gen generate --force
-
-  # Use locally downloaded voice files
-  audio-gen generate --voice-path ./models/en_US-ryan-high.onnx --voice-config-path ./models/en_US-ryan-high.onnx.json
 
   # List words that would be generated
   audio-gen list
@@ -101,18 +98,6 @@ Examples:
         help="Path to Piper voice JSON config",
     )
     gen_parser.add_argument(
-        "--voice-url",
-        type=str,
-        default=None,
-        help="URL to download Piper ONNX voice if missing (default: en_US-ryan-high)",
-    )
-    gen_parser.add_argument(
-        "--voice-config-url",
-        type=str,
-        default=None,
-        help="URL to download Piper voice config if missing",
-    )
-    gen_parser.add_argument(
         "--voice-cache-dir",
         type=Path,
         default=None,
@@ -165,8 +150,6 @@ Examples:
             voice_name=None,
             voice_path=args.voice_path,
             voice_config_path=args.voice_config_path,
-            voice_url=args.voice_url,
-            voice_config_url=args.voice_config_url,
             voice_cache_dir=args.voice_cache_dir,
         )
 
