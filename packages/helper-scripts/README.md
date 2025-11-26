@@ -22,17 +22,25 @@ bun --cwd packages/helper-scripts lint            # biome check --write
 bun --cwd packages/helper-scripts check-types     # tsc --noEmit
 bun --cwd packages/helper-scripts generate        # ElevenLabs example audio generation
 bun --cwd packages/helper-scripts cmudict-to-json # Download & compact CMUDict into JSON
+bun --cwd packages/helper-scripts emit-phoneme-words # Emit word manifest for audio-generation (Python)
 ```
 
 ## Audio generation workflow
 
-`generate.ts` scans the shared phoneme metadata for unique example words and creates `.mp3` files using the ElevenLabs API.
+Two options exist for audio assets:
 
-1. Supply an `ELEVENLABS_API_KEY` in `.env`.
-2. Run `bun --cwd packages/helper-scripts generate`.
-3. Audio is written to `apps/web/public/audio/examples/<word>.mp3` (directories are created automatically).
+1. **Emit word manifest for the Python pipeline (preferred for type safety)**
+   - `emit-phoneme-words.ts` composes a deduped word list from `shared-data` spelling patterns, contrasts, and allophones.
+   - Output: `packages/audio-generation/data/phoneme-words.json` (checked in; regenerated when phoneme data changes).
+   - Run: `bun --cwd packages/helper-scripts emit-phoneme-words`
 
-The script skips words that already have audio. To experiment with a smaller batch, temporarily adjust the `extractExampleWords()` call inside `src/generate.ts`.
+2. **Generate example audio with ElevenLabs (Node)**
+   - `generate.ts` scans phoneme metadata for unique example words and creates `.mp3` files using the ElevenLabs API.
+   - Supply an `ELEVENLABS_API_KEY` in `.env`.
+   - Run: `bun --cwd packages/helper-scripts generate`.
+   - Audio is written to `apps/web/public/audio/examples/<word>.mp3` (directories are created automatically).
+
+The ElevenLabs script skips words that already have audio. To experiment with a smaller batch, temporarily adjust the `extractExampleWords()` call inside `src/generate.ts`.
 
 ## CMUDict JSON workflow
 

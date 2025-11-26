@@ -1,6 +1,6 @@
 # Audio Generation
 
-Base scaffold for future audio generation work. Currently only a placeholder CLI is wired up.
+Scaffold for generating audio for every example word in the phonetics datasets. The package consumes a typed word manifest emitted from `packages/shared-data` and will eventually stream audio output to the web app.
 
 ## Prerequisites
 
@@ -14,7 +14,6 @@ cd packages/audio-generation
 
 # Install dependencies
 uv sync
-
 ```
 
 ## Development
@@ -33,8 +32,22 @@ uv run ruff check --fix src
 uv run pyright src
 ```
 
+## Data source
+
+- Word list: `data/phoneme-words.json`
+- How it’s produced: `bun --cwd packages/helper-scripts emit-phoneme-words`  
+  (reads spelling patterns, contrasts, and allophones from `shared-data`, then writes the manifest here)
+- Regenerate whenever you edit phoneme metadata.
+
+## CLI
+
+```bash
+# Preview manifest counts and a sample of words
+uv run audio-gen
+```
+
 ## Current state
 
-- The CLI (`audio-gen`) only prints a placeholder message.
-- Dependencies are empty; dev tools (ruff, pyright) remain configured.
+- CLI (`audio-gen`) loads the manifest and echoes a quick preview.
+- Dependencies are minimal; dev tools (ruff, pyright) remain configured.
 - Voice models and generation code have been removed to allow a fresh start.
