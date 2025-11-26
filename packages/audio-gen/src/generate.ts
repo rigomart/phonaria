@@ -2,25 +2,23 @@ import "dotenv/config";
 
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { Readable } from "node:stream";
-import type { ReadableStream } from "node:stream/web";
 
-import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
+import { createElevenLabsProvider } from "./providers/elevenlabs";
+import type { TtsInput } from "./providers/types";
 
-const demoUtterances: string[] = [
-	"luke",
-	"look",
-	"through",
-	'<phoneme alphabet="cmu-arpabet" ph="DH AH0">the</phoneme>',
+const demoUtterances: TtsInput[] = [
+	{ id: "the", text: '<phoneme alphabet="cmu-arpabet" ph="DH AH0">the</phoneme>' },
+	{
+		id: "p",
+		text: `
+	<speak>
+    <break time="1s"/>
+    <phoneme alphabet="cmu-arpabet" ph="P AH0">p</phoneme>
+  </speak>`,
+	},
 ];
 
-const voiceId = process.env.ELEVENLABS_VOICE_ID ?? "21m00Tcm4TlvDq8ikWAM"; // Rachel (default)
-const modelId = process.env.ELEVENLABS_MODEL_ID ?? "eleven_turbo_v2";
 const outputDir = path.resolve(process.cwd(), "output");
-
-const client = new ElevenLabsClient({
-	apiKey: process.env.ELEVENLABS_API_KEY,
-});
 
 function toSafeFilename(word: string): string {
 	return word
@@ -30,40 +28,17 @@ function toSafeFilename(word: string): string {
 		.replace(/^-+|-+$/g, "");
 }
 
-async function streamToBuffer(stream: ReadableStream<Uint8Array>): Promise<Buffer> {
-	const nodeStream = Readable.fromWeb(stream);
-	const chunks: Buffer[] = [];
-
-	for await (const chunk of nodeStream) {
-		chunks.push(Buffer.from(chunk));
-	}
-
-	return Buffer.concat(chunks);
-}
-
 async function synthesize(): Promise<void> {
-	if (!process.env.ELEVENLABS_API_KEY) {
-		throw new Error("ELEVENLABS_API_KEY is required to run the ElevenLabs demo.");
-	}
+	const tts = createElevenLabsProvider();
 
 	await mkdir(outputDir, { recursive: true });
 
-	for (const word of demoUtterances) {
-		console.log(`Generating audio for "${word}"...`);
-		const audio = await client.textToSpeech.convert(voiceId, {
-			text: word,
-			modelId,
-			outputFormat: "mp3_44100_128",
-			voiceSettings: {
-				speed: 0.7,
-				stability: 1,
-				similarityBoost: 1,
-			},
-		});
+	const outputs = await tts.synthesize(demoUtterances);
 
-		const buffer = await streamToBuffer(audio);
-		const filepath = path.join(outputDir, `${toSafeFilename(word)}.mp3`);
-		await writeFile(filepath, buffer);
+	for (const { id, audio } of outputs) {
+		console.log(`Generating audio for "${id}"...`);
+		const filepath = path.join(outputDir, `${toSafeFilename(id)}.mp3`);
+		await writeFile(filepath, audio);
 		console.log(`Saved ${filepath}`);
 	}
 
