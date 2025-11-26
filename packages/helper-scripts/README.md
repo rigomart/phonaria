@@ -1,16 +1,15 @@
 # Helper Scripts
 
-Utility scripts that back the Phonaria web application. They generate reusable assets (example audio and CMU Pronouncing Dictionary JSON) and provide lint/type checks for the package itself.
+Utility scripts that back the Phonaria web application. They generate reusable assets (CMU Pronouncing Dictionary JSON, phoneme word manifests) and provide lint/type checks for the package itself.
 
 ## Prerequisites
 
 - `bun install` at the workspace root
 - Node.js 18+
-- Optional: `.env` file in this directory for API keys and overrides
+- Optional: `.env` file in this directory for overrides
 
 ```ini
 # packages/helper-scripts/.env
-ELEVENLABS_API_KEY=...
 CMUDICT_SRC_URL=https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/master/cmudict.dict
 # CMUDICT_JSON_PATH=/absolute/or/relative/path.json   # optional override
 ```
@@ -20,27 +19,16 @@ CMUDICT_SRC_URL=https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/ma
 ```bash
 bun --cwd packages/helper-scripts lint            # biome check --write
 bun --cwd packages/helper-scripts check-types     # tsc --noEmit
-bun --cwd packages/helper-scripts generate        # ElevenLabs example audio generation
 bun --cwd packages/helper-scripts cmudict-to-json # Download & compact CMUDict into JSON
-bun --cwd packages/helper-scripts emit-phoneme-words # Emit word manifest for audio-generation (Python)
+bun --cwd packages/helper-scripts emit-phoneme-words # Emit word manifest for downstream audio tooling
 ```
 
-## Audio generation workflow
+## Word manifest workflow
 
-Two options exist for audio assets:
+`emit-phoneme-words.ts` composes a deduped word list from `shared-data` spelling patterns, contrasts, and allophones.
 
-1. **Emit word manifest for the Python pipeline (preferred for type safety)**
-   - `emit-phoneme-words.ts` composes a deduped word list from `shared-data` spelling patterns, contrasts, and allophones.
-   - Output: `packages/audio-generation/data/phoneme-words.json` (checked in; regenerated when phoneme data changes).
-   - Run: `bun --cwd packages/helper-scripts emit-phoneme-words`
-
-2. **Generate example audio with ElevenLabs (Node)**
-   - `generate.ts` scans phoneme metadata for unique example words and creates `.mp3` files using the ElevenLabs API.
-   - Supply an `ELEVENLABS_API_KEY` in `.env`.
-   - Run: `bun --cwd packages/helper-scripts generate`.
-   - Audio is written to `apps/web/public/audio/examples/<word>.mp3` (directories are created automatically).
-
-The ElevenLabs script skips words that already have audio. To experiment with a smaller batch, temporarily adjust the `extractExampleWords()` call inside `src/generate.ts`.
+- Output: `packages/audio-generation/data/phoneme-words.json` (checked in; regenerate when phoneme data changes).
+- Run: `bun --cwd packages/helper-scripts emit-phoneme-words`
 
 ## CMUDict JSON workflow
 

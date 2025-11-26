@@ -11,15 +11,13 @@
 	"author": "",
 	"license": "ISC",
 	"packageManager": "bun@1.3.2",
- "scripts": {
-	"lint": "biome check --write",
-	"check-types": "tsc --noEmit",
-	"generate": "tsx src/generate.ts",
-	"cmudict-to-json": "tsx src/cmudict-to-json.ts",
-	"emit-phoneme-words": "tsx src/emit-phoneme-words.ts"
- },
+	"scripts": {
+		"lint": "biome check --write",
+		"check-types": "tsc --noEmit",
+		"cmudict-to-json": "tsx src/cmudict-to-json.ts",
+		"emit-phoneme-words": "tsx src/emit-phoneme-words.ts"
+	},
 	"dependencies": {
-		"@elevenlabs/elevenlabs-js": "^2.6.0",
 		"shared-data": "workspace:*",
 		"@types/node": "^24.0.10",
 		"dotenv": "^17.2.0"
