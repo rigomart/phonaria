@@ -1,15 +1,10 @@
 [project]
 name = "audio-generation"
 version = "0.1.0"
-description = "TTS script for generating MP3 audio from phoneme example words using Piper"
+description = "Base scaffold for audio generation utilities (implementation pending)"
 readme = "README.md"
 requires-python = ">=3.10,<3.12"
 dependencies = [
-    "piper-tts~=1.3.0",
-    "onnxruntime~=1.19",
-    "pydantic~=2.9",
-    "tqdm~=4.66",
-    "pydub~=0.25",
 ]
 
 [project.scripts]
