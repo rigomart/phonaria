@@ -19,7 +19,7 @@ class WordManifest(TypedDict):
     words: list[str]
 
 
-DATA_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "phoneme-words.json"
+DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "phoneme-words.json"
 
 
 def load_word_manifest(path: Path = DATA_PATH) -> WordManifest:
@@ -36,15 +36,21 @@ def load_word_manifest(path: Path = DATA_PATH) -> WordManifest:
     return manifest
 
 
-def preview_manifest(manifest: WordManifest) -> None:
-    total = manifest["meta"]["total"]
-    sample = ", ".join(manifest["words"][:10])
-    print(f"phoneme-words: {total} total (showing first 10) -> {sample}")
+def print_manifest(manifest: WordManifest) -> None:
+    meta = manifest["meta"]
+    print("phoneme-words manifest")
+    print(f"- generatedAt: {meta['generatedAt']}")
+    print(f"- source: {meta['source']}")
+    print(f"- total: {meta['total']}")
+    print(f"- sourceCounts: {meta['sourceCounts']}")
+    print("\nwords:")
+    for word in manifest["words"]:
+        print(f"- {word}")
 
 
 def main() -> int:
     manifest = load_word_manifest()
-    preview_manifest(manifest)
+    print_manifest(manifest)
     return 0
 
 

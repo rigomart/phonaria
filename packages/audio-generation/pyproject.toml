@@ -8,7 +8,7 @@ dependencies = [
 ]
 
 [project.scripts]
-audio-gen = "audio_generation.main:main"
+audio-gen = "main:main"
 
 [dependency-groups]
 dev = [
@@ -21,15 +21,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/audio_generation"]
-
-[tool.uv.extra-build-dependencies]
-pkuseg = ["numpy"]
+sources = ["src"]
+include = ["main.py"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-src = ["src"]
+src = ["audio_generation"]
 
 [tool.ruff.lint]
 select = [
@@ -42,15 +40,12 @@ select = [
     "ERA", # eradicate commented-out code
 ]
 
-[tool.ruff.lint.isort]
-known-first-party = ["audio_generation"]
-
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 
 [tool.pyright]
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 typeCheckingMode = "strict"
 reportMissingImports = "error"
 reportUndefinedVariable = "error"

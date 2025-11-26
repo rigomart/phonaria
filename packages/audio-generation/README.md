@@ -42,12 +42,12 @@ uv run pyright src
 ## CLI
 
 ```bash
-# Preview manifest counts and a sample of words
+# Print manifest meta and the full word list
 uv run audio-gen
 ```
 
 ## Current state
 
-- CLI (`audio-gen`) loads the manifest and echoes a quick preview.
+- CLI (`audio-gen`) loads the manifest and prints meta + all words.
 - Dependencies are minimal; dev tools (ruff, pyright) remain configured.
 - Voice models and generation code have been removed to allow a fresh start.
