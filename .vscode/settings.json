@@ -13,5 +13,5 @@
 		"editor.defaultFormatter": "charliermarsh.ruff"
 	},
 	"chatgpt.openOnStartup": true,
-	"python.defaultInterpreterPath": "${workspaceFolder}/packages/audio-generation/.venv/bin/python"
+	"python.defaultInterpreterPath": "${workspaceFolder}/packages/audio-gen-local/.venv/bin/python"
 }

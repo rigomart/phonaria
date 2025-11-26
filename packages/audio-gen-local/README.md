@@ -1,4 +1,4 @@
-# Audio Generation
+# Audio Gen Local
 
 Scaffold for generating audio for every example word in the phonetics datasets. The package consumes a typed word manifest emitted from `packages/shared-data` and will eventually stream audio output to the web app.
 
@@ -10,7 +10,7 @@ Scaffold for generating audio for every example word in the phonetics datasets. 
 ## Setup
 
 ```bash
-cd packages/audio-generation
+cd packages/audio-gen-local
 
 # Install dependencies
 uv sync
