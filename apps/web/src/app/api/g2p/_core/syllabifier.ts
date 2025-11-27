@@ -1,4 +1,8 @@
-import { getSymbolIdForCmuToken, PhonemeSymbolRegistry } from "shared-data";
+import {
+	type CmuArpaToken,
+	getPhonemeIdForCmuArpa,
+	PhonemeSymbolRegistry,
+} from "shared-data";
 import type { G2PPhoneme, G2PStress } from "../_schemas/g2p-api.schema";
 import { isValidOnset } from "./phonotactics";
 
@@ -19,9 +23,9 @@ export function syllabify(cmuTokens: string[]): Syllable[] {
 
 	// 1. Map to internal representation
 	const phonemes: InternalPhoneme[] = cmuTokens.map((token, index) => {
-		const symbolId = getSymbolIdForCmuToken(token);
-		const symbol = symbolId ? PhonemeSymbolRegistry[symbolId] : undefined;
-		const isVowel = symbol?.category.startsWith("vowel") ?? false;
+		const symbolId = getPhonemeIdForCmuArpa(token as CmuArpaToken);
+		const symbol = PhonemeSymbolRegistry[symbolId];
+		const isVowel = symbol.category.startsWith("vowel");
 
 		// Extract stress from CMU token (e.g., "AH0", "AH1", "AH2")
 		let stress: G2PStress = "none";
@@ -118,17 +122,11 @@ function findMaximalOnsetSplit(consonants: InternalPhoneme[]): number {
 
 function mapToG2PPhonemes(internalPhonemes: InternalPhoneme[]): G2PPhoneme[] {
 	return internalPhonemes.map((p) => {
-		const symbolId = getSymbolIdForCmuToken(p.cmuToken);
-		if (symbolId) {
-			const symbol = PhonemeSymbolRegistry[symbolId];
-			return {
-				ipa: symbol.ipa,
-				phonemeId: symbolId,
-				cmuToken: p.cmuToken,
-			};
-		}
+		const symbolId = getPhonemeIdForCmuArpa(p.cmuToken as CmuArpaToken);
+		const symbol = PhonemeSymbolRegistry[symbolId];
 		return {
-			phonemeId: null,
+			ipa: symbol.ipa,
+			phonemeId: symbolId,
 			cmuToken: p.cmuToken,
 		};
 	});

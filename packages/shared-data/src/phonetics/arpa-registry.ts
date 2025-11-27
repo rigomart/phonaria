@@ -86,14 +86,29 @@ export const CmuSymbolRegistry = {
 export type CmuArpaToken = keyof typeof CmuSymbolRegistry;
 
 /**
- * Safely maps a CMU ARPA token to a phoneme symbol ID.
- * @param token - The CMU ARPA token string to map.
- * @returns The phoneme symbol ID, or undefined if the token is not found.
+ * Maps a CMU ARPA token to a phoneme symbol ID.
+ * Type-safe: only accepts valid CMU ARPA tokens.
+ * @param token - The CMU ARPA token to map.
+ * @returns The phoneme symbol ID.
  * @example
- * getSymbolIdForCmuToken("P") // "voiceless-bilabial-plosive"
- * getSymbolIdForCmuToken("AH0") // "open-mid-back-unrounded"
- * getSymbolIdForCmuToken("UNKNOWN") // undefined
+ * getPhonemeIdForCmuArpa("P") // "voiceless-bilabial-plosive"
+ * getPhonemeIdForCmuArpa("AH0") // "mid-central-unrounded"
  */
-export function getSymbolIdForCmuToken(token: string): PhonemeSymbolId | undefined {
-	return CmuSymbolRegistry[token as CmuArpaToken];
+export function getPhonemeIdForCmuArpa(token: CmuArpaToken): PhonemeSymbolId {
+	return CmuSymbolRegistry[token];
+}
+
+/**
+ * Reverse lookup: gets all CMU ARPA tokens that map to a phoneme ID.
+ * Returns an array since multiple tokens can map to the same phoneme (e.g., IY0, IY1, IY2).
+ * @param phonemeId - The phoneme symbol ID.
+ * @returns Array of CMU ARPA tokens that map to this phoneme.
+ * @example
+ * getCmuArpaForPhonemeId("close-front-unrounded") // ["IY0", "IY1", "IY2"]
+ * getCmuArpaForPhonemeId("voiceless-bilabial-plosive") // ["P"]
+ */
+export function getCmuArpaForPhonemeId(phonemeId: PhonemeSymbolId): CmuArpaToken[] {
+	return Object.entries(CmuSymbolRegistry)
+		.filter(([, id]) => id === phonemeId)
+		.map(([token]) => token as CmuArpaToken);
 }

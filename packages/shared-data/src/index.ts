@@ -1,8 +1,9 @@
 export {
 	type CmuArpaToken,
 	CmuSymbolRegistry,
-	getSymbolIdForCmuToken,
-} from "./phonetics/cmu-lookup";
+	getCmuArpaForPhonemeId,
+	getPhonemeIdForCmuArpa,
+} from "./phonetics/arpa-registry";
 export {
 	type PhonemeAllophone,
 	type PhonemeAllophoneContextKey,
