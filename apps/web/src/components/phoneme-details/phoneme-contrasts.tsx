@@ -2,9 +2,9 @@ import { Info } from "lucide-react";
 import {
 	ContrastsByPhonemeIdRegistry,
 	FeatureValueByPhonemeRegistry,
+	getIpaForPhonemeId,
 	type PhonemeArticulatoryFeatureKey,
 	type PhonemeArticulatoryFeatures,
-	PhonemeSymbolRegistry,
 } from "shared-data";
 import { type FeatureValueDefinition, featureDefinitions } from "@/data/phoneme-details";
 import { cn } from "@/lib/utils";
@@ -42,7 +42,7 @@ export function PhonemeDetailsContrasts() {
 	const t = useScopedI18n(`components.phoneme-details.contrasts`);
 
 	const contrasts = ContrastsByPhonemeIdRegistry[phonemeId];
-	const currentIpa = PhonemeSymbolRegistry[phonemeId].ipa;
+	const currentIpa = getIpaForPhonemeId(phonemeId);
 	const vsLabel = t("vs");
 
 	if (!contrasts || contrasts.length === 0) {
@@ -57,7 +57,7 @@ export function PhonemeDetailsContrasts() {
 			</PhonemeSectionHeader>
 			<PhonemeSectionContent>
 				{contrasts.map((contrast) => {
-					const partnerIpa = PhonemeSymbolRegistry[contrast.partnerId].ipa;
+					const partnerIpa = getIpaForPhonemeId(contrast.partnerId);
 					// Limit to first pair
 					const displayPairs = contrast.minimalPairs[0];
 

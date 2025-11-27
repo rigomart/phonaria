@@ -1,4 +1,4 @@
-import { PhonemeSymbolRegistry } from "shared-data";
+import { getIpaForPhonemeId } from "shared-data";
 import { phonemeDetailsById } from "@/data/phoneme-details";
 import { AudioControls } from "../audio-controls";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
@@ -6,7 +6,7 @@ import { usePhonemeDetailsContext } from "./phoneme-details-context";
 export function PhonemeDetailsHeader() {
 	const { phonemeId } = usePhonemeDetailsContext();
 
-	const { ipa } = PhonemeSymbolRegistry[phonemeId];
+	const ipa = getIpaForPhonemeId(phonemeId);
 	const { label } = phonemeDetailsById[phonemeId];
 
 	return (

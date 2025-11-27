@@ -1,25 +1,9 @@
 export {
+	CmuArpaRegistry,
 	type CmuArpaToken,
-	CmuSymbolRegistry,
 	getCmuArpaForPhonemeId,
 	getPhonemeIdForCmuArpa,
-} from "./phonetics/arpa-registry";
-export {
-	type PhonemeAllophone,
-	type PhonemeAllophoneContextKey,
-	PhonemeAllophoneRegistry,
-} from "./phonetics/phoneme-allophones";
-export {
-	ConsonantArticulationRegistry,
-	DiphthongVowelArticulationRegistry,
-	FeatureValueByPhonemeRegistry,
-	MonophthongVowelArticulationRegistry,
-	type PhonemeArticulation,
-	PhonemeArticulationRegistry,
-	RhoticVowelArticulationRegistry,
-} from "./phonetics/phoneme-articulations";
-export { ContrastsByPhonemeIdRegistry, type PhonemeContrast } from "./phonetics/phoneme-contrasts";
-export { PhonemeSpellingPatternRegistry } from "./phonetics/phoneme-patterns";
+} from "./phonetics/cmu-arpa-registry";
 export type {
 	ConsonantArticulatoryFeatures,
 	ConsonantPhonemeArticulatoryFeatureKey,
@@ -35,13 +19,34 @@ export type {
 	VowelArticulatoryFeatures,
 	VowelPhonemeArticulatoryFeatureKey,
 	VowelSymbolIpa,
-} from "./phonetics/symbols-registry";
+} from "./phonetics/ipa-registry";
 export {
-	ConsonantSymbolRegistry,
-	DiphthongSymbolRegistry,
-	MonophthongSymbolRegistry,
+	ConsonantIpaRegistry,
+	DiphthongIpaRegistry,
+	getIpaForPhonemeId,
+	getPhonemeCategory,
+	isConsonantPhoneme,
+	isVowelPhoneme,
+	MonophthongIpaRegistry,
 	PhonemeCount,
-	PhonemeSymbolRegistry,
-	RhoticSymbolRegistry,
-	VowelSymbolRegistry,
-} from "./phonetics/symbols-registry";
+	PhonemeIpaRegistry,
+	RhoticIpaRegistry,
+	VowelIpaRegistry,
+} from "./phonetics/ipa-registry";
+export {
+	type PhonemeAllophone,
+	type PhonemeAllophoneContextKey,
+	PhonemeAllophoneRegistry,
+} from "./phonetics/phoneme-allophones";
+export {
+	ConsonantArticulationRegistry,
+	DiphthongVowelArticulationRegistry,
+	FeatureValueByPhonemeRegistry,
+	MonophthongVowelArticulationRegistry,
+	type PhonemeArticulation,
+	PhonemeArticulationRegistry,
+	RhoticVowelArticulationRegistry,
+	type VowelType,
+} from "./phonetics/phoneme-articulations";
+export { ContrastsByPhonemeIdRegistry, type PhonemeContrast } from "./phonetics/phoneme-contrasts";
+export { PhonemeSpellingPatternRegistry } from "./phonetics/phoneme-patterns";

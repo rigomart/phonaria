@@ -1,5 +1,5 @@
 import { createContext, use } from "react";
-import type { PhonemeSymbolId } from "shared-data/src/phonetics/symbols-registry";
+import type { PhonemeSymbolId } from "shared-data";
 
 type PhonemeDetailsContextType = {
 	phonemeId: PhonemeSymbolId;

@@ -2,10 +2,11 @@
 
 import {
 	ConsonantArticulationRegistry,
-	ConsonantSymbolRegistry,
-	DiphthongSymbolRegistry,
+	ConsonantIpaRegistry,
+	DiphthongIpaRegistry,
 	DiphthongVowelArticulationRegistry,
-	MonophthongSymbolRegistry,
+	getIpaForPhonemeId,
+	MonophthongIpaRegistry,
 	MonophthongVowelArticulationRegistry,
 	type PhonemeSymbolId,
 } from "shared-data";
@@ -27,34 +28,37 @@ const MAX_PREVIEW_CONSONANTS = 18;
 
 // Use vowels from registries (monophthongs + diphthongs), limited for preview
 const PREVIEW_VOWELS: PreviewVowel[] = [
-	...Object.entries(MonophthongSymbolRegistry).map(([id, symbol]) => {
+	...Object.entries(MonophthongIpaRegistry).map(([id, ipa]) => {
+		const phonemeId = id as PhonemeSymbolId;
 		const articulation =
 			MonophthongVowelArticulationRegistry[id as keyof typeof MonophthongVowelArticulationRegistry];
 		return {
-			id: id as PhonemeSymbolId,
-			symbol: symbol.ipa,
+			id: phonemeId,
+			symbol: ipa,
 			rounded: articulation.features.roundness === "rounded",
 		};
 	}),
-	...Object.entries(DiphthongSymbolRegistry).map(([id, symbol]) => {
+	...Object.entries(DiphthongIpaRegistry).map(([id, ipa]) => {
+		const phonemeId = id as PhonemeSymbolId;
 		const articulation =
 			DiphthongVowelArticulationRegistry[id as keyof typeof DiphthongVowelArticulationRegistry];
 		return {
-			id: id as PhonemeSymbolId,
-			symbol: symbol.ipa,
+			id: phonemeId,
+			symbol: ipa,
 			rounded: articulation.features.roundness === "rounded",
 		};
 	}),
 ].slice(0, MAX_PREVIEW_VOWELS);
 
 // Use consonants from registry, limited for preview
-const PREVIEW_CONSONANTS: PreviewConsonant[] = Object.entries(ConsonantSymbolRegistry)
-	.map(([id, symbol]) => {
+const PREVIEW_CONSONANTS: PreviewConsonant[] = Object.entries(ConsonantIpaRegistry)
+	.map(([id, ipa]) => {
+		const phonemeId = id as PhonemeSymbolId;
 		const articulation =
 			ConsonantArticulationRegistry[id as keyof typeof ConsonantArticulationRegistry];
 		return {
-			id: id as PhonemeSymbolId,
-			symbol: symbol.ipa,
+			id: phonemeId,
+			symbol: ipa,
 			voiced: articulation.features.voicing === "voiced",
 		};
 	})

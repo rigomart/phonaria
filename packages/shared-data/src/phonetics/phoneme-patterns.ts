@@ -1,7 +1,7 @@
 // Common spelling patterns for English phonemes
 // Because English spelling is historically inconsistent, these represent general tendencies rather than fixed rules
 
-import type { PhonemeSymbolId } from "./symbols-registry";
+import type { PhonemeSymbolId } from "./ipa-registry";
 
 //? Future:examples should be per pattern, also add fields for position (coda, onset, etc.)
 type SpellingPattern = {

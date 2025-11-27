@@ -1,4 +1,4 @@
-import type { PhonemeArticulation, VowelArticulatoryFeatures } from "shared-data";
+import type { PhonemeArticulation, VowelArticulatoryFeatures, VowelType } from "shared-data";
 import { featureDefinitions } from "@/data/phoneme-details";
 import { cn } from "@/lib/utils";
 import {
@@ -13,26 +13,21 @@ import {
 
 type StaticVowelFeatures = Extract<
 	PhonemeArticulation,
-	{ category: "vowel/monophthong" | "vowel/rhotic" }
+	{ vowelType: "monophthong" | "rhotic" }
 >["features"];
 
-type DiphthongVowelFeatures = Extract<
-	PhonemeArticulation,
-	{ category: "vowel/diphthong" }
->["features"];
-
-export type VowelChartCategory = "vowel/monophthong" | "vowel/rhotic" | "vowel/diphthong";
+type DiphthongVowelFeatures = Extract<PhonemeArticulation, { vowelType: "diphthong" }>["features"];
 
 export type VowelChartCardProps =
 	| {
-			category: "vowel/monophthong" | "vowel/rhotic";
+			vowelType: "monophthong" | "rhotic";
 			phonemeLabel: string;
 			phonemeIpa: string;
 			features: StaticVowelFeatures;
 			chartId: string;
 	  }
 	| {
-			category: "vowel/diphthong";
+			vowelType: "diphthong";
 			phonemeLabel: string;
 			phonemeIpa: string;
 			features: DiphthongVowelFeatures;
@@ -40,7 +35,7 @@ export type VowelChartCardProps =
 	  };
 
 export function VowelChartCard(props: VowelChartCardProps) {
-	const isDiphthong = props.category === "vowel/diphthong";
+	const isDiphthong = props.vowelType === "diphthong";
 	const layout = SMALL_VOWEL_CHART_LAYOUT;
 
 	const startPoint = getVowelPoint(props.features.height, props.features.backness, layout);
@@ -50,7 +45,7 @@ export function VowelChartCard(props: VowelChartCardProps) {
 
 	const startRoundness = props.features.roundness;
 	const targetRoundness = isDiphthong ? props.features.targetRoundness : undefined;
-	const isRhotic = props.category === "vowel/rhotic";
+	const isRhotic = props.vowelType === "rhotic";
 
 	return (
 		<section className="rounded-lg border bg-background-soft p-2">

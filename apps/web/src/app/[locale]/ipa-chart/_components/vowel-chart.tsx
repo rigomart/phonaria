@@ -79,7 +79,7 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 	};
 	const ariaLabel = `${marker.entry.label} (${marker.entry.ipa})`;
 	const isRounded = marker.entry.features.roundness === "rounded";
-	const isRhotic = marker.entry.category === "vowel/rhotic";
+	const isRhotic = marker.entry.vowelType === "rhotic";
 
 	return (
 		<Tooltip>

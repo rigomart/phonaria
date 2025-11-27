@@ -2,10 +2,10 @@ import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+	getIpaForPhonemeId,
 	type PhonemeArticulation,
 	PhonemeArticulationRegistry,
 	type PhonemeSymbolId,
-	PhonemeSymbolRegistry,
 } from "shared-data";
 import {
 	type ArticulatoryFeature,
@@ -76,7 +76,7 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllustrationProps) {
 	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
-	const { ipa: phonemeIpa } = PhonemeSymbolRegistry[phonemeId];
+	const phonemeIpa = getIpaForPhonemeId(phonemeId);
 
 	if (articulation.category === "consonant") {
 		return (
@@ -91,25 +91,25 @@ function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllus
 		);
 	}
 
-	if (articulation.category === "vowel/monophthong" || articulation.category === "vowel/rhotic") {
+	if (articulation.vowelType === "monophthong" || articulation.vowelType === "rhotic") {
 		return (
 			<VowelChartCard
 				chartId={phonemeId}
 				phonemeLabel={phonemeLabel}
 				phonemeIpa={phonemeIpa}
-				category={articulation.category}
+				vowelType={articulation.vowelType}
 				features={articulation.features}
 			/>
 		);
 	}
 
-	if (articulation.category === "vowel/diphthong") {
+	if (articulation.vowelType === "diphthong") {
 		return (
 			<VowelChartCard
 				chartId={phonemeId}
 				phonemeLabel={phonemeLabel}
 				phonemeIpa={phonemeIpa}
-				category={articulation.category}
+				vowelType={articulation.vowelType}
 				features={articulation.features}
 			/>
 		);
@@ -133,7 +133,7 @@ function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 		);
 	}
 
-	if (articulation.category === "vowel/monophthong" || articulation.category === "vowel/rhotic") {
+	if (articulation.vowelType === "monophthong" || articulation.vowelType === "rhotic") {
 		return (
 			<div className="flex flex-wrap gap-2">
 				<FeatureRow feature={featureDefinitions.height} valueKey={articulation.features.height} />
@@ -153,7 +153,7 @@ function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 		);
 	}
 
-	if (articulation.category === "vowel/diphthong") {
+	if (articulation.vowelType === "diphthong") {
 		const features = articulation.features;
 		const changingFeatures = [];
 

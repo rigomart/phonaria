@@ -3,7 +3,7 @@ import type {
 	PhonemeArticulatoryFeatureKey,
 	PhonemeSymbolId,
 	VowelArticulatoryFeatures,
-} from "./symbols-registry";
+} from "./ipa-registry";
 
 type PhonemeContrastPair = {
 	word: string;

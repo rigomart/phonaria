@@ -1,10 +1,10 @@
-import type { PhonemeSymbolId } from "./symbols-registry";
+import type { PhonemeSymbolId } from "./ipa-registry";
 
 /**
  * Maps CMU ARPA tokens to phoneme symbol IDs.
  * Each stress variant (0, 1, 2) for vowels maps to the same base phoneme ID.
  */
-export const CmuSymbolRegistry = {
+export const CmuArpaRegistry = {
 	// Consonants
 	P: "voiceless-bilabial-plosive",
 	B: "voiced-bilabial-plosive",
@@ -83,7 +83,7 @@ export const CmuSymbolRegistry = {
 	ER2: "open-mid-central-rhotic",
 } as const satisfies Record<string, PhonemeSymbolId>;
 
-export type CmuArpaToken = keyof typeof CmuSymbolRegistry;
+export type CmuArpaToken = keyof typeof CmuArpaRegistry;
 
 /**
  * Maps a CMU ARPA token to a phoneme symbol ID.
@@ -95,7 +95,7 @@ export type CmuArpaToken = keyof typeof CmuSymbolRegistry;
  * getPhonemeIdForCmuArpa("AH0") // "mid-central-unrounded"
  */
 export function getPhonemeIdForCmuArpa(token: CmuArpaToken): PhonemeSymbolId {
-	return CmuSymbolRegistry[token];
+	return CmuArpaRegistry[token];
 }
 
 /**
@@ -108,7 +108,7 @@ export function getPhonemeIdForCmuArpa(token: CmuArpaToken): PhonemeSymbolId {
  * getCmuArpaForPhonemeId("voiceless-bilabial-plosive") // ["P"]
  */
 export function getCmuArpaForPhonemeId(phonemeId: PhonemeSymbolId): CmuArpaToken[] {
-	return Object.entries(CmuSymbolRegistry)
+	return Object.entries(CmuArpaRegistry)
 		.filter(([, id]) => id === phonemeId)
 		.map(([token]) => token as CmuArpaToken);
 }
