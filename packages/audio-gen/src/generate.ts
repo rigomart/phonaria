@@ -4,19 +4,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { createElevenLabsProvider } from "./providers/elevenlabs";
-import type { TtsInput } from "./providers/types";
-
-const demoUtterances: TtsInput[] = [
-	{ id: "the", text: '<phoneme alphabet="cmu-arpabet" ph="DH AH0">the</phoneme>' },
-	{
-		id: "p",
-		text: `
-	<speak>
-    <break time="1s"/>
-    <phoneme alphabet="cmu-arpabet" ph="P AH0">p</phoneme>
-  </speak>`,
-	},
-];
+import { getWordInputs } from "./word-inputs";
 
 const outputDir = path.resolve(process.cwd(), "output");
 
@@ -30,14 +18,15 @@ function toSafeFilename(word: string): string {
 
 async function synthesize(): Promise<void> {
 	const tts = createElevenLabsProvider();
+	const limit = process.env.WORDS_LIMIT ? Number(process.env.WORDS_LIMIT) : undefined;
+	const inputs = getWordInputs(Number.isFinite(limit) ? limit : undefined);
 
 	await mkdir(outputDir, { recursive: true });
 
-	const outputs = await tts.synthesize(demoUtterances);
-
-	for (const { id, audio } of outputs) {
-		console.log(`Generating audio for "${id}"...`);
-		const filepath = path.join(outputDir, `${toSafeFilename(id)}.mp3`);
+	for (const utterance of inputs) {
+		console.log(`Generating audio for "${utterance.id}"...`);
+		const [{ audio }] = await tts.synthesize([utterance]);
+		const filepath = path.join(outputDir, `${toSafeFilename(utterance.id)}.mp3`);
 		await writeFile(filepath, audio);
 		console.log(`Saved ${filepath}`);
 	}

@@ -2,7 +2,7 @@
 
 ## ElevenLabs demo
 
-Minimal example to synthesize a few hard-coded utterances to MP3 files.
+Minimal example to synthesize words collected from shared-data to MP3 files.
 
 ### Setup
 - Add an ElevenLabs API key to `.env` in this package:
@@ -11,6 +11,7 @@ Minimal example to synthesize a few hard-coded utterances to MP3 files.
   # Optional overrides
   # ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
   # ELEVENLABS_MODEL_ID=eleven_turbo_v2
+  # WORDS_LIMIT=25 # optional cap while testing
   ```
 
 ### Run
