@@ -4,11 +4,12 @@
 import type { PhonemeSymbolId } from "./ipa-registry";
 
 //? Future:examples should be per pattern, also add fields for position (coda, onset, etc.)
-type SpellingPattern = {
+export type SpellingPattern = {
 	patterns: string[];
 	examples: {
 		word: string;
 		phonemic: string;
+		cmuArpa?: string;
 	}[];
 };
 

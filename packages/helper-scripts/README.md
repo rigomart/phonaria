@@ -17,18 +17,19 @@ CMUDICT_SRC_URL=https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/ma
 ## Available commands
 
 ```bash
-bun --cwd packages/helper-scripts lint            # biome check --write
-bun --cwd packages/helper-scripts check-types     # tsc --noEmit
-bun --cwd packages/helper-scripts cmudict-to-json # Download & compact CMUDict into JSON
-bun --cwd packages/helper-scripts emit-phoneme-words # Emit word manifest for downstream audio tooling
+bun --cwd packages/helper-scripts lint                     # biome check --write
+bun --cwd packages/helper-scripts check-types              # tsc --noEmit
+bun --cwd packages/helper-scripts cmudict-to-json          # Download & compact CMUDict into JSON
+bun --cwd packages/helper-scripts generate-word-mappings   # Generate word mappings with CMU ARPA
 ```
 
-## Word manifest workflow
+## Word mappings workflow
 
-`emit-phoneme-words.ts` composes a deduped word list from `shared-data` spelling patterns, contrasts, and allophones.
+`generate-word-mappings.ts` extracts all example words from `shared-data` (spelling patterns, contrasts, allophones) and looks up their CMU ARPA transcriptions in the CMUDict.
 
-- Output: `packages/audio-generation/data/phoneme-words.json` (checked in; regenerate when phoneme data changes).
-- Run: `bun --cwd packages/helper-scripts emit-phoneme-words`
+- Output: `packages/audio-gen/data/cmu-arpa-mappings.json` (regenerate when phoneme data changes)
+- Run: `bun --cwd packages/helper-scripts generate-word-mappings`
+- Includes: word, IPA phonemic transcription, CMU ARPA tokens, lookup status, and variant info
 
 ## CMUDict JSON workflow
 

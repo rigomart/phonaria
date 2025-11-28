@@ -1,8 +1,9 @@
 import type { PhonemeSymbolId } from "./ipa-registry";
 
-type AllophoneExample = {
+export type AllophoneExample = {
 	word: string;
 	phonemic: string;
+	cmuArpa?: string;
 };
 
 type BasePhonemeAllophone<ContextKey extends string = string> = {

@@ -5,9 +5,10 @@ import type {
 	VowelArticulatoryFeatures,
 } from "./ipa-registry";
 
-type PhonemeContrastPair = {
+export type PhonemeContrastPair = {
 	word: string;
 	phonemic: string;
+	cmuArpa?: string;
 };
 
 type PhonemeContrastType = keyof ConsonantArticulatoryFeatures | keyof VowelArticulatoryFeatures;

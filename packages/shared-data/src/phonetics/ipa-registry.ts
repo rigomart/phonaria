@@ -148,12 +148,8 @@ export type PhonemeSymbolId = keyof typeof PhonemeIpaRegistry;
 export type PhonemeSymbolIpa = (typeof PhonemeIpaRegistry)[PhonemeSymbolId];
 
 // Helper functions to derive phoneme category from registry structure
-export function isVowelPhoneme(phonemeId: PhonemeSymbolId): boolean {
+function isVowelPhoneme(phonemeId: PhonemeSymbolId): boolean {
 	return phonemeId in VowelIpaRegistry;
-}
-
-export function isConsonantPhoneme(phonemeId: PhonemeSymbolId): boolean {
-	return phonemeId in ConsonantIpaRegistry;
 }
 
 export function getPhonemeCategory(phonemeId: PhonemeSymbolId): PhonemeCategory {

@@ -25,8 +25,6 @@ export {
 	DiphthongIpaRegistry,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
-	isConsonantPhoneme,
-	isVowelPhoneme,
 	MonophthongIpaRegistry,
 	PhonemeCount,
 	PhonemeIpaRegistry,
@@ -34,6 +32,7 @@ export {
 	VowelIpaRegistry,
 } from "./phonetics/ipa-registry";
 export {
+	type AllophoneExample,
 	type PhonemeAllophone,
 	type PhonemeAllophoneContextKey,
 	PhonemeAllophoneRegistry,
@@ -48,5 +47,12 @@ export {
 	RhoticVowelArticulationRegistry,
 	type VowelType,
 } from "./phonetics/phoneme-articulations";
-export { ContrastsByPhonemeIdRegistry, type PhonemeContrast } from "./phonetics/phoneme-contrasts";
-export { PhonemeSpellingPatternRegistry } from "./phonetics/phoneme-patterns";
+export {
+	ContrastsByPhonemeIdRegistry,
+	type PhonemeContrast,
+	type PhonemeContrastPair,
+} from "./phonetics/phoneme-contrasts";
+export {
+	PhonemeSpellingPatternRegistry,
+	type SpellingPattern,
+} from "./phonetics/phoneme-patterns";

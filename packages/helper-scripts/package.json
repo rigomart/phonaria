@@ -15,7 +15,7 @@
 		"lint": "biome check --write",
 		"check-types": "tsc --noEmit",
 		"cmudict-to-json": "tsx src/cmudict-to-json.ts",
-		"emit-phoneme-words": "tsx src/emit-phoneme-words.ts"
+		"generate-word-mappings": "tsx src/generate-word-mappings.ts"
 	},
 	"dependencies": {
 		"shared-data": "workspace:*",

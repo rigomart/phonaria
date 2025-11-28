@@ -1,0 +1,212 @@
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+
+import {
+	ContrastsByPhonemeIdRegistry,
+	PhonemeAllophoneRegistry,
+	PhonemeSpellingPatternRegistry,
+} from "shared-data";
+
+type CMUDict = {
+	meta: {
+		formatVersion: number;
+		source: string;
+		sourceUrl: string;
+		generatedAt: string;
+		wordCount: number;
+		variantCount: number;
+		skippedLineCount: number;
+		deduplicatedVariantCount: number;
+	};
+	data: Record<string, string[]>;
+};
+
+type WordMapping = {
+	word: string;
+	phonemic: string;
+	cmuArpa?: string;
+	status: "found" | "missing" | "multiple";
+	variants?: string[];
+};
+
+type Report = {
+	meta: {
+		generatedAt: string;
+		total: number;
+		found: number;
+		missing: number;
+		multiple: number;
+	};
+	mappings: WordMapping[];
+};
+
+function normalizeWord(word: string): string {
+	return word.trim().toUpperCase();
+}
+
+function loadCMUDict(): CMUDict {
+	const cmudictPath = resolve(
+		__dirname,
+		"..",
+		"..",
+		"..",
+		"apps",
+		"web",
+		"src",
+		"data",
+		"dict",
+		"cmudict.json",
+	);
+	const content = readFileSync(cmudictPath, "utf8");
+	return JSON.parse(content);
+}
+
+function lookupCMUArpa(word: string, cmudict: CMUDict): WordMapping {
+	const normalized = normalizeWord(word);
+	const variants = cmudict.data[normalized];
+
+	if (!variants || variants.length === 0) {
+		return {
+			word,
+			phonemic: "",
+			status: "missing",
+		};
+	}
+
+	if (variants.length > 1) {
+		return {
+			word,
+			phonemic: "",
+			cmuArpa: variants[0], // Use first variant
+			status: "multiple",
+			variants,
+		};
+	}
+
+	return {
+		word,
+		phonemic: "",
+		cmuArpa: variants[0],
+		status: "found",
+	};
+}
+
+function collectFromSpellingPatterns(cmudict: CMUDict): WordMapping[] {
+	const mappings: WordMapping[] = [];
+
+	for (const entry of Object.values(PhonemeSpellingPatternRegistry ?? {})) {
+		if (!entry) continue;
+		for (const example of entry.examples) {
+			const mapping = lookupCMUArpa(example.word, cmudict);
+			mapping.phonemic = example.phonemic;
+			mappings.push(mapping);
+		}
+	}
+
+	return mappings;
+}
+
+function collectFromContrasts(cmudict: CMUDict): WordMapping[] {
+	const mappings: WordMapping[] = [];
+
+	for (const matches of Object.values(ContrastsByPhonemeIdRegistry ?? {})) {
+		if (!matches) continue;
+		for (const match of matches) {
+			for (const pair of match.minimalPairs) {
+				for (const item of pair) {
+					const mapping = lookupCMUArpa(item.word, cmudict);
+					mapping.phonemic = item.phonemic;
+					mappings.push(mapping);
+				}
+			}
+		}
+	}
+
+	return mappings;
+}
+
+function collectFromAllophones(cmudict: CMUDict): WordMapping[] {
+	const mappings: WordMapping[] = [];
+
+	for (const entry of Object.values(PhonemeAllophoneRegistry ?? {})) {
+		if (!entry) continue;
+		for (const variant of entry) {
+			for (const example of variant.examples) {
+				const mapping = lookupCMUArpa(example.word, cmudict);
+				mapping.phonemic = example.phonemic;
+				mappings.push(mapping);
+			}
+		}
+	}
+
+	return mappings;
+}
+
+function buildReport(): Report {
+	const cmudict = loadCMUDict();
+
+	const spellingPatternMappings = collectFromSpellingPatterns(cmudict);
+	const contrastMappings = collectFromContrasts(cmudict);
+	const allophoneMappings = collectFromAllophones(cmudict);
+
+	const allMappings = [...spellingPatternMappings, ...contrastMappings, ...allophoneMappings];
+
+	const found = allMappings.filter((m) => m.status === "found").length;
+	const missing = allMappings.filter((m) => m.status === "missing").length;
+	const multiple = allMappings.filter((m) => m.status === "multiple").length;
+
+	return {
+		meta: {
+			generatedAt: new Date().toISOString(),
+			total: allMappings.length,
+			found,
+			missing,
+			multiple,
+		},
+		mappings: allMappings,
+	};
+}
+
+function main() {
+	console.log("🔍 Generating CMU ARPA mappings for example words...\n");
+
+	const report = buildReport();
+
+	const outputPath = resolve(__dirname, "..", "..", "audio-gen", "data", "cmu-arpa-mappings.json");
+
+	mkdirSync(dirname(outputPath), { recursive: true });
+	writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+
+	// Calculate unique words
+	const uniqueWords = new Set(report.mappings.map((m) => m.word.toLowerCase()));
+
+	console.log(`✅ Generated CMU ARPA mappings report\n`);
+	console.log(`📊 Statistics:`);
+	console.log(`   Total examples:  ${report.meta.total}`);
+	console.log(`   Unique words:    ${uniqueWords.size}`);
+	console.log(
+		`   Found:           ${report.meta.found} (${((report.meta.found / report.meta.total) * 100).toFixed(1)}%)`,
+	);
+	console.log(
+		`   Multiple:        ${report.meta.multiple} (${((report.meta.multiple / report.meta.total) * 100).toFixed(1)}%)`,
+	);
+	console.log(
+		`   Missing:         ${report.meta.missing} (${((report.meta.missing / report.meta.total) * 100).toFixed(1)}%)`,
+	);
+	console.log(`\n📁 Output: ${outputPath}`);
+
+	if (report.meta.missing > 0) {
+		console.log(`\n⚠️  Missing words:`);
+		const missingWords = report.mappings.filter((m) => m.status === "missing").map((m) => m.word);
+		console.log(`   ${missingWords.join(", ")}`);
+	}
+
+	if (report.meta.multiple > 5) {
+		console.log(`\n💡 ${report.meta.multiple} words have multiple pronunciations`);
+		console.log(`   Using first variant by default`);
+	}
+}
+
+if (require.main === module) {
+	main();
+}
