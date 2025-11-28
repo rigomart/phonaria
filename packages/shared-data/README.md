@@ -53,6 +53,9 @@ import {
   type PhonemeCategory,
   type VowelType,
   type CmuArpaToken,
+  type SpellingPattern,
+  type AllophoneExample,
+  type PhonemeContrastPair,
 } from "shared-data";
 ```
 
@@ -63,9 +66,9 @@ import {
 | `ipa-registry.ts` | IPA registries mapping `PhonemeSymbolId` → IPA symbol. Includes consonants, monophthongs, diphthongs, and rhotics. Also provides helper functions for category detection and IPA lookup. |
 | `cmu-arpa-registry.ts` | CMU ARPA registry mapping CMU ARPABET tokens (with stress digits) → `PhonemeSymbolId`. Includes bidirectional lookup helpers. |
 | `phoneme-articulations.ts` | Maps each `PhonemeSymbolId` to its articulatory feature set (manner/place/voicing for consonants; height/backness/roundness for vowels). Also defines `VowelType` (monophthong/diphthong/rhotic). |
-| `phoneme-contrasts.ts` | Minimal-pair style relationships (`ContrastsByPhonemeIdRegistry`) that highlight challenging sound pairs. |
-| `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. |
-| `phoneme-allophones.ts` | Allophonic variations with context keys for each phoneme. |
+| `phoneme-contrasts.ts` | Minimal-pair style relationships (`ContrastsByPhonemeIdRegistry`) that highlight challenging sound pairs. Each example includes `word` and `phonemic` (IPA). |
+| `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. Each example includes `word` and `phonemic` (IPA). |
+| `phoneme-allophones.ts` | Allophonic variations with context keys for each phoneme. Each example includes `word` and `phonemic` (IPA). |
 | `index.ts` | Barrel re-export for all of the above so consumers import from `shared-data`. |
 
 ## Usage examples
@@ -126,7 +129,45 @@ if (articulation.vowelType === "diphthong") {
 import { PhonemeSpellingPatternRegistry } from "shared-data";
 
 const patterns = PhonemeSpellingPatternRegistry[phonemeId]?.patterns ?? [];
+const examples = PhonemeSpellingPatternRegistry[phonemeId]?.examples ?? [];
+// Each example: { word: "pen", phonemic: "pɛn" }
 ```
+
+### Access example words
+
+```ts
+import {
+  PhonemeSpellingPatternRegistry,
+  PhonemeAllophoneRegistry,
+  ContrastsByPhonemeIdRegistry
+} from "shared-data";
+
+// Spelling pattern examples
+const pattern = PhonemeSpellingPatternRegistry["voiceless-bilabial-plosive"];
+pattern?.examples.forEach(ex => {
+  console.log(`${ex.word}: ${ex.phonemic}`);
+  // "pen: pɛn"
+});
+
+// Allophone examples
+const allophones = PhonemeAllophoneRegistry["voiceless-alveolar-plosive"];
+allophones?.forEach(variant => {
+  variant.examples.forEach(ex => {
+    console.log(`${ex.word}: ${ex.phonemic}`);
+  });
+});
+
+// Minimal pair examples
+const contrasts = ContrastsByPhonemeIdRegistry["voiceless-bilabial-plosive"];
+contrasts?.forEach(contrast => {
+  contrast.minimalPairs.forEach(([pair1, pair2]) => {
+    console.log(`${pair1.word} vs ${pair2.word}`);
+    console.log(`  ${pair1.phonemic} vs ${pair2.phonemic}`);
+  });
+});
+```
+
+> **Note**: CMU ARPA transcriptions are generated dynamically by `helper-scripts` from CMUDict. See the `generate-word-mappings` script for word → CMU ARPA lookups.
 
 ## Contribution guide
 

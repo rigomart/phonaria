@@ -9,7 +9,6 @@ export type SpellingPattern = {
 	examples: {
 		word: string;
 		phonemic: string;
-		cmuArpa?: string;
 	}[];
 };
 

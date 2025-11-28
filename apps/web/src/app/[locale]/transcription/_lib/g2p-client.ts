@@ -1,4 +1,4 @@
-import { getIpaForPhonemeId, PhonemeIpaRegistry, type PhonemeSymbolId } from "shared-data";
+import { PhonemeIpaRegistry, type PhonemeSymbolId } from "shared-data";
 import type {
 	G2PPhoneme,
 	TranscribedPhoneme,

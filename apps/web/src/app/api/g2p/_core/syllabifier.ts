@@ -1,8 +1,8 @@
 import {
 	type CmuArpaToken,
 	getIpaForPhonemeId,
+	getPhonemeCategory,
 	getPhonemeIdForCmuArpa,
-	isVowelPhoneme,
 } from "shared-data";
 import type { G2PPhoneme, G2PStress } from "../_schemas/g2p-api.schema";
 import { isValidOnset } from "./phonotactics";
@@ -25,7 +25,7 @@ export function syllabify(cmuTokens: string[]): Syllable[] {
 	// 1. Map to internal representation
 	const phonemes: InternalPhoneme[] = cmuTokens.map((token, index) => {
 		const symbolId = getPhonemeIdForCmuArpa(token as CmuArpaToken);
-		const isVowel = isVowelPhoneme(symbolId);
+		const isVowel = getPhonemeCategory(symbolId) === "vowel";
 
 		// Extract stress from CMU token (e.g., "AH0", "AH1", "AH2")
 		let stress: G2PStress = "none";

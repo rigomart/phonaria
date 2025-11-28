@@ -5,7 +5,6 @@ import {
 	ConsonantIpaRegistry,
 	DiphthongIpaRegistry,
 	DiphthongVowelArticulationRegistry,
-	getIpaForPhonemeId,
 	MonophthongIpaRegistry,
 	MonophthongVowelArticulationRegistry,
 	type PhonemeSymbolId,

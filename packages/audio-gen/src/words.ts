@@ -1,55 +1,50 @@
-import {
-	ContrastsByPhonemeIdRegistry,
-	PhonemeAllophoneRegistry,
-	PhonemeSpellingPatternRegistry,
-} from "shared-data";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
-export type WordWithPhonemic = { word: string; phonemic: string };
+export type WordWithPhonemic = {
+	word: string;
+	phonemic: string;
+	cmuArpa?: string;
+};
 
-function normalizeWord(word: string): string {
-	return word.trim().toLowerCase();
-}
+type WordMapping = {
+	word: string;
+	phonemic: string;
+	cmuArpa?: string;
+	status: "found" | "missing" | "multiple";
+	variants?: string[];
+};
 
-function pushExamples(
-	entries: WordWithPhonemic[],
-	examples: ReadonlyArray<{ word: string; phonemic: string }>,
-): void {
-	for (const example of examples) {
-		entries.push({ word: normalizeWord(example.word), phonemic: example.phonemic });
-	}
-}
+type MappingsFile = {
+	meta: {
+		generatedAt: string;
+		total: number;
+		found: number;
+		missing: number;
+		multiple: number;
+	};
+	mappings: WordMapping[];
+};
 
 /**
- * Collects unique words and their phonemic transcriptions from shared phoneme data.
- * Dedupes by normalized word, keeping the first encountered transcription.
+ * Loads word mappings from the generated cmu-arpa-mappings.json file.
+ * Returns unique words with their phonemic (IPA) and CMU ARPA transcriptions.
  */
 export function collectWordsWithPhonemic(): WordWithPhonemic[] {
-	const entries: WordWithPhonemic[] = [];
+	const mappingsPath = resolve(__dirname, "..", "data", "cmu-arpa-mappings.json");
+	const content = readFileSync(mappingsPath, "utf8");
+	const data: MappingsFile = JSON.parse(content);
 
-	for (const pattern of Object.values(PhonemeSpellingPatternRegistry ?? {})) {
-		if (pattern) pushExamples(entries, pattern.examples);
-	}
-
-	for (const matches of Object.values(ContrastsByPhonemeIdRegistry ?? {})) {
-		if (!matches) continue;
-		for (const match of matches) {
-			for (const pair of match.minimalPairs) {
-				pushExamples(entries, pair);
-			}
-		}
-	}
-
-	for (const variants of Object.values(PhonemeAllophoneRegistry ?? {})) {
-		if (!variants) continue;
-		for (const variant of variants) {
-			pushExamples(entries, variant.examples);
-		}
-	}
-
+	// Dedupe by word (lowercase), keeping first occurrence
 	const byWord = new Map<string, WordWithPhonemic>();
-	for (const entry of entries) {
-		if (!byWord.has(entry.word)) {
-			byWord.set(entry.word, entry);
+	for (const mapping of data.mappings) {
+		const normalized = mapping.word.trim().toLowerCase();
+		if (!byWord.has(normalized)) {
+			byWord.set(normalized, {
+				word: normalized,
+				phonemic: mapping.phonemic,
+				cmuArpa: mapping.cmuArpa,
+			});
 		}
 	}
 

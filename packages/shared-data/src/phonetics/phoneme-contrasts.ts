@@ -8,7 +8,6 @@ import type {
 export type PhonemeContrastPair = {
 	word: string;
 	phonemic: string;
-	cmuArpa?: string;
 };
 
 type PhonemeContrastType = keyof ConsonantArticulatoryFeatures | keyof VowelArticulatoryFeatures;

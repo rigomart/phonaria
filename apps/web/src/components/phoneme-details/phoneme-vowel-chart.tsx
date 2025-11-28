@@ -1,4 +1,4 @@
-import type { PhonemeArticulation, VowelArticulatoryFeatures, VowelType } from "shared-data";
+import type { PhonemeArticulation, VowelArticulatoryFeatures } from "shared-data";
 import { featureDefinitions } from "@/data/phoneme-details";
 import { cn } from "@/lib/utils";
 import {
