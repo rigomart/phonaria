@@ -17,14 +17,14 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	"voiceless-bilabial-plosive": {
 		patterns: ["p", "pp"],
 		examples: [
-			{ word: "pen", phonemic: "pɛn" },
+			{ word: "pat", phonemic: "pæt" },
 			{ word: "happy", phonemic: "ˈhæpi" },
 		],
 	},
 	"voiced-bilabial-plosive": {
 		patterns: ["b", "bb"],
 		examples: [
-			{ word: "big", phonemic: "bɪɡ" },
+			{ word: "bat", phonemic: "bæt" },
 			{ word: "rabbit", phonemic: "ˈɹæbɪt" },
 		],
 	},
@@ -39,23 +39,23 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	"voiced-alveolar-plosive": {
 		patterns: ["d", "dd", "-ed"],
 		examples: [
-			{ word: "dog", phonemic: "dɔɡ" },
+			{ word: "day", phonemic: "deɪ" },
 			{ word: "ladder", phonemic: "ˈlædɝ" },
-			{ word: "loved", phonemic: "lʌvd" },
+			{ word: "rained", phonemic: "ɹeɪnd" },
 		],
 	},
 	"voiceless-velar-plosive": {
 		patterns: ["c", "k", "ck"],
 		examples: [
 			{ word: "cat", phonemic: "kæt" },
-			{ word: "keep", phonemic: "kip" },
+			{ word: "kid", phonemic: "kɪd" },
 			{ word: "back", phonemic: "bæk" },
 		],
 	},
 	"voiced-velar-plosive": {
 		patterns: ["g", "gg"],
 		examples: [
-			{ word: "go", phonemic: "ɡoʊ" },
+			{ word: "gum", phonemic: "ɡʌm" },
 			{ word: "bigger", phonemic: "ˈbɪɡɝ" },
 		],
 	},
@@ -64,7 +64,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	"voiced-bilabial-nasal": {
 		patterns: ["m", "mm"],
 		examples: [
-			{ word: "moon", phonemic: "mun" },
+			{ word: "ram", phonemic: "ræm" },
 			{ word: "summer", phonemic: "ˈsʌmɝ" },
 		],
 	},
@@ -80,7 +80,6 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		patterns: ["-ng", "n"],
 		examples: [
 			{ word: "sing", phonemic: "sɪŋ" },
-			{ word: "long", phonemic: "lɔŋ" },
 			{ word: "think", phonemic: "θɪŋk" },
 		],
 	},
@@ -97,21 +96,20 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		patterns: ["r", "rr", "wr-"],
 		examples: [
 			{ word: "red", phonemic: "ɹɛd" },
-			{ word: "sorry", phonemic: "ˈsɑɹi" },
 			{ word: "write", phonemic: "ɹaɪt" },
 		],
 	},
 	"voiced-labial-velar-approximant": {
 		patterns: ["w"],
 		examples: [
-			{ word: "we", phonemic: "wi" },
+			{ word: "west", phonemic: "wɛst" },
 			{ word: "away", phonemic: "əˈweɪ" },
 		],
 	},
 	"voiced-palatal-approximant": {
 		patterns: ["y"],
 		examples: [
-			{ word: "yes", phonemic: "jɛs" },
+			{ word: "yoke", phonemic: "joʊk" },
 			{ word: "you", phonemic: "ju" },
 		],
 	},
@@ -120,23 +118,23 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	"voiceless-labiodental-fricative": {
 		patterns: ["f", "ff", "ph"],
 		examples: [
-			{ word: "fish", phonemic: "fɪʃ" },
-			{ word: "off", phonemic: "ɔf" },
+			{ word: "fan", phonemic: "fæn" },
+			{ word: "coffee", phonemic: "ˈkɔfi" },
 			{ word: "phone", phonemic: "foʊn" },
 		],
 	},
 	"voiced-labiodental-fricative": {
 		patterns: ["v"],
 		examples: [
-			{ word: "very", phonemic: "ˈvɛɹi" },
-			{ word: "love", phonemic: "lʌv" },
+			{ word: "van", phonemic: "væn" },
+			{ word: "save", phonemic: "seɪv" },
 		],
 	},
 	"voiceless-dental-fricative": {
 		patterns: ["th"],
 		examples: [
+			{ word: "thin", phonemic: "θɪn" },
 			{ word: "think", phonemic: "θɪŋk" },
-			{ word: "math", phonemic: "mæθ" },
 		],
 	},
 	"voiced-dental-fricative": {
@@ -150,7 +148,6 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		patterns: ["s", "ss", "c"],
 		examples: [
 			{ word: "sun", phonemic: "sʌn" },
-			{ word: "pass", phonemic: "pæs" },
 			{ word: "city", phonemic: "ˈsɪti" },
 		],
 	},
@@ -167,7 +164,6 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		examples: [
 			{ word: "shop", phonemic: "ʃɑp" },
 			{ word: "nation", phonemic: "ˈneɪʃən" },
-			{ word: "special", phonemic: "ˈspɛʃəl" },
 		],
 	},
 	"voiced-postalveolar-fricative": {
@@ -189,14 +185,14 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	"voiceless-postalveolar-affricate": {
 		patterns: ["ch", "tch"],
 		examples: [
-			{ word: "chair", phonemic: "tʃɛɹ" },
+			{ word: "cheap", phonemic: "tʃip" },
 			{ word: "catch", phonemic: "kætʃ" },
 		],
 	},
 	"voiced-postalveolar-affricate": {
 		patterns: ["j", "-dge", "-ge"],
 		examples: [
-			{ word: "jump", phonemic: "dʒʌmp" },
+			{ word: "jeep", phonemic: "dʒip" },
 			{ word: "bridge", phonemic: "bɹɪdʒ" },
 			{ word: "page", phonemic: "peɪdʒ" },
 		],
@@ -206,7 +202,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	"close-front-unrounded": {
 		patterns: ["ee", "ea", "-y", "e"],
 		examples: [
-			{ word: "tree", phonemic: "tɹi" },
+			{ word: "seed", phonemic: "sid" },
 			{ word: "sea", phonemic: "si" },
 			{ word: "happy", phonemic: "ˈhæpi" },
 			{ word: "be", phonemic: "bi" },
@@ -223,7 +219,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		patterns: ["oo", "u-e", "ew"],
 		examples: [
 			{ word: "food", phonemic: "fud" },
-			{ word: "rude", phonemic: "ɹud" },
+			{ word: "mood", phonemic: "mud" },
 			{ word: "new", phonemic: "nu" },
 		],
 	},
@@ -239,7 +235,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	"open-mid-front-unrounded": {
 		patterns: ["e", "ea"],
 		examples: [
-			{ word: "bed", phonemic: "bɛd" },
+			{ word: "red", phonemic: "ɹɛd" },
 			{ word: "bread", phonemic: "bɹɛd" },
 		],
 	},
@@ -247,7 +243,6 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		patterns: ["a", "e", "o"],
 		examples: [
 			{ word: "sofa", phonemic: "ˈsoʊfə" },
-			{ word: "problem", phonemic: "ˈpɹɑbləm" },
 			{ word: "lemon", phonemic: "ˈlɛmən" },
 		],
 	},
@@ -262,7 +257,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		patterns: ["aw", "au", "al"],
 		examples: [
 			{ word: "saw", phonemic: "sɔ" },
-			{ word: "because", phonemic: "bɪˈkɔz" },
+			{ word: "cause", phonemic: "kɔz" },
 			{ word: "talk", phonemic: "tɔk" },
 		],
 	},
@@ -310,7 +305,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	"close-mid-back-rounded-to-near-close-near-back-rounded": {
 		patterns: ["o", "oa", "o-e"],
 		examples: [
-			{ word: "go", phonemic: "ɡoʊ" },
+			{ word: "code", phonemic: "koʊd" },
 			{ word: "boat", phonemic: "boʊt" },
 			{ word: "home", phonemic: "hoʊm" },
 		],

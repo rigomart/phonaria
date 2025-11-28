@@ -151,19 +151,32 @@ function buildReport(): Report {
 
 	const allMappings = [...spellingPatternMappings, ...contrastMappings, ...allophoneMappings];
 
-	const found = allMappings.filter((m) => m.status === "found").length;
-	const missing = allMappings.filter((m) => m.status === "missing").length;
-	const multiple = allMappings.filter((m) => m.status === "multiple").length;
+	// Deduplicate by word (case-insensitive), keeping first occurrence
+	const byWord = new Map<string, WordMapping>();
+	for (const mapping of allMappings) {
+		const key = mapping.word.toLowerCase();
+		if (!byWord.has(key)) {
+			byWord.set(key, mapping);
+		}
+	}
+
+	const uniqueMappings = Array.from(byWord.values()).sort((a, b) =>
+		a.word.localeCompare(b.word),
+	);
+
+	const found = uniqueMappings.filter((m) => m.status === "found").length;
+	const missing = uniqueMappings.filter((m) => m.status === "missing").length;
+	const multiple = uniqueMappings.filter((m) => m.status === "multiple").length;
 
 	return {
 		meta: {
 			generatedAt: new Date().toISOString(),
-			total: allMappings.length,
+			total: uniqueMappings.length,
 			found,
 			missing,
 			multiple,
 		},
-		mappings: allMappings,
+		mappings: uniqueMappings,
 	};
 }
 
@@ -177,13 +190,9 @@ function main() {
 	mkdirSync(dirname(outputPath), { recursive: true });
 	writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 
-	// Calculate unique words
-	const uniqueWords = new Set(report.mappings.map((m) => m.word.toLowerCase()));
-
 	console.log(`✅ Generated CMU ARPA mappings report\n`);
 	console.log(`📊 Statistics:`);
-	console.log(`   Total examples:  ${report.meta.total}`);
-	console.log(`   Unique words:    ${uniqueWords.size}`);
+	console.log(`   Unique words:    ${report.meta.total}`);
 	console.log(
 		`   Found:           ${report.meta.found} (${((report.meta.found / report.meta.total) * 100).toFixed(1)}%)`,
 	);

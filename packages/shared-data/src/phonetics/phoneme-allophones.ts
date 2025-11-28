@@ -19,7 +19,6 @@ const phonemeAllophonesData = {
 			contextKey: "stressed-onset-aspirated",
 			examples: [
 				{ word: "pin", phonemic: "pɪn" },
-				{ word: "paper", phonemic: "ˈpeɪpɝ" },
 			],
 		},
 		{
@@ -27,7 +26,6 @@ const phonemeAllophonesData = {
 			contextKey: "after-s-onset-unaspirated",
 			examples: [
 				{ word: "spin", phonemic: "spɪn" },
-				{ word: "space", phonemic: "speɪs" },
 			],
 		},
 	],
@@ -37,7 +35,7 @@ const phonemeAllophonesData = {
 			contextKey: "stressed-onset-aspirated",
 			examples: [
 				{ word: "top", phonemic: "tɑp" },
-				{ word: "attack", phonemic: "əˈtæk" },
+				{ word: "time", phonemic: "taɪm" },
 			],
 		},
 		{
@@ -45,7 +43,6 @@ const phonemeAllophonesData = {
 			contextKey: "vowel-to-vowel-flap",
 			examples: [
 				{ word: "water", phonemic: "ˈwɔtɝ" },
-				{ word: "city", phonemic: "ˈsɪti" },
 			],
 		},
 		{
@@ -53,7 +50,6 @@ const phonemeAllophonesData = {
 			contextKey: "t-before-syllabic-n-glottal",
 			examples: [
 				{ word: "button", phonemic: "ˈbʌtən" },
-				{ word: "kitten", phonemic: "ˈkɪtən" },
 			],
 		},
 	],
@@ -63,7 +59,6 @@ const phonemeAllophonesData = {
 			contextKey: "stressed-onset-aspirated",
 			examples: [
 				{ word: "cat", phonemic: "kæt" },
-				{ word: "account", phonemic: "əˈkaʊnt" },
 			],
 		},
 		{
@@ -71,7 +66,15 @@ const phonemeAllophonesData = {
 			contextKey: "after-s-onset-unaspirated",
 			examples: [
 				{ word: "skate", phonemic: "skeɪt" },
-				{ word: "school", phonemic: "skul" },
+			],
+		},
+	],
+	"voiced-alveolar-plosive": [
+		{
+			ipaVariant: "ɾ",
+			contextKey: "vowel-to-vowel-flap",
+			examples: [
+				{ word: "ladder", phonemic: "ˈlædɝ" },
 			],
 		},
 	],
@@ -83,7 +86,6 @@ const phonemeAllophonesData = {
 			contextKey: "coda-dark-l",
 			examples: [
 				{ word: "ball", phonemic: "bɔl" },
-				{ word: "milk", phonemic: "mɪlk" },
 			],
 		},
 	],
@@ -95,7 +97,6 @@ const phonemeAllophonesData = {
 			contextKey: "pre-voiced-coda-lengthened",
 			examples: [
 				{ word: "seed", phonemic: "sid" },
-				{ word: "leave", phonemic: "liv" },
 			],
 		},
 		{
@@ -103,7 +104,6 @@ const phonemeAllophonesData = {
 			contextKey: "pre-voiceless-coda-shorter",
 			examples: [
 				{ word: "seat", phonemic: "sit" },
-				{ word: "leaf", phonemic: "lif" },
 			],
 		},
 	],
@@ -113,7 +113,6 @@ const phonemeAllophonesData = {
 			contextKey: "pre-voiced-coda-lengthened",
 			examples: [
 				{ word: "bad", phonemic: "bæd" },
-				{ word: "cab", phonemic: "kæb" },
 			],
 		},
 		{
@@ -121,7 +120,6 @@ const phonemeAllophonesData = {
 			contextKey: "pre-voiceless-coda-shorter",
 			examples: [
 				{ word: "bat", phonemic: "bæt" },
-				{ word: "cap", phonemic: "kæp" },
 			],
 		},
 	],
@@ -133,14 +131,12 @@ const phonemeAllophonesData = {
 			contextKey: "stressed-r-colored",
 			examples: [
 				{ word: "bird", phonemic: "bɝd" },
-				{ word: "first", phonemic: "fɝst" },
 			],
 		},
 		{
 			ipaVariant: "ɚ",
 			contextKey: "unstressed-r-colored",
 			examples: [
-				{ word: "teacher", phonemic: "ˈtitʃɝ" },
 				{ word: "water", phonemic: "ˈwɔtɝ" },
 			],
 		},

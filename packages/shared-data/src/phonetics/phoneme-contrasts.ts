@@ -29,20 +29,12 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "pat", phonemic: "pæt" },
 				{ word: "bat", phonemic: "bæt" },
 			],
-			[
-				{ word: "rip", phonemic: "ɹɪp" },
-				{ word: "rib", phonemic: "ɹɪb" },
-			],
 		],
 	},
 	{
 		phonemeIds: ["voiceless-alveolar-plosive", "voiced-alveolar-plosive"],
 		contrastType: ["voicing"],
 		minimalPairs: [
-			[
-				{ word: "ten", phonemic: "tɛn" },
-				{ word: "den", phonemic: "dɛn" },
-			],
 			[
 				{ word: "seat", phonemic: "sit" },
 				{ word: "seed", phonemic: "sid" },
@@ -57,10 +49,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "coat", phonemic: "koʊt" },
 				{ word: "goat", phonemic: "goʊt" },
 			],
-			[
-				{ word: "back", phonemic: "bæk" },
-				{ word: "bag", phonemic: "bæɡ" },
-			],
 		],
 	},
 	{
@@ -71,10 +59,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "fan", phonemic: "fæn" },
 				{ word: "van", phonemic: "væn" },
 			],
-			[
-				{ word: "safe", phonemic: "seɪf" },
-				{ word: "save", phonemic: "seɪv" },
-			],
 		],
 	},
 	{
@@ -84,10 +68,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 			[
 				{ word: "sip", phonemic: "sɪp" },
 				{ word: "zip", phonemic: "zɪp" },
-			],
-			[
-				{ word: "seal", phonemic: "sil" },
-				{ word: "zeal", phonemic: "zil" },
 			],
 		],
 	},
@@ -101,10 +81,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "sip", phonemic: "sɪp" },
 				{ word: "ship", phonemic: "ʃɪp" },
 			],
-			[
-				{ word: "mess", phonemic: "mɛs" },
-				{ word: "mesh", phonemic: "mɛʃ" },
-			],
 		],
 	},
 	{
@@ -114,10 +90,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 			[
 				{ word: "cheap", phonemic: "tʃip" },
 				{ word: "sheep", phonemic: "ʃip" },
-			],
-			[
-				{ word: "chin", phonemic: "tʃɪn" },
-				{ word: "shin", phonemic: "ʃɪn" },
 			],
 		],
 	},
@@ -129,10 +101,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "cheap", phonemic: "tʃip" },
 				{ word: "jeep", phonemic: "dʒip" },
 			],
-			[
-				{ word: "chin", phonemic: "tʃɪn" },
-				{ word: "gin", phonemic: "dʒɪn" },
-			],
 		],
 	},
 	{
@@ -142,10 +110,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 			[
 				{ word: "thin", phonemic: "θɪn" },
 				{ word: "tin", phonemic: "tɪn" },
-			],
-			[
-				{ word: "thank", phonemic: "θæŋk" },
-				{ word: "tank", phonemic: "tæŋk" },
 			],
 		],
 	},
@@ -157,10 +121,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "thin", phonemic: "θɪn" },
 				{ word: "sin", phonemic: "sɪn" },
 			],
-			[
-				{ word: "think", phonemic: "θɪŋk" },
-				{ word: "sink", phonemic: "sɪŋk" },
-			],
 		],
 	},
 	{
@@ -170,10 +130,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 			[
 				{ word: "they", phonemic: "ðeɪ" },
 				{ word: "day", phonemic: "deɪ" },
-			],
-			[
-				{ word: "though", phonemic: "ðoʊ" },
-				{ word: "dough", phonemic: "doʊ" },
 			],
 		],
 	},
@@ -185,10 +141,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "breathe", phonemic: "bɹið" },
 				{ word: "breeze", phonemic: "bɹiz" },
 			],
-			[
-				{ word: "seethe", phonemic: "sið" },
-				{ word: "seize", phonemic: "siz" },
-			],
 		],
 	},
 	{
@@ -196,12 +148,8 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		contrastType: ["place"],
 		minimalPairs: [
 			[
-				{ word: "ban", phonemic: "bæn" },
-				{ word: "bang", phonemic: "bæŋ" },
-			],
-			[
-				{ word: "sun", phonemic: "sʌn" },
-				{ word: "sung", phonemic: "sʌŋ" },
+				{ word: "sin", phonemic: "sɪn" },
+				{ word: "sing", phonemic: "sɪŋ" },
 			],
 		],
 	},
@@ -213,10 +161,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "sum", phonemic: "sʌm" },
 				{ word: "sun", phonemic: "sʌn" },
 			],
-			[
-				{ word: "ram", phonemic: "ræm" },
-				{ word: "ran", phonemic: "ræn" },
-			],
 		],
 	},
 	{
@@ -226,10 +170,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 			[
 				{ word: "wine", phonemic: "waɪn" },
 				{ word: "vine", phonemic: "vaɪn" },
-			],
-			[
-				{ word: "west", phonemic: "wɛst" },
-				{ word: "vest", phonemic: "vɛst" },
 			],
 		],
 	},
@@ -241,10 +181,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "led", phonemic: "lɛd" },
 				{ word: "red", phonemic: "ɹɛd" },
 			],
-			[
-				{ word: "light", phonemic: "laɪt" },
-				{ word: "right", phonemic: "ɹaɪt" },
-			],
 		],
 	},
 	{
@@ -254,10 +190,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 			[
 				{ word: "yoke", phonemic: "joʊk" },
 				{ word: "joke", phonemic: "dʒoʊk" },
-			],
-			[
-				{ word: "year", phonemic: "jɪɹ" },
-				{ word: "jeer", phonemic: "dʒɪɹ" },
 			],
 		],
 	},
@@ -278,10 +210,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		contrastType: ["tenseness", "height"],
 		minimalPairs: [
 			[
-				{ word: "beet", phonemic: "bit" },
-				{ word: "bit", phonemic: "bɪt" },
-			],
-			[
 				{ word: "seat", phonemic: "sit" },
 				{ word: "sit", phonemic: "sɪt" },
 			],
@@ -292,12 +220,8 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		contrastType: ["tenseness", "height"],
 		minimalPairs: [
 			[
-				{ word: "pool", phonemic: "pul" },
-				{ word: "pull", phonemic: "pʊl" },
-			],
-			[
-				{ word: "Luke", phonemic: "luk" },
-				{ word: "look", phonemic: "lʊk" },
+				{ word: "food", phonemic: "fud" },
+				{ word: "foot", phonemic: "fʊt" },
 			],
 		],
 	},
@@ -306,12 +230,8 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		contrastType: ["height"],
 		minimalPairs: [
 			[
-				{ word: "bet", phonemic: "bɛt" },
-				{ word: "bat", phonemic: "bæt" },
-			],
-			[
-				{ word: "men", phonemic: "mɛn" },
-				{ word: "man", phonemic: "mæn" },
+				{ word: "bed", phonemic: "bɛd" },
+				{ word: "bad", phonemic: "bæd" },
 			],
 		],
 	},
@@ -323,10 +243,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "put", phonemic: "pʊt" },
 				{ word: "putt", phonemic: "pʌt" },
 			],
-			[
-				{ word: "book", phonemic: "bʊk" },
-				{ word: "buck", phonemic: "bʌk" },
-			],
 		],
 	},
 	{
@@ -336,10 +252,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 			[
 				{ word: "cup", phonemic: "kʌp" },
 				{ word: "cop", phonemic: "kɑp" },
-			],
-			[
-				{ word: "luck", phonemic: "lʌk" },
-				{ word: "lock", phonemic: "lɑk" },
 			],
 		],
 	},
@@ -356,10 +268,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 				{ word: "time", phonemic: "taɪm" },
 				{ word: "tame", phonemic: "teɪm" },
 			],
-			[
-				{ word: "line", phonemic: "laɪn" },
-				{ word: "lane", phonemic: "leɪn" },
-			],
 		],
 	},
 	{
@@ -372,10 +280,6 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 			[
 				{ word: "know", phonemic: "noʊ" },
 				{ word: "now", phonemic: "naʊ" },
-			],
-			[
-				{ word: "coat", phonemic: "koʊt" },
-				{ word: "cow", phonemic: "kaʊ" },
 			],
 		],
 	},
