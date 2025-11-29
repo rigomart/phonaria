@@ -17,11 +17,7 @@ export function PhonemeDetailsHeader() {
 					<span className="text-3xl sm:text-5xl leading-none font-bold">{ipa}</span>
 					<span className="text-2xl sm:text-4xl text-muted-foreground/50 font-semibold">/</span>
 				</div>
-				<AudioControls
-					size="sm"
-					path={`/audio/phonemes/${phonemeId}.mp3`}
-					label={`Play ${phonemeId}`}
-				/>
+				<AudioControls size="sm" path={`/audio/${phonemeId}.mp3`} label={`Play ${phonemeId}`} />
 			</div>
 			<p className="text-xs sm:text-sm text-left text-muted-foreground/80">{label}</p>
 		</div>

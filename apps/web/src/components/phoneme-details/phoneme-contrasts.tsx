@@ -156,12 +156,7 @@ function ExampleItem({ ipa, word, phonemic, className }: ExampleItemProps) {
 					<ItemDescription className="text-xs text-muted-foreground">/{phonemic}/</ItemDescription>
 				</ItemContent>
 				<ItemActions>
-					<AudioControls
-						size="xs"
-						path={`/phoneme-examples/${word}.mp3`}
-						label={word}
-						variant="compact"
-					/>
+					<AudioControls size="xs" path={`/audio/${word}.mp3`} label={word} variant="compact" />
 				</ItemActions>
 			</Item>
 		</div>
