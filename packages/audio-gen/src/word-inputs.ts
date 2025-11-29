@@ -7,12 +7,8 @@ import { collectWordsWithPhonemic } from "./words";
  */
 function wrapWithSsml(word: string, cmuArpa?: string): string {
 	if (!cmuArpa) {
-		// Fallback to plain text if no CMU ARPA available
 		return word;
 	}
-
-	// ElevenLabs uses <phoneme> tag with alphabet="ipa" or alphabet="cmu-arpabet"
-	// CMU ARPA format uses space-separated tokens
 	return `<speak><phoneme alphabet="cmu-arpabet" ph="${cmuArpa}">${word}</phoneme></speak>`;
 }
 

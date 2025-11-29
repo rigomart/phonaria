@@ -24,9 +24,9 @@ const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
 const DEFAULT_MODEL_ID = "eleven_turbo_v2";
 const DEFAULT_OUTPUT_FORMAT = "mp3_44100_128";
 const DEFAULT_VOICE_SETTINGS: ElevenLabsVoiceSettings = {
-	speed: 0.7,
-	stability: 1,
-	similarityBoost: 1,
+	speed: 0.8,
+	stability: 0.8,
+	similarityBoost: 0.8,
 };
 
 async function streamToBuffer(stream: ReadableStream<Uint8Array>): Promise<Buffer> {
