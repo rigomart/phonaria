@@ -17,6 +17,7 @@ export const MANNER_ORDER: MannerOfArticulation[] = [
 	"fricative",
 	"affricate",
 	"approximant",
+	"lateral-approximant",
 ];
 
 /**
@@ -33,7 +34,6 @@ export const PLACE_ORDER: PlaceOfArticulation[] = [
 	"velar",
 	"labial-velar",
 	"glottal",
-	"alveolar-lateral",
 ];
 
 /**
@@ -45,6 +45,7 @@ export const MANNER_LABELS: Record<MannerOfArticulation, string> = {
 	fricative: "Fricative",
 	affricate: "Affricate",
 	approximant: "Approximant",
+	"lateral-approximant": "Lateral approximant",
 };
 
 /**
@@ -60,7 +61,6 @@ export const PLACE_LABELS: Record<PlaceOfArticulation, string> = {
 	velar: "Velar",
 	"labial-velar": "Labial-velar",
 	glottal: "Glottal",
-	"alveolar-lateral": "Lateral",
 };
 
 /**

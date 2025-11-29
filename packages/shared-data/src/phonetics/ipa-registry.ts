@@ -15,9 +15,8 @@ export type ConsonantArticulatoryFeatures = {
 		| "labiodental"
 		| "glottal"
 		| "postalveolar"
-		| "dental"
-		| "alveolar-lateral";
-	manner: "plosive" | "fricative" | "affricate" | "nasal" | "approximant";
+		| "dental";
+	manner: "plosive" | "fricative" | "affricate" | "nasal" | "approximant" | "lateral-approximant";
 };
 
 export type ConsonantPhonemeArticulatoryFeatureKey = keyof ConsonantArticulatoryFeatures;

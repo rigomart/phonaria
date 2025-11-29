@@ -17,16 +17,12 @@ const phonemeAllophonesData = {
 		{
 			ipaVariant: "pʰ",
 			contextKey: "stressed-onset-aspirated",
-			examples: [
-				{ word: "pin", phonemic: "pɪn" },
-			],
+			examples: [{ word: "pin", phonemic: "pɪn" }],
 		},
 		{
 			ipaVariant: "p",
 			contextKey: "after-s-onset-unaspirated",
-			examples: [
-				{ word: "spin", phonemic: "spɪn" },
-			],
+			examples: [{ word: "spin", phonemic: "spɪn" }],
 		},
 	],
 	"voiceless-alveolar-plosive": [
@@ -41,41 +37,31 @@ const phonemeAllophonesData = {
 		{
 			ipaVariant: "ɾ",
 			contextKey: "vowel-to-vowel-flap",
-			examples: [
-				{ word: "water", phonemic: "ˈwɔtɝ" },
-			],
+			examples: [{ word: "water", phonemic: "ˈwɔtɝ" }],
 		},
 		{
 			ipaVariant: "ʔ",
 			contextKey: "t-before-syllabic-n-glottal",
-			examples: [
-				{ word: "button", phonemic: "ˈbʌtən" },
-			],
+			examples: [{ word: "button", phonemic: "ˈbʌtən" }],
 		},
 	],
 	"voiceless-velar-plosive": [
 		{
 			ipaVariant: "kʰ",
 			contextKey: "stressed-onset-aspirated",
-			examples: [
-				{ word: "cat", phonemic: "kæt" },
-			],
+			examples: [{ word: "cat", phonemic: "kæt" }],
 		},
 		{
 			ipaVariant: "k",
 			contextKey: "after-s-onset-unaspirated",
-			examples: [
-				{ word: "skate", phonemic: "skeɪt" },
-			],
+			examples: [{ word: "skate", phonemic: "skeɪt" }],
 		},
 	],
 	"voiced-alveolar-plosive": [
 		{
 			ipaVariant: "ɾ",
 			contextKey: "vowel-to-vowel-flap",
-			examples: [
-				{ word: "ladder", phonemic: "ˈlædɝ" },
-			],
+			examples: [{ word: "ladder", phonemic: "ˈlædɝ" }],
 		},
 	],
 
@@ -84,9 +70,7 @@ const phonemeAllophonesData = {
 		{
 			ipaVariant: "ɫ",
 			contextKey: "coda-dark-l",
-			examples: [
-				{ word: "ball", phonemic: "bɔl" },
-			],
+			examples: [{ word: "ball", phonemic: "bɔl" }],
 		},
 	],
 
@@ -95,32 +79,24 @@ const phonemeAllophonesData = {
 		{
 			ipaVariant: "iː",
 			contextKey: "pre-voiced-coda-lengthened",
-			examples: [
-				{ word: "seed", phonemic: "sid" },
-			],
+			examples: [{ word: "seed", phonemic: "sid" }],
 		},
 		{
 			ipaVariant: "i",
 			contextKey: "pre-voiceless-coda-shorter",
-			examples: [
-				{ word: "seat", phonemic: "sit" },
-			],
+			examples: [{ word: "seat", phonemic: "sit" }],
 		},
 	],
 	"near-open-front-unrounded": [
 		{
 			ipaVariant: "æː",
 			contextKey: "pre-voiced-coda-lengthened",
-			examples: [
-				{ word: "bad", phonemic: "bæd" },
-			],
+			examples: [{ word: "bad", phonemic: "bæd" }],
 		},
 		{
 			ipaVariant: "æ",
 			contextKey: "pre-voiceless-coda-shorter",
-			examples: [
-				{ word: "bat", phonemic: "bæt" },
-			],
+			examples: [{ word: "bat", phonemic: "bæt" }],
 		},
 	],
 
@@ -129,16 +105,12 @@ const phonemeAllophonesData = {
 		{
 			ipaVariant: "ɝ",
 			contextKey: "stressed-r-colored",
-			examples: [
-				{ word: "bird", phonemic: "bɝd" },
-			],
+			examples: [{ word: "bird", phonemic: "bɝd" }],
 		},
 		{
 			ipaVariant: "ɚ",
 			contextKey: "unstressed-r-colored",
-			examples: [
-				{ word: "water", phonemic: "ˈwɔtɝ" },
-			],
+			examples: [{ word: "water", phonemic: "ˈwɔtɝ" }],
 		},
 	],
 } as const;

@@ -517,6 +517,11 @@ export const featureDefinitions: BaseFeatureDefinitions = {
 				label: "Approximant",
 				description: "Air flows smoothly without friction, like a vowel.",
 			},
+			"lateral-approximant": {
+				label: "Lateral approximant",
+				description:
+					"Tongue blocks the center at the ridge while air flows along the sides of the tongue.",
+			},
 		},
 	},
 	place: {
@@ -554,10 +559,6 @@ export const featureDefinitions: BaseFeatureDefinitions = {
 			glottal: {
 				label: "Glottal",
 				description: "Sound is made in the gap between the vocal cords.",
-			},
-			"alveolar-lateral": {
-				label: "Alveolar lateral",
-				description: "Tongue tip touches the tooth ridge, but air flows around the sides.",
 			},
 			"labial-velar": {
 				label: "Labial-velar",

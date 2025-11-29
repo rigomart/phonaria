@@ -64,8 +64,10 @@ export function ConsonantChart() {
 		return map;
 	}, [consonants]);
 
+	const gridTemplateColumns = `auto repeat(${PLACE_ORDER.length}, minmax(4.5rem, 1fr))`;
+
 	return (
-		<div className="inline-grid w-full min-w-max gap-1.5 grid-cols-[auto_repeat(10,minmax(4.5rem,1fr))]">
+		<div className="inline-grid w-full min-w-max gap-1.5" style={{ gridTemplateColumns }}>
 			<div />
 			{PLACE_ORDER.map((place) => (
 				<div

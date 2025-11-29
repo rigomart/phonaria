@@ -114,7 +114,7 @@ export const ConsonantArticulationRegistry: Record<ConsonantSymbolId, ConsonantA
 	},
 	"voiced-alveolar-lateral-approximant": {
 		category: "consonant",
-		features: { manner: "approximant", place: "alveolar-lateral", voicing: "voiced" },
+		features: { manner: "lateral-approximant", place: "alveolar", voicing: "voiced" },
 	},
 	"voiced-postalveolar-approximant": {
 		category: "consonant",

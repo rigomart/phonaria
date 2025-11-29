@@ -160,9 +160,7 @@ function buildReport(): Report {
 		}
 	}
 
-	const uniqueMappings = Array.from(byWord.values()).sort((a, b) =>
-		a.word.localeCompare(b.word),
-	);
+	const uniqueMappings = Array.from(byWord.values()).sort((a, b) => a.word.localeCompare(b.word));
 
 	const found = uniqueMappings.filter((m) => m.status === "found").length;
 	const missing = uniqueMappings.filter((m) => m.status === "missing").length;
