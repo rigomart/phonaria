@@ -209,6 +209,8 @@ function FeatureRow<ValueKey extends string>({
 }) {
 	const value = feature.values[valueKey];
 
+	const { contentRef } = usePhonemeDetailsContext();
+
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
@@ -223,7 +225,12 @@ function FeatureRow<ValueKey extends string>({
 					<span className="text-xs font-medium">{value.label}</span>
 				</Pressable>
 			</PopoverTrigger>
-			<PopoverContent className="p-1" align="start">
+			<PopoverContent
+				className="p-1"
+				align="end"
+				side="bottom"
+				collisionBoundary={contentRef.current}
+			>
 				<dl className="space-y-2">
 					<div className="bg-accent/20 rounded-lg p-2">
 						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>
@@ -254,6 +261,8 @@ function DiphthongFeatureRow<ValueKey extends string>({
 	const startValue = feature.values[valueKey];
 	const endValue = targetFeature.values[targetValueKey];
 
+	const { contentRef } = usePhonemeDetailsContext();
+
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
@@ -272,7 +281,12 @@ function DiphthongFeatureRow<ValueKey extends string>({
 					</div>
 				</Pressable>
 			</PopoverTrigger>
-			<PopoverContent className="p-1" align="start">
+			<PopoverContent
+				className="p-1"
+				align="end"
+				side="bottom"
+				collisionBoundary={contentRef.current}
+			>
 				<dl className="space-y-2">
 					<div className="bg-accent/20 rounded-lg p-2">
 						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>
