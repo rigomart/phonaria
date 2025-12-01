@@ -156,6 +156,23 @@ export function getPhonemeCategory(phonemeId: PhonemeSymbolId): PhonemeCategory 
 }
 
 /**
+ * Returns the type of a phoneme ("consonant", "monophthong", "diphthong", "rhotic")
+ * based on which registry it is found in.
+ */
+export function getPhonemeType(phonemeId: PhonemeSymbolId) {
+	if (phonemeId in MonophthongIpaRegistry) {
+		return "monophthong";
+	}
+	if (phonemeId in DiphthongIpaRegistry) {
+		return "diphthong";
+	}
+	if (phonemeId in RhoticIpaRegistry) {
+		return "rhotic";
+	}
+	return "consonant";
+}
+
+/**
  * Gets the IPA symbol for a phoneme ID.
  * Type-safe: only accepts valid phoneme IDs.
  * @param phonemeId - The phoneme symbol ID.

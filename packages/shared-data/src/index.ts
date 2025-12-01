@@ -25,6 +25,7 @@ export {
 	DiphthongIpaRegistry,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
+	getPhonemeType,
 	MonophthongIpaRegistry,
 	PhonemeCount,
 	PhonemeIpaRegistry,
