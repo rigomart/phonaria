@@ -1,6 +1,6 @@
-import type { PhonemeSymbolId } from "./symbols-registry";
+import type { PhonemeSymbolId } from "./ipa-registry";
 
-type AllophoneExample = {
+export type AllophoneExample = {
 	word: string;
 	phonemic: string;
 };
@@ -17,18 +17,12 @@ const phonemeAllophonesData = {
 		{
 			ipaVariant: "pʰ",
 			contextKey: "stressed-onset-aspirated",
-			examples: [
-				{ word: "pin", phonemic: "pɪn" },
-				{ word: "paper", phonemic: "ˈpeɪpɝ" },
-			],
+			examples: [{ word: "pin", phonemic: "pɪn" }],
 		},
 		{
 			ipaVariant: "p",
 			contextKey: "after-s-onset-unaspirated",
-			examples: [
-				{ word: "spin", phonemic: "spɪn" },
-				{ word: "space", phonemic: "speɪs" },
-			],
+			examples: [{ word: "spin", phonemic: "spɪn" }],
 		},
 	],
 	"voiceless-alveolar-plosive": [
@@ -37,42 +31,37 @@ const phonemeAllophonesData = {
 			contextKey: "stressed-onset-aspirated",
 			examples: [
 				{ word: "top", phonemic: "tɑp" },
-				{ word: "attack", phonemic: "əˈtæk" },
+				{ word: "time", phonemic: "taɪm" },
 			],
 		},
 		{
 			ipaVariant: "ɾ",
 			contextKey: "vowel-to-vowel-flap",
-			examples: [
-				{ word: "water", phonemic: "ˈwɔtɝ" },
-				{ word: "city", phonemic: "ˈsɪti" },
-			],
+			examples: [{ word: "water", phonemic: "ˈwɔtɝ" }],
 		},
 		{
 			ipaVariant: "ʔ",
 			contextKey: "t-before-syllabic-n-glottal",
-			examples: [
-				{ word: "button", phonemic: "ˈbʌtən" },
-				{ word: "kitten", phonemic: "ˈkɪtən" },
-			],
+			examples: [{ word: "button", phonemic: "ˈbʌtən" }],
 		},
 	],
 	"voiceless-velar-plosive": [
 		{
 			ipaVariant: "kʰ",
 			contextKey: "stressed-onset-aspirated",
-			examples: [
-				{ word: "cat", phonemic: "kæt" },
-				{ word: "account", phonemic: "əˈkaʊnt" },
-			],
+			examples: [{ word: "cat", phonemic: "kæt" }],
 		},
 		{
 			ipaVariant: "k",
 			contextKey: "after-s-onset-unaspirated",
-			examples: [
-				{ word: "skate", phonemic: "skeɪt" },
-				{ word: "school", phonemic: "skul" },
-			],
+			examples: [{ word: "skate", phonemic: "skeɪt" }],
+		},
+	],
+	"voiced-alveolar-plosive": [
+		{
+			ipaVariant: "ɾ",
+			contextKey: "vowel-to-vowel-flap",
+			examples: [{ word: "ladder", phonemic: "ˈlædɝ" }],
 		},
 	],
 
@@ -81,10 +70,7 @@ const phonemeAllophonesData = {
 		{
 			ipaVariant: "ɫ",
 			contextKey: "coda-dark-l",
-			examples: [
-				{ word: "ball", phonemic: "bɔl" },
-				{ word: "milk", phonemic: "mɪlk" },
-			],
+			examples: [{ word: "ball", phonemic: "bɔl" }],
 		},
 	],
 
@@ -93,56 +79,38 @@ const phonemeAllophonesData = {
 		{
 			ipaVariant: "iː",
 			contextKey: "pre-voiced-coda-lengthened",
-			examples: [
-				{ word: "seed", phonemic: "sid" },
-				{ word: "leave", phonemic: "liv" },
-			],
+			examples: [{ word: "seed", phonemic: "sid" }],
 		},
 		{
 			ipaVariant: "i",
 			contextKey: "pre-voiceless-coda-shorter",
-			examples: [
-				{ word: "seat", phonemic: "sit" },
-				{ word: "leaf", phonemic: "lif" },
-			],
+			examples: [{ word: "seat", phonemic: "sit" }],
 		},
 	],
 	"near-open-front-unrounded": [
 		{
 			ipaVariant: "æː",
 			contextKey: "pre-voiced-coda-lengthened",
-			examples: [
-				{ word: "bad", phonemic: "bæd" },
-				{ word: "cab", phonemic: "kæb" },
-			],
+			examples: [{ word: "bad", phonemic: "bæd" }],
 		},
 		{
 			ipaVariant: "æ",
 			contextKey: "pre-voiceless-coda-shorter",
-			examples: [
-				{ word: "bat", phonemic: "bæt" },
-				{ word: "cap", phonemic: "kæp" },
-			],
+			examples: [{ word: "bat", phonemic: "bæt" }],
 		},
 	],
 
-	// Rhotic vowel stress variants
-	"open-mid-central-rhotic": [
+	// R-colored vowel stress variants
+	"r-colored-open-mid-central": [
 		{
 			ipaVariant: "ɝ",
 			contextKey: "stressed-r-colored",
-			examples: [
-				{ word: "bird", phonemic: "bɝd" },
-				{ word: "first", phonemic: "fɝst" },
-			],
+			examples: [{ word: "bird", phonemic: "bɝd" }],
 		},
 		{
 			ipaVariant: "ɚ",
 			contextKey: "unstressed-r-colored",
-			examples: [
-				{ word: "teacher", phonemic: "ˈtitʃɝ" },
-				{ word: "water", phonemic: "ˈwɔtɝ" },
-			],
+			examples: [{ word: "water", phonemic: "ˈwɔtɚ" }],
 		},
 	],
 } as const;

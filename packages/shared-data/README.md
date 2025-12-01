@@ -14,20 +14,46 @@ All canonical phonetics datasets use PascalCase `*Registry` names (or `*Catalog`
 
 ```ts
 import {
-  PhonemeSymbolRegistry,
-  ConsonantSymbolRegistry,
-  VowelSymbolRegistry,
+  // IPA registries (PhonemeId → IPA symbol)
+  PhonemeIpaRegistry,
+  ConsonantIpaRegistry,
+  VowelIpaRegistry,
+  MonophthongIpaRegistry,
+  DiphthongIpaRegistry,
+
+  // CMU ARPA registries (CMU token → PhonemeId)
+  CmuArpaRegistry,
+
+  // Helper functions
+  getIpaForPhonemeId,
+  getPhonemeIdForCmuArpa,
+  getCmuArpaForPhonemeId,
+  isVowelPhoneme,
+  isConsonantPhoneme,
+  getPhonemeCategory,
+
+  // Articulation registries (PhonemeId → articulatory features)
   PhonemeArticulationRegistry,
   ConsonantArticulationRegistry,
   MonophthongVowelArticulationRegistry,
   DiphthongVowelArticulationRegistry,
-  RhoticVowelArticulationRegistry,
+
+  // Other registries
   ContrastsByPhonemeIdRegistry,
   PhonemeSpellingPatternRegistry,
+  PhonemeAllophoneRegistry,
+
+  // Types
   type ConsonantArticulatoryFeatures,
   type VowelArticulatoryFeatures,
   type PhonemeArticulatoryFeatures,
   type PhonemeSymbolId,
+  type PhonemeCategory,
+  type VowelType,
+  type CmuArpaToken,
+  type SpellingPattern,
+  type AllophoneExample,
+  type PhonemeContrastPair,
 } from "shared-data";
 ```
 
@@ -35,38 +61,121 @@ import {
 
 | File | Purpose |
 | --- | --- |
-| `symbols-registry.ts` | Typed registries of every consonant, vowel, diphthong, and rhotic symbol plus helper type exports. |
-| `phoneme-articulations.ts` | Maps each `PhonemeSymbolId` to its articulatory feature set (manner/place/voicing or height/backness/etc.). |
-| `phoneme-contrasts.ts` | Minimal-pair style relationships (`ContrastsByPhonemeIdRegistry`) that highlight challenging sound pairs. |
-| `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. |
+| `ipa-registry.ts` | IPA registries mapping `PhonemeSymbolId` → IPA symbol. Includes consonants, monophthongs (with optional `rhoticity`), and diphthongs. Also provides helper functions for category detection and IPA lookup. |
+| `cmu-arpa-registry.ts` | CMU ARPA registry mapping CMU ARPABET tokens (with stress digits) → `PhonemeSymbolId`. Includes bidirectional lookup helpers. |
+| `phoneme-articulations.ts` | Maps each `PhonemeSymbolId` to its articulatory feature set (manner/place/voicing for consonants; height/backness/roundness for vowels). Also defines `VowelType` (monophthong/diphthong) and supports `rhoticity` on vowels. |
+| `phoneme-contrasts.ts` | Minimal-pair style relationships (`ContrastsByPhonemeIdRegistry`) that highlight challenging sound pairs. Each example includes `word` and `phonemic` (IPA). |
+| `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. Each example includes `word` and `phonemic` (IPA). |
+| `phoneme-allophones.ts` | Allophonic variations with context keys for each phoneme. Each example includes `word` and `phonemic` (IPA). |
 | `index.ts` | Barrel re-export for all of the above so consumers import from `shared-data`. |
 
 ## Usage examples
 
-Render IPA info in the web app:
+### Get IPA symbol for a phoneme
 
 ```ts
-import { PhonemeSymbolRegistry, PhonemeArticulationRegistry } from "shared-data";
+import { getIpaForPhonemeId } from "shared-data";
 
-const ipa = PhonemeSymbolRegistry[phonemeId].ipa;
-const articulation = PhonemeArticulationRegistry[phonemeId];
+const ipa = getIpaForPhonemeId("voiceless-bilabial-plosive"); // "p"
+const vowelIpa = getIpaForPhonemeId("close-front-unrounded"); // "i"
 ```
 
-Build spelling-pattern cards:
+### Convert CMU ARPA to phoneme ID and IPA
+
+```ts
+import { getPhonemeIdForCmuArpa, getIpaForPhonemeId } from "shared-data";
+
+const phonemeId = getPhonemeIdForCmuArpa("AH0"); // "mid-central-unrounded" (schwa)
+const ipa = getIpaForPhonemeId(phonemeId); // "ə"
+```
+
+### Reverse lookup: phoneme ID to CMU ARPA tokens
+
+```ts
+import { getCmuArpaForPhonemeId } from "shared-data";
+
+const tokens = getCmuArpaForPhonemeId("close-front-unrounded");
+// ["IY0", "IY1", "IY2"] - all stress variants
+```
+
+### Check phoneme category
+
+```ts
+import { isVowelPhoneme, isConsonantPhoneme, getPhonemeCategory } from "shared-data";
+
+isVowelPhoneme("close-front-unrounded"); // true
+isConsonantPhoneme("voiceless-bilabial-plosive"); // true
+getPhonemeCategory("close-front-unrounded"); // "vowel"
+```
+
+### Access articulation features
+
+```ts
+import { PhonemeArticulationRegistry } from "shared-data";
+
+const articulation = PhonemeArticulationRegistry["close-front-unrounded"];
+// { category: "vowel", vowelType: "monophthong", features: { ... } }
+
+if (articulation.vowelType === "diphthong") {
+  // Handle diphthong-specific rendering
+}
+```
+
+### Build spelling-pattern cards
 
 ```ts
 import { PhonemeSpellingPatternRegistry } from "shared-data";
 
 const patterns = PhonemeSpellingPatternRegistry[phonemeId]?.patterns ?? [];
+const examples = PhonemeSpellingPatternRegistry[phonemeId]?.examples ?? [];
+// Each example: { word: "pen", phonemic: "pɛn" }
 ```
+
+### Access example words
+
+```ts
+import {
+  PhonemeSpellingPatternRegistry,
+  PhonemeAllophoneRegistry,
+  ContrastsByPhonemeIdRegistry
+} from "shared-data";
+
+// Spelling pattern examples
+const pattern = PhonemeSpellingPatternRegistry["voiceless-bilabial-plosive"];
+pattern?.examples.forEach(ex => {
+  console.log(`${ex.word}: ${ex.phonemic}`);
+  // "pen: pɛn"
+});
+
+// Allophone examples
+const allophones = PhonemeAllophoneRegistry["voiceless-alveolar-plosive"];
+allophones?.forEach(variant => {
+  variant.examples.forEach(ex => {
+    console.log(`${ex.word}: ${ex.phonemic}`);
+  });
+});
+
+// Minimal pair examples
+const contrasts = ContrastsByPhonemeIdRegistry["voiceless-bilabial-plosive"];
+contrasts?.forEach(contrast => {
+  contrast.minimalPairs.forEach(([pair1, pair2]) => {
+    console.log(`${pair1.word} vs ${pair2.word}`);
+    console.log(`  ${pair1.phonemic} vs ${pair2.phonemic}`);
+  });
+});
+```
+
+> **Note**: CMU ARPA transcriptions are generated dynamically by `helper-scripts` from CMUDict. See the `generate-word-mappings` script for word → CMU ARPA lookups.
 
 ## Contribution guide
 
-1. **Edit the right module**:  
-   - New phoneme symbol → `symbols-registry.ts`  
-   - Articulation metadata → `phoneme-articulations.ts`  
-   - Contrast pairs → `phoneme-contrasts.ts`  
+1. **Edit the right module**:
+   - New phoneme IPA symbol → `ipa-registry.ts`
+   - CMU ARPA mappings → `cmu-arpa-registry.ts`
+   - Articulation metadata → `phoneme-articulations.ts`
+   - Contrast pairs → `phoneme-contrasts.ts`
    - Spelling patterns → `phoneme-patterns.ts`
+   - Allophonic variations → `phoneme-allophones.ts`
 2. **Stay data-only**: no prose strings, learner copy, or localization text. Keep values constrained to typed enums/objects so consuming apps can translate separately.
 3. **Update types when needed**: extend the relevant type definitions and re-export through `src/index.ts`.
 4. **Validate**:

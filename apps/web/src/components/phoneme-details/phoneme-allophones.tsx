@@ -56,11 +56,7 @@ export function PhonemeDetailsAllophones() {
 											</ItemDescription>
 										</ItemContent>
 										<ItemActions>
-											<AudioControls
-												size="xs"
-												path={`/audio/phoneme-examples/${ex.word}.mp3`}
-												label={ex.word}
-											/>
+											<AudioControls size="xs" path={`/audio/${ex.word}.mp3`} label={ex.word} />
 										</ItemActions>
 									</Item>
 								))}

@@ -6,6 +6,7 @@ import Providers from "./providers";
 import "./globals.css";
 import type { Metadata } from "next";
 import { setStaticParamsLocale } from "next-international/server";
+import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { I18nProviderClient } from "@/locales/client";
 import { getStaticParams } from "@/locales/server";
@@ -62,6 +63,7 @@ export default async function RootLayout({
 							<div className="h-screen flex flex-col">
 								<Header />
 								{children}
+								<Footer />
 							</div>
 						</Providers>
 					</NuqsAdapter>

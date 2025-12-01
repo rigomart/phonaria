@@ -1,24 +1,9 @@
 export {
+	CmuArpaRegistry,
 	type CmuArpaToken,
-	CmuSymbolRegistry,
-	getSymbolIdForCmuToken,
-} from "./phonetics/cmu-lookup";
-export {
-	type PhonemeAllophone,
-	type PhonemeAllophoneContextKey,
-	PhonemeAllophoneRegistry,
-} from "./phonetics/phoneme-allophones";
-export {
-	ConsonantArticulationRegistry,
-	DiphthongVowelArticulationRegistry,
-	FeatureValueByPhonemeRegistry,
-	MonophthongVowelArticulationRegistry,
-	type PhonemeArticulation,
-	PhonemeArticulationRegistry,
-	RhoticVowelArticulationRegistry,
-} from "./phonetics/phoneme-articulations";
-export { ContrastsByPhonemeIdRegistry, type PhonemeContrast } from "./phonetics/phoneme-contrasts";
-export { PhonemeSpellingPatternRegistry } from "./phonetics/phoneme-patterns";
+	getCmuArpaForPhonemeId,
+	getPhonemeIdForCmuArpa,
+} from "./phonetics/cmu-arpa-registry";
 export type {
 	ConsonantArticulatoryFeatures,
 	ConsonantPhonemeArticulatoryFeatureKey,
@@ -30,17 +15,42 @@ export type {
 	PhonemeCategory,
 	PhonemeSymbolId,
 	PhonemeSymbolIpa,
-	RhoticSymbolIpa,
 	VowelArticulatoryFeatures,
 	VowelPhonemeArticulatoryFeatureKey,
 	VowelSymbolIpa,
-} from "./phonetics/symbols-registry";
+} from "./phonetics/ipa-registry";
 export {
-	ConsonantSymbolRegistry,
-	DiphthongSymbolRegistry,
-	MonophthongSymbolRegistry,
+	ConsonantIpaRegistry,
+	DiphthongIpaRegistry,
+	getIpaForPhonemeId,
+	getPhonemeCategory,
+	getPhonemeType,
+	MonophthongIpaRegistry,
 	PhonemeCount,
-	PhonemeSymbolRegistry,
-	RhoticSymbolRegistry,
-	VowelSymbolRegistry,
-} from "./phonetics/symbols-registry";
+	PhonemeIpaRegistry,
+	VowelIpaRegistry,
+} from "./phonetics/ipa-registry";
+export {
+	type AllophoneExample,
+	type PhonemeAllophone,
+	type PhonemeAllophoneContextKey,
+	PhonemeAllophoneRegistry,
+} from "./phonetics/phoneme-allophones";
+export {
+	ConsonantArticulationRegistry,
+	DiphthongVowelArticulationRegistry,
+	FeatureValueByPhonemeRegistry,
+	MonophthongVowelArticulationRegistry,
+	type PhonemeArticulation,
+	PhonemeArticulationRegistry,
+	type VowelType,
+} from "./phonetics/phoneme-articulations";
+export {
+	ContrastsByPhonemeIdRegistry,
+	type PhonemeContrast,
+	type PhonemeContrastPair,
+} from "./phonetics/phoneme-contrasts";
+export {
+	PhonemeSpellingPatternRegistry,
+	type SpellingPattern,
+} from "./phonetics/phoneme-patterns";

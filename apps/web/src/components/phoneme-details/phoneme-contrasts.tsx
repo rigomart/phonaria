@@ -2,9 +2,9 @@ import { Info } from "lucide-react";
 import {
 	ContrastsByPhonemeIdRegistry,
 	FeatureValueByPhonemeRegistry,
+	getIpaForPhonemeId,
 	type PhonemeArticulatoryFeatureKey,
 	type PhonemeArticulatoryFeatures,
-	PhonemeSymbolRegistry,
 } from "shared-data";
 import { type FeatureValueDefinition, featureDefinitions } from "@/data/phoneme-details";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,8 @@ function getFeatureValueDefinition<K extends PhonemeArticulatoryFeatureKey>(
 	}
 
 	const feature = featureDefinitions[featureKey];
+	if (!feature) return null;
+
 	const value = feature.values[valueKey];
 	return value ?? null;
 }
@@ -42,7 +44,7 @@ export function PhonemeDetailsContrasts() {
 	const t = useScopedI18n(`components.phoneme-details.contrasts`);
 
 	const contrasts = ContrastsByPhonemeIdRegistry[phonemeId];
-	const currentIpa = PhonemeSymbolRegistry[phonemeId].ipa;
+	const currentIpa = getIpaForPhonemeId(phonemeId);
 	const vsLabel = t("vs");
 
 	if (!contrasts || contrasts.length === 0) {
@@ -57,7 +59,7 @@ export function PhonemeDetailsContrasts() {
 			</PhonemeSectionHeader>
 			<PhonemeSectionContent>
 				{contrasts.map((contrast) => {
-					const partnerIpa = PhonemeSymbolRegistry[contrast.partnerId].ipa;
+					const partnerIpa = getIpaForPhonemeId(contrast.partnerId);
 					// Limit to first pair
 					const displayPairs = contrast.minimalPairs[0];
 
@@ -156,12 +158,7 @@ function ExampleItem({ ipa, word, phonemic, className }: ExampleItemProps) {
 					<ItemDescription className="text-xs text-muted-foreground">/{phonemic}/</ItemDescription>
 				</ItemContent>
 				<ItemActions>
-					<AudioControls
-						size="xs"
-						path={`/phoneme-examples/${word}.mp3`}
-						label={word}
-						variant="compact"
-					/>
+					<AudioControls size="xs" path={`/audio/${word}.mp3`} label={word} variant="compact" />
 				</ItemActions>
 			</Item>
 		</div>

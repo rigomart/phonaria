@@ -1,5 +1,4 @@
-import type { PhonemeSymbolId } from "shared-data";
-import { PhonemeSymbolRegistry } from "shared-data";
+import { PhonemeIpaRegistry, type PhonemeSymbolId } from "shared-data";
 import type {
 	G2PPhoneme,
 	TranscribedPhoneme,
@@ -116,5 +115,5 @@ function isKnownPhoneme(
 	if (typeof phoneme.phonemeId !== "string") {
 		return false;
 	}
-	return phoneme.phonemeId in PhonemeSymbolRegistry;
+	return phoneme.phonemeId in PhonemeIpaRegistry;
 }

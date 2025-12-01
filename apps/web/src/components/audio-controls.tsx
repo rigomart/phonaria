@@ -1,6 +1,6 @@
 "use client";
 
-import { AudioLines, Turtle } from "lucide-react";
+import { PlayIcon, Turtle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAudioManager } from "@/hooks/use-audio-manager";
 import { ButtonGroup } from "./ui/button-group";
@@ -27,7 +27,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export function AudioControls(props: Props) {
 	const { label, className, size = "default", variant = "default", src, path } = props;
-	const resolvedSrc = src ? src : `${baseUrl}/${path}`;
+	const resolvedSrc = src ? src : `${baseUrl}${path}`;
 	const { play, status } = useAudioManager(resolvedSrc);
 
 	return (
@@ -39,7 +39,7 @@ export function AudioControls(props: Props) {
 				aria-label={`Play ${label}`}
 				disabled={status === "loading" || status === "playing"}
 			>
-				{status === "loading" ? <Spinner /> : <AudioLines />}
+				{status === "loading" ? <Spinner /> : <PlayIcon />}
 				{variant === "compact" ? null : "Listen"}
 			</Button>
 			<Button

@@ -14,11 +14,10 @@
 	"scripts": {
 		"lint": "biome check --write",
 		"check-types": "tsc --noEmit",
-		"generate": "tsx src/generate.ts",
-		"cmudict-to-json": "tsx src/cmudict-to-json.ts"
+		"cmudict-to-json": "tsx src/cmudict-to-json.ts",
+		"generate-word-mappings": "tsx src/generate-word-mappings.ts"
 	},
 	"dependencies": {
-		"@elevenlabs/elevenlabs-js": "^2.6.0",
 		"shared-data": "workspace:*",
 		"@types/node": "^24.0.10",
 		"dotenv": "^17.2.0"

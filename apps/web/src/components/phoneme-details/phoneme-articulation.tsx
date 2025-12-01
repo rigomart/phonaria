@@ -2,10 +2,10 @@ import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+	getIpaForPhonemeId,
 	type PhonemeArticulation,
 	PhonemeArticulationRegistry,
 	type PhonemeSymbolId,
-	PhonemeSymbolRegistry,
 } from "shared-data";
 import {
 	type ArticulatoryFeature,
@@ -76,7 +76,7 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllustrationProps) {
 	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
-	const { ipa: phonemeIpa } = PhonemeSymbolRegistry[phonemeId];
+	const phonemeIpa = getIpaForPhonemeId(phonemeId);
 
 	if (articulation.category === "consonant") {
 		return (
@@ -91,25 +91,25 @@ function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllus
 		);
 	}
 
-	if (articulation.category === "vowel/monophthong" || articulation.category === "vowel/rhotic") {
+	if (articulation.vowelType === "monophthong") {
 		return (
 			<VowelChartCard
 				chartId={phonemeId}
 				phonemeLabel={phonemeLabel}
 				phonemeIpa={phonemeIpa}
-				category={articulation.category}
+				vowelType={articulation.vowelType}
 				features={articulation.features}
 			/>
 		);
 	}
 
-	if (articulation.category === "vowel/diphthong") {
+	if (articulation.vowelType === "diphthong") {
 		return (
 			<VowelChartCard
 				chartId={phonemeId}
 				phonemeLabel={phonemeLabel}
 				phonemeIpa={phonemeIpa}
-				category={articulation.category}
+				vowelType={articulation.vowelType}
 				features={articulation.features}
 			/>
 		);
@@ -133,7 +133,7 @@ function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 		);
 	}
 
-	if (articulation.category === "vowel/monophthong" || articulation.category === "vowel/rhotic") {
+	if (articulation.vowelType === "monophthong") {
 		return (
 			<div className="flex flex-wrap gap-2">
 				<FeatureRow feature={featureDefinitions.height} valueKey={articulation.features.height} />
@@ -149,11 +149,17 @@ function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 					feature={featureDefinitions.tenseness}
 					valueKey={articulation.features.tenseness}
 				/>
+				{articulation.features.rhoticity ? (
+					<FeatureRow
+						feature={featureDefinitions.rhoticity}
+						valueKey={articulation.features.rhoticity}
+					/>
+				) : null}
 			</div>
 		);
 	}
 
-	if (articulation.category === "vowel/diphthong") {
+	if (articulation.vowelType === "diphthong") {
 		const features = articulation.features;
 		const changingFeatures = [];
 
@@ -209,6 +215,8 @@ function FeatureRow<ValueKey extends string>({
 }) {
 	const value = feature.values[valueKey];
 
+	const { contentRef } = usePhonemeDetailsContext();
+
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
@@ -223,7 +231,12 @@ function FeatureRow<ValueKey extends string>({
 					<span className="text-xs font-medium">{value.label}</span>
 				</Pressable>
 			</PopoverTrigger>
-			<PopoverContent className="p-1" align="start">
+			<PopoverContent
+				className="p-1"
+				align="end"
+				side="bottom"
+				collisionBoundary={contentRef.current}
+			>
 				<dl className="space-y-2">
 					<div className="bg-accent/20 rounded-lg p-2">
 						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>
@@ -254,6 +267,8 @@ function DiphthongFeatureRow<ValueKey extends string>({
 	const startValue = feature.values[valueKey];
 	const endValue = targetFeature.values[targetValueKey];
 
+	const { contentRef } = usePhonemeDetailsContext();
+
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
@@ -272,7 +287,12 @@ function DiphthongFeatureRow<ValueKey extends string>({
 					</div>
 				</Pressable>
 			</PopoverTrigger>
-			<PopoverContent className="p-1" align="start">
+			<PopoverContent
+				className="p-1"
+				align="end"
+				side="bottom"
+				collisionBoundary={contentRef.current}
+			>
 				<dl className="space-y-2">
 					<div className="bg-accent/20 rounded-lg p-2">
 						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>

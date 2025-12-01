@@ -16,7 +16,9 @@ export type ArticulatoryFeature<ValueKey extends string> = {
 };
 
 type BaseFeatureDefinitions = {
-	[K in keyof PhonemeArticulatoryFeatures]: ArticulatoryFeature<PhonemeArticulatoryFeatures[K]>;
+	[K in keyof Required<PhonemeArticulatoryFeatures>]: ArticulatoryFeature<
+		NonNullable<PhonemeArticulatoryFeatures[K]>
+	>;
 };
 
 type DiphthongTargetFeatureDefinitions = {
@@ -472,8 +474,8 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 			},
 		],
 	},
-	"open-mid-central-rhotic": {
-		label: "Open-mid central rhotic tense vowel",
+	"r-colored-open-mid-central": {
+		label: "Open-mid central r-colored vowel",
 		steps: [
 			"Keep tongue central; add slight curl or bunch.",
 			"Sustain voicing; avoid lip rounding.",
@@ -517,6 +519,11 @@ export const featureDefinitions: BaseFeatureDefinitions = {
 				label: "Approximant",
 				description: "Air flows smoothly without friction, like a vowel.",
 			},
+			"lateral-approximant": {
+				label: "Lateral approximant",
+				description:
+					"Tongue blocks the center at the ridge while air flows along the sides of the tongue.",
+			},
 		},
 	},
 	place: {
@@ -554,10 +561,6 @@ export const featureDefinitions: BaseFeatureDefinitions = {
 			glottal: {
 				label: "Glottal",
 				description: "Sound is made in the gap between the vocal cords.",
-			},
-			"alveolar-lateral": {
-				label: "Alveolar lateral",
-				description: "Tongue tip touches the tooth ridge, but air flows around the sides.",
 			},
 			"labial-velar": {
 				label: "Labial-velar",
@@ -664,6 +667,16 @@ export const featureDefinitions: BaseFeatureDefinitions = {
 			lax: {
 				label: "Lax",
 				description: "Muscles are relaxed; sound is shorter.",
+			},
+		},
+	},
+	rhoticity: {
+		label: "R-coloring",
+		description: "Whether the vowel carries r-like coloring",
+		values: {
+			"r-colored": {
+				label: "R-colored",
+				description: "Tongue adds subtle /r/ quality; resonance stays central.",
 			},
 		},
 	},
@@ -793,12 +806,12 @@ export const allophoneContextDefinitions: Record<
 	},
 	"stressed-r-colored": {
 		name: "Stressed R-colored",
-		description: "Stressed rhotic vowel with full R-coloring",
+		description: "Stressed r-colored vowel with full R-coloring",
 		when: "In stressed syllables",
 	},
 	"unstressed-r-colored": {
 		name: "Unstressed R-colored",
-		description: "Reduced rhotic vowel with lighter R-coloring",
+		description: "Reduced r-colored vowel with lighter R-coloring",
 		when: "In unstressed syllables (particularly word-final -er)",
 	},
 };

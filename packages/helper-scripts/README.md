@@ -1,16 +1,15 @@
 # Helper Scripts
 
-Utility scripts that back the Phonaria web application. They generate reusable assets (example audio and CMU Pronouncing Dictionary JSON) and provide lint/type checks for the package itself.
+Utility scripts that back the Phonaria web application. They generate reusable assets (CMU Pronouncing Dictionary JSON, phoneme word manifests) and provide lint/type checks for the package itself.
 
 ## Prerequisites
 
 - `bun install` at the workspace root
 - Node.js 18+
-- Optional: `.env` file in this directory for API keys and overrides
+- Optional: `.env` file in this directory for overrides
 
 ```ini
 # packages/helper-scripts/.env
-ELEVENLABS_API_KEY=...
 CMUDICT_SRC_URL=https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/master/cmudict.dict
 # CMUDICT_JSON_PATH=/absolute/or/relative/path.json   # optional override
 ```
@@ -18,21 +17,19 @@ CMUDICT_SRC_URL=https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/ma
 ## Available commands
 
 ```bash
-bun --cwd packages/helper-scripts lint            # biome check --write
-bun --cwd packages/helper-scripts check-types     # tsc --noEmit
-bun --cwd packages/helper-scripts generate        # ElevenLabs example audio generation
-bun --cwd packages/helper-scripts cmudict-to-json # Download & compact CMUDict into JSON
+bun --cwd packages/helper-scripts lint                     # biome check --write
+bun --cwd packages/helper-scripts check-types              # tsc --noEmit
+bun --cwd packages/helper-scripts cmudict-to-json          # Download & compact CMUDict into JSON
+bun --cwd packages/helper-scripts generate-word-mappings   # Generate word mappings with CMU ARPA
 ```
 
-## Audio generation workflow
+## Word mappings workflow
 
-`generate.ts` scans the shared phoneme metadata for unique example words and creates `.mp3` files using the ElevenLabs API.
+`generate-word-mappings.ts` extracts all example words from `shared-data` (spelling patterns, contrasts, allophones) and looks up their CMU ARPA transcriptions in the CMUDict.
 
-1. Supply an `ELEVENLABS_API_KEY` in `.env`.
-2. Run `bun --cwd packages/helper-scripts generate`.
-3. Audio is written to `apps/web/public/audio/examples/<word>.mp3` (directories are created automatically).
-
-The script skips words that already have audio. To experiment with a smaller batch, temporarily adjust the `extractExampleWords()` call inside `src/generate.ts`.
+- Output: `packages/audio-gen/data/cmu-arpa-mappings.json` (regenerate when phoneme data changes)
+- Run: `bun --cwd packages/helper-scripts generate-word-mappings`
+- Includes: word, IPA phonemic transcription, CMU ARPA tokens, lookup status, and variant info
 
 ## CMUDict JSON workflow
 

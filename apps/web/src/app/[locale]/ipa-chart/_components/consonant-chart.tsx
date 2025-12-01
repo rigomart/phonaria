@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo } from "react";
 import type { ConsonantSymbolId } from "shared-data";
-import { ConsonantArticulationRegistry, ConsonantSymbolRegistry } from "shared-data";
+import { ConsonantArticulationRegistry, getIpaForPhonemeId } from "shared-data";
 import { cn } from "@/lib/utils";
 import {
 	getCellKey,
@@ -29,12 +29,12 @@ export function ConsonantChart() {
 		const phonemes: ConsonantPhoneme[] = [];
 
 		for (const [id, articulation] of Object.entries(ConsonantArticulationRegistry)) {
-			const symbolEntry = ConsonantSymbolRegistry[id as keyof typeof ConsonantSymbolRegistry];
-			if (!symbolEntry) continue;
+			const phonemeId = id as ConsonantSymbolId;
+			const ipa = getIpaForPhonemeId(phonemeId);
 
 			phonemes.push({
-				id: id as ConsonantSymbolId,
-				symbol: symbolEntry.ipa,
+				id: phonemeId,
+				symbol: ipa,
 				voicing: articulation.features.voicing,
 				manner: articulation.features.manner,
 				place: articulation.features.place,
@@ -64,8 +64,10 @@ export function ConsonantChart() {
 		return map;
 	}, [consonants]);
 
+	const gridTemplateColumns = `auto repeat(${PLACE_ORDER.length}, minmax(4.5rem, 1fr))`;
+
 	return (
-		<div className="inline-grid w-full min-w-max gap-1.5 grid-cols-[auto_repeat(10,minmax(4.5rem,1fr))]">
+		<div className="inline-grid w-full min-w-max gap-1.5" style={{ gridTemplateColumns }}>
 			<div />
 			{PLACE_ORDER.map((place) => (
 				<div

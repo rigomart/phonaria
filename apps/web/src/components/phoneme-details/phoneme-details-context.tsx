@@ -1,8 +1,9 @@
-import { createContext, use } from "react";
-import type { PhonemeSymbolId } from "shared-data/src/phonetics/symbols-registry";
+import { createContext, use, useRef } from "react";
+import type { PhonemeSymbolId } from "shared-data";
 
 type PhonemeDetailsContextType = {
 	phonemeId: PhonemeSymbolId;
+	contentRef: React.RefObject<HTMLDivElement | null>;
 };
 
 const PhonemeDetailsContext = createContext<PhonemeDetailsContextType | null>(null);
@@ -22,5 +23,8 @@ export function PhonemeDetailsProvider({
 	phonemeId: PhonemeSymbolId;
 	children: React.ReactNode;
 }) {
-	return <PhonemeDetailsContext value={{ phonemeId }}>{children}</PhonemeDetailsContext>;
+	const contentRef = useRef<HTMLDivElement | null>(null);
+	return (
+		<PhonemeDetailsContext value={{ phonemeId, contentRef }}>{children}</PhonemeDetailsContext>
+	);
 }

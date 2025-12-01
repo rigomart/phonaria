@@ -7,17 +7,25 @@ import type {
 	PhonemeArticulatoryFeatures,
 	PhonemeCategory,
 	PhonemeSymbolId,
-	RhoticSymbolId,
 	VowelArticulatoryFeatures,
-} from "./symbols-registry";
+} from "./ipa-registry";
+
+export type VowelType = "monophthong" | "diphthong";
 
 type PhonemeArticulationBase<
 	Category extends PhonemeCategory,
 	Features extends Record<string, string>,
-> = {
-	category: Category;
-	features: Features;
-};
+	VowelTypeArg extends VowelType | undefined = undefined,
+> = Category extends "vowel"
+	? {
+			category: Category;
+			vowelType: VowelTypeArg extends VowelType ? VowelTypeArg : never;
+			features: Features;
+		}
+	: {
+			category: Category;
+			features: Features;
+		};
 
 // Consonant articulations
 type ConsonantArticulation = PhonemeArticulationBase<"consonant", ConsonantArticulatoryFeatures>;
@@ -105,7 +113,7 @@ export const ConsonantArticulationRegistry: Record<ConsonantSymbolId, ConsonantA
 	},
 	"voiced-alveolar-lateral-approximant": {
 		category: "consonant",
-		features: { manner: "approximant", place: "alveolar-lateral", voicing: "voiced" },
+		features: { manner: "lateral-approximant", place: "alveolar", voicing: "voiced" },
 	},
 	"voiced-postalveolar-approximant": {
 		category: "consonant",
@@ -124,8 +132,9 @@ export const ConsonantArticulationRegistry: Record<ConsonantSymbolId, ConsonantA
 // Monophthong vowel articulations
 
 type MonophthongVowelArticulation = PhonemeArticulationBase<
-	"vowel/monophthong",
-	VowelArticulatoryFeatures
+	"vowel",
+	VowelArticulatoryFeatures,
+	"monophthong"
 >;
 
 export const MonophthongVowelArticulationRegistry: Record<
@@ -133,7 +142,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 	MonophthongVowelArticulation
 > = {
 	"close-front-unrounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "close",
 			backness: "front",
@@ -142,7 +152,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 		},
 	},
 	"close-back-rounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "close",
 			backness: "back",
@@ -151,7 +162,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 		},
 	},
 	"near-close-near-front-unrounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "near-close",
 			backness: "near-front",
@@ -160,7 +172,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 		},
 	},
 	"near-close-near-back-rounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "near-close",
 			backness: "near-back",
@@ -169,7 +182,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 		},
 	},
 	"mid-central-unrounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "mid",
 			backness: "central",
@@ -178,7 +192,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 		},
 	},
 	"open-mid-front-unrounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "open-mid",
 			backness: "front",
@@ -187,7 +202,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 		},
 	},
 	"open-mid-back-unrounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "open-mid",
 			backness: "back",
@@ -196,7 +212,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 		},
 	},
 	"open-mid-back-rounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "open-mid",
 			backness: "back",
@@ -205,7 +222,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 		},
 	},
 	"near-open-front-unrounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "near-open",
 			backness: "front",
@@ -214,7 +232,8 @@ export const MonophthongVowelArticulationRegistry: Record<
 		},
 	},
 	"open-back-unrounded": {
-		category: "vowel/monophthong",
+		category: "vowel",
+		vowelType: "monophthong",
 		features: {
 			height: "open",
 			backness: "back",
@@ -222,12 +241,23 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "lax",
 		},
 	},
+	"r-colored-open-mid-central": {
+		category: "vowel",
+		vowelType: "monophthong",
+		features: {
+			height: "open-mid",
+			backness: "central",
+			roundness: "unrounded",
+			tenseness: "tense",
+			rhoticity: "r-colored",
+		},
+	},
 };
 
 // Diphthong vowel articulations
 
 type DiphthongVowelArticulation = PhonemeArticulationBase<
-	"vowel/diphthong",
+	"vowel",
 	{
 		height: VowelArticulatoryFeatures["height"];
 		backness: VowelArticulatoryFeatures["backness"];
@@ -235,7 +265,8 @@ type DiphthongVowelArticulation = PhonemeArticulationBase<
 		targetHeight: VowelArticulatoryFeatures["height"];
 		targetBackness: VowelArticulatoryFeatures["backness"];
 		targetRoundness: VowelArticulatoryFeatures["roundness"];
-	}
+	},
+	"diphthong"
 >;
 
 export const DiphthongVowelArticulationRegistry: Record<
@@ -243,7 +274,8 @@ export const DiphthongVowelArticulationRegistry: Record<
 	DiphthongVowelArticulation
 > = {
 	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
-		category: "vowel/diphthong",
+		category: "vowel",
+		vowelType: "diphthong",
 		features: {
 			height: "close-mid",
 			backness: "front",
@@ -254,7 +286,8 @@ export const DiphthongVowelArticulationRegistry: Record<
 		},
 	},
 	"close-mid-back-rounded-to-near-close-near-back-rounded": {
-		category: "vowel/diphthong",
+		category: "vowel",
+		vowelType: "diphthong",
 		features: {
 			height: "close-mid",
 			backness: "back",
@@ -265,7 +298,8 @@ export const DiphthongVowelArticulationRegistry: Record<
 		},
 	},
 	"open-front-unrounded-to-near-close-near-front-unrounded": {
-		category: "vowel/diphthong",
+		category: "vowel",
+		vowelType: "diphthong",
 		features: {
 			height: "open",
 			backness: "front",
@@ -276,7 +310,8 @@ export const DiphthongVowelArticulationRegistry: Record<
 		},
 	},
 	"open-front-unrounded-to-near-close-near-back-rounded": {
-		category: "vowel/diphthong",
+		category: "vowel",
+		vowelType: "diphthong",
 		features: {
 			height: "open",
 			backness: "front",
@@ -287,7 +322,8 @@ export const DiphthongVowelArticulationRegistry: Record<
 		},
 	},
 	"open-mid-back-rounded-to-near-close-near-front-unrounded": {
-		category: "vowel/diphthong",
+		category: "vowel",
+		vowelType: "diphthong",
 		features: {
 			height: "open-mid",
 			backness: "back",
@@ -299,34 +335,16 @@ export const DiphthongVowelArticulationRegistry: Record<
 	},
 };
 
-// Rhotic vowel articulations
-
-type RhoticVowelArticulation = PhonemeArticulationBase<"vowel/rhotic", VowelArticulatoryFeatures>;
-
-export const RhoticVowelArticulationRegistry: Record<RhoticSymbolId, RhoticVowelArticulation> = {
-	"open-mid-central-rhotic": {
-		category: "vowel/rhotic",
-		features: {
-			height: "open-mid",
-			backness: "central",
-			roundness: "unrounded",
-			tenseness: "tense",
-		},
-	},
-};
-
 export const PhonemeArticulationRegistry = {
 	...ConsonantArticulationRegistry,
 	...MonophthongVowelArticulationRegistry,
 	...DiphthongVowelArticulationRegistry,
-	...RhoticVowelArticulationRegistry,
 } as const satisfies Record<PhonemeSymbolId, PhonemeArticulation>;
 
 export type PhonemeArticulation =
 	| ConsonantArticulation
 	| MonophthongVowelArticulation
-	| DiphthongVowelArticulation
-	| RhoticVowelArticulation;
+	| DiphthongVowelArticulation;
 
 type FeatureValueLookup = {
 	[K in PhonemeArticulatoryFeatureKey]: Partial<
@@ -343,6 +361,7 @@ const buildFeatureValueByPhoneme = (): FeatureValueLookup => {
 		backness: {},
 		roundness: {},
 		tenseness: {},
+		rhoticity: {},
 	};
 
 	const assignFeatureValue = <K extends PhonemeArticulatoryFeatureKey>(
@@ -367,6 +386,7 @@ const buildFeatureValueByPhoneme = (): FeatureValueLookup => {
 		assignFeatureValue("backness", phonemeId, features.backness);
 		assignFeatureValue("roundness", phonemeId, features.roundness);
 		assignFeatureValue("tenseness", phonemeId, features.tenseness);
+		assignFeatureValue("rhoticity", phonemeId, features.rhoticity);
 	}
 
 	return lookup;

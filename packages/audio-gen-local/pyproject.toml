@@ -1,0 +1,51 @@
+[project]
+name = "audio-generation"
+version = "0.1.0"
+description = "Base scaffold for audio generation utilities (implementation pending)"
+readme = "README.md"
+requires-python = ">=3.10,<3.12"
+dependencies = [
+]
+
+[project.scripts]
+audio-gen = "main:main"
+
+[dependency-groups]
+dev = [
+    "ruff~=0.14.0",
+    "pyright~=1.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+sources = ["src"]
+include = ["main.py"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["audio_generation"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "B", "C4", "UP", "ARG", "SIM", "TCH", "PTH", "RUF",
+    "A",   # flake8-builtins
+    "BLE", # flake8-blind-except
+    "PIE", # flake8-pie
+    "PL",  # pylint (selective)
+    "TID", # flake8-tidy-imports
+    "ERA", # eradicate commented-out code
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pyright]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+reportMissingImports = "error"
+reportUndefinedVariable = "error"
