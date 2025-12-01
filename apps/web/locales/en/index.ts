@@ -7,7 +7,21 @@ export default {
 				"ipa-chart": "IPA Reference",
 			},
 		},
+		footer: {
+			links: {
+				credits: "Credits",
+				github: "GitHub",
+			},
+			copyright: "© {year} Phonaria. All rights reserved.",
+		},
 		"phoneme-details": {
+			header: {
+				"audio-disclaimer": {
+					"button-label": "Audio source information",
+					"popover-text": "Audio samples are sourced from Wikimedia Commons.",
+					"view-credits": "View full credits",
+				},
+			},
 			articulation: {
 				title: "Pronunciation",
 				description: "How this sound is produced using your vocal tract.",
@@ -165,6 +179,36 @@ export default {
 				title: "IPA Reference",
 				description: "Browse the General American English sound inventory.",
 				action: "View Chart",
+			},
+		},
+	},
+	"credits-page": {
+		meta: {
+			title: "Credits & Attribution",
+			description: "Credits and acknowledgments for Phonaria resources and data sources",
+		},
+		title: "Credits & Attribution",
+		description:
+			"Phonaria builds on the work of open source projects, linguistic research, and public domain resources.",
+		sections: {
+			wikimedia: {
+				title: "Phonetic Audio Samples",
+				content:
+					'Phonetic audio samples used in this app are based on recordings from the "General phonetics" gallery on Wikimedia Commons. The original files were created by various Wikimedia Commons contributors and are used here under Creative Commons Attribution-ShareAlike and other compatible free licenses. For full authorship and licensing details, please see the individual file pages on Wikimedia Commons.',
+				"link-text": "View General phonetics gallery",
+				"link-url": "https://commons.wikimedia.org/wiki/General_phonetics",
+			},
+			cmu: {
+				title: "CMU Pronouncing Dictionary",
+				content:
+					"The grapheme-to-phoneme transcription feature uses pronunciation data from the CMU Pronouncing Dictionary, a public domain pronunciation dictionary created by Carnegie Mellon University. The dictionary contains over 134,000 North American English words with their phonetic transcriptions.",
+				"link-text": "Learn more about CMU Dict",
+				"link-url": "http://www.speech.cs.cmu.edu/cgi-bin/cmudict",
+			},
+			"phonetic-data": {
+				title: "Phonetic Data & Resources",
+				content:
+					"Articulatory descriptions, phoneme features, and IPA classifications are compiled from established phonetic resources, linguistic research, and educational materials in the public domain.",
 			},
 		},
 	},
