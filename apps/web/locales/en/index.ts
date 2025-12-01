@@ -220,25 +220,16 @@ export default {
 		},
 		title: "CMUDict Statistics",
 		description:
-			"Insights from the CMU Pronouncing Dictionary, including phoneme frequency, stress patterns, syllable distributions, and ambiguous words.",
+			"Insights from the CMU Pronouncing Dictionary, including phoneme frequency, and syllable distribution.",
 		sections: {
 			phonemes: {
 				title: "Phoneme Frequency",
 				description:
 					"Most frequent phonemes in CMUDict, shown by token count across all pronunciations.",
 			},
-			stress: {
-				title: "Stress Patterns",
-				description:
-					"Distribution of stress markers (primary, secondary, unstressed) and most common stress patterns.",
-			},
 			syllables: {
 				title: "Syllable Distribution",
 				description: "Distribution of syllable counts per word in CMUDict.",
-			},
-			ambiguous: {
-				title: "Ambiguous Words",
-				description: "Words with multiple pronunciation variants in CMUDict.",
 			},
 		},
 	},

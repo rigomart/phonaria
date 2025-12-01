@@ -36,25 +36,10 @@ export type CmudictStatsPayload = {
 		};
 		averageTokensPerWord: number;
 	}>;
-	stress: {
-		primary: number;
-		secondary: number;
-		unstressed: number;
-		topPatterns: Array<{
-			pattern: string[];
-			count: number;
-		}>;
-	};
 	syllables: Array<{
 		count: number;
 		words: number;
 		percentage: number;
-	}>;
-	ambiguousWords: Array<{
-		word: string;
-		variantCount: number;
-		variants: string[];
-		hasMore: boolean;
 	}>;
 	sequences?: {
 		onsets: Array<{
