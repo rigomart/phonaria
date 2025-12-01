@@ -22,14 +22,14 @@ export function PhonemeDetailsHeader() {
 
 	return (
 		<div className="flex flex-col gap-1 bg-background-strong py-2 px-4 shadow-sm">
-			<div className="flex gap-6 items-center">
+			<div className="flex gap-4">
 				<div className="text-2xl sm:text-4xl flex items-baseline gap-2">
 					<span className="text-muted-foreground/50 font-semibold">/</span>
 					<span className="leading-none font-bold">{ipa}</span>
 					<span className="text-muted-foreground/50 font-semibold">/</span>
 				</div>
 				{showAudioControls && (
-					<>
+					<div className="flex gap-1">
 						<AudioControls
 							size="sm"
 							path={`/audio/phonemes/${phonemeId}.ogg`}
@@ -37,28 +37,23 @@ export function PhonemeDetailsHeader() {
 						/>
 						<Popover>
 							<PopoverTrigger asChild>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="h-8 w-8 text-muted-foreground hover:text-foreground"
-									aria-label={t("button-label")}
-								>
-									<Info className="h-4 w-4" />
+								<Button variant="ghost" size="icon" aria-label={t("button-label")}>
+									<Info className="size-3" />
 								</Button>
 							</PopoverTrigger>
-							<PopoverContent align="end" className="w-[calc(100vw-2rem)] sm:w-80">
-								<div className="space-y-3">
+							<PopoverContent>
+								<div className="space-y-1">
 									<p className="text-sm text-muted-foreground">{t("popover-text")}</p>
-									<Button asChild variant="link" size="sm" className="h-auto p-0">
+									<Button asChild variant="link" size="xs" className="h-auto p-0">
 										<Link href="/credits">{t("view-credits")}</Link>
 									</Button>
 								</div>
 							</PopoverContent>
 						</Popover>
-					</>
+					</div>
 				)}
 			</div>
-			<p className="text-xs sm:text-sm text-left text-muted-foreground/80">{label}</p>
+			<p className="text-xs sm:text-sm text-left text-muted-foreground">{label}</p>
 		</div>
 	);
 }

@@ -194,7 +194,7 @@ export default {
 			wikimedia: {
 				title: "Phonetic Audio Samples",
 				content:
-					'Phonetic audio samples used in this app are based on recordings from the "General phonetics" gallery on Wikimedia Commons. The original files were created by various Wikimedia Commons contributors and are used here under Creative Commons Attribution-ShareAlike and other compatible free licenses. For full authorship and licensing details, please see the individual file pages on Wikimedia Commons.',
+					'Phonetic audio samples used in this app are derived from recordings in the "General phonetics" gallery on Wikimedia Commons. The original files were created by various Wikimedia Commons contributors, including Peter Isotalo, Erutuon, Denelson83, and Octane, and are used here under Creative Commons Attribution-ShareAlike and other compatible free licenses. For full authorship and licensing details, please see the individual file pages on Wikimedia Commons.',
 				"link-text": "View General phonetics gallery",
 				"link-url": "https://commons.wikimedia.org/wiki/General_phonetics",
 			},

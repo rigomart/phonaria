@@ -18,7 +18,7 @@ export default async function CreditsPage({ params }: { params: Promise<{ locale
 
 	return (
 		<div className="flex flex-1 flex-col bg-background overflow-y-auto">
-			<div className="container mx-auto p-4 py-6 sm:p-6 lg:p-8 max-w-4xl">
+			<div className="container mx-auto p-4 py-6 sm:p-6 lg:p-8 max-w-4xl bg-background-soft">
 				<h1 className="text-3xl font-bold mb-2">{t("title")}</h1>
 				<p className="text-muted-foreground mb-8">{t("description")}</p>
 

@@ -19,7 +19,7 @@ export async function Footer() {
 							{t("links.credits")}
 						</Link>
 						<a
-							href="https://github.com/anthropics/phonaria"
+							href="https://github.com/rigomart/phonaria"
 							target="_blank"
 							rel="noopener noreferrer"
 							className="text-muted-foreground hover:text-foreground transition-colors"
