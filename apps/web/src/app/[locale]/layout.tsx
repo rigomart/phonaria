@@ -6,8 +6,8 @@ import Providers from "./providers";
 import "./globals.css";
 import type { Metadata } from "next";
 import { setStaticParamsLocale } from "next-international/server";
-import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 import { I18nProviderClient } from "@/locales/client";
 import { getStaticParams } from "@/locales/server";
 

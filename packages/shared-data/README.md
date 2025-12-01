@@ -20,7 +20,6 @@ import {
   VowelIpaRegistry,
   MonophthongIpaRegistry,
   DiphthongIpaRegistry,
-  RhoticIpaRegistry,
 
   // CMU ARPA registries (CMU token → PhonemeId)
   CmuArpaRegistry,
@@ -38,7 +37,6 @@ import {
   ConsonantArticulationRegistry,
   MonophthongVowelArticulationRegistry,
   DiphthongVowelArticulationRegistry,
-  RhoticVowelArticulationRegistry,
 
   // Other registries
   ContrastsByPhonemeIdRegistry,
@@ -63,9 +61,9 @@ import {
 
 | File | Purpose |
 | --- | --- |
-| `ipa-registry.ts` | IPA registries mapping `PhonemeSymbolId` → IPA symbol. Includes consonants, monophthongs, diphthongs, and rhotics. Also provides helper functions for category detection and IPA lookup. |
+| `ipa-registry.ts` | IPA registries mapping `PhonemeSymbolId` → IPA symbol. Includes consonants, monophthongs (with optional `rhoticity`), and diphthongs. Also provides helper functions for category detection and IPA lookup. |
 | `cmu-arpa-registry.ts` | CMU ARPA registry mapping CMU ARPABET tokens (with stress digits) → `PhonemeSymbolId`. Includes bidirectional lookup helpers. |
-| `phoneme-articulations.ts` | Maps each `PhonemeSymbolId` to its articulatory feature set (manner/place/voicing for consonants; height/backness/roundness for vowels). Also defines `VowelType` (monophthong/diphthong/rhotic). |
+| `phoneme-articulations.ts` | Maps each `PhonemeSymbolId` to its articulatory feature set (manner/place/voicing for consonants; height/backness/roundness for vowels). Also defines `VowelType` (monophthong/diphthong) and supports `rhoticity` on vowels. |
 | `phoneme-contrasts.ts` | Minimal-pair style relationships (`ContrastsByPhonemeIdRegistry`) that highlight challenging sound pairs. Each example includes `word` and `phonemic` (IPA). |
 | `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. Each example includes `word` and `phonemic` (IPA). |
 | `phoneme-allophones.ts` | Allophonic variations with context keys for each phoneme. Each example includes `word` and `phonemic` (IPA). |

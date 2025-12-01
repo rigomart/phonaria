@@ -15,7 +15,6 @@ export type {
 	PhonemeCategory,
 	PhonemeSymbolId,
 	PhonemeSymbolIpa,
-	RhoticSymbolIpa,
 	VowelArticulatoryFeatures,
 	VowelPhonemeArticulatoryFeatureKey,
 	VowelSymbolIpa,
@@ -29,7 +28,6 @@ export {
 	MonophthongIpaRegistry,
 	PhonemeCount,
 	PhonemeIpaRegistry,
-	RhoticIpaRegistry,
 	VowelIpaRegistry,
 } from "./phonetics/ipa-registry";
 export {
@@ -45,7 +43,6 @@ export {
 	MonophthongVowelArticulationRegistry,
 	type PhonemeArticulation,
 	PhonemeArticulationRegistry,
-	RhoticVowelArticulationRegistry,
 	type VowelType,
 } from "./phonetics/phoneme-articulations";
 export {

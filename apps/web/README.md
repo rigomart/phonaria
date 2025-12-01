@@ -4,7 +4,7 @@ This package hosts the primary Phonaria experience: a Next.js 15 App Router proj
 
 ## Feature overview
 
-- **Interactive IPA chart** – Explore 40 General American phonemes organized by consonants, monophthongs, diphthongs, and rhotics with detailed articulation metadata, example words, minimal pairs, and optional ElevenLabs audio.
+- **Interactive IPA chart** – Explore 40 General American phonemes organized by consonants, monophthongs (including r-colored vowels), and diphthongs with detailed articulation metadata, example words, minimal pairs, and optional ElevenLabs audio.
 - **Grapheme-to-phoneme transcription** – `POST /api/g2p` converts user text into IPA with stress markers and clickable phoneme insights.
 - **Phoneme detail dialogs** – Click any phoneme to view production guidance, articulatory features, spelling patterns, allophones, and contrast information.
 - **Dictionary integration** – Clicking a transcribed word shows definitions and pronunciation audio via `GET /api/dictionary` (with Upstash Redis rate limiting).

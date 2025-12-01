@@ -10,11 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
 	};
 }
 
-export default async function CreditsPage({
-	params,
-}: {
-	params: Promise<{ locale: string }>;
-}) {
+export default async function CreditsPage({ params }: { params: Promise<{ locale: string }> }) {
 	const { locale } = await params;
 	setStaticParamsLocale(locale);
 

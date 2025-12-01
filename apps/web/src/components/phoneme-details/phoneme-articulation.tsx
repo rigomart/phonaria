@@ -91,7 +91,7 @@ function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllus
 		);
 	}
 
-	if (articulation.vowelType === "monophthong" || articulation.vowelType === "rhotic") {
+	if (articulation.vowelType === "monophthong") {
 		return (
 			<VowelChartCard
 				chartId={phonemeId}
@@ -133,7 +133,7 @@ function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 		);
 	}
 
-	if (articulation.vowelType === "monophthong" || articulation.vowelType === "rhotic") {
+	if (articulation.vowelType === "monophthong") {
 		return (
 			<div className="flex flex-wrap gap-2">
 				<FeatureRow feature={featureDefinitions.height} valueKey={articulation.features.height} />
@@ -149,6 +149,12 @@ function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
 					feature={featureDefinitions.tenseness}
 					valueKey={articulation.features.tenseness}
 				/>
+				{articulation.features.rhoticity ? (
+					<FeatureRow
+						feature={featureDefinitions.rhoticity}
+						valueKey={articulation.features.rhoticity}
+					/>
+				) : null}
 			</div>
 		);
 	}

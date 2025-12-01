@@ -61,14 +61,20 @@ export type VowelArticulatoryFeatures = {
 	backness: "front" | "near-front" | "central" | "near-back" | "back";
 	roundness: "rounded" | "unrounded";
 	tenseness: "tense" | "lax";
+	rhoticity?: "r-colored";
 };
 
 export type VowelPhonemeArticulatoryFeatureKey = keyof VowelArticulatoryFeatures;
 
 // Vowels - Monophthongs
 
-type MonophthongPhonemeIdPattern =
+type StandardMonophthongPhonemeIdPattern =
 	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}`;
+type RColoredMonophthongPhonemeIdPattern =
+	`r-colored-${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}`;
+type MonophthongPhonemeIdPattern =
+	| StandardMonophthongPhonemeIdPattern
+	| RColoredMonophthongPhonemeIdPattern;
 
 export const MonophthongIpaRegistry = {
 	"close-front-unrounded": "i",
@@ -81,6 +87,7 @@ export const MonophthongIpaRegistry = {
 	"open-mid-back-rounded": "ɔ",
 	"near-open-front-unrounded": "æ",
 	"open-back-unrounded": "ɑ",
+	"r-colored-open-mid-central": "ɝ",
 } as const satisfies Partial<Record<MonophthongPhonemeIdPattern, string>>;
 
 export type MonophthongSymbolId = keyof typeof MonophthongIpaRegistry;
@@ -104,29 +111,13 @@ export const DiphthongIpaRegistry = {
 export type DiphthongSymbolId = keyof typeof DiphthongIpaRegistry;
 export type DiphthongSymbolIpa = (typeof DiphthongIpaRegistry)[DiphthongSymbolId];
 
-// Vowels - Rhotic
-
-type RhoticPhonemeIdPattern =
-	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-rhotic`;
-
-export const RhoticIpaRegistry = {
-	"open-mid-central-rhotic": "ɝ",
-} as const satisfies Partial<Record<RhoticPhonemeIdPattern, string>>;
-
-export type RhoticSymbolId = keyof typeof RhoticIpaRegistry;
-export type RhoticSymbolIpa = (typeof RhoticIpaRegistry)[RhoticSymbolId];
-
 // Vowels - All
 
-type VowelPhonemeIdPattern =
-	| MonophthongPhonemeIdPattern
-	| DiphthongPhonemeIdPattern
-	| RhoticPhonemeIdPattern;
+type VowelPhonemeIdPattern = MonophthongPhonemeIdPattern | DiphthongPhonemeIdPattern;
 
 export const VowelIpaRegistry = {
 	...MonophthongIpaRegistry,
 	...DiphthongIpaRegistry,
-	...RhoticIpaRegistry,
 } as const satisfies Partial<Record<VowelPhonemeIdPattern, string>>;
 
 export type VowelSymbolId = keyof typeof VowelIpaRegistry;
@@ -156,7 +147,7 @@ export function getPhonemeCategory(phonemeId: PhonemeSymbolId): PhonemeCategory 
 }
 
 /**
- * Returns the type of a phoneme ("consonant", "monophthong", "diphthong", "rhotic")
+ * Returns the type of a phoneme ("consonant", "monophthong", "diphthong")
  * based on which registry it is found in.
  */
 export function getPhonemeType(phonemeId: PhonemeSymbolId) {
@@ -165,9 +156,6 @@ export function getPhonemeType(phonemeId: PhonemeSymbolId) {
 	}
 	if (phonemeId in DiphthongIpaRegistry) {
 		return "diphthong";
-	}
-	if (phonemeId in RhoticIpaRegistry) {
-		return "rhotic";
 	}
 	return "consonant";
 }
@@ -190,9 +178,8 @@ export const PhonemeCount = {
 	consonants: Object.keys(ConsonantIpaRegistry).length,
 	monophthongs: Object.keys(MonophthongIpaRegistry).length,
 	diphthongs: Object.keys(DiphthongIpaRegistry).length,
-	rhotics: Object.keys(RhoticIpaRegistry).length,
 	get vowels() {
-		return this.monophthongs + this.diphthongs + this.rhotics;
+		return this.monophthongs + this.diphthongs;
 	},
 	get total() {
 		return this.consonants + this.vowels;

@@ -318,8 +318,8 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 		],
 	},
 
-	// Rhotics
-	"open-mid-central-rhotic": {
+	// R-colored vowels
+	"r-colored-open-mid-central": {
 		patterns: ["er", "ir", "ur", "or"],
 		examples: [
 			{ word: "her", phonemic: "hɝ" },

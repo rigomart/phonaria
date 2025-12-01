@@ -30,11 +30,11 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 	const isUnknown = word.source === "fallback";
 
 	return (
-		<div className="flex flex-col items-center text-center min-w-0">
+		<div className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2">
 			<button
 				type="button"
 				className={cn(
-					"text-lg md:text-xl font-normal mb-3 whitespace-nowrap px-3 py-1 rounded-md transition-colors duration-200",
+					"text-lg md:text-xl font-normal whitespace-nowrap px-3 py-1 rounded-md transition-colors duration-200",
 					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
 					"cursor-pointer hover:bg-muted/50 hover:text-foreground",
 					isUnknown ? "text-muted-foreground/50" : "text-muted-foreground",
@@ -106,7 +106,7 @@ export function TranscriptionDisplay() {
 
 	return (
 		<div className="relative flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto bg-muted/20 border border-border/40 p-4 md:p-6">
-			<div className="absolute top-2 right-2 flex items-center gap-1">
+			<div className="absolute top-2 right-2 flex flex-col items-center gap-1">
 				<TranscriptionInfoButton />
 				<TranscriptionCopyButton result={result} />
 			</div>

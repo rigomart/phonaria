@@ -3,12 +3,12 @@
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { getIpaForPhonemeId, getPhonemeType } from "shared-data";
-import { phonemeDetailsById } from "@/data/phoneme-details";
-import { AudioControls } from "../audio-controls";
-import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { phonemeDetailsById } from "@/data/phoneme-details";
 import { useScopedI18n } from "@/locales/client";
+import { AudioControls } from "../audio-controls";
+import { usePhonemeDetailsContext } from "./phoneme-details-context";
 
 export function PhonemeDetailsHeader() {
 	const { phonemeId } = usePhonemeDetailsContext();
@@ -18,8 +18,7 @@ export function PhonemeDetailsHeader() {
 	const { label } = phonemeDetailsById[phonemeId];
 
 	const phonemeType = getPhonemeType(phonemeId);
-	const showAudioControls =
-		phonemeType === "consonant" || phonemeType === "monophthong" || phonemeType === "rhotic";
+	const showAudioControls = phonemeType === "consonant" || phonemeType === "monophthong";
 
 	return (
 		<div className="flex flex-col gap-1 bg-background-strong py-2 px-4 shadow-sm">

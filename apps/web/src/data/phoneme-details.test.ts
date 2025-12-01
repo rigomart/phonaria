@@ -13,6 +13,7 @@ const getFeatureValueDefinition = <K extends FeatureKey>(
 ) => {
 	if (!valueKey) return null;
 	const feature = featureDefinitions[featureKey];
+	if (!feature) return null;
 	const value = feature.values[valueKey];
 	return value ?? null;
 };

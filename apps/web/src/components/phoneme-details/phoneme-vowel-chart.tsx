@@ -11,16 +11,13 @@ import {
 	VOWEL_HEIGHT_ORDER,
 } from "@/lib/vowel-chart-geometry";
 
-type StaticVowelFeatures = Extract<
-	PhonemeArticulation,
-	{ vowelType: "monophthong" | "rhotic" }
->["features"];
+type StaticVowelFeatures = Extract<PhonemeArticulation, { vowelType: "monophthong" }>["features"];
 
 type DiphthongVowelFeatures = Extract<PhonemeArticulation, { vowelType: "diphthong" }>["features"];
 
 export type VowelChartCardProps =
 	| {
-			vowelType: "monophthong" | "rhotic";
+			vowelType: "monophthong";
 			phonemeLabel: string;
 			phonemeIpa: string;
 			features: StaticVowelFeatures;
@@ -45,7 +42,7 @@ export function VowelChartCard(props: VowelChartCardProps) {
 
 	const startRoundness = props.features.roundness;
 	const targetRoundness = isDiphthong ? props.features.targetRoundness : undefined;
-	const isRhotic = props.vowelType === "rhotic";
+	const isRhotic = props.vowelType === "monophthong" && props.features.rhoticity === "r-colored";
 
 	return (
 		<section className="rounded-lg border bg-background-soft p-2">

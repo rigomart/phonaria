@@ -113,7 +113,7 @@ export default {
 				legend: {
 					rounded: "Rounded",
 					unrounded: "Unrounded",
-					rhotic: "Rhotic",
+					"r-colored": "R-colored",
 				},
 			},
 		},

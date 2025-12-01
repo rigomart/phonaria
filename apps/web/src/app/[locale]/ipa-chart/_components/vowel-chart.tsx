@@ -79,7 +79,7 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 	};
 	const ariaLabel = `${marker.entry.label} (${marker.entry.ipa})`;
 	const isRounded = marker.entry.features.roundness === "rounded";
-	const isRhotic = marker.entry.vowelType === "rhotic";
+	const isRhotic = marker.entry.features.rhoticity === "r-colored";
 
 	return (
 		<Tooltip>
@@ -166,7 +166,7 @@ export function VowelChartLegend() {
 			</div>
 			<div className="flex items-center gap-1 sm:gap-1.5">
 				<span className="size-2.5 sm:size-3 rounded-full border border-dashed border-primary bg-primary/10" />
-				<span>{t("rhotic")}</span>
+				<span>{t("r-colored")}</span>
 			</div>
 		</div>
 	);

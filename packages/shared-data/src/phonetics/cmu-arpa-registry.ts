@@ -77,10 +77,10 @@ export const CmuArpaRegistry = {
 	OY1: "open-mid-back-rounded-to-near-close-near-front-unrounded",
 	OY2: "open-mid-back-rounded-to-near-close-near-front-unrounded",
 
-	// Rhotic vowels
-	ER0: "open-mid-central-rhotic",
-	ER1: "open-mid-central-rhotic",
-	ER2: "open-mid-central-rhotic",
+	// R-colored vowels
+	ER0: "r-colored-open-mid-central",
+	ER1: "r-colored-open-mid-central",
+	ER2: "r-colored-open-mid-central",
 } as const satisfies Record<string, PhonemeSymbolId>;
 
 export type CmuArpaToken = keyof typeof CmuArpaRegistry;

@@ -7,11 +7,10 @@ import type {
 	PhonemeArticulatoryFeatures,
 	PhonemeCategory,
 	PhonemeSymbolId,
-	RhoticSymbolId,
 	VowelArticulatoryFeatures,
 } from "./ipa-registry";
 
-export type VowelType = "monophthong" | "diphthong" | "rhotic";
+export type VowelType = "monophthong" | "diphthong";
 
 type PhonemeArticulationBase<
 	Category extends PhonemeCategory,
@@ -242,6 +241,17 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "lax",
 		},
 	},
+	"r-colored-open-mid-central": {
+		category: "vowel",
+		vowelType: "monophthong",
+		features: {
+			height: "open-mid",
+			backness: "central",
+			roundness: "unrounded",
+			tenseness: "tense",
+			rhoticity: "r-colored",
+		},
+	},
 };
 
 // Diphthong vowel articulations
@@ -325,39 +335,16 @@ export const DiphthongVowelArticulationRegistry: Record<
 	},
 };
 
-// Rhotic vowel articulations
-
-type RhoticVowelArticulation = PhonemeArticulationBase<
-	"vowel",
-	VowelArticulatoryFeatures,
-	"rhotic"
->;
-
-export const RhoticVowelArticulationRegistry: Record<RhoticSymbolId, RhoticVowelArticulation> = {
-	"open-mid-central-rhotic": {
-		category: "vowel",
-		vowelType: "rhotic",
-		features: {
-			height: "open-mid",
-			backness: "central",
-			roundness: "unrounded",
-			tenseness: "tense",
-		},
-	},
-};
-
 export const PhonemeArticulationRegistry = {
 	...ConsonantArticulationRegistry,
 	...MonophthongVowelArticulationRegistry,
 	...DiphthongVowelArticulationRegistry,
-	...RhoticVowelArticulationRegistry,
 } as const satisfies Record<PhonemeSymbolId, PhonemeArticulation>;
 
 export type PhonemeArticulation =
 	| ConsonantArticulation
 	| MonophthongVowelArticulation
-	| DiphthongVowelArticulation
-	| RhoticVowelArticulation;
+	| DiphthongVowelArticulation;
 
 type FeatureValueLookup = {
 	[K in PhonemeArticulatoryFeatureKey]: Partial<
@@ -374,6 +361,7 @@ const buildFeatureValueByPhoneme = (): FeatureValueLookup => {
 		backness: {},
 		roundness: {},
 		tenseness: {},
+		rhoticity: {},
 	};
 
 	const assignFeatureValue = <K extends PhonemeArticulatoryFeatureKey>(
@@ -398,6 +386,7 @@ const buildFeatureValueByPhoneme = (): FeatureValueLookup => {
 		assignFeatureValue("backness", phonemeId, features.backness);
 		assignFeatureValue("roundness", phonemeId, features.roundness);
 		assignFeatureValue("tenseness", phonemeId, features.tenseness);
+		assignFeatureValue("rhoticity", phonemeId, features.rhoticity);
 	}
 
 	return lookup;

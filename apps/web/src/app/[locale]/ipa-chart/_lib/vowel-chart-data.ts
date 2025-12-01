@@ -4,14 +4,10 @@ import {
 	MonophthongVowelArticulationRegistry,
 	type PhonemeArticulation,
 	type PhonemeSymbolId,
-	RhoticVowelArticulationRegistry,
 } from "shared-data";
 import { phonemeDetailsById } from "@/data/phoneme-details";
 
-type StaticVowelFeatures = Extract<
-	PhonemeArticulation,
-	{ vowelType: "monophthong" | "rhotic" }
->["features"];
+type StaticVowelFeatures = Extract<PhonemeArticulation, { vowelType: "monophthong" }>["features"];
 
 type DiphthongVowelFeatures = Extract<PhonemeArticulation, { vowelType: "diphthong" }>["features"];
 
@@ -19,7 +15,7 @@ export type StaticVowelChartEntry = {
 	id: PhonemeSymbolId;
 	ipa: string;
 	label: string;
-	vowelType: "monophthong" | "rhotic";
+	vowelType: "monophthong";
 	features: StaticVowelFeatures;
 };
 
@@ -47,20 +43,6 @@ function mapMonophthongs() {
 	});
 }
 
-function mapRhotics() {
-	return Object.entries(RhoticVowelArticulationRegistry).map(([id, articulation]) => {
-		const phonemeId = id as PhonemeSymbolId;
-		const ipa = getIpaForPhonemeId(phonemeId);
-		return {
-			id: phonemeId,
-			ipa,
-			label: phonemeDetailsById[phonemeId].label,
-			vowelType: articulation.vowelType,
-			features: articulation.features,
-		} satisfies StaticVowelChartEntry;
-	});
-}
-
 function mapDiphthongs() {
 	return Object.entries(DiphthongVowelArticulationRegistry).map(([id, articulation]) => {
 		const phonemeId = id as PhonemeSymbolId;
@@ -75,8 +57,6 @@ function mapDiphthongs() {
 	});
 }
 
-export const staticVowelEntries = [...mapMonophthongs(), ...mapRhotics()].filter(
-	Boolean,
-) as StaticVowelChartEntry[];
+export const staticVowelEntries = mapMonophthongs().filter(Boolean) as StaticVowelChartEntry[];
 
 export const diphthongVowelEntries = mapDiphthongs().filter(Boolean) as DiphthongVowelChartEntry[];

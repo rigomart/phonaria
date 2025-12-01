@@ -100,8 +100,8 @@ const phonemeAllophonesData = {
 		},
 	],
 
-	// Rhotic vowel stress variants
-	"open-mid-central-rhotic": [
+	// R-colored vowel stress variants
+	"r-colored-open-mid-central": [
 		{
 			ipaVariant: "ɝ",
 			contextKey: "stressed-r-colored",
@@ -110,7 +110,7 @@ const phonemeAllophonesData = {
 		{
 			ipaVariant: "ɚ",
 			contextKey: "unstressed-r-colored",
-			examples: [{ word: "water", phonemic: "ˈwɔtɝ" }],
+			examples: [{ word: "water", phonemic: "ˈwɔtɚ" }],
 		},
 	],
 } as const;
