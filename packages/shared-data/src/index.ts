@@ -1,3 +1,6 @@
+export { default as cmudictData } from "../data/dict/cmudict.json";
+export { default as cmudictStatsData } from "../data/dict/cmudict-stats.json";
+export type { CmudictPayload, CmudictStatsPayload } from "./dict/types";
 export {
 	CmuArpaRegistry,
 	type CmuArpaToken,

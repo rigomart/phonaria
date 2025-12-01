@@ -5,6 +5,7 @@ export default {
 				overview: "Overview",
 				transcription: "Transcription",
 				"ipa-chart": "IPA Reference",
+				stats: "Statistics",
 			},
 		},
 		footer: {
@@ -209,6 +210,35 @@ export default {
 				title: "Phonetic Data & Resources",
 				content:
 					"Articulatory descriptions, phoneme features, and IPA classifications are compiled from established phonetic resources, linguistic research, and educational materials in the public domain.",
+			},
+		},
+	},
+	"stats-page": {
+		meta: {
+			title: "CMUDict Statistics",
+			description: "Statistics and insights from the CMU Pronouncing Dictionary",
+		},
+		title: "CMUDict Statistics",
+		description:
+			"Insights from the CMU Pronouncing Dictionary, including phoneme frequency, stress patterns, syllable distributions, and ambiguous words.",
+		sections: {
+			phonemes: {
+				title: "Phoneme Frequency",
+				description:
+					"Most frequent phonemes in CMUDict, shown by token count across all pronunciations.",
+			},
+			stress: {
+				title: "Stress Patterns",
+				description:
+					"Distribution of stress markers (primary, secondary, unstressed) and most common stress patterns.",
+			},
+			syllables: {
+				title: "Syllable Distribution",
+				description: "Distribution of syllable counts per word in CMUDict.",
+			},
+			ambiguous: {
+				title: "Ambiguous Words",
+				description: "Words with multiple pronunciation variants in CMUDict.",
 			},
 		},
 	},
