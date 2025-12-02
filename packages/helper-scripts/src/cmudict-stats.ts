@@ -138,9 +138,7 @@ function generateStats(payload: CmudictPayload): CmudictStatsPayload {
 			words: meta.wordCount,
 			variants: meta.variantCount,
 			multiplePronunciationShare:
-				meta.wordCount > 0
-					? (aggregated.multiplePronunciationCount / meta.wordCount) * 100
-					: 0,
+				meta.wordCount > 0 ? (aggregated.multiplePronunciationCount / meta.wordCount) * 100 : 0,
 		},
 		phonemes,
 		syllables,
