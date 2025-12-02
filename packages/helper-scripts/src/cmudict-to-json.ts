@@ -1,21 +1,16 @@
-import * as fs from "node:fs";
 import * as path from "node:path";
 import { config } from "dotenv";
+import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 config();
 
-/**
- * Normalize CMU word entry (remove variant numbers and uppercase)
- */
 function normalizeCmuWord(input: string): string {
 	const base = input.includes("(") ? input.replace(/\(\d+\)$/, "") : input;
 	return base.toUpperCase();
 }
 
-// Type for the compact JSON format
 type CompactCmudict = Record<string, string[]>;
 
-// Type for the new payload format with metadata
 type CmudictPayload = {
 	meta: {
 		formatVersion: number;
@@ -42,20 +37,6 @@ if (!cmudictUrl) {
 // TypeScript knows cmudictUrl is defined after the check above
 const safeCmudictUrl: string = cmudictUrl;
 
-/**
- * Ensure output directory exists
- */
-function ensureOutputDirectory(): void {
-	const dir = path.dirname(outputPath);
-	if (!fs.existsSync(dir)) {
-		fs.mkdirSync(dir, { recursive: true });
-		console.log(`Created output directory: ${dir}`);
-	}
-}
-
-/**
- * Parse CMUDict content and convert to compact JSON format
- */
 function parseCmudict(content: string): {
 	result: CompactCmudict;
 	wordCount: number;
@@ -142,9 +123,6 @@ function parseCmudict(content: string): {
 	};
 }
 
-/**
- * Fetch CMUDict data from URL
- */
 async function fetchCmudict(): Promise<string> {
 	console.log("Fetching CMUDict data from remote source...");
 
@@ -185,27 +163,18 @@ async function fetchCmudict(): Promise<string> {
 	return text;
 }
 
-/**
- * Save dictionary to JSON file
- */
 function saveToJson(payload: CmudictPayload): void {
 	const wordCount = payload.meta.wordCount;
 	console.log(`Saving ${wordCount} words to ${payload.meta.sourceUrl}`);
 
-	const json = JSON.stringify(payload, null, 0);
-	fs.writeFileSync(outputPath, json, "utf-8");
-
-	const stats = fs.statSync(outputPath);
-	console.log(`Saved ${stats.size} bytes to ${outputPath}`);
+	const bytesWritten = writeJsonFile(outputPath, payload);
+	console.log(`Saved ${bytesWritten} bytes to ${outputPath}`);
 }
 
-/**
- * Generate CMUDict JSON file
- */
 async function main(): Promise<void> {
 	console.log("Starting CMUDict JSON generation...");
 
-	ensureOutputDirectory();
+	ensureDirectoryForFile(outputPath);
 
 	try {
 		const content = await fetchCmudict();

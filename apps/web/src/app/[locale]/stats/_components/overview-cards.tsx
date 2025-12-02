@@ -1,8 +1,16 @@
 "use client";
 
+import { BookOpen, Volume2 } from "lucide-react";
 import { cmudictStatsData } from "shared-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
+import {
+	Item,
+	ItemContent,
+	ItemDescription,
+	ItemGroup,
+	ItemMedia,
+	ItemTitle,
+} from "@/components/ui/item";
 import { useScopedI18n } from "@/locales/client";
 
 export function OverviewCards() {
@@ -18,6 +26,9 @@ export function OverviewCards() {
 			<CardContent>
 				<ItemGroup className="flex flex-col gap-2">
 					<Item variant="outline">
+						<ItemMedia variant="icon">
+							<BookOpen />
+						</ItemMedia>
 						<ItemContent>
 							<ItemDescription>{t("total-words")}</ItemDescription>
 							<ItemTitle className="text-2xl">{overview.words.toLocaleString()}</ItemTitle>
@@ -25,6 +36,9 @@ export function OverviewCards() {
 					</Item>
 
 					<Item variant="outline">
+						<ItemMedia variant="icon">
+							<Volume2 />
+						</ItemMedia>
 						<ItemContent>
 							<ItemDescription>{t("total-pronunciations")}</ItemDescription>
 							<ItemTitle className="text-2xl">{overview.variants.toLocaleString()}</ItemTitle>

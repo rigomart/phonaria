@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { cmudictStatsData } from "shared-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -45,6 +45,7 @@ export function SyllableHistogram() {
 							tickLine={false}
 							label={{ value: "Word count", angle: -90, position: "insideLeft" }}
 						/>
+						<CartesianGrid vertical={false} />
 						<ChartTooltip
 							content={
 								<ChartTooltipContent

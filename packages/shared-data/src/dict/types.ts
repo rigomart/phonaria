@@ -14,7 +14,7 @@ export type CmudictPayload = {
 
 export type CmudictStatsPayload = {
 	meta: {
-		generatedAt: string;
+		generatedAt: number;
 		source: string;
 		sourceUrl: string;
 		wordCount: number;
@@ -41,18 +41,4 @@ export type CmudictStatsPayload = {
 		words: number;
 		percentage: number;
 	}>;
-	sequences?: {
-		onsets: Array<{
-			bigram: string;
-			count: number;
-		}>;
-		codas: Array<{
-			bigram: string;
-			count: number;
-		}>;
-		trigrams: Array<{
-			trigram: string;
-			count: number;
-		}>;
-	};
 };
