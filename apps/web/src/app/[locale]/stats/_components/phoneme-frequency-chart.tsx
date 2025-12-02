@@ -1,21 +1,21 @@
 "use client";
 
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
-import type { CmudictStatsPayload } from "shared-data";
 import { cmudictStatsData } from "shared-data";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	type ChartConfig,
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useScopedI18n } from "@/locales/client";
 
 export function PhonemeFrequencyChart() {
-	const stats = cmudictStatsData as CmudictStatsPayload;
-	const topPhonemes = stats.phonemes.slice(0, 20);
+	const stats = cmudictStatsData;
+	const t = useScopedI18n("stats-page.sections.phonemes");
 
-	const chartData = topPhonemes.map((phoneme) => ({
+	const chartData = stats.phonemes.map((phoneme) => ({
 		phoneme: phoneme.ipa || phoneme.arpa,
 		arpa: phoneme.arpa,
 		frequency: phoneme.tokenCount,
@@ -31,25 +31,19 @@ export function PhonemeFrequencyChart() {
 
 	return (
 		<Card>
-			<CardContent className="p-4">
-				<ChartContainer config={chartConfig} className="min-h-[250px] w-full">
-					<BarChart
-						accessibilityLayer
-						data={chartData}
-						layout="vertical"
-						margin={{ left: 40, right: 20 }}
-					>
-						<XAxis type="number" />
+			<CardHeader>
+				<CardTitle className="text-xl font-semibold">{t("title")}</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<ChartContainer config={chartConfig} className="min-h-[1000px] w-full">
+					<BarChart accessibilityLayer data={chartData} layout="vertical">
+						<XAxis tickLine={false} type="number" />
 						<YAxis
+							tickLine={false}
+							axisLine={false}
 							dataKey="phoneme"
 							type="category"
-							tickLine={false}
-							tickMargin={10}
-							width={60}
-							tickFormatter={(value) => {
-								const item = chartData.find((d) => d.phoneme === value);
-								return item?.arpa || value;
-							}}
+							tickMargin={8}
 						/>
 						<ChartTooltip
 							content={
@@ -71,7 +65,7 @@ export function PhonemeFrequencyChart() {
 								/>
 							}
 						/>
-						<Bar dataKey="frequency" fill="var(--color-frequency)" radius={4} />
+						<Bar dataKey="frequency" fill="var(--color-frequency)" radius={8} />
 					</BarChart>
 				</ChartContainer>
 			</CardContent>

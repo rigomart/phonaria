@@ -12,9 +12,9 @@ const statsOutputPath =
 
 /**
  * Extract ARPAbet token from a token string (removes stress markers)
+ * Used for sequence analysis where stress is not needed
  */
 function extractArpaToken(token: string): string {
-	// Remove stress markers (0, 1, 2) from the end
 	return token.replace(/[012]$/, "");
 }
 
@@ -124,16 +124,15 @@ function generateStats(payload: CmudictPayload): CmudictStatsPayload {
 			const syllableCount = countSyllables(tokens);
 			syllableCounts.set(syllableCount, (syllableCounts.get(syllableCount) || 0) + 1);
 
-			// Process tokens
+			// Process tokens (keep stress markers for phoneme mapping)
 			for (const token of tokens) {
-				const arpa = extractArpaToken(token);
-				if (arpa) {
-					phonemeTokenCounts.set(arpa, (phonemeTokenCounts.get(arpa) || 0) + 1);
-					if (!phonemeWordSets.has(arpa)) {
-						phonemeWordSets.set(arpa, new Set());
+				if (token.length > 0) {
+					phonemeTokenCounts.set(token, (phonemeTokenCounts.get(token) || 0) + 1);
+					if (!phonemeWordSets.has(token)) {
+						phonemeWordSets.set(token, new Set());
 					}
-					phonemeWordSets.get(arpa)?.add(word);
-					phonemeTotalTokens.set(arpa, (phonemeTotalTokens.get(arpa) || 0) + 1);
+					phonemeWordSets.get(token)?.add(word);
+					phonemeTotalTokens.set(token, (phonemeTotalTokens.get(token) || 0) + 1);
 				}
 			}
 
@@ -170,28 +169,28 @@ function generateStats(payload: CmudictPayload): CmudictStatsPayload {
 
 	// Build phoneme stats
 	const phonemes = Array.from(phonemeTokenCounts.entries())
-		.map(([arpa, tokenCount]) => {
-			const wordSet = phonemeWordSets.get(arpa);
+		.map(([arpaToken, tokenCount]) => {
+			const wordSet = phonemeWordSets.get(arpaToken);
 			if (!wordSet) {
-				throw new Error(`Missing word set for phoneme ${arpa}`);
+				throw new Error(`Missing word set for phoneme ${arpaToken}`);
 			}
 			const wordCoverage = wordSet.size;
-			const totalTokens = phonemeTotalTokens.get(arpa) || 0;
+			const totalTokens = phonemeTotalTokens.get(arpaToken) || 0;
 			const averageTokensPerWord = wordCoverage > 0 ? totalTokens / wordCoverage : 0;
 
-			// Try to get IPA symbol
+			// Map ARPA token (with stress) to IPA symbol via phoneme ID
 			let ipa: string | null = null;
 			try {
-				if (arpa in CmuArpaRegistry) {
-					const phonemeId = getPhonemeIdForCmuArpa(arpa as keyof typeof CmuArpaRegistry);
+				if (arpaToken in CmuArpaRegistry) {
+					const phonemeId = getPhonemeIdForCmuArpa(arpaToken as keyof typeof CmuArpaRegistry);
 					ipa = getIpaForPhonemeId(phonemeId);
 				}
 			} catch {
-				// If mapping fails, leave IPA as null
+				// Mapping failed, leave IPA as null
 			}
 
 			return {
-				arpa,
+				arpa: arpaToken,
 				ipa,
 				tokenCount,
 				wordCoverage: {

@@ -1,21 +1,21 @@
 "use client";
 
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
-import type { CmudictStatsPayload } from "shared-data";
 import { cmudictStatsData } from "shared-data";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	type ChartConfig,
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useScopedI18n } from "@/locales/client";
 
 export function SyllableHistogram() {
-	const stats = cmudictStatsData as CmudictStatsPayload;
-	const syllables = stats.syllables.filter((s) => s.count <= 10); // Cap at 10 for readability
+	const stats = cmudictStatsData;
+	const t = useScopedI18n("stats-page.sections.syllables");
 
-	const chartData = syllables.map((s) => ({
+	const chartData = stats.syllables.map((s) => ({
 		syllables: s.count,
 		words: s.words,
 		percentage: s.percentage,
@@ -30,20 +30,19 @@ export function SyllableHistogram() {
 
 	return (
 		<Card>
-			<CardContent className="p-4">
-				<ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+			<CardHeader>
+				<CardTitle className="text-xl font-semibold">{t("title")}</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<ChartContainer config={chartConfig} className="w-full">
 					<BarChart accessibilityLayer data={chartData}>
 						<XAxis
 							dataKey="syllables"
 							tickLine={false}
-							tickMargin={10}
-							axisLine={false}
 							label={{ value: "Syllables per word", position: "insideBottom", offset: -5 }}
 						/>
 						<YAxis
 							tickLine={false}
-							tickMargin={10}
-							axisLine={false}
 							label={{ value: "Word count", angle: -90, position: "insideLeft" }}
 						/>
 						<ChartTooltip
@@ -64,7 +63,7 @@ export function SyllableHistogram() {
 								/>
 							}
 						/>
-						<Bar dataKey="words" fill="var(--color-words)" radius={4} />
+						<Bar dataKey="words" fill="var(--color-words)" radius={8} />
 					</BarChart>
 				</ChartContainer>
 			</CardContent>

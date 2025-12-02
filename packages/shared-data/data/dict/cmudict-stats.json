@@ -1,6 +1,6 @@
 {
 	"meta": {
-		"generatedAt": "2025-12-01T21:18:29.465Z",
+		"generatedAt": "2025-12-01T22:55:10.437Z",
 		"source": "cmudict",
 		"sourceUrl": "https://raw.githubusercontent.com/rigomart/cmudict/0f8072f814306c5ee4fbf992ed853601b12c01f9/cmudict.dict",
 		"wordCount": 126052,
@@ -14,11 +14,11 @@
 	},
 	"phonemes": [
 		{
-			"arpa": "AH",
-			"ipa": null,
-			"tokenCount": 71199,
-			"wordCoverage": { "count": 55044, "percentage": 43.667692698251514 },
-			"averageTokensPerWord": 1.2934924787442772
+			"arpa": "AH0",
+			"ipa": "ə",
+			"tokenCount": 63177,
+			"wordCoverage": { "count": 50044, "percentage": 39.70107574651731 },
+			"averageTokensPerWord": 1.262429062425066
 		},
 		{
 			"arpa": "N",
@@ -33,13 +33,6 @@
 			"tokenCount": 50458,
 			"wordCoverage": { "count": 41418, "percentage": 32.857868181385456 },
 			"averageTokensPerWord": 1.218262591143947
-		},
-		{
-			"arpa": "IH",
-			"ipa": null,
-			"tokenCount": 50454,
-			"wordCoverage": { "count": 40361, "percentage": 32.019325357788844 },
-			"averageTokensPerWord": 1.2500681350808949
 		},
 		{
 			"arpa": "L",
@@ -70,18 +63,18 @@
 			"averageTokensPerWord": 1.159524385979071
 		},
 		{
-			"arpa": "IY",
-			"ipa": null,
-			"tokenCount": 35131,
-			"wordCoverage": { "count": 30631, "percentage": 24.300288769714086 },
-			"averageTokensPerWord": 1.1469099931442004
-		},
-		{
 			"arpa": "D",
 			"ipa": "d",
 			"tokenCount": 32575,
 			"wordCoverage": { "count": 27940, "percentage": 22.165455526290735 },
 			"averageTokensPerWord": 1.1658911954187545
+		},
+		{
+			"arpa": "IH0",
+			"ipa": "ɪ",
+			"tokenCount": 30214,
+			"wordCoverage": { "count": 26175, "percentage": 20.76523974232856 },
+			"averageTokensPerWord": 1.1543075453677172
 		},
 		{
 			"arpa": "M",
@@ -91,13 +84,6 @@
 			"averageTokensPerWord": 1.1211321750273244
 		},
 		{
-			"arpa": "ER",
-			"ipa": null,
-			"tokenCount": 29164,
-			"wordCoverage": { "count": 26305, "percentage": 20.868371783073652 },
-			"averageTokensPerWord": 1.108686561490211
-		},
-		{
 			"arpa": "Z",
 			"ipa": "z",
 			"tokenCount": 28247,
@@ -105,25 +91,18 @@
 			"averageTokensPerWord": 1.1350558546974203
 		},
 		{
-			"arpa": "EH",
-			"ipa": null,
-			"tokenCount": 27714,
-			"wordCoverage": { "count": 24764, "percentage": 19.64586043854917 },
-			"averageTokensPerWord": 1.1191245356162172
+			"arpa": "ER0",
+			"ipa": "ɝ",
+			"tokenCount": 23971,
+			"wordCoverage": { "count": 22035, "percentage": 17.480880906292644 },
+			"averageTokensPerWord": 1.0878602223734968
 		},
 		{
-			"arpa": "AA",
-			"ipa": null,
-			"tokenCount": 25303,
-			"wordCoverage": { "count": 22319, "percentage": 17.706184749151145 },
-			"averageTokensPerWord": 1.133697746314799
-		},
-		{
-			"arpa": "AE",
-			"ipa": null,
-			"tokenCount": 22056,
-			"wordCoverage": { "count": 20104, "percentage": 15.94897343953289 },
-			"averageTokensPerWord": 1.0970951054516513
+			"arpa": "IY0",
+			"ipa": "i",
+			"tokenCount": 22163,
+			"wordCoverage": { "count": 20236, "percentage": 16.053692127058675 },
+			"averageTokensPerWord": 1.0952263293140938
 		},
 		{
 			"arpa": "B",
@@ -133,6 +112,13 @@
 			"averageTokensPerWord": 1.102771065754974
 		},
 		{
+			"arpa": "EH1",
+			"ipa": "ɛ",
+			"tokenCount": 20851,
+			"wordCoverage": { "count": 19489, "percentage": 15.461079554469585 },
+			"averageTokensPerWord": 1.0698855764790394
+		},
+		{
 			"arpa": "P",
 			"ipa": "p",
 			"tokenCount": 19996,
@@ -140,11 +126,25 @@
 			"averageTokensPerWord": 1.1288883870603512
 		},
 		{
-			"arpa": "OW",
-			"ipa": null,
-			"tokenCount": 19348,
-			"wordCoverage": { "count": 17307, "percentage": 13.730047916732776 },
-			"averageTokensPerWord": 1.1179291616109088
+			"arpa": "AA1",
+			"ipa": "ɑ",
+			"tokenCount": 16969,
+			"wordCoverage": { "count": 16268, "percentage": 12.90578491416241 },
+			"averageTokensPerWord": 1.0430907302680108
+		},
+		{
+			"arpa": "AE1",
+			"ipa": "æ",
+			"tokenCount": 16915,
+			"wordCoverage": { "count": 16036, "percentage": 12.72173388760194 },
+			"averageTokensPerWord": 1.054814168121726
+		},
+		{
+			"arpa": "IH1",
+			"ipa": "ɪ",
+			"tokenCount": 15778,
+			"wordCoverage": { "count": 14904, "percentage": 11.823691809729318 },
+			"averageTokensPerWord": 1.058641975308642
 		},
 		{
 			"arpa": "F",
@@ -154,32 +154,11 @@
 			"averageTokensPerWord": 1.0949768826894444
 		},
 		{
-			"arpa": "EY",
-			"ipa": null,
-			"tokenCount": 13749,
-			"wordCoverage": { "count": 12807, "percentage": 10.160092660171994 },
-			"averageTokensPerWord": 1.0735535254157882
-		},
-		{
 			"arpa": "G",
 			"ipa": "ɡ",
 			"tokenCount": 13693,
 			"wordCoverage": { "count": 12567, "percentage": 9.96969504648875 },
 			"averageTokensPerWord": 1.0895997453648445
-		},
-		{
-			"arpa": "AO",
-			"ipa": null,
-			"tokenCount": 11571,
-			"wordCoverage": { "count": 10861, "percentage": 8.61628534255704 },
-			"averageTokensPerWord": 1.0653715127520487
-		},
-		{
-			"arpa": "AY",
-			"ipa": null,
-			"tokenCount": 11534,
-			"wordCoverage": { "count": 10593, "percentage": 8.403674673944087 },
-			"averageTokensPerWord": 1.0888322477107524
 		},
 		{
 			"arpa": "V",
@@ -189,6 +168,13 @@
 			"averageTokensPerWord": 1.1172884158313527
 		},
 		{
+			"arpa": "IY1",
+			"ipa": "i",
+			"tokenCount": 10329,
+			"wordCoverage": { "count": 9772, "percentage": 7.752356170469329 },
+			"averageTokensPerWord": 1.0569995906672125
+		},
+		{
 			"arpa": "NG",
 			"ipa": "ŋ",
 			"tokenCount": 9992,
@@ -196,18 +182,18 @@
 			"averageTokensPerWord": 1.1034787410270568
 		},
 		{
-			"arpa": "UW",
-			"ipa": null,
-			"tokenCount": 9973,
-			"wordCoverage": { "count": 9241, "percentage": 7.331101450195157 },
-			"averageTokensPerWord": 1.0792122064711611
-		},
-		{
 			"arpa": "HH",
 			"ipa": "h",
 			"tokenCount": 9379,
 			"wordCoverage": { "count": 8853, "percentage": 7.023291974740584 },
 			"averageTokensPerWord": 1.0594148876087202
+		},
+		{
+			"arpa": "EY1",
+			"ipa": "eɪ",
+			"tokenCount": 9365,
+			"wordCoverage": { "count": 8910, "percentage": 7.0685114079903535 },
+			"averageTokensPerWord": 1.0510662177328844
 		},
 		{
 			"arpa": "W",
@@ -224,6 +210,48 @@
 			"averageTokensPerWord": 1.078361858190709
 		},
 		{
+			"arpa": "OW1",
+			"ipa": "oʊ",
+			"tokenCount": 8673,
+			"wordCoverage": { "count": 8344, "percentage": 6.619490369054041 },
+			"averageTokensPerWord": 1.0394295302013423
+		},
+		{
+			"arpa": "OW0",
+			"ipa": "oʊ",
+			"tokenCount": 8215,
+			"wordCoverage": { "count": 7536, "percentage": 5.978485069653794 },
+			"averageTokensPerWord": 1.0901008492569002
+		},
+		{
+			"arpa": "AO1",
+			"ipa": "ɔ",
+			"tokenCount": 8178,
+			"wordCoverage": { "count": 7854, "percentage": 6.230761907784089 },
+			"averageTokensPerWord": 1.0412528647822765
+		},
+		{
+			"arpa": "AY1",
+			"ipa": "aɪ",
+			"tokenCount": 6932,
+			"wordCoverage": { "count": 6507, "percentage": 5.162155300986894 },
+			"averageTokensPerWord": 1.065314276932534
+		},
+		{
+			"arpa": "AH1",
+			"ipa": "ʌ",
+			"tokenCount": 6878,
+			"wordCoverage": { "count": 6570, "percentage": 5.212134674578746 },
+			"averageTokensPerWord": 1.0468797564687975
+		},
+		{
+			"arpa": "UW1",
+			"ipa": "u",
+			"tokenCount": 6717,
+			"wordCoverage": { "count": 6329, "percentage": 5.020943737505156 },
+			"averageTokensPerWord": 1.0613051034918628
+		},
+		{
 			"arpa": "JH",
 			"ipa": "dʒ",
 			"tokenCount": 6394,
@@ -238,6 +266,13 @@
 			"averageTokensPerWord": 1.0889348500517062
 		},
 		{
+			"arpa": "AA0",
+			"ipa": "ɑ",
+			"tokenCount": 4966,
+			"wordCoverage": { "count": 4588, "percentage": 3.6397677149113066 },
+			"averageTokensPerWord": 1.0823888404533566
+		},
+		{
 			"arpa": "CH",
 			"ipa": "tʃ",
 			"tokenCount": 4955,
@@ -245,11 +280,53 @@
 			"averageTokensPerWord": 1.0774081322026527
 		},
 		{
-			"arpa": "AW",
-			"ipa": null,
-			"tokenCount": 3377,
-			"wordCoverage": { "count": 3199, "percentage": 2.537841525719544 },
-			"averageTokensPerWord": 1.055642388246327
+			"arpa": "ER1",
+			"ipa": "ɝ",
+			"tokenCount": 4581,
+			"wordCoverage": { "count": 4335, "percentage": 3.439056897153556 },
+			"averageTokensPerWord": 1.0567474048442906
+		},
+		{
+			"arpa": "IH2",
+			"ipa": "ɪ",
+			"tokenCount": 4462,
+			"wordCoverage": { "count": 4129, "percentage": 3.275632278742106 },
+			"averageTokensPerWord": 1.0806490675708404
+		},
+		{
+			"arpa": "EH2",
+			"ipa": "ɛ",
+			"tokenCount": 3934,
+			"wordCoverage": { "count": 3649, "percentage": 2.8948370513756227 },
+			"averageTokensPerWord": 1.0781035900246643
+		},
+		{
+			"arpa": "EY2",
+			"ipa": "eɪ",
+			"tokenCount": 3418,
+			"wordCoverage": { "count": 3252, "percentage": 2.579887665407927 },
+			"averageTokensPerWord": 1.0510455104551046
+		},
+		{
+			"arpa": "AE2",
+			"ipa": "æ",
+			"tokenCount": 3408,
+			"wordCoverage": { "count": 3205, "percentage": 2.542601466061625 },
+			"averageTokensPerWord": 1.0633385335413417
+		},
+		{
+			"arpa": "AY2",
+			"ipa": "aɪ",
+			"tokenCount": 3395,
+			"wordCoverage": { "count": 3232, "percentage": 2.56402119760099 },
+			"averageTokensPerWord": 1.0504331683168318
+		},
+		{
+			"arpa": "AA2",
+			"ipa": "ɑ",
+			"tokenCount": 3368,
+			"wordCoverage": { "count": 3161, "percentage": 2.5076952368863643 },
+			"averageTokensPerWord": 1.0654856058209428
 		},
 		{
 			"arpa": "TH",
@@ -259,18 +336,116 @@
 			"averageTokensPerWord": 1.058210564139418
 		},
 		{
-			"arpa": "UH",
-			"ipa": null,
-			"tokenCount": 2340,
-			"wordCoverage": { "count": 2243, "percentage": 1.7794243645479644 },
-			"averageTokensPerWord": 1.0432456531431118
+			"arpa": "EH0",
+			"ipa": "ɛ",
+			"tokenCount": 2929,
+			"wordCoverage": { "count": 2777, "percentage": 2.2030590549931772 },
+			"averageTokensPerWord": 1.0547353258912495
 		},
 		{
-			"arpa": "OY",
-			"ipa": null,
-			"tokenCount": 1289,
-			"wordCoverage": { "count": 1205, "percentage": 0.9559546853679433 },
-			"averageTokensPerWord": 1.0697095435684647
+			"arpa": "IY2",
+			"ipa": "i",
+			"tokenCount": 2639,
+			"wordCoverage": { "count": 2512, "percentage": 1.9928283565512646 },
+			"averageTokensPerWord": 1.0505573248407643
+		},
+		{
+			"arpa": "OW2",
+			"ipa": "oʊ",
+			"tokenCount": 2460,
+			"wordCoverage": { "count": 2346, "percentage": 1.861136673753689 },
+			"averageTokensPerWord": 1.0485933503836318
+		},
+		{
+			"arpa": "AW1",
+			"ipa": "aʊ",
+			"tokenCount": 2346,
+			"wordCoverage": { "count": 2244, "percentage": 1.7802176879383111 },
+			"averageTokensPerWord": 1.0454545454545454
+		},
+		{
+			"arpa": "UW0",
+			"ipa": "u",
+			"tokenCount": 2061,
+			"wordCoverage": { "count": 1949, "percentage": 1.546187287785993 },
+			"averageTokensPerWord": 1.0574653668547973
+		},
+		{
+			"arpa": "AO2",
+			"ipa": "ɔ",
+			"tokenCount": 1886,
+			"wordCoverage": { "count": 1817, "percentage": 1.44146860026021 },
+			"averageTokensPerWord": 1.0379746835443038
+		},
+		{
+			"arpa": "AE0",
+			"ipa": "æ",
+			"tokenCount": 1733,
+			"wordCoverage": { "count": 1672, "percentage": 1.3264367086599183 },
+			"averageTokensPerWord": 1.0364832535885167
+		},
+		{
+			"arpa": "UH1",
+			"ipa": "ʊ",
+			"tokenCount": 1605,
+			"wordCoverage": { "count": 1540, "percentage": 1.2217180211341352 },
+			"averageTokensPerWord": 1.0422077922077921
+		},
+		{
+			"arpa": "AO0",
+			"ipa": "ɔ",
+			"tokenCount": 1507,
+			"wordCoverage": { "count": 1445, "percentage": 1.1463522990511852 },
+			"averageTokensPerWord": 1.0429065743944637
+		},
+		{
+			"arpa": "AY0",
+			"ipa": "aɪ",
+			"tokenCount": 1207,
+			"wordCoverage": { "count": 1165, "percentage": 0.9242217497540697 },
+			"averageTokensPerWord": 1.0360515021459227
+		},
+		{
+			"arpa": "UW2",
+			"ipa": "u",
+			"tokenCount": 1195,
+			"wordCoverage": { "count": 1141, "percentage": 0.9051819883857455 },
+			"averageTokensPerWord": 1.0473269062226118
+		},
+		{
+			"arpa": "AH2",
+			"ipa": "ʌ",
+			"tokenCount": 1144,
+			"wordCoverage": { "count": 1073, "percentage": 0.8512359978421603 },
+			"averageTokensPerWord": 1.0661696178937559
+		},
+		{
+			"arpa": "EY0",
+			"ipa": "eɪ",
+			"tokenCount": 966,
+			"wordCoverage": { "count": 920, "percentage": 0.7298575191190937 },
+			"averageTokensPerWord": 1.05
+		},
+		{
+			"arpa": "OY1",
+			"ipa": "ɔɪ",
+			"tokenCount": 958,
+			"wordCoverage": { "count": 896, "percentage": 0.7108177577507696 },
+			"averageTokensPerWord": 1.0691964285714286
+		},
+		{
+			"arpa": "AW2",
+			"ipa": "aʊ",
+			"tokenCount": 652,
+			"wordCoverage": { "count": 629, "percentage": 0.49900041252816296 },
+			"averageTokensPerWord": 1.0365659777424483
+		},
+		{
+			"arpa": "ER2",
+			"ipa": "ɝ",
+			"tokenCount": 612,
+			"wordCoverage": { "count": 595, "percentage": 0.4720274172563704 },
+			"averageTokensPerWord": 1.0285714285714285
 		},
 		{
 			"arpa": "DH",
@@ -285,6 +460,41 @@
 			"tokenCount": 574,
 			"wordCoverage": { "count": 534, "percentage": 0.42363469044521307 },
 			"averageTokensPerWord": 1.0749063670411985
+		},
+		{
+			"arpa": "UH2",
+			"ipa": "ʊ",
+			"tokenCount": 478,
+			"wordCoverage": { "count": 471, "percentage": 0.3736553168533621 },
+			"averageTokensPerWord": 1.0148619957537155
+		},
+		{
+			"arpa": "AW0",
+			"ipa": "aʊ",
+			"tokenCount": 379,
+			"wordCoverage": { "count": 372, "percentage": 0.2951163012090249 },
+			"averageTokensPerWord": 1.0188172043010753
+		},
+		{
+			"arpa": "UH0",
+			"ipa": "ʊ",
+			"tokenCount": 257,
+			"wordCoverage": { "count": 254, "percentage": 0.2015041411480976 },
+			"averageTokensPerWord": 1.0118110236220472
+		},
+		{
+			"arpa": "OY2",
+			"ipa": "ɔɪ",
+			"tokenCount": 207,
+			"wordCoverage": { "count": 201, "percentage": 0.15945800145971506 },
+			"averageTokensPerWord": 1.0298507462686568
+		},
+		{
+			"arpa": "OY0",
+			"ipa": "ɔɪ",
+			"tokenCount": 124,
+			"wordCoverage": { "count": 120, "percentage": 0.09519880684162092 },
+			"averageTokensPerWord": 1.0333333333333334
 		}
 	],
 	"syllables": [

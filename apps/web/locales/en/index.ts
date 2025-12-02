@@ -222,14 +222,17 @@ export default {
 		description:
 			"Insights from the CMU Pronouncing Dictionary, including phoneme frequency, and syllable distribution.",
 		sections: {
+			overview: {
+				title: "Overview",
+				"updated-at": "Updated at",
+				"total-pronunciations": "Total Pronunciations",
+				"total-words": "Total Words",
+			},
 			phonemes: {
 				title: "Phoneme Frequency",
-				description:
-					"Most frequent phonemes in CMUDict, shown by token count across all pronunciations.",
 			},
 			syllables: {
 				title: "Syllable Distribution",
-				description: "Distribution of syllable counts per word in CMUDict.",
 			},
 		},
 	},

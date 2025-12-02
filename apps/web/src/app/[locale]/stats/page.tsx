@@ -25,20 +25,13 @@ export default async function StatsPage({ params }: { params: Promise<{ locale: 
 				<h1 className="text-3xl font-bold mb-1">{t("title")}</h1>
 				<p className="text-muted-foreground mb-4">{t("description")}</p>
 
-				<div className="space-y-6">
-					<OverviewCards />
-
-					<section className="space-y-2">
-						<h2 className="text-xl font-semibold">{t("sections.phonemes.title")}</h2>
-						<p className="text-sm text-muted-foreground">{t("sections.phonemes.description")}</p>
-						<PhonemeFrequencyChart />
-					</section>
-
-					<section className="space-y-2">
-						<h2 className="text-xl font-semibold">{t("sections.syllables.title")}</h2>
-						<p className="text-sm text-muted-foreground">{t("sections.syllables.description")}</p>
+				<div className="grid gap-6 md:grid-cols-2">
+					<div className="space-y-6">
+						<OverviewCards />
 						<SyllableHistogram />
-					</section>
+					</div>
+
+					<PhonemeFrequencyChart />
 				</div>
 			</div>
 		</div>
