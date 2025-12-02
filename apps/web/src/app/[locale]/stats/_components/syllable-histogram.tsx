@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { cmudictStatsData } from "shared-data";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	type ChartConfig,
 	ChartContainer,
@@ -32,41 +32,59 @@ export function SyllableHistogram() {
 		<Card>
 			<CardHeader>
 				<CardTitle className="text-xl font-semibold">{t("title")}</CardTitle>
+				<CardDescription>Frequency of words by syllable count</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<ChartContainer config={chartConfig} className="w-full">
-					<BarChart accessibilityLayer data={chartData}>
-						<XAxis
-							dataKey="syllables"
-							tickLine={false}
-							label={{ value: "Syllables per word", position: "insideBottom", offset: -5 }}
-						/>
-						<YAxis
-							tickLine={false}
-							label={{ value: "Word count", angle: -90, position: "insideLeft" }}
-						/>
-						<CartesianGrid vertical={false} />
-						<ChartTooltip
-							content={
-								<ChartTooltipContent
-									formatter={(value) => {
-										const data = chartData.find((d) => d.words === value);
-										if (!data) return null;
-										return (
-											<>
-												<div className="font-medium">{data.words.toLocaleString()} words</div>
-												<div className="text-xs text-muted-foreground">
-													{data.percentage.toFixed(1)}% of words
+				<div className="w-full">
+					<ChartContainer config={chartConfig} className="w-full h-[300px]">
+						<BarChart
+							accessibilityLayer
+							data={chartData}
+							margin={{ top: 20, right: 0, bottom: 0, left: 0 }}
+						>
+							<XAxis
+								dataKey="syllables"
+								tickLine={false}
+								axisLine={false}
+								tickMargin={10}
+								label={{
+									value: "Syllables per word",
+									position: "insideBottom",
+									offset: -5,
+									style: { fill: "var(--muted-foreground)", fontSize: 12 },
+								}}
+							/>
+							<YAxis
+								tickLine={false}
+								axisLine={false}
+								tickFormatter={(value) => `${value / 1000}k`}
+								width={40}
+								className="text-xs text-muted-foreground"
+							/>
+							<CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted" />
+							<ChartTooltip
+								cursor={{ fill: "var(--muted)" }}
+								content={
+									<ChartTooltipContent
+										formatter={(value) => {
+											const data = chartData.find((d) => d.words === value);
+											if (!data) return null;
+											return (
+												<div className="flex flex-col gap-1">
+													<div className="font-semibold">{data.words.toLocaleString()} words</div>
+													<div className="text-xs text-muted-foreground">
+														{data.percentage.toFixed(1)}% of total
+													</div>
 												</div>
-											</>
-										);
-									}}
-								/>
-							}
-						/>
-						<Bar dataKey="words" fill="var(--color-words)" radius={8} />
-					</BarChart>
-				</ChartContainer>
+											);
+										}}
+									/>
+								}
+							/>
+							<Bar dataKey="words" fill="var(--chart-1)" radius={[4, 4, 0, 0]} barSize={40} />
+						</BarChart>
+					</ChartContainer>
+				</div>
 			</CardContent>
 		</Card>
 	);
