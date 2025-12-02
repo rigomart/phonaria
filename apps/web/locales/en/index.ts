@@ -181,6 +181,11 @@ export default {
 				description: "Browse the General American English sound inventory.",
 				action: "View Chart",
 			},
+			stats: {
+				title: "CMUDict Statistics",
+				description: "Browse word counts, phoneme frequency, and syllable distribution.",
+				action: "View statistics",
+			},
 		},
 	},
 	"credits-page": {
