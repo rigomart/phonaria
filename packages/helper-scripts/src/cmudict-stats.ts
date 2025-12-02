@@ -16,17 +16,22 @@ function countSyllables(tokens: string[]): number {
 	return tokens.filter((token) => /[012]$/.test(token)).length;
 }
 
-function generateStats(payload: CmudictPayload): CmudictStatsPayload {
-	const { data, meta } = payload;
+type AggregatedCounts = {
+	phonemeTokenCounts: Map<string, number>;
+	phonemeWordSets: Map<string, Set<string>>;
+	syllableCounts: Map<number, number>;
+	multiplePronunciationCount: number;
+};
 
+const increment = <T>(map: Map<T, number>, key: T): void => {
+	map.set(key, (map.get(key) || 0) + 1);
+};
+
+function aggregateCounts(data: CmudictPayload["data"]): AggregatedCounts {
 	const phonemeTokenCounts = new Map<string, number>();
 	const phonemeWordSets = new Map<string, Set<string>>();
-
 	const syllableCounts = new Map<number, number>();
-
-	const increment = <T>(map: Map<T, number>, key: T): void => {
-		map.set(key, (map.get(key) || 0) + 1);
-	};
+	let multiplePronunciationCount = 0;
 
 	const getOrCreateWordSet = (arpaToken: string): Set<string> => {
 		const existing = phonemeWordSets.get(arpaToken);
@@ -37,9 +42,12 @@ function generateStats(payload: CmudictPayload): CmudictStatsPayload {
 	};
 
 	for (const [word, variants] of Object.entries(data)) {
+		if (variants.length > 1) {
+			multiplePronunciationCount++;
+		}
+
 		for (const variant of variants) {
 			const tokens = variant.split(/\s+/).filter((t) => t.length > 0);
-
 			const syllableCount = countSyllables(tokens);
 			increment(syllableCounts, syllableCount);
 
@@ -52,8 +60,17 @@ function generateStats(payload: CmudictPayload): CmudictStatsPayload {
 		}
 	}
 
+	return { phonemeTokenCounts, phonemeWordSets, syllableCounts, multiplePronunciationCount };
+}
+
+function buildPhonemeStats(
+	counts: AggregatedCounts,
+	meta: CmudictPayload["meta"],
+): CmudictStatsPayload["phonemes"] {
+	const { phonemeTokenCounts, phonemeWordSets } = counts;
+
 	// Build phoneme stats
-	const phonemes = Array.from(phonemeTokenCounts.entries())
+	return Array.from(phonemeTokenCounts.entries())
 		.map(([arpaToken, tokenCount]) => {
 			const wordSet = phonemeWordSets.get(arpaToken);
 			if (!wordSet) {
@@ -85,24 +102,28 @@ function generateStats(payload: CmudictPayload): CmudictStatsPayload {
 			};
 		})
 		.sort((a, b) => b.wordCoverage.percentage - a.wordCoverage.percentage);
+}
 
-	// Build syllable stats
+function buildSyllableStats(
+	syllableCounts: AggregatedCounts["syllableCounts"],
+): CmudictStatsPayload["syllables"] {
 	const totalWordsWithSyllables = Array.from(syllableCounts.values()).reduce((a, b) => a + b, 0);
-	const syllables = Array.from(syllableCounts.entries())
+
+	return Array.from(syllableCounts.entries())
 		.map(([count, words]) => ({
 			count,
 			words,
 			percentage: totalWordsWithSyllables > 0 ? (words / totalWordsWithSyllables) * 100 : 0,
 		}))
 		.sort((a, b) => a.count - b.count);
+}
 
-	// Count words with multiple pronunciations
-	let multiplePronunciationCount = 0;
-	for (const variants of Object.values(data)) {
-		if (variants.length > 1) {
-			multiplePronunciationCount++;
-		}
-	}
+function generateStats(payload: CmudictPayload): CmudictStatsPayload {
+	const { data, meta } = payload;
+
+	const aggregated = aggregateCounts(data);
+	const phonemes = buildPhonemeStats(aggregated, meta);
+	const syllables = buildSyllableStats(aggregated.syllableCounts);
 
 	const stats: CmudictStatsPayload = {
 		meta: {
@@ -111,13 +132,15 @@ function generateStats(payload: CmudictPayload): CmudictStatsPayload {
 			sourceUrl: meta.sourceUrl,
 			wordCount: meta.wordCount,
 			variantCount: meta.variantCount,
-			multiplePronunciationCount,
+			multiplePronunciationCount: aggregated.multiplePronunciationCount,
 		},
 		overview: {
 			words: meta.wordCount,
 			variants: meta.variantCount,
 			multiplePronunciationShare:
-				meta.wordCount > 0 ? (multiplePronunciationCount / meta.wordCount) * 100 : 0,
+				meta.wordCount > 0
+					? (aggregated.multiplePronunciationCount / meta.wordCount) * 100
+					: 0,
 		},
 		phonemes,
 		syllables,
