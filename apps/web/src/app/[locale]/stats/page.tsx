@@ -35,7 +35,9 @@ export default async function StatsPage({ params }: { params: Promise<{ locale: 
 						<h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("title")}</h1>
 						<p className="text-muted-foreground mt-2 text-sm sm:text-base">{t("description")}</p>
 					</div>
-					<Badge variant="outline">Updated: {lastUpdated}</Badge>
+					<Badge variant="outline">
+						{t("sections.overview.updated", { date: lastUpdated })}
+					</Badge>
 				</div>
 
 				<Separator />

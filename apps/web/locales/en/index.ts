@@ -224,15 +224,66 @@ export default {
 		sections: {
 			overview: {
 				title: "Overview",
-				"updated-at": "Updated at",
-				"total-pronunciations": "Total Pronunciations",
-				"total-words": "Total Words",
+				updated: "Updated: {date}",
+				cards: {
+					words: {
+						title: "Total Words",
+						description: "Entries in the dictionary",
+					},
+					variants: {
+						title: "Total Pronunciations",
+						description: "Phonetic transcriptions",
+					},
+					"multiple-pronunciations": {
+						title: "Multiple Pronunciations",
+						description: "Words with multiple variants",
+					},
+				},
 			},
 			phonemes: {
 				title: "Phoneme Frequency",
+				description: "Distribution of phonemes across the dictionary corpus",
+				tabs: {
+					vowels: "Vowels",
+					consonants: "Consonants",
+					all: "All phonemes",
+				},
+				chart: {
+					label: "Percentage",
+					tooltip: {
+						labels: {
+							arpa: "Arpa",
+							coverage: "Coverage",
+							words: "Words",
+						},
+					},
+				},
 			},
 			syllables: {
 				title: "Syllable Distribution",
+				description: "Frequency of words by syllable count",
+				"x-axis-label": "Syllables per word",
+				chart: {
+					label: "Words",
+					tooltip: {
+						words: "{count} words",
+						percentage: "{percentage}% of total",
+					},
+				},
+			},
+			"top-phonemes": {
+				"coverage-label": "word coverage",
+				highlights: {
+					schwa: {
+						name: "Schwa",
+					},
+					"post-alveolar-approximant": {
+						name: "Post-alveolar approximant",
+					},
+					"voiceless-alveolar-plosive": {
+						name: "Voiceless alveolar plosive",
+					},
+				},
 			},
 		},
 	},

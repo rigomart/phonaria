@@ -48,7 +48,7 @@ export function PhonemeFrequencyChart() {
 
 	const chartConfig = {
 		percentage: {
-			label: "Percentage",
+			label: t("chart.label"),
 			color: "var(--chart-1)",
 		},
 	} satisfies ChartConfig;
@@ -57,14 +57,14 @@ export function PhonemeFrequencyChart() {
 		<Card className="col-span-2">
 			<CardHeader>
 				<CardTitle className="text-lg font-semibold">{t("title")}</CardTitle>
-				<CardDescription>Distribution of phonemes across the dictionary corpus</CardDescription>
+				<CardDescription>{t("description")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<Tabs defaultValue="vowels" className="w-full">
 					<TabsList className="grid w-full grid-cols-3 mb-4">
-						<TabsTrigger value="vowels">Vowels</TabsTrigger>
-						<TabsTrigger value="consonants">Consonants</TabsTrigger>
-						<TabsTrigger value="all">All Phonemes</TabsTrigger>
+						<TabsTrigger value="vowels">{t("tabs.vowels")}</TabsTrigger>
+						<TabsTrigger value="consonants">{t("tabs.consonants")}</TabsTrigger>
+						<TabsTrigger value="all">{t("tabs.all")}</TabsTrigger>
 					</TabsList>
 
 					<TabsContent value="all">
@@ -91,6 +91,14 @@ function PhonemeBarChart({
 	config: ChartConfig;
 	height: number;
 }) {
+	const t = useScopedI18n("stats-page.sections.phonemes");
+
+	const tooltipLabels = {
+		arpa: t("chart.tooltip.labels.arpa"),
+		coverage: t("chart.tooltip.labels.coverage"),
+		words: t("chart.tooltip.labels.words"),
+	};
+
 	return (
 		<div style={{ height }} className="w-full">
 			<ChartContainer config={config} className="h-full w-full">
@@ -117,19 +125,26 @@ function PhonemeBarChart({
 							<ChartTooltipContent
 								indicator="line"
 								formatter={(value, _, item) => {
-									const data = item.payload;
+									const data = item?.payload as ChartDataItem | undefined;
+									if (!data) return null;
+
+									const phonemeLabel = data.phoneme || data.arpa;
+									const coveragePercentage = typeof value === "number" ? value : Number(value);
+
 									return (
 										<div className="flex flex-col gap-1">
 											<div className="font-semibold flex items-center gap-2 text-sm">
-												/{data.phoneme}/
+												/{phonemeLabel}/
 											</div>
 
-											<div className="text-xs text-muted-foreground">Arpa: {data.arpa}</div>
 											<div className="text-xs text-muted-foreground">
-												Coverage: {Number(value).toFixed(2)}%
+												{tooltipLabels.arpa}: {data.arpa}
 											</div>
 											<div className="text-xs text-muted-foreground">
-												Words: {data.coverage.toLocaleString()}
+												{tooltipLabels.coverage}: {coveragePercentage.toFixed(2)}%
+											</div>
+											<div className="text-xs text-muted-foreground">
+												{tooltipLabels.words}: {data.coverage.toLocaleString()}
 											</div>
 										</div>
 									);

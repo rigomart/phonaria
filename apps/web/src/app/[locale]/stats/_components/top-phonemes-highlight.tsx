@@ -3,28 +3,30 @@
 import { cmudictStatsData } from "shared-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useScopedI18n } from "@/locales/client";
 
 // Known important phonemes to highlight
 const HIGHLIGHT_PHONEMES = [
 	{
 		arpa: "AH0",
 		ipa: "ə",
-		name: "Schwa",
+		translationKey: "schwa",
 	},
 	{
 		arpa: "R",
 		ipa: "ɹ",
-		name: "Post-alveolar approximant",
+		translationKey: "post-alveolar-approximant",
 	},
 	{
 		arpa: "T",
 		ipa: "t",
-		name: "Voiceless alveolar plosive",
+		translationKey: "voiceless-alveolar-plosive",
 	},
-];
+] as const;
 
 export function TopPhonemesHighlight() {
 	const stats = cmudictStatsData;
+	const t = useScopedI18n("stats-page.sections.top-phonemes");
 
 	// Find data for our highlights
 	const highlights = HIGHLIGHT_PHONEMES.map((highlight) => {
@@ -42,7 +44,7 @@ export function TopPhonemesHighlight() {
 					<CardHeader className="pb-0">
 						<div className="flex justify-between items-center">
 							<CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-								{item.name}
+								{t(`highlights.${item.translationKey}.name`)}
 							</CardTitle>
 							<span className="text-lg border px-2 py-0.5 rounded-md whitespace-nowrap">
 								/{item.ipa}/
@@ -54,7 +56,7 @@ export function TopPhonemesHighlight() {
 							<div className="text-2xl font-bold">
 								{item.data?.wordCoverage.percentage.toFixed(1)}%
 							</div>
-							<p className="text-xs text-muted-foreground">word coverage</p>
+							<p className="text-xs text-muted-foreground">{t("coverage-label")}</p>
 						</div>
 					</CardContent>
 				</Card>

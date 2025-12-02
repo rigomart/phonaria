@@ -23,7 +23,7 @@ export function SyllableHistogram() {
 
 	const chartConfig = {
 		words: {
-			label: "Words",
+			label: t("chart.label"),
 			color: "var(--chart-1)",
 		},
 	} satisfies ChartConfig;
@@ -32,7 +32,7 @@ export function SyllableHistogram() {
 		<Card>
 			<CardHeader>
 				<CardTitle className="text-xl font-semibold">{t("title")}</CardTitle>
-				<CardDescription>Frequency of words by syllable count</CardDescription>
+				<CardDescription>{t("description")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<div className="w-full">
@@ -48,7 +48,7 @@ export function SyllableHistogram() {
 								axisLine={false}
 								tickMargin={10}
 								label={{
-									value: "Syllables per word",
+									value: t("x-axis-label"),
 									position: "insideBottom",
 									offset: -5,
 									style: { fill: "var(--muted-foreground)", fontSize: 12 },
@@ -71,9 +71,15 @@ export function SyllableHistogram() {
 											if (!data) return null;
 											return (
 												<div className="flex flex-col gap-1">
-													<div className="font-semibold">{data.words.toLocaleString()} words</div>
+													<div className="font-semibold">
+														{t("chart.tooltip.words", {
+															count: data.words.toLocaleString(),
+														})}
+													</div>
 													<div className="text-xs text-muted-foreground">
-														{data.percentage.toFixed(1)}% of total
+														{t("chart.tooltip.percentage", {
+															percentage: data.percentage.toFixed(1),
+														})}
 													</div>
 												</div>
 											);
