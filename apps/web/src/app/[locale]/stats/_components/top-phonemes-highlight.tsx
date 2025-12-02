@@ -44,8 +44,8 @@ export function TopPhonemesHighlight() {
 							<CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
 								{item.name}
 							</CardTitle>
-							<span className="text-lg font-mono bg-background border px-2 py-0.5 rounded shadow-sm">
-								{item.ipa}
+							<span className="text-lg border px-2 py-0.5 rounded-md whitespace-nowrap">
+								/{item.ipa}/
 							</span>
 						</div>
 					</CardHeader>

@@ -1,7 +1,14 @@
 "use client";
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { cmudictStatsData } from "shared-data";
+import {
+	CmuArpaRegistry,
+	type CmuArpaToken,
+	cmudictStatsData,
+	getPhonemeCategory,
+	getPhonemeIdForCmuArpa,
+	type PhonemeCategory,
+} from "shared-data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	type ChartConfig,
@@ -12,31 +19,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScopedI18n } from "@/locales/client";
 
-const VOWEL_ARPA = new Set([
-	"AA",
-	"AE",
-	"AH",
-	"AO",
-	"AW",
-	"AY",
-	"EH",
-	"ER",
-	"EY",
-	"IH",
-	"IY",
-	"OW",
-	"OY",
-	"UH",
-	"UW",
-]);
-
 type ChartDataItem = {
 	phoneme: string | null;
 	arpa: string;
 	frequency: number;
 	coverage: number;
 	percentage: number;
-	isVowel: boolean;
+	category: PhonemeCategory | null;
 };
 
 export function PhonemeFrequencyChart() {
@@ -50,12 +39,12 @@ export function PhonemeFrequencyChart() {
 			frequency: phoneme.tokenCount,
 			coverage: phoneme.wordCoverage.count,
 			percentage: phoneme.wordCoverage.percentage,
-			isVowel: VOWEL_ARPA.has(phoneme.arpa),
+			category: getCategoryForArpaToken(phoneme.arpa),
 		}))
 		.sort((a, b) => b.percentage - a.percentage);
 
-	const vowelsData = allData.filter((d) => d.isVowel);
-	const consonantsData = allData.filter((d) => !d.isVowel);
+	const vowelsData = allData.filter((d) => d.category === "vowel");
+	const consonantsData = allData.filter((d) => d.category === "consonant");
 
 	const chartConfig = {
 		percentage: {
@@ -79,10 +68,10 @@ export function PhonemeFrequencyChart() {
 					</TabsList>
 
 					<TabsContent value="all">
-						<PhonemeBarChart data={allData} config={chartConfig} height={1200} />
+						<PhonemeBarChart data={allData} config={chartConfig} height={1800} />
 					</TabsContent>
 					<TabsContent value="vowels">
-						<PhonemeBarChart data={vowelsData} config={chartConfig} height={800} />
+						<PhonemeBarChart data={vowelsData} config={chartConfig} height={1200} />
 					</TabsContent>
 					<TabsContent value="consonants">
 						<PhonemeBarChart data={consonantsData} config={chartConfig} height={800} />
@@ -118,7 +107,7 @@ function PhonemeBarChart({
 						tickLine={false}
 						tickMargin={10}
 						axisLine={false}
-						width={40}
+						width={32}
 						className="text-sm font-medium"
 					/>
 					<CartesianGrid horizontal={false} strokeDasharray="3 3" className="stroke-muted" />
@@ -159,4 +148,16 @@ function PhonemeBarChart({
 			</ChartContainer>
 		</div>
 	);
+}
+
+function getCategoryForArpaToken(arpa: string): PhonemeCategory | null {
+	if (!isCmuArpaToken(arpa)) {
+		return null;
+	}
+
+	return getPhonemeCategory(getPhonemeIdForCmuArpa(arpa));
+}
+
+function isCmuArpaToken(arpa: string): arpa is CmuArpaToken {
+	return Object.hasOwn(CmuArpaRegistry, arpa);
 }
