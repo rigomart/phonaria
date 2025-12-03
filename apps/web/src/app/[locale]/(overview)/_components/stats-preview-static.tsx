@@ -54,13 +54,14 @@ export function StatsPreviewStatic() {
 						const barWidth = MAX_COVERAGE
 							? (phoneme.wordCoverage.percentage / MAX_COVERAGE) * 100
 							: 0;
+						const phonemeLabel = phoneme.ipa ? `/${phoneme.ipa}/` : phoneme.arpa;
 
 						return (
 							<div key={phoneme.arpa} className="space-y-1.5">
 								<div className="flex items-center justify-between text-xs">
 									<div className="flex items-center gap-2 min-w-0">
 										<span className="px-2 py-1 rounded-md border border-border bg-muted text-sm font-semibold leading-none">
-											/{phoneme.ipa}/
+											{phonemeLabel}
 										</span>
 										<span className="text-[11px] text-muted-foreground uppercase tracking-wide">
 											{phoneme.arpa}

@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +11,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useScopedI18n } from "@/locales/client";
 import { useDictionary } from "../_hooks/use-dictionary";
 import { useDictionaryStore } from "../_store/dictionary-store";
 import {
@@ -25,6 +27,7 @@ import {
 export function WordDefinitionDialog() {
 	const { selectedWord, setSelectedWord } = useDictionaryStore();
 	const open = !!selectedWord;
+	const t = useScopedI18n("g2p-page.dictionary-dialog");
 
 	const { data, isLoading, error } = useDictionary(selectedWord);
 	const normalizedWord = selectedWord?.trim() ?? "";
@@ -54,7 +57,27 @@ export function WordDefinitionDialog() {
 					<DialogTitle className="sr-only">{`Definition`}</DialogTitle>
 					<DialogDescription className="sr-only">{`Definition for ${selectedWord}`}</DialogDescription>
 
-					<WordDefinitionDetailsHeader word={selectedWord ?? ""} audioUrl={data?.audioUrl} />
+					<div className="flex items-end gap-2">
+						<WordDefinitionDetailsHeader word={selectedWord ?? ""} audioUrl={data?.audioUrl} />
+						<Popover>
+							<PopoverTrigger asChild>
+								<Button variant="ghost" size="icon" aria-label={t("source-info.button-aria")}>
+									<Info className="size-4" />
+								</Button>
+							</PopoverTrigger>
+							<PopoverContent className="max-w-xs">
+								<p className="text-xs text-muted-foreground leading-relaxed">
+									{t("source-info.text")}
+								</p>
+								<Button asChild variant="link" size="xs" className="mt-2">
+									<Link href="/credits" className="underline underline-offset-4">
+										{t("source-info.link")}
+										<ArrowUpRight className="size-4" aria-hidden="true" />
+									</Link>
+								</Button>
+							</PopoverContent>
+						</Popover>
+					</div>
 				</DialogHeader>
 				<ScrollArea className="max-h-[min(70vh,calc(100dvh-10rem))]">
 					{data && <WordDefinitionDetailsContent wordDefinition={data} />}

@@ -157,6 +157,13 @@ export default {
 				},
 			},
 		},
+		"dictionary-dialog": {
+			"source-info": {
+				"button-aria": "Source information",
+				text: "Definitions come from Wiktionary via the Free Dictionary API (CC BY-SA 3.0). Pronunciation audio cites Wikimedia Commons with per-file licenses.",
+				link: "View credits",
+			},
+		},
 	},
 	"overview-page": {
 		meta: {
@@ -210,6 +217,15 @@ export default {
 					"The grapheme-to-phoneme transcription feature uses pronunciation data from the CMU Pronouncing Dictionary, a public domain pronunciation dictionary created by Carnegie Mellon University. The dictionary contains over 134,000 North American English words with their phonetic transcriptions.",
 				"link-text": "Learn more about CMU Dict",
 				"link-url": "http://www.speech.cs.cmu.edu/cgi-bin/cmudict",
+			},
+			"free-dictionary": {
+				title: "Free Dictionary API",
+				content:
+					"Dictionary definitions are provided via the Free Dictionary API (dictionaryapi.dev) using Wiktionary data. Entries carry CC BY-SA 3.0 license metadata, and audio assets cite Wikimedia Commons with per-file licenses.",
+				"link-text": "Visit Free Dictionary API",
+				"link-url": "https://dictionaryapi.dev/",
+				"license-text": "View CC BY-SA 3.0 license",
+				"license-url": "https://creativecommons.org/licenses/by-sa/3.0/",
 			},
 			"phonetic-data": {
 				title: "Phonetic Data & Resources",
