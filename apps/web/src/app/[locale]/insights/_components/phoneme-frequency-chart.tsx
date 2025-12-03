@@ -54,7 +54,7 @@ export function PhonemeFrequencyChart() {
 	} satisfies ChartConfig;
 
 	return (
-		<Card className="col-span-2">
+		<Card>
 			<CardHeader>
 				<CardTitle className="text-lg font-semibold">{t("title")}</CardTitle>
 				<CardDescription>{t("description")}</CardDescription>
