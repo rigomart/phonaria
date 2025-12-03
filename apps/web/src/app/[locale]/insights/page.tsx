@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { setStaticParamsLocale } from "next-international/server";
 import Link from "next/link";
+import { setStaticParamsLocale } from "next-international/server";
 import { cmudictStatsData } from "shared-data";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
