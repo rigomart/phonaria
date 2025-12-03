@@ -2,12 +2,11 @@
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
-	CmuArpaRegistry,
-	type CmuArpaToken,
 	cmudictStatsData,
+	getIpaForPhonemeId,
 	getPhonemeCategory,
-	getPhonemeIdForCmuArpa,
 	type PhonemeCategory,
+	type PhonemeSymbolId,
 } from "shared-data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -18,10 +17,11 @@ import {
 } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScopedI18n } from "@/locales/client";
+import { TopPhonemesHighlight } from "./top-phonemes-highlight";
 
 type ChartDataItem = {
-	phoneme: string | null;
-	arpa: string;
+	phonemeId: PhonemeSymbolId;
+	ipa: string;
 	frequency: number;
 	coverage: number;
 	percentage: number;
@@ -33,14 +33,17 @@ export function PhonemeFrequencyChart() {
 	const t = useScopedI18n("stats-page.sections.phonemes");
 
 	const allData: ChartDataItem[] = stats.phonemes
-		.map((phoneme) => ({
-			phoneme: phoneme.ipa || phoneme.arpa,
-			arpa: phoneme.arpa,
-			frequency: phoneme.tokenCount,
-			coverage: phoneme.wordCoverage.count,
-			percentage: phoneme.wordCoverage.percentage,
-			category: getCategoryForArpaToken(phoneme.arpa),
-		}))
+		.map((phoneme) => {
+			const ipa = getIpaForPhonemeId(phoneme.phonemeId) ?? phoneme.phonemeId;
+			return {
+				phonemeId: phoneme.phonemeId,
+				ipa,
+				frequency: phoneme.tokenCount,
+				coverage: phoneme.wordCoverage.count,
+				percentage: phoneme.wordCoverage.percentage,
+				category: getPhonemeCategory(phoneme.phonemeId),
+			};
+		})
 		.sort((a, b) => b.percentage - a.percentage);
 
 	const vowelsData = allData.filter((d) => d.category === "vowel");
@@ -60,18 +63,20 @@ export function PhonemeFrequencyChart() {
 				<CardDescription>{t("description")}</CardDescription>
 			</CardHeader>
 			<CardContent>
+				<TopPhonemesHighlight />
+
 				<Tabs defaultValue="vowels" className="w-full">
-					<TabsList className="grid w-full grid-cols-3 mb-4">
+					<TabsList className="grid w-full grid-cols-3">
 						<TabsTrigger value="vowels">{t("tabs.vowels")}</TabsTrigger>
 						<TabsTrigger value="consonants">{t("tabs.consonants")}</TabsTrigger>
 						<TabsTrigger value="all">{t("tabs.all")}</TabsTrigger>
 					</TabsList>
 
 					<TabsContent value="all">
-						<PhonemeBarChart data={allData} config={chartConfig} height={1800} />
+						<PhonemeBarChart data={allData} config={chartConfig} height={1200} />
 					</TabsContent>
 					<TabsContent value="vowels">
-						<PhonemeBarChart data={vowelsData} config={chartConfig} height={1200} />
+						<PhonemeBarChart data={vowelsData} config={chartConfig} height={500} />
 					</TabsContent>
 					<TabsContent value="consonants">
 						<PhonemeBarChart data={consonantsData} config={chartConfig} height={800} />
@@ -94,7 +99,7 @@ function PhonemeBarChart({
 	const t = useScopedI18n("stats-page.sections.phonemes");
 
 	const tooltipLabels = {
-		arpa: t("chart.tooltip.labels.arpa"),
+		phoneme: t("chart.tooltip.labels.phoneme"),
 		coverage: t("chart.tooltip.labels.coverage"),
 		words: t("chart.tooltip.labels.words"),
 	};
@@ -110,7 +115,7 @@ function PhonemeBarChart({
 						hide
 					/>
 					<YAxis
-						dataKey="phoneme"
+						dataKey="ipa"
 						type="category"
 						tickLine={false}
 						tickMargin={10}
@@ -128,7 +133,7 @@ function PhonemeBarChart({
 									const data = item?.payload as ChartDataItem | undefined;
 									if (!data) return null;
 
-									const phonemeLabel = data.phoneme || data.arpa;
+									const phonemeLabel = data.ipa || data.phonemeId;
 									const coveragePercentage = typeof value === "number" ? value : Number(value);
 
 									return (
@@ -138,7 +143,7 @@ function PhonemeBarChart({
 											</div>
 
 											<div className="text-xs text-muted-foreground">
-												{tooltipLabels.arpa}: {data.arpa}
+												{tooltipLabels.phoneme}: {data.phonemeId}
 											</div>
 											<div className="text-xs text-muted-foreground">
 												{tooltipLabels.coverage}: {coveragePercentage.toFixed(2)}%
@@ -163,16 +168,4 @@ function PhonemeBarChart({
 			</ChartContainer>
 		</div>
 	);
-}
-
-function getCategoryForArpaToken(arpa: string): PhonemeCategory | null {
-	if (!isCmuArpaToken(arpa)) {
-		return null;
-	}
-
-	return getPhonemeCategory(getPhonemeIdForCmuArpa(arpa));
-}
-
-function isCmuArpaToken(arpa: string): arpa is CmuArpaToken {
-	return Object.hasOwn(CmuArpaRegistry, arpa);
 }

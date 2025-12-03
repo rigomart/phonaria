@@ -1,3 +1,5 @@
+import type { PhonemeSymbolId } from "../phonetics/ipa-registry";
+
 export type CmudictPayload = {
 	meta: {
 		formatVersion: number;
@@ -27,8 +29,7 @@ export type CmudictStatsPayload = {
 		multiplePronunciationShare: number;
 	};
 	phonemes: Array<{
-		arpa: string;
-		ipa: string | null;
+		phonemeId: PhonemeSymbolId;
 		tokenCount: number;
 		wordCoverage: {
 			count: number;

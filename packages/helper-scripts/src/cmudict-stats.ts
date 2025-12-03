@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { CmudictPayload, CmudictStatsPayload } from "shared-data";
-import { CmuArpaRegistry, getIpaForPhonemeId, getPhonemeIdForCmuArpa } from "shared-data";
+import type { CmudictPayload, CmudictStatsPayload, PhonemeSymbolId } from "shared-data";
+import { CmuArpaRegistry, getPhonemeIdForCmuArpa } from "shared-data";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 const cmudictPath =
@@ -16,10 +16,34 @@ function countSyllables(tokens: string[]): number {
 	return tokens.filter((token) => /[012]$/.test(token)).length;
 }
 
+function countSyllablesForWord(
+	word: string,
+	variants: string[],
+	zeroSyllableWords: Set<string>,
+): { syllableCount: number; tokensPerVariant: string[][] } {
+	const tokensPerVariant = variants.map((variant) => variant.split(/\s+/).filter(Boolean));
+	const syllableCounts = tokensPerVariant.map((tokens) => countSyllables(tokens));
+
+	const representativeSyllableCount =
+		syllableCounts.find((count) => count > 0) ?? syllableCounts[0] ?? 0;
+
+	if (representativeSyllableCount === 0) {
+		zeroSyllableWords.add(word);
+		return { syllableCount: 1, tokensPerVariant };
+	}
+
+	return { syllableCount: representativeSyllableCount, tokensPerVariant };
+}
+
+function isCmuArpaToken(token: string): token is keyof typeof CmuArpaRegistry {
+	return Object.hasOwn(CmuArpaRegistry, token);
+}
+
 type AggregatedCounts = {
-	phonemeTokenCounts: Map<string, number>;
-	phonemeWordSets: Map<string, Set<string>>;
+	phonemeTokenCounts: Map<PhonemeSymbolId, number>;
+	phonemeWordSets: Map<PhonemeSymbolId, Set<string>>;
 	syllableCounts: Map<number, number>;
+	zeroSyllableWords: Set<string>;
 	multiplePronunciationCount: number;
 };
 
@@ -28,16 +52,17 @@ const increment = <T>(map: Map<T, number>, key: T): void => {
 };
 
 function aggregateCounts(data: CmudictPayload["data"]): AggregatedCounts {
-	const phonemeTokenCounts = new Map<string, number>();
-	const phonemeWordSets = new Map<string, Set<string>>();
+	const phonemeTokenCounts = new Map<PhonemeSymbolId, number>();
+	const phonemeWordSets = new Map<PhonemeSymbolId, Set<string>>();
 	const syllableCounts = new Map<number, number>();
+	const zeroSyllableWords = new Set<string>();
 	let multiplePronunciationCount = 0;
 
-	const getOrCreateWordSet = (arpaToken: string): Set<string> => {
-		const existing = phonemeWordSets.get(arpaToken);
+	const getOrCreateWordSet = (phonemeId: PhonemeSymbolId): Set<string> => {
+		const existing = phonemeWordSets.get(phonemeId);
 		if (existing) return existing;
 		const created = new Set<string>();
-		phonemeWordSets.set(arpaToken, created);
+		phonemeWordSets.set(phonemeId, created);
 		return created;
 	};
 
@@ -46,21 +71,31 @@ function aggregateCounts(data: CmudictPayload["data"]): AggregatedCounts {
 			multiplePronunciationCount++;
 		}
 
-		for (const variant of variants) {
-			const tokens = variant.split(/\s+/).filter((t) => t.length > 0);
-			const syllableCount = countSyllables(tokens);
-			increment(syllableCounts, syllableCount);
+		const { syllableCount, tokensPerVariant } = countSyllablesForWord(
+			word,
+			variants,
+			zeroSyllableWords,
+		);
 
+		for (const tokens of tokensPerVariant) {
 			for (const token of tokens) {
-				if (token.length > 0) {
-					increment(phonemeTokenCounts, token);
-					getOrCreateWordSet(token).add(word);
-				}
+				if (!isCmuArpaToken(token)) continue;
+				const phonemeId = getPhonemeIdForCmuArpa(token);
+				increment(phonemeTokenCounts, phonemeId);
+				getOrCreateWordSet(phonemeId).add(word);
 			}
 		}
+
+		increment(syllableCounts, syllableCount);
 	}
 
-	return { phonemeTokenCounts, phonemeWordSets, syllableCounts, multiplePronunciationCount };
+	return {
+		phonemeTokenCounts,
+		phonemeWordSets,
+		syllableCounts,
+		zeroSyllableWords,
+		multiplePronunciationCount,
+	};
 }
 
 function buildPhonemeStats(
@@ -71,28 +106,16 @@ function buildPhonemeStats(
 
 	// Build phoneme stats
 	return Array.from(phonemeTokenCounts.entries())
-		.map(([arpaToken, tokenCount]) => {
-			const wordSet = phonemeWordSets.get(arpaToken);
+		.map(([phonemeId, tokenCount]) => {
+			const wordSet = phonemeWordSets.get(phonemeId);
 			if (!wordSet) {
-				throw new Error(`Missing word set for phoneme ${arpaToken}`);
+				throw new Error(`Missing word set for phoneme ${phonemeId}`);
 			}
 			const wordCoverage = wordSet.size;
 			const averageTokensPerWord = wordCoverage > 0 ? tokenCount / wordCoverage : 0;
 
-			// Map ARPA token (with stress) to IPA symbol via phoneme ID
-			let ipa: string | null = null;
-			try {
-				if (arpaToken in CmuArpaRegistry) {
-					const phonemeId = getPhonemeIdForCmuArpa(arpaToken as keyof typeof CmuArpaRegistry);
-					ipa = getIpaForPhonemeId(phonemeId);
-				}
-			} catch {
-				// Mapping failed, leave IPA as null
-			}
-
 			return {
-				arpa: arpaToken,
-				ipa,
+				phonemeId,
 				tokenCount,
 				wordCoverage: {
 					count: wordCoverage,
@@ -118,7 +141,10 @@ function buildSyllableStats(
 		.sort((a, b) => a.count - b.count);
 }
 
-function generateStats(payload: CmudictPayload): CmudictStatsPayload {
+function generateStats(payload: CmudictPayload): {
+	stats: CmudictStatsPayload;
+	zeroSyllableWords: Set<string>;
+} {
 	const { data, meta } = payload;
 
 	const aggregated = aggregateCounts(data);
@@ -144,7 +170,7 @@ function generateStats(payload: CmudictPayload): CmudictStatsPayload {
 		syllables,
 	};
 
-	return stats;
+	return { stats, zeroSyllableWords: aggregated.zeroSyllableWords };
 }
 
 function main(): void {
@@ -161,13 +187,22 @@ function main(): void {
 
 	console.log(`Loaded CMUDict with ${cmudictPayload.meta.wordCount} words`);
 
-	const stats = generateStats(cmudictPayload);
+	const { stats, zeroSyllableWords } = generateStats(cmudictPayload);
 
 	const bytesWritten = writeJsonFile(statsOutputPath, stats);
 
 	console.log(`\nStats Summary:`);
 	console.log(`- Phonemes analyzed: ${stats.phonemes.length}`);
 	console.log(`- Syllable counts: ${stats.syllables.length}`);
+	if (zeroSyllableWords.size > 0) {
+		console.warn(
+			`- Coerced ${zeroSyllableWords.size} entries with no detected syllables to 1 syllable: ${Array.from(
+				zeroSyllableWords,
+			)
+				.slice(0, 5)
+				.join(", ")}${zeroSyllableWords.size > 5 ? ", ..." : ""}`,
+		);
+	}
 	console.log(`\nSaved ${bytesWritten} bytes to ${statsOutputPath}`);
 	console.log("\nCMUDict stats generation complete.");
 }

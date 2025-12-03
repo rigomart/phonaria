@@ -23,7 +23,7 @@ export function Header() {
 	const navigationLinks = [
 		{ href: "/transcription", label: t("transcription") },
 		{ href: "/ipa-chart", label: t("ipa-chart") },
-		{ href: "/stats", label: t("stats") },
+		{ href: "/insights", label: t("insights") },
 	];
 
 	return (

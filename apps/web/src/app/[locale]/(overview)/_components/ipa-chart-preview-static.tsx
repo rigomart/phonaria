@@ -22,8 +22,8 @@ type PreviewConsonant = {
 	voiced: boolean;
 };
 
-const MAX_PREVIEW_VOWELS = 12;
-const MAX_PREVIEW_CONSONANTS = 18;
+const MAX_PREVIEW_VOWELS = 10;
+const MAX_PREVIEW_CONSONANTS = 16;
 
 // Use vowels from registries (monophthongs + diphthongs), limited for preview
 const PREVIEW_VOWELS: PreviewVowel[] = [

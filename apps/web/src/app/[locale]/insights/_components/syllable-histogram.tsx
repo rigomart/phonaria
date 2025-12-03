@@ -40,7 +40,7 @@ export function SyllableHistogram() {
 						<BarChart
 							accessibilityLayer
 							data={chartData}
-							margin={{ top: 20, right: 0, bottom: 0, left: 0 }}
+							margin={{ top: 20, right: 0, bottom: 20, left: 0 }}
 						>
 							<XAxis
 								dataKey="syllables"
@@ -50,7 +50,7 @@ export function SyllableHistogram() {
 								label={{
 									value: t("x-axis-label"),
 									position: "insideBottom",
-									offset: -5,
+									offset: -16,
 									style: { fill: "var(--muted-foreground)", fontSize: 12 },
 								}}
 							/>

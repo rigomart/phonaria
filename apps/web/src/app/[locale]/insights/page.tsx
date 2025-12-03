@@ -8,7 +8,6 @@ import { getScopedI18n } from "@/locales/server";
 import { OverviewCards } from "./_components/overview-cards";
 import { PhonemeFrequencyChart } from "./_components/phoneme-frequency-chart";
 import { SyllableHistogram } from "./_components/syllable-histogram";
-import { TopPhonemesHighlight } from "./_components/top-phonemes-highlight";
 
 export async function generateMetadata(): Promise<Metadata> {
 	const t = await getScopedI18n("stats-page.meta");
@@ -57,12 +56,8 @@ export default async function StatsPage({ params }: { params: Promise<{ locale: 
 						</section>
 					</div>
 
-					<div className="lg:col-span-8 space-y-4 bg-background-soft rounded-xl shadow-sm p-4">
-						<TopPhonemesHighlight />
-
-						<section>
-							<PhonemeFrequencyChart />
-						</section>
+					<div className="lg:col-span-8">
+						<PhonemeFrequencyChart />
 					</div>
 				</div>
 			</div>

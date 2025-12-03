@@ -5,7 +5,7 @@ export default {
 				overview: "Overview",
 				transcription: "Transcription",
 				"ipa-chart": "IPA Reference",
-				stats: "Insights",
+				insights: "Insights",
 			},
 		},
 		footer: {
@@ -277,7 +277,7 @@ export default {
 					label: "Percentage",
 					tooltip: {
 						labels: {
-							arpa: "Arpa",
+							phoneme: "Phoneme",
 							coverage: "Coverage",
 							words: "Words",
 						},
@@ -297,7 +297,7 @@ export default {
 				},
 			},
 			"top-phonemes": {
-				"coverage-label": "word coverage",
+				"coverage-label": "% Coverage",
 				highlights: {
 					schwa: {
 						name: "Schwa",

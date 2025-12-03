@@ -1,6 +1,6 @@
 "use client";
 
-import { cmudictStatsData } from "shared-data";
+import { cmudictStatsData, getIpaForPhonemeId } from "shared-data";
 import { useScopedI18n } from "@/locales/client";
 
 const PREVIEW_STATS = [
@@ -35,7 +35,7 @@ export function StatsPreviewStatic() {
 						key={stat.key}
 						className="rounded-lg bg-muted/20 border border-border/40 p-2 flex flex-col gap-1 flex-1"
 					>
-						<div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+						<div className="text-xs text-muted-foreground font-medium">
 							{tOverview(`${stat.translationKey}.title`)}
 						</div>
 						<div className="text-lg font-semibold leading-tight">{stat.value.toLocaleString()}</div>
@@ -44,7 +44,7 @@ export function StatsPreviewStatic() {
 			</div>
 
 			<div className="flex-1 rounded-lg border border-border/40 bg-background-soft p-3 flex flex-col gap-3 min-h-0">
-				<div className="flex items-center justify-between text-[11px] text-muted-foreground uppercase tracking-wide">
+				<div className="flex items-center justify-between text-xs text-muted-foreground">
 					<span>{tSections("phonemes.title")}</span>
 					<span>{tTopPhonemes("coverage-label")}</span>
 				</div>
@@ -54,20 +54,18 @@ export function StatsPreviewStatic() {
 						const barWidth = MAX_COVERAGE
 							? (phoneme.wordCoverage.percentage / MAX_COVERAGE) * 100
 							: 0;
-						const phonemeLabel = phoneme.ipa ? `/${phoneme.ipa}/` : phoneme.arpa;
+						const phonemeIpa = getIpaForPhonemeId(phoneme.phonemeId) ?? phoneme.phonemeId;
 
 						return (
-							<div key={phoneme.arpa} className="space-y-1.5">
+							<div key={phoneme.phonemeId} className="space-y-1.5">
 								<div className="flex items-center justify-between text-xs">
 									<div className="flex items-center gap-2 min-w-0">
 										<span className="px-2 py-1 rounded-md border border-border bg-muted text-sm font-semibold leading-none">
-											{phonemeLabel}
+											{phonemeIpa}
 										</span>
-										<span className="text-[11px] text-muted-foreground uppercase tracking-wide">
-											{phoneme.arpa}
-										</span>
+										<span className="text-xs text-muted-foreground">{phoneme.phonemeId}</span>
 									</div>
-									<span className="text-[11px] text-muted-foreground">
+									<span className="text-xs text-muted-foreground">
 										{phoneme.wordCoverage.percentage.toFixed(1)}%
 									</span>
 								</div>
