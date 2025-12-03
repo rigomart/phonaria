@@ -47,7 +47,7 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 					<ToolCard
 						title={t("launchpad.stats.title")}
 						description={t("launchpad.stats.description")}
-						href="/stats"
+						href="/insights"
 						icon={<BarChart3 className="size-5" />}
 						preview={<StatsPreviewStatic />}
 					/>
