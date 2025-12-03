@@ -76,17 +76,15 @@ describe("CMUDict", () => {
 			const firstVariant = result[0];
 			expect(Array.isArray(firstVariant)).toBe(true);
 			expect(firstVariant.length).toBeGreaterThan(0);
-			
+
 			// Check that syllables have the expected structure
 			const firstSyllable = firstVariant[0];
 			expect(firstSyllable).toHaveProperty("phonemes");
 			expect(firstSyllable).toHaveProperty("stress");
 			expect(Array.isArray(firstSyllable.phonemes)).toBe(true);
-			
+
 			// Verify IPA symbols are present
-			const ipaSymbols = firstVariant.flatMap((syllable) =>
-				syllable.phonemes.map((p) => p.ipa)
-			);
+			const ipaSymbols = firstVariant.flatMap((syllable) => syllable.phonemes.map((p) => p.ipa));
 			expect(ipaSymbols).toContain("h");
 			expect(ipaSymbols).toContain("ə");
 			expect(ipaSymbols).toContain("l");
