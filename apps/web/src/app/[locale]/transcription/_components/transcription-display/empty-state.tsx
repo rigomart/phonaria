@@ -20,7 +20,7 @@ export function EmptyState() {
 			<div className="text-center space-y-8 max-w-lg w-full">
 				{/* Visual Example */}
 				<div className="space-y-4">
-					<div className="inline-flex flex-col items-center gap-3 bg-muted/40 border border-border/60 rounded-lg px-6 py-5">
+					<div className="inline-flex flex-col items-center gap-3 bg-background-soft shadow-md rounded-xl px-6 py-5">
 						<div className="flex items-center gap-2">
 							<TypeIcon className="size-4 text-muted-foreground/40" />
 							<div className="text-base text-muted-foreground font-normal">
@@ -47,7 +47,7 @@ export function EmptyState() {
 								onClick={() => handleExampleClick(example)}
 								variant="outline"
 								disabled={transcribeMutation.isPending}
-								className="flex items-center justify-between gap-2"
+								className="flex items-center justify-between gap-2 bg-background-soft"
 							>
 								<span className="text-xs font-normal text-muted-foreground">{example}</span>
 								<ArrowRightIcon className="size-3 opacity-30" />
