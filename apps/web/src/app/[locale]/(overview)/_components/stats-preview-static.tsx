@@ -14,11 +14,6 @@ const PREVIEW_STATS = [
 		translationKey: "variants",
 		value: cmudictStatsData.overview.variants,
 	},
-	{
-		key: "multiple-pronunciations",
-		translationKey: "multiple-pronunciations",
-		value: cmudictStatsData.meta.multiplePronunciationCount,
-	},
 ] as const;
 
 const TOP_PHONEMES = cmudictStatsData.phonemes.slice(0, 3);
@@ -34,18 +29,16 @@ export function StatsPreviewStatic() {
 
 	return (
 		<div className="w-full h-full bg-background rounded-md border border-border/50 shadow-sm p-3 sm:p-4 flex flex-col gap-3 min-h-0">
-			<div className="grid grid-cols-3 gap-2">
+			<div className="flex gap-2">
 				{PREVIEW_STATS.map((stat) => (
 					<div
 						key={stat.key}
-						className="rounded-lg bg-muted/20 border border-border/40 p-2 flex flex-col gap-1"
+						className="rounded-lg bg-muted/20 border border-border/40 p-2 flex flex-col gap-1 flex-1"
 					>
 						<div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
 							{tOverview(`${stat.translationKey}.title`)}
 						</div>
-						<div className="text-lg font-semibold leading-tight">
-							{stat.value.toLocaleString()}
-						</div>
+						<div className="text-lg font-semibold leading-tight">{stat.value.toLocaleString()}</div>
 					</div>
 				))}
 			</div>
@@ -78,10 +71,7 @@ export function StatsPreviewStatic() {
 									</span>
 								</div>
 								<div className="h-1.5 rounded-full bg-border/60 overflow-hidden">
-									<div
-										className="h-full bg-primary/70"
-										style={{ width: `${barWidth}%` }}
-									/>
+									<div className="h-full bg-primary/70" style={{ width: `${barWidth}%` }} />
 								</div>
 							</div>
 						);

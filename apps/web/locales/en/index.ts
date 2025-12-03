@@ -5,7 +5,7 @@ export default {
 				overview: "Overview",
 				transcription: "Transcription",
 				"ipa-chart": "IPA Reference",
-				stats: "Statistics",
+				stats: "Insights",
 			},
 		},
 		footer: {
@@ -182,9 +182,9 @@ export default {
 				action: "View Chart",
 			},
 			stats: {
-				title: "CMUDict Statistics",
-				description: "Browse word counts, phoneme frequency, and syllable distribution.",
-				action: "View statistics",
+				title: "Pronunciation Insights",
+				description: "Explore phoneme frequency and syllable patterns across the corpus.",
+				action: "View insights",
 			},
 		},
 	},
@@ -220,12 +220,16 @@ export default {
 	},
 	"stats-page": {
 		meta: {
-			title: "CMUDict Statistics",
-			description: "Statistics and insights from the CMU Pronouncing Dictionary",
+			title: "Pronunciation Insights",
+			description: "Frequency and pattern insights from the pronunciation corpus",
 		},
-		title: "CMUDict Statistics",
-		description:
-			"Insights from the CMU Pronouncing Dictionary, including phoneme frequency, and syllable distribution.",
+		title: "Pronunciation Insights",
+		description: "Phoneme frequency and syllable distribution across the pronunciation corpus.",
+		"source-note": {
+			prefix: "Data derived from the CMU Pronouncing Dictionary.",
+			link: "View credits",
+			suffix: "for authorship and licensing details.",
+		},
 		sections: {
 			overview: {
 				title: "Overview",

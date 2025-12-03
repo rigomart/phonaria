@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { setStaticParamsLocale } from "next-international/server";
+import Link from "next/link";
 import { cmudictStatsData } from "shared-data";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -34,6 +35,13 @@ export default async function StatsPage({ params }: { params: Promise<{ locale: 
 					<div>
 						<h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("title")}</h1>
 						<p className="text-muted-foreground mt-2 text-sm sm:text-base">{t("description")}</p>
+						<p className="text-xs sm:text-sm text-muted-foreground mt-2">
+							{t("source-note.prefix")}{" "}
+							<Link href="/credits" className="underline underline-offset-4">
+								{t("source-note.link")}
+							</Link>{" "}
+							{t("source-note.suffix")}
+						</p>
 					</div>
 					<Badge variant="outline">{t("sections.overview.updated", { date: lastUpdated })}</Badge>
 				</div>
