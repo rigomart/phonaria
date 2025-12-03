@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { cmudict } from "./dictionary";
 
-vi.mock("@/data/dict/cmudict.json", () => ({
-	default: {
+vi.mock("shared-data", () => ({
+	cmudictData: {
 		meta: {
 			formatVersion: 1,
 			source: "cmudict",
@@ -71,7 +71,26 @@ describe("CMUDict", () => {
 		expect(result).toBeDefined();
 		expect(Array.isArray(result)).toBe(true);
 		if (result) {
-			expect(result[0]).toEqual(["h", "ə", "ˈ", "l", "oʊ"]);
+			// Result is an array of variants, each variant is an array of syllables
+			expect(result.length).toBeGreaterThan(0);
+			const firstVariant = result[0];
+			expect(Array.isArray(firstVariant)).toBe(true);
+			expect(firstVariant.length).toBeGreaterThan(0);
+			
+			// Check that syllables have the expected structure
+			const firstSyllable = firstVariant[0];
+			expect(firstSyllable).toHaveProperty("phonemes");
+			expect(firstSyllable).toHaveProperty("stress");
+			expect(Array.isArray(firstSyllable.phonemes)).toBe(true);
+			
+			// Verify IPA symbols are present
+			const ipaSymbols = firstVariant.flatMap((syllable) =>
+				syllable.phonemes.map((p) => p.ipa)
+			);
+			expect(ipaSymbols).toContain("h");
+			expect(ipaSymbols).toContain("ə");
+			expect(ipaSymbols).toContain("l");
+			expect(ipaSymbols).toContain("oʊ");
 		}
 	});
 
