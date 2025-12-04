@@ -20,6 +20,7 @@ CMUDICT_SRC_URL=https://raw.githubusercontent.com/rigomart/cmudict/refs/heads/ma
 bun --cwd packages/helper-scripts lint                     # biome check --write
 bun --cwd packages/helper-scripts check-types              # tsc --noEmit
 bun --cwd packages/helper-scripts cmudict-to-json          # Download & compact CMUDict into JSON
+bun --cwd packages/helper-scripts cmudict-stats            # Build stats for the generated CMUDict JSON
 bun --cwd packages/helper-scripts generate-word-mappings   # Generate word mappings with CMU ARPA
 ```
 
@@ -30,13 +31,14 @@ bun --cwd packages/helper-scripts generate-word-mappings   # Generate word mappi
 - Output: `packages/audio-gen/data/cmu-arpa-mappings.json` (regenerate when phoneme data changes)
 - Run: `bun --cwd packages/helper-scripts generate-word-mappings`
 - Includes: word, IPA phonemic transcription, CMU ARPA tokens, lookup status, and variant info
+- Input: `CMUDICT_JSON_PATH` if set, otherwise `packages/shared-data/data/dict/cmudict.json`
 
 ## CMUDict JSON workflow
 
 `cmudict-to-json.ts` downloads the raw CMU Pronouncing Dictionary, normalizes entries, and writes a JSON payload with metadata and a compact map of uppercase words to sanitized ARPAbet variants used by the web API.
 
 1. Configure `CMUDICT_SRC_URL` (see `.env` example above).
-2. Optionally set `CMUDICT_JSON_PATH`; otherwise the output defaults to `apps/web/data/dict/cmudict.json`.
+2. Optionally set `CMUDICT_JSON_PATH`; otherwise the output defaults to `packages/shared-data/data/dict/cmudict.json` (the shared default for all consumers).
 3. Run `bun --cwd packages/helper-scripts cmudict-to-json`.
 
 The generated JSON has the following structure:

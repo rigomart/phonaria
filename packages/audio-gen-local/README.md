@@ -35,9 +35,21 @@ uv run pyright src
 ## Data source
 
 - Word list: `data/phoneme-words.json`
-- How it’s produced: `bun --cwd packages/helper-scripts emit-phoneme-words`  
-  (reads spelling patterns, contrasts, and allophones from `shared-data`, then writes the manifest here)
-- Regenerate whenever you edit phoneme metadata.
+- Shape:
+  ```json
+  {
+    "meta": {
+      "generatedAt": "2025-01-09T00:00:00.000Z",
+      "source": "manual",
+      "total": 3,
+      "sourceCounts": { "spellingPatterns": 3 }
+    },
+    "words": ["back", "account", "city"]
+  }
+  ```
+- Generate it manually for now (create the `data` directory and the JSON file above).
+  A helper-script emitter will eventually feed this manifest directly from `shared-data`.
+  Regenerate whenever you edit phoneme metadata.
 
 ## CLI
 
