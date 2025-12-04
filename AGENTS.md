@@ -30,24 +30,27 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 - Clear empty, retry, and error states tuned for quick iteration.
 
 ## Project Structure & Module Organization
-- `apps/web`: Next.js 15 App Router project with internationalization via `[locale]` dynamic routes. Feature-specific code uses route groups (e.g. `(g2p)`) and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`) to co-locate related code. UI primitives live in `src/components`, shared utilities in `src/lib`, and global datasets in `src/data`.
+- Agents can read the README for any relevant package or app to get a fast overview before making changes.
+- `apps/web`: Next.js 15 App Router project with internationalization via `[locale]` dynamic routes. Feature-specific code uses route groups (e.g. `(overview)`) and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`) to co-locate related code. UI primitives live in `src/components`, shared utilities in `src/lib`, and feature data wiring in `src/data`.
 - `packages/shared-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. All types and registries are exported from `src/index.ts`. Key exports include:
+  - `cmudictData` and `cmudictStatsData`: Bundled CMUDict JSON and coverage stats used by the API and insights page
   - `PhonemeSymbolRegistry`: Complete phoneme catalog with IPA symbols, categories, and metadata
   - `PhonemeArticulationRegistry`: Articulatory features and production guidance for each phoneme
   - `ContrastsByPhonemeIdRegistry`: Minimal pairs and contrast information
   - `PhonemeSpellingPatternRegistry`: Common spelling patterns for each phoneme
   - `PhonemeAllophoneRegistry`: Allophonic variations with context keys
   - `CmuSymbolRegistry`: Mapping between CMU ARPABET and IPA symbols
-- `packages/helper-scripts`: TypeScript utilities for ElevenLabs audio generation and CMUDict JSON conversion. Scripts read `.env` config and emit assets into `apps/web/data` or `apps/web/public/audio`.
+- `packages/helper-scripts`: TypeScript utilities for ElevenLabs audio generation and CMUDict JSON/stat generation. Scripts read `.env` config and emit assets into `packages/shared-data/data`; generated audio is produced locally and manually uploaded to the external audio bucket the app references.
 - `docs`: Product briefs, project overviews, enhancement plans, and feature deep-dives organized in `enhancements/` and `features/` subdirectories.
 
 ## App Routes & Organization
 The web app uses Next.js App Router with internationalization:
 - `app/[locale]/`: Base layout with locale-based routing (e.g. `/en`, `/es`)
-  - `(g2p)/`: Route group for grapheme-to-phoneme transcription tool (renders at `/{locale}`)
+  - `(overview)/`: Launchpad landing page rendered at `/{locale}`
+  - `transcription/`: Grapheme-to-phoneme workspace with inspector and dialogs
   - `ipa-chart/`: Interactive IPA chart with consonants and vowels
-  - `overview/`: Landing page with feature previews and navigation
-  - `dev/`: Development utilities and testing pages (development only)
+  - `insights/`: CMUDict coverage stats and phoneme distributions
+  - `credits/`: Data source acknowledgements
 - `app/api/`: API routes for server-side functionality
   - `g2p/`: Grapheme-to-phoneme transcription endpoint
   - `dictionary/`: Dictionary lookup with rate limiting
@@ -62,6 +65,8 @@ The web app uses Next.js App Router with internationalization:
 - `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter web test` for targeted runs.
 - `bun --cwd packages/helper-scripts generate`: Regenerate ElevenLabs pronunciation audio (requires `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env`).
 - `bun --cwd packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
+- `bun --cwd packages/helper-scripts cmudict-stats`: Build CMUDict coverage statistics used by the insights page.
+- `bun --cwd packages/helper-scripts generate-word-mappings`: Produce CMU ARPA mappings for example words derived from shared-data.
 
 ## Technical Philosophy
 ### Modern Web Standards
@@ -92,7 +97,7 @@ The web app uses Next.js App Router with internationalization:
 - Prefer TypeScript modules with named exports; React components export PascalCase symbols even if the file name is kebab-case.
 - Use path aliases (`@/components/...`, `@/lib/...`, `@/data/...`) instead of relative dot paths for better maintainability.
 - Feature-specific code should be co-located under route directories using prefixed folders: `_components` for UI, `_hooks` for logic, `_lib` for utilities, `_store` for state, `_types` for types, `_schemas` for validation, `_sections` for page sections.
-- Route groups (e.g. `(g2p)`) share layouts without affecting URL structure.
+- Route groups (e.g. `(overview)`) share layouts without affecting URL structure.
 
 ## Testing Guidelines
 - Vitest drives `apps/web` tests; co-locate specs using `.test.ts` suffix (e.g. `apps/web/src/data/phoneme-details.test.ts`).
@@ -110,31 +115,20 @@ The web app uses Next.js App Router with internationalization:
 - Required environment variables for `apps/web`:
   - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` for API rate limiting
   - `CMUDICT_SRC_URL` (optional) for CMUDict source location during builds
-- When updating CMUDict assets, use the helper scripts (`cmudict-to-json`) and commit JSON outputs under `apps/web/data/dict` so deployments stay deterministic.
-- Generated audio files from `packages/helper-scripts generate` are committed to `apps/web/public/audio/examples` for consistent deployments.
+- When updating CMUDict assets, use the helper scripts (`cmudict-to-json`, `cmudict-stats`) and commit JSON outputs under `packages/shared-data/data/dict` so deployments stay deterministic.
+- Generated audio files from `packages/helper-scripts generate` are produced locally and manually uploaded to the external audio bucket (alongside any externally sourced audio files) that the app references.
 
 ## Design & UX Patterns
 
 Core Design Philosophy: Functional Over Marketing:
 - Avoid hero sections, gradients, and marketing copy in favor of functional design
 - Explain what tools do, not what benefits they provide
-- Prefer subtle, functional design over decorative elements
 
 Progressive Disclosure:
-- Show examples and guidance only when needed (empty state)
-- Remove help elements once users engage with content
+- Show examples and guidance only when needed
 - Reduce cognitive load. Single source of truth for each functionality
 
 ## Learning Experience Principles
 - Toolbox over coursework: allow learners to enter through any feature and combine tools as needed.
 - Approachable language: keep explanations plain to demystify IPA, minimal pairs, and articulation terms.
-- Audio-first feedback: maintain high-quality recordings that reinforce on-screen content.
 - Progressive disclosure: surface guidance when needed and recede as users explore.
-- No user tracking: prioritize utility without personalization or progress scoring.
-
-## Upcoming Features
-- Spelling Pattern Explorer to explain pronunciation outcomes for recurring endings and highlight them across tools.
-- Pronunciation History & Context to surface timelines, cross-language comparisons, and cultural insights that shape English sounds.
-
-## Out of Scope
-- Personal progress dashboards, adaptive lesson plans, and personalization engines remain intentionally excluded.

@@ -1,24 +1,39 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { cmudict } from "./dictionary";
 
-vi.mock("shared-data", () => ({
-	cmudictData: {
-		meta: {
-			formatVersion: 1,
-			source: "cmudict",
-			sourceUrl: "https://example.com/cmudict.dict",
-			generatedAt: "2025-01-09T12:00:00.000Z",
-			wordCount: 2,
-			variantCount: 3,
-			skippedLineCount: 0,
-			deduplicatedVariantCount: 0,
+vi.mock("shared-data", () => {
+	const ipaMap: Record<string, string> = {
+		HH: "h",
+		AH0: "ə",
+		L: "l",
+		OW1: "oʊ",
+		W: "w",
+		ER1: "ɝ",
+		D: "d",
+	};
+
+	return {
+		cmudictData: {
+			meta: {
+				formatVersion: 1,
+				source: "cmudict",
+				sourceUrl: "https://example.com/cmudict.dict",
+				generatedAt: "2025-01-09T12:00:00.000Z",
+				wordCount: 2,
+				variantCount: 3,
+				skippedLineCount: 0,
+				deduplicatedVariantCount: 0,
+			},
+			data: {
+				HELLO: ["HH AH0 L OW1"],
+				WORLD: ["W ER1 L D"],
+			},
 		},
-		data: {
-			HELLO: ["HH AH0 L OW1"],
-			WORLD: ["W ER1 L D"],
-		},
-	},
-}));
+		getPhonemeIdForCmuArpa: (token: string) => token,
+		getPhonemeCategory: (token: string) => (/[012]$/.test(token) ? "vowel" : "consonant"),
+		getIpaForPhonemeId: (token: string) => ipaMap[token] ?? token.toLowerCase(),
+	};
+});
 
 const mockCmudictData = {
 	meta: {
@@ -84,7 +99,9 @@ describe("CMUDict", () => {
 			expect(Array.isArray(firstSyllable.phonemes)).toBe(true);
 
 			// Verify IPA symbols are present
-			const ipaSymbols = firstVariant.flatMap((syllable) => syllable.phonemes.map((p) => p.ipa));
+			const ipaSymbols = firstVariant.flatMap((syllable) =>
+				syllable.phonemes.flatMap((p) => ("ipa" in p ? [p.ipa] : [])),
+			);
 			expect(ipaSymbols).toContain("h");
 			expect(ipaSymbols).toContain("ə");
 			expect(ipaSymbols).toContain("l");

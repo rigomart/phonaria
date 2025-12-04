@@ -4,10 +4,10 @@ Phonaria is a phoneme-first ESL pronunciation project built around a modern Next
 
 ## Highlights
 
-- **Audio-first learning** – Interactive phoneme dialogs with minimal pairs, production tips, and optional ElevenLabs example audio.
-- **Fast G2P service** – A bundled CMU Pronouncing Dictionary powers instant transcription and phoneme highlighting.
-- **Dictionary integration** – Clickable transcriptions surface word definitions and available pronunciation audio in a side drawer.
-- **Shared phoneme metadata** – Typed phoneme data and articulation metadata are reusable across the app and helper tooling.
+- **Transcription workspace** – Stress-marked IPA output with clickable words for definitions and a phoneme inspector for articulation details.
+- **Interactive IPA chart** – Phoneme dialogs bundle articulation tips, minimal pairs, spelling patterns, and optional example audio.
+- **Dictionary + CMUDict coverage** – CMU-based G2P with fallback handling plus an insights page backed by CMUDict statistics.
+- **Shared phoneme metadata** – Typed datasets power both the app and helper tooling with a single source of truth.
 
 ## Monorepo layout
 
@@ -49,12 +49,13 @@ All commits should pass linting, type checking, and relevant tests.
 
 Phonaria ships with pre-generated assets but also supports regeneration when source data changes:
 
-- **CMU Pronouncing Dictionary** – Stored at `apps/web/data/dict/cmudict.json` and bundled with the API for fast lookups. The JSON includes metadata (source, generation timestamp, counts) and the dictionary data. Regenerate with:
+- **CMU Pronouncing Dictionary** – Stored at `packages/shared-data/data/dict/cmudict.json` and bundled through the `shared-data` package. The `cmudict-stats.json` companion file powers the insights page. Regenerate with:
   ```bash
   CMUDICT_SRC_URL="<remote .dict file>" bun --cwd packages/helper-scripts cmudict-to-json
+  bun --cwd packages/helper-scripts cmudict-stats
   ```
   Use `CMUDICT_JSON_PATH` to override the default output location.
-- **Example audio** – ElevenLabs powered `.mp3` files saved to `apps/web/public/audio/examples`. Provide an `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env` and run:
+- **Example audio** – ElevenLabs powered `.mp3` files are generated locally, then uploaded manually to the audio bucket the app references (alongside any externally sourced files). Provide an `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env` and run:
   ```bash
   bun --cwd packages/helper-scripts generate
   ```
