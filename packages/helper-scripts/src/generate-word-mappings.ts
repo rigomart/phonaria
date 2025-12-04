@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 import {
@@ -44,8 +44,23 @@ function normalizeWord(word: string): string {
 	return word.trim().toUpperCase();
 }
 
-function loadCMUDict(): CMUDict {
-	const cmudictPath = resolve(
+function getCmudictPath(): string {
+	const envPath = process.env.CMUDICT_JSON_PATH;
+	if (envPath) return envPath;
+
+	const defaultPath = resolve(
+		__dirname,
+		"..",
+		"..",
+		"..",
+		"shared-data",
+		"data",
+		"dict",
+		"cmudict.json",
+	);
+	if (existsSync(defaultPath)) return defaultPath;
+
+	const legacyPath = resolve(
 		__dirname,
 		"..",
 		"..",
@@ -57,7 +72,15 @@ function loadCMUDict(): CMUDict {
 		"dict",
 		"cmudict.json",
 	);
-	const content = readFileSync(cmudictPath, "utf8");
+	if (existsSync(legacyPath)) return legacyPath;
+
+	throw new Error(
+		`CMUDict JSON not found. Set CMUDICT_JSON_PATH or generate it at ${defaultPath}.`,
+	);
+}
+
+function loadCMUDict(): CMUDict {
+	const content = readFileSync(getCmudictPath(), "utf8");
 	return JSON.parse(content);
 }
 
