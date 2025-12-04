@@ -70,7 +70,7 @@ export function WordDefinitionDialog() {
 									{t("source-info.text")}
 								</p>
 								<Button asChild variant="link" size="xs" className="mt-2">
-									<Link href="/credits" className="underline underline-offset-4">
+									<Link href="/credits" target="_blank" className="underline underline-offset-4">
 										{t("source-info.link")}
 										<ArrowUpRight className="size-4" aria-hidden="true" />
 									</Link>

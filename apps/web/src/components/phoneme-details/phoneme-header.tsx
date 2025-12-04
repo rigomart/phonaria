@@ -45,7 +45,9 @@ export function PhonemeDetailsHeader() {
 								<div className="space-y-1">
 									<p className="text-sm text-muted-foreground">{t("popover-text")}</p>
 									<Button asChild variant="link" size="xs" className="h-auto p-0">
-										<Link href="/credits">{t("view-credits")}</Link>
+										<Link href="/credits" target="_blank">
+											{t("view-credits")}
+										</Link>
 									</Button>
 								</div>
 							</PopoverContent>
