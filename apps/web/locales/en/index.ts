@@ -297,18 +297,10 @@ export default {
 				},
 			},
 			"top-phonemes": {
-				"coverage-label": "% Coverage",
-				highlights: {
-					schwa: {
-						name: "Schwa",
-					},
-					"post-alveolar-approximant": {
-						name: "Post-alveolar approximant",
-					},
-					"voiceless-alveolar-plosive": {
-						name: "Voiceless alveolar plosive",
-					},
-				},
+				title: "Top {count} by word coverage",
+				info: "Share of CMUDict entries that include the phoneme (word-level coverage).",
+				"coverage-label": "Word coverage",
+				"words-label": "{count} words",
 			},
 		},
 	},

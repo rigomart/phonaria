@@ -33,8 +33,8 @@ export default async function StatsPage({ params }: { params: Promise<{ locale: 
 				<div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
 					<div>
 						<h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("title")}</h1>
-						<p className="text-muted-foreground mt-2 text-sm sm:text-base">{t("description")}</p>
-						<p className="text-xs sm:text-sm text-muted-foreground mt-2">
+						<p className="text-foreground/80 mt-2 text-sm sm:text-base">{t("description")}</p>
+						<p className="text-xs text-muted-foreground mt-2 border rounded-xl py-1 px-2">
 							{t("source-note.prefix")}{" "}
 							<Link href="/credits" className="underline underline-offset-4">
 								{t("source-note.link")}

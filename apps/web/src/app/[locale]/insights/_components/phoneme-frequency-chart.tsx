@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScopedI18n } from "@/locales/client";
-import { TopPhonemesHighlight } from "./top-phonemes-highlight";
 
 type ChartDataItem = {
 	phonemeId: PhonemeSymbolId;
@@ -63,7 +62,7 @@ export function PhonemeFrequencyChart() {
 				<CardDescription>{t("description")}</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<TopPhonemesHighlight />
+				{/* <TopPhonemesHighlight /> */}
 
 				<Tabs defaultValue="vowels" className="w-full">
 					<TabsList className="grid w-full grid-cols-3">
