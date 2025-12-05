@@ -5,6 +5,7 @@ export default {
 				overview: "Overview",
 				transcription: "Transcription",
 				"ipa-chart": "IPA Reference",
+				insights: "Insights",
 			},
 		},
 		footer: {
@@ -156,6 +157,13 @@ export default {
 				},
 			},
 		},
+		"dictionary-dialog": {
+			"source-info": {
+				"button-aria": "Source information",
+				text: "Definitions come from Wiktionary via the Free Dictionary API (CC BY-SA 3.0). Pronunciation audio cites Wikimedia Commons with per-file licenses.",
+				link: "View credits",
+			},
+		},
 	},
 	"overview-page": {
 		meta: {
@@ -179,6 +187,11 @@ export default {
 				title: "IPA Reference",
 				description: "Browse the General American English sound inventory.",
 				action: "View Chart",
+			},
+			stats: {
+				title: "Pronunciation Insights",
+				description: "Explore phoneme frequency and syllable patterns across the corpus.",
+				action: "View insights",
 			},
 		},
 	},
@@ -205,10 +218,89 @@ export default {
 				"link-text": "Learn more about CMU Dict",
 				"link-url": "http://www.speech.cs.cmu.edu/cgi-bin/cmudict",
 			},
+			"free-dictionary": {
+				title: "Free Dictionary API",
+				content:
+					"Dictionary definitions are provided via the Free Dictionary API (dictionaryapi.dev) using Wiktionary data. Entries carry CC BY-SA 3.0 license metadata, and audio assets cite Wikimedia Commons with per-file licenses.",
+				"link-text": "Visit Free Dictionary API",
+				"link-url": "https://dictionaryapi.dev/",
+				"license-text": "View CC BY-SA 3.0 license",
+				"license-url": "https://creativecommons.org/licenses/by-sa/3.0/",
+			},
 			"phonetic-data": {
 				title: "Phonetic Data & Resources",
 				content:
 					"Articulatory descriptions, phoneme features, and IPA classifications are compiled from established phonetic resources, linguistic research, and educational materials in the public domain.",
+			},
+		},
+	},
+	"stats-page": {
+		meta: {
+			title: "Pronunciation Insights",
+			description: "Frequency and pattern insights from the pronunciation corpus",
+		},
+		title: "Pronunciation Insights",
+		description: "Phoneme frequency and syllable distribution across the pronunciation corpus.",
+		"source-note": {
+			prefix: "Data derived from the CMU Pronouncing Dictionary.",
+			link: "View credits",
+			suffix: "for authorship and licensing details.",
+		},
+		sections: {
+			overview: {
+				title: "Overview",
+				updated: "Updated: {date}",
+				cards: {
+					words: {
+						title: "Total Words",
+						description: "Entries in the dictionary",
+					},
+					variants: {
+						title: "Total Pronunciations",
+						description: "Phonetic transcriptions",
+					},
+					"multiple-pronunciations": {
+						title: "Multiple Pronunciations",
+						description: "Words with multiple variants",
+					},
+				},
+			},
+			phonemes: {
+				title: "Phoneme Frequency",
+				description: "Distribution of phonemes across the dictionary corpus",
+				tabs: {
+					vowels: "Vowels",
+					consonants: "Consonants",
+					all: "All phonemes",
+				},
+				chart: {
+					label: "Percentage",
+					tooltip: {
+						labels: {
+							phoneme: "Phoneme",
+							coverage: "Coverage",
+							words: "Words",
+						},
+					},
+				},
+			},
+			syllables: {
+				title: "Syllable Distribution",
+				description: "Frequency of words by syllable count",
+				"x-axis-label": "Syllables per word",
+				chart: {
+					label: "Words",
+					tooltip: {
+						words: "{count} words",
+						percentage: "{percentage}% of total",
+					},
+				},
+			},
+			"top-phonemes": {
+				title: "Top {count} by word coverage",
+				info: "Share of CMUDict entries that include the phoneme (word-level coverage).",
+				"coverage-label": "Word coverage",
+				"words-label": "{count} words",
 			},
 		},
 	},

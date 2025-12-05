@@ -15,6 +15,7 @@
 		"lint": "biome check --write",
 		"check-types": "tsc --noEmit",
 		"cmudict-to-json": "tsx src/cmudict-to-json.ts",
+		"cmudict-stats": "tsx src/cmudict-stats.ts",
 		"generate-word-mappings": "tsx src/generate-word-mappings.ts"
 	},
 	"dependencies": {

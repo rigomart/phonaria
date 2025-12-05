@@ -55,6 +55,32 @@ export default async function CreditsPage({ params }: { params: Promise<{ locale
 						</a>
 					</section>
 
+					{/* Free Dictionary API */}
+					<section className="space-y-3">
+						<h2 className="text-xl font-semibold">{t("sections.free-dictionary.title")}</h2>
+						<p className="text-sm text-muted-foreground leading-relaxed">
+							{t("sections.free-dictionary.content")}
+						</p>
+						<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+							<a
+								href={t("sections.free-dictionary.link-url")}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-block text-sm text-primary hover:underline"
+							>
+								{t("sections.free-dictionary.link-text")} →
+							</a>
+							<a
+								href={t("sections.free-dictionary.license-url")}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-block text-xs text-muted-foreground hover:underline"
+							>
+								{t("sections.free-dictionary.license-text")}
+							</a>
+						</div>
+					</section>
+
 					{/* Phonetic Data Sources */}
 					<section className="space-y-3">
 						<h2 className="text-xl font-semibold">{t("sections.phonetic-data.title")}</h2>

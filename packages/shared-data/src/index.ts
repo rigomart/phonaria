@@ -1,3 +1,11 @@
+import cmudictJson from "../data/dict/cmudict.json";
+import cmudictStatsJson from "../data/dict/cmudict-stats.json";
+import type { CmudictPayload, CmudictStatsPayload } from "./dict/types";
+
+export const cmudictData = cmudictJson as CmudictPayload;
+export const cmudictStatsData = cmudictStatsJson as CmudictStatsPayload;
+
+export type { CmudictPayload, CmudictStatsPayload } from "./dict/types";
 export {
 	CmuArpaRegistry,
 	type CmuArpaToken,

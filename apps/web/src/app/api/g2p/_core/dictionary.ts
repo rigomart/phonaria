@@ -1,4 +1,4 @@
-import cmudictData from "@/data/dict/cmudict.json";
+import { cmudictData } from "shared-data";
 import type { G2PSyllable } from "../_schemas/g2p-api.schema";
 import { normalizeCmuWord } from "../_utils/text-processing";
 import { syllabify } from "./syllabifier";
@@ -22,7 +22,8 @@ class CMUDict {
 		this.loadPromise = Promise.resolve()
 			.then(() => {
 				if (this.loaded) return;
-				// Type assertion with runtime check or schema validation would be better here if we didn't trust the JSON file
+
+				// No schema validation for performance reasons
 				const json = cmudictData as unknown as CmudictJson;
 				this.data = json.data;
 				this.loaded = true;

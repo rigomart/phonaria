@@ -4,10 +4,10 @@ This package hosts the primary Phonaria experience: a Next.js 15 App Router proj
 
 ## Feature overview
 
-- **Interactive IPA chart** – Explore 40 General American phonemes organized by consonants, monophthongs (including r-colored vowels), and diphthongs with detailed articulation metadata, example words, minimal pairs, and optional ElevenLabs audio.
-- **Grapheme-to-phoneme transcription** – `POST /api/g2p` converts user text into IPA with stress markers and clickable phoneme insights.
-- **Phoneme detail dialogs** – Click any phoneme to view production guidance, articulatory features, spelling patterns, allophones, and contrast information.
-- **Dictionary integration** – Clicking a transcribed word shows definitions and pronunciation audio via `GET /api/dictionary` (with Upstash Redis rate limiting).
+- **Transcription workspace** – Stress-marked IPA output with clickable words for dictionary definitions and a phoneme inspector to surface articulation details.
+- **Interactive IPA chart** – Browse consonants, monophthongs (including r-colored vowels), and diphthongs with minimal pairs, spelling patterns, allophones, and optional example audio.
+- **Insights page** – CMUDict coverage cards, phoneme frequency charts, and syllable histograms powered by the shared CMUDict stats dataset.
+- **Dictionary integration** – `GET /api/dictionary` proxies Free Dictionary responses with Upstash Redis rate limiting; transcribed words link straight to definitions and audio.
 - **Themeable & responsive UI** – Tailwind CSS v4, shadcn/ui primitives, and next-themes provide a polished light/dark experience across devices.
 - **Internationalization** – Locale-based routing via next-international with support for multiple languages.
 
@@ -52,27 +52,30 @@ apps/web
 │   ├── en/               # English translations
 │   ├── client.ts         # Client-side i18n setup
 │   └── server.ts         # Server-side i18n setup
-├── public/               # Static assets (SVG icons, audio files)
+├── public/               # Static assets (SVG icons, optional audio)
 ├── src/
 │   ├── app/              # Next.js App Router
 │   │   ├── [locale]/     # Locale-based routing (e.g., /en, /es)
-│   │   │   ├── (g2p)/    # Route group: G2P transcription tool (renders at /{locale})
-│   │   │   │   ├── _components/   # Feature-specific UI components
-│   │   │   │   ├── _hooks/        # Feature-specific React hooks
-│   │   │   │   ├── _lib/          # Feature-specific utilities
-│   │   │   │   ├── _schemas/      # Zod validation schemas
-│   │   │   │   ├── _store/        # Zustand state stores
-│   │   │   │   ├── _types/        # TypeScript type definitions
-│   │   │   │   └── page.tsx       # Route page component
-│   │   │   ├── ipa-chart/ # IPA chart with phoneme details
+│   │   │   ├── (overview)/       # Launchpad rendered at /{locale}
+│   │   │   ├── transcription/    # G2P workspace with phoneme inspector + dialogs
+│   │   │   │   ├── _components/
+│   │   │   │   ├── _hooks/
+│   │   │   │   ├── _lib/
+│   │   │   │   ├── _schemas/
+│   │   │   │   ├── _store/
+│   │   │   │   ├── _types/
+│   │   │   │   └── page.tsx
+│   │   │   ├── ipa-chart/        # IPA chart with phoneme detail dialogs
 │   │   │   │   ├── _components/
 │   │   │   │   ├── _lib/
 │   │   │   │   ├── _sections/
 │   │   │   │   ├── _store/
 │   │   │   │   └── page.tsx
-│   │   │   ├── overview/  # Landing page with feature previews
-│   │   │   ├── dev/       # Development utilities (dev only)
-│   │   │   ├── _hooks/    # Shared locale-level hooks
+│   │   │   ├── insights/         # CMUDict stats and coverage visualizations
+│   │   │   │   ├── _components/
+│   │   │   │   └── page.tsx
+│   │   │   ├── credits/          # Data source acknowledgements
+│   │   │   ├── _hooks/           # Shared locale-level hooks
 │   │   │   ├── globals.css
 │   │   │   ├── layout.tsx
 │   │   │   └── providers.tsx
@@ -91,20 +94,20 @@ apps/web
 │   ├── components/        # Shared UI components
 │   │   ├── phoneme-details/  # Phoneme dialog components
 │   │   ├── ui/            # shadcn/ui components (Radix UI based)
-│   │   ├── audio-button.tsx
 │   │   ├── audio-controls.tsx
+│   │   ├── footer.tsx
 │   │   ├── header.tsx
-│   │   ├── mode-toggle.tsx
-│   │   └── theme-provider.tsx
-│   ├── data/              # Bundled data files
-│   │   ├── dict/          # CMU Pronouncing Dictionary
-│   │   │   └── cmudict.json
+│   │   ├── theme-provider.tsx
+│   │   └── theme-switcher.tsx
+│   ├── data/              # Bundled data wiring for the app
 │   │   └── phoneme-details.ts  # Phoneme metadata aggregation
 │   ├── hooks/             # Shared React hooks
-│   │   └── use-audio-manager/
+│   │   ├── use-audio-manager/
+│   │   └── use-media-query.ts
 │   ├── lib/               # Shared utilities
 │   │   ├── api/           # API client utilities
-│   │   └── utils.ts       # General helper functions
+│   │   ├── utils.ts       # General helper functions
+│   │   └── vowel-chart-geometry.ts
 │   └── middleware.ts      # Next.js middleware (locale handling)
 ├── next.config.ts         # Next.js configuration (CSP headers, etc.)
 ├── tsconfig.json          # TypeScript configuration
@@ -114,19 +117,23 @@ apps/web
 ### Directory naming conventions
 
 - **Prefixed directories** (`_components`, `_hooks`, `_lib`, etc.) – Feature-specific code co-located with routes; not exposed as routes by Next.js
-- **Route groups** (`(g2p)`) – Share layouts without affecting URL structure
+- **Route groups** (`(overview)`) – Share layouts without affecting URL structure
 - **Locale routes** (`[locale]`) – Dynamic routing for internationalization support
 
 ## Data dependencies
 
-- **CMU Pronouncing Dictionary** – Located at `src/data/dict/cmudict.json` with metadata (source URL, generation timestamp, entry counts) and dictionary data. Regenerate via `bun --cwd packages/helper-scripts cmudict-to-json` (see helper-scripts README).
-- **Phoneme metadata** – Sourced from `packages/shared-data` package, including:
+- **CMU Pronouncing Dictionary** – Shipped via `shared-data` at `packages/shared-data/data/dict/cmudict.json`; the companion `cmudict-stats.json` feeds the insights page. Regenerate with:
+  ```bash
+  CMUDICT_SRC_URL="<remote .dict file>" bun --cwd packages/helper-scripts cmudict-to-json
+  bun --cwd packages/helper-scripts cmudict-stats
+  ```
+- **Phoneme metadata** – Sourced from `packages/shared-data` and aggregated in `src/data/phoneme-details.ts`, including:
   - Phoneme symbols, categories, and IPA representations
   - Articulatory features and production guidance
   - Minimal pairs and contrast information
   - Spelling patterns and allophones
   - CMU ARPABET to IPA symbol mappings
-- **Example audio** – Optional `.mp3` files under `public/audio/examples`. Generated with `bun --cwd packages/helper-scripts generate` once `ELEVENLABS_API_KEY` is configured in `packages/helper-scripts/.env`.
+- **Example audio** – ElevenLabs-generated `.mp3` files are produced locally, then manually uploaded to the audio bucket referenced by the app (alongside any externally sourced clips). Generate with `bun --cwd packages/helper-scripts generate` once `ELEVENLABS_API_KEY` is configured in `packages/helper-scripts/.env`.
 
 ## Environment variables
 
@@ -137,13 +144,13 @@ Create a `.env.local` file in `apps/web` with the following variables:
 UPSTASH_REDIS_REST_URL=your_upstash_redis_url
 UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
 
-# Optional: CMUDict source URL for builds
+# Optional: only needed when regenerating CMUDict JSON with helper-scripts
 CMUDICT_SRC_URL=https://example.com/cmudict.dict
 ```
 
 ## Testing guidance
 
-Unit tests live alongside the code they cover using `.test.ts` suffix (e.g., `src/data/phoneme-details.test.ts`, `src/app/api/dictionary/_services/dictionary-service.test.ts`). Run `bun --cwd apps/web test` locally or rely on the root `bun test` command for workspace-wide coverage.
+Unit tests live alongside the code they cover using `.test.ts` suffix (e.g., `src/data/phoneme-details.test.ts`, `src/app/api/g2p/_core/syllabifier.test.ts`, `src/app/api/dictionary/_services/dictionary-service.test.ts`). Run `bun --cwd apps/web test` locally or rely on the root `bun test` command for workspace-wide coverage.
 
 ## Security
 

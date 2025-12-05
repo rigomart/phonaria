@@ -165,7 +165,7 @@ contrasts?.forEach(contrast => {
 });
 ```
 
-> **Note**: CMU ARPA transcriptions are generated dynamically by `helper-scripts` from CMUDict. See the `generate-word-mappings` script for word → CMU ARPA lookups.
+> **Note**: CMU ARPA transcriptions are generated dynamically by `helper-scripts` from CMUDict. The default CMUDict JSON lives at `packages/shared-data/data/dict/cmudict.json` (generated via `bun --cwd packages/helper-scripts cmudict-to-json`). See the `generate-word-mappings` script for word → CMU ARPA lookups.
 
 ## Contribution guide
 
