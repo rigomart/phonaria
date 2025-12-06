@@ -1,17 +1,20 @@
 "use client";
 
-import { BookA, SendHorizonal } from "lucide-react";
+import { BookA, ChevronDown, SendHorizonal } from "lucide-react";
 import type { PhonemeSymbolIpa } from "shared-data";
 
-type PreviewItem = {
+type PreviewWord = {
 	word: string;
 	phonemes: PhonemeSymbolIpa[];
+	variantLabel?: string;
+	isMissing?: boolean;
 };
 
-const PREVIEW_DATA: PreviewItem[] = [
+const PREVIEW_WORDS: PreviewWord[] = [
 	{
 		word: "clear",
 		phonemes: ["k", "l", "ɪ", "ɹ"],
+		variantLabel: "1/2",
 	},
 	{
 		word: "sky",
@@ -21,56 +24,66 @@ const PREVIEW_DATA: PreviewItem[] = [
 
 export function G2PPreviewStatic() {
 	return (
-		<div className="w-full h-full bg-background rounded-md border border-border/50 shadow-sm overflow-hidden select-none flex flex-col min-h-0">
-			{/* Input Section */}
-			<div className="bg-background-soft p-3 shrink-0">
-				<form className="flex gap-3">
-					<div className="flex-1 flex items-center relative">
-						<div className="flex-1 text-sm px-4 py-2 bg-muted-foreground/5 rounded-xl text-muted-foreground">
+		<div className="flex h-full w-full select-none flex-col overflow-hidden rounded-xl border border-border/60 bg-background-soft shadow-sm">
+			<div className="border-b border-border/60 bg-background px-3 py-3">
+				<div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+					<span className="font-medium text-muted-foreground/80">Max 200 characters • English</span>
+				</div>
+
+				<div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+					<div className="relative flex-1">
+						<div className="flex h-11 items-center rounded-lg border border-border/70 bg-background px-3 pr-16 text-sm text-muted-foreground shadow-inner shadow-black/5">
 							clear sky
 						</div>
-						<div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-							<span className="text-xs text-muted-foreground">0/200</span>
+						<div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
+							9/200
 						</div>
 					</div>
-					<div className="size-9 p-0 rounded-xl bg-secondary flex items-center justify-center">
-						<SendHorizonal className="size-3" />
-					</div>
-				</form>
+					<button
+						type="button"
+						className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground shadow-sm"
+					>
+						<SendHorizonal className="size-4" />
+					</button>
+				</div>
 			</div>
 
-			{/* Transcription Results */}
-			<div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 overflow-x-auto bg-muted/20 border border-border/40 p-4 md:p-6 flex-1 min-h-0">
-				{PREVIEW_DATA.map((item) => (
-					<div key={item.word} className="flex flex-col items-center text-center min-w-0">
-						<button
-							type="button"
-							className="text-base sm:text-lg font-normal mb-2 whitespace-nowrap px-3 py-1 rounded-md transition-colors duration-200 text-muted-foreground hover:bg-muted/50 hover:text-foreground cursor-pointer"
-						>
+			<div className="relative flex flex-1 flex-wrap items-start justify-center gap-6 overflow-x-auto border-t border-border/60 bg-background px-4 py-5 md:gap-7 md:px-6">
+				{PREVIEW_WORDS.map((item) => (
+					<div key={item.word} className="flex min-w-0 flex-col items-center gap-2 text-center">
+						<div className="rounded-lg px-3 py-1 text-base font-semibold text-foreground">
 							{item.word}
-						</button>
-						<div className="flex items-center gap-2 min-h-12">
-							<div className="leading-normal whitespace-nowrap flex items-center">
-								<div className="flex items-center">
+						</div>
+
+						<div className="flex items-center gap-2">
+							{item.isMissing ? (
+								<div className="flex items-center justify-center rounded border border-dashed border-muted-foreground/40 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+									Not found
+								</div>
+							) : (
+								<div className="flex items-center gap-1">
 									{item.phonemes.map((ph, idx) => (
 										<span
 											key={`${item.word}-${idx}`}
-											className="text-xl sm:text-2xl md:text-3xl bg-transparent border-none p-1 m-0 rounded-md text-foreground"
+											className="rounded-md px-1 text-2xl font-semibold tracking-wide text-foreground"
 										>
 											{ph}
 										</span>
 									))}
 								</div>
-							</div>
+							)}
+
+							<span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background px-2 py-1 text-xs font-medium text-muted-foreground">
+								<ChevronDown className="size-3" />
+							</span>
 						</div>
 					</div>
 				))}
 			</div>
 
-			{/* Dictionary Definition Mock */}
-			<div className="px-3 py-2 border-t border-border/40 bg-muted/5 flex items-center gap-2 shrink-0">
-				<BookA className="size-3 text-primary/60" />
-				<div className="h-3 w-48 bg-muted-foreground/5 rounded-sm" />
+			<div className="flex items-center gap-2 border-t border-border/60 bg-background px-3 py-2 text-[11px] text-muted-foreground">
+				<BookA className="size-3 text-primary/70" />
+				<div className="h-3 w-48 rounded-sm bg-muted-foreground/10" />
 			</div>
 		</div>
 	);
