@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, SendHorizonal } from "lucide-react";
+import { Keyboard, Loader2, SendHorizonal } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,10 +39,10 @@ export function G2PInputForm({
 	};
 
 	return (
-		<div className="w-full space-y-1">
+		<div className="w-full space-y-3">
 			<div
 				className={cn(
-					"text-xs text-muted-foreground/40 text-center opacity-0 transition-opacity duration-150",
+					"flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground transition-opacity",
 					{
 						"opacity-100": isMobileDevice === false,
 						"pointer-events-none select-none": isMobileDevice === null || isMobileDevice,
@@ -50,48 +50,60 @@ export function G2PInputForm({
 				)}
 				aria-hidden={Boolean(isMobileDevice === null || !isMobileDevice)}
 			>
-				Type anywhere to begin transcribing
+				<span className="inline-flex items-center gap-1">
+					<Keyboard className="size-4" />
+					Type anywhere or paste text to transcribe.
+				</span>
+				<span className="text-xs text-muted-foreground/80">
+					Max {maxLength} characters • English phonemes
+				</span>
 			</div>
 
-			<div className="space-y-2">
-				<form onSubmit={handleSubmit} className="flex gap-3">
-					<div className="flex-1 relative">
-						<Input
-							ref={inputRef}
-							value={inputText}
-							onChange={(e) => setInputText(e.target.value)}
-							placeholder={placeholder}
-							disabled={isLoading}
-							className="flex-1 h-12 text-base px-4 pr-16 py-2"
-							maxLength={maxLength}
-							aria-label="Text to transcribe"
-						/>
-						<div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-							<span
-								className={`text-xs transition-colors ${
-									characterCount >= maxLength * 0.9
-										? "text-orange-600 dark:text-orange-400 font-medium"
-										: "text-muted-foreground"
-								}`}
-							>
-								{characterCount}/{maxLength}
-							</span>
-						</div>
+			<form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-center">
+				<div className="relative flex-1">
+					<Input
+						ref={inputRef}
+						value={inputText}
+						onChange={(e) => setInputText(e.target.value)}
+						placeholder={placeholder}
+						disabled={isLoading}
+						className="h-12 rounded-lg border bg-background px-4 pr-20 text-base shadow-inner shadow-black/5"
+						maxLength={maxLength}
+						aria-label="Text to transcribe"
+					/>
+					<div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+						<span
+							className={cn(
+								"text-xs font-medium tabular-nums transition-colors",
+								characterCount >= maxLength * 0.9
+									? "text-orange-600 dark:text-orange-400"
+									: "text-muted-foreground",
+							)}
+						>
+							{characterCount}/{maxLength}
+						</span>
 					</div>
-					<Button
-						type="submit"
-						disabled={!hasText || isLoading}
-						className="h-12 w-12 p-0"
-						size="default"
-					>
-						{isLoading ? (
-							<Loader2 className="h-4 w-4 animate-spin" />
-						) : (
-							<SendHorizonal className="h-4 w-4" />
-						)}
-					</Button>
-				</form>
-			</div>
+				</div>
+
+				<Button
+					type="submit"
+					disabled={!hasText || isLoading}
+					className="h-12 w-full gap-2 sm:w-auto"
+					size="default"
+				>
+					{isLoading ? (
+						<>
+							<Loader2 className="size-4 animate-spin" />
+							<span className="text-sm">Transcribing…</span>
+						</>
+					) : (
+						<>
+							<SendHorizonal className="size-4" />
+							<span className="text-sm">Transcribe</span>
+						</>
+					)}
+				</Button>
+			</form>
 		</div>
 	);
 }

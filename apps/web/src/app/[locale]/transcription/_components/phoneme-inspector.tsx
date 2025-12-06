@@ -24,13 +24,20 @@ export function PhonemeInspector() {
 
 	if (!hasSelection) {
 		return (
-			<Empty className="h-full border-0 bg-linear-120 from-background-strong to-background">
+			<Empty className="h-full border-0 bg-transparent px-6 py-8 text-center">
 				<EmptyHeader>
-					<EmptyMedia variant="icon">
+					<EmptyMedia
+						variant="icon"
+						className="rounded-full border border-border/70 bg-background shadow-sm"
+					>
 						<MousePointerClickIcon />
 					</EmptyMedia>
-					<EmptyTitle>Select a phoneme from the transcription</EmptyTitle>
-					<EmptyDescription>Click any symbol like /ə/ to explore details.</EmptyDescription>
+					<EmptyTitle className="text-base font-semibold text-foreground">
+						Select a phoneme
+					</EmptyTitle>
+					<EmptyDescription className="text-sm text-muted-foreground">
+						Click any symbol like /ə/ to view articulation, contrasts, and spelling patterns.
+					</EmptyDescription>
 				</EmptyHeader>
 			</Empty>
 		);
@@ -38,14 +45,17 @@ export function PhonemeInspector() {
 
 	if (!selectedPhonemeId) {
 		return (
-			<Empty className="h-full border-0 bg-linear-120 from-background-strong to-background">
+			<Empty className="h-full border-0 bg-transparent px-6 py-8 text-center">
 				<EmptyHeader>
-					<EmptyMedia variant="icon">
+					<EmptyMedia
+						variant="icon"
+						className="rounded-full border border-border/70 bg-background shadow-sm"
+					>
 						<InfoIcon />
 					</EmptyMedia>
-					<EmptyDescription>
-						This CMU token doesn't map to a phoneme in our dataset. Try another symbol or update the
-						shared data mappings.
+					<EmptyDescription className="text-sm text-muted-foreground">
+						This CMU token doesn&apos;t map to a phoneme in our dataset. Try another symbol or
+						update the shared data mappings.
 					</EmptyDescription>
 				</EmptyHeader>
 			</Empty>
@@ -53,14 +63,16 @@ export function PhonemeInspector() {
 	}
 
 	return (
-		<PhonemeDetails phonemeId={selectedPhonemeId}>
-			<PhonemeDetailsHeader />
-			<PhonemeDetailsContent>
-				<PhonemeDetailsArticulation />
-				<PhonemeDetailsPatterns />
-				<PhonemeDetailsContrasts />
-				<PhonemeDetailsAllophones />
-			</PhonemeDetailsContent>
-		</PhonemeDetails>
+		<div className="rounded-xl border border-border/80 bg-background shadow-sm">
+			<PhonemeDetails phonemeId={selectedPhonemeId}>
+				<PhonemeDetailsHeader />
+				<PhonemeDetailsContent>
+					<PhonemeDetailsArticulation />
+					<PhonemeDetailsPatterns />
+					<PhonemeDetailsContrasts />
+					<PhonemeDetailsAllophones />
+				</PhonemeDetailsContent>
+			</PhonemeDetails>
+		</div>
 	);
 }

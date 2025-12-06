@@ -7,24 +7,20 @@ import { WordDefinitionDialog } from "./_components/word-definition-dialog";
 export default function Index() {
 	return (
 		<div className="flex-1 min-h-0 bg-background">
-			<div className="container mx-auto h-full min-h-0">
-				<div className="grid grid-cols-1 lg:grid-cols-12 h-full min-h-0 border">
-					{/* Main Content Area */}
-					<div className="lg:col-span-7 min-h-0 overflow-y-auto">
-						{/* Input Section */}
-						<div className="border-b bg-background-soft p-4">
+			<div className="container mx-auto h-full min-h-0 px-2 py-3 lg:py-4">
+				<div className="grid h-full min-h-0 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] lg:items-start">
+					<div className="flex min-h-0 flex-col rounded-xl border bg-background-soft shadow-sm">
+						<div className="border-b px-4 py-3 lg:px-5 lg:py-4">
 							<G2PInputForm />
 						</div>
-
-						{/* Transcription Results or Empty State */}
 						<TranscriptionDisplay />
 					</div>
 
-					{/* Right Column: Stacked summary blocks */}
-					<div className="hidden lg:col-span-5 lg:flex lg:flex-1 lg:flex-col min-h-0 lg:border-l bg-background-soft">
+					<div className="hidden min-h-0 rounded-xl border bg-background-soft shadow-sm lg:flex lg:flex-col lg:sticky lg:top-6">
 						<PhonemeInspector />
 					</div>
 				</div>
+
 				<PhonemeDialog />
 				<WordDefinitionDialog />
 			</div>

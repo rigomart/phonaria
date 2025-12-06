@@ -22,8 +22,13 @@ export function VariantSelector({ variants, wordIndex, onSelect }: VariantSelect
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-muted/50">
-					<ChevronDown className="h-4 w-4" />
+				<Button
+					size="icon"
+					variant="ghost"
+					className="h-8 w-8 rounded-full border border-border/70 bg-background hover:border-border hover:bg-muted/40"
+					aria-label="Select pronunciation variant"
+				>
+					<ChevronDown className="h-4 w-4 text-muted-foreground" />
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="start">

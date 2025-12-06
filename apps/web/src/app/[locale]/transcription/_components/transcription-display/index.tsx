@@ -34,10 +34,10 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 			<button
 				type="button"
 				className={cn(
-					"text-lg md:text-xl font-normal whitespace-nowrap px-3 py-1 rounded-md transition-colors duration-200",
+					"text-base md:text-lg font-semibold whitespace-nowrap px-3 py-1 rounded-lg transition-colors duration-200",
 					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-					"cursor-pointer hover:bg-muted/50 hover:text-foreground",
-					isUnknown ? "text-muted-foreground/50" : "text-muted-foreground",
+					"cursor-pointer border border-transparent hover:border-border/70 hover:bg-muted/40 hover:text-foreground",
+					isUnknown ? "text-muted-foreground/60" : "text-foreground",
 				)}
 				onClick={() => setSelectedWord(word.word)}
 				aria-label={`Show definition for ${word.word}`}
@@ -105,9 +105,10 @@ export function TranscriptionDisplay() {
 	if (!result) return <EmptyState />;
 
 	return (
-		<div className="relative flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto bg-muted/20 border border-border/40 p-4 md:p-6">
-			<div className="absolute top-2 right-2 flex flex-col items-center gap-1">
+		<div className="relative flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto rounded-b-xl border-t border-border/60 bg-background px-4 py-5 md:px-6">
+			<div className="absolute right-3 top-3 flex items-center gap-2 rounded-full border border-border/70 bg-background-soft px-2 py-1 shadow-sm">
 				<TranscriptionInfoButton />
+				<div className="h-4 w-px bg-border/60" aria-hidden />
 				<TranscriptionCopyButton result={result} />
 			</div>
 
