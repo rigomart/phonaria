@@ -32,7 +32,7 @@ export function VowelChartSection({ variant, className }: Props) {
 
 	return (
 		<section className={cn("max-w-3xl mx-auto", className)}>
-			<div className="rounded-xl bg-background-soft p-2 sm:p-3 shadow-sm space-y-3">
+			<div className="rounded-xl border bg-background-soft p-2 sm:p-3 shadow-sm space-y-3">
 				<div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
 					<VowelChartLegend />
 					<ChartInfoButton content={t(`${variant}.diagram`)} ariaLabel={ariaLabel} />

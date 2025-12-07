@@ -64,11 +64,11 @@ export function TranscriptionCopyButton({ result }: TranscriptionCopyButtonProps
 		<Button
 			variant="ghost"
 			size="icon"
-			className="h-8 w-8 text-muted-foreground hover:text-foreground"
+			className="size-8 text-muted-foreground hover:text-foreground"
 			onClick={handleCopyToClipboard}
 			aria-label={t("aria-label")}
 		>
-			{isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+			{isCopied ? <Check className="size-4" /> : <Copy className="size-4" />}
 		</Button>
 	);
 }

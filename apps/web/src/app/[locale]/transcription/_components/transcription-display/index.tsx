@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { useCurrentTranscription } from "../../_hooks/use-g2p";
@@ -34,10 +35,10 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 			<button
 				type="button"
 				className={cn(
-					"text-lg md:text-xl font-normal whitespace-nowrap px-3 py-1 rounded-md transition-colors duration-200",
+					"text-base md:text-lg font-semibold whitespace-nowrap px-3 py-1 rounded-lg transition-colors duration-200",
 					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-					"cursor-pointer hover:bg-muted/50 hover:text-foreground",
-					isUnknown ? "text-muted-foreground/50" : "text-muted-foreground",
+					"cursor-pointer border border-transparent hover:border-border/70 hover:bg-muted/40 hover:text-foreground",
+					isUnknown ? "text-muted-foreground/60" : "text-foreground",
 				)}
 				onClick={() => setSelectedWord(word.word)}
 				aria-label={`Show definition for ${word.word}`}
@@ -50,7 +51,7 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 				{word.word}
 			</button>
 
-			<div className="flex items-center gap-2 min-h-12">
+			<div className="flex items-center gap-2">
 				{isUnknown ? (
 					<div
 						className="flex items-center justify-center text-muted-foreground/60 text-xs font-medium uppercase tracking-wider border border-dashed border-muted-foreground/30 rounded px-2 py-1 h-8 select-none"
@@ -105,11 +106,12 @@ export function TranscriptionDisplay() {
 	if (!result) return <EmptyState />;
 
 	return (
-		<div className="relative flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto bg-muted/20 border border-border/40 p-4 md:p-6">
-			<div className="absolute top-2 right-2 flex flex-col items-center gap-1">
+		<div className="relative flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto rounded-b-xl border-t px-4 py-5 md:px-6">
+			<ButtonGroup className="absolute right-1 top-1 bg-background-strong rounded-xl border border-border/70 shadow-sm">
 				<TranscriptionInfoButton />
+				<ButtonGroupSeparator />
 				<TranscriptionCopyButton result={result} />
-			</div>
+			</ButtonGroup>
 
 			{result.words.map((word, wordIndex) => (
 				<WordColumn

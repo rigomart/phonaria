@@ -60,9 +60,9 @@ export default async function RootLayout({
 				<I18nProviderClient locale={locale}>
 					<NuqsAdapter>
 						<Providers>
-							<div className="h-screen flex flex-col">
+							<div className="min-h-screen flex flex-col">
 								<Header />
-								{children}
+								<main className="flex-1 flex min-h-0 flex-col">{children}</main>
 								<Footer />
 							</div>
 						</Providers>

@@ -16,44 +16,40 @@ export function EmptyState() {
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-[400px] p-8">
-			<div className="text-center space-y-8 max-w-lg w-full">
-				{/* Visual Example */}
-				<div className="space-y-4">
-					<div className="inline-flex flex-col items-center gap-3 bg-background-soft shadow-md rounded-xl px-6 py-5">
-						<div className="flex items-center gap-2">
-							<TypeIcon className="size-4 text-muted-foreground/40" />
-							<div className="text-base text-muted-foreground font-normal">
-								{t("visual-example.text")}
-							</div>
+		<div className="flex min-h-[420px] items-center justify-center bg-background px-6 py-10">
+			<div className="w-full max-w-2xl space-y-8 rounded-xl border border-dashed border-border/70 bg-background-soft px-6 py-7 text-center shadow-sm">
+				<div className="flex flex-col items-center gap-3">
+					<div className="inline-flex items-center gap-2 rounded-full bg-background px-3 py-1 text-xs font-medium text-muted-foreground/90 ring-1 ring-border/80">
+						<TypeIcon className="size-3.5 text-muted-foreground/60" />
+						<span>{t("description")}</span>
+					</div>
+					<div className="inline-flex items-center gap-2 rounded-lg border border-border/70 bg-background px-5 py-3 shadow-inner shadow-black/5">
+						<div className="text-sm font-medium text-muted-foreground">
+							{t("visual-example.text")}
 						</div>
 						<ChevronDownIcon className="size-4 text-muted-foreground/40" />
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-2 text-lg tracking-wide">
 							<AudioWaveformIcon className="size-4 text-muted-foreground/40" />
-							<div className="text-lg text-foreground tracking-wide">{t("visual-example.ipa")}</div>
+							<span className="font-semibold text-foreground">{t("visual-example.ipa")}</span>
 						</div>
 					</div>
-					<p className="text-xs text-muted-foreground">{t("description")}</p>
+					<p className="text-sm text-muted-foreground">{t("try-example")}</p>
 				</div>
 
-				{/* Examples Grid */}
-				<div className="space-y-3">
-					<p className="text-sm font-medium text-muted-foreground">{t("try-example")}</p>
-					<div className="grid grid-cols-2 gap-2">
-						{examples.map((example) => (
-							<Button
-								key={example}
-								type="button"
-								onClick={() => handleExampleClick(example)}
-								variant="outline"
-								disabled={transcribeMutation.isPending}
-								className="flex items-center justify-between gap-2 bg-background-soft"
-							>
-								<span className="text-xs font-normal text-muted-foreground">{example}</span>
-								<ArrowRightIcon className="size-3 opacity-30" />
-							</Button>
-						))}
-					</div>
+				<div className="grid gap-2 sm:grid-cols-2">
+					{examples.map((example) => (
+						<Button
+							key={example}
+							type="button"
+							onClick={() => handleExampleClick(example)}
+							variant="outline"
+							disabled={transcribeMutation.isPending}
+							className="flex items-center justify-between gap-2 bg-background text-left text-sm font-medium"
+						>
+							<span className="truncate text-muted-foreground">{example}</span>
+							<ArrowRightIcon className="size-3.5 text-muted-foreground/50" />
+						</Button>
+					))}
 				</div>
 			</div>
 		</div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
 	cmudictStatsData,
@@ -8,6 +9,7 @@ import {
 	type PhonemeCategory,
 	type PhonemeSymbolId,
 } from "shared-data";
+import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	type ChartConfig,
@@ -15,8 +17,8 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScopedI18n } from "@/locales/client";
+import { TopPhonemesHighlight } from "./top-phonemes-highlight";
 
 type ChartDataItem = {
 	phonemeId: PhonemeSymbolId;
@@ -30,6 +32,8 @@ type ChartDataItem = {
 export function PhonemeFrequencyChart() {
 	const stats = cmudictStatsData;
 	const t = useScopedI18n("stats-page.sections.phonemes");
+	const [selectedPhonemeId, setSelectedPhonemeId] = useState<PhonemeSymbolId | null>(null);
+	const [dialogOpen, setDialogOpen] = useState(false);
 
 	const allData: ChartDataItem[] = stats.phonemes
 		.map((phoneme) => {
@@ -48,41 +52,82 @@ export function PhonemeFrequencyChart() {
 	const vowelsData = allData.filter((d) => d.category === "vowel");
 	const consonantsData = allData.filter((d) => d.category === "consonant");
 
-	const chartConfig = {
+	const vowelConfig = {
+		percentage: {
+			label: t("chart.label"),
+			color: "var(--chart-2)",
+		},
+	} satisfies ChartConfig;
+
+	const consonantConfig = {
 		percentage: {
 			label: t("chart.label"),
 			color: "var(--chart-1)",
 		},
 	} satisfies ChartConfig;
 
+	const handlePhonemeClick = (phonemeId: PhonemeSymbolId) => {
+		setSelectedPhonemeId(phonemeId);
+		setDialogOpen(true);
+	};
+
 	return (
-		<Card>
-			<CardHeader>
-				<CardTitle className="text-lg font-semibold">{t("title")}</CardTitle>
-				<CardDescription>{t("description")}</CardDescription>
-			</CardHeader>
-			<CardContent>
-				{/* <TopPhonemesHighlight /> */}
+		<>
+			<Card>
+				<CardHeader className="pb-2">
+					<CardTitle className="text-lg font-semibold">{t("title")}</CardTitle>
+					<CardDescription>{t("description")}</CardDescription>
+				</CardHeader>
+				<CardContent className="space-y-6">
+					<TopPhonemesHighlight />
 
-				<Tabs defaultValue="vowels" className="w-full">
-					<TabsList className="grid w-full grid-cols-3">
-						<TabsTrigger value="vowels">{t("tabs.vowels")}</TabsTrigger>
-						<TabsTrigger value="consonants">{t("tabs.consonants")}</TabsTrigger>
-						<TabsTrigger value="all">{t("tabs.all")}</TabsTrigger>
-					</TabsList>
+					{/* Side-by-side layout on larger screens */}
+					<div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+						{/* Vowels Section */}
+						<div className="space-y-2">
+							<div className="flex items-center gap-2">
+								<div className="size-3 rounded-full bg-chart-2" />
+								<h3 className="text-sm font-semibold text-muted-foreground">
+									{t("tabs.vowels")} ({vowelsData.length})
+								</h3>
+							</div>
+							<PhonemeBarChart
+								data={vowelsData}
+								config={vowelConfig}
+								height={420}
+								onPhonemeClick={handlePhonemeClick}
+								fillColor="var(--chart-2)"
+							/>
+						</div>
 
-					<TabsContent value="all">
-						<PhonemeBarChart data={allData} config={chartConfig} height={1200} />
-					</TabsContent>
-					<TabsContent value="vowels">
-						<PhonemeBarChart data={vowelsData} config={chartConfig} height={500} />
-					</TabsContent>
-					<TabsContent value="consonants">
-						<PhonemeBarChart data={consonantsData} config={chartConfig} height={800} />
-					</TabsContent>
-				</Tabs>
-			</CardContent>
-		</Card>
+						{/* Consonants Section */}
+						<div className="space-y-2">
+							<div className="flex items-center gap-2">
+								<div className="size-3 rounded-full bg-chart-1" />
+								<h3 className="text-sm font-semibold text-muted-foreground">
+									{t("tabs.consonants")} ({consonantsData.length})
+								</h3>
+							</div>
+							<PhonemeBarChart
+								data={consonantsData}
+								config={consonantConfig}
+								height={600}
+								onPhonemeClick={handlePhonemeClick}
+								fillColor="var(--chart-1)"
+							/>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+
+			{selectedPhonemeId && (
+				<PhonemeDetailsDialog
+					open={dialogOpen}
+					onOpenChange={setDialogOpen}
+					phonemeId={selectedPhonemeId}
+				/>
+			)}
+		</>
 	);
 }
 
@@ -90,10 +135,14 @@ function PhonemeBarChart({
 	data,
 	config,
 	height,
+	onPhonemeClick,
+	fillColor,
 }: {
 	data: ChartDataItem[];
 	config: ChartConfig;
 	height: number;
+	onPhonemeClick: (phonemeId: PhonemeSymbolId) => void;
+	fillColor: string;
 }) {
 	const t = useScopedI18n("stats-page.sections.phonemes");
 
@@ -101,6 +150,10 @@ function PhonemeBarChart({
 		phoneme: t("chart.tooltip.labels.phoneme"),
 		coverage: t("chart.tooltip.labels.coverage"),
 		words: t("chart.tooltip.labels.words"),
+	};
+
+	const handleBarClick = (data: ChartDataItem) => {
+		onPhonemeClick(data.phonemeId);
 	};
 
 	return (
@@ -150,6 +203,7 @@ function PhonemeBarChart({
 											<div className="text-xs text-muted-foreground">
 												{tooltipLabels.words}: {data.coverage.toLocaleString()}
 											</div>
+											<div className="text-xs text-primary/80 mt-1">Click for details</div>
 										</div>
 									);
 								}}
@@ -158,10 +212,12 @@ function PhonemeBarChart({
 					/>
 					<Bar
 						dataKey="percentage"
-						fill="var(--chart-1)"
+						fill={fillColor}
 						radius={4}
-						barSize={24}
+						barSize={20}
 						background={{ fill: "var(--muted)", opacity: 0.1, radius: 4 }}
+						className="cursor-pointer"
+						onClick={(data) => handleBarClick(data as unknown as ChartDataItem)}
 					/>
 				</BarChart>
 			</ChartContainer>

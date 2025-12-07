@@ -14,20 +14,18 @@ export function TranscriptionInfoButton() {
 				<Button
 					variant="ghost"
 					size="icon"
-					className="h-8 w-8 text-muted-foreground hover:text-foreground"
+					className="size-8 text-muted-foreground hover:text-foreground"
 					aria-label={t("aria-label")}
 				>
-					<Info className="h-4 w-4" />
+					<Info className="size-4" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent align="end" className="w-[calc(100vw-2rem)] sm:w-96 max-w-md">
-				<div className="space-y-3">
-					<h4 className="font-medium text-sm">{t("title")}</h4>
-					<div className="space-y-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+			<PopoverContent align="end" className="sm:w-96">
+				<div className="space-y-2">
+					<h4 className="font-semibold text-sm">{t("title")}</h4>
+					<div className="space-y-2 text-xs sm:text-sm text-muted-foreground">
 						<p>{t("description")}</p>
-						<p>
-							<strong className="text-foreground">{t("limitations-title")}</strong>
-						</p>
+						<p className="font-semibold">{t("limitations-title")}</p>
 						<ul className="list-disc list-inside space-y-1 ml-2">
 							<li>{t("limitations.newer-words")}</li>
 							<li>{t("limitations.proper-nouns")}</li>

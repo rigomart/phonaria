@@ -6,25 +6,21 @@ import { WordDefinitionDialog } from "./_components/word-definition-dialog";
 
 export default function Index() {
 	return (
-		<div className="flex-1 min-h-0 bg-background">
-			<div className="container mx-auto h-full min-h-0">
-				<div className="grid grid-cols-1 lg:grid-cols-12 h-full min-h-0 border">
-					{/* Main Content Area */}
-					<div className="lg:col-span-7 min-h-0 overflow-y-auto">
-						{/* Input Section */}
-						<div className="border-b bg-background-soft p-4">
+		<div className="flex-1 min-h-0 h-full bg-background">
+			<div className="container mx-auto h-full min-h-0 px-2 py-2 lg:py-3">
+				<div className="grid h-full min-h-0 grid-rows-1 gap-3 grid-cols-1 lg:grid-cols-12 lg:grid-rows-1 lg:items-stretch">
+					<div className="flex h-full min-h-0 flex-col rounded-xl border bg-background-soft shadow-sm lg:col-span-7">
+						<div className="border-b px-4 py-3 lg:px-5 lg:py-4">
 							<G2PInputForm />
 						</div>
-
-						{/* Transcription Results or Empty State */}
 						<TranscriptionDisplay />
 					</div>
 
-					{/* Right Column: Stacked summary blocks */}
-					<div className="hidden lg:col-span-5 lg:flex lg:flex-1 lg:flex-col min-h-0 lg:border-l bg-background-soft">
+					<div className="hidden lg:flex lg:min-h-0 lg:max-h-[calc(100dvh-9rem)] lg:flex-1 lg:flex-col rounded-xl bg-background-soft overflow-hidden shadow-sm lg:col-span-5">
 						<PhonemeInspector />
 					</div>
 				</div>
+
 				<PhonemeDialog />
 				<WordDefinitionDialog />
 			</div>
