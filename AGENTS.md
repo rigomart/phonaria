@@ -128,6 +128,13 @@ Progressive Disclosure:
 - Show examples and guidance only when needed
 - Reduce cognitive load. Single source of truth for each functionality
 
+Styling Guidelines:
+- Use design system tokens consistently; avoid arbitrary values.
+- Prefer Tailwind's built-in scale for sizes, spacing, and typography (e.g. `text-xs` not `text-[11px]`).
+- Use semantic color tokens from shadcn (e.g. `bg-muted`, `text-foreground`, `border`).
+- Avoid opacity modifiers on colors like `bg-primary/10` or `border-border/40`.
+- Use full-opacity borders and backgrounds; define new tokens if variants are needed.
+
 ## Learning Experience Principles
 - Toolbox over coursework: allow learners to enter through any feature and combine tools as needed.
 - Approachable language: keep explanations plain to demystify IPA, minimal pairs, and articulation terms.
