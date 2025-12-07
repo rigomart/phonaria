@@ -67,7 +67,7 @@ export function IpaChartPreviewStatic() {
 	return (
 		<div className="w-full h-full space-y-2 select-none flex flex-col min-h-0">
 			{/* Vowels Section */}
-			<div className="rounded-xl bg-background-soft p-2 sm:p-3 shadow-sm space-y-3 flex-1 flex flex-col min-h-0">
+			<div className="rounded-xl border bg-background-soft p-2 sm:p-3 shadow-sm space-y-3 flex-1 flex flex-col min-h-0">
 				<div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap shrink-0">
 					<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
 						<div className="flex items-center gap-1">
@@ -101,7 +101,7 @@ export function IpaChartPreviewStatic() {
 			</div>
 
 			{/* Consonants Section */}
-			<div className="space-y-3 rounded-xl bg-background-soft shadow-sm p-2 sm:p-3 flex-1 flex flex-col min-h-0">
+			<div className="space-y-3 rounded-xl border bg-background-soft shadow-sm p-2 sm:p-3 flex-1 flex flex-col min-h-0">
 				<div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap shrink-0">
 					<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
 						<div className="flex items-center gap-1">

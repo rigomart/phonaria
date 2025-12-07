@@ -53,7 +53,7 @@ function PhonemeCard({
 		<button
 			type="button"
 			onClick={() => onSelect(item.phonemeId)}
-			className="flex flex-col gap-2 rounded-lg border bg-muted/40 p-3 text-left transition-colors hover:bg-muted/60 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+			className="flex flex-col gap-2 rounded-xl border bg-background-soft p-3 text-left transition-colors hover:bg-muted/40 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
 		>
 			<div className="flex items-center gap-2">
 				<span className="inline-flex size-6 items-center justify-center rounded-md bg-primary/15 text-xs font-semibold text-primary">

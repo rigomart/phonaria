@@ -24,8 +24,8 @@ const PREVIEW_WORDS: PreviewWord[] = [
 
 export function G2PPreviewStatic() {
 	return (
-		<div className="flex h-full w-full select-none flex-col overflow-hidden rounded-xl border border-border/60 bg-background-soft shadow-sm">
-			<div className="border-b border-border/60 bg-background px-3 py-3">
+		<div className="flex h-full w-full select-none flex-col overflow-hidden rounded-xl border bg-background-soft shadow-sm">
+			<div className="border-b border bg-background px-3 py-3">
 				<div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
 					<span className="font-medium text-muted-foreground/80">Max 200 characters • English</span>
 				</div>
@@ -48,7 +48,7 @@ export function G2PPreviewStatic() {
 				</div>
 			</div>
 
-			<div className="relative flex flex-1 flex-wrap items-start justify-center gap-6 overflow-x-auto border-t border-border/60 bg-background px-4 py-5 md:gap-7 md:px-6">
+			<div className="relative flex flex-1 flex-wrap items-start justify-center gap-6 overflow-x-auto border-t border bg-background px-4 py-5 md:gap-7 md:px-6">
 				{PREVIEW_WORDS.map((item) => (
 					<div key={item.word} className="flex min-w-0 flex-col items-center gap-2 text-center">
 						<div className="rounded-lg px-3 py-1 text-base font-semibold text-foreground">
@@ -81,7 +81,7 @@ export function G2PPreviewStatic() {
 				))}
 			</div>
 
-			<div className="flex items-center gap-2 border-t border-border/60 bg-background px-3 py-2 text-[11px] text-muted-foreground">
+			<div className="flex items-center gap-2 border-t border bg-background px-3 py-2 text-[11px] text-muted-foreground">
 				<BookA className="size-3 text-primary/70" />
 				<div className="h-3 w-48 rounded-sm bg-muted-foreground/10" />
 			</div>

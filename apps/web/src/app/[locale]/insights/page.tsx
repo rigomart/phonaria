@@ -3,6 +3,7 @@ import Link from "next/link";
 import { setStaticParamsLocale } from "next-international/server";
 import { cmudictStatsData } from "shared-data";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getScopedI18n } from "@/locales/server";
 import { InsightsFacts } from "./_components/insights-facts";
 import { OverviewCards } from "./_components/overview-cards";
@@ -55,10 +56,16 @@ export default async function StatsPage({ params }: { params: Promise<{ locale: 
 						<OverviewCards />
 
 						{/* Insights facts */}
-						<div className="rounded-xl border bg-background-soft p-4 shadow-sm">
-							<h2 className="text-sm font-semibold mb-3 text-muted-foreground">Quick Insights</h2>
-							<InsightsFacts />
-						</div>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-semibold text-muted-foreground">
+									Quick Insights
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<InsightsFacts />
+							</CardContent>
+						</Card>
 
 						{/* Syllable histogram */}
 						<SyllableHistogram />

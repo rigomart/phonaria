@@ -28,12 +28,12 @@ export function StatsPreviewStatic() {
 	const tTopPhonemes = useScopedI18n("stats-page.sections.top-phonemes");
 
 	return (
-		<div className="w-full h-full bg-background rounded-md border border-border/50 shadow-sm p-3 sm:p-4 flex flex-col gap-3 min-h-0">
+		<div className="w-full h-full bg-background rounded-xl border shadow-sm p-3 sm:p-4 flex flex-col gap-3 min-h-0">
 			<div className="flex gap-2">
 				{PREVIEW_STATS.map((stat) => (
 					<div
 						key={stat.key}
-						className="rounded-lg bg-muted/20 border border-border/40 p-2 flex flex-col gap-1 flex-1"
+						className="rounded-xl bg-background-soft border p-2 flex flex-col gap-1 flex-1"
 					>
 						<div className="text-xs text-muted-foreground font-medium">
 							{tOverview(`${stat.translationKey}.title`)}
@@ -43,7 +43,7 @@ export function StatsPreviewStatic() {
 				))}
 			</div>
 
-			<div className="flex-1 rounded-lg border border-border/40 bg-background-soft p-3 flex flex-col gap-3 min-h-0">
+			<div className="flex-1 rounded-xl border bg-background-soft p-3 flex flex-col gap-3 min-h-0">
 				<div className="flex items-center justify-between text-xs text-muted-foreground">
 					<span>{tSections("phonemes.title")}</span>
 					<span>{tTopPhonemes("coverage-label")}</span>

@@ -15,7 +15,7 @@ export function ToolCard({ title, description, href, icon, preview }: ToolCardPr
 			href={href}
 			className="
 				group relative flex flex-col w-full h-full
-				rounded-2xl border border-border/40 bg-background-soft
+				rounded-xl border bg-background-soft shadow-sm
 				hover:border-primary/20 hover:bg-accent/50
 				transition-all duration-200 ease-out
 				focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
