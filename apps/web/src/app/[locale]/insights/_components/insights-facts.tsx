@@ -79,7 +79,7 @@ export function InsightsFacts() {
 	}
 
 	return (
-		<div className="flex flex-col gap-2 mb-4">
+		<div className="flex flex-col gap-2">
 			{facts.map((fact) => (
 				<div key={fact.key} className="flex items-start gap-2 text-sm text-muted-foreground">
 					<Lightbulb className="size-4 shrink-0 mt-0.5 text-amber-500" />
