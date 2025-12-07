@@ -5,6 +5,7 @@ import { cmudictStatsData } from "shared-data";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getScopedI18n } from "@/locales/server";
+import { InsightsFacts } from "./_components/insights-facts";
 import { OverviewCards } from "./_components/overview-cards";
 import { PhonemeFrequencyChart } from "./_components/phoneme-frequency-chart";
 import { SyllableHistogram } from "./_components/syllable-histogram";
@@ -46,6 +47,8 @@ export default async function StatsPage({ params }: { params: Promise<{ locale: 
 				</div>
 
 				<Separator />
+
+				<InsightsFacts />
 
 				<div className="grid gap-6 grid-cols-1 lg:grid-cols-12">
 					<div className="flex flex-col gap-4 lg:col-span-4">

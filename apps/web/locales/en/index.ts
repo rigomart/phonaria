@@ -299,8 +299,15 @@ export default {
 			"top-phonemes": {
 				title: "Top {count} by word coverage",
 				info: "Share of CMUDict entries that include the phoneme (word-level coverage).",
+				"vowels-title": "Top vowels by word coverage",
+				"consonants-title": "Top consonants by word coverage",
 				"coverage-label": "Word coverage",
 				"words-label": "{count} words",
+			},
+			facts: {
+				"top-phoneme": "/{ipa}/ appears in {percentage}% of all dictionary words",
+				"top-syllable": "{count}-syllable words are most common at {percentage}%",
+				"densest-phoneme": "/{ipa}/ averages {avgPerWord} occurrences per word",
 			},
 		},
 	},
