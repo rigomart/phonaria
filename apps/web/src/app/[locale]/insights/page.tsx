@@ -48,7 +48,7 @@ export default async function StatsPage({ params }: { params: Promise<{ locale: 
 				</div>
 
 				{/* Bento grid layout */}
-				<div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+				<div className="grid gap-4 grid-cols-1 lg:grid-cols-12">
 					{/* Left column: Stats overview */}
 					<div className="lg:col-span-4 flex flex-col gap-4">
 						{/* Overview stats card */}
