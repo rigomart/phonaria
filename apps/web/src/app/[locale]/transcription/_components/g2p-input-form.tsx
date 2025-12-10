@@ -33,6 +33,8 @@ export function G2PInputForm({
 		},
 	});
 
+	const showStartTypingHint = isMobileDevice === false;
+
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (hasText && !isLoading) transcribeMutation.mutate(inputText.trim());
@@ -40,24 +42,17 @@ export function G2PInputForm({
 
 	return (
 		<div className="w-full space-y-3">
-			<div
-				className={cn(
-					"flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground transition-opacity",
-					{
-						"opacity-100": isMobileDevice === false,
-						"pointer-events-none select-none": isMobileDevice === null || isMobileDevice,
-					},
-				)}
-				aria-hidden={Boolean(isMobileDevice === null || !isMobileDevice)}
-			>
-				<span className="inline-flex items-center gap-1">
-					<Keyboard className="size-4" />
-					Type anywhere or paste text to transcribe.
-				</span>
-				<span className="text-xs text-muted-foreground/80">
-					Max {maxLength} characters • English phonemes
-				</span>
-			</div>
+			{showStartTypingHint ? (
+				<div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+					<span className="inline-flex items-center gap-1">
+						<Keyboard className="size-4" />
+						Type anywhere or paste text to transcribe.
+					</span>
+					<span className="text-xs text-muted-foreground/80">
+						Max {maxLength} characters • English phonemes
+					</span>
+				</div>
+			) : null}
 
 			<form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-center">
 				<div className="relative flex-1">
