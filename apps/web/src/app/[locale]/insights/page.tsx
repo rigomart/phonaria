@@ -1,14 +1,25 @@
-import { useFormatter, useTranslations } from "next-intl";
+import { type Locale, useFormatter, useTranslations } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
+import { use } from "react";
 import { cmudictStatsData } from "shared-data";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 import { InsightsFacts } from "./_components/insights-facts";
 import { OverviewCards } from "./_components/overview-cards";
 import { PhonemeFrequencyChart } from "./_components/phoneme-frequency-chart";
 import { SyllableHistogram } from "./_components/syllable-histogram";
 
-export default function StatsPage() {
+export function generateStaticParams() {
+	return routing.locales.map((locale) => ({ locale }));
+}
+
+export default function InsightsPage({ params }: PageProps<"/[locale]/insights">) {
+	const { locale } = use(params);
+
+	setRequestLocale(locale as Locale);
+
 	const t = useTranslations("stats-page");
 	const format = useFormatter();
 

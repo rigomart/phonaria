@@ -1,6 +1,17 @@
-import { useTranslations } from "next-intl";
+import { type Locale, useTranslations } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
+import { use } from "react";
+import { routing } from "@/i18n/routing";
 
-export default function CreditsPage() {
+export function generateStaticParams() {
+	return routing.locales.map((locale) => ({ locale }));
+}
+
+export default function CreditsPage({ params }: PageProps<"/[locale]/credits">) {
+	const { locale } = use(params);
+
+	setRequestLocale(locale as Locale);
+
 	const t = useTranslations("credits-page");
 
 	return (
