@@ -203,7 +203,9 @@ function PhonemeBarChart({
 											<div className="text-xs text-muted-foreground">
 												{tooltipLabels.words}: {data.coverage.toLocaleString()}
 											</div>
-											<div className="text-xs text-primary/80 mt-1">Click for details</div>
+											<div className="text-xs text-primary/80 mt-1">
+												{t("chart.tooltip.click-for-details")}
+											</div>
 										</div>
 									);
 								}}

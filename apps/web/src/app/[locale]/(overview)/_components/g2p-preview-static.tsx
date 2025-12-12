@@ -1,6 +1,7 @@
 "use client";
 
 import { BookA, ChevronDown, SendHorizonal } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { PhonemeSymbolIpa } from "shared-data";
 
 type PreviewWord = {
@@ -23,11 +24,13 @@ const PREVIEW_WORDS: PreviewWord[] = [
 ];
 
 export function G2PPreviewStatic() {
+	const t = useTranslations("overview-page.launchpad.g2p.preview");
+
 	return (
 		<div className="flex h-full w-full select-none flex-col overflow-hidden rounded-xl border bg-background-soft shadow-sm">
 			<div className="border-b border bg-background px-3 py-3">
 				<div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-					<span className="font-medium text-muted-foreground/80">Max 200 characters • English</span>
+					<span className="font-medium text-muted-foreground/80">{t("header")}</span>
 				</div>
 
 				<div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">

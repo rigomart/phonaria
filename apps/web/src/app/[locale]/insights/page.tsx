@@ -56,7 +56,7 @@ export default function InsightsPage({ params }: PageProps<"/[locale]/insights">
 						<Card>
 							<CardHeader className="pb-2">
 								<CardTitle className="text-sm font-semibold text-muted-foreground">
-									Quick Insights
+									{t("sections.facts.title")}
 								</CardTitle>
 							</CardHeader>
 							<CardContent>

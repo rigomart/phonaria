@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
 	ConsonantArticulationRegistry,
 	ConsonantIpaRegistry,
@@ -64,6 +65,8 @@ const PREVIEW_CONSONANTS: PreviewConsonant[] = Object.entries(ConsonantIpaRegist
 	.slice(0, MAX_PREVIEW_CONSONANTS);
 
 export function IpaChartPreviewStatic() {
+	const t = useTranslations("overview-page.launchpad.ipa-chart.preview.legend");
+
 	return (
 		<div className="w-full h-full space-y-2 select-none flex flex-col min-h-0">
 			{/* Vowels Section */}
@@ -72,11 +75,11 @@ export function IpaChartPreviewStatic() {
 					<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
 						<div className="flex items-center gap-1">
 							<span className="size-2.5 sm:size-3 rounded-full border border-primary" />
-							<span>Unrounded</span>
+							<span>{t("unrounded")}</span>
 						</div>
 						<div className="flex items-center gap-1">
 							<span className="size-2.5 sm:size-3 rounded-full bg-primary" />
-							<span>Rounded</span>
+							<span>{t("rounded")}</span>
 						</div>
 					</div>
 				</div>
@@ -106,11 +109,11 @@ export function IpaChartPreviewStatic() {
 					<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
 						<div className="flex items-center gap-1">
 							<span className="size-2.5 sm:size-3 rounded border border-border bg-background opacity-80" />
-							<span>Voiceless</span>
+							<span>{t("voiceless")}</span>
 						</div>
 						<div className="flex items-center gap-1">
 							<span className="size-2.5 sm:size-3 rounded border border-primary/20 bg-primary/20 font-semibold" />
-							<span>Voiced</span>
+							<span>{t("voiced")}</span>
 						</div>
 					</div>
 				</div>

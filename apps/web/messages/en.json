@@ -6,6 +6,11 @@
 				"transcription": "Transcription",
 				"ipa-chart": "IPA Reference",
 				"insights": "Insights"
+			},
+			"language": {
+				"label": "Language",
+				"en": "English",
+				"es": "Spanish"
 			}
 		},
 		"footer": {
@@ -14,6 +19,13 @@
 				"github": "GitHub"
 			},
 			"copyright": "© {year} Phonaria. All rights reserved."
+		},
+		"theme-switcher": {
+			"label": "Theme",
+			"toggle-aria": "Toggle theme",
+			"light": "Light",
+			"dark": "Dark",
+			"system": "System"
 		},
 		"phoneme-details": {
 			"header": {
@@ -131,6 +143,16 @@
 			"try-example": "Or try an example",
 			"examples": ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"]
 		},
+		"input-form": {
+			"placeholder": "Enter text to transcribe...",
+			"aria-label": "Text to transcribe",
+			"hint": "Type anywhere or paste text to transcribe.",
+			"max-characters": "Max {maxLength} characters • English phonemes",
+			"button": {
+				"transcribe": "Transcribe",
+				"transcribing": "Transcribing…"
+			}
+		},
 		"transcription-display": {
 			"copy-button": {
 				"aria-label": "Copy transcription to clipboard",
@@ -172,12 +194,23 @@
 			"g2p": {
 				"title": "Transcription Studio",
 				"description": "Type any text to see its pronunciation represented in IPA phonemes.",
-				"action": "Open Studio"
+				"action": "Open Studio",
+				"preview": {
+					"header": "Max 200 characters • English"
+				}
 			},
 			"ipa-chart": {
 				"title": "IPA Reference",
 				"description": "Browse the General American English sound inventory.",
-				"action": "View Chart"
+				"action": "View Chart",
+				"preview": {
+					"legend": {
+						"unrounded": "Unrounded",
+						"rounded": "Rounded",
+						"voiceless": "Voiceless",
+						"voiced": "Voiced"
+					}
+				}
 			},
 			"stats": {
 				"title": "Pronunciation Insights",
@@ -266,7 +299,8 @@
 							"phoneme": "Phoneme",
 							"coverage": "Coverage",
 							"words": "Words"
-						}
+						},
+						"click-for-details": "Click for details"
 					}
 				}
 			},
@@ -291,6 +325,7 @@
 				"words-label": "{count} words"
 			},
 			"facts": {
+				"title": "Quick Insights",
 				"top-phoneme": "/{ipa}/ appears in {percentage}% of all dictionary words",
 				"top-syllable": "{count}-syllable words are most common at {percentage}%",
 				"densest-phoneme": "/{ipa}/ averages {avgPerWord} occurrences per word"
