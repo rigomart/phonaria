@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { useFormatter, useTranslations } from "next-intl";
 import { cmudictStatsData } from "shared-data";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,23 +8,11 @@ import { OverviewCards } from "./_components/overview-cards";
 import { PhonemeFrequencyChart } from "./_components/phoneme-frequency-chart";
 import { SyllableHistogram } from "./_components/syllable-histogram";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-	const { locale } = await params;
-	const t = await getTranslations({ locale: locale as "en" | "es", namespace: "stats-page.meta" });
-	return {
-		title: t("title"),
-		description: t("description"),
-	};
-}
+export default function StatsPage() {
+	const t = useTranslations("stats-page");
+	const format = useFormatter();
 
-export default async function StatsPage({ params }: { params: Promise<{ locale: string }> }) {
-	const { locale } = await params;
-
-	const t = await getTranslations({ locale: locale as "en" | "es", namespace: "stats-page" });
-	const lastUpdated = new Date(cmudictStatsData.meta.generatedAt).toLocaleString(locale, {
-		dateStyle: "long",
-		timeStyle: "short",
-	});
+	const lastUpdated = format.dateTime(cmudictStatsData.meta.generatedAt, "long-date-time");
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">

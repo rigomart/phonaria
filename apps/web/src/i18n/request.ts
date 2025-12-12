@@ -1,24 +1,54 @@
+import { type Formats, hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
-
-// Can be imported from a shared config
-const locales = ["en", "es"] as const;
+import { routing } from "./routing";
 
 export const formats = {
-	// Add any custom formats here if needed
-};
+	dateTime: {
+		"short-date": {
+			day: "numeric",
+			month: "short",
+			year: "numeric",
+		},
+		"long-date": {
+			day: "numeric",
+			month: "long",
+			year: "numeric",
+		},
+		"short-date-time": {
+			day: "numeric",
+			month: "short",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		},
+		"long-date-time": {
+			day: "numeric",
+			month: "long",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		},
+	},
+	number: {
+		precise: {
+			maximumFractionDigits: 5,
+		},
+	},
+	list: {
+		enumeration: {
+			style: "long",
+			type: "conjunction",
+		},
+	},
+} satisfies Formats;
 
 export default getRequestConfig(async ({ requestLocale }) => {
-	// This typically varies based on local storage, cookie, or headers
-	let locale = await requestLocale;
-
-	// Validate that the incoming `locale` parameter is valid
-	if (!locale || !locales.includes(locale as any)) {
-		locale = "en"; // Default fallback
-	}
+	const requested = await requestLocale;
+	const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
 
 	return {
-		locale: locale as "en" | "es",
+		locale,
 		messages: (await import(`../../messages/${locale}.json`)).default,
-		formats,
+		formats: formats,
 	};
 });
