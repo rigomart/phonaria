@@ -14,10 +14,7 @@ interface G2PInputFormProps {
 	maxLength?: number;
 }
 
-export function G2PInputForm({
-	placeholder,
-	maxLength = 200,
-}: G2PInputFormProps) {
+export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps) {
 	const t = useTranslations("g2p-page.input-form");
 	const [inputText, setInputText] = useState("");
 	const transcribeMutation = useTranscribe();

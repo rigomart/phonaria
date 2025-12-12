@@ -1,11 +1,8 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
+import { type Locale, useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { usePathname, useRouter } from "@/i18n/navigation";
-import { routing } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
 import {
 	Select,
 	SelectContent,
@@ -13,9 +10,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-
-const LOCALES = routing.locales as readonly ["en", "es"];
-type Locale = (typeof LOCALES)[number];
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 export function LocaleSwitcher({
 	size = "sm",
@@ -25,18 +22,19 @@ export function LocaleSwitcher({
 	className?: string;
 }) {
 	const t = useTranslations("components.header.language");
-	const locale = useLocale() as Locale;
 	const pathname = usePathname();
 	const router = useRouter();
-	const searchParams = useSearchParams();
+	const params = useParams();
+	const locale = params.locale as Locale;
 	const [isPending, startTransition] = useTransition();
 
 	const handleLocaleChange = (nextLocale: Locale) => {
 		if (nextLocale === locale) return;
-		const query = searchParams.toString();
-		const href = query ? `${pathname}?${query}` : pathname;
 		startTransition(() => {
-			router.replace(href, { locale: nextLocale });
+			// @ts-expect-error -- TypeScript will validate that only known `params`
+			// are used in combination with a given `pathname`. Since the two will
+			// always match for the current route, we can skip runtime checks.
+			router.replace({ pathname, params });
 		});
 	};
 
@@ -54,7 +52,7 @@ export function LocaleSwitcher({
 				<SelectValue />
 			</SelectTrigger>
 			<SelectContent>
-				{LOCALES.map((l) => (
+				{routing.locales.map((l) => (
 					<SelectItem key={l} value={l}>
 						{t(l)}
 					</SelectItem>
