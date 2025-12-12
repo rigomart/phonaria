@@ -1,6 +1,12 @@
 # Phonaria – Web Application
 
-This package hosts the primary Phonaria experience: a Next.js 15 App Router project that delivers interactive IPA charts, grapheme-to-phoneme transcription, dictionary lookups, and pronunciation audio for ESL learners.
+This package hosts the primary Phonaria experience: a Next.js 15 App Router project that delivers interactive IPA references, grapheme‑to‑phoneme transcription, in‑context dictionary lookups, and optional pronunciation audio in a single learner‑first workspace.
+
+## At a glance
+
+- App Router + locale‑based routing under `app/[locale]` (e.g. `/en`, `/es`)
+- Core routes: `/{locale}` overview, `/{locale}/transcription`, `/{locale}/ipa-chart`, `/{locale}/insights`, `/{locale}/credits`
+- API routes: `POST /api/g2p` (G2P transcription) and `GET /api/dictionary` (lookup + audio)
 
 ## Feature overview
 
@@ -13,12 +19,12 @@ This package hosts the primary Phonaria experience: a Next.js 15 App Router proj
 
 ## Tech stack
 
-- **Framework** – Next.js 15.5.5 (App Router, Turbopack for dev and builds)
+- **Framework** – Next.js 16 (App Router, Turbopack for dev and builds)
 - **UI Library** – React 19.1.0 with TypeScript 5
 - **Language** – TypeScript with strict settings and path aliases (`@/components`, `@/lib`, `@/data`)
 - **Styling** – Tailwind CSS v4, shadcn/ui components, Radix UI primitives, CSS variables in `src/app/[locale]/globals.css`
 - **State Management** – TanStack Query v5 (server state and caching), Zustand (client state stores)
-- **Internationalization** – next-international for locale-based routing and translations
+- **Internationalization** – next-intl with locale-based routing and JSON message catalogs
 - **Data Validation** – Zod schemas for API request/response validation
 - **Rate Limiting** – Upstash Redis for API endpoint protection
 - **Analytics** – Vercel Analytics and Speed Insights
@@ -46,12 +52,11 @@ bun --cwd apps/web start           # next start (after build)
 
 ## Directory structure
 
+The tree below is illustrative; prefixed folders (`_components`, `_hooks`, `_lib`, etc.) co‑locate feature code with routes without becoming URL segments.
+
 ```
 apps/web
-├── locales/              # Internationalization configuration (next-international)
-│   ├── en/               # English translations
-│   ├── client.ts         # Client-side i18n setup
-│   └── server.ts         # Server-side i18n setup
+├── messages/             # next-intl message catalogs (e.g., en.json, es.json)
 ├── public/               # Static assets (SVG icons, optional audio)
 ├── src/
 │   ├── app/              # Next.js App Router
@@ -104,11 +109,11 @@ apps/web
 │   ├── hooks/             # Shared React hooks
 │   │   ├── use-audio-manager/
 │   │   └── use-media-query.ts
+│   ├── i18n/              # next-intl routing, navigation, and request config
 │   ├── lib/               # Shared utilities
 │   │   ├── api/           # API client utilities
 │   │   ├── utils.ts       # General helper functions
 │   │   └── vowel-chart-geometry.ts
-│   └── middleware.ts      # Next.js middleware (locale handling)
 ├── next.config.ts         # Next.js configuration (CSP headers, etc.)
 ├── tsconfig.json          # TypeScript configuration
 └── vitest.config.ts       # Vitest test runner configuration

@@ -1,13 +1,14 @@
 # Phonaria
 
-Phonaria is a phoneme-first ESL pronunciation project built around a modern Next.js application. Learners explore General American phonemes through interactive IPA charts, grapheme-to-phoneme (G2P) transcription, and in-context dictionary lookups with audio support.
+Phonaria is a learner-first pronunciation toolkit for English-as-a-second-language learners. It’s designed as a “toolbox” rather than a course: interactive IPA references, instant grapheme‑to‑phoneme (G2P) transcription, and in‑context dictionary lookups live in one responsive, audio‑first workspace.
 
 ## Highlights
 
-- **Transcription workspace** – Stress-marked IPA output with clickable words for definitions and a phoneme inspector for articulation details.
-- **Interactive IPA chart** – Phoneme dialogs bundle articulation tips, minimal pairs, spelling patterns, and optional example audio.
-- **Dictionary + CMUDict coverage** – CMU-based G2P with fallback handling plus an insights page backed by CMUDict statistics.
-- **Shared phoneme metadata** – Typed datasets power both the app and helper tooling with a single source of truth.
+- **G2P studio** – Paste text for stress‑marked IPA; click words for definitions and click phonemes for articulation, allophones, spelling patterns, and contrasts.
+- **IPA reference hub** – Responsive General American chart with production guidance, minimal pairs, and example libraries (with optional audio).
+- **Dictionary bridge** – In‑context lookups with audio and clear empty/error states, rate‑limited via Upstash Redis.
+- **Insights** – CMUDict coverage, phoneme frequency, and syllable distribution visualizations.
+- **Shared data core** – Typed phoneme registries and CMUDict assets power both the UI and helper scripts.
 
 ## Monorepo layout
 
@@ -44,6 +45,16 @@ bun build        # build all packages for production
 ```
 
 All commits should pass linting, type checking, and relevant tests.
+
+## Contributing
+
+Contributions are welcome. Before opening a PR:
+
+- Use the scoped scripts above and keep changes aligned to the relevant package (`apps/web`, `packages/shared-data`, etc.).
+- Run `bun lint`, `bun check-types`, and `bun test`.
+- Prefer small, focused commits and follow Conventional Commit messages.
+
+See `docs/project-overview.md` for product context and `docs/README.md` for enhancement plans and feature briefs.
 
 ## Data & helper workflows
 
