@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
@@ -17,7 +18,6 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useScopedI18n } from "@/locales/client";
 import { TopPhonemesHighlight } from "./top-phonemes-highlight";
 
 type ChartDataItem = {
@@ -31,7 +31,7 @@ type ChartDataItem = {
 
 export function PhonemeFrequencyChart() {
 	const stats = cmudictStatsData;
-	const t = useScopedI18n("stats-page.sections.phonemes");
+	const t = useTranslations("stats-page.sections.phonemes");
 	const [selectedPhonemeId, setSelectedPhonemeId] = useState<PhonemeSymbolId | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -144,7 +144,7 @@ function PhonemeBarChart({
 	onPhonemeClick: (phonemeId: PhonemeSymbolId) => void;
 	fillColor: string;
 }) {
-	const t = useScopedI18n("stats-page.sections.phonemes");
+	const t = useTranslations("stats-page.sections.phonemes");
 
 	const tooltipLabels = {
 		phoneme: t("chart.tooltip.labels.phoneme"),

@@ -1,9 +1,9 @@
 "use client";
 
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useScopedI18n } from "@/locales/client";
 
 type ChartInfoButtonProps = {
 	content: string;
@@ -11,7 +11,7 @@ type ChartInfoButtonProps = {
 };
 
 export function ChartInfoButton({ content, ariaLabel }: ChartInfoButtonProps) {
-	const t = useScopedI18n("ipa-chart.info-button");
+	const t = useTranslations("ipa-chart.info-button");
 
 	return (
 		<Popover>

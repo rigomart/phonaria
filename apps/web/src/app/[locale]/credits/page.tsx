@@ -1,20 +1,7 @@
-import type { Metadata } from "next";
-import { setStaticParamsLocale } from "next-international/server";
-import { getScopedI18n } from "@/locales/server";
+import { useTranslations } from "next-intl";
 
-export async function generateMetadata(): Promise<Metadata> {
-	const t = await getScopedI18n("credits-page.meta");
-	return {
-		title: t("title"),
-		description: t("description"),
-	};
-}
-
-export default async function CreditsPage({ params }: { params: Promise<{ locale: string }> }) {
-	const { locale } = await params;
-	setStaticParamsLocale(locale);
-
-	const t = await getScopedI18n("credits-page");
+export default function CreditsPage() {
+	const t = useTranslations("credits-page");
 
 	return (
 		<div className="flex flex-1 flex-col bg-background overflow-y-auto">

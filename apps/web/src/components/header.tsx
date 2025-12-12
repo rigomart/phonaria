@@ -1,7 +1,7 @@
 "use client";
 
 import { AudioLines, Menu } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,11 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
-import { useScopedI18n } from "@/locales/client";
+import { Link } from "@/i18n/navigation";
 
 export function Header() {
 	const [open, setOpen] = useState(false);
-	const t = useScopedI18n("components.header.navigation");
+	const t = useTranslations("components.header.navigation");
 
 	const navigationLinks = [
 		{ href: "/transcription", label: t("transcription") },

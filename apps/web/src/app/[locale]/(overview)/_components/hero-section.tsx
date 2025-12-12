@@ -1,8 +1,8 @@
-import { getScopedI18n } from "@/locales/server";
+import { getTranslations } from "next-intl/server";
 import { HeroPhonemeDemo } from "./hero-phoneme-demo";
 
 export async function HeroSection() {
-	const t = await getScopedI18n("overview-page.hero");
+	const t = await getTranslations("overview-page.hero");
 
 	return (
 		<section className="border-b border-border/60 bg-background-soft">

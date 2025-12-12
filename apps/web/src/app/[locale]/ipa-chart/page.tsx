@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { PhonemeCount } from "shared-data";
 import {
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useScopedI18n } from "@/locales/client";
 import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { ConsonantsSection } from "./_sections/consonants-section";
 import { VowelChartSection } from "./_sections/vowels-section";
@@ -26,8 +26,8 @@ const COUNT_BY_TAB = {
 } as const;
 
 export default function IpaChartPage() {
-	const tabs = useScopedI18n("ipa-chart.nav-tabs");
-	const hint = useScopedI18n("ipa-chart.hint");
+	const tabs = useTranslations("ipa-chart.nav-tabs");
+	const hint = useTranslations("ipa-chart.hint");
 	const isDesktop = useMediaQuery("(min-width: 640px)");
 
 	const [activeTab, setActiveTab] = useQueryState(

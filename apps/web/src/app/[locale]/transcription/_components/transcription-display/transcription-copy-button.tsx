@@ -1,10 +1,10 @@
 "use client";
 
 import { Check, Copy } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { useScopedI18n } from "@/locales/client";
 import { useG2PStore } from "../../_store/g2p-store";
 import type { TranscriptionResult } from "../../_types/g2p";
 
@@ -13,7 +13,7 @@ interface TranscriptionCopyButtonProps {
 }
 
 export function TranscriptionCopyButton({ result }: TranscriptionCopyButtonProps) {
-	const t = useScopedI18n("g2p-page.transcription-display.copy-button");
+	const t = useTranslations("g2p-page.transcription-display.copy-button");
 	const selectedVariants = useG2PStore((state) => state.selectedVariants);
 	const [isCopied, setIsCopied] = useState(false);
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { Lightbulb } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cmudictStatsData, getIpaForPhonemeId, getPhonemeCategory } from "shared-data";
-import { useScopedI18n } from "@/locales/client";
 
 function getTopPhoneme() {
 	const sorted = [...cmudictStatsData.phonemes].sort(
@@ -45,7 +45,7 @@ type Fact = {
 };
 
 export function InsightsFacts() {
-	const t = useScopedI18n("stats-page.sections.facts");
+	const t = useTranslations("stats-page.sections.facts");
 
 	const topPhoneme = getTopPhoneme();
 	const topSyllable = getTopSyllableCount();

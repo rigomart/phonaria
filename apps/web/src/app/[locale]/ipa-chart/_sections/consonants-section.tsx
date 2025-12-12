@@ -1,11 +1,11 @@
+import { useTranslations } from "next-intl";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useScopedI18n } from "@/locales/client";
 import { ChartInfoButton } from "../_components/chart-info-button";
 import { ConsonantChart } from "../_components/consonant-chart";
 
 export function ConsonantsSection() {
-	const t = useScopedI18n("ipa-chart.sections.consonants");
-	const ariaT = useScopedI18n("ipa-chart.info-button");
+	const t = useTranslations("ipa-chart.sections.consonants");
+	const ariaT = useTranslations("ipa-chart.info-button");
 	return (
 		<div className="space-y-3 rounded-xl border bg-background-soft shadow-sm p-2 sm:p-3">
 			<div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">

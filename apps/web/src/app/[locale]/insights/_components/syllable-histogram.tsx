@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { cmudictStatsData } from "shared-data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,11 +10,10 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useScopedI18n } from "@/locales/client";
 
 export function SyllableHistogram() {
 	const stats = cmudictStatsData;
-	const t = useScopedI18n("stats-page.sections.syllables");
+	const t = useTranslations("stats-page.sections.syllables");
 
 	const chartData = stats.syllables.map((s) => ({
 		syllables: s.count,

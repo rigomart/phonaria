@@ -1,13 +1,13 @@
 "use client";
 
 import { ArrowRightIcon, AudioWaveformIcon, ChevronDownIcon, TypeIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { useScopedI18n } from "@/locales/client";
 import { useTranscribe } from "../../_hooks/use-g2p";
 
 export function EmptyState() {
 	const transcribeMutation = useTranscribe();
-	const t = useScopedI18n("g2p-page.empty-state");
+	const t = useTranslations("g2p-page.empty-state");
 
 	const examples = [t(`examples.0`), t(`examples.1`), t(`examples.2`), t(`examples.3`)];
 

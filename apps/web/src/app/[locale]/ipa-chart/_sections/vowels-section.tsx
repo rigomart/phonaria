@@ -1,5 +1,5 @@
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { useScopedI18n } from "@/locales/client";
 import { ChartInfoButton } from "../_components/chart-info-button";
 import { DiphthongVowelChart } from "../_components/diphthong-chart";
 import { MonophthongVowelChart, VowelChartLegend } from "../_components/vowel-chart";
@@ -23,8 +23,8 @@ const entriesByVariant: Record<Variant, VowelChartEntry[]> = {
 };
 
 export function VowelChartSection({ variant, className }: Props) {
-	const t = useScopedI18n("ipa-chart.sections.vowels");
-	const ariaT = useScopedI18n("ipa-chart.info-button");
+	const t = useTranslations("ipa-chart.sections.vowels");
+	const ariaT = useTranslations("ipa-chart.info-button");
 	const entries = entriesByVariant[variant];
 
 	const ariaLabel =

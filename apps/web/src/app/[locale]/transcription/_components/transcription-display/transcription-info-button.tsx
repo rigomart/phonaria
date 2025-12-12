@@ -1,12 +1,12 @@
 "use client";
 
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useScopedI18n } from "@/locales/client";
 
 export function TranscriptionInfoButton() {
-	const t = useScopedI18n("g2p-page.transcription-display.info-button");
+	const t = useTranslations("g2p-page.transcription-display.info-button");
 
 	return (
 		<Popover>

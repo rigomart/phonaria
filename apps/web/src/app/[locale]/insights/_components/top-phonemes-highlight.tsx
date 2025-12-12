@@ -1,6 +1,7 @@
 "use client";
 
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import {
 	cmudictStatsData,
@@ -11,7 +12,6 @@ import {
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useScopedI18n } from "@/locales/client";
 
 const TOP_COUNT = 3;
 
@@ -44,7 +44,7 @@ function PhonemeCard({
 	index: number;
 	onSelect: (phonemeId: PhonemeSymbolId) => void;
 }) {
-	const t = useScopedI18n("stats-page.sections.top-phonemes");
+	const t = useTranslations("stats-page.sections.top-phonemes");
 
 	const formatPercent = (value: number) =>
 		value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -112,7 +112,7 @@ function CategorySection({
 }
 
 export function TopPhonemesHighlight() {
-	const t = useScopedI18n("stats-page.sections.top-phonemes");
+	const t = useTranslations("stats-page.sections.top-phonemes");
 	const [selectedPhonemeId, setSelectedPhonemeId] = useState<PhonemeSymbolId | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
 

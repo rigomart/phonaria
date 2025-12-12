@@ -1,6 +1,6 @@
 import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
 	getIpaForPhonemeId,
 	type PhonemeArticulation,
@@ -13,7 +13,7 @@ import {
 	featureDefinitions,
 	phonemeDetailsById,
 } from "@/data/phoneme-details";
-import { useScopedI18n } from "@/locales/client";
+import { Link } from "@/i18n/navigation";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -34,7 +34,7 @@ export function PhonemeDetailsArticulation() {
 
 	const articulation = PhonemeArticulationRegistry[phonemeId];
 
-	const t = useScopedI18n(`components.phoneme-details.articulation`);
+	const t = useTranslations(`components.phoneme-details.articulation`);
 
 	return (
 		<PhonemeSection>

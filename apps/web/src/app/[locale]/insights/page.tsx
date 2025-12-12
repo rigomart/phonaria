@@ -1,17 +1,16 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { setStaticParamsLocale } from "next-international/server";
+import { getTranslations } from "next-intl/server";
 import { cmudictStatsData } from "shared-data";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getScopedI18n } from "@/locales/server";
+import { Link } from "@/i18n/navigation";
 import { InsightsFacts } from "./_components/insights-facts";
 import { OverviewCards } from "./_components/overview-cards";
 import { PhonemeFrequencyChart } from "./_components/phoneme-frequency-chart";
 import { SyllableHistogram } from "./_components/syllable-histogram";
 
-export async function generateMetadata(): Promise<Metadata> {
-	const t = await getScopedI18n("stats-page.meta");
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+	const { locale } = await params;
+	const t = await getTranslations({ locale: locale as "en" | "es", namespace: "stats-page.meta" });
 	return {
 		title: t("title"),
 		description: t("description"),
@@ -20,9 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function StatsPage({ params }: { params: Promise<{ locale: string }> }) {
 	const { locale } = await params;
-	setStaticParamsLocale(locale);
 
-	const t = await getScopedI18n("stats-page");
+	const t = await getTranslations({ locale: locale as "en" | "es", namespace: "stats-page" });
 	const lastUpdated = new Date(cmudictStatsData.meta.generatedAt).toLocaleString(locale, {
 		dateStyle: "long",
 		timeStyle: "short",

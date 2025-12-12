@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
 	ContrastsByPhonemeIdRegistry,
 	FeatureValueByPhonemeRegistry,
@@ -8,7 +9,6 @@ import {
 } from "shared-data";
 import { type FeatureValueDefinition, featureDefinitions } from "@/data/phoneme-details";
 import { cn } from "@/lib/utils";
-import { useScopedI18n } from "@/locales/client";
 import { AudioControls } from "../audio-controls";
 import { Badge } from "../ui/badge";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
@@ -41,7 +41,7 @@ function getFeatureValueDefinition<K extends PhonemeArticulatoryFeatureKey>(
 export function PhonemeDetailsContrasts() {
 	const { phonemeId } = usePhonemeDetailsContext();
 
-	const t = useScopedI18n(`components.phoneme-details.contrasts`);
+	const t = useTranslations(`components.phoneme-details.contrasts`);
 
 	const contrasts = ContrastsByPhonemeIdRegistry[phonemeId];
 	const currentIpa = getIpaForPhonemeId(phonemeId);

@@ -1,15 +1,16 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Noto_Sans, Noto_Sans_Mono, Noto_Serif } from "next/font/google";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import Providers from "./providers";
-import "./globals.css";
 import type { Metadata } from "next";
-import { setStaticParamsLocale } from "next-international/server";
+import { Noto_Sans, Noto_Sans_Mono, Noto_Serif } from "next/font/google";
+import { notFound } from "next/navigation";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { I18nProviderClient } from "@/locales/client";
-import { getStaticParams } from "@/locales/server";
+import { routing } from "@/i18n/routing";
+import Providers from "./providers";
+import "./globals.css";
 
 const notoSerif = Noto_Serif({
 	variable: "--font-noto-serif",
@@ -30,7 +31,7 @@ const notoSansMono = Noto_Sans_Mono({
 });
 
 export async function generateStaticParams() {
-	return getStaticParams();
+	return routing.locales.map((locale) => ({ locale }));
 }
 
 export const metadata: Metadata = {
@@ -48,16 +49,20 @@ export default async function RootLayout({
 }>) {
 	const { locale } = await params;
 
-	setStaticParamsLocale(locale);
+	if (!hasLocale(routing.locales, locale)) {
+		return notFound();
+	}
+
+	setRequestLocale(locale);
 
 	return (
 		<html
-			lang="en"
+			lang={locale}
 			suppressHydrationWarning
 			className={`${notoSerif.variable} ${notoSans.variable} ${notoSansMono.variable}`}
 		>
 			<body className={`antialiased`}>
-				<I18nProviderClient locale={locale}>
+				<NextIntlClientProvider>
 					<NuqsAdapter>
 						<Providers>
 							<div className="min-h-screen flex flex-col">
@@ -67,7 +72,7 @@ export default async function RootLayout({
 							</div>
 						</Providers>
 					</NuqsAdapter>
-				</I18nProviderClient>
+				</NextIntlClientProvider>
 				<Analytics />
 				<SpeedInsights />
 			</body>

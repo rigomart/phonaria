@@ -1,11 +1,11 @@
 "use client";
 
 import { MousePointerClick } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { PhonemeSymbolId, PhonemeSymbolIpa } from "shared-data";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details/phoneme-details-dialog";
 import { cn } from "@/lib/utils";
-import { useScopedI18n } from "@/locales/client";
 
 type ExamplePhoneme = {
 	id: PhonemeSymbolId;
@@ -48,7 +48,7 @@ const SENTENCE_DATA: { text: string; phonemes: ExamplePhoneme[] }[] = [
 ];
 
 export function HeroPhonemeDemo() {
-	const t = useScopedI18n("overview-page.hero");
+	const t = useTranslations("overview-page.hero");
 	const [selectedPhonemeId, setSelectedPhonemeId] = useState<PhonemeSymbolId | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
 
