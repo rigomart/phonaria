@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import { ChartInfoButton } from "../_components/chart-info-button";
 import { DiphthongVowelChart } from "../_components/diphthong-chart";
@@ -8,7 +9,7 @@ import type {
 	StaticVowelChartEntry,
 	VowelChartEntry,
 } from "../_lib/vowel-chart-data";
-import { diphthongVowelEntries, staticVowelEntries } from "../_lib/vowel-chart-data";
+import { getDiphthongVowelEntries, getStaticVowelEntries } from "../_lib/vowel-chart-data";
 
 type Variant = "monophthongs" | "diphthongs";
 
@@ -17,15 +18,14 @@ type Props = {
 	className?: string;
 };
 
-const entriesByVariant: Record<Variant, VowelChartEntry[]> = {
-	monophthongs: staticVowelEntries,
-	diphthongs: diphthongVowelEntries,
-};
-
 export function VowelChartSection({ variant, className }: Props) {
 	const t = useTranslations("ipa-chart.sections.vowels");
 	const ariaT = useTranslations("ipa-chart.info-button");
-	const entries = entriesByVariant[variant];
+	const { phonemeDetailsById } = usePhonemeDetailsCopy();
+	const entries: VowelChartEntry[] =
+		variant === "monophthongs"
+			? getStaticVowelEntries(phonemeDetailsById)
+			: getDiphthongVowelEntries(phonemeDetailsById);
 
 	const ariaLabel =
 		variant === "monophthongs" ? ariaT("aria-monophthongs") : ariaT("aria-diphthongs");

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import type { VowelArticulatoryFeatures } from "shared-data";
-import { featureDefinitions } from "@/data/phoneme-details";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import {
 	type ChartPoint,
@@ -119,6 +119,7 @@ function BacknessColumn({ backness }: { backness: VowelArticulatoryFeatures["bac
 }
 
 function AxisLabels() {
+	const { featureDefinitions } = usePhonemeDetailsCopy();
 	const tBackness = featureDefinitions.backness;
 	const tHeight = featureDefinitions.height;
 	const topLabelY = vowelChartLayout.chartTop - 10;

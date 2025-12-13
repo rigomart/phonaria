@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { PhonemeAllophoneRegistry } from "shared-data";
-import { allophoneContextDefinitions } from "@/data/phoneme-details";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { AudioControls } from "../audio-controls";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
@@ -15,6 +15,7 @@ import {
 export function PhonemeDetailsAllophones() {
 	const { phonemeId } = usePhonemeDetailsContext();
 	const t = useTranslations("components.phoneme-details.allophones");
+	const { allophoneContextDefinitions } = usePhonemeDetailsCopy();
 	const allophones = PhonemeAllophoneRegistry[phonemeId];
 
 	if (!allophones) return null;

@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import type { ConsonantSymbolId } from "shared-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import type { MannerOfArticulation, PlaceOfArticulation, Voicing } from "../_lib/consonant-grid";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
@@ -63,11 +64,12 @@ function ConsonantButton({
 }) {
 	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
 	const t = useTranslations("ipa-chart.card");
+	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 	const handleClick = () => {
 		selectPhoneme(phoneme.id);
 	};
-	const tooltipContent = `/${phoneme.symbol}/ - ${phoneme.voicing} ${phoneme.place} ${phoneme.manner}`;
-	const ariaLabel = `${phoneme.symbol}`;
+	const tooltipContent = `/${phoneme.symbol}/ - ${phonemeDetailsById[phoneme.id].label}`;
+	const ariaLabel = `${phonemeDetailsById[phoneme.id].label} (${phoneme.symbol})`;
 
 	return (
 		<Tooltip>

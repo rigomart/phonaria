@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { getIpaForPhonemeId, getPhonemeType } from "shared-data";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { phonemeDetailsById } from "@/data/phoneme-details";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
 import { AudioControls } from "../audio-controls";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
@@ -15,6 +15,7 @@ export function PhonemeDetailsHeader() {
 	const t = useTranslations("components.phoneme-details.header.audio-disclaimer");
 
 	const ipa = getIpaForPhonemeId(phonemeId);
+	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 	const { label } = phonemeDetailsById[phonemeId];
 
 	const phonemeType = getPhonemeType(phonemeId);

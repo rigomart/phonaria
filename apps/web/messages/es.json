@@ -76,11 +76,11 @@
 	},
 	"ipa-chart": {
 		"title": "Tabla IPA",
-		"description": "Tabla de consulta para entender los fonemas del inglés. Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio.",
+		"description": "Tabla interactiva para entender los fonemas del inglés (IPA, también conocido como AFI en español). Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio.",
 		"hero-section": {
 			"title": "Tabla IPA de los fonemas del inglés",
 			"short": "Tabla IPA interactiva",
-			"description": "Tabla de consulta para entender los fonemas del inglés.",
+			"description": "Tabla interactiva para entender los fonemas del inglés.",
 			"phonemes": "fonemas",
 			"vowels": "vocales",
 			"consonants": "consonantes"
@@ -167,7 +167,7 @@
 				"limitations-title": "Limitaciones conocidas:",
 				"limitations": {
 					"newer-words": "Palabras recientes, jerga y términos especializados pueden no estar incluidos",
-					"proper-nouns": "A menudo faltan nombres propios y marcas",
+					"proper-nouns": "A menudo faltan nombres propios y marcas comerciales",
 					"homographs": "Los homógrafos muestran múltiples variantes"
 				}
 			}
@@ -175,7 +175,7 @@
 		"dictionary-dialog": {
 			"source-info": {
 				"button-aria": "Información de la fuente",
-				"text": "Las definiciones provienen de Wiktionary a través de la API Free Dictionary (CC BY-SA 3.0). El audio de pronunciación se toma de Wikimedia Commons, con licencias específicas por archivo.",
+				"text": "Las definiciones provienen de Wiktionary a través de la API Free Dictionary (CC BY-SA 3.0). El audio de pronunciación se obtiene de Wikimedia Commons, con licencias específicas por archivo.",
 				"link": "Ver créditos"
 			}
 		}
@@ -186,7 +186,7 @@
 			"description": "Herramientas de pronunciación para estudiantes de inglés. Convierte texto a transcripción IPA y explora detalles de articulación de fonemas."
 		},
 		"hero": {
-			"title": "Kit de herramientas de pronunciación basado en fonemas",
+			"title": "Herramientas de pronunciación basadas en fonemas",
 			"description": "Una colección de herramientas para descifrar la ortografía del inglés. Transcribe texto a IPA, explora el inventario de sonidos y estudia detalles de articulación.",
 			"hint": "Haz clic en cualquier símbolo para explorar detalles"
 		},
@@ -201,7 +201,7 @@
 			},
 			"ipa-chart": {
 				"title": "Tabla IPA",
-				"description": "Explora el inventario de sonidos del inglés estadounidense estándar.",
+				"description": "Explora el inventario de sonidos del inglés estadounidense estándar en la tabla IPA (AFI).",
 				"action": "Ver tabla",
 				"preview": {
 					"legend": {
@@ -235,13 +235,13 @@
 			},
 			"cmu": {
 				"title": "Diccionario de pronunciación de CMU",
-				"content": "La función de transcripción grafema-a-fonema usa datos de pronunciación del Diccionario de pronunciación de CMU, un diccionario de pronunciación de dominio público creado por la Universidad Carnegie Mellon. El diccionario contiene más de 134.000 palabras del inglés norteamericano con sus transcripciones fonéticas.",
+				"content": "La función de transcripción de grafemas a fonemas usa datos de pronunciación del Diccionario de pronunciación de CMU, un diccionario de pronunciación de dominio público creado por la Universidad Carnegie Mellon. El diccionario contiene más de 134.000 palabras del inglés norteamericano con sus transcripciones fonéticas.",
 				"link-text": "Más información sobre CMU Dict",
 				"link-url": "http://www.speech.cs.cmu.edu/cgi-bin/cmudict"
 			},
 			"free-dictionary": {
 				"title": "API Free Dictionary",
-				"content": "Las definiciones del diccionario se proporcionan mediante la API Free Dictionary (dictionaryapi.dev) usando datos de Wiktionary. Las entradas incluyen metadatos de licencia CC BY-SA 3.0 y el audio de pronunciación se toma de Wikimedia Commons, con licencias específicas por archivo.",
+				"content": "Las definiciones del diccionario se proporcionan mediante la API Free Dictionary (dictionaryapi.dev) usando datos de Wiktionary. Las entradas incluyen metadatos de licencia CC BY-SA 3.0 y el audio de pronunciación se obtiene de Wikimedia Commons, con licencias específicas por archivo.",
 				"link-text": "Visitar la API Free Dictionary",
 				"link-url": "https://dictionaryapi.dev/",
 				"license-text": "Ver licencia CC BY-SA 3.0",

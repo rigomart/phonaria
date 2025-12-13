@@ -7,12 +7,8 @@ import {
 	PhonemeArticulationRegistry,
 	type PhonemeSymbolId,
 } from "shared-data";
-import {
-	type ArticulatoryFeature,
-	diphthongTargetDefinitions,
-	featureDefinitions,
-	phonemeDetailsById,
-} from "@/data/phoneme-details";
+import type { ArticulatoryFeature, PhonemeDetailsCopy } from "@/data/phoneme-details";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Button } from "../ui/button";
@@ -33,6 +29,9 @@ export function PhonemeDetailsArticulation() {
 	const { phonemeId } = usePhonemeDetailsContext();
 
 	const articulation = PhonemeArticulationRegistry[phonemeId];
+	const { phonemeDetailsById, featureDefinitions, diphthongTargetDefinitions } =
+		usePhonemeDetailsCopy();
+	const phonemeLabel = phonemeDetailsById[phonemeId].label;
 
 	const t = useTranslations(`components.phoneme-details.articulation`);
 
@@ -46,11 +45,19 @@ export function PhonemeDetailsArticulation() {
 				<div className="flex flex-col items-start gap-1">
 					<div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
 						<div className="col-span-2">
-							<ArticulationIllustration phonemeId={phonemeId} articulation={articulation} />
+							<ArticulationIllustration
+								phonemeId={phonemeId}
+								phonemeLabel={phonemeLabel}
+								articulation={articulation}
+							/>
 						</div>
 						<div className="rounded-lg w-full col-span-1 space-y-3">
 							<h4 className="text-sm sm:text-base font-semibold">{t("features")}</h4>
-							<ArticulatoryFeatures articulation={articulation} />
+							<ArticulatoryFeatures
+								articulation={articulation}
+								featureDefinitions={featureDefinitions}
+								diphthongTargetDefinitions={diphthongTargetDefinitions}
+							/>
 						</div>
 					</div>
 					<Button size="xs" variant="link" asChild>
@@ -69,13 +76,17 @@ export function PhonemeDetailsArticulation() {
 
 type ArticulationIllustrationProps = {
 	phonemeId: PhonemeSymbolId;
+	phonemeLabel: string;
 	articulation: PhonemeArticulation;
 };
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllustrationProps) {
-	const { label: phonemeLabel } = phonemeDetailsById[phonemeId];
+function ArticulationIllustration({
+	phonemeId,
+	phonemeLabel,
+	articulation,
+}: ArticulationIllustrationProps) {
 	const phonemeIpa = getIpaForPhonemeId(phonemeId);
 
 	if (articulation.category === "consonant") {
@@ -120,9 +131,15 @@ function ArticulationIllustration({ phonemeId, articulation }: ArticulationIllus
 
 type ArticulatoryFeaturesProps = {
 	articulation: PhonemeArticulation;
+	featureDefinitions: PhonemeDetailsCopy["featureDefinitions"];
+	diphthongTargetDefinitions: PhonemeDetailsCopy["diphthongTargetDefinitions"];
 };
 
-function ArticulatoryFeatures({ articulation }: ArticulatoryFeaturesProps) {
+function ArticulatoryFeatures({
+	articulation,
+	featureDefinitions,
+	diphthongTargetDefinitions,
+}: ArticulatoryFeaturesProps) {
 	if (articulation.category === "consonant") {
 		return (
 			<div className="flex flex-wrap gap-2">

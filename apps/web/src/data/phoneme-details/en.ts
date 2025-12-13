@@ -1,38 +1,6 @@
-import type {
-	PhonemeAllophoneContextKey,
-	PhonemeArticulatoryFeatures,
-	PhonemeSymbolId,
-} from "shared-data";
+import type { PhonemeDetailsCopy } from "./types";
 
-export type FeatureValueDefinition = {
-	label: string;
-	description: string;
-};
-
-export type ArticulatoryFeature<ValueKey extends string> = {
-	label: string;
-	description: string;
-	values: Record<ValueKey, FeatureValueDefinition>;
-};
-
-type BaseFeatureDefinitions = {
-	[K in keyof Required<PhonemeArticulatoryFeatures>]: ArticulatoryFeature<
-		NonNullable<PhonemeArticulatoryFeatures[K]>
-	>;
-};
-
-type DiphthongTargetFeatureDefinitions = {
-	targetHeight: ArticulatoryFeature<PhonemeArticulatoryFeatures["height"]>;
-	targetBackness: ArticulatoryFeature<PhonemeArticulatoryFeatures["backness"]>;
-	targetRoundness: ArticulatoryFeature<PhonemeArticulatoryFeatures["roundness"]>;
-};
-
-export type PhonemeDetailsEntry = {
-	label: string;
-};
-
-// TODO: Refine pitfalls and steps before wiring to the UI
-export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = {
+const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
 	"voiceless-bilabial-plosive": {
 		label: "Voiceless bilabial plosive",
 	},
@@ -155,7 +123,7 @@ export const phonemeDetailsById: Record<PhonemeSymbolId, PhonemeDetailsEntry> = 
 	},
 };
 
-export const featureDefinitions: BaseFeatureDefinitions = {
+const featureDefinitions: PhonemeDetailsCopy["featureDefinitions"] = {
 	manner: {
 		label: "Manner",
 		description: "How airflow is shaped to make the sound",
@@ -343,7 +311,7 @@ export const featureDefinitions: BaseFeatureDefinitions = {
 	},
 };
 
-export const diphthongTargetDefinitions: DiphthongTargetFeatureDefinitions = {
+const diphthongTargetDefinitions: PhonemeDetailsCopy["diphthongTargetDefinitions"] = {
 	targetHeight: {
 		label: "Height",
 		description: "Vertical position of the tongue at the end of the diphthong",
@@ -420,16 +388,7 @@ export const diphthongTargetDefinitions: DiphthongTargetFeatureDefinitions = {
 	},
 };
 
-export type AllophoneContextDefinition = {
-	name: string;
-	description: string;
-	when: string;
-};
-
-export const allophoneContextDefinitions: Record<
-	PhonemeAllophoneContextKey,
-	AllophoneContextDefinition
-> = {
+const allophoneContextDefinitions: PhonemeDetailsCopy["allophoneContextDefinitions"] = {
 	"stressed-onset-aspirated": {
 		name: "Aspirated",
 		description: "Released with a puff of air",
@@ -475,4 +434,11 @@ export const allophoneContextDefinitions: Record<
 		description: "Reduced r-colored vowel with lighter R-coloring",
 		when: "In unstressed syllables (particularly word-final -er)",
 	},
+};
+
+export const phonemeDetailsCopyEn: PhonemeDetailsCopy = {
+	phonemeDetailsById,
+	featureDefinitions,
+	diphthongTargetDefinitions,
+	allophoneContextDefinitions,
 };

@@ -43,6 +43,11 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 - `packages/helper-scripts`: TypeScript utilities for ElevenLabs audio generation and CMUDict JSON/stat generation. Scripts read `.env` config and emit assets into `packages/shared-data/data`; generated audio is produced locally and manually uploaded to the external audio bucket the app references.
 - `docs`: Product briefs, project overviews, enhancement plans, and feature deep-dives organized in `enhancements/` and `features/` subdirectories.
 
+## Internationalization & Translations (Agent Notes)
+- UI text uses next-intl message catalogs in `apps/web/messages/{locale}.json` via `useTranslations(...)`.
+- Typed phoneme-detail copy lives in `apps/web/src/data/phoneme-details/{locale}.ts` and is accessed with `getPhonemeDetailsCopy(locale)` (non-React) or `usePhonemeDetailsCopy()` from `apps/web/src/data/phoneme-details/client.ts` (client components).
+- This split exists because phoneme copy is keyed by `shared-data` IDs/types; keeping it in TypeScript preserves type safety, prevents missing keys, and reduces drift as phoneme registries evolve.
+
 ## App Routes & Organization
 The web app uses Next.js App Router with internationalization:
 - `app/[locale]/`: Base layout with locale-based routing (e.g. `/en`, `/es`)

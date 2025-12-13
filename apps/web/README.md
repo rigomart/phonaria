@@ -1,6 +1,6 @@
 # Phonaria – Web Application
 
-This package hosts the primary Phonaria experience: a Next.js 15 App Router project that delivers interactive IPA references, grapheme‑to‑phoneme transcription, in‑context dictionary lookups, and optional pronunciation audio in a single learner‑first workspace.
+This package hosts the primary Phonaria experience: a Next.js App Router project that delivers interactive IPA references, grapheme‑to‑phoneme transcription, in‑context dictionary lookups, and optional pronunciation audio in a single learner‑first workspace.
 
 ## At a glance
 
@@ -105,7 +105,7 @@ apps/web
 │   │   ├── theme-provider.tsx
 │   │   └── theme-switcher.tsx
 │   ├── data/              # Bundled data wiring for the app
-│   │   └── phoneme-details.ts  # Phoneme metadata aggregation
+│   │   └── phoneme-details/ # Locale-aware phoneme copy + typed definitions
 │   ├── hooks/             # Shared React hooks
 │   │   ├── use-audio-manager/
 │   │   └── use-media-query.ts
@@ -132,13 +132,37 @@ apps/web
   CMUDICT_SRC_URL="<remote .dict file>" bun --cwd packages/helper-scripts cmudict-to-json
   bun --cwd packages/helper-scripts cmudict-stats
   ```
-- **Phoneme metadata** – Sourced from `packages/shared-data` and aggregated in `src/data/phoneme-details.ts`, including:
+- **Phoneme metadata** – Canonical IDs and structures live in `packages/shared-data`; learner-facing copy is layered on in `src/data/phoneme-details/`, including:
   - Phoneme symbols, categories, and IPA representations
   - Articulatory features and production guidance
   - Minimal pairs and contrast information
   - Spelling patterns and allophones
   - CMU ARPABET to IPA symbol mappings
 - **Example audio** – ElevenLabs-generated `.mp3` files are produced locally, then manually uploaded to the audio bucket referenced by the app (alongside any externally sourced clips). Generate with `bun --cwd packages/helper-scripts generate` once `ELEVENLABS_API_KEY` is configured in `packages/helper-scripts/.env`.
+
+## Internationalization & translations
+
+Phonaria uses **two complementary translation layers**:
+
+1) **UI copy (next-intl messages)** – Navigation, page text, labels, and general UI strings live in `messages/{locale}.json` and are accessed with `useTranslations(...)`.
+
+2) **Typed domain copy (phoneme details)** – Some strings are tightly coupled to `shared-data` IDs/types (e.g. `PhonemeSymbolId`, articulatory feature keys/values, allophone context keys). Those are stored as locale-specific TypeScript bundles in `src/data/phoneme-details/` and accessed with:
+
+- Client components: `usePhonemeDetailsCopy()` from `@/data/phoneme-details/client`
+- Non-React contexts/tests: `getPhonemeDetailsCopy(locale)` from `@/data/phoneme-details`
+
+Why not put phoneme detail strings into `messages/*.json`?
+
+- The keys come from `shared-data` registries and must stay **complete and in sync** as phoneme IDs/features evolve.
+- TypeScript enforces coverage with `Record<PhonemeSymbolId, ...>` and strict typing, preventing missing/typo’d keys at build time.
+- The data is not just “UI labels”; it’s a localized layer over the canonical phoneme model that’s reused across charts, tooltips, and dialogs.
+
+### Adding a new locale
+
+- Add `messages/{locale}.json` for UI strings.
+- Add `src/data/phoneme-details/{locale}.ts` for phoneme detail copy and register it in `src/data/phoneme-details/index.ts`.
+- Add the locale to `src/i18n/routing.ts`.
+- Run `bun --cwd apps/web test` and `bun --cwd apps/web check-types` (phoneme copy has coverage tests).
 
 ## Environment variables
 
