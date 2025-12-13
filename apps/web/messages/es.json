@@ -4,8 +4,8 @@
 			"navigation": {
 				"overview": "Inicio",
 				"transcription": "Transcripción",
-				"ipa-chart": "Referencia IPA",
-				"insights": "Análisis"
+				"ipa-chart": "Tabla IPA",
+				"insights": "Estadísticas"
 			},
 			"language": {
 				"label": "Idioma",
@@ -67,20 +67,20 @@
 		}
 	},
 	"locale-layout": {
-		"title": "Phonaria - Aprendizaje de fonemas del inglés",
-		"description": "Herramienta interactiva para aprender fonemas del inglés con transcripción IPA"
+		"title": "Phonaria - Fonemas del inglés",
+		"description": "Herramienta interactiva para aprender los fonemas del inglés con transcripción a IPA"
 	},
 	"not-found-page": {
 		"title": "Página no encontrada",
 		"description": "Comprueba la dirección del navegador o usa la navegación para ir a una página conocida."
 	},
 	"ipa-chart": {
-		"title": "Referencia IPA",
-		"description": "Herramienta de referencia para entender los fonemas del inglés. Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio.",
+		"title": "Tabla IPA",
+		"description": "Tabla de consulta para entender los fonemas del inglés. Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio.",
 		"hero-section": {
-			"title": "Referencia de fonemas del inglés",
+			"title": "Tabla IPA de los fonemas del inglés",
 			"short": "Tabla IPA interactiva",
-			"description": "Herramienta de referencia para entender los fonemas del inglés.",
+			"description": "Tabla de consulta para entender los fonemas del inglés.",
 			"phonemes": "fonemas",
 			"vowels": "vocales",
 			"consonants": "consonantes"
@@ -126,8 +126,8 @@
 		},
 		"dialog": {
 			"sagittal-title": "Vista sagital",
-			"sagittal-aria-label": "Marcador de posición de vista sagital",
-			"sagittal-placeholder": "Marcador de posición de vista sagital"
+			"sagittal-aria-label": "Vista sagital (próximamente)",
+			"sagittal-placeholder": "Vista sagital (próximamente)"
 		},
 		"card": {
 			"tooltip-hint": "Haz clic para ver detalles de articulación"
@@ -139,15 +139,15 @@
 				"text": "the quick brown fox",
 				"ipa": "ðə kwɪk braʊn fɑks"
 			},
-			"description": "Haz clic en los fonemas para escuchar los sonidos y ver detalles de articulación",
+			"description": "Haz clic o toca los fonemas para escuchar los sonidos y ver detalles de articulación",
 			"try-example": "O prueba un ejemplo",
 			"examples": ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"]
 		},
 		"input-form": {
 			"placeholder": "Escribe texto para transcribir...",
 			"aria-label": "Texto para transcribir",
-			"hint": "Escribe en cualquier parte o pega texto para transcribir.",
-			"max-characters": "Máx. {maxLength} caracteres • fonemas en inglés",
+			"hint": "Escribe o pega texto para transcribir.",
+			"max-characters": "Máx. {maxLength} caracteres • fonemas del inglés",
 			"button": {
 				"transcribe": "Transcribir",
 				"transcribing": "Transcribiendo…"
@@ -186,21 +186,21 @@
 			"description": "Herramientas de pronunciación para estudiantes de inglés. Convierte texto a transcripción IPA y explora detalles de articulación de fonemas."
 		},
 		"hero": {
-			"title": "Herramientas de pronunciación centradas en fonemas",
+			"title": "Kit de herramientas de pronunciación basado en fonemas",
 			"description": "Una colección de herramientas para descifrar la ortografía del inglés. Transcribe texto a IPA, explora el inventario de sonidos y estudia detalles de articulación.",
 			"hint": "Haz clic en cualquier símbolo para explorar detalles"
 		},
 		"launchpad": {
 			"g2p": {
-				"title": "Transcripción IPA",
-				"description": "Escribe cualquier texto para ver su pronunciación en fonemas IPA.",
-				"action": "Abrir transcripción",
+				"title": "Estudio de transcripción",
+				"description": "Escribe cualquier texto para ver su pronunciación representada en fonemas IPA.",
+				"action": "Abrir estudio",
 				"preview": {
 					"header": "Máx. 200 caracteres • inglés"
 				}
 			},
 			"ipa-chart": {
-				"title": "Referencia IPA",
+				"title": "Tabla IPA",
 				"description": "Explora el inventario de sonidos del inglés estadounidense estándar.",
 				"action": "Ver tabla",
 				"preview": {
@@ -213,9 +213,9 @@
 				}
 			},
 			"stats": {
-				"title": "Análisis de pronunciación",
+				"title": "Estadísticas de pronunciación",
 				"description": "Explora la frecuencia de fonemas y patrones silábicos en el corpus.",
-				"action": "Ver análisis"
+				"action": "Ver estadísticas"
 			}
 		}
 	},
@@ -255,10 +255,10 @@
 	},
 	"stats-page": {
 		"meta": {
-			"title": "Análisis de pronunciación",
+			"title": "Estadísticas de pronunciación",
 			"description": "Datos de frecuencia y patrones del corpus de pronunciación"
 		},
-		"title": "Análisis de pronunciación",
+		"title": "Estadísticas de pronunciación",
 		"description": "Frecuencia de fonemas y distribución silábica en el corpus de pronunciación.",
 		"source-note": {
 			"prefix": "Datos derivados del Diccionario de pronunciación de CMU (CMUDict).",
@@ -317,10 +317,10 @@
 				}
 			},
 			"top-phonemes": {
-				"title": "Principales {count} por cobertura de palabras",
+				"title": "Los {count} fonemas con mayor cobertura",
 				"info": "Proporción de entradas de CMUDict que incluyen el fonema (cobertura a nivel de palabra).",
-				"vowels-title": "Principales vocales por cobertura de palabras",
-				"consonants-title": "Principales consonantes por cobertura de palabras",
+				"vowels-title": "Vocales con mayor cobertura",
+				"consonants-title": "Consonantes con mayor cobertura",
 				"coverage-label": "Cobertura de palabras",
 				"words-label": "{count} palabras"
 			},
@@ -328,7 +328,7 @@
 				"title": "Datos rápidos",
 				"top-phoneme": "/{ipa}/ aparece en el {percentage}% de todas las palabras del diccionario",
 				"top-syllable": "Las palabras de {count} sílabas son las más comunes ({percentage}%)",
-				"densest-phoneme": "/{ipa}/ promedia {avgPerWord} apariciones por palabra"
+				"densest-phoneme": "/{ipa}/ aparece {avgPerWord} veces por palabra, en promedio"
 			}
 		}
 	}

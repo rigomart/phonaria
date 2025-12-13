@@ -28,8 +28,7 @@ export default function InsightsPage({ params }: PageProps<"/[locale]/insights">
 	return (
 		<div className="flex flex-1 flex-col bg-background">
 			<div className="container mx-auto p-4 sm:p-6 max-w-7xl space-y-4">
-				{/* Compact header */}
-				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+				<div className="flex flex-col justify-between gap-2">
 					<div className="flex items-center gap-3">
 						<h1 className="text-xl sm:text-2xl font-bold tracking-tight">{t("title")}</h1>
 						<Badge variant="outline" className="hidden sm:inline-flex">
@@ -45,30 +44,22 @@ export default function InsightsPage({ params }: PageProps<"/[locale]/insights">
 					</p>
 				</div>
 
-				{/* Bento grid layout */}
 				<div className="grid gap-4 grid-cols-1 lg:grid-cols-12">
-					{/* Left column: Stats overview */}
 					<div className="lg:col-span-4 flex flex-col gap-4">
-						{/* Overview stats card */}
 						<OverviewCards />
 
-						{/* Insights facts */}
 						<Card>
-							<CardHeader className="pb-2">
-								<CardTitle className="text-sm font-semibold text-muted-foreground">
-									{t("sections.facts.title")}
-								</CardTitle>
+							<CardHeader>
+								<CardTitle>{t("sections.facts.title")}</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<InsightsFacts />
 							</CardContent>
 						</Card>
 
-						{/* Syllable histogram */}
 						<SyllableHistogram />
 					</div>
 
-					{/* Right column: Phoneme chart (takes more space) */}
 					<div className="lg:col-span-8">
 						<PhonemeFrequencyChart />
 					</div>
