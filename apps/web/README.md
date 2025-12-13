@@ -157,6 +157,12 @@ Why not put phoneme detail strings into `messages/*.json`?
 - TypeScript enforces coverage with `Record<PhonemeSymbolId, ...>` and strict typing, preventing missing/typo’d keys at build time.
 - The data is not just “UI labels”; it’s a localized layer over the canonical phoneme model that’s reused across charts, tooltips, and dialogs.
 
+### Copy tone
+
+- Keep translations neutral and natural (avoid regionalisms and overly literal phrasing).
+- Prefer concise, functional labels over marketing copy.
+- Use `IPA` as the primary term; `IPA (AFI)` is acceptable on first mention in explanatory text.
+
 ### Adding a new locale
 
 - Add `messages/{locale}.json` for UI strings.

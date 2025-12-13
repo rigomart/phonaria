@@ -18,11 +18,13 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { TopPhonemesHighlight } from "./top-phonemes-highlight";
 
 type ChartDataItem = {
 	phonemeId: PhonemeSymbolId;
 	ipa: string;
+	label: string;
 	frequency: number;
 	coverage: number;
 	percentage: number;
@@ -32,6 +34,7 @@ type ChartDataItem = {
 export function PhonemeFrequencyChart() {
 	const stats = cmudictStatsData;
 	const t = useTranslations("stats-page.sections.phonemes");
+	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 	const [selectedPhonemeId, setSelectedPhonemeId] = useState<PhonemeSymbolId | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -41,6 +44,7 @@ export function PhonemeFrequencyChart() {
 			return {
 				phonemeId: phoneme.phonemeId,
 				ipa,
+				label: phonemeDetailsById[phoneme.phonemeId].label,
 				frequency: phoneme.tokenCount,
 				coverage: phoneme.wordCoverage.count,
 				percentage: phoneme.wordCoverage.percentage,
@@ -195,7 +199,7 @@ function PhonemeBarChart({
 											</div>
 
 											<div className="text-xs text-muted-foreground">
-												{tooltipLabels.phoneme}: {data.phonemeId}
+												{tooltipLabels.phoneme}: {data.label}
 											</div>
 											<div className="text-xs text-muted-foreground">
 												{tooltipLabels.coverage}: {coveragePercentage.toFixed(2)}%

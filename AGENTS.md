@@ -47,6 +47,8 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 - UI text uses next-intl message catalogs in `apps/web/messages/{locale}.json` via `useTranslations(...)`.
 - Typed phoneme-detail copy lives in `apps/web/src/data/phoneme-details/{locale}.ts` and is accessed with `getPhonemeDetailsCopy(locale)` (non-React) or `usePhonemeDetailsCopy()` from `apps/web/src/data/phoneme-details/client.ts` (client components).
 - This split exists because phoneme copy is keyed by `shared-data` IDs/types; keeping it in TypeScript preserves type safety, prevents missing keys, and reduces drift as phoneme registries evolve.
+- Translation tone: neutral, natural, and learner-first; keep labels short and functional (avoid marketing language and regionalisms).
+- Terminology: use `IPA` as the primary label; `IPA (AFI)` is acceptable on first mention in explanatory copy.
 
 ## App Routes & Organization
 The web app uses Next.js App Router with internationalization:
