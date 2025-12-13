@@ -15,7 +15,7 @@ This package hosts the primary Phonaria experience: a Next.js 15 App Router proj
 - **Insights page** – CMUDict coverage cards, phoneme frequency charts, and syllable histograms powered by the shared CMUDict stats dataset.
 - **Dictionary integration** – `GET /api/dictionary` proxies Free Dictionary responses with Upstash Redis rate limiting; transcribed words link straight to definitions and audio.
 - **Themeable & responsive UI** – Tailwind CSS v4, shadcn/ui primitives, and next-themes provide a polished light/dark experience across devices.
-- **Internationalization** – Locale-based routing via next-international with support for multiple languages.
+- **Internationalization** – Locale-based routing via next-intl with support for multiple languages.
 
 ## Tech stack
 

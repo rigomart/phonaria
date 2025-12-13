@@ -1,23 +1,22 @@
 # Localization Implementation Plan (Updated)
 
-This plan details the steps to upgrade the project to **Next.js 16**, replace `next-international` with **`next-intl`**, and implement Spanish localization.
+This plan details the steps to implement Spanish localization using **Next.js 16** and **`next-intl`**.
 
 ## User Review Required
 
 > [!IMPORTANT] 
-> **Major Migration**: This plan replaces the previous Phase 1. We will **uninstall** `next-international` and remove its config before setting up `next-intl`.
+> **Current State**: The app uses `next-intl` for locale routing and message catalogs.
 > **Data Strategy**: We will continue with the **Localized Data Module** strategy (separate `.ts` files) for `phoneme-details`, as it works independently of the i18n library and provides superior type safety for complex data.
 
 ## Proposed Changes
 
-### Phase 1: Upgrade & Migrate
-Upgrade framework and switch i18n libraries.
+### Phase 1: Verify i18n Baseline
+Confirm Next.js + `next-intl` plumbing is in place and documented.
 
 #### [Steps]
-1.  **Upgrade Next.js**: Run `bun update next@latest react@latest react-dom@latest eslint-config-next@latest`.
-2.  **Uninstall Old Lib**: Run `bun remove next-international`.
-3.  **Install New Lib**: Run `bun add next-intl`.
-4.  **Clean Up**: Delete `locales/client.ts`, `locales/server.ts`, and `middleware.ts` (to rewrite it).
+1.  **Dependencies**: Ensure `next-intl` is installed and the previous i18n package is not present in `package.json`.
+2.  **Config Check**: Confirm request config + middleware are wired for locales `['en', 'es']` with default `en`.
+3.  **Docs Check**: Ensure README and internal docs reference `next-intl`.
 
 #### [NEW] [apps/web/src/i18n/request.ts](file:///Users/rigos/projects/phonaria/apps/web/src/i18n/request.ts)
 - Create the standard `next-intl` request configuration.
@@ -53,7 +52,7 @@ Add the ability for users to switch languages.
 Sweep the codebase for remaining hardcoded strings.
 
 #### [MODIFY] Component Files
-- Replace `useI18n` (old) with `useTranslations` (next-intl).
+- Replace any legacy i18n hooks with `useTranslations` (`next-intl`).
 - Example: `const t = useTranslations('phoneme-details');`
 
 ## Verification Plan

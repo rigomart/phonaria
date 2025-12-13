@@ -73,7 +73,7 @@ export function Header() {
 											<span className="text-sm font-medium text-muted-foreground">
 												{tLanguage("label")}
 											</span>
-											<LocaleSwitcher size="default" className="min-w-32" />
+											<LocaleSwitcher />
 										</div>
 										<div className="flex items-center justify-between">
 											<span className="text-sm font-medium text-muted-foreground">

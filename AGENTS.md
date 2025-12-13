@@ -73,7 +73,7 @@ The web app uses Next.js App Router with internationalization:
 - Performance-first, low-latency interactions using Next.js 15 with Turbopack for fast builds and HMR.
 - Responsive surfaces that adapt naturally from phones to large displays.
 - Audio-first experience built on React 19, Next.js App Router, Tailwind CSS v4, and shadcn/ui components.
-- Internationalization via next-international with locale-based routing.
+- Internationalization via next-intl with locale-based routing.
 - Data fetching and caching with TanStack Query; client state management with Zustand.
 - API rate limiting via Upstash Redis; analytics via Vercel Analytics and Speed Insights.
 
@@ -82,7 +82,7 @@ The web app uses Next.js App Router with internationalization:
 - **Styling**: Tailwind CSS v4 with shadcn/ui components built on Radix UI primitives
 - **State Management**: Zustand for client state, TanStack Query for server state
 - **Data Validation**: Zod schemas for runtime type safety
-- **Internationalization**: next-international for locale-based routing and content
+- **Internationalization**: next-intl for locale-based routing and content
 - **Developer Tools**: Biome for linting/formatting, TypeScript 5 for type checking, Vitest for testing
 - **Build Tools**: Turborepo for monorepo orchestration, Bun for package management and runtime
 

@@ -12,15 +12,8 @@ import {
 } from "@/components/ui/select";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
 
-export function LocaleSwitcher({
-	size = "sm",
-	className,
-}: {
-	size?: "sm" | "default";
-	className?: string;
-}) {
+export function LocaleSwitcher() {
 	const t = useTranslations("components.header.language");
 	const pathname = usePathname();
 	const router = useRouter();
@@ -34,7 +27,7 @@ export function LocaleSwitcher({
 			// @ts-expect-error -- TypeScript will validate that only known `params`
 			// are used in combination with a given `pathname`. Since the two will
 			// always match for the current route, we can skip runtime checks.
-			router.replace({ pathname, params });
+			router.replace({ pathname, params }, { locale: nextLocale });
 		});
 	};
 
@@ -44,11 +37,7 @@ export function LocaleSwitcher({
 			onValueChange={(value) => handleLocaleChange(value as Locale)}
 			disabled={isPending}
 		>
-			<SelectTrigger
-				size={size}
-				aria-label={t("label")}
-				className={cn("bg-background-soft min-w-24", className)}
-			>
+			<SelectTrigger size="sm" aria-label={t("label")} className="bg-background-soft min-w-24">
 				<SelectValue />
 			</SelectTrigger>
 			<SelectContent>
