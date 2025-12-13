@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
@@ -17,12 +18,13 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useScopedI18n } from "@/locales/client";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { TopPhonemesHighlight } from "./top-phonemes-highlight";
 
 type ChartDataItem = {
 	phonemeId: PhonemeSymbolId;
 	ipa: string;
+	label: string;
 	frequency: number;
 	coverage: number;
 	percentage: number;
@@ -31,7 +33,8 @@ type ChartDataItem = {
 
 export function PhonemeFrequencyChart() {
 	const stats = cmudictStatsData;
-	const t = useScopedI18n("stats-page.sections.phonemes");
+	const t = useTranslations("stats-page.sections.phonemes");
+	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 	const [selectedPhonemeId, setSelectedPhonemeId] = useState<PhonemeSymbolId | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -41,6 +44,7 @@ export function PhonemeFrequencyChart() {
 			return {
 				phonemeId: phoneme.phonemeId,
 				ipa,
+				label: phonemeDetailsById[phoneme.phonemeId].label,
 				frequency: phoneme.tokenCount,
 				coverage: phoneme.wordCoverage.count,
 				percentage: phoneme.wordCoverage.percentage,
@@ -144,7 +148,7 @@ function PhonemeBarChart({
 	onPhonemeClick: (phonemeId: PhonemeSymbolId) => void;
 	fillColor: string;
 }) {
-	const t = useScopedI18n("stats-page.sections.phonemes");
+	const t = useTranslations("stats-page.sections.phonemes");
 
 	const tooltipLabels = {
 		phoneme: t("chart.tooltip.labels.phoneme"),
@@ -195,7 +199,7 @@ function PhonemeBarChart({
 											</div>
 
 											<div className="text-xs text-muted-foreground">
-												{tooltipLabels.phoneme}: {data.phonemeId}
+												{tooltipLabels.phoneme}: {data.label}
 											</div>
 											<div className="text-xs text-muted-foreground">
 												{tooltipLabels.coverage}: {coveragePercentage.toFixed(2)}%
@@ -203,7 +207,9 @@ function PhonemeBarChart({
 											<div className="text-xs text-muted-foreground">
 												{tooltipLabels.words}: {data.coverage.toLocaleString()}
 											</div>
-											<div className="text-xs text-primary/80 mt-1">Click for details</div>
+											<div className="text-xs text-primary/80 mt-1">
+												{t("chart.tooltip.click-for-details")}
+											</div>
 										</div>
 									);
 								}}

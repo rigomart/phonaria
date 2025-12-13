@@ -1,0 +1,335 @@
+{
+	"components": {
+		"header": {
+			"navigation": {
+				"overview": "Inicio",
+				"transcription": "Transcripción",
+				"ipa-chart": "Tabla IPA",
+				"insights": "Estadísticas"
+			},
+			"language": {
+				"label": "Idioma",
+				"en": "Inglés",
+				"es": "Español"
+			}
+		},
+		"footer": {
+			"links": {
+				"credits": "Créditos",
+				"github": "GitHub"
+			},
+			"copyright": "© {year} Phonaria. Todos los derechos reservados."
+		},
+		"theme-switcher": {
+			"label": "Tema",
+			"toggle-aria": "Cambiar tema",
+			"light": "Claro",
+			"dark": "Oscuro",
+			"system": "Sistema"
+		},
+		"phoneme-details": {
+			"header": {
+				"audio-disclaimer": {
+					"button-label": "Información sobre las fuentes de audio",
+					"popover-text": "Las muestras de audio provienen de Wikimedia Commons.",
+					"view-credits": "Ver créditos completos"
+				}
+			},
+			"articulation": {
+				"title": "Pronunciación",
+				"description": "Cómo se produce este sonido usando tu tracto vocal.",
+				"features": "Rasgos",
+				"ipa-chart-link": "Ver en la tabla IPA",
+				"step-by-step": "Paso a paso",
+				"common-mistakes": "Errores comunes",
+				"pitfalls": {
+					"summary": "Resumen",
+					"tip": "Consejo"
+				}
+			},
+			"contrasts": {
+				"title": "Contrastes",
+				"learn-more-aria": "Más información sobre contrastes para practicar",
+				"description": "Pares mínimos que muestran cómo este sonido difiere de fonemas similares.",
+				"open-contrast": "Ver contraste",
+				"differs-in": "Difieren en",
+				"vs": "vs"
+			},
+			"patterns": {
+				"title": "Patrones ortográficos",
+				"description": "Combinaciones de letras comunes que representan este sonido en la ortografía del inglés.",
+				"most-common": "Grafías:"
+			},
+			"allophones": {
+				"title": "Variaciones",
+				"description": "Este sonido tiene variaciones sutiles según su posición en una palabra o el acento."
+			}
+		}
+	},
+	"locale-layout": {
+		"title": "Phonaria - Fonemas del inglés",
+		"description": "Herramienta interactiva para aprender los fonemas del inglés con transcripción a IPA"
+	},
+	"not-found-page": {
+		"title": "Página no encontrada",
+		"description": "Comprueba la dirección del navegador o usa la navegación para ir a una página conocida."
+	},
+	"ipa-chart": {
+		"title": "Tabla IPA",
+		"description": "Tabla interactiva para entender los fonemas del inglés (IPA, también conocido como AFI en español). Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio.",
+		"hero-section": {
+			"title": "Tabla IPA de los fonemas del inglés",
+			"short": "Tabla IPA interactiva",
+			"description": "Tabla interactiva para entender los fonemas del inglés.",
+			"phonemes": "fonemas",
+			"vowels": "vocales",
+			"consonants": "consonantes"
+		},
+		"nav-tabs": {
+			"consonants": "Consonantes",
+			"vowels": "Vocales",
+			"monophthongs": "Vocales · Monoptongos",
+			"diphthongs": "Vocales · Diptongos"
+		},
+		"info-button": {
+			"label": "Cómo leer esta tabla",
+			"label-short": "Guía",
+			"aria-consonants": "Cómo leer la tabla de consonantes",
+			"aria-monophthongs": "Cómo leer la tabla de vocales monoptongas",
+			"aria-diphthongs": "Cómo leer la tabla de vocales diptongas"
+		},
+		"hint": {
+			"sounds": "sonidos",
+			"click-for-details": "Haz clic en un fonema para ver detalles"
+		},
+		"sections": {
+			"consonants": {
+				"diagram": "Consonantes organizadas por modo (filas: cómo se produce el sonido) y lugar (columnas: dónde se produce en la boca). En cada celda: sorda a la izquierda, sonora a la derecha.",
+				"legend": {
+					"voiceless": "Sordas",
+					"voiced": "Sonoras"
+				}
+			},
+			"vowels": {
+				"monophthongs": {
+					"diagram": "Vocales trazadas según la posición de la lengua. El eje vertical muestra la altura de la lengua (alta a baja). El eje horizontal muestra la anterioridad (frontal a posterior)."
+				},
+				"diphthongs": {
+					"diagram": "Vocales que se deslizan entre dos posiciones. Cada flecha traza el movimiento de la lengua desde el inicio hasta el final."
+				},
+				"legend": {
+					"rounded": "Redondeadas",
+					"unrounded": "No redondeadas",
+					"r-colored": "Róticas"
+				}
+			}
+		},
+		"dialog": {
+			"sagittal-title": "Vista sagital",
+			"sagittal-aria-label": "Vista sagital (próximamente)",
+			"sagittal-placeholder": "Vista sagital (próximamente)"
+		},
+		"card": {
+			"tooltip-hint": "Haz clic para ver detalles de articulación"
+		}
+	},
+	"g2p-page": {
+		"empty-state": {
+			"visual-example": {
+				"text": "the quick brown fox",
+				"ipa": "ðə kwɪk braʊn fɑks"
+			},
+			"description": "Haz clic o toca los fonemas para escuchar los sonidos y ver detalles de articulación",
+			"try-example": "O prueba un ejemplo",
+			"examples": ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"]
+		},
+		"input-form": {
+			"placeholder": "Escribe texto para transcribir...",
+			"aria-label": "Texto para transcribir",
+			"hint": "Escribe o pega texto para transcribir.",
+			"max-characters": "Máx. {maxLength} caracteres • fonemas del inglés",
+			"button": {
+				"transcribe": "Transcribir",
+				"transcribing": "Transcribiendo…"
+			}
+		},
+		"transcription-display": {
+			"copy-button": {
+				"aria-label": "Copiar transcripción al portapapeles",
+				"toast-success": "Copiado al portapapeles",
+				"toast-error": "No hay transcripción para copiar",
+				"toast-error-failed": "No se pudo copiar al portapapeles"
+			},
+			"info-button": {
+				"aria-label": "Información sobre la transcripción",
+				"title": "Sobre esta transcripción",
+				"description": "Las pronunciaciones se obtienen del Diccionario de pronunciación de CMU (CMUDict), que contiene más de 134.000 palabras del inglés norteamericano.",
+				"limitations-title": "Limitaciones conocidas:",
+				"limitations": {
+					"newer-words": "Palabras recientes, jerga y términos especializados pueden no estar incluidos",
+					"proper-nouns": "A menudo faltan nombres propios y marcas comerciales",
+					"homographs": "Los homógrafos muestran múltiples variantes"
+				}
+			}
+		},
+		"dictionary-dialog": {
+			"source-info": {
+				"button-aria": "Información de la fuente",
+				"text": "Las definiciones provienen de Wiktionary a través de la API Free Dictionary (CC BY-SA 3.0). El audio de pronunciación se obtiene de Wikimedia Commons, con licencias específicas por archivo.",
+				"link": "Ver créditos"
+			}
+		}
+	},
+	"overview-page": {
+		"meta": {
+			"title": "Phonaria",
+			"description": "Herramientas de pronunciación para estudiantes de inglés. Convierte texto a transcripción IPA y explora detalles de articulación de fonemas."
+		},
+		"hero": {
+			"title": "Herramientas de pronunciación basadas en fonemas",
+			"description": "Una colección de herramientas para descifrar la ortografía del inglés. Transcribe texto a IPA, explora el inventario de sonidos y estudia detalles de articulación.",
+			"hint": "Haz clic en cualquier símbolo para explorar detalles"
+		},
+		"launchpad": {
+			"g2p": {
+				"title": "Estudio de transcripción",
+				"description": "Escribe cualquier texto para ver su pronunciación representada en fonemas IPA.",
+				"action": "Abrir estudio",
+				"preview": {
+					"header": "Máx. 200 caracteres • inglés"
+				}
+			},
+			"ipa-chart": {
+				"title": "Tabla IPA",
+				"description": "Explora el inventario de sonidos del inglés estadounidense estándar en la tabla IPA (AFI).",
+				"action": "Ver tabla",
+				"preview": {
+					"legend": {
+						"unrounded": "No redondeadas",
+						"rounded": "Redondeadas",
+						"voiceless": "Sordas",
+						"voiced": "Sonoras"
+					}
+				}
+			},
+			"stats": {
+				"title": "Estadísticas de pronunciación",
+				"description": "Explora la frecuencia de fonemas y patrones silábicos en el corpus.",
+				"action": "Ver estadísticas"
+			}
+		}
+	},
+	"credits-page": {
+		"meta": {
+			"title": "Créditos y atribución",
+			"description": "Créditos y agradecimientos para los recursos y fuentes de datos de Phonaria"
+		},
+		"title": "Créditos y atribución",
+		"description": "Phonaria se basa en el trabajo de proyectos de código abierto, investigación lingüística y recursos de dominio público.",
+		"sections": {
+			"wikimedia": {
+				"title": "Muestras de audio fonético",
+				"content": "Las muestras de audio fonético usadas en esta aplicación provienen de grabaciones en la galería \"General phonetics\" de Wikimedia Commons. Los archivos originales fueron creados por varios colaboradores de Wikimedia Commons, incluidos Peter Isotalo, Erutuon, Denelson83 y Octane, y se usan aquí bajo Creative Commons Atribución-CompartirIgual y otras licencias libres compatibles. Para detalles completos de autoría y licencias, consulta las páginas individuales de los archivos en Wikimedia Commons.",
+				"link-text": "Ver la galería «General phonetics»",
+				"link-url": "https://commons.wikimedia.org/wiki/General_phonetics"
+			},
+			"cmu": {
+				"title": "Diccionario de pronunciación de CMU",
+				"content": "La función de transcripción de grafemas a fonemas usa datos de pronunciación del Diccionario de pronunciación de CMU, un diccionario de pronunciación de dominio público creado por la Universidad Carnegie Mellon. El diccionario contiene más de 134.000 palabras del inglés norteamericano con sus transcripciones fonéticas.",
+				"link-text": "Más información sobre CMU Dict",
+				"link-url": "http://www.speech.cs.cmu.edu/cgi-bin/cmudict"
+			},
+			"free-dictionary": {
+				"title": "API Free Dictionary",
+				"content": "Las definiciones del diccionario se proporcionan mediante la API Free Dictionary (dictionaryapi.dev) usando datos de Wiktionary. Las entradas incluyen metadatos de licencia CC BY-SA 3.0 y el audio de pronunciación se obtiene de Wikimedia Commons, con licencias específicas por archivo.",
+				"link-text": "Visitar la API Free Dictionary",
+				"link-url": "https://dictionaryapi.dev/",
+				"license-text": "Ver licencia CC BY-SA 3.0",
+				"license-url": "https://creativecommons.org/licenses/by-sa/3.0/"
+			},
+			"phonetic-data": {
+				"title": "Datos y recursos fonéticos",
+				"content": "Las descripciones articulatorias, los rasgos fonémicos y las clasificaciones IPA se compilan a partir de recursos fonéticos establecidos, investigación lingüística y materiales educativos de dominio público."
+			}
+		}
+	},
+	"stats-page": {
+		"meta": {
+			"title": "Estadísticas de pronunciación",
+			"description": "Datos de frecuencia y patrones del corpus de pronunciación"
+		},
+		"title": "Estadísticas de pronunciación",
+		"description": "Frecuencia de fonemas y distribución silábica en el corpus de pronunciación.",
+		"source-note": {
+			"prefix": "Datos derivados del Diccionario de pronunciación de CMU (CMUDict).",
+			"link": "Ver créditos",
+			"suffix": "para detalles de autoría y licencias."
+		},
+		"sections": {
+			"overview": {
+				"title": "Resumen",
+				"updated": "Actualizado: {date}",
+				"cards": {
+					"words": {
+						"title": "Total de palabras",
+						"description": "Entradas en el diccionario"
+					},
+					"variants": {
+						"title": "Total de pronunciaciones",
+						"description": "Transcripciones fonéticas"
+					},
+					"multiple-pronunciations": {
+						"title": "Pronunciaciones múltiples",
+						"description": "Palabras con varias variantes"
+					}
+				}
+			},
+			"phonemes": {
+				"title": "Frecuencia de fonemas",
+				"description": "Distribución de fonemas en el corpus del diccionario",
+				"tabs": {
+					"vowels": "Vocales",
+					"consonants": "Consonantes",
+					"all": "Todos los fonemas"
+				},
+				"chart": {
+					"label": "Porcentaje",
+					"tooltip": {
+						"labels": {
+							"phoneme": "Fonema",
+							"coverage": "Cobertura",
+							"words": "Palabras"
+						},
+						"click-for-details": "Haz clic para ver detalles"
+					}
+				}
+			},
+			"syllables": {
+				"title": "Distribución silábica",
+				"description": "Frecuencia de palabras según el número de sílabas",
+				"x-axis-label": "Sílabas por palabra",
+				"chart": {
+					"label": "Palabras",
+					"tooltip": {
+						"words": "{count} palabras",
+						"percentage": "{percentage}% del total"
+					}
+				}
+			},
+			"top-phonemes": {
+				"title": "Los {count} fonemas con mayor cobertura",
+				"info": "Proporción de entradas de CMUDict que incluyen el fonema (cobertura a nivel de palabra).",
+				"vowels-title": "Vocales con mayor cobertura",
+				"consonants-title": "Consonantes con mayor cobertura",
+				"coverage-label": "Cobertura de palabras",
+				"words-label": "{count} palabras"
+			},
+			"facts": {
+				"title": "Datos rápidos",
+				"top-phoneme": "/{ipa}/ aparece en el {percentage}% de todas las palabras del diccionario",
+				"top-syllable": "Las palabras de {count} sílabas son las más comunes ({percentage}%)",
+				"densest-phoneme": "/{ipa}/ aparece {avgPerWord} veces por palabra, en promedio"
+			}
+		}
+	}
+}

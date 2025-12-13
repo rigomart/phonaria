@@ -1,8 +1,8 @@
 "use client";
 
 import { BookOpen, Layers, Volume2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cmudictStatsData } from "shared-data";
-import { useScopedI18n } from "@/locales/client";
 
 const CARD_CONFIG = [
 	{
@@ -30,7 +30,7 @@ const CARD_CONFIG = [
 
 export function OverviewCards() {
 	const stats = cmudictStatsData;
-	const t = useScopedI18n("stats-page.sections.overview.cards");
+	const t = useTranslations("stats-page.sections.overview.cards");
 
 	return (
 		<div className="grid gap-3 grid-cols-1 sm:grid-cols-3 lg:grid-cols-1">

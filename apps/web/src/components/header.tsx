@@ -1,8 +1,9 @@
 "use client";
 
 import { AudioLines, Menu } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +15,13 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
-import { useScopedI18n } from "@/locales/client";
+import { Link } from "@/i18n/navigation";
 
 export function Header() {
 	const [open, setOpen] = useState(false);
-	const t = useScopedI18n("components.header.navigation");
+	const t = useTranslations("components.header.navigation");
+	const tLanguage = useTranslations("components.header.language");
+	const tTheme = useTranslations("components.theme-switcher");
 
 	const navigationLinks = [
 		{ href: "/transcription", label: t("transcription") },
@@ -65,9 +68,17 @@ export function Header() {
 
 								{/* Dark mode toggle at the bottom */}
 								<SheetFooter>
-									<div className="border-t border-border pt-4">
+									<div className="border-t border-border pt-4 space-y-3">
 										<div className="flex items-center justify-between">
-											<span className="text-sm font-medium text-muted-foreground">Theme</span>
+											<span className="text-sm font-medium text-muted-foreground">
+												{tLanguage("label")}
+											</span>
+											<LocaleSwitcher />
+										</div>
+										<div className="flex items-center justify-between">
+											<span className="text-sm font-medium text-muted-foreground">
+												{tTheme("label")}
+											</span>
 											<ThemeSwitcher />
 										</div>
 									</div>
@@ -100,6 +111,7 @@ export function Header() {
 
 					{/* Desktop mode toggle */}
 					<div className="hidden md:flex items-center gap-2">
+						<LocaleSwitcher />
 						<ThemeSwitcher />
 					</div>
 				</div>

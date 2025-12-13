@@ -1,8 +1,8 @@
-import Link from "next/link";
-import { getScopedI18n } from "@/locales/server";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
 export async function Footer() {
-	const t = await getScopedI18n("components.footer");
+	const t = await getTranslations("components.footer");
 
 	const currentYear = new Date().getFullYear();
 	const copyrightText = t("copyright", { year: currentYear });

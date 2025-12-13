@@ -1,5 +1,5 @@
+import { useTranslations } from "next-intl";
 import { PhonemeSpellingPatternRegistry } from "shared-data";
-import { useScopedI18n } from "@/locales/client";
 import { AudioControls } from "../audio-controls";
 import { Badge } from "../ui/badge";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
@@ -14,7 +14,7 @@ import {
 
 export function PhonemeDetailsPatterns() {
 	const { phonemeId } = usePhonemeDetailsContext();
-	const t = useScopedI18n("components.phoneme-details.patterns");
+	const t = useTranslations("components.phoneme-details.patterns");
 
 	const spellingData = PhonemeSpellingPatternRegistry[phonemeId];
 

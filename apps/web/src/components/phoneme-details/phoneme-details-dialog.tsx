@@ -29,7 +29,7 @@ export function PhonemeDetailsDialog({
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<PhonemeDetails phonemeId={phonemeId}>
-				<DialogContent className={`${maxWidth} p-0 gap-0`}>
+				<DialogContent className={`${maxWidth} p-0 gap-0 overflow-hidden`}>
 					<DialogHeader>
 						<PhonemeDetailsHeader />
 						<DialogTitle className="sr-only">Phoneme details</DialogTitle>

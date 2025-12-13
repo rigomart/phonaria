@@ -4,7 +4,6 @@ import type { CSSProperties } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
-import { useScopedI18n } from "@/locales/client";
 import type { StaticVowelChartEntry } from "../_lib/vowel-chart-data";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 import {
@@ -151,8 +150,10 @@ function getMarkerOffsets(count: number): MarkerOffset[] {
 	return offsets;
 }
 
+import { useTranslations } from "next-intl";
+
 export function VowelChartLegend() {
-	const t = useScopedI18n("ipa-chart.sections.vowels.legend");
+	const t = useTranslations("ipa-chart.sections.vowels.legend");
 
 	return (
 		<div className="flex flex-wrap gap-2 sm:gap-3 text-xs text-muted-foreground">

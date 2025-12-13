@@ -1,26 +1,15 @@
 import { BarChart3, BookOpen, Mic } from "lucide-react";
-import type { Metadata } from "next";
-import { setStaticParamsLocale } from "next-international/server";
-import { getScopedI18n } from "@/locales/server";
+import { getTranslations } from "next-intl/server";
 import { G2PPreviewStatic } from "./_components/g2p-preview-static";
 import { HeroSection } from "./_components/hero-section";
 import { IpaChartPreviewStatic } from "./_components/ipa-chart-preview-static";
 import { StatsPreviewStatic } from "./_components/stats-preview-static";
 import { ToolCard } from "./_components/tool-card";
 
-export async function generateMetadata(): Promise<Metadata> {
-	const t = await getScopedI18n("overview-page.meta");
-	return {
-		title: t("title"),
-		description: t("description"),
-	};
-}
-
 export default async function OverviewPage({ params }: { params: Promise<{ locale: string }> }) {
 	const { locale } = await params;
-	setStaticParamsLocale(locale);
 
-	const t = await getScopedI18n("overview-page");
+	const t = await getTranslations({ locale: locale as "en" | "es", namespace: "overview-page" });
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">

@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
 	ContrastsByPhonemeIdRegistry,
 	FeatureValueByPhonemeRegistry,
@@ -6,9 +7,9 @@ import {
 	type PhonemeArticulatoryFeatureKey,
 	type PhonemeArticulatoryFeatures,
 } from "shared-data";
-import { type FeatureValueDefinition, featureDefinitions } from "@/data/phoneme-details";
+import type { FeatureValueDefinition, PhonemeDetailsCopy } from "@/data/phoneme-details";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
-import { useScopedI18n } from "@/locales/client";
 import { AudioControls } from "../audio-controls";
 import { Badge } from "../ui/badge";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
@@ -24,6 +25,7 @@ import {
 } from "./phoneme-section";
 
 function getFeatureValueDefinition<K extends PhonemeArticulatoryFeatureKey>(
+	featureDefinitions: PhonemeDetailsCopy["featureDefinitions"],
 	featureKey: K,
 	valueKey: PhonemeArticulatoryFeatures[K] | undefined,
 ): FeatureValueDefinition | null {
@@ -41,7 +43,8 @@ function getFeatureValueDefinition<K extends PhonemeArticulatoryFeatureKey>(
 export function PhonemeDetailsContrasts() {
 	const { phonemeId } = usePhonemeDetailsContext();
 
-	const t = useScopedI18n(`components.phoneme-details.contrasts`);
+	const t = useTranslations(`components.phoneme-details.contrasts`);
+	const { featureDefinitions } = usePhonemeDetailsCopy();
 
 	const contrasts = ContrastsByPhonemeIdRegistry[phonemeId];
 	const currentIpa = getIpaForPhonemeId(phonemeId);
@@ -71,8 +74,16 @@ export function PhonemeDetailsContrasts() {
 									{contrast.contrastType.map((type) => {
 										const phonemeValueKey = FeatureValueByPhonemeRegistry[type][phonemeId];
 										const partnerValueKey = FeatureValueByPhonemeRegistry[type][contrast.partnerId];
-										const phonemeValueDef = getFeatureValueDefinition(type, phonemeValueKey);
-										const partnerValueDef = getFeatureValueDefinition(type, partnerValueKey);
+										const phonemeValueDef = getFeatureValueDefinition(
+											featureDefinitions,
+											type,
+											phonemeValueKey,
+										);
+										const partnerValueDef = getFeatureValueDefinition(
+											featureDefinitions,
+											type,
+											partnerValueKey,
+										);
 
 										if (!phonemeValueDef || !partnerValueDef) {
 											return null;

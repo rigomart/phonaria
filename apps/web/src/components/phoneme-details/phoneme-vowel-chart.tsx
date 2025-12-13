@@ -1,5 +1,5 @@
 import type { PhonemeArticulation, VowelArticulatoryFeatures } from "shared-data";
-import { featureDefinitions } from "@/data/phoneme-details";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import {
 	type ChartPoint,
@@ -186,6 +186,7 @@ function AxisLabels() {
 	const topHeight = VOWEL_HEIGHT_ORDER[0];
 	const topLabelY = layout.chartTop - 6;
 	const rowLabelOffset = 8;
+	const { featureDefinitions } = usePhonemeDetailsCopy();
 	const tBackness = featureDefinitions.backness;
 	const tHeight = featureDefinitions.height;
 	const mainBackness = ["front", "central", "back"] as const satisfies ReadonlyArray<

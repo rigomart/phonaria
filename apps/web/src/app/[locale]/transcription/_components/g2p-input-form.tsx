@@ -1,6 +1,7 @@
 "use client";
 
 import { Keyboard, Loader2, SendHorizonal } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,10 +14,8 @@ interface G2PInputFormProps {
 	maxLength?: number;
 }
 
-export function G2PInputForm({
-	placeholder = "Enter text to transcribe...",
-	maxLength = 200,
-}: G2PInputFormProps) {
+export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps) {
+	const t = useTranslations("g2p-page.input-form");
 	const [inputText, setInputText] = useState("");
 	const transcribeMutation = useTranscribe();
 	const isLoading = transcribeMutation.isPending;
@@ -34,6 +33,7 @@ export function G2PInputForm({
 	});
 
 	const showStartTypingHint = isMobileDevice === false;
+	const placeholderText = placeholder ?? t("placeholder");
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -46,10 +46,10 @@ export function G2PInputForm({
 				<div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
 					<span className="inline-flex items-center gap-1">
 						<Keyboard className="size-4" />
-						Type anywhere or paste text to transcribe.
+						{t("hint")}
 					</span>
 					<span className="text-xs text-muted-foreground/80">
-						Max {maxLength} characters • English phonemes
+						{t("max-characters", { maxLength })}
 					</span>
 				</div>
 			) : null}
@@ -60,11 +60,11 @@ export function G2PInputForm({
 						ref={inputRef}
 						value={inputText}
 						onChange={(e) => setInputText(e.target.value)}
-						placeholder={placeholder}
+						placeholder={placeholderText}
 						disabled={isLoading}
 						className="h-12 rounded-lg border bg-background px-4 pr-20 text-base shadow-inner shadow-black/5"
 						maxLength={maxLength}
-						aria-label="Text to transcribe"
+						aria-label={t("aria-label")}
 					/>
 					<div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
 						<span
@@ -89,12 +89,12 @@ export function G2PInputForm({
 					{isLoading ? (
 						<>
 							<Loader2 className="size-4 animate-spin" />
-							<span className="text-sm">Transcribing…</span>
+							<span className="text-sm">{t("button.transcribing")}</span>
 						</>
 					) : (
 						<>
 							<SendHorizonal className="size-4" />
-							<span className="text-sm">Transcribe</span>
+							<span className="text-sm">{t("button.transcribe")}</span>
 						</>
 					)}
 				</Button>

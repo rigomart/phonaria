@@ -1,7 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { cmudictStatsData, getIpaForPhonemeId } from "shared-data";
-import { useScopedI18n } from "@/locales/client";
 
 const PREVIEW_STATS = [
 	{
@@ -23,9 +23,9 @@ const MAX_COVERAGE = TOP_PHONEMES.reduce(
 );
 
 export function StatsPreviewStatic() {
-	const tOverview = useScopedI18n("stats-page.sections.overview.cards");
-	const tSections = useScopedI18n("stats-page.sections");
-	const tTopPhonemes = useScopedI18n("stats-page.sections.top-phonemes");
+	const tOverview = useTranslations("stats-page.sections.overview.cards");
+	const tSections = useTranslations("stats-page.sections");
+	const tTopPhonemes = useTranslations("stats-page.sections.top-phonemes");
 
 	return (
 		<div className="w-full h-full bg-background rounded-xl border shadow-sm p-3 sm:p-4 flex flex-col gap-3 min-h-0">

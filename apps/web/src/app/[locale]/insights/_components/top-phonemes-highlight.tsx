@@ -1,6 +1,7 @@
 "use client";
 
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import {
 	cmudictStatsData,
@@ -11,18 +12,22 @@ import {
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useScopedI18n } from "@/locales/client";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 
 const TOP_COUNT = 3;
 
 type PhonemeItem = {
 	phonemeId: PhonemeSymbolId;
 	ipa: string;
+	label: string;
 	coverage: number;
 	percentage: number;
 };
 
-function getTopPhonemesByCategory(category: "vowel" | "consonant"): PhonemeItem[] {
+function getTopPhonemesByCategory(
+	phonemeDetailsById: Record<PhonemeSymbolId, { label: string }>,
+	category: "vowel" | "consonant",
+): PhonemeItem[] {
 	return [...cmudictStatsData.phonemes]
 		.filter((p) => getPhonemeCategory(p.phonemeId) === category)
 		.sort((a, b) => b.wordCoverage.percentage - a.wordCoverage.percentage)
@@ -30,6 +35,7 @@ function getTopPhonemesByCategory(category: "vowel" | "consonant"): PhonemeItem[
 		.map((phoneme) => ({
 			phonemeId: phoneme.phonemeId,
 			ipa: getIpaForPhonemeId(phoneme.phonemeId) ?? phoneme.phonemeId,
+			label: phonemeDetailsById[phoneme.phonemeId].label,
 			coverage: phoneme.wordCoverage.count,
 			percentage: phoneme.wordCoverage.percentage,
 		}));
@@ -44,7 +50,7 @@ function PhonemeCard({
 	index: number;
 	onSelect: (phonemeId: PhonemeSymbolId) => void;
 }) {
-	const t = useScopedI18n("stats-page.sections.top-phonemes");
+	const t = useTranslations("stats-page.sections.top-phonemes");
 
 	const formatPercent = (value: number) =>
 		value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -62,7 +68,7 @@ function PhonemeCard({
 				<Badge variant="secondary" className="text-sm px-2 py-1 leading-none">
 					/{item.ipa}/
 				</Badge>
-				<span className="text-xs font-medium text-muted-foreground truncate">{item.phonemeId}</span>
+				<span className="text-xs font-medium text-muted-foreground truncate">{item.label}</span>
 			</div>
 
 			<div className="flex items-baseline gap-2">
@@ -112,12 +118,13 @@ function CategorySection({
 }
 
 export function TopPhonemesHighlight() {
-	const t = useScopedI18n("stats-page.sections.top-phonemes");
+	const t = useTranslations("stats-page.sections.top-phonemes");
 	const [selectedPhonemeId, setSelectedPhonemeId] = useState<PhonemeSymbolId | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
+	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 
-	const topVowels = getTopPhonemesByCategory("vowel");
-	const topConsonants = getTopPhonemesByCategory("consonant");
+	const topVowels = getTopPhonemesByCategory(phonemeDetailsById, "vowel");
+	const topConsonants = getTopPhonemesByCategory(phonemeDetailsById, "consonant");
 
 	const handleSelect = (phonemeId: PhonemeSymbolId) => {
 		setSelectedPhonemeId(phonemeId);

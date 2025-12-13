@@ -14,6 +14,11 @@ const cspHeader = `
     media-src 'self' https://api.dictionaryapi.dev https://assets.rigos.dev;
 `;
 
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+/** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
 	headers: async () => {
 		return [
@@ -25,4 +30,4 @@ const nextConfig: NextConfig = {
 	},
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

@@ -3,13 +3,12 @@
 import { Fragment, useMemo } from "react";
 import type { ConsonantSymbolId } from "shared-data";
 import { ConsonantArticulationRegistry, getIpaForPhonemeId } from "shared-data";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import {
 	getCellKey,
-	MANNER_LABELS,
 	MANNER_ORDER,
 	type MannerOfArticulation,
-	PLACE_LABELS,
 	PLACE_ORDER,
 	type PlaceOfArticulation,
 	type Voicing,
@@ -25,6 +24,7 @@ interface ConsonantPhoneme {
 }
 
 export function ConsonantChart() {
+	const { featureDefinitions } = usePhonemeDetailsCopy();
 	const consonants = useMemo(() => {
 		const phonemes: ConsonantPhoneme[] = [];
 
@@ -74,14 +74,14 @@ export function ConsonantChart() {
 					key={place}
 					className="px-1.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
 				>
-					{PLACE_LABELS[place]}
+					{featureDefinitions.place.values[place].label}
 				</div>
 			))}
 
 			{MANNER_ORDER.map((manner) => (
 				<Fragment key={manner}>
 					<div className="flex items-center justify-end pr-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-						{MANNER_LABELS[manner]}
+						{featureDefinitions.manner.values[manner].label}
 					</div>
 					{PLACE_ORDER.map((place) => {
 						const key = getCellKey(manner, place);

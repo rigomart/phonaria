@@ -1,20 +1,21 @@
 "use client";
 
 import { Info } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { getIpaForPhonemeId, getPhonemeType } from "shared-data";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { phonemeDetailsById } from "@/data/phoneme-details";
-import { useScopedI18n } from "@/locales/client";
+import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
+import { Link } from "@/i18n/navigation";
 import { AudioControls } from "../audio-controls";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 
 export function PhonemeDetailsHeader() {
 	const { phonemeId } = usePhonemeDetailsContext();
-	const t = useScopedI18n("components.phoneme-details.header.audio-disclaimer");
+	const t = useTranslations("components.phoneme-details.header.audio-disclaimer");
 
 	const ipa = getIpaForPhonemeId(phonemeId);
+	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 	const { label } = phonemeDetailsById[phonemeId];
 
 	const phonemeType = getPhonemeType(phonemeId);

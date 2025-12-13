@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -14,7 +14,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { useScopedI18n } from "@/locales/client";
+import { Link } from "@/i18n/navigation";
 import { useDictionary } from "../_hooks/use-dictionary";
 import { useDictionaryStore } from "../_store/dictionary-store";
 import {
@@ -27,7 +27,7 @@ import {
 export function WordDefinitionDialog() {
 	const { selectedWord, setSelectedWord } = useDictionaryStore();
 	const open = !!selectedWord;
-	const t = useScopedI18n("g2p-page.dictionary-dialog");
+	const t = useTranslations("g2p-page.dictionary-dialog");
 
 	const { data, isLoading, error } = useDictionary(selectedWord);
 	const normalizedWord = selectedWord?.trim() ?? "";

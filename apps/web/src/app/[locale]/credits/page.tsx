@@ -1,20 +1,18 @@
-import type { Metadata } from "next";
-import { setStaticParamsLocale } from "next-international/server";
-import { getScopedI18n } from "@/locales/server";
+import { type Locale, useTranslations } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
+import { use } from "react";
+import { routing } from "@/i18n/routing";
 
-export async function generateMetadata(): Promise<Metadata> {
-	const t = await getScopedI18n("credits-page.meta");
-	return {
-		title: t("title"),
-		description: t("description"),
-	};
+export function generateStaticParams() {
+	return routing.locales.map((locale) => ({ locale }));
 }
 
-export default async function CreditsPage({ params }: { params: Promise<{ locale: string }> }) {
-	const { locale } = await params;
-	setStaticParamsLocale(locale);
+export default function CreditsPage({ params }: PageProps<"/[locale]/credits">) {
+	const { locale } = use(params);
 
-	const t = await getScopedI18n("credits-page");
+	setRequestLocale(locale as Locale);
+
+	const t = useTranslations("credits-page");
 
 	return (
 		<div className="flex flex-1 flex-col bg-background overflow-y-auto">
