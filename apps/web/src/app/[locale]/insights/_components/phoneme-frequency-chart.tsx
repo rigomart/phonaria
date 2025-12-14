@@ -7,11 +7,17 @@ import {
 	type PhonemeCategory,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@phonaria/ui/components/card";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	type ChartConfig,
 	ChartContainer,

@@ -6,6 +6,7 @@ import {
 	type PhonemeArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
 import { Badge } from "@phonaria/ui/components/badge";
+import { LabelSeparator } from "@phonaria/ui/components/separator";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FeatureValueDefinition, PhonemeDetailsCopy } from "@/data/phoneme-details";
@@ -13,7 +14,6 @@ import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import { AudioControls } from "../audio-controls";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
-import { LabelSeparator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {

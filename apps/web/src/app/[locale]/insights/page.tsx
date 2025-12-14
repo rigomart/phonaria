@@ -1,9 +1,9 @@
 import { cmudictStatsData } from "@phonaria/phonetics-data";
 import { Badge } from "@phonaria/ui/components/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@phonaria/ui/components/card";
 import { type Locale, useFormatter, useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { use } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { InsightsFacts } from "./_components/insights-facts";

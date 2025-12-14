@@ -16,4 +16,28 @@ function Separator({ className, orientation = "horizontal", ...props }: Separato
 	);
 }
 
-export { Separator };
+type LabelSeparatorProps = {
+	label: string;
+	orientation?: "horizontal" | "vertical";
+	className?: string;
+};
+
+function LabelSeparator({ label, orientation = "horizontal", className }: LabelSeparatorProps) {
+	const isVertical = orientation === "vertical";
+
+	return (
+		<div
+			className={cn(
+				"flex items-center justify-center gap-1 overflow-hidden",
+				isVertical ? "flex-col" : "flex-row",
+				className,
+			)}
+		>
+			<Separator orientation={orientation} />
+			<span className="text-xs font-semibold">{label}</span>
+			<Separator orientation={orientation} />
+		</div>
+	);
+}
+
+export { Separator, LabelSeparator };

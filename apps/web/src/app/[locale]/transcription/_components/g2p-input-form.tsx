@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
+import { Input } from "@phonaria/ui/components/input";
 import { Keyboard, Loader2, SendHorizonal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTranscribe } from "../_hooks/use-g2p";
 import { useStartTypingAnywhere } from "../_hooks/use-start-typing-anywhere";

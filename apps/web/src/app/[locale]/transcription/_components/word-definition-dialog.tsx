@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
+import { Separator } from "@phonaria/ui/components/separator";
 import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Link } from "@/i18n/navigation";
 import { useDictionary } from "../_hooks/use-dictionary";
 import { useDictionaryStore } from "../_store/dictionary-store";

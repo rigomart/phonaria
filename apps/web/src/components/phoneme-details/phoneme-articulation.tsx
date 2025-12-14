@@ -5,6 +5,7 @@ import {
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
+import { Separator } from "@phonaria/ui/components/separator";
 import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -14,7 +15,6 @@ import { Link } from "@/i18n/navigation";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Pressable } from "../ui/pressable";
-import { Separator } from "../ui/separator";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
 	PhonemeSection,
