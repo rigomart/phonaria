@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@phonaria/ui/components/badge";
 import { cn } from "@/lib/utils";
 import type { TranscribedPhoneme } from "../_types/g2p";
 
