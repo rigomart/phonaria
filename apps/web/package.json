@@ -42,6 +42,7 @@
 		"react": "19",
 		"react-dom": "19",
 		"recharts": "2.15.4",
+		"@phonaria/ui": "workspace:*",
 		"shared-data": "workspace:*",
 		"sonner": "^2.0.7",
 		"tailwind-merge": "^3.3.1",

@@ -28,6 +28,7 @@ const nextConfig: NextConfig = {
 			},
 		];
 	},
+	transpilePackages: ["@phonaria/ui"],
 };
 
 export default withNextIntl(nextConfig);
