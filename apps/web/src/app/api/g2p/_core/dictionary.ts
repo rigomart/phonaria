@@ -1,4 +1,4 @@
-import { cmudictData } from "shared-data";
+import { cmudictData } from "@phonaria/phonetics-data";
 import type { G2PSyllable } from "../_schemas/g2p-api.schema";
 import { normalizeCmuWord } from "../_utils/text-processing";
 import { syllabify } from "./syllabifier";

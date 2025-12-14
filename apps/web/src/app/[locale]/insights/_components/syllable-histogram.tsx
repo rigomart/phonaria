@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { cmudictStatsData } from "shared-data";
+import { cmudictStatsData } from "@phonaria/phonetics-data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	type ChartConfig,

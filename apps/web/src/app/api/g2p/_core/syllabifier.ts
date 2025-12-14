@@ -3,7 +3,7 @@ import {
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	getPhonemeIdForCmuArpa,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 import type { G2PPhoneme, G2PStress } from "../_schemas/g2p-api.schema";
 import { isValidOnset } from "./phonotactics";
 

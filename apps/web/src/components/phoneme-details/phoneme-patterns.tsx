@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { PhonemeSpellingPatternRegistry } from "shared-data";
+import { PhonemeSpellingPatternRegistry } from "@phonaria/phonetics-data";
 import { AudioControls } from "../audio-controls";
 import { Badge } from "../ui/badge";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";

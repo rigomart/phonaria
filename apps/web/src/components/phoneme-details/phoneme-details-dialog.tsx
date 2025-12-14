@@ -1,6 +1,6 @@
 "use client";
 
-import type { PhonemeSymbolId } from "shared-data";
+import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {

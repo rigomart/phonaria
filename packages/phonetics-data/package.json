@@ -1,5 +1,5 @@
 {
-	"name": "shared-data",
+	"name": "@phonaria/phonetics-data",
 	"version": "1.0.0",
 	"description": "",
 	"main": "./src/index.ts",

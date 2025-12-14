@@ -6,7 +6,7 @@ import {
 	type PhonemeArticulation,
 	PhonemeArticulationRegistry,
 	type PhonemeSymbolId,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 import type { ArticulatoryFeature, PhonemeDetailsCopy } from "@/data/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";

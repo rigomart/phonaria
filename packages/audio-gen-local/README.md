@@ -1,6 +1,6 @@
 # Audio Gen Local
 
-Scaffold for generating audio for every example word in the phonetics datasets. The package consumes a typed word manifest emitted from `packages/shared-data` and will eventually stream audio output to the web app.
+Scaffold for generating audio for every example word in the phonetics datasets. The package consumes a typed word manifest emitted from `packages/phonetics-data` and will eventually stream audio output to the web app.
 
 ## Prerequisites
 
@@ -48,7 +48,7 @@ uv run pyright src
   }
   ```
 - Generate it manually for now (create the `data` directory and the JSON file above).
-  A helper-script emitter will eventually feed this manifest directly from `shared-data`.
+  A helper-script emitter will eventually feed this manifest directly from `@phonaria/phonetics-data`.
   Regenerate whenever you edit phoneme metadata.
 
 ## CLI

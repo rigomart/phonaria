@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { PhonemeAllophoneRegistry } from "shared-data";
+import { PhonemeAllophoneRegistry } from "@phonaria/phonetics-data";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { AudioControls } from "../audio-controls";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";

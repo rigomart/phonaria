@@ -1,4 +1,4 @@
-# shared-data
+# `@phonaria/phonetics-data`
 
 Canonical phoneme metadata for the Phonaria workspace. Everything in this package is structured data: IPA symbols, articulatory feature maps, contrast sets, and spelling patterns that other packages render into UI copy on their own. Do **not** store prose, learner-facing descriptions, or localized strings here—apps import the metadata and generate copy in their respective locales.
 
@@ -10,7 +10,7 @@ Canonical phoneme metadata for the Phonaria workspace. Everything in this packag
 
 ## Exports at a glance
 
-All canonical phonetics datasets use PascalCase `*Registry` names (or `*Catalog` for arrays) to signal their role as source-of-truth data exports from `shared-data`. This naming convention makes it visually obvious that these are global data registries, not local constants.
+All canonical phonetics datasets use PascalCase `*Registry` names (or `*Catalog` for arrays) to signal their role as source-of-truth data exports from `@phonaria/phonetics-data`. This naming convention makes it visually obvious that these are global data registries, not local constants.
 
 ```ts
 import {
@@ -54,7 +54,7 @@ import {
   type SpellingPattern,
   type AllophoneExample,
   type PhonemeContrastPair,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 ```
 
 ## Module map (`src/phonetics`)
@@ -67,14 +67,14 @@ import {
 | `phoneme-contrasts.ts` | Minimal-pair style relationships (`ContrastsByPhonemeIdRegistry`) that highlight challenging sound pairs. Each example includes `word` and `phonemic` (IPA). |
 | `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. Each example includes `word` and `phonemic` (IPA). |
 | `phoneme-allophones.ts` | Allophonic variations with context keys for each phoneme. Each example includes `word` and `phonemic` (IPA). |
-| `index.ts` | Barrel re-export for all of the above so consumers import from `shared-data`. |
+| `index.ts` | Barrel re-export for all of the above so consumers import from `@phonaria/phonetics-data`. |
 
 ## Usage examples
 
 ### Get IPA symbol for a phoneme
 
 ```ts
-import { getIpaForPhonemeId } from "shared-data";
+import { getIpaForPhonemeId } from "@phonaria/phonetics-data";
 
 const ipa = getIpaForPhonemeId("voiceless-bilabial-plosive"); // "p"
 const vowelIpa = getIpaForPhonemeId("close-front-unrounded"); // "i"
@@ -83,7 +83,7 @@ const vowelIpa = getIpaForPhonemeId("close-front-unrounded"); // "i"
 ### Convert CMU ARPA to phoneme ID and IPA
 
 ```ts
-import { getPhonemeIdForCmuArpa, getIpaForPhonemeId } from "shared-data";
+import { getPhonemeIdForCmuArpa, getIpaForPhonemeId } from "@phonaria/phonetics-data";
 
 const phonemeId = getPhonemeIdForCmuArpa("AH0"); // "mid-central-unrounded" (schwa)
 const ipa = getIpaForPhonemeId(phonemeId); // "ə"
@@ -92,7 +92,7 @@ const ipa = getIpaForPhonemeId(phonemeId); // "ə"
 ### Reverse lookup: phoneme ID to CMU ARPA tokens
 
 ```ts
-import { getCmuArpaForPhonemeId } from "shared-data";
+import { getCmuArpaForPhonemeId } from "@phonaria/phonetics-data";
 
 const tokens = getCmuArpaForPhonemeId("close-front-unrounded");
 // ["IY0", "IY1", "IY2"] - all stress variants
@@ -101,7 +101,7 @@ const tokens = getCmuArpaForPhonemeId("close-front-unrounded");
 ### Check phoneme category
 
 ```ts
-import { isVowelPhoneme, isConsonantPhoneme, getPhonemeCategory } from "shared-data";
+import { isVowelPhoneme, isConsonantPhoneme, getPhonemeCategory } from "@phonaria/phonetics-data";
 
 isVowelPhoneme("close-front-unrounded"); // true
 isConsonantPhoneme("voiceless-bilabial-plosive"); // true
@@ -111,7 +111,7 @@ getPhonemeCategory("close-front-unrounded"); // "vowel"
 ### Access articulation features
 
 ```ts
-import { PhonemeArticulationRegistry } from "shared-data";
+import { PhonemeArticulationRegistry } from "@phonaria/phonetics-data";
 
 const articulation = PhonemeArticulationRegistry["close-front-unrounded"];
 // { category: "vowel", vowelType: "monophthong", features: { ... } }
@@ -124,7 +124,7 @@ if (articulation.vowelType === "diphthong") {
 ### Build spelling-pattern cards
 
 ```ts
-import { PhonemeSpellingPatternRegistry } from "shared-data";
+import { PhonemeSpellingPatternRegistry } from "@phonaria/phonetics-data";
 
 const patterns = PhonemeSpellingPatternRegistry[phonemeId]?.patterns ?? [];
 const examples = PhonemeSpellingPatternRegistry[phonemeId]?.examples ?? [];
@@ -138,7 +138,7 @@ import {
   PhonemeSpellingPatternRegistry,
   PhonemeAllophoneRegistry,
   ContrastsByPhonemeIdRegistry
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 
 // Spelling pattern examples
 const pattern = PhonemeSpellingPatternRegistry["voiceless-bilabial-plosive"];
@@ -165,7 +165,7 @@ contrasts?.forEach(contrast => {
 });
 ```
 
-> **Note**: CMU ARPA transcriptions are generated dynamically by `helper-scripts` from CMUDict. The default CMUDict JSON lives at `packages/shared-data/data/dict/cmudict.json` (generated via `bun --cwd packages/helper-scripts cmudict-to-json`). See the `generate-word-mappings` script for word → CMU ARPA lookups.
+> **Note**: CMU ARPA transcriptions are generated dynamically by `helper-scripts` from CMUDict. The default CMUDict JSON lives at `packages/phonetics-data/data/dict/cmudict.json` (generated via `bun --cwd packages/helper-scripts cmudict-to-json`). See the `generate-word-mappings` script for word → CMU ARPA lookups.
 
 ## Contribution guide
 
@@ -180,8 +180,8 @@ contrasts?.forEach(contrast => {
 3. **Update types when needed**: extend the relevant type definitions and re-export through `src/index.ts`.
 4. **Validate**:
    ```bash
-   bun --cwd packages/shared-data lint
-   bun --cwd packages/shared-data check-types
+   bun --cwd packages/phonetics-data lint
+   bun --cwd packages/phonetics-data check-types
    ```
 5. **Coordinate downstream assets**: if a change affects audio generation or web UI expectations, follow the workflows in `packages/helper-scripts` or `apps/web` to regenerate assets.
 

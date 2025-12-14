@@ -1,5 +1,8 @@
-import type { PhonemeArticulatoryFeatures } from "shared-data";
-import { PhonemeAllophoneRegistry, PhonemeArticulationRegistry } from "shared-data";
+import type { PhonemeArticulatoryFeatures } from "@phonaria/phonetics-data";
+import {
+	PhonemeAllophoneRegistry,
+	PhonemeArticulationRegistry,
+} from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import { phonemeDetailsCopyByLocale } from "./phoneme-details";
 

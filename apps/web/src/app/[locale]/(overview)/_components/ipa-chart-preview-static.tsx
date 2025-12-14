@@ -9,7 +9,7 @@ import {
 	MonophthongIpaRegistry,
 	MonophthongVowelArticulationRegistry,
 	type PhonemeSymbolId,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 
 type PreviewVowel = {
 	id: PhonemeSymbolId;

@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { parseAsStringEnum, useQueryState } from "nuqs";
-import { PhonemeCount } from "shared-data";
+import { PhonemeCount } from "@phonaria/phonetics-data";
 import {
 	Select,
 	SelectContent,

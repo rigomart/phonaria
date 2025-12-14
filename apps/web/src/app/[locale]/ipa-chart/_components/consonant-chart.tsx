@@ -1,8 +1,8 @@
 "use client";
 
 import { Fragment, useMemo } from "react";
-import type { ConsonantSymbolId } from "shared-data";
-import { ConsonantArticulationRegistry, getIpaForPhonemeId } from "shared-data";
+import type { ConsonantSymbolId } from "@phonaria/phonetics-data";
+import { ConsonantArticulationRegistry, getIpaForPhonemeId } from "@phonaria/phonetics-data";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import {

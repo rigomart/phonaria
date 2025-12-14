@@ -32,7 +32,7 @@ ELEVENLABS_API_KEY=your_key_here
 
 Before generating audio, ensure the CMUDict JSON and the word mappings exist:
 ```bash
-bun --cwd packages/helper-scripts cmudict-to-json          # writes to packages/shared-data/data/dict/cmudict.json
+bun --cwd packages/helper-scripts cmudict-to-json          # writes to packages/phonetics-data/data/dict/cmudict.json
 bun --cwd packages/helper-scripts generate-word-mappings
 ```
 

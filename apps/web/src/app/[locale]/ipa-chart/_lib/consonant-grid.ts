@@ -1,4 +1,4 @@
-import type { ConsonantArticulatoryFeatures } from "shared-data";
+import type { ConsonantArticulatoryFeatures } from "@phonaria/phonetics-data";
 
 /**
  * Consonant grid organization types

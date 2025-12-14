@@ -1,7 +1,7 @@
 import { type Locale, useFormatter, useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { use } from "react";
-import { cmudictStatsData } from "shared-data";
+import { cmudictStatsData } from "@phonaria/phonetics-data";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";

@@ -1,5 +1,5 @@
 {
-	"name": "helper-scripts",
+	"name": "@phonaria/helper-scripts",
 	"version": "1.0.0",
 	"description": "Collection of helper scripts for Phonaria application including TTS audio generation and data processing utilities",
 	"keywords": [
@@ -19,7 +19,7 @@
 		"generate-word-mappings": "tsx src/generate-word-mappings.ts"
 	},
 	"dependencies": {
-		"shared-data": "workspace:*",
+		"@phonaria/phonetics-data": "workspace:*",
 		"@types/node": "^24.0.10",
 		"dotenv": "^17.2.0"
 	},

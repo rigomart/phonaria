@@ -1,5 +1,5 @@
 {
-	"name": "audio-gen",
+	"name": "@phonaria/audio-gen",
 	"version": "1.0.0",
 	"description": "Audio generation for Phonaria application using ElevenLabs",
 	"keywords": [
@@ -19,7 +19,7 @@
 	"dependencies": {
 		"@elevenlabs/elevenlabs-js": "^2.25.0",
 		"dotenv": "^17.2.0",
-		"shared-data": "workspace:*"
+		"@phonaria/phonetics-data": "workspace:*"
 	},
 	"devDependencies": {
 		"tsx": "^4.20.3",

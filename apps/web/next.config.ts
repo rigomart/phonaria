@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
 			},
 		];
 	},
-	transpilePackages: ["@phonaria/ui"],
+	transpilePackages: ["@phonaria/ui", "@phonaria/phonetics-data"],
 };
 
 export default withNextIntl(nextConfig);

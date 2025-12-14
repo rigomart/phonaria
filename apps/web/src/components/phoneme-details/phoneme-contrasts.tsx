@@ -6,7 +6,7 @@ import {
 	getIpaForPhonemeId,
 	type PhonemeArticulatoryFeatureKey,
 	type PhonemeArticulatoryFeatures,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 import type { FeatureValueDefinition, PhonemeDetailsCopy } from "@/data/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";

@@ -8,7 +8,7 @@ import {
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeSymbolId,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";

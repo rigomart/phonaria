@@ -3,7 +3,7 @@
 import { MousePointerClick } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { PhonemeSymbolId, PhonemeSymbolIpa } from "shared-data";
+import type { PhonemeSymbolId, PhonemeSymbolIpa } from "@phonaria/phonetics-data";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details/phoneme-details-dialog";
 import { cn } from "@/lib/utils";
 

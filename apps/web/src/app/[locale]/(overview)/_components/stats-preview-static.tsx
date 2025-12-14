@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { cmudictStatsData, getIpaForPhonemeId } from "shared-data";
+import { cmudictStatsData, getIpaForPhonemeId } from "@phonaria/phonetics-data";
 
 const PREVIEW_STATS = [
 	{

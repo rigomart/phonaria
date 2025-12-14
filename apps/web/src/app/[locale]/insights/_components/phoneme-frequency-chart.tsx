@@ -9,7 +9,7 @@ import {
 	getPhonemeCategory,
 	type PhonemeCategory,
 	type PhonemeSymbolId,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {

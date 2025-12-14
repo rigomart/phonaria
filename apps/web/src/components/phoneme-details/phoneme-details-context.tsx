@@ -1,5 +1,5 @@
 import { createContext, use, useRef } from "react";
-import type { PhonemeSymbolId } from "shared-data";
+import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 
 type PhonemeDetailsContextType = {
 	phonemeId: PhonemeSymbolId;

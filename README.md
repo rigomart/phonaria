@@ -8,14 +8,14 @@ Phonaria is a learner-first pronunciation toolkit for English-as-a-second-langua
 - **IPA reference hub** – Responsive General American chart with production guidance, minimal pairs, and example libraries (with optional audio).
 - **Dictionary bridge** – In‑context lookups with audio and clear empty/error states, rate‑limited via Upstash Redis.
 - **Insights** – CMUDict coverage, phoneme frequency, and syllable distribution visualizations.
-- **Shared data core** – Typed phoneme registries and CMUDict assets power both the UI and helper scripts.
+- **Phonetics data core** – Typed phoneme registries and CMUDict assets power both the UI and helper scripts.
 
 ## Monorepo layout
 
 | Package | Description |
 | --- | --- |
 | [`apps/web`](apps/web/README.md) | Next.js App Router project containing the learner experience and API routes. |
-| [`packages/shared-data`](packages/shared-data/README.md) | Source of truth for phoneme metadata, articulation registries, and helper utilities. |
+| [`packages/phonetics-data`](packages/phonetics-data/README.md) | Source of truth for phoneme metadata, articulation registries, and helper utilities. |
 | [`packages/helper-scripts`](packages/helper-scripts/README.md) | ElevenLabs audio generation and CMUDict tooling that feed the web app. |
 | [`docs`](docs/README.md) | Product briefs, technical design notes, and feature deep-dives. |
 
@@ -50,7 +50,7 @@ All commits should pass linting, type checking, and relevant tests.
 
 Contributions are welcome. Before opening a PR:
 
-- Use the scoped scripts above and keep changes aligned to the relevant package (`apps/web`, `packages/shared-data`, etc.).
+- Use the scoped scripts above and keep changes aligned to the relevant package (`apps/web`, `packages/phonetics-data`, etc.).
 - Run `bun lint`, `bun check-types`, and `bun test`.
 - Prefer small, focused commits and follow Conventional Commit messages.
 
@@ -60,7 +60,7 @@ See `docs/project-overview.md` for product context and `docs/README.md` for enha
 
 Phonaria ships with pre-generated assets but also supports regeneration when source data changes:
 
-- **CMU Pronouncing Dictionary** – Stored at `packages/shared-data/data/dict/cmudict.json` and bundled through the `shared-data` package. The `cmudict-stats.json` companion file powers the insights page. Regenerate with:
+- **CMU Pronouncing Dictionary** – Stored at `packages/phonetics-data/data/dict/cmudict.json` and bundled through the `@phonaria/phonetics-data` package. The `cmudict-stats.json` companion file powers the insights page. Regenerate with:
   ```bash
   CMUDICT_SRC_URL="<remote .dict file>" bun --cwd packages/helper-scripts cmudict-to-json
   bun --cwd packages/helper-scripts cmudict-stats

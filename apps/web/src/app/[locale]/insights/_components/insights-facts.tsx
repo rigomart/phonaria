@@ -2,7 +2,11 @@
 
 import { Lightbulb } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { cmudictStatsData, getIpaForPhonemeId, getPhonemeCategory } from "shared-data";
+import {
+	cmudictStatsData,
+	getIpaForPhonemeId,
+	getPhonemeCategory,
+} from "@phonaria/phonetics-data";
 
 function getTopPhoneme() {
 	const sorted = [...cmudictStatsData.phonemes].sort(

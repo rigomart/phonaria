@@ -1,4 +1,4 @@
-import type { PhonemeSymbolId } from "shared-data";
+import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { cn } from "@/lib/utils";
 import { PhonemeDetailsProvider, usePhonemeDetailsContext } from "./phoneme-details-context";
 
