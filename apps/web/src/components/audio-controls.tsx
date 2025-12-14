@@ -1,7 +1,7 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
 import { PlayIcon, Turtle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useAudioManager } from "@/hooks/use-audio-manager";
 import { ButtonGroup } from "./ui/button-group";
 import { Spinner } from "./ui/spinner";

@@ -1,11 +1,11 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
 import { AudioLines, Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Button } from "@/components/ui/button";
 import {
 	Sheet,
 	SheetContent,
@@ -58,11 +58,16 @@ export function Header() {
 								{/* Navigation links */}
 								<nav className="flex flex-col items-start gap-1 px-4">
 									{navigationLinks.map((link) => (
-										<Button asChild variant="link">
-											<Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
-												{link.label}
-											</Link>
-										</Button>
+										<Button
+											key={link.href}
+											nativeButton={false}
+											variant="link"
+											render={
+												<Link href={link.href} onClick={() => setOpen(false)}>
+													{link.label}
+												</Link>
+											}
+										/>
 									))}
 								</nav>
 

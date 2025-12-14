@@ -1,5 +1,5 @@
+import { Button } from "@phonaria/ui/components/button";
 import { ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

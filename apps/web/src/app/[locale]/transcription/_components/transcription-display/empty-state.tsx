@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
 import { ArrowRightIcon, AudioWaveformIcon, ChevronDownIcon, TypeIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import { useTranscribe } from "../../_hooks/use-g2p";
 
 export function EmptyState() {

@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type ChartInfoButtonProps = {

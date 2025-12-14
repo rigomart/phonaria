@@ -1,10 +1,10 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
 import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { useG2PStore } from "../../_store/g2p-store";
 import type { TranscriptionResult } from "../../_types/g2p";
 

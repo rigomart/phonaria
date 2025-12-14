@@ -1,7 +1,7 @@
 import { PhonemeSpellingPatternRegistry } from "@phonaria/phonetics-data";
+import { Badge } from "@phonaria/ui/components/badge";
 import { useTranslations } from "next-intl";
 import { AudioControls } from "../audio-controls";
-import { Badge } from "../ui/badge";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
@@ -33,7 +33,7 @@ export function PhonemeDetailsPatterns() {
 					<div className="flex items-center gap-1.5 flex-wrap">
 						<span className="text-xs text-muted-foreground">{t("most-common")}</span>
 						{spellingData.patterns.map((pattern) => (
-							<Badge key={pattern} variant="accent">
+							<Badge key={pattern} variant="default">
 								{pattern}
 							</Badge>
 						))}

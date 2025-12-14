@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
 import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -69,12 +69,18 @@ export function WordDefinitionDialog() {
 								<p className="text-xs text-muted-foreground leading-relaxed">
 									{t("source-info.text")}
 								</p>
-								<Button asChild variant="link" size="xs" className="mt-2">
-									<Link href="/credits" target="_blank" className="underline underline-offset-4">
-										{t("source-info.link")}
-										<ArrowUpRight className="size-4" aria-hidden="true" />
-									</Link>
-								</Button>
+								<Button
+									variant="link"
+									size="xs"
+									className="mt-2"
+									nativeButton={false}
+									render={
+										<Link href="/credits" target="_blank" className="underline underline-offset-4">
+											{t("source-info.link")}
+											<ArrowUpRight className="size-4" aria-hidden="true" />
+										</Link>
+									}
+								/>
 							</PopoverContent>
 						</Popover>
 					</div>
@@ -92,12 +98,18 @@ export function WordDefinitionDialog() {
 						<p className="text-xs text-muted-foreground">You can also check this word in:</p>
 						<div className="flex flex-wrap gap-1">
 							{dictionaryFallbackLinks.map((link) => (
-								<Button key={link.label} asChild variant="ghost" size="xs">
-									<Link href={link.href} target="_blank" rel="noreferrer noopener">
-										{link.label}
-										<ExternalLink className="size-4" aria-hidden="true" />
-									</Link>
-								</Button>
+								<Button
+									key={link.label}
+									variant="ghost"
+									size="xs"
+									nativeButton={false}
+									render={
+										<Link href={link.href} target="_blank" rel="noreferrer noopener">
+											{link.label}
+											<ExternalLink className="size-4" aria-hidden="true" />
+										</Link>
+									}
+								/>
 							))}
 						</div>
 					</DialogFooter>

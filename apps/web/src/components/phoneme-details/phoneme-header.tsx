@@ -1,9 +1,9 @@
 "use client";
 
 import { getIpaForPhonemeId, getPhonemeType } from "@phonaria/phonetics-data";
+import { Button } from "@phonaria/ui/components/button";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
@@ -45,11 +45,17 @@ export function PhonemeDetailsHeader() {
 							<PopoverContent>
 								<div className="space-y-1">
 									<p className="text-sm text-muted-foreground">{t("popover-text")}</p>
-									<Button asChild variant="link" size="xs" className="h-auto p-0">
-										<Link href="/credits" target="_blank">
-											{t("view-credits")}
-										</Link>
-									</Button>
+									<Button
+										variant="link"
+										size="xs"
+										className="h-auto p-0"
+										nativeButton={false}
+										render={
+											<Link href="/credits" target="_blank">
+												{t("view-credits")}
+											</Link>
+										}
+									/>
 								</div>
 							</PopoverContent>
 						</Popover>

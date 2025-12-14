@@ -1,10 +1,9 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
 import { MonitorIcon, Moon, MoonIcon, Sun, SunIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-
-import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
