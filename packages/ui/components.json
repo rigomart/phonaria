@@ -5,17 +5,20 @@
 	"tsx": true,
 	"tailwind": {
 		"config": "",
-		"css": "../../packages/ui/src/index.css",
+		"css": "src/index.css",
 		"baseColor": "zinc",
 		"cssVariables": true,
 		"prefix": ""
 	},
 	"iconLibrary": "hugeicons",
 	"aliases": {
-		"components": "@/components",
+		"components": "@phonaria/ui/components",
 		"utils": "@phonaria/ui/lib/utils",
-		"ui": "@phonaria/ui/components",
-		"lib": "@/lib",
-		"hooks": "@/ui/hooks"
-	}
+		"hooks": "@phonaria/ui/hooks",
+		"lib": "@phonaria/ui/lib",
+		"ui": "@phonaria/ui/components"
+	},
+	"menuColor": "default",
+	"menuAccent": "subtle",
+	"registries": {}
 }

@@ -1,8 +1,8 @@
-/** biome-ignore-all lint/complexity/noImportantStyles: Important styles are used to override default styles only */
 @import "tailwindcss";
 @import "tw-animate-css";
-@source "../../../../../packages/ui/src";
-
+@source "../../../apps/**/*.{ts,tsx}";
+@source "../../../components/**/*.{ts,tsx}";
+@source "../**/*.{ts,tsx}";
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -183,24 +183,5 @@
 	button:not(:disabled),
 	[role="button"]:not(:disabled) {
 		cursor: pointer;
-	}
-}
-
-@theme {
-	--animate-vocal-vibration: vocal-vibration 1.2s ease-in-out infinite;
-	@keyframes vocal-vibration {
-		0%,
-		100% {
-			transform: scaleY(1);
-		}
-		25% {
-			transform: scaleY(1.4);
-		}
-		50% {
-			transform: scaleY(0.6);
-		}
-		75% {
-			transform: scaleY(1.2);
-		}
 	}
 }
