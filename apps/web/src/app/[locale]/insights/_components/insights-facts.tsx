@@ -1,12 +1,8 @@
 "use client";
 
+import { cmudictStatsData, getIpaForPhonemeId, getPhonemeCategory } from "@phonaria/phonetics-data";
 import { Lightbulb } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-	cmudictStatsData,
-	getIpaForPhonemeId,
-	getPhonemeCategory,
-} from "@phonaria/phonetics-data";
 
 function getTopPhoneme() {
 	const sorted = [...cmudictStatsData.phonemes].sort(

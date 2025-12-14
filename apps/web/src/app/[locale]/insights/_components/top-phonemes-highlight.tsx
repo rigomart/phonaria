@@ -1,14 +1,14 @@
 "use client";
 
-import { Info } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
 import {
 	cmudictStatsData,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
+import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";

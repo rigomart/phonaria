@@ -1,5 +1,3 @@
-import { Info } from "lucide-react";
-import { useTranslations } from "next-intl";
 import {
 	ContrastsByPhonemeIdRegistry,
 	FeatureValueByPhonemeRegistry,
@@ -7,6 +5,8 @@ import {
 	type PhonemeArticulatoryFeatureKey,
 	type PhonemeArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
+import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { FeatureValueDefinition, PhonemeDetailsCopy } from "@/data/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";

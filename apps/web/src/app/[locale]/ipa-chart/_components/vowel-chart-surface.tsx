@@ -1,7 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
 import type { VowelArticulatoryFeatures } from "@phonaria/phonetics-data";
+import type { ReactNode } from "react";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import {

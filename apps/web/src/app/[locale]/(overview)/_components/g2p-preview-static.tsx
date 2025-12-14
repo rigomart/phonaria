@@ -1,8 +1,8 @@
 "use client";
 
+import type { PhonemeSymbolIpa } from "@phonaria/phonetics-data";
 import { BookA, ChevronDown, SendHorizonal } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { PhonemeSymbolIpa } from "@phonaria/phonetics-data";
 
 type PreviewWord = {
 	word: string;

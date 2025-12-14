@@ -1,5 +1,5 @@
-import { useTranslations } from "next-intl";
 import type { ConsonantSymbolId } from "@phonaria/phonetics-data";
+import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";

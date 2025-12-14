@@ -1,7 +1,4 @@
-import type {
-	PhonemeArticulation,
-	VowelArticulatoryFeatures,
-} from "@phonaria/phonetics-data";
+import type { PhonemeArticulation, VowelArticulatoryFeatures } from "@phonaria/phonetics-data";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import {

@@ -1,8 +1,8 @@
 "use client";
 
+import { PhonemeCount } from "@phonaria/phonetics-data";
 import { useTranslations } from "next-intl";
 import { parseAsStringEnum, useQueryState } from "nuqs";
-import { PhonemeCount } from "@phonaria/phonetics-data";
 import {
 	Select,
 	SelectContent,

@@ -1,8 +1,8 @@
 "use client";
 
+import { getIpaForPhonemeId, getPhonemeType } from "@phonaria/phonetics-data";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { getIpaForPhonemeId, getPhonemeType } from "@phonaria/phonetics-data";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";

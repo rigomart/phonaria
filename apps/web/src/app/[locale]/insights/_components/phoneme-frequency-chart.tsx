@@ -1,8 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
 	cmudictStatsData,
 	getIpaForPhonemeId,
@@ -10,6 +7,9 @@ import {
 	type PhonemeCategory,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {

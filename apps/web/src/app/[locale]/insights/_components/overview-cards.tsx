@@ -1,8 +1,8 @@
 "use client";
 
+import { cmudictStatsData } from "@phonaria/phonetics-data";
 import { BookOpen, Layers, Volume2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { cmudictStatsData } from "@phonaria/phonetics-data";
 
 const CARD_CONFIG = [
 	{
