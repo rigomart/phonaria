@@ -5,7 +5,6 @@ import {
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
-import { Separator } from "@phonaria/ui/components/separator";
 import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -253,23 +252,25 @@ function FeatureRow<ValueKey extends string>({
 					<span className="text-xs font-medium">{value.label}</span>
 				</Pressable>
 			</PopoverTrigger>
-			<PopoverContent
-				className="p-1"
-				align="end"
-				side="bottom"
-				collisionBoundary={contentRef.current}
-			>
-				<dl className="space-y-2">
-					<div className="bg-accent/20 rounded-lg p-2">
-						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>
-						<dd className="text-xs leading-relaxed">{feature.description}</dd>
+			<PopoverContent align="end" side="bottom" collisionBoundary={contentRef.current}>
+				<div className="space-y-3">
+					<div className="rounded-lg border bg-muted p-2">
+						<p className="text-sm font-semibold leading-none">{feature.label}</p>
+						<p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+							{feature.description}
+						</p>
 					</div>
-					<Separator />
-					<div className="rounded-lg p-2">
-						<dt className="text-xs font-semibold mb-1">{value.label}</dt>
-						<dd className="text-xs leading-relaxed">{value.description}</dd>
+
+					<div className="pl-3 border-l-2 border-border">
+						<div className="flex items-center gap-1">
+							<ArrowRightIcon className="size-3 text-muted-foreground" aria-hidden="true" />
+							<span className="text-sm font-semibold leading-none">{value.label}</span>
+						</div>
+						<p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+							{value.description}
+						</p>
 					</div>
-				</dl>
+				</div>
 			</PopoverContent>
 		</Popover>
 	);
@@ -309,36 +310,41 @@ function DiphthongFeatureRow<ValueKey extends string>({
 					</div>
 				</Pressable>
 			</PopoverTrigger>
-			<PopoverContent
-				className="p-1"
-				align="end"
-				side="bottom"
-				collisionBoundary={contentRef.current}
-			>
-				<dl className="space-y-2">
-					<div className="bg-accent/20 rounded-lg p-2">
-						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>
-						<dd className="text-xs leading-relaxed">{feature.description}</dd>
+			<PopoverContent align="end" side="bottom" collisionBoundary={contentRef.current}>
+				<div className="space-y-3">
+					<div className="rounded-lg border bg-muted p-2">
+						<p className="text-sm font-semibold leading-none">{feature.label}</p>
+						<p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+							{feature.description}
+						</p>
 					</div>
-					<Separator />
-					<div className="rounded-lg p-2 space-y-2">
-						<div>
-							<dt className="text-xs font-semibold mb-1">{startValue.label}</dt>
-							<dd className="text-xs text-muted-foreground leading-relaxed">
-								{startValue.description}
-							</dd>
+
+					<div className="pl-3 border-l-2 border-border space-y-2">
+						<div className="flex items-center gap-1">
+							<span className="text-sm font-semibold leading-none">{startValue.label}</span>
+							<ArrowRightIcon className="size-3 text-muted-foreground" aria-hidden="true" />
+							<span className="text-sm font-semibold leading-none">{endValue.label}</span>
 						</div>
-						<div className="flex items-center justify-center text-muted-foreground">
-							<ArrowDownIcon className="size-4" />
-						</div>
-						<div>
-							<dt className="text-xs font-semibold mb-1">{endValue.label}</dt>
-							<dd className="text-xs text-muted-foreground leading-relaxed">
-								{endValue.description}
-							</dd>
+
+						<div className="space-y-2">
+							<div className="rounded-lg border p-2">
+								<p className="text-xs font-semibold">{startValue.label}</p>
+								<p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+									{startValue.description}
+								</p>
+							</div>
+							<div className="flex items-center justify-center text-muted-foreground">
+								<ArrowDownIcon className="size-4" aria-hidden="true" />
+							</div>
+							<div className="rounded-lg border p-2">
+								<p className="text-xs font-semibold">{endValue.label}</p>
+								<p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+									{endValue.description}
+								</p>
+							</div>
 						</div>
 					</div>
-				</dl>
+				</div>
 			</PopoverContent>
 		</Popover>
 	);

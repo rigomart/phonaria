@@ -121,7 +121,7 @@ export function PhonemeFrequencyChart() {
 							<PhonemeBarChart
 								data={consonantsData}
 								config={consonantConfig}
-								height={600}
+								height={640}
 								onPhonemeClick={handlePhonemeClick}
 								fillColor="var(--chart-1)"
 							/>

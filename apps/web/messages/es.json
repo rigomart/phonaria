@@ -272,15 +272,15 @@
 				"cards": {
 					"words": {
 						"title": "Total de palabras",
-						"description": "Entradas en el diccionario"
+						"description": "Entradas únicas"
 					},
 					"variants": {
 						"title": "Total de pronunciaciones",
-						"description": "Transcripciones fonéticas"
+						"description": "Variantes de pronunciación"
 					},
 					"multiple-pronunciations": {
 						"title": "Pronunciaciones múltiples",
-						"description": "Palabras con varias variantes"
+						"description": "Palabras con 2 o más variantes de pronunciación"
 					}
 				}
 			},
