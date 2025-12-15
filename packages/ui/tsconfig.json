@@ -6,7 +6,6 @@
 		"moduleResolution": "bundler",
 		"rootDir": "src",
 		"jsx": "react-jsx",
-		"typeRoots": ["../../node_modules/.bun/node_modules/@types"],
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"strict": true,

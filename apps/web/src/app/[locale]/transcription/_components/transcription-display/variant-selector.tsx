@@ -1,13 +1,14 @@
 import { Button } from "@phonaria/ui/components/button";
-import { ChevronDown } from "lucide-react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@phonaria/ui/components/menu";
+import { ChevronDown } from "lucide-react";
 import type { TranscribedSyllable } from "../../_types/g2p";
 
 interface VariantSelectorProps {
@@ -21,19 +22,22 @@ export function VariantSelector({ variants, wordIndex, onSelect }: VariantSelect
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					size="icon"
-					variant="ghost"
-					className="h-8 w-8 rounded-full border border-border/70 bg-background hover:border-border hover:bg-muted/40"
-					aria-label="Select pronunciation variant"
-				>
-					<ChevronDown className="h-4 w-4 text-muted-foreground" />
-				</Button>
-			</DropdownMenuTrigger>
+			<Button
+				size="icon"
+				variant="ghost"
+				className="h-8 w-8 rounded-full border border-border/70 bg-background hover:border-border hover:bg-muted/40"
+				aria-label="Select pronunciation variant"
+				render={
+					<DropdownMenuTrigger>
+						<ChevronDown className="h-4 w-4 text-muted-foreground" />
+					</DropdownMenuTrigger>
+				}
+			/>
 			<DropdownMenuContent align="start">
-				<DropdownMenuLabel>Variants</DropdownMenuLabel>
-				<DropdownMenuSeparator />
+				<DropdownMenuGroup>
+					<DropdownMenuLabel>Variants</DropdownMenuLabel>
+					<DropdownMenuSeparator />
+				</DropdownMenuGroup>
 				{variants.map((variant, index) => {
 					// Format the display string with stress markers and syllable separators
 					const displayString = variant

@@ -5,10 +5,9 @@
 	"tsx": true,
 	"tailwind": {
 		"config": "",
-		"css": "../../packages/ui/src/index.css",
+		"css": "../../packages/ui/src/styles/globals.css",
 		"baseColor": "zinc",
-		"cssVariables": true,
-		"prefix": ""
+		"cssVariables": true
 	},
 	"iconLibrary": "hugeicons",
 	"aliases": {
@@ -16,6 +15,9 @@
 		"utils": "@phonaria/ui/lib/utils",
 		"ui": "@phonaria/ui/components",
 		"lib": "@/lib",
-		"hooks": "@/ui/hooks"
+		"hooks": "@/hooks"
+	},
+	"registries": {
+		"@coss": "https://coss.com/ui/r/{name}.json"
 	}
 }
