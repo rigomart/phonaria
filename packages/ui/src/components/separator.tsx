@@ -33,9 +33,9 @@ function LabelSeparator({ label, orientation = "horizontal", className }: LabelS
 				className,
 			)}
 		>
-			<Separator orientation={orientation} />
+			<Separator orientation={orientation} className="h-full w-full" />
 			<span className="text-xs font-semibold">{label}</span>
-			<Separator orientation={orientation} />
+			<Separator orientation={orientation} className="h-full w-full" />
 		</div>
 	);
 }
