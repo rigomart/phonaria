@@ -4,7 +4,6 @@ import { Button } from "@phonaria/ui/components/button";
 import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
 import { useG2PStore } from "../../_store/g2p-store";
 import type { TranscriptionResult } from "../../_types/g2p";
 
@@ -45,17 +44,14 @@ export function TranscriptionCopyButton({ result }: TranscriptionCopyButtonProps
 	const handleCopyToClipboard = async () => {
 		const ipaText = extractIpaText();
 		if (!ipaText) {
-			toast.error(t("toast-error"));
 			return;
 		}
 
 		try {
 			await navigator.clipboard.writeText(ipaText);
 			setIsCopied(true);
-			toast.success(t("toast-success"));
 			setTimeout(() => setIsCopied(false), 2000);
 		} catch (error) {
-			toast.error(t("toast-error-failed"));
 			console.error("Copy failed:", error);
 		}
 	};

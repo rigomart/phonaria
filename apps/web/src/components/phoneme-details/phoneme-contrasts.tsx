@@ -100,16 +100,17 @@ export function PhonemeDetailsContrasts() {
 												<PopoverTrigger
 													render={
 														<Badge
-															variant="accent"
+															variant="success"
 															key={type}
-															className="capitalize cursor-help gap-1"
+															className="capitalize"
+															render={<button type="button" />}
 														/>
 													}
 												>
 													{type}
 													<Info className="h-3 w-3 opacity-60" />
 												</PopoverTrigger>
-												<PopoverContent tooltipStyle className="max-w-[22rem]">
+												<PopoverContent tooltipStyle>
 													<div className="flex gap-2">
 														<div className="flex flex-col gap-1 max-w-32">
 															<p className="font-semibold text-sm">{phonemeValueDef.label}</p>

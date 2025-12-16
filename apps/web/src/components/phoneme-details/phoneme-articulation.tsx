@@ -7,13 +7,13 @@ import {
 import { AspectRatio } from "@phonaria/ui/components/aspect-ratio";
 import { Button } from "@phonaria/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
+import { Pressable } from "@phonaria/ui/components/pressable";
 import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { ArticulatoryFeature, PhonemeDetailsCopy } from "@/data/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
-import { Pressable } from "../ui/pressable";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
 	PhonemeSection,

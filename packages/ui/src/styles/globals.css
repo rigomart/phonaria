@@ -25,6 +25,12 @@
 	--accent-foreground: oklch(0.2 0.012 257);
 	--destructive: oklch(0.6271 0.1936 33.339);
 	--destructive-foreground: oklch(1 0 0);
+	--info: oklch(0.58 0.05 230);
+	--info-foreground: oklch(0.38 0.07 230);
+	--success: oklch(0.62 0.06 150);
+	--success-foreground: oklch(0.38 0.07 150);
+	--warning: oklch(0.67 0.06 90);
+	--warning-foreground: oklch(0.42 0.07 90);
 	--border: oklch(0.91 0.006 257);
 	--input: oklch(0.965 0.006 257);
 	--ring: oklch(0.372 0.039 257);
@@ -74,6 +80,12 @@
 	--accent-foreground: oklch(0.95 0.005 240);
 	--destructive: oklch(0.6271 0.1936 33.339);
 	--destructive-foreground: oklch(1 0 0);
+	--info: oklch(0.72 0.045 230);
+	--info-foreground: oklch(0.9 0.04 230);
+	--success: oklch(0.74 0.05 150);
+	--success-foreground: oklch(0.9 0.05 150);
+	--warning: oklch(0.78 0.045 90);
+	--warning-foreground: oklch(0.92 0.045 90);
 	--border: oklch(0.25 0.015 257);
 	--input: oklch(0.22 0.015 257);
 	--ring: oklch(0.76 0.025 257);
@@ -121,6 +133,12 @@
 	--color-accent-foreground: var(--accent-foreground);
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
+	--color-info: var(--info);
+	--color-info-foreground: var(--info-foreground);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
@@ -173,13 +191,6 @@
 		body {
 			overflow-y: scroll;
 		}
-	}
-	/* Prevent scroll lock helpers from double-compensating when the gutter is already reserved */
-	body[data-scroll-locked],
-	.with-scroll-bars-hidden {
-		margin-right: 0 !important;
-		padding-right: 0 !important;
-		--removed-body-scroll-bar-size: 0px;
 	}
 	button:not(:disabled),
 	[role="button"]:not(:disabled) {

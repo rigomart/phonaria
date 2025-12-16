@@ -8,14 +8,14 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@phonaria/ui/components/card";
-import { useTranslations } from "next-intl";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
 	type ChartConfig,
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@phonaria/ui/components/chart";
+import { useTranslations } from "next-intl";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export function SyllableHistogram() {
 	const stats = cmudictStatsData;

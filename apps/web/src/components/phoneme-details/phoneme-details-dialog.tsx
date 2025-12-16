@@ -20,16 +20,11 @@ type PhonemeDetailsDialogProps = {
 	maxWidth?: string;
 };
 
-export function PhonemeDetailsDialog({
-	open,
-	onOpenChange,
-	phonemeId,
-	maxWidth = "max-w-3xl",
-}: PhonemeDetailsDialogProps) {
+export function PhonemeDetailsDialog({ open, onOpenChange, phonemeId }: PhonemeDetailsDialogProps) {
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<PhonemeDetails phonemeId={phonemeId}>
-				<DialogContent className={`${maxWidth} p-0 gap-0 overflow-hidden`}>
+				<DialogContent>
 					<DialogHeader>
 						<PhonemeDetailsHeader />
 						<DialogTitle className="sr-only">Phoneme details</DialogTitle>

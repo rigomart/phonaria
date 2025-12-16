@@ -14,16 +14,16 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@phonaria/ui/components/card";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import {
 	type ChartConfig,
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@phonaria/ui/components/chart";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { TopPhonemesHighlight } from "./top-phonemes-highlight";
 
