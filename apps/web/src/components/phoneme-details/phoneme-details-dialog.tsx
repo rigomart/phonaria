@@ -1,8 +1,13 @@
 "use client";
 
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@phonaria/ui/components/dialog";
-import { ScrollArea, ScrollBar } from "@phonaria/ui/components/scroll-area";
+import {
+	Dialog,
+	DialogHeader,
+	DialogPanel,
+	DialogPopup,
+	DialogTitle,
+} from "@phonaria/ui/components/dialog";
 import {
 	PhonemeDetails,
 	PhonemeDetailsAllophones,
@@ -24,21 +29,20 @@ export function PhonemeDetailsDialog({ open, onOpenChange, phonemeId }: PhonemeD
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<PhonemeDetails phonemeId={phonemeId}>
-				<DialogContent>
-					<DialogHeader>
+				<DialogPopup>
+					<DialogHeader className="p-0">
 						<PhonemeDetailsHeader />
 						<DialogTitle className="sr-only">Phoneme details</DialogTitle>
 					</DialogHeader>
-					<ScrollArea className="max-h-[min(85vh,calc(100dvh-2rem))]">
+					<DialogPanel>
 						<PhonemeDetailsContent>
 							<PhonemeDetailsArticulation />
 							<PhonemeDetailsPatterns />
 							<PhonemeDetailsContrasts />
 							<PhonemeDetailsAllophones />
 						</PhonemeDetailsContent>
-						<ScrollBar orientation="vertical" />
-					</ScrollArea>
-				</DialogContent>
+					</DialogPanel>
+				</DialogPopup>
 			</PhonemeDetails>
 		</Dialog>
 	);

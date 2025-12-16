@@ -22,12 +22,12 @@ export function PhonemeDetailsHeader() {
 	const showAudioControls = phonemeType === "consonant" || phonemeType === "monophthong";
 
 	return (
-		<div className="flex flex-col gap-1 bg-background-strong py-2 px-4 shadow-sm">
+		<div className="flex flex-col gap-1 bg-background-strong py-2 px-4 shadow-sm rounded-t-xl">
 			<div className="flex gap-4">
-				<div className="text-2xl sm:text-4xl flex items-baseline gap-2">
-					<span className="text-muted-foreground/50 font-semibold">/</span>
-					<span className="leading-none font-bold">{ipa}</span>
-					<span className="text-muted-foreground/50 font-semibold">/</span>
+				<div className="text-2xl sm:text-4xl flex items-baseline gap-1 sm:gap-2 font-bold">
+					<span className="text-muted-foreground/50">/</span>
+					<span className="leading-none">{ipa}</span>
+					<span className="text-muted-foreground/50">/</span>
 				</div>
 				{showAudioControls && (
 					<div className="flex gap-1">
@@ -40,7 +40,7 @@ export function PhonemeDetailsHeader() {
 							<PopoverTrigger
 								render={<Button variant="ghost" size="icon" aria-label={t("button-label")} />}
 							>
-								<Info className="size-3" />
+								<Info />
 							</PopoverTrigger>
 							<PopoverContent>
 								<div className="space-y-1">

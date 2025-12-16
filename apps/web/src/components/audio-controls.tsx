@@ -40,7 +40,7 @@ export function AudioControls(props: Props) {
 				disabled={status === "loading" || status === "playing"}
 			>
 				{status === "loading" ? <Spinner /> : <PlayIcon />}
-				{variant === "compact" ? null : "Listen"}
+				{variant === "compact" ? null : <span>Listen</span>}
 			</Button>
 			<Button
 				size={size}

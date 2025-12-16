@@ -46,7 +46,7 @@ export function PhonemeDetailsPatterns() {
 					</div>
 					<div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
 						{spellingData.examples.map((example) => (
-							<Item variant="outline" size="sm" key={example.word}>
+							<Item variant="outline" size="xs" key={example.word}>
 								<ItemContent>
 									<ItemTitle className="text-sm font-semibold">{example.word}</ItemTitle>
 									<ItemDescription className="text-xs text-muted-foreground">
@@ -55,7 +55,7 @@ export function PhonemeDetailsPatterns() {
 								</ItemContent>
 								<ItemActions>
 									<AudioControls
-										size="xs"
+										size="sm"
 										variant="compact"
 										path={`/audio/${example.word}.mp3`}
 										label={example.word}

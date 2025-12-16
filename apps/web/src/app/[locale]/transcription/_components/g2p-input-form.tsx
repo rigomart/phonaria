@@ -54,7 +54,7 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 				</div>
 			) : null}
 
-			<form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-center">
+			<form onSubmit={handleSubmit} className="flex gap-2 flex-row">
 				<div className="relative flex-1">
 					<Input
 						ref={inputRef}
@@ -81,22 +81,11 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 					</div>
 				</div>
 
-				<Button
-					type="submit"
-					disabled={!hasText || isLoading}
-					className="w-full gap-2 sm:w-auto"
-					size="default"
-				>
+				<Button type="submit" size="lg" disabled={!hasText || isLoading} className="gap-2">
 					{isLoading ? (
-						<>
-							<Loader2 className="size-4 animate-spin" />
-							<span className="text-sm">{t("button.transcribing")}</span>
-						</>
+						<Loader2 className="size-4 animate-spin" />
 					) : (
-						<>
-							<SendHorizonal className="size-4" />
-							<span className="text-sm">{t("button.transcribe")}</span>
-						</>
+						<SendHorizonal className="size-4" />
 					)}
 				</Button>
 			</form>

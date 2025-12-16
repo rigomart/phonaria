@@ -69,7 +69,7 @@ export function PhonemeInspector() {
 	return (
 		<PhonemeDetails phonemeId={selectedPhonemeId}>
 			<PhonemeDetailsHeader />
-			<PhonemeDetailsContent>
+			<PhonemeDetailsContent className="p-3">
 				<PhonemeDetailsArticulation />
 				<PhonemeDetailsPatterns />
 				<PhonemeDetailsContrasts />

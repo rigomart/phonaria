@@ -55,7 +55,7 @@ export function PhonemeDetailsAllophones() {
 							</header>
 							<ul className="grid sm:grid-cols-2 grid-cols-1 gap-2">
 								{allo.examples.map((ex) => (
-									<Item key={ex.word} variant="outline" size="sm">
+									<Item key={ex.word} variant="outline" size="xs">
 										<ItemContent>
 											<ItemTitle>{ex.word}</ItemTitle>
 											<ItemDescription className="text-xs text-muted-foreground">

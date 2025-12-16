@@ -172,13 +172,13 @@ function ExampleItem({ ipa, word, phonemic, className }: ExampleItemProps) {
 				<span className="text-xs font-semibold text-muted-foreground/60">/</span>
 			</div>
 
-			<Item variant="outline" size="sm" className="flex-1 bg-background-strong">
+			<Item variant="outline" size="xs" className="flex-1 bg-background-strong">
 				<ItemContent>
 					<ItemTitle>{word}</ItemTitle>
 					<ItemDescription className="text-xs text-muted-foreground">/{phonemic}/</ItemDescription>
 				</ItemContent>
 				<ItemActions>
-					<AudioControls size="xs" path={`/audio/${word}.mp3`} label={word} variant="compact" />
+					<AudioControls size="sm" path={`/audio/${word}.mp3`} label={word} variant="compact" />
 				</ItemActions>
 			</Item>
 		</div>

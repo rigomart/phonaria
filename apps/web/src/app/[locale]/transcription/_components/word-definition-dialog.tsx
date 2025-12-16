@@ -3,15 +3,14 @@
 import { Button } from "@phonaria/ui/components/button";
 import {
 	Dialog,
-	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
+	DialogPanel,
+	DialogPopup,
 	DialogTitle,
 } from "@phonaria/ui/components/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
-import { ScrollArea } from "@phonaria/ui/components/scroll-area";
-import { Separator } from "@phonaria/ui/components/separator";
 import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -52,7 +51,7 @@ export function WordDefinitionDialog() {
 				if (!o) setSelectedWord(null);
 			}}
 		>
-			<DialogContent>
+			<DialogPopup>
 				<DialogHeader>
 					<DialogTitle className="sr-only">{`Definition`}</DialogTitle>
 					<DialogDescription className="sr-only">{`Definition for ${selectedWord}`}</DialogDescription>
@@ -86,14 +85,11 @@ export function WordDefinitionDialog() {
 						</Popover>
 					</div>
 				</DialogHeader>
-				<ScrollArea className="max-h-[min(70vh,calc(100dvh-10rem))]">
+				<DialogPanel>
 					{data && <WordDefinitionDetailsContent wordDefinition={data} />}
 					{isLoading && <WordDefinitionDetailsContentLoading />}
 					{error && <WordDefinitionDetailsContentNotFound />}
-				</ScrollArea>
-
-				<Separator />
-
+				</DialogPanel>
 				{dictionaryFallbackLinks.length > 0 && (
 					<DialogFooter className="items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
 						<p className="text-xs text-muted-foreground">You can also check this word in:</p>
@@ -114,7 +110,7 @@ export function WordDefinitionDialog() {
 						</div>
 					</DialogFooter>
 				)}
-			</DialogContent>
+			</DialogPopup>
 		</Dialog>
 	);
 }
