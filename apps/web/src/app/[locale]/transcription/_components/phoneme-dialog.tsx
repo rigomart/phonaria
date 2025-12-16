@@ -2,10 +2,10 @@
 
 import { Dialog, DialogContent } from "@phonaria/ui/components/dialog";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from "@phonaria/ui/components/empty";
+import { ScrollArea, ScrollBar } from "@phonaria/ui/components/scroll-area";
 import { InfoIcon } from "lucide-react";
 import { useEffect } from "react";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { useG2PStore } from "../_store/g2p-store";
 
