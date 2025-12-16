@@ -27,10 +27,7 @@ export function PhonemeInspector() {
 			<div className="flex h-full min-h-0 flex-1 flex-col">
 				<Empty className="h-full border-0 bg-transparent px-6 py-8 text-center">
 					<EmptyHeader>
-						<EmptyMedia
-							variant="icon"
-							className="rounded-full border border-border/70 bg-background shadow-sm"
-						>
+						<EmptyMedia variant="icon">
 							<MousePointerClickIcon />
 						</EmptyMedia>
 						<EmptyTitle className="text-base font-semibold text-foreground">
