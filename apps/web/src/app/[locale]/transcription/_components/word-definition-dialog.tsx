@@ -1,9 +1,6 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
-import { Separator } from "@phonaria/ui/components/separator";
-import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
-import { useTranslations } from "next-intl";
 import {
 	Dialog,
 	DialogContent,
@@ -11,7 +8,10 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog";
+} from "@phonaria/ui/components/dialog";
+import { Separator } from "@phonaria/ui/components/separator";
+import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "@/i18n/navigation";
@@ -73,7 +73,6 @@ export function WordDefinitionDialog() {
 									variant="link"
 									size="xs"
 									className="mt-2"
-									nativeButton={false}
 									render={
 										<Link href="/credits" target="_blank" className="underline underline-offset-4">
 											{t("source-info.link")}
@@ -102,7 +101,6 @@ export function WordDefinitionDialog() {
 									key={link.label}
 									variant="ghost"
 									size="xs"
-									nativeButton={false}
 									render={
 										<Link href={link.href} target="_blank" rel="noreferrer noopener">
 											{link.label}

@@ -60,7 +60,6 @@ export function Header() {
 									{navigationLinks.map((link) => (
 										<Button
 											key={link.href}
-											nativeButton={false}
 											variant="link"
 											render={
 												<Link href={link.href} onClick={() => setOpen(false)}>

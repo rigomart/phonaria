@@ -49,7 +49,6 @@ export function PhonemeDetailsHeader() {
 										variant="link"
 										size="xs"
 										className="h-auto p-0"
-										nativeButton={false}
 										render={
 											<Link href="/credits" target="_blank">
 												{t("view-credits")}

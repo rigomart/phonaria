@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
+import { ButtonGroup } from "@phonaria/ui/components/group";
 import { PlayIcon, Turtle } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
-import { ButtonGroup } from "./ui/button-group";
 import { Spinner } from "./ui/spinner";
 
 type SourceProps =

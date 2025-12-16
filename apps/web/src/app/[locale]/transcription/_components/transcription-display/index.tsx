@@ -1,7 +1,7 @@
 "use client";
 
+import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group";
 import { useEffect, useMemo, useState } from "react";
-import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { useCurrentTranscription } from "../../_hooks/use-g2p";

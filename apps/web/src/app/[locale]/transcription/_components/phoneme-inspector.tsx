@@ -1,5 +1,12 @@
 "use client";
 
+import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "@phonaria/ui/components/empty";
 import { InfoIcon, MousePointerClickIcon } from "lucide-react";
 import {
 	PhonemeDetails,
@@ -10,13 +17,6 @@ import {
 	PhonemeDetailsHeader,
 	PhonemeDetailsPatterns,
 } from "@/components/phoneme-details";
-import {
-	Empty,
-	EmptyDescription,
-	EmptyHeader,
-	EmptyMedia,
-	EmptyTitle,
-} from "@/components/ui/empty";
 import { useG2PStore } from "../_store/g2p-store";
 
 export function PhonemeInspector() {

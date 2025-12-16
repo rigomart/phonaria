@@ -4,6 +4,7 @@ import {
 	PhonemeArticulationRegistry,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
+import { AspectRatio } from "@phonaria/ui/components/aspect-ratio";
 import { Button } from "@phonaria/ui/components/button";
 import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
@@ -11,7 +12,6 @@ import { useTranslations } from "next-intl";
 import type { ArticulatoryFeature, PhonemeDetailsCopy } from "@/data/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
-import { AspectRatio } from "../ui/aspect-ratio";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Pressable } from "../ui/pressable";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
@@ -62,7 +62,6 @@ export function PhonemeDetailsArticulation() {
 					<Button
 						size="xs"
 						variant="link"
-						nativeButton={false}
 						render={
 							<Link href="/ipa-chart">
 								{t("ipa-chart-link")}

@@ -62,7 +62,8 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 						onChange={(e) => setInputText(e.target.value)}
 						placeholder={placeholderText}
 						disabled={isLoading}
-						className="h-12 rounded-lg border bg-background px-4 pr-20 text-base shadow-inner shadow-black/5"
+						size="lg"
+						className="rounded-lg pr-20 border-border"
 						maxLength={maxLength}
 						aria-label={t("aria-label")}
 					/>
@@ -83,7 +84,7 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 				<Button
 					type="submit"
 					disabled={!hasText || isLoading}
-					className="h-12 w-full gap-2 sm:w-auto"
+					className="w-full gap-2 sm:w-auto"
 					size="default"
 				>
 					{isLoading ? (

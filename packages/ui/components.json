@@ -11,10 +11,13 @@
 	},
 	"iconLibrary": "hugeicons",
 	"aliases": {
-		"components": "@phonaria/ui/components",
-		"utils": "@phonaria/ui/lib/utils",
-		"hooks": "@phonaria/ui/hooks",
-		"lib": "@phonaria/ui/lib",
-		"ui": "@phonaria/ui/components"
+		"components": "@/components",
+		"utils": "@/lib/utils",
+		"ui": "@/components",
+		"lib": "@/lib",
+		"hooks": "@/hooks"
+	},
+	"registries": {
+		"@coss": "https://coss.com/ui/r/{name}.json"
 	}
 }
