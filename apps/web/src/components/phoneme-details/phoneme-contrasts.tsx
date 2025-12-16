@@ -6,6 +6,14 @@ import {
 	type PhonemeArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
 import { Badge } from "@phonaria/ui/components/badge";
+import {
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemTitle,
+} from "@phonaria/ui/components/item";
+import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { LabelSeparator } from "@phonaria/ui/components/separator";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -13,8 +21,6 @@ import type { FeatureValueDefinition, PhonemeDetailsCopy } from "@/data/phoneme-
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import { AudioControls } from "../audio-controls";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
 	PhonemeSection,
@@ -90,19 +96,20 @@ export function PhonemeDetailsContrasts() {
 										}
 
 										return (
-											<Tooltip key={type}>
-												<Badge
-													variant="accent"
-													key={type}
-													className="capitalize cursor-help gap-1"
+											<Popover key={type}>
+												<PopoverTrigger
 													render={
-														<TooltipTrigger>
-															{type}
-															<Info className="h-3 w-3 opacity-60" />
-														</TooltipTrigger>
+														<Badge
+															variant="accent"
+															key={type}
+															className="capitalize cursor-help gap-1"
+														/>
 													}
-												/>
-												<TooltipContent>
+												>
+													{type}
+													<Info className="h-3 w-3 opacity-60" />
+												</PopoverTrigger>
+												<PopoverContent tooltipStyle className="max-w-[22rem]">
 													<div className="flex gap-2">
 														<div className="flex flex-col gap-1 max-w-32">
 															<p className="font-semibold text-sm">{phonemeValueDef.label}</p>
@@ -114,8 +121,8 @@ export function PhonemeDetailsContrasts() {
 															<p className="text-xs leading-tight">{partnerValueDef.description}</p>
 														</div>
 													</div>
-												</TooltipContent>
-											</Tooltip>
+												</PopoverContent>
+											</Popover>
 										);
 									})}
 								</div>
@@ -164,7 +171,7 @@ function ExampleItem({ ipa, word, phonemic, className }: ExampleItemProps) {
 				<span className="text-xs font-semibold text-muted-foreground/60">/</span>
 			</div>
 
-			<Item variant="outline" size="xs" className="flex-1 bg-background-strong">
+			<Item variant="outline" size="sm" className="flex-1 bg-background-strong">
 				<ItemContent>
 					<ItemTitle>{word}</ItemTitle>
 					<ItemDescription className="text-xs text-muted-foreground">/{phonemic}/</ItemDescription>

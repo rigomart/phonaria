@@ -6,13 +6,13 @@ import {
 } from "@phonaria/phonetics-data";
 import { AspectRatio } from "@phonaria/ui/components/aspect-ratio";
 import { Button } from "@phonaria/ui/components/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { ArticulatoryFeature, PhonemeDetailsCopy } from "@/data/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Pressable } from "../ui/pressable";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
@@ -235,23 +235,23 @@ function FeatureRow<ValueKey extends string>({
 }) {
 	const value = feature.values[valueKey];
 
-	const { contentRef } = usePhonemeDetailsContext();
-
 	return (
 		<Popover>
-			<PopoverTrigger asChild>
-				<Pressable
-					size="default"
-					variant="outline"
-					className="sm:flex-col items-start gap-1 sm:w-full"
-				>
-					<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-						{feature.label}
-					</span>
-					<span className="text-xs font-medium">{value.label}</span>
-				</Pressable>
+			<PopoverTrigger
+				render={
+					<Pressable
+						size="default"
+						variant="outline"
+						className="sm:flex-col items-start gap-1 sm:w-full"
+					/>
+				}
+			>
+				<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+					{feature.label}
+				</span>
+				<span className="text-xs font-medium">{value.label}</span>
 			</PopoverTrigger>
-			<PopoverContent align="end" side="bottom" collisionBoundary={contentRef.current}>
+			<PopoverContent align="end" side="bottom">
 				<div className="space-y-3">
 					<div className="rounded-lg border bg-muted p-2">
 						<p className="text-sm font-semibold leading-none">{feature.label}</p>
@@ -289,27 +289,27 @@ function DiphthongFeatureRow<ValueKey extends string>({
 	const startValue = feature.values[valueKey];
 	const endValue = targetFeature.values[targetValueKey];
 
-	const { contentRef } = usePhonemeDetailsContext();
-
 	return (
 		<Popover>
-			<PopoverTrigger asChild>
-				<Pressable
-					size="default"
-					variant="outline"
-					className="sm:flex-col items-start gap-1 sm:w-full"
-				>
-					<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-						{feature.label}
-					</span>
-					<div className="flex items-center gap-1 text-xs font-medium">
-						<span>{startValue.label}</span>
-						<ArrowRightIcon className="size-3 text-muted-foreground" />
-						<span>{endValue.label}</span>
-					</div>
-				</Pressable>
+			<PopoverTrigger
+				render={
+					<Pressable
+						size="default"
+						variant="outline"
+						className="sm:flex-col items-start gap-1 sm:w-full"
+					/>
+				}
+			>
+				<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+					{feature.label}
+				</span>
+				<div className="flex items-center gap-1 text-xs font-medium">
+					<span>{startValue.label}</span>
+					<ArrowRightIcon className="size-3 text-muted-foreground" />
+					<span>{endValue.label}</span>
+				</div>
 			</PopoverTrigger>
-			<PopoverContent align="end" side="bottom" collisionBoundary={contentRef.current}>
+			<PopoverContent align="end" side="bottom">
 				<div className="space-y-3">
 					<div className="rounded-lg border bg-muted p-2">
 						<p className="text-sm font-semibold leading-none">{feature.label}</p>

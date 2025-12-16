@@ -1,6 +1,6 @@
 import type { ConsonantSymbolId } from "@phonaria/phonetics-data";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { useTranslations } from "next-intl";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import type { MannerOfArticulation, PlaceOfArticulation, Voicing } from "../_lib/consonant-grid";
@@ -73,26 +73,28 @@ function ConsonantButton({
 
 	return (
 		<Tooltip>
-			<TooltipTrigger asChild>
-				<button
-					type="button"
-					onClick={handleClick}
-					aria-label={ariaLabel}
-					className={cn(
-						"group relative grid place-items-center text-center",
-						"min-w-10 min-h-10 px-2 py-1.5 rounded-md border",
-						"hover:border-primary hover:bg-primary/5 transition-all duration-150",
-						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-						"active:scale-[0.98]",
-						isVoiceless
-							? "bg-background border-border opacity-80 hover:opacity-100"
-							: "bg-primary/15 border-primary/20 font-semibold",
-					)}
-				>
-					<div className="text-base sm:text-lg font-medium leading-none tracking-tight">
-						{phoneme.symbol}
-					</div>
-				</button>
+			<TooltipTrigger
+				render={
+					<button
+						type="button"
+						onClick={handleClick}
+						aria-label={ariaLabel}
+						className={cn(
+							"group relative grid place-items-center text-center",
+							"min-w-10 min-h-10 px-2 py-1.5 rounded-md border",
+							"hover:border-primary hover:bg-primary/5 transition-all duration-150",
+							"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+							"active:scale-[0.98]",
+							isVoiceless
+								? "bg-background border-border opacity-80 hover:opacity-100"
+								: "bg-primary/15 border-primary/20 font-semibold",
+						)}
+					/>
+				}
+			>
+				<div className="text-base sm:text-lg font-medium leading-none tracking-tight">
+					{phoneme.symbol}
+				</div>
 			</TooltipTrigger>
 			<TooltipContent side="top" align="center">
 				<div className="max-w-56 text-pretty text-xs leading-snug">

@@ -2,9 +2,9 @@
 
 import { Button } from "@phonaria/ui/components/button";
 import { ButtonGroup } from "@phonaria/ui/components/group";
+import { Spinner } from "@phonaria/ui/components/spinner";
 import { PlayIcon, Turtle } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
-import { Spinner } from "./ui/spinner";
 
 type SourceProps =
 	| {

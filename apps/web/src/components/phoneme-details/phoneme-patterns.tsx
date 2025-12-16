@@ -1,8 +1,14 @@
 import { PhonemeSpellingPatternRegistry } from "@phonaria/phonetics-data";
 import { Badge } from "@phonaria/ui/components/badge";
+import {
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemTitle,
+} from "@phonaria/ui/components/item";
 import { useTranslations } from "next-intl";
 import { AudioControls } from "../audio-controls";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
 	PhonemeSection,
@@ -40,7 +46,7 @@ export function PhonemeDetailsPatterns() {
 					</div>
 					<div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
 						{spellingData.examples.map((example) => (
-							<Item variant="outline" size="xs" key={example.word}>
+							<Item variant="outline" size="sm" key={example.word}>
 								<ItemContent>
 									<ItemTitle className="text-sm font-semibold">{example.word}</ItemTitle>
 									<ItemDescription className="text-xs text-muted-foreground">

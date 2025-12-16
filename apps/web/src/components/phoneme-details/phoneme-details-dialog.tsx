@@ -2,7 +2,7 @@
 
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@phonaria/ui/components/dialog";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@phonaria/ui/components/scroll-area";
 import {
 	PhonemeDetails,
 	PhonemeDetailsAllophones,

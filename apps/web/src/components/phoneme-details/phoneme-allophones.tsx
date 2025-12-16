@@ -1,8 +1,14 @@
 import { PhonemeAllophoneRegistry } from "@phonaria/phonetics-data";
+import {
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemTitle,
+} from "@phonaria/ui/components/item";
 import { useTranslations } from "next-intl";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { AudioControls } from "../audio-controls";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
 	PhonemeSection,
@@ -49,7 +55,7 @@ export function PhonemeDetailsAllophones() {
 							</header>
 							<ul className="grid sm:grid-cols-2 grid-cols-1 gap-2">
 								{allo.examples.map((ex) => (
-									<Item key={ex.word} variant="outline" size="xs">
+									<Item key={ex.word} variant="outline" size="sm">
 										<ItemContent>
 											<ItemTitle>{ex.word}</ItemTitle>
 											<ItemDescription className="text-xs text-muted-foreground">

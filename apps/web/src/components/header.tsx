@@ -1,11 +1,6 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
-import { AudioLines, Menu } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { LocaleSwitcher } from "@/components/locale-switcher";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import {
 	Sheet,
 	SheetContent,
@@ -14,7 +9,12 @@ import {
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@phonaria/ui/components/sheet";
+import { AudioLines, Menu } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { LocaleSwitcher } from "@/components/locale-switcher";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Link } from "@/i18n/navigation";
 
 export function Header() {
@@ -36,11 +36,9 @@ export function Header() {
 					<div className="flex items-center gap-4">
 						{/* Mobile menu button - positioned before logo */}
 						<Sheet open={open} onOpenChange={setOpen}>
-							<SheetTrigger asChild>
-								<Button variant="ghost" size="icon" className="md:hidden">
-									<Menu className="size-5" />
-									<span className="sr-only">Toggle menu</span>
-								</Button>
+							<SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden" />}>
+								<Menu className="size-5" />
+								<span className="sr-only">Toggle menu</span>
 							</SheetTrigger>
 							<SheetContent side="left">
 								<SheetHeader>

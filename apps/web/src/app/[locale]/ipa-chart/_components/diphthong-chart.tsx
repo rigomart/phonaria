@@ -1,7 +1,7 @@
 "use client";
 
+import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { type CSSProperties, useId } from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
 import type { DiphthongVowelChartEntry } from "../_lib/vowel-chart-data";
@@ -95,22 +95,24 @@ function DiphthongMarker({ geometry }: { geometry: DiphthongGeometry }) {
 				aria-hidden
 			/>
 			<Tooltip>
-				<TooltipTrigger asChild>
-					<button
-						type="button"
-						onClick={handleSelect}
-						className={cn(
-							vowelMarkerButtonBaseClass,
-							"border bg-secondary text-foreground rounded-full shadow-sm size-6 sm:size-9",
-							"left-[calc(var(--marker-left)-0.75rem)] top-[calc(var(--marker-top)-0.75rem)]",
-							"sm:left-[calc(var(--marker-left)-1.125rem)] sm:top-[calc(var(--marker-top)-1.125rem)]",
-							"hover:scale-110 hover:z-10 active:scale-95 hover:bg-secondary/80 hover:border-primary/60",
-						)}
-						style={buttonStyles as CSSProperties}
-						aria-label={ariaLabel}
-					>
-						{geometry.entry.ipa}
-					</button>
+				<TooltipTrigger
+					render={
+						<button
+							type="button"
+							onClick={handleSelect}
+							className={cn(
+								vowelMarkerButtonBaseClass,
+								"border bg-secondary text-foreground rounded-full shadow-sm size-6 sm:size-9",
+								"left-[calc(var(--marker-left)-0.75rem)] top-[calc(var(--marker-top)-0.75rem)]",
+								"sm:left-[calc(var(--marker-left)-1.125rem)] sm:top-[calc(var(--marker-top)-1.125rem)]",
+								"hover:scale-110 hover:z-10 active:scale-95 hover:bg-secondary/80 hover:border-primary/60",
+							)}
+							style={buttonStyles as CSSProperties}
+							aria-label={ariaLabel}
+						/>
+					}
+				>
+					{geometry.entry.ipa}
 				</TooltipTrigger>
 				<TooltipContent side="top" align="center">
 					<div className="max-w-[16rem] text-pretty text-xs leading-snug font-semibold">

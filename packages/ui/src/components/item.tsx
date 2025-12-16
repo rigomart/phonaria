@@ -1,12 +1,15 @@
-import { Separator } from "@phonaria/ui/components/separator";
-import { Slot } from "@radix-ui/react-slot";
+import { mergeProps } from "@base-ui/react/merge-props";
+import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
 import { cn } from "@/lib/utils";
+import { Separator } from "./separator";
 
-function ItemGroup({ className, ...props }: React.ComponentProps<"ul">) {
+function ItemGroup({ className, ...props }: React.ComponentProps<"div">) {
 	return (
-		<ul
+		// biome-ignore lint/a11y/useSemanticElements: Could be different element
+		<div
+			role="list"
 			data-slot="item-group"
 			className={cn("group/item-group flex flex-col", className)}
 			{...props}
@@ -26,7 +29,7 @@ function ItemSeparator({ className, ...props }: React.ComponentProps<typeof Sepa
 }
 
 const itemVariants = cva(
-	"group/item flex items-center border border-transparent text-sm rounded-lg transition-colors [a]:hover:bg-accent/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+	"group/item flex items-center border border-transparent text-sm rounded-md transition-colors [a]:hover:bg-accent/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
 	{
 		variants: {
 			variant: {
@@ -37,7 +40,6 @@ const itemVariants = cva(
 			size: {
 				default: "p-4 gap-4 ",
 				sm: "py-3 px-4 gap-2.5",
-				xs: "py-2 px-3 gap-1.5",
 			},
 		},
 		defaultVariants: {
@@ -51,23 +53,27 @@ function Item({
 	className,
 	variant = "default",
 	size = "default",
-	asChild = false,
+	render,
 	...props
-}: React.ComponentProps<"li"> & VariantProps<typeof itemVariants> & { asChild?: boolean }) {
-	const Comp = asChild ? Slot : "li";
-	return (
-		<Comp
-			data-slot="item"
-			data-variant={variant}
-			data-size={size}
-			className={cn(itemVariants({ variant, size, className }))}
-			{...props}
-		/>
-	);
+}: React.ComponentProps<"div"> &
+	VariantProps<typeof itemVariants> & { render?: useRender.RenderProp }) {
+	return useRender({
+		defaultTagName: "div",
+		render,
+		props: mergeProps(
+			{
+				"data-slot": "item",
+				"data-variant": variant,
+				"data-size": size,
+				className: cn(itemVariants({ variant, size, className })),
+			},
+			props,
+		),
+	});
 }
 
 const itemMediaVariants = cva(
-	"flex shrink-0 items-center justify-center gap-2 group-has-data-[slot=item-description]/item:self-start [&_svg]:pointer-events-none group-has-data-[slot=item-description]/item:translate-y-0.5",
+	"flex shrink-0 items-center justify-center gap-2 group-has-[[data-slot=item-description]]/item:self-start [&_svg]:pointer-events-none group-has-[[data-slot=item-description]]/item:translate-y-0.5",
 	{
 		variants: {
 			variant: {

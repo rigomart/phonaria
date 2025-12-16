@@ -1,7 +1,7 @@
 "use client";
 
+import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import type { CSSProperties } from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
 import type { StaticVowelChartEntry } from "../_lib/vowel-chart-data";
@@ -82,29 +82,31 @@ function VowelMarker({ marker }: { marker: VowelMarkerData }) {
 
 	return (
 		<Tooltip>
-			<TooltipTrigger asChild>
-				<button
-					type="button"
-					onClick={handleSelect}
-					className={cn(
-						vowelMarkerButtonBaseClass,
-						"left-[calc(var(--marker-left)-0.75rem+var(--marker-offset-x))] top-[calc(var(--marker-top)-0.75rem+var(--marker-offset-y))]",
-						"sm:left-[calc(var(--marker-left)-1.125rem+var(--marker-offset-x))] sm:top-[calc(var(--marker-top)-1.125rem+var(--marker-offset-y))]",
-						"hover:scale-110 hover:z-10 active:scale-95",
-						{
-							"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary/90":
-								isRounded && !isRhotic,
-							"border-primary bg-background text-foreground rounded-full size-6 sm:size-9 hover:bg-primary/5 hover:border-primary/80":
-								!isRounded && !isRhotic,
-							"border-dashed border-primary bg-primary/10 text-foreground rounded-full size-6 sm:size-9 hover:bg-primary/20 hover:border-primary/80":
-								isRhotic,
-						},
-					)}
-					style={buttonStyles as CSSProperties}
-					aria-label={ariaLabel}
-				>
-					{marker.entry.ipa}
-				</button>
+			<TooltipTrigger
+				render={
+					<button
+						type="button"
+						onClick={handleSelect}
+						className={cn(
+							vowelMarkerButtonBaseClass,
+							"left-[calc(var(--marker-left)-0.75rem+var(--marker-offset-x))] top-[calc(var(--marker-top)-0.75rem+var(--marker-offset-y))]",
+							"sm:left-[calc(var(--marker-left)-1.125rem+var(--marker-offset-x))] sm:top-[calc(var(--marker-top)-1.125rem+var(--marker-offset-y))]",
+							"hover:scale-110 hover:z-10 active:scale-95",
+							{
+								"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary/90":
+									isRounded && !isRhotic,
+								"border-primary bg-background text-foreground rounded-full size-6 sm:size-9 hover:bg-primary/5 hover:border-primary/80":
+									!isRounded && !isRhotic,
+								"border-dashed border-primary bg-primary/10 text-foreground rounded-full size-6 sm:size-9 hover:bg-primary/20 hover:border-primary/80":
+									isRhotic,
+							},
+						)}
+						style={buttonStyles as CSSProperties}
+						aria-label={ariaLabel}
+					/>
+				}
+			>
+				{marker.entry.ipa}
 			</TooltipTrigger>
 			<TooltipContent side="top" align="center">
 				<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">

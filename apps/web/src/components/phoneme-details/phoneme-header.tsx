@@ -2,9 +2,9 @@
 
 import { getIpaForPhonemeId, getPhonemeType } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
 import { AudioControls } from "../audio-controls";
@@ -37,10 +37,10 @@ export function PhonemeDetailsHeader() {
 							label={`Play ${phonemeId}`}
 						/>
 						<Popover>
-							<PopoverTrigger asChild>
-								<Button variant="ghost" size="icon" aria-label={t("button-label")}>
-									<Info className="size-3" />
-								</Button>
+							<PopoverTrigger
+								render={<Button variant="ghost" size="icon" aria-label={t("button-label")} />}
+							>
+								<Info className="size-3" />
 							</PopoverTrigger>
 							<PopoverContent>
 								<div className="space-y-1">

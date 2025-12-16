@@ -9,11 +9,11 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@phonaria/ui/components/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
+import { ScrollArea } from "@phonaria/ui/components/scroll-area";
 import { Separator } from "@phonaria/ui/components/separator";
 import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "@/i18n/navigation";
 import { useDictionary } from "../_hooks/use-dictionary";
 import { useDictionaryStore } from "../_store/dictionary-store";
@@ -60,10 +60,12 @@ export function WordDefinitionDialog() {
 					<div className="flex items-end gap-2">
 						<WordDefinitionDetailsHeader word={selectedWord ?? ""} audioUrl={data?.audioUrl} />
 						<Popover>
-							<PopoverTrigger asChild>
-								<Button variant="ghost" size="icon" aria-label={t("source-info.button-aria")}>
-									<Info className="size-4" />
-								</Button>
+							<PopoverTrigger
+								render={
+									<Button variant="ghost" size="icon" aria-label={t("source-info.button-aria")} />
+								}
+							>
+								<Info className="size-4" />
 							</PopoverTrigger>
 							<PopoverContent className="max-w-xs">
 								<p className="text-xs text-muted-foreground leading-relaxed">
