@@ -11,7 +11,7 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@phonaria/ui/components/sheet";
-import { AudioLines, BarChart3, BookOpen, Menu, Mic } from "lucide-react";
+import { AudioLines, Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { LocaleSwitcher } from "@/components/locale-switcher";
@@ -23,9 +23,9 @@ export function Header() {
 	const t = useTranslations("components.header.navigation");
 
 	const navigationLinks = [
-		{ href: "/transcription", label: t("transcription"), Icon: Mic },
-		{ href: "/ipa-chart", label: t("ipa-chart"), Icon: BookOpen },
-		{ href: "/insights", label: t("insights"), Icon: BarChart3 },
+		{ href: "/transcription", label: t("transcription") },
+		{ href: "/ipa-chart", label: t("ipa-chart") },
+		{ href: "/insights", label: t("insights") },
 	];
 
 	return (
@@ -65,7 +65,6 @@ export function Header() {
 													className="w-full justify-start text-muted-foreground hover:text-foreground"
 													render={<Link href={link.href} onClick={() => setOpen(false)} />}
 												>
-													<link.Icon className="size-4" aria-hidden="true" />
 													{link.label}
 												</Button>
 											))}
@@ -101,7 +100,6 @@ export function Header() {
 									href={link.href}
 									className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
 								>
-									<link.Icon className="size-4" aria-hidden="true" />
 									{link.label}
 								</Link>
 							))}
