@@ -38,6 +38,12 @@ Prepare a release:
 - commit version bumps
 - tag the release as vX.Y.Z (use the app package version)
 
+## Automation
+
+CI enforces changesets on pull requests and opens a release PR on pushes to main:
+- PRs fail if versioned packages changed without a changeset.
+- The release workflow runs `changeset version` and opens a version bump PR.
+
 ## SemVer meaning
 
 - patch: bug fix or data correction
