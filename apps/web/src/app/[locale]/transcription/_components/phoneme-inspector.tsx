@@ -8,6 +8,7 @@ import {
 	EmptyTitle,
 } from "@phonaria/ui/components/empty";
 import { InfoIcon, MousePointerClickIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
 	PhonemeDetails,
 	PhonemeDetailsAllophones,
@@ -21,6 +22,7 @@ import { useG2PStore } from "../_store/g2p-store";
 
 export function PhonemeInspector() {
 	const { selectedPhonemeId, hasSelection } = useG2PStore();
+	const t = useTranslations("g2p-page.phoneme-inspector");
 
 	if (!hasSelection) {
 		return (
@@ -31,10 +33,10 @@ export function PhonemeInspector() {
 							<MousePointerClickIcon />
 						</EmptyMedia>
 						<EmptyTitle className="text-base font-semibold text-foreground">
-							Select a phoneme
+							{t("no-selection.title")}
 						</EmptyTitle>
 						<EmptyDescription className="text-sm text-muted-foreground">
-							Click any symbol like /ə/ to view articulation, contrasts, and spelling patterns.
+							{t("no-selection.description")}
 						</EmptyDescription>
 					</EmptyHeader>
 				</Empty>
@@ -51,8 +53,7 @@ export function PhonemeInspector() {
 							<InfoIcon />
 						</EmptyMedia>
 						<EmptyDescription className="text-sm text-muted-foreground">
-							This CMU token doesn&apos;t map to a phoneme in our dataset. Try another symbol or
-							update the shared data mappings.
+							{t("unmapped.description")}
 						</EmptyDescription>
 					</EmptyHeader>
 				</Empty>

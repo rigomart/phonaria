@@ -147,7 +147,7 @@
 			"placeholder": "Escribe texto para transcribir...",
 			"aria-label": "Texto para transcribir",
 			"hint": "Escribe o pega texto para transcribir.",
-			"max-characters": "Máx. {maxLength} caracteres • fonemas del inglés",
+			"max-characters": "Máx. {maxLength} caracteres",
 			"button": {
 				"transcribe": "Transcribir",
 				"transcribing": "Transcribiendo…"
@@ -170,6 +170,15 @@
 					"proper-nouns": "A menudo faltan nombres propios y marcas comerciales",
 					"homographs": "Los homógrafos muestran múltiples variantes"
 				}
+			}
+		},
+		"phoneme-inspector": {
+			"no-selection": {
+				"title": "Selecciona un fonema",
+				"description": "Haz clic en cualquier símbolo como /ə/ para ver la articulación, los contrastes y los patrones de ortografía."
+			},
+			"unmapped": {
+				"description": "Este token de CMU no se corresponde con ningún fonema en nuestro conjunto de datos. Prueba con otro símbolo o actualiza las asignaciones de datos compartidos."
 			}
 		},
 		"dictionary-dialog": {

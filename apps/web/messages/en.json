@@ -147,7 +147,7 @@
 			"placeholder": "Enter text to transcribe...",
 			"aria-label": "Text to transcribe",
 			"hint": "Type anywhere or paste text to transcribe.",
-			"max-characters": "Max {maxLength} characters • English phonemes",
+			"max-characters": "Max {maxLength} characters",
 			"button": {
 				"transcribe": "Transcribe",
 				"transcribing": "Transcribing…"
@@ -170,6 +170,15 @@
 					"proper-nouns": "Proper nouns and brand names often missing",
 					"homographs": "Homographs show multiple variants"
 				}
+			}
+		},
+		"phoneme-inspector": {
+			"no-selection": {
+				"title": "Select a phoneme",
+				"description": "Click any symbol like /ə/ to view articulation, contrasts, and spelling patterns."
+			},
+			"unmapped": {
+				"description": "This CMU token doesn't map to a phoneme in our dataset. Try another symbol or update the shared data mappings."
 			}
 		},
 		"dictionary-dialog": {
