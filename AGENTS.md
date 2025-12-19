@@ -69,7 +69,7 @@ The web app uses Next.js App Router with internationalization:
 - `bun build`: Execute workspace builds with Turbopack before production deployment.
 - `bun lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
 - `bun check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
-- `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter web test` for targeted runs.
+- `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter @phonaria/app test` for targeted runs.
 - `bun --cwd packages/helper-scripts generate`: Regenerate ElevenLabs pronunciation audio (requires `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env`).
 - `bun --cwd packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
 - `bun --cwd packages/helper-scripts cmudict-stats`: Build CMUDict coverage statistics used by the insights page.
@@ -114,7 +114,7 @@ The web app uses Next.js App Router with internationalization:
 
 ## Commit & Pull Request Guidelines
 - Follow the Conventional Commit style: `type(scope): summary` (e.g. `feat(api): add g2p fallback`).
-- Squash fixups locally and keep scopes aligned with the touched package (`web`, `helper-scripts`, etc.).
+- Squash fixups locally and keep scopes aligned with the touched package (`@phonaria/app`, `helper-scripts`, etc.).
 - PRs need a short summary, linked issue or task, and confirmation of `bun lint`, `bun check-types`, and `bun test`. Add UI screenshots or API samples when behavior changes.
 
 ## Environment & Configuration Tips

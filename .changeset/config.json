@@ -1,0 +1,15 @@
+{
+	"$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
+	"changelog": false,
+	"commit": false,
+	"fixed": [["@phonaria/app", "@phonaria/phonetics-data", "@phonaria/ui"]],
+	"linked": [],
+	"access": "restricted",
+	"privatePackages": {
+		"version": true,
+		"tag": false
+	},
+	"baseBranch": "main",
+	"updateInternalDependencies": "patch",
+	"ignore": ["@phonaria/helper-scripts", "@phonaria/audio-gen"]
+}
