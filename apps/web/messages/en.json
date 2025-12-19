@@ -45,6 +45,11 @@
 				"pitfalls": {
 					"summary": "Summary",
 					"tip": "Tip"
+				},
+				"affricate": {
+					"stop": "Stop",
+					"fricative": "Fricative",
+					"toggle-aria": "Affricate phase"
 				}
 			},
 			"contrasts": {

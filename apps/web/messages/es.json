@@ -45,6 +45,11 @@
 				"pitfalls": {
 					"summary": "Resumen",
 					"tip": "Consejo"
+				},
+				"affricate": {
+					"stop": "Oclusión",
+					"fricative": "Fricción",
+					"toggle-aria": "Fase de la africada"
 				}
 			},
 			"contrasts": {

@@ -4,7 +4,7 @@ Phonaria uses Changesets to manage a single product version shared by the core p
 
 ## Scope
 
-Fixed group (versioned together):
+Versioned packages:
 - @phonaria/app
 - @phonaria/phonetics-data
 - @phonaria/ui
@@ -17,7 +17,9 @@ Baseline version: 0.5.0
 
 ## When to add a changeset
 
-Create a changeset for any change that affects the shipped product, including:
+Create a changeset for any change that affects the shipped product. Include
+`@phonaria/app` in the changeset whenever the user-facing app changes, even if
+the code change lives in another package. Examples include:
 - UI or UX changes in the app
 - IPA / phonetics data changes
 - New features or bug fixes

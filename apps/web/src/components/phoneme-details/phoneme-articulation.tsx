@@ -8,12 +8,19 @@ import { AspectRatio } from "@phonaria/ui/components/aspect-ratio";
 import { Button } from "@phonaria/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Pressable } from "@phonaria/ui/components/pressable";
+import {
+	ToggleGroup,
+	ToggleGroupItem,
+	ToggleGroupSeparator,
+} from "@phonaria/ui/components/toggle-group";
 import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import type { ArticulatoryFeature, PhonemeDetailsCopy } from "@/data/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
 	PhonemeSection,
@@ -93,6 +100,10 @@ function ArticulationIllustration({
 	const phonemeIpa = getIpaForPhonemeId(phonemeId);
 
 	if (articulation.category === "consonant") {
+		if (articulation.features.manner === "affricate") {
+			return <AffricateIllustration phonemeId={phonemeId} phonemeLabel={phonemeLabel} />;
+		}
+
 		return (
 			<AspectRatio ratio={1} className="bg-neutral-900/60 rounded-lg overflow-hidden">
 				<Image
@@ -130,6 +141,69 @@ function ArticulationIllustration({
 	}
 
 	return null;
+}
+
+type AffricatePhase = "stop" | "fricative";
+
+function AffricateIllustration({
+	phonemeId,
+	phonemeLabel,
+}: {
+	phonemeId: PhonemeSymbolId;
+	phonemeLabel: string;
+}) {
+	const t = useTranslations("components.phoneme-details.articulation");
+	const [phase, setPhase] = useState<AffricatePhase>("stop");
+	const stopLabel = t("affricate.stop");
+	const fricativeLabel = t("affricate.fricative");
+
+	return (
+		<AspectRatio ratio={1} className="bg-neutral-900/60 rounded-lg overflow-hidden">
+			<div className="relative h-full w-full">
+				<Image
+					src={`${BUCKET_URL}/diagrams/${phonemeId}_stop.svg`}
+					alt={`${phonemeLabel} (${stopLabel})`}
+					fill
+					className={cn(
+						"absolute inset-0 object-cover transition-opacity duration-200 ease-out motion-reduce:transition-none",
+						phase === "stop" ? "opacity-100" : "opacity-0",
+					)}
+					aria-hidden={phase !== "stop"}
+				/>
+				<Image
+					src={`${BUCKET_URL}/diagrams/${phonemeId}_fricative.svg`}
+					alt={`${phonemeLabel} (${fricativeLabel})`}
+					fill
+					className={cn(
+						"absolute inset-0 object-cover transition-opacity duration-200 ease-out motion-reduce:transition-none",
+						phase === "fricative" ? "opacity-100" : "opacity-0",
+					)}
+					aria-hidden={phase !== "fricative"}
+				/>
+
+				<ToggleGroup
+					aria-label={t("affricate.toggle-aria")}
+					className="absolute bottom-2 left-2 rounded-lg bg-background-strong"
+					value={[phase]}
+					onValueChange={(nextPhase) => {
+						const [nextValue] = nextPhase;
+						if (!nextValue) return;
+						setPhase(nextValue as AffricatePhase);
+					}}
+					variant="outline"
+					size="sm"
+				>
+					<ToggleGroupItem value="stop" aria-label={stopLabel}>
+						{stopLabel}
+					</ToggleGroupItem>
+					<ToggleGroupSeparator orientation="vertical" />
+					<ToggleGroupItem value="fricative" aria-label={fricativeLabel}>
+						{fricativeLabel}
+					</ToggleGroupItem>
+				</ToggleGroup>
+			</div>
+		</AspectRatio>
+	);
 }
 
 type ArticulatoryFeaturesProps = {
