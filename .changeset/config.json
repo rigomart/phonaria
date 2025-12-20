@@ -7,9 +7,14 @@
 	"access": "restricted",
 	"privatePackages": {
 		"version": true,
-		"tag": false
+		"tag": true
 	},
 	"baseBranch": "main",
 	"updateInternalDependencies": "patch",
-	"ignore": ["@phonaria/helper-scripts", "@phonaria/audio-gen"]
+	"ignore": [
+		"@phonaria/helper-scripts",
+		"@phonaria/audio-gen",
+		"@phonaria/phonetics-data",
+		"@phonaria/ui"
+	]
 }

@@ -10,7 +10,8 @@
 		"test": "turbo run test",
 		"changeset": "changeset",
 		"changeset:status": "changeset status",
-		"changeset:version": "changeset version"
+		"changeset:version": "changeset version",
+		"changeset:tag": "changeset tag"
 	},
 	"keywords": [
 		"english pronunciation",

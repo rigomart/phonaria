@@ -1,6 +1,4 @@
 ---
-"@phonaria/phonetics-data": patch
-"@phonaria/ui": patch
 "@phonaria/app": patch
 ---
 
