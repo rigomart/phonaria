@@ -11,10 +11,5 @@
 	},
 	"baseBranch": "main",
 	"updateInternalDependencies": "patch",
-	"ignore": [
-		"@phonaria/helper-scripts",
-		"@phonaria/audio-gen",
-		"@phonaria/phonetics-data",
-		"@phonaria/ui"
-	]
+	"ignore": ["@phonaria/helper-scripts", "@phonaria/audio-gen"]
 }

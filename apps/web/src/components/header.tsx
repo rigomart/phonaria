@@ -11,10 +11,11 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@phonaria/ui/components/sheet";
-import { AudioLines, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { Logo } from "@/components/logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Link } from "@/i18n/navigation";
 
@@ -45,7 +46,7 @@ export function Header() {
 									<SheetHeader>
 										<div className="flex items-center gap-2">
 											<span className="flex items-center justify-center">
-												<AudioLines className="size-4" aria-hidden="true" />
+												<Logo className="size-6" />
 											</span>
 											<SheetTitle>
 												<span className="text-base font-medium">Phonaria</span>
@@ -86,8 +87,8 @@ export function Header() {
 								href="/"
 								className="flex items-center gap-1.5 text-foreground hover:text-primary transition-colors"
 							>
-								<span className="flex size-6 items-center justify-center">
-									<AudioLines className="size-5" aria-hidden="true" />
+								<span className="flex items-center justify-center">
+									<Logo className="size-6 text-foreground" />
 								</span>
 								<span className="text-lg font-semibold">Phonaria</span>
 							</Link>
