@@ -1,15 +1,11 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from "@phonaria/ui/components/menu";
+import { Globe } from "lucide-react";
 import { useParams } from "next/navigation";
 import { type Locale, useTranslations } from "next-intl";
 import { useTransition } from "react";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 
@@ -32,21 +28,21 @@ export function LocaleSwitcher() {
 	};
 
 	return (
-		<Select
-			value={locale}
-			onValueChange={(value) => handleLocaleChange(value as Locale)}
-			disabled={isPending}
-		>
-			<SelectTrigger size="sm" aria-label={t("label")} className="bg-background-soft min-w-24">
-				<SelectValue />
-			</SelectTrigger>
-			<SelectContent>
+		<Menu>
+			<MenuTrigger
+				render={<Button variant="outline" aria-label={t("label")} disabled={isPending} />}
+			>
+				<Globe className="size-4" />
+
+				<span className="text-sm">{t(locale)}</span>
+			</MenuTrigger>
+			<MenuPopup>
 				{routing.locales.map((l) => (
-					<SelectItem key={l} value={l}>
+					<MenuItem key={l} onClick={() => handleLocaleChange(l as Locale)}>
 						{t(l)}
-					</SelectItem>
+					</MenuItem>
 				))}
-			</SelectContent>
-		</Select>
+			</MenuPopup>
+		</Menu>
 	);
 }

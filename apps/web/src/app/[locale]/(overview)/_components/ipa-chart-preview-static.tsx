@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import {
 	ConsonantArticulationRegistry,
 	ConsonantIpaRegistry,
@@ -9,7 +8,8 @@ import {
 	MonophthongIpaRegistry,
 	MonophthongVowelArticulationRegistry,
 	type PhonemeSymbolId,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
+import { useTranslations } from "next-intl";
 
 type PreviewVowel = {
 	id: PhonemeSymbolId;

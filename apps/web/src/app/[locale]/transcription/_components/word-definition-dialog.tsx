@@ -1,19 +1,18 @@
 "use client";
 
-import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { Button } from "@phonaria/ui/components/button";
 import {
 	Dialog,
-	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
+	DialogPanel,
+	DialogPopup,
 	DialogTitle,
-} from "@/components/ui/dialog";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+} from "@phonaria/ui/components/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
+import { ArrowUpRight, ExternalLink, Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useDictionary } from "../_hooks/use-dictionary";
 import { useDictionaryStore } from "../_store/dictionary-store";
@@ -52,7 +51,7 @@ export function WordDefinitionDialog() {
 				if (!o) setSelectedWord(null);
 			}}
 		>
-			<DialogContent>
+			<DialogPopup>
 				<DialogHeader>
 					<DialogTitle className="sr-only">{`Definition`}</DialogTitle>
 					<DialogDescription className="sr-only">{`Definition for ${selectedWord}`}</DialogDescription>
@@ -60,49 +59,58 @@ export function WordDefinitionDialog() {
 					<div className="flex items-end gap-2">
 						<WordDefinitionDetailsHeader word={selectedWord ?? ""} audioUrl={data?.audioUrl} />
 						<Popover>
-							<PopoverTrigger asChild>
-								<Button variant="ghost" size="icon" aria-label={t("source-info.button-aria")}>
-									<Info className="size-4" />
-								</Button>
+							<PopoverTrigger
+								render={
+									<Button variant="ghost" size="icon" aria-label={t("source-info.button-aria")} />
+								}
+							>
+								<Info className="size-4" />
 							</PopoverTrigger>
 							<PopoverContent className="max-w-xs">
 								<p className="text-xs text-muted-foreground leading-relaxed">
 									{t("source-info.text")}
 								</p>
-								<Button asChild variant="link" size="xs" className="mt-2">
-									<Link href="/credits" target="_blank" className="underline underline-offset-4">
-										{t("source-info.link")}
-										<ArrowUpRight className="size-4" aria-hidden="true" />
-									</Link>
-								</Button>
+								<Button
+									variant="link"
+									size="xs"
+									className="mt-2"
+									render={
+										<Link href="/credits" target="_blank" className="underline underline-offset-4">
+											{t("source-info.link")}
+											<ArrowUpRight className="size-4" aria-hidden="true" />
+										</Link>
+									}
+								/>
 							</PopoverContent>
 						</Popover>
 					</div>
 				</DialogHeader>
-				<ScrollArea className="max-h-[min(70vh,calc(100dvh-10rem))]">
+				<DialogPanel>
 					{data && <WordDefinitionDetailsContent wordDefinition={data} />}
 					{isLoading && <WordDefinitionDetailsContentLoading />}
 					{error && <WordDefinitionDetailsContentNotFound />}
-				</ScrollArea>
-
-				<Separator />
-
+				</DialogPanel>
 				{dictionaryFallbackLinks.length > 0 && (
 					<DialogFooter className="items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
 						<p className="text-xs text-muted-foreground">You can also check this word in:</p>
 						<div className="flex flex-wrap gap-1">
 							{dictionaryFallbackLinks.map((link) => (
-								<Button key={link.label} asChild variant="ghost" size="xs">
-									<Link href={link.href} target="_blank" rel="noreferrer noopener">
-										{link.label}
-										<ExternalLink className="size-4" aria-hidden="true" />
-									</Link>
-								</Button>
+								<Button
+									key={link.label}
+									variant="ghost"
+									size="xs"
+									render={
+										<Link href={link.href} target="_blank" rel="noreferrer noopener">
+											{link.label}
+											<ExternalLink className="size-4" aria-hidden="true" />
+										</Link>
+									}
+								/>
 							))}
 						</div>
 					</DialogFooter>
 				)}
-			</DialogContent>
+			</DialogPopup>
 		</Dialog>
 	);
 }

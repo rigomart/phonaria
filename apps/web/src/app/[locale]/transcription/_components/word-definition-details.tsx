@@ -1,8 +1,8 @@
 "use client";
 
+import { Badge } from "@phonaria/ui/components/badge";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { AudioControls } from "@/components/audio-controls";
-import { Badge } from "@/components/ui/badge";
 import type { WordDefinition } from "../_schemas/dictionary";
 
 type WordDefinitionDetailsHeaderProps = {

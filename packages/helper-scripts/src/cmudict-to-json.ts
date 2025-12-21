@@ -28,7 +28,7 @@ type CmudictPayload = {
 const cmudictUrl = process.env.CMUDICT_SRC_URL;
 const outputPath =
 	process.env.CMUDICT_JSON_PATH ||
-	path.resolve(__dirname, "../../shared-data/data/dict/cmudict.json");
+	path.resolve(__dirname, "../../phonetics-data/data/dict/cmudict.json");
 
 if (!cmudictUrl) {
 	throw new Error("CMUDICT_SRC_URL environment variable is required");

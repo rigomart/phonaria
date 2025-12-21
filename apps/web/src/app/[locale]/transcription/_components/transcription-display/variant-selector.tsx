@@ -1,13 +1,13 @@
-import { ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@phonaria/ui/components/button";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+	Menu,
+	MenuGroup,
+	MenuGroupLabel,
+	MenuItem,
+	MenuPopup,
+	MenuTrigger,
+} from "@phonaria/ui/components/menu";
+import { ChevronDown } from "lucide-react";
 import type { TranscribedSyllable } from "../../_types/g2p";
 
 interface VariantSelectorProps {
@@ -20,42 +20,36 @@ export function VariantSelector({ variants, wordIndex, onSelect }: VariantSelect
 	if (variants.length <= 1) return null;
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					size="icon"
-					variant="ghost"
-					className="h-8 w-8 rounded-full border border-border/70 bg-background hover:border-border hover:bg-muted/40"
-					aria-label="Select pronunciation variant"
-				>
-					<ChevronDown className="h-4 w-4 text-muted-foreground" />
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="start">
-				<DropdownMenuLabel>Variants</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				{variants.map((variant, index) => {
-					// Format the display string with stress markers and syllable separators
-					const displayString = variant
-						.map((syllable) => {
-							const stressMark =
-								syllable.stress === "primary" ? "ˈ" : syllable.stress === "secondary" ? "ˌ" : "";
+		<Menu>
+			<MenuTrigger
+				render={<Button size="icon" variant="ghost" aria-label="Select pronunciation variant" />}
+			>
+				<ChevronDown className="size-4 text-muted-foreground" />
+			</MenuTrigger>
+			<MenuPopup align="start">
+				<MenuGroup>
+					<MenuGroupLabel>Variants</MenuGroupLabel>
 
-							const phonemesStr = syllable.phonemes.map((p) => p.symbol).join(" ");
-							return `${stressMark}${phonemesStr}`;
-						})
-						.join(" · ");
+					{variants.map((variant, index) => {
+						// Format the display string with stress markers and syllable separators
+						const displayString = variant
+							.map((syllable) => {
+								const stressMark =
+									syllable.stress === "primary" ? "ˈ" : syllable.stress === "secondary" ? "ˌ" : "";
 
-					return (
-						<DropdownMenuItem
-							key={`${wordIndex}-${index}`}
-							onClick={() => onSelect(wordIndex, index)}
-						>
-							{`/${displayString}/`}
-						</DropdownMenuItem>
-					);
-				})}
-			</DropdownMenuContent>
-		</DropdownMenu>
+								const phonemesStr = syllable.phonemes.map((p) => p.symbol).join(" ");
+								return `${stressMark}${phonemesStr}`;
+							})
+							.join(" · ");
+
+						return (
+							<MenuItem key={`${wordIndex}-${index}`} onClick={() => onSelect(wordIndex, index)}>
+								{`/${displayString}/`}
+							</MenuItem>
+						);
+					})}
+				</MenuGroup>
+			</MenuPopup>
+		</Menu>
 	);
 }

@@ -1,4 +1,4 @@
-import { PhonemeIpaRegistry, type PhonemeSymbolId } from "shared-data";
+import { PhonemeIpaRegistry, type PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type {
 	G2PPhoneme,
 	TranscribedPhoneme,

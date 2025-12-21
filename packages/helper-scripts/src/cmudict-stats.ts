@@ -1,15 +1,19 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { CmudictPayload, CmudictStatsPayload, PhonemeSymbolId } from "shared-data";
-import { CmuArpaRegistry, getPhonemeIdForCmuArpa } from "shared-data";
+import type {
+	CmudictPayload,
+	CmudictStatsPayload,
+	PhonemeSymbolId,
+} from "@phonaria/phonetics-data";
+import { CmuArpaRegistry, getPhonemeIdForCmuArpa } from "@phonaria/phonetics-data";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 const cmudictPath =
 	process.env.CMUDICT_JSON_PATH ||
-	path.resolve(__dirname, "../../shared-data/data/dict/cmudict.json");
+	path.resolve(__dirname, "../../phonetics-data/data/dict/cmudict.json");
 const statsOutputPath =
 	process.env.CMUDICT_STATS_JSON_PATH ||
-	path.resolve(__dirname, "../../shared-data/data/dict/cmudict-stats.json");
+	path.resolve(__dirname, "../../phonetics-data/data/dict/cmudict-stats.json");
 
 /** Proxying vowels with stress markers to syllables. */
 function countSyllables(tokens: string[]): number {

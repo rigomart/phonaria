@@ -1,8 +1,13 @@
 "use client";
 
-import type { PhonemeSymbolId } from "shared-data";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
+import {
+	Dialog,
+	DialogHeader,
+	DialogPanel,
+	DialogPopup,
+	DialogTitle,
+} from "@phonaria/ui/components/dialog";
 import {
 	PhonemeDetails,
 	PhonemeDetailsAllophones,
@@ -20,30 +25,24 @@ type PhonemeDetailsDialogProps = {
 	maxWidth?: string;
 };
 
-export function PhonemeDetailsDialog({
-	open,
-	onOpenChange,
-	phonemeId,
-	maxWidth = "max-w-3xl",
-}: PhonemeDetailsDialogProps) {
+export function PhonemeDetailsDialog({ open, onOpenChange, phonemeId }: PhonemeDetailsDialogProps) {
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<PhonemeDetails phonemeId={phonemeId}>
-				<DialogContent className={`${maxWidth} p-0 gap-0 overflow-hidden`}>
-					<DialogHeader>
+				<DialogPopup>
+					<DialogHeader className="p-0">
 						<PhonemeDetailsHeader />
 						<DialogTitle className="sr-only">Phoneme details</DialogTitle>
 					</DialogHeader>
-					<ScrollArea className="max-h-[min(85vh,calc(100dvh-2rem))]">
+					<DialogPanel>
 						<PhonemeDetailsContent>
 							<PhonemeDetailsArticulation />
 							<PhonemeDetailsPatterns />
 							<PhonemeDetailsContrasts />
 							<PhonemeDetailsAllophones />
 						</PhonemeDetailsContent>
-						<ScrollBar orientation="vertical" />
-					</ScrollArea>
-				</DialogContent>
+					</DialogPanel>
+				</DialogPopup>
 			</PhonemeDetails>
 		</Dialog>
 	);

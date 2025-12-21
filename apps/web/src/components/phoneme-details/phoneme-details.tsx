@@ -1,4 +1,4 @@
-import type { PhonemeSymbolId } from "shared-data";
+import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { cn } from "@/lib/utils";
 import { PhonemeDetailsProvider, usePhonemeDetailsContext } from "./phoneme-details-context";
 
@@ -13,7 +13,5 @@ export function PhonemeDetails({ phonemeId, children }: Props) {
 
 export function PhonemeDetailsContent({ className, ...props }: React.ComponentProps<"div">) {
 	const { contentRef } = usePhonemeDetailsContext();
-	return (
-		<div className={cn("space-y-6 overflow-y-auto py-4", className)} {...props} ref={contentRef} />
-	);
+	return <div className={cn("space-y-6 overflow-y-auto", className)} {...props} ref={contentRef} />;
 }

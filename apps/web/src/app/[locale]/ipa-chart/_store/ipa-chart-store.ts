@@ -1,4 +1,4 @@
-import type { PhonemeSymbolId } from "shared-data";
+import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { create } from "zustand";
 
 interface IpaChartStore {

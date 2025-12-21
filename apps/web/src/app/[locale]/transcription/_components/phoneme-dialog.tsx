@@ -1,15 +1,17 @@
 "use client";
 
+import { Dialog, DialogContent } from "@phonaria/ui/components/dialog";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from "@phonaria/ui/components/empty";
+import { ScrollArea, ScrollBar } from "@phonaria/ui/components/scroll-area";
 import { InfoIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from "@/components/ui/empty";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { useG2PStore } from "../_store/g2p-store";
 
 export function PhonemeDialog() {
+	const t = useTranslations("g2p-page.phoneme-inspector");
 	const isMobile = useIsMobile();
 	const selectedPhonemeId = useG2PStore((state) => state.selectedPhonemeId);
 	const hasSelection = useG2PStore((state) => state.hasSelection);
@@ -42,10 +44,7 @@ export function PhonemeDialog() {
 					<EmptyMedia variant="icon">
 						<InfoIcon />
 					</EmptyMedia>
-					<EmptyDescription>
-						This CMU token doesn&apos;t map to a phoneme in our dataset. Try another symbol or
-						update the shared data mappings.
-					</EmptyDescription>
+					<EmptyDescription>{t("unmapped.description")}</EmptyDescription>
 				</EmptyHeader>
 			</Empty>
 		);

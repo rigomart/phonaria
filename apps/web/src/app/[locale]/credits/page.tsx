@@ -37,6 +37,32 @@ export default function CreditsPage({ params }: PageProps<"/[locale]/credits">) 
 						</a>
 					</section>
 
+					{/* Sagittal Illustrations */}
+					<section className="space-y-3">
+						<h2 className="text-xl font-semibold">{t("sections.sagittal.title")}</h2>
+						<p className="text-sm text-muted-foreground leading-relaxed">
+							{t("sections.sagittal.content")}
+						</p>
+						<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+							<a
+								href={t("sections.sagittal.link-url")}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-block text-sm text-primary hover:underline"
+							>
+								{t("sections.sagittal.link-text")} →
+							</a>
+							<a
+								href={t("sections.sagittal.license-url")}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-block text-xs text-muted-foreground hover:underline"
+							>
+								{t("sections.sagittal.license-text")}
+							</a>
+						</div>
+					</section>
+
 					{/* CMU Pronouncing Dictionary */}
 					<section className="space-y-3">
 						<h2 className="text-xl font-semibold">{t("sections.cmu.title")}</h2>
@@ -84,6 +110,14 @@ export default function CreditsPage({ params }: PageProps<"/[locale]/credits">) 
 						<h2 className="text-xl font-semibold">{t("sections.phonetic-data.title")}</h2>
 						<p className="text-sm text-muted-foreground leading-relaxed">
 							{t("sections.phonetic-data.content")}
+						</p>
+					</section>
+
+					{/* Example Word Audio */}
+					<section className="space-y-3">
+						<h2 className="text-xl font-semibold">{t("sections.example-audio.title")}</h2>
+						<p className="text-sm text-muted-foreground leading-relaxed">
+							{t("sections.example-audio.content")}
 						</p>
 					</section>
 				</div>

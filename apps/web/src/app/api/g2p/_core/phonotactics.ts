@@ -1,4 +1,4 @@
-import type { CmuArpaToken } from "shared-data";
+import type { CmuArpaToken } from "@phonaria/phonetics-data";
 
 /**
  * Valid English onsets for syllabification using Maximum Onset Principle.

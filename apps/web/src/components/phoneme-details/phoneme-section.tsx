@@ -5,7 +5,7 @@ type PhonemeSectionProps = React.ComponentProps<"section">;
 
 export function PhonemeSection({ className, children, ...props }: PhonemeSectionProps) {
 	return (
-		<section className={cn("space-y-4 px-3 sm:px-4", className)} {...props}>
+		<section className={cn("space-y-4", className)} {...props}>
 			{children}
 		</section>
 	);

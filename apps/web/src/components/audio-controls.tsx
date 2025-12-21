@@ -1,10 +1,10 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
+import { ButtonGroup } from "@phonaria/ui/components/group";
+import { Spinner } from "@phonaria/ui/components/spinner";
 import { PlayIcon, Turtle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useAudioManager } from "@/hooks/use-audio-manager";
-import { ButtonGroup } from "./ui/button-group";
-import { Spinner } from "./ui/spinner";
 
 type SourceProps =
 	| {
@@ -40,7 +40,7 @@ export function AudioControls(props: Props) {
 				disabled={status === "loading" || status === "playing"}
 			>
 				{status === "loading" ? <Spinner /> : <PlayIcon />}
-				{variant === "compact" ? null : "Listen"}
+				{variant === "compact" ? null : <span>Listen</span>}
 			</Button>
 			<Button
 				size={size}

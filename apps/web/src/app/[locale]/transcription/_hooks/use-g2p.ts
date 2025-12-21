@@ -1,5 +1,5 @@
+import { toastManager } from "@phonaria/ui/components/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { transcribeText } from "../_lib/g2p-client";
 import { useG2PStore } from "../_store/g2p-store";
 import type { TranscriptionResult } from "../_types/g2p";
@@ -22,7 +22,11 @@ export function useTranscribe() {
 		},
 		onError: (error: unknown) => {
 			const message = error instanceof Error ? error.message : "Failed to transcribe text";
-			toast.error(`Transcription failed: ${message}`);
+			toastManager.add({
+				title: "Transcription failed",
+				description: message,
+				type: "error",
+			});
 		},
 	});
 }

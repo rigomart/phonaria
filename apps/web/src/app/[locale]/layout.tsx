@@ -10,7 +10,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { routing } from "@/i18n/routing";
 import Providers from "./providers";
-import "./globals.css";
+import "@phonaria/ui/globals.css";
 
 const notoSerif = Noto_Serif({
 	variable: "--font-noto-serif",

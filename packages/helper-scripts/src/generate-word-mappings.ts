@@ -5,7 +5,7 @@ import {
 	ContrastsByPhonemeIdRegistry,
 	PhonemeAllophoneRegistry,
 	PhonemeSpellingPatternRegistry,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 
 type CMUDict = {
 	meta: {
@@ -53,7 +53,7 @@ function getCmudictPath(): string {
 		"..",
 		"..",
 		"..",
-		"shared-data",
+		"phonetics-data",
 		"data",
 		"dict",
 		"cmudict.json",

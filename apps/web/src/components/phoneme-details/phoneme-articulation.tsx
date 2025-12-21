@@ -1,20 +1,26 @@
-import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
-import Image from "next/image";
-import { useTranslations } from "next-intl";
 import {
 	getIpaForPhonemeId,
 	type PhonemeArticulation,
 	PhonemeArticulationRegistry,
 	type PhonemeSymbolId,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
+import { AspectRatio } from "@phonaria/ui/components/aspect-ratio";
+import { Button } from "@phonaria/ui/components/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
+import { Pressable } from "@phonaria/ui/components/pressable";
+import {
+	ToggleGroup,
+	ToggleGroupItem,
+	ToggleGroupSeparator,
+} from "@phonaria/ui/components/toggle-group";
+import { ArrowDownIcon, ArrowRightIcon } from "lucide-react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import type { ArticulatoryFeature, PhonemeDetailsCopy } from "@/data/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
-import { AspectRatio } from "../ui/aspect-ratio";
-import { Button } from "../ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Pressable } from "../ui/pressable";
-import { Separator } from "../ui/separator";
+import { cn } from "@/lib/utils";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
 	PhonemeSection,
@@ -60,12 +66,16 @@ export function PhonemeDetailsArticulation() {
 							/>
 						</div>
 					</div>
-					<Button size="xs" variant="link" asChild>
-						<Link href="/ipa-chart">
-							{t("ipa-chart-link")}
-							<ArrowRightIcon className="size-4" aria-hidden="true" />
-						</Link>
-					</Button>
+					<Button
+						size="xs"
+						variant="link"
+						render={
+							<Link href="/ipa-chart">
+								{t("ipa-chart-link")}
+								<ArrowRightIcon className="size-4" aria-hidden="true" />
+							</Link>
+						}
+					/>
 				</div>
 			</PhonemeSectionContent>
 
@@ -90,6 +100,10 @@ function ArticulationIllustration({
 	const phonemeIpa = getIpaForPhonemeId(phonemeId);
 
 	if (articulation.category === "consonant") {
+		if (articulation.features.manner === "affricate") {
+			return <AffricateIllustration phonemeId={phonemeId} phonemeLabel={phonemeLabel} />;
+		}
+
 		return (
 			<AspectRatio ratio={1} className="bg-neutral-900/60 rounded-lg overflow-hidden">
 				<Image
@@ -127,6 +141,69 @@ function ArticulationIllustration({
 	}
 
 	return null;
+}
+
+type AffricatePhase = "stop" | "fricative";
+
+function AffricateIllustration({
+	phonemeId,
+	phonemeLabel,
+}: {
+	phonemeId: PhonemeSymbolId;
+	phonemeLabel: string;
+}) {
+	const t = useTranslations("components.phoneme-details.articulation");
+	const [phase, setPhase] = useState<AffricatePhase>("stop");
+	const stopLabel = t("affricate.stop");
+	const fricativeLabel = t("affricate.fricative");
+
+	return (
+		<AspectRatio ratio={1} className="bg-neutral-900/60 rounded-lg overflow-hidden">
+			<div className="relative h-full w-full">
+				<Image
+					src={`${BUCKET_URL}/diagrams/${phonemeId}_stop.svg`}
+					alt={`${phonemeLabel} (${stopLabel})`}
+					fill
+					className={cn(
+						"absolute inset-0 object-cover transition-opacity duration-200 ease-out motion-reduce:transition-none",
+						phase === "stop" ? "opacity-100" : "opacity-0",
+					)}
+					aria-hidden={phase !== "stop"}
+				/>
+				<Image
+					src={`${BUCKET_URL}/diagrams/${phonemeId}_fricative.svg`}
+					alt={`${phonemeLabel} (${fricativeLabel})`}
+					fill
+					className={cn(
+						"absolute inset-0 object-cover transition-opacity duration-200 ease-out motion-reduce:transition-none",
+						phase === "fricative" ? "opacity-100" : "opacity-0",
+					)}
+					aria-hidden={phase !== "fricative"}
+				/>
+
+				<ToggleGroup
+					aria-label={t("affricate.toggle-aria")}
+					className="absolute bottom-2 left-2 rounded-lg bg-background-strong"
+					value={[phase]}
+					onValueChange={(nextPhase) => {
+						const [nextValue] = nextPhase;
+						if (!nextValue) return;
+						setPhase(nextValue as AffricatePhase);
+					}}
+					variant="outline"
+					size="sm"
+				>
+					<ToggleGroupItem value="stop" aria-label={stopLabel}>
+						{stopLabel}
+					</ToggleGroupItem>
+					<ToggleGroupSeparator orientation="vertical" />
+					<ToggleGroupItem value="fricative" aria-label={fricativeLabel}>
+						{fricativeLabel}
+					</ToggleGroupItem>
+				</ToggleGroup>
+			</div>
+		</AspectRatio>
+	);
 }
 
 type ArticulatoryFeaturesProps = {
@@ -232,39 +309,41 @@ function FeatureRow<ValueKey extends string>({
 }) {
 	const value = feature.values[valueKey];
 
-	const { contentRef } = usePhonemeDetailsContext();
-
 	return (
 		<Popover>
-			<PopoverTrigger asChild>
-				<Pressable
-					size="default"
-					variant="outline"
-					className="sm:flex-col items-start gap-1 sm:w-full"
-				>
-					<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-						{feature.label}
-					</span>
-					<span className="text-xs font-medium">{value.label}</span>
-				</Pressable>
-			</PopoverTrigger>
-			<PopoverContent
-				className="p-1"
-				align="end"
-				side="bottom"
-				collisionBoundary={contentRef.current}
+			<PopoverTrigger
+				render={
+					<Pressable
+						size="default"
+						variant="outline"
+						className="sm:flex-col items-start gap-1 sm:w-full"
+					/>
+				}
 			>
-				<dl className="space-y-2">
-					<div className="bg-accent/20 rounded-lg p-2">
-						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>
-						<dd className="text-xs leading-relaxed">{feature.description}</dd>
+				<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+					{feature.label}
+				</span>
+				<span className="text-xs font-medium">{value.label}</span>
+			</PopoverTrigger>
+			<PopoverContent align="end" side="bottom">
+				<div className="space-y-3">
+					<div className="rounded-lg border bg-muted p-2">
+						<p className="text-sm font-semibold leading-none">{feature.label}</p>
+						<p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+							{feature.description}
+						</p>
 					</div>
-					<Separator />
-					<div className="rounded-lg p-2">
-						<dt className="text-xs font-semibold mb-1">{value.label}</dt>
-						<dd className="text-xs leading-relaxed">{value.description}</dd>
+
+					<div className="pl-3 border-l-2 border-border">
+						<div className="flex items-center gap-1">
+							<ArrowRightIcon className="size-3 text-muted-foreground" aria-hidden="true" />
+							<span className="text-sm font-semibold leading-none">{value.label}</span>
+						</div>
+						<p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+							{value.description}
+						</p>
 					</div>
-				</dl>
+				</div>
 			</PopoverContent>
 		</Popover>
 	);
@@ -284,56 +363,61 @@ function DiphthongFeatureRow<ValueKey extends string>({
 	const startValue = feature.values[valueKey];
 	const endValue = targetFeature.values[targetValueKey];
 
-	const { contentRef } = usePhonemeDetailsContext();
-
 	return (
 		<Popover>
-			<PopoverTrigger asChild>
-				<Pressable
-					size="default"
-					variant="outline"
-					className="sm:flex-col items-start gap-1 sm:w-full"
-				>
-					<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-						{feature.label}
-					</span>
-					<div className="flex items-center gap-1 text-xs font-medium">
-						<span>{startValue.label}</span>
-						<ArrowRightIcon className="size-3 text-muted-foreground" />
-						<span>{endValue.label}</span>
-					</div>
-				</Pressable>
-			</PopoverTrigger>
-			<PopoverContent
-				className="p-1"
-				align="end"
-				side="bottom"
-				collisionBoundary={contentRef.current}
+			<PopoverTrigger
+				render={
+					<Pressable
+						size="default"
+						variant="outline"
+						className="sm:flex-col items-start gap-1 sm:w-full"
+					/>
+				}
 			>
-				<dl className="space-y-2">
-					<div className="bg-accent/20 rounded-lg p-2">
-						<dt className="text-xs font-semibold uppercase tracking-wide mb-1">{feature.label}</dt>
-						<dd className="text-xs leading-relaxed">{feature.description}</dd>
+				<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+					{feature.label}
+				</span>
+				<div className="flex items-center gap-1 text-xs font-medium">
+					<span>{startValue.label}</span>
+					<ArrowRightIcon className="size-3 text-muted-foreground" />
+					<span>{endValue.label}</span>
+				</div>
+			</PopoverTrigger>
+			<PopoverContent align="end" side="bottom">
+				<div className="space-y-3">
+					<div className="rounded-lg border bg-muted p-2">
+						<p className="text-sm font-semibold leading-none">{feature.label}</p>
+						<p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+							{feature.description}
+						</p>
 					</div>
-					<Separator />
-					<div className="rounded-lg p-2 space-y-2">
-						<div>
-							<dt className="text-xs font-semibold mb-1">{startValue.label}</dt>
-							<dd className="text-xs text-muted-foreground leading-relaxed">
-								{startValue.description}
-							</dd>
+
+					<div className="pl-3 border-l-2 border-border space-y-2">
+						<div className="flex items-center gap-1">
+							<span className="text-sm font-semibold leading-none">{startValue.label}</span>
+							<ArrowRightIcon className="size-3 text-muted-foreground" aria-hidden="true" />
+							<span className="text-sm font-semibold leading-none">{endValue.label}</span>
 						</div>
-						<div className="flex items-center justify-center text-muted-foreground">
-							<ArrowDownIcon className="size-4" />
-						</div>
-						<div>
-							<dt className="text-xs font-semibold mb-1">{endValue.label}</dt>
-							<dd className="text-xs text-muted-foreground leading-relaxed">
-								{endValue.description}
-							</dd>
+
+						<div className="space-y-2">
+							<div className="rounded-lg border p-2">
+								<p className="text-xs font-semibold">{startValue.label}</p>
+								<p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+									{startValue.description}
+								</p>
+							</div>
+							<div className="flex items-center justify-center text-muted-foreground">
+								<ArrowDownIcon className="size-4" aria-hidden="true" />
+							</div>
+							<div className="rounded-lg border p-2">
+								<p className="text-xs font-semibold">{endValue.label}</p>
+								<p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+									{endValue.description}
+								</p>
+							</div>
 						</div>
 					</div>
-				</dl>
+				</div>
 			</PopoverContent>
 		</Popover>
 	);

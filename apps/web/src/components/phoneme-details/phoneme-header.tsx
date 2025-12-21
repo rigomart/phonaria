@@ -1,10 +1,10 @@
 "use client";
 
+import { getIpaForPhonemeId, getPhonemeType } from "@phonaria/phonetics-data";
+import { Button } from "@phonaria/ui/components/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { getIpaForPhonemeId, getPhonemeType } from "shared-data";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { Link } from "@/i18n/navigation";
 import { AudioControls } from "../audio-controls";
@@ -22,12 +22,12 @@ export function PhonemeDetailsHeader() {
 	const showAudioControls = phonemeType === "consonant" || phonemeType === "monophthong";
 
 	return (
-		<div className="flex flex-col gap-1 bg-background-strong py-2 px-4 shadow-sm">
+		<div className="flex flex-col gap-1 bg-background-strong py-2 px-4 shadow-sm rounded-t-xl">
 			<div className="flex gap-4">
-				<div className="text-2xl sm:text-4xl flex items-baseline gap-2">
-					<span className="text-muted-foreground/50 font-semibold">/</span>
-					<span className="leading-none font-bold">{ipa}</span>
-					<span className="text-muted-foreground/50 font-semibold">/</span>
+				<div className="text-2xl sm:text-4xl flex items-baseline gap-1 sm:gap-2 font-bold">
+					<span className="text-muted-foreground/50">/</span>
+					<span className="leading-none">{ipa}</span>
+					<span className="text-muted-foreground/50">/</span>
 				</div>
 				{showAudioControls && (
 					<div className="flex gap-1">
@@ -37,19 +37,24 @@ export function PhonemeDetailsHeader() {
 							label={`Play ${phonemeId}`}
 						/>
 						<Popover>
-							<PopoverTrigger asChild>
-								<Button variant="ghost" size="icon" aria-label={t("button-label")}>
-									<Info className="size-3" />
-								</Button>
+							<PopoverTrigger
+								render={<Button variant="ghost" size="icon" aria-label={t("button-label")} />}
+							>
+								<Info />
 							</PopoverTrigger>
 							<PopoverContent>
 								<div className="space-y-1">
 									<p className="text-sm text-muted-foreground">{t("popover-text")}</p>
-									<Button asChild variant="link" size="xs" className="h-auto p-0">
-										<Link href="/credits" target="_blank">
-											{t("view-credits")}
-										</Link>
-									</Button>
+									<Button
+										variant="link"
+										size="xs"
+										className="h-auto p-0"
+										render={
+											<Link href="/credits" target="_blank">
+												{t("view-credits")}
+											</Link>
+										}
+									/>
 								</div>
 							</PopoverContent>
 						</Popover>

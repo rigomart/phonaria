@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { cmudict } from "./dictionary";
 
-vi.mock("shared-data", () => {
+vi.mock("@phonaria/phonetics-data", () => {
 	const ipaMap: Record<string, string> = {
 		HH: "h",
 		AH0: "ə",

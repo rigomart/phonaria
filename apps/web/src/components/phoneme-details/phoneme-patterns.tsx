@@ -1,8 +1,14 @@
+import { PhonemeSpellingPatternRegistry } from "@phonaria/phonetics-data";
+import { Badge } from "@phonaria/ui/components/badge";
+import {
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemTitle,
+} from "@phonaria/ui/components/item";
 import { useTranslations } from "next-intl";
-import { PhonemeSpellingPatternRegistry } from "shared-data";
 import { AudioControls } from "../audio-controls";
-import { Badge } from "../ui/badge";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { usePhonemeDetailsContext } from "./phoneme-details-context";
 import {
 	PhonemeSection,
@@ -33,7 +39,7 @@ export function PhonemeDetailsPatterns() {
 					<div className="flex items-center gap-1.5 flex-wrap">
 						<span className="text-xs text-muted-foreground">{t("most-common")}</span>
 						{spellingData.patterns.map((pattern) => (
-							<Badge key={pattern} variant="accent">
+							<Badge key={pattern} variant="default">
 								{pattern}
 							</Badge>
 						))}
@@ -49,7 +55,7 @@ export function PhonemeDetailsPatterns() {
 								</ItemContent>
 								<ItemActions>
 									<AudioControls
-										size="xs"
+										size="sm"
 										variant="compact"
 										path={`/audio/${example.word}.mp3`}
 										label={example.word}

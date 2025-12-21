@@ -1,24 +1,26 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export function TranscriptionInfoButton() {
 	const t = useTranslations("g2p-page.transcription-display.info-button");
 
 	return (
 		<Popover>
-			<PopoverTrigger asChild>
-				<Button
-					variant="ghost"
-					size="icon"
-					className="size-8 text-muted-foreground hover:text-foreground"
-					aria-label={t("aria-label")}
-				>
-					<Info className="size-4" />
-				</Button>
+			<PopoverTrigger
+				render={
+					<Button
+						variant="ghost"
+						size="icon"
+						className="size-8 text-muted-foreground hover:text-foreground"
+						aria-label={t("aria-label")}
+					/>
+				}
+			>
+				<Info className="size-4" />
 			</PopoverTrigger>
 			<PopoverContent align="end" className="sm:w-96">
 				<div className="space-y-2">

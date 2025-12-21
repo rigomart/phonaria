@@ -1,23 +1,29 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
 	cmudictStatsData,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeCategory,
 	type PhonemeSymbolId,
-} from "shared-data";
-import { PhonemeDetailsDialog } from "@/components/phoneme-details";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+} from "@phonaria/phonetics-data";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@phonaria/ui/components/card";
 import {
 	type ChartConfig,
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@phonaria/ui/components/chart";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { TopPhonemesHighlight } from "./top-phonemes-highlight";
 
@@ -115,7 +121,7 @@ export function PhonemeFrequencyChart() {
 							<PhonemeBarChart
 								data={consonantsData}
 								config={consonantConfig}
-								height={600}
+								height={640}
 								onPhonemeClick={handlePhonemeClick}
 								fillColor="var(--chart-1)"
 							/>

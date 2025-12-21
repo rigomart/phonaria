@@ -8,13 +8,13 @@ export async function Footer() {
 	const copyrightText = t("copyright", { year: currentYear });
 
 	return (
-		<footer className="border-t border-border/40 bg-background">
+		<footer className="border-t border-border bg-background">
 			<div className="container mx-auto px-4 py-4">
 				<div className="flex flex-col sm:flex-row gap-4 justify-between items-center text-sm">
 					<nav className="flex gap-4 items-center">
 						<Link
 							href="/credits"
-							className="text-muted-foreground hover:text-foreground transition-colors"
+							className="rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 						>
 							{t("links.credits")}
 						</Link>
@@ -22,7 +22,7 @@ export async function Footer() {
 							href="https://github.com/rigomart/phonaria"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-muted-foreground hover:text-foreground transition-colors"
+							className="rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 						>
 							{t("links.github")}
 						</a>

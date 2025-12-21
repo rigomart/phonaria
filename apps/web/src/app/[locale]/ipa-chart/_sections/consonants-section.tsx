@@ -1,5 +1,5 @@
+import { ScrollArea, ScrollBar } from "@phonaria/ui/components/scroll-area";
 import { useTranslations } from "next-intl";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ChartInfoButton } from "../_components/chart-info-button";
 import { ConsonantChart } from "../_components/consonant-chart";
 

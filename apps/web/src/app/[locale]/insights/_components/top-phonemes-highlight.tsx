@@ -1,17 +1,17 @@
 "use client";
 
-import { Info } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
 import {
 	cmudictStatsData,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeSymbolId,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
+import { Badge } from "@phonaria/ui/components/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
+import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 
 const TOP_COUNT = 3;
@@ -98,14 +98,21 @@ function CategorySection({
 		<div className="space-y-2">
 			<div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
 				<span>{title}</span>
-				<Tooltip>
-					<TooltipTrigger className="inline-flex items-center justify-center rounded-full border border-border bg-background/60 p-1 text-[10px] leading-none">
+				<Popover>
+					<PopoverTrigger
+						render={
+							<button
+								type="button"
+								className="inline-flex items-center justify-center rounded-full border border-border bg-background/60 p-1 text-[10px] leading-none"
+							/>
+						}
+					>
 						<Info className="h-3 w-3" />
-					</TooltipTrigger>
-					<TooltipContent side="top" sideOffset={6} className="max-w-[240px] text-xs">
+					</PopoverTrigger>
+					<PopoverContent tooltipStyle side="top" sideOffset={6} className="max-w-[240px] text-xs">
 						{infoText}
-					</TooltipContent>
-				</Tooltip>
+					</PopoverContent>
+				</Popover>
 			</div>
 
 			<div className="grid gap-2 grid-cols-1 sm:grid-cols-3">

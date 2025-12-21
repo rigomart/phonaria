@@ -32,7 +32,7 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 ## Project Structure & Module Organization
 - Agents can read the README for any relevant package or app to get a fast overview before making changes.
 - `apps/web`: Next.js 15 App Router project with internationalization via `[locale]` dynamic routes. Feature-specific code uses route groups (e.g. `(overview)`) and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`) to co-locate related code. UI primitives live in `src/components`, shared utilities in `src/lib`, and feature data wiring in `src/data`.
-- `packages/shared-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. All types and registries are exported from `src/index.ts`. Key exports include:
+- `packages/phonetics-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. All types and registries are exported from `src/index.ts`. Key exports include:
   - `cmudictData` and `cmudictStatsData`: Bundled CMUDict JSON and coverage stats used by the API and insights page
   - `PhonemeSymbolRegistry`: Complete phoneme catalog with IPA symbols, categories, and metadata
   - `PhonemeArticulationRegistry`: Articulatory features and production guidance for each phoneme
@@ -40,13 +40,13 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
   - `PhonemeSpellingPatternRegistry`: Common spelling patterns for each phoneme
   - `PhonemeAllophoneRegistry`: Allophonic variations with context keys
   - `CmuSymbolRegistry`: Mapping between CMU ARPABET and IPA symbols
-- `packages/helper-scripts`: TypeScript utilities for ElevenLabs audio generation and CMUDict JSON/stat generation. Scripts read `.env` config and emit assets into `packages/shared-data/data`; generated audio is produced locally and manually uploaded to the external audio bucket the app references.
+- `packages/helper-scripts`: TypeScript utilities for ElevenLabs audio generation and CMUDict JSON/stat generation. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`; generated audio is produced locally and manually uploaded to the external audio bucket the app references.
 - `docs`: Product briefs, project overviews, enhancement plans, and feature deep-dives organized in `enhancements/` and `features/` subdirectories.
 
 ## Internationalization & Translations (Agent Notes)
 - UI text uses next-intl message catalogs in `apps/web/messages/{locale}.json` via `useTranslations(...)`.
 - Typed phoneme-detail copy lives in `apps/web/src/data/phoneme-details/{locale}.ts` and is accessed with `getPhonemeDetailsCopy(locale)` (non-React) or `usePhonemeDetailsCopy()` from `apps/web/src/data/phoneme-details/client.ts` (client components).
-- This split exists because phoneme copy is keyed by `shared-data` IDs/types; keeping it in TypeScript preserves type safety, prevents missing keys, and reduces drift as phoneme registries evolve.
+- This split exists because phoneme copy is keyed by `@phonaria/phonetics-data` IDs/types; keeping it in TypeScript preserves type safety, prevents missing keys, and reduces drift as phoneme registries evolve.
 - Translation tone: neutral, natural, and learner-first; keep labels short and functional (avoid marketing language and regionalisms).
 - Terminology: use `IPA` as the primary label; `IPA (AFI)` is acceptable on first mention in explanatory copy.
 
@@ -69,11 +69,11 @@ The web app uses Next.js App Router with internationalization:
 - `bun build`: Execute workspace builds with Turbopack before production deployment.
 - `bun lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
 - `bun check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
-- `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter web test` for targeted runs.
+- `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter @phonaria/app test` for targeted runs.
 - `bun --cwd packages/helper-scripts generate`: Regenerate ElevenLabs pronunciation audio (requires `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env`).
 - `bun --cwd packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
 - `bun --cwd packages/helper-scripts cmudict-stats`: Build CMUDict coverage statistics used by the insights page.
-- `bun --cwd packages/helper-scripts generate-word-mappings`: Produce CMU ARPA mappings for example words derived from shared-data.
+- `bun --cwd packages/helper-scripts generate-word-mappings`: Produce CMU ARPA mappings for example words derived from `@phonaria/phonetics-data`.
 
 ## Technical Philosophy
 ### Modern Web Standards
@@ -109,12 +109,12 @@ The web app uses Next.js App Router with internationalization:
 ## Testing Guidelines
 - Vitest drives `apps/web` tests; co-locate specs using `.test.ts` suffix (e.g. `apps/web/src/data/phoneme-details.test.ts`).
 - Favor fast unit coverage on data transformations, API helpers, and utilities; integration tests should mock network boundaries.
-- Test shared-data packages separately to ensure metadata integrity.
+- Test phonetics-data packages separately to ensure metadata integrity.
 - Before pushing, run `bun test`, `bun lint`, and `bun check-types` to catch issues early.
 
 ## Commit & Pull Request Guidelines
 - Follow the Conventional Commit style: `type(scope): summary` (e.g. `feat(api): add g2p fallback`).
-- Squash fixups locally and keep scopes aligned with the touched package (`web`, `helper-scripts`, etc.).
+- Squash fixups locally and keep scopes aligned with the touched package (`@phonaria/app`, `helper-scripts`, etc.).
 - PRs need a short summary, linked issue or task, and confirmation of `bun lint`, `bun check-types`, and `bun test`. Add UI screenshots or API samples when behavior changes.
 
 ## Environment & Configuration Tips
@@ -122,7 +122,7 @@ The web app uses Next.js App Router with internationalization:
 - Required environment variables for `apps/web`:
   - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` for API rate limiting
   - `CMUDICT_SRC_URL` (optional) for CMUDict source location during builds
-- When updating CMUDict assets, use the helper scripts (`cmudict-to-json`, `cmudict-stats`) and commit JSON outputs under `packages/shared-data/data/dict` so deployments stay deterministic.
+- When updating CMUDict assets, use the helper scripts (`cmudict-to-json`, `cmudict-stats`) and commit JSON outputs under `packages/phonetics-data/data/dict` so deployments stay deterministic.
 - Generated audio files from `packages/helper-scripts generate` are produced locally and manually uploaded to the external audio bucket (alongside any externally sourced audio files) that the app references.
 
 ## Design & UX Patterns

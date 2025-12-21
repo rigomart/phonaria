@@ -2,7 +2,7 @@ import type {
 	PhonemeAllophoneContextKey,
 	PhonemeArticulatoryFeatures,
 	PhonemeSymbolId,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 
 export type FeatureValueDefinition = {
 	label: string;

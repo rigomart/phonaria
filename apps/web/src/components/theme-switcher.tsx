@@ -1,41 +1,25 @@
 "use client";
 
-import { MonitorIcon, Moon, MoonIcon, Sun, SunIcon } from "lucide-react";
+import { ThemeSwitcher as UiThemeSwitcher } from "@phonaria/ui/components/theme-switcher";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 
-import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 export function ThemeSwitcher() {
-	const { setTheme } = useTheme();
+	const { theme, setTheme } = useTheme();
 	const t = useTranslations("components.theme-switcher");
 
+	const value = theme === "light" || theme === "dark" || theme === "system" ? theme : "system";
+
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button variant="outline" size="icon">
-					<Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-					<Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-					<span className="sr-only">{t("toggle-aria")}</span>
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end">
-				<DropdownMenuItem onClick={() => setTheme("light")}>
-					<SunIcon /> {t("light")}
-				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme("dark")}>
-					<MoonIcon /> {t("dark")}
-				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme("system")}>
-					<MonitorIcon /> {t("system")}
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+		<UiThemeSwitcher
+			value={value}
+			onValueChange={(nextTheme) => setTheme(nextTheme)}
+			labels={{
+				toggleAriaLabel: t("toggle-aria"),
+				light: t("light"),
+				dark: t("dark"),
+				system: t("system"),
+			}}
+		/>
 	);
 }

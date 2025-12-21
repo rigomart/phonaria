@@ -1,4 +1,4 @@
-import type { PhonemeSymbolId } from "shared-data";
+import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type {
 	G2PPhoneme,
 	G2PStress,

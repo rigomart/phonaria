@@ -1,16 +1,16 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { parseAsStringEnum, useQueryState } from "nuqs";
-import { PhonemeCount } from "shared-data";
+import { PhonemeCount } from "@phonaria/phonetics-data";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@phonaria/ui/components/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@phonaria/ui/components/tabs";
+import { useTranslations } from "next-intl";
+import { parseAsStringEnum, useQueryState } from "nuqs";
 import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { ConsonantsSection } from "./_sections/consonants-section";
 import { VowelChartSection } from "./_sections/vowels-section";
@@ -60,6 +60,7 @@ export default function IpaChartPage() {
 							<Select
 								value={activeTab}
 								onValueChange={(value) => setActiveTab(value as IpaChartTab)}
+								itemToStringLabel={(item) => tabs(item as IpaChartTab)}
 							>
 								<SelectTrigger className="w-full sm:w-auto bg-background-soft flex sm:hidden">
 									<SelectValue />

@@ -127,12 +127,12 @@ apps/web
 
 ## Data dependencies
 
-- **CMU Pronouncing Dictionary** – Shipped via `shared-data` at `packages/shared-data/data/dict/cmudict.json`; the companion `cmudict-stats.json` feeds the insights page. Regenerate with:
+- **CMU Pronouncing Dictionary** – Shipped via `@phonaria/phonetics-data` at `packages/phonetics-data/data/dict/cmudict.json`; the companion `cmudict-stats.json` feeds the insights page. Regenerate with:
   ```bash
   CMUDICT_SRC_URL="<remote .dict file>" bun --cwd packages/helper-scripts cmudict-to-json
   bun --cwd packages/helper-scripts cmudict-stats
   ```
-- **Phoneme metadata** – Canonical IDs and structures live in `packages/shared-data`; learner-facing copy is layered on in `src/data/phoneme-details/`, including:
+- **Phoneme metadata** – Canonical IDs and structures live in `packages/phonetics-data`; learner-facing copy is layered on in `src/data/phoneme-details/`, including:
   - Phoneme symbols, categories, and IPA representations
   - Articulatory features and production guidance
   - Minimal pairs and contrast information
@@ -146,14 +146,14 @@ Phonaria uses **two complementary translation layers**:
 
 1) **UI copy (next-intl messages)** – Navigation, page text, labels, and general UI strings live in `messages/{locale}.json` and are accessed with `useTranslations(...)`.
 
-2) **Typed domain copy (phoneme details)** – Some strings are tightly coupled to `shared-data` IDs/types (e.g. `PhonemeSymbolId`, articulatory feature keys/values, allophone context keys). Those are stored as locale-specific TypeScript bundles in `src/data/phoneme-details/` and accessed with:
+2) **Typed domain copy (phoneme details)** – Some strings are tightly coupled to `@phonaria/phonetics-data` IDs/types (e.g. `PhonemeSymbolId`, articulatory feature keys/values, allophone context keys). Those are stored as locale-specific TypeScript bundles in `src/data/phoneme-details/` and accessed with:
 
 - Client components: `usePhonemeDetailsCopy()` from `@/data/phoneme-details/client`
 - Non-React contexts/tests: `getPhonemeDetailsCopy(locale)` from `@/data/phoneme-details`
 
 Why not put phoneme detail strings into `messages/*.json`?
 
-- The keys come from `shared-data` registries and must stay **complete and in sync** as phoneme IDs/features evolve.
+- The keys come from `@phonaria/phonetics-data` registries and must stay **complete and in sync** as phoneme IDs/features evolve.
 - TypeScript enforces coverage with `Record<PhonemeSymbolId, ...>` and strict typing, preventing missing/typo’d keys at build time.
 - The data is not just “UI labels”; it’s a localized layer over the canonical phoneme model that’s reused across charts, tooltips, and dialogs.
 

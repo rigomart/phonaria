@@ -1,4 +1,4 @@
-import type { VowelArticulatoryFeatures } from "shared-data";
+import type { VowelArticulatoryFeatures } from "@phonaria/phonetics-data";
 
 export const VOWEL_HEIGHT_ORDER: ReadonlyArray<VowelArticulatoryFeatures["height"]> = [
 	"close",

@@ -4,7 +4,7 @@ import {
 	MonophthongVowelArticulationRegistry,
 	type PhonemeArticulation,
 	type PhonemeSymbolId,
-} from "shared-data";
+} from "@phonaria/phonetics-data";
 
 type StaticVowelFeatures = Extract<PhonemeArticulation, { vowelType: "monophthong" }>["features"];
 
