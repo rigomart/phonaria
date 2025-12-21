@@ -60,6 +60,7 @@ export default function IpaChartPage() {
 							<Select
 								value={activeTab}
 								onValueChange={(value) => setActiveTab(value as IpaChartTab)}
+								itemToStringLabel={(item) => tabs(item as IpaChartTab)}
 							>
 								<SelectTrigger className="w-full sm:w-auto bg-background-soft flex sm:hidden">
 									<SelectValue />
