@@ -235,10 +235,10 @@
 	},
 	"credits-page": {
 		"meta": {
-			"title": "Credits & Attribution",
-			"description": "Credits and acknowledgments for Phonaria resources and data sources"
+			"title": "Credits & Sources",
+			"description": "Credits and sources for Phonaria resources, data, and media"
 		},
-		"title": "Credits & Attribution",
+		"title": "Credits & Sources",
 		"description": "Phonaria builds on the work of open source projects, linguistic research, and public domain resources.",
 		"sections": {
 			"wikimedia": {
@@ -247,11 +247,23 @@
 				"link-text": "View General phonetics gallery",
 				"link-url": "https://commons.wikimedia.org/wiki/General_phonetics"
 			},
+			"sagittal": {
+				"title": "Sagittal Illustrations",
+				"content": "Sagittal view illustrations used in the articulation panels are adapted from a base illustration by Tavin and Nardog. The original artwork was modified to generate consistent variants for the phonemes in this app.",
+				"link-text": "View original illustration",
+				"link-url": "https://commons.wikimedia.org/wiki/File:Voiceless_dental_fricative_articulation.svg",
+				"license-text": "View CC BY-SA 4.0 license",
+				"license-url": "https://creativecommons.org/licenses/by-sa/4.0"
+			},
+			"example-audio": {
+				"title": "Example Word Audio",
+				"content": "Example word audio in the phoneme details is currently AI-generated. We use synthetic audio while the word list is still evolving; recording human voices for a changing set would mean frequent replacements and uneven coverage. Modern text-to-speech helps, but it does not replace native-speaker recordings for a pronunciation-first experience. Once the set stabilizes, we will replace these with human recordings and update the credits."
+			},
 			"cmu": {
 				"title": "CMU Pronouncing Dictionary",
 				"content": "The grapheme-to-phoneme transcription feature uses pronunciation data from the CMU Pronouncing Dictionary, a public domain pronunciation dictionary created by Carnegie Mellon University. The dictionary contains over 134,000 North American English words with their phonetic transcriptions.",
 				"link-text": "Learn more about CMU Dict",
-				"link-url": "http://www.speech.cs.cmu.edu/cgi-bin/cmudict"
+				"link-url": "https://github.com/cmusphinx/cmudict"
 			},
 			"free-dictionary": {
 				"title": "Free Dictionary API",
