@@ -1,6 +1,6 @@
 # Phonaria – Web Application
 
-This package hosts the primary Phonaria experience: a Next.js App Router project that delivers interactive IPA references, grapheme‑to‑phoneme transcription, in‑context dictionary lookups, and optional pronunciation audio in a single learner‑first workspace.
+This package hosts the primary Phonaria experience: a Next.js App Router project that delivers interactive IPA references, grapheme‑to‑phoneme transcription, in‑context dictionary lookups, and phoneme/example audio in a single learner‑first workspace.
 
 ## At a glance
 
@@ -11,16 +11,16 @@ This package hosts the primary Phonaria experience: a Next.js App Router project
 ## Feature overview
 
 - **Transcription workspace** – Stress-marked IPA output with clickable words for dictionary definitions and a phoneme inspector to surface articulation details.
-- **Interactive IPA chart** – Browse consonants, monophthongs (including r-colored vowels), and diphthongs with minimal pairs, spelling patterns, allophones, and optional example audio.
+- **Interactive IPA chart** – Browse consonants, monophthongs (including r-colored vowels), and diphthongs with minimal pairs, spelling patterns, allophones, and example audio.
 - **Insights page** – CMUDict coverage cards, phoneme frequency charts, and syllable histograms powered by the shared CMUDict stats dataset.
 - **Dictionary integration** – `GET /api/dictionary` proxies Free Dictionary responses with Upstash Redis rate limiting; transcribed words link straight to definitions and audio.
-- **Themeable & responsive UI** – Tailwind CSS v4, shadcn/ui primitives, and next-themes provide a polished light/dark experience across devices.
+- **Themeable & responsive UI** – Tailwind CSS v4, shadcn/ui primitives, and next-themes provide a consistent light/dark experience across devices.
 - **Internationalization** – Locale-based routing via next-intl with support for multiple languages.
 
 ## Tech stack
 
 - **Framework** – Next.js 16 (App Router, Turbopack for dev and builds)
-- **UI Library** – React 19.1.0 with TypeScript 5
+- **UI Library** – React 19.2.3 with TypeScript 5
 - **Language** – TypeScript with strict settings and path aliases (`@/components`, `@/lib`, `@/data`)
 - **Styling** – Tailwind CSS v4, shadcn/ui components, Radix UI primitives, CSS variables in `src/app/[locale]/globals.css`
 - **State Management** – TanStack Query v5 (server state and caching), Zustand (client state stores)
@@ -138,7 +138,8 @@ apps/web
   - Minimal pairs and contrast information
   - Spelling patterns and allophones
   - CMU ARPABET to IPA symbol mappings
-- **Example audio** – ElevenLabs-generated `.mp3` files are produced locally, then manually uploaded to the audio bucket referenced by the app (alongside any externally sourced clips). Generate with `bun --cwd packages/helper-scripts generate` once `ELEVENLABS_API_KEY` is configured in `packages/helper-scripts/.env`.
+- **Sagittal illustrations** – Derived from a Wikimedia Commons base SVG and adapted into consistent variants for articulation panels (see the Credits & Sources page for attribution).
+- **Example word audio** – AI-generated `.mp3` files (currently produced via ElevenLabs) are produced locally, then manually uploaded to the audio bucket referenced by the app. These are temporary while the example word list is still evolving; human recordings can replace them once the set stabilizes. Generate with `bun --cwd packages/helper-scripts generate` once `ELEVENLABS_API_KEY` is configured in `packages/helper-scripts/.env`.
 
 ## Internationalization & translations
 

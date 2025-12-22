@@ -1,11 +1,11 @@
 # Phonaria
 
-Phonaria is a learner-first pronunciation toolkit for English-as-a-second-language learners. It’s designed as a “toolbox” rather than a course: interactive IPA references, instant grapheme‑to‑phoneme (G2P) transcription, and in‑context dictionary lookups live in one responsive, audio‑first workspace.
+Phonaria is a learner-first pronunciation toolkit for ESL learners. It’s a toolbox rather than a course: interactive IPA references, instant grapheme‑to‑phoneme (G2P) transcription, contrast guidance, and in‑context dictionary lookups live in one responsive, phoneme‑focused workspace.
 
 ## Highlights
 
 - **G2P studio** – Paste text for stress‑marked IPA; click words for definitions and click phonemes for articulation, allophones, spelling patterns, and contrasts.
-- **IPA reference hub** – Responsive General American chart with production guidance, minimal pairs, and example libraries (with optional audio).
+- **IPA reference hub** – Responsive General American chart with production guidance, minimal pairs, and example words (with audio where available).
 - **Dictionary bridge** – In‑context lookups with audio and clear empty/error states, rate‑limited via Upstash Redis.
 - **Insights** – CMUDict coverage, phoneme frequency, and syllable distribution visualizations.
 - **Phonetics data core** – Typed phoneme registries and CMUDict assets power both the UI and helper scripts.
@@ -66,7 +66,7 @@ Phonaria ships with pre-generated assets but also supports regeneration when sou
   bun --cwd packages/helper-scripts cmudict-stats
   ```
   Use `CMUDICT_JSON_PATH` to override the default output location.
-- **Example audio** – ElevenLabs powered `.mp3` files are generated locally, then uploaded manually to the audio bucket the app references (alongside any externally sourced files). Provide an `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env` and run:
+- **Example word audio** – AI-generated `.mp3` files (currently produced via ElevenLabs) are generated locally, then uploaded manually to the audio bucket the app references. These are temporary while the example word list is still evolving; human recordings can replace them once the set stabilizes. Provide an `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env` and run:
   ```bash
   bun --cwd packages/helper-scripts generate
   ```
