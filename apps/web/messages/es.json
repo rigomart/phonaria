@@ -72,8 +72,8 @@
 		}
 	},
 	"locale-layout": {
-		"title": "Phonaria - Pronunciación mediante fonemas",
-		"description": "Herramientas de pronunciación para estudiantes de inglés. Convierte texto a transcripción IPA y explora detalles de articulación de fonemas."
+		"title": "Transcripción IPA y pronunciación en inglés - Phonaria",
+		"description": "Convierte texto a IPA, explora la tabla de fonemas del inglés y practica la pronunciación con detalles de articulación y ejemplos."
 	},
 	"not-found-page": {
 		"title": "Página no encontrada",
@@ -83,8 +83,8 @@
 		"title": "Tabla IPA",
 		"description": "Tabla interactiva para entender los fonemas del inglés (IPA, también conocido como AFI en español). Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio.",
 		"meta": {
-			"title": "Tabla IPA - Phonaria",
-			"description": "Tabla interactiva para entender los fonemas del inglés (IPA, también conocido como AFI en español). Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio."
+			"title": "Tabla IPA del inglés - Phonaria",
+			"description": "Tabla IPA interactiva del inglés con detalles de fonemas, guía de articulación, palabras de ejemplo y audio."
 		},
 		"hero-section": {
 			"title": "Tabla IPA de los fonemas del inglés",
@@ -201,7 +201,7 @@
 	"overview-page": {
 		"meta": {
 			"title": "Phonaria - Pronunciación mediante fonemas",
-			"description": "Herramientas de pronunciación para estudiantes de inglés. Convierte texto a transcripción IPA y explora detalles de articulación de fonemas."
+			"description": "Convierte texto a IPA, explora la tabla de fonemas del inglés y practica la pronunciación con detalles de articulación y ejemplos."
 		},
 		"hero": {
 			"title": "Herramientas de pronunciación basadas en fonemas",
@@ -239,8 +239,8 @@
 	},
 	"transcription-page": {
 		"meta": {
-			"title": "Estudio de transcripción - Phonaria",
-			"description": "Escribe cualquier texto para ver su pronunciación en IPA, con detalles de fonemas y definiciones."
+			"title": "Herramienta de transcripción IPA - Phonaria",
+			"description": "Transcribe texto en inglés a IPA con detalles de fonemas y diccionario integrado."
 		}
 	},
 	"credits-page": {
@@ -291,8 +291,8 @@
 	},
 	"stats-page": {
 		"meta": {
-			"title": "Estadísticas de pronunciación - Phonaria",
-			"description": "Datos de frecuencia y patrones del corpus de pronunciación."
+			"title": "Estadísticas de pronunciación y frecuencia de fonemas - Phonaria",
+			"description": "Explora frecuencia de fonemas, patrones silábicos y cobertura del corpus de pronunciación del inglés."
 		},
 		"title": "Estadísticas de pronunciación",
 		"description": "Frecuencia de fonemas y distribución silábica en el corpus de pronunciación.",
