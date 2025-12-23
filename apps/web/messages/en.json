@@ -72,8 +72,8 @@
 		}
 	},
 	"locale-layout": {
-		"title": "Phonaria - English Phoneme Learning",
-		"description": "Interactive tool for learning English phonemes with IPA transcription"
+		"title": "Phonaria - Pronunciation through phonemes",
+		"description": "Pronunciation toolkit for English learners. Convert text to IPA transcription and explore phoneme articulation details."
 	},
 	"not-found-page": {
 		"title": "Page not found",
@@ -82,6 +82,10 @@
 	"ipa-chart": {
 		"title": "IPA Reference",
 		"description": "Reference tool for understanding English phonemes. Click on any symbol to see articulation details, example words, and audio pronunciation.",
+		"meta": {
+			"title": "IPA Reference - Phonaria",
+			"description": "Reference tool for understanding English phonemes. Click any symbol to see articulation details, example words, and audio pronunciation."
+		},
 		"hero-section": {
 			"title": "English Phoneme Reference",
 			"short": "Interactive IPA Chart",
@@ -196,7 +200,7 @@
 	},
 	"overview-page": {
 		"meta": {
-			"title": "Phonaria",
+			"title": "Phonaria - Pronunciation through phonemes",
 			"description": "Pronunciation toolkit for English learners. Convert text to IPA transcription and explore phoneme articulation details."
 		},
 		"hero": {
@@ -233,10 +237,16 @@
 			}
 		}
 	},
+	"transcription-page": {
+		"meta": {
+			"title": "Transcription Studio - Phonaria",
+			"description": "Type any text to see its pronunciation in IPA, with clickable phoneme details and dictionary lookups."
+		}
+	},
 	"credits-page": {
 		"meta": {
-			"title": "Credits & Sources",
-			"description": "Credits and sources for Phonaria resources, data, and media"
+			"title": "Credits & Sources - Phonaria",
+			"description": "Credits and sources for Phonaria resources, data, and media."
 		},
 		"title": "Credits & Sources",
 		"description": "Phonaria builds on the work of open source projects, linguistic research, and public domain resources.",
@@ -281,8 +291,8 @@
 	},
 	"stats-page": {
 		"meta": {
-			"title": "Pronunciation Insights",
-			"description": "Frequency and pattern insights from the pronunciation corpus"
+			"title": "Pronunciation Insights - Phonaria",
+			"description": "Frequency and pattern insights from the pronunciation corpus."
 		},
 		"title": "Pronunciation Insights",
 		"description": "Phoneme frequency and syllable distribution across the pronunciation corpus.",

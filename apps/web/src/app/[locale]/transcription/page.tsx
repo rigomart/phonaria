@@ -1,8 +1,33 @@
+import type { Metadata } from "next";
+import type { Locale } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { getLanguageAlternates, getLocalePath } from "@/lib/seo";
 import { G2PInputForm } from "./_components/g2p-input-form";
 import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { PhonemeInspector } from "./_components/phoneme-inspector";
 import { TranscriptionDisplay } from "./_components/transcription-display";
 import { WordDefinitionDialog } from "./_components/word-definition-dialog";
+
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+	const locale = (await params).locale as Locale;
+	const t = await getTranslations({
+		locale,
+		namespace: "transcription-page",
+	});
+
+	return {
+		title: t("meta.title"),
+		description: t("meta.description"),
+		alternates: {
+			canonical: getLocalePath(locale, "/transcription"),
+			languages: getLanguageAlternates("/transcription"),
+		},
+	};
+}
 
 export default function Index() {
 	return (
