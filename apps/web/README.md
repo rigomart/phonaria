@@ -40,6 +40,15 @@ bun --cwd apps/web dev     # start Next.js at http://localhost:3000
 
 The root `bun dev` will also start this project if you prefer Turborepo orchestration.
 
+## Environment variables
+
+- `VERCEL_PROJECT_PRODUCTION_URL` (Vercel system env) is used to build canonical URLs,
+  `metadataBase`, `robots.txt`, and `sitemap.xml`. If it is unavailable (local dev),
+  the app falls back to `http://localhost:3000`. Ensure "Automatically expose System
+  Environment Variables" is enabled in Vercel project settings.
+- `GOOGLE_SITE_VERIFICATION` (custom) enables the Search Console verification meta tag.
+  Set this in Vercel for production and in `apps/web/.env.local` if you want to verify locally.
+
 ### Useful scripts
 
 ```bash

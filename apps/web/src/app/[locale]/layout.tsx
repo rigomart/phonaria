@@ -36,7 +36,7 @@ export async function generateStaticParams() {
 	return routing.locales.map((locale) => ({ locale }));
 }
 
-const GOOGLE_SITE_VERIFICATION = "6o7KP6z7_Flklh0kpy1ME0Ujf-m8ES5zaXaM67po0LM";
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION;
 
 export async function generateMetadata({
 	params,
@@ -66,9 +66,7 @@ export async function generateMetadata({
 			index: true,
 			follow: true,
 		},
-		verification: {
-			google: GOOGLE_SITE_VERIFICATION,
-		},
+		verification: googleSiteVerification ? { google: googleSiteVerification } : undefined,
 	};
 }
 

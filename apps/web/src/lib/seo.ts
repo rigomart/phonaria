@@ -1,7 +1,11 @@
 import { routing } from "@/i18n/routing";
 
-export const SITE_URL = "https://phonaria.rigos.dev";
 export const SITE_NAME = "Phonaria";
+
+const host = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "localhost:3000";
+const protocol = host === "localhost:3000" ? "http" : "https";
+
+export const SITE_URL = `${protocol}://${host}`;
 
 const normalizePath = (path?: string) => {
 	if (!path || path === "/") {
