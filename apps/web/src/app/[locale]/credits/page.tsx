@@ -1,10 +1,30 @@
+import type { Metadata } from "next";
 import { type Locale, useTranslations } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { use } from "react";
 import { routing } from "@/i18n/routing";
+import { getLanguageAlternates, getLocalePath } from "@/lib/seo";
 
 export function generateStaticParams() {
 	return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+	const locale = (await params).locale as Locale;
+	const t = await getTranslations({ locale, namespace: "credits-page" });
+
+	return {
+		title: t("meta.title"),
+		description: t("meta.description"),
+		alternates: {
+			canonical: getLocalePath(locale, "/credits"),
+			languages: getLanguageAlternates("/credits"),
+		},
+	};
 }
 
 export default function CreditsPage({ params }: PageProps<"/[locale]/credits">) {

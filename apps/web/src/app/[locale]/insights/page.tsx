@@ -1,11 +1,13 @@
 import { cmudictStatsData } from "@phonaria/phonetics-data";
 import { Badge } from "@phonaria/ui/components/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@phonaria/ui/components/card";
+import type { Metadata } from "next";
 import { type Locale, useFormatter, useTranslations } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { use } from "react";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { getLanguageAlternates, getLocalePath } from "@/lib/seo";
 import { InsightsFacts } from "./_components/insights-facts";
 import { OverviewCards } from "./_components/overview-cards";
 import { PhonemeFrequencyChart } from "./_components/phoneme-frequency-chart";
@@ -13,6 +15,24 @@ import { SyllableHistogram } from "./_components/syllable-histogram";
 
 export function generateStaticParams() {
 	return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+	const locale = (await params).locale as Locale;
+	const t = await getTranslations({ locale, namespace: "stats-page" });
+
+	return {
+		title: t("meta.title"),
+		description: t("meta.description"),
+		alternates: {
+			canonical: getLocalePath(locale, "/insights"),
+			languages: getLanguageAlternates("/insights"),
+		},
+	};
 }
 
 export default function InsightsPage({ params }: PageProps<"/[locale]/insights">) {

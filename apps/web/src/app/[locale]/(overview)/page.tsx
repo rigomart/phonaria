@@ -1,15 +1,37 @@
 import { BarChart3, BookOpen, Mic } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
+import type { Locale } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getLanguageAlternates, getLocalePath } from "@/lib/seo";
 import { G2PPreviewStatic } from "./_components/g2p-preview-static";
 import { HeroSection } from "./_components/hero-section";
 import { IpaChartPreviewStatic } from "./_components/ipa-chart-preview-static";
 import { StatsPreviewStatic } from "./_components/stats-preview-static";
 import { ToolCard } from "./_components/tool-card";
 
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+	const locale = (await params).locale as Locale;
+	const t = await getTranslations({ locale, namespace: "overview-page" });
+
+	return {
+		title: t("meta.title"),
+		description: t("meta.description"),
+		alternates: {
+			canonical: getLocalePath(locale, ""),
+			languages: getLanguageAlternates(""),
+		},
+	};
+}
+
 export default async function OverviewPage({ params }: { params: Promise<{ locale: string }> }) {
 	const { locale } = await params;
 
-	const t = await getTranslations({ locale: locale as "en" | "es", namespace: "overview-page" });
+	setRequestLocale(locale as Locale);
+	const t = await getTranslations("overview-page");
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">

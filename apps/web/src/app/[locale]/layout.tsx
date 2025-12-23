@@ -3,12 +3,14 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Noto_Sans, Noto_Sans_Mono, Noto_Serif } from "next/font/google";
 import { notFound } from "next/navigation";
+import type { Locale } from "next-intl";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { routing } from "@/i18n/routing";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import Providers from "./providers";
 import "@phonaria/ui/globals.css";
 
@@ -34,11 +36,41 @@ export async function generateStaticParams() {
 	return routing.locales.map((locale) => ({ locale }));
 }
 
-export const metadata: Metadata = {
-	title: "Phonaria - Pronunciation toolkit for ESL learners",
-	description:
-		"Learner-first pronunciation toolkit for people studying English as a second language. Gathers the core resources learners need to understand how English sounds work, explore spelling and phoneme patterns, and connect what they read with how it should sound.",
-};
+const GOOGLE_SITE_VERIFICATION = "6o7KP6z7_Flklh0kpy1ME0Ujf-m8ES5zaXaM67po0LM";
+
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+	const locale = (await params).locale as Locale;
+	const t = await getTranslations({ locale, namespace: "locale-layout" });
+
+	return {
+		metadataBase: new URL(SITE_URL),
+		title: t("title"),
+		description: t("description"),
+		applicationName: SITE_NAME,
+		openGraph: {
+			title: t("title"),
+			description: t("description"),
+			siteName: SITE_NAME,
+			type: "website",
+		},
+		twitter: {
+			card: "summary",
+			title: t("title"),
+			description: t("description"),
+		},
+		robots: {
+			index: true,
+			follow: true,
+		},
+		verification: {
+			google: GOOGLE_SITE_VERIFICATION,
+		},
+	};
+}
 
 export default async function RootLayout({
 	params,

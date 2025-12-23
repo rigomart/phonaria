@@ -72,8 +72,8 @@
 		}
 	},
 	"locale-layout": {
-		"title": "Phonaria - Fonemas del inglés",
-		"description": "Herramienta interactiva para aprender los fonemas del inglés con transcripción a IPA"
+		"title": "Phonaria - Pronunciación mediante fonemas",
+		"description": "Herramientas de pronunciación para estudiantes de inglés. Convierte texto a transcripción IPA y explora detalles de articulación de fonemas."
 	},
 	"not-found-page": {
 		"title": "Página no encontrada",
@@ -82,6 +82,10 @@
 	"ipa-chart": {
 		"title": "Tabla IPA",
 		"description": "Tabla interactiva para entender los fonemas del inglés (IPA, también conocido como AFI en español). Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio.",
+		"meta": {
+			"title": "Tabla IPA - Phonaria",
+			"description": "Tabla interactiva para entender los fonemas del inglés (IPA, también conocido como AFI en español). Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio."
+		},
 		"hero-section": {
 			"title": "Tabla IPA de los fonemas del inglés",
 			"short": "Tabla IPA interactiva",
@@ -196,7 +200,7 @@
 	},
 	"overview-page": {
 		"meta": {
-			"title": "Phonaria",
+			"title": "Phonaria - Pronunciación mediante fonemas",
 			"description": "Herramientas de pronunciación para estudiantes de inglés. Convierte texto a transcripción IPA y explora detalles de articulación de fonemas."
 		},
 		"hero": {
@@ -233,10 +237,16 @@
 			}
 		}
 	},
+	"transcription-page": {
+		"meta": {
+			"title": "Estudio de transcripción - Phonaria",
+			"description": "Escribe cualquier texto para ver su pronunciación en IPA, con detalles de fonemas y definiciones."
+		}
+	},
 	"credits-page": {
 		"meta": {
-			"title": "Créditos y fuentes",
-			"description": "Créditos y fuentes de los recursos, datos y materiales de Phonaria"
+			"title": "Créditos y fuentes - Phonaria",
+			"description": "Créditos y fuentes de los recursos, datos y materiales de Phonaria."
 		},
 		"title": "Créditos y fuentes",
 		"description": "Phonaria se basa en el trabajo de proyectos de código abierto, investigación lingüística y recursos de dominio público.",
@@ -281,8 +291,8 @@
 	},
 	"stats-page": {
 		"meta": {
-			"title": "Estadísticas de pronunciación",
-			"description": "Datos de frecuencia y patrones del corpus de pronunciación"
+			"title": "Estadísticas de pronunciación - Phonaria",
+			"description": "Datos de frecuencia y patrones del corpus de pronunciación."
 		},
 		"title": "Estadísticas de pronunciación",
 		"description": "Frecuencia de fonemas y distribución silábica en el corpus de pronunciación.",
