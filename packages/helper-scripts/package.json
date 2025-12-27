@@ -16,7 +16,8 @@
 		"check-types": "tsc --noEmit",
 		"cmudict-to-json": "tsx src/cmudict-to-json.ts",
 		"cmudict-stats": "tsx src/cmudict-stats.ts",
-		"generate-word-mappings": "tsx src/generate-word-mappings.ts"
+		"generate-word-mappings": "tsx src/generate-word-mappings.ts",
+		"phoneme-trie-to-json": "tsx src/phoneme-trie-to-json.ts"
 	},
 	"dependencies": {
 		"@phonaria/phonetics-data": "workspace:*",

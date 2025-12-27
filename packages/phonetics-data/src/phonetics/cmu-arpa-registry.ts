@@ -112,3 +112,67 @@ export function getCmuArpaForPhonemeId(phonemeId: PhonemeSymbolId): CmuArpaToken
 		.filter(([, id]) => id === phonemeId)
 		.map(([token]) => token as CmuArpaToken);
 }
+
+/**
+ * Maps phoneme symbol IDs to standard ARPABET labels (without stress markers).
+ * Used as trie keys for phoneme search. Schwa=AX, strut=AH distinction is preserved.
+ */
+export const PhonemeArpabetLabel = {
+	// Consonants
+	"voiceless-bilabial-plosive": "P",
+	"voiced-bilabial-plosive": "B",
+	"voiceless-alveolar-plosive": "T",
+	"voiced-alveolar-plosive": "D",
+	"voiceless-velar-plosive": "K",
+	"voiced-velar-plosive": "G",
+	"voiceless-labiodental-fricative": "F",
+	"voiced-labiodental-fricative": "V",
+	"voiceless-dental-fricative": "TH",
+	"voiced-dental-fricative": "DH",
+	"voiceless-alveolar-fricative": "S",
+	"voiced-alveolar-fricative": "Z",
+	"voiceless-postalveolar-fricative": "SH",
+	"voiced-postalveolar-fricative": "ZH",
+	"voiceless-glottal-fricative": "HH",
+	"voiced-bilabial-nasal": "M",
+	"voiced-alveolar-nasal": "N",
+	"voiced-velar-nasal": "NG",
+	"voiced-alveolar-lateral-approximant": "L",
+	"voiced-postalveolar-approximant": "R",
+	"voiced-labial-velar-approximant": "W",
+	"voiced-palatal-approximant": "Y",
+	"voiceless-postalveolar-affricate": "CH",
+	"voiced-postalveolar-affricate": "JH",
+
+	// Monophthongs
+	"close-front-unrounded": "IY",
+	"close-back-rounded": "UW",
+	"near-close-near-front-unrounded": "IH",
+	"near-close-near-back-rounded": "UH",
+	"mid-central-unrounded": "AX",
+	"open-mid-front-unrounded": "EH",
+	"open-mid-back-unrounded": "AH",
+	"open-mid-back-rounded": "AO",
+	"near-open-front-unrounded": "AE",
+	"open-back-unrounded": "AA",
+	"r-colored-open-mid-central": "ER",
+
+	// Diphthongs
+	"close-mid-front-unrounded-to-near-close-near-front-unrounded": "EY",
+	"close-mid-back-rounded-to-near-close-near-back-rounded": "OW",
+	"open-front-unrounded-to-near-close-near-front-unrounded": "AY",
+	"open-front-unrounded-to-near-close-near-back-rounded": "AW",
+	"open-mid-back-rounded-to-near-close-near-front-unrounded": "OY",
+} as const satisfies Record<PhonemeSymbolId, string>;
+
+/**
+ * Gets the standard ARPABET label for a phoneme ID (without stress markers).
+ * @param phonemeId - The phoneme symbol ID.
+ * @returns The standard ARPABET label.
+ * @example
+ * getArpabetForPhonemeId("voiceless-bilabial-plosive") // "P"
+ * getArpabetForPhonemeId("mid-central-unrounded") // "AX"
+ */
+export function getArpabetForPhonemeId(phonemeId: PhonemeSymbolId): string {
+	return PhonemeArpabetLabel[phonemeId];
+}
