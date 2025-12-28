@@ -111,7 +111,7 @@ erDiagram
 2. **Copy connection string** from Neon dashboard
 3. **Add environment variables** to `apps/web/.env.local`:
    ```javascript
-                                            DATABASE_URL=postgres://...@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require
+                                               DATABASE_URL=postgres://...@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require
    ```
 
 
@@ -165,5 +165,3 @@ Run `bun drizzle-kit push` to apply schema to Neon.---
 ### API Endpoint
 
 | File | Action ||------|--------|| `apps/web/src/app/api/phoneme-search/route.ts` | NEW: GET endpoint with prefix query |
-
-### Frontend
