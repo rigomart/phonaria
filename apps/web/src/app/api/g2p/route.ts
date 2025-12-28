@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "../_lib/rate-limit";
-import { cmudict } from "./_core/dictionary";
+import { lookupManyCmudict } from "./_core/dictionary";
 import { fallbackG2P } from "./_core/phoneme-generator";
 import type { G2PResponse, G2PSyllable, G2PWord } from "./_schemas/g2p-api.schema";
-import { tokenizeText } from "./_utils/text-processing";
+import { normalizeCmuWord, tokenizeText } from "./_utils/text-processing";
 import { isValidText, validateRequest } from "./_utils/validation";
 
 export async function POST(request: NextRequest) {
@@ -41,15 +41,14 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ words: [] }, { status: 200 });
 		}
 
-		await cmudict.load();
-
 		const words = tokenizeText(text);
+		const lookups = await lookupManyCmudict(words);
 		const results: G2PWord[] = [];
 
 		for (const word of words) {
 			if (word.length === 0) continue;
 
-			const variants = cmudict.lookup(word);
+			const variants = lookups.get(normalizeCmuWord(word));
 			let phonemeVariants: G2PSyllable[][];
 			let source: G2PWord["source"];
 

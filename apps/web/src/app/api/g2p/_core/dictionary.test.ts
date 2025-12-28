@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { cmudict } from "./dictionary";
+import { __resetCmudictCache, lookupCmudict } from "./dictionary";
 
 vi.mock("@phonaria/phonetics-data", () => {
 	const ipaMap: Record<string, string> = {
@@ -13,76 +13,46 @@ vi.mock("@phonaria/phonetics-data", () => {
 	};
 
 	return {
-		cmudictData: {
-			meta: {
-				formatVersion: 1,
-				source: "cmudict",
-				sourceUrl: "https://example.com/cmudict.dict",
-				generatedAt: "2025-01-09T12:00:00.000Z",
-				wordCount: 2,
-				variantCount: 3,
-				skippedLineCount: 0,
-				deduplicatedVariantCount: 0,
-			},
-			data: {
-				HELLO: ["HH AH0 L OW1"],
-				WORLD: ["W ER1 L D"],
-			},
-		},
 		getPhonemeIdForCmuArpa: (token: string) => token,
 		getPhonemeCategory: (token: string) => (/[012]$/.test(token) ? "vowel" : "consonant"),
 		getIpaForPhonemeId: (token: string) => ipaMap[token] ?? token.toLowerCase(),
 	};
 });
 
-const mockCmudictData = {
-	meta: {
-		formatVersion: 1,
-		source: "cmudict",
-		sourceUrl: "https://example.com/cmudict.dict",
-		generatedAt: "2025-01-09T12:00:00.000Z",
-		wordCount: 2,
-		variantCount: 3,
-		skippedLineCount: 0,
-		deduplicatedVariantCount: 0,
+const mockRows = [
+	{ word: "HELLO", cmuVariants: ["HH AH0 L OW1"] },
+	{ word: "WORLD", cmuVariants: ["W ER1 L D"] },
+] as const;
+
+const dbSelectMock = vi.hoisted(() => vi.fn());
+
+vi.mock("@/db/schema", () => ({
+	words: {
+		word: "word",
+		cmuVariants: "cmu_variants",
 	},
-	data: {
-		HELLO: ["HH AH0 L OW1"],
-		WORLD: ["W ER1 L D"],
+}));
+
+vi.mock("@/db/drizzle", () => ({
+	db: {
+		select: dbSelectMock,
 	},
-};
+}));
 
 describe("CMUDict", () => {
 	beforeEach(() => {
-		// Reset the cmudict instance before each test
-		const cmudictInstance = cmudict as unknown as {
-			data: Record<string, string[]> | null;
-			loaded: boolean;
-			loadPromise: Promise<void> | null;
-			cache: Map<string, string[][]>;
-		};
-		cmudictInstance.data = null;
-		cmudictInstance.loaded = false;
-		cmudictInstance.loadPromise = null;
-		cmudictInstance.cache.clear();
-	});
+		__resetCmudictCache();
 
-	it("should load dictionary data from payload.data property", async () => {
-		await cmudict.load();
-
-		// Verify that the data was loaded from the correct property
-		const cmudictInstance = cmudict as unknown as {
-			data: Record<string, string[]> | null;
-			loaded: boolean;
-		};
-		expect(cmudictInstance.data).toEqual(mockCmudictData.data);
-		expect(cmudictInstance.loaded).toBe(true);
+		dbSelectMock.mockReset();
+		dbSelectMock.mockReturnValue({
+			from: () => ({
+				where: () => Promise.resolve(mockRows),
+			}),
+		});
 	});
 
 	it("should lookup words correctly after loading", async () => {
-		await cmudict.load();
-
-		const result = cmudict.lookup("hello");
+		const result = await lookupCmudict("hello");
 		expect(result).toBeDefined();
 		expect(Array.isArray(result)).toBe(true);
 		if (result) {
@@ -110,13 +80,29 @@ describe("CMUDict", () => {
 	});
 
 	it("should return undefined for unknown words", async () => {
-		await cmudict.load();
+		// Override mock to return nothing (no matching rows)
+		dbSelectMock.mockReturnValueOnce({
+			from: () => ({
+				where: () => Promise.resolve([]),
+			}),
+		});
 
-		const result = cmudict.lookup("unknownword");
+		const result = await lookupCmudict("unknownword");
 		expect(result).toBeUndefined();
 	});
 
-	it("should throw error when lookup called before load", () => {
-		expect(() => cmudict.lookup("hello")).toThrow("Dictionary not loaded");
+	it("should not re-query for repeated misses (caches undefined results)", async () => {
+		dbSelectMock.mockReturnValueOnce({
+			from: () => ({
+				where: () => Promise.resolve([]),
+			}),
+		});
+
+		const first = await lookupCmudict("nope");
+		const second = await lookupCmudict("nope");
+
+		expect(first).toBeUndefined();
+		expect(second).toBeUndefined();
+		expect(dbSelectMock).toHaveBeenCalledTimes(1);
 	});
 });
