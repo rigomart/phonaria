@@ -9,7 +9,11 @@
 		"start": "bun --bun next start",
 		"lint": "biome check --write",
 		"check-types": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run",
+		"db:push": "drizzle-kit push",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:seed": "bun run src/db/seed.ts"
 	},
 	"dependencies": {
 		"@neondatabase/serverless": "^1.0.2",
@@ -51,6 +55,7 @@
 		"zustand": "^5.0.8"
 	},
 	"devDependencies": {
+		"@next/env": "^16.1.1",
 		"@tailwindcss/postcss": "^4.1.12",
 		"@types/node": "^20",
 		"@types/pg": "^8.16.0",

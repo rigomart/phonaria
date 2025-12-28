@@ -7,7 +7,7 @@ todos:
     status: completed
   - id: schema
     content: Create Drizzle schema (words, dictionary_stats tables) and push to Neon
-    status: in_progress
+    status: completed
     dependencies:
       - infra-setup
   - id: seed-script
@@ -111,7 +111,7 @@ erDiagram
 2. **Copy connection string** from Neon dashboard
 3. **Add environment variables** to `apps/web/.env.local`:
    ```javascript
-                          DATABASE_URL=postgres://...@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require
+                                            DATABASE_URL=postgres://...@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require
    ```
 
 
@@ -167,15 +167,3 @@ Run `bun drizzle-kit push` to apply schema to Neon.---
 | File | Action ||------|--------|| `apps/web/src/app/api/phoneme-search/route.ts` | NEW: GET endpoint with prefix query |
 
 ### Frontend
-
-| File | Action ||------|--------|| `apps/web/src/app/[locale]/phoneme-search/page.tsx` | NEW: Page layout || `apps/web/src/app/[locale]/phoneme-search/_components/phoneme-autocomplete.tsx` | NEW: Searchable combobox || `apps/web/src/app/[locale]/phoneme-search/_components/word-results.tsx` | NEW: Results display || `apps/web/src/app/[locale]/phoneme-search/_hooks/use-phoneme-search.ts` | NEW: Query hook with URL state || [`apps/web/messages/en.json`](apps/web/messages/en.json) | Add translations || [`apps/web/messages/es.json`](apps/web/messages/es.json) | Add translations |---
-
-## Phase 7: Cleanup and Documentation
-
-### Remove JSON Files
-
-| File | Action ||------|--------|| `packages/phonetics-data/data/dict/cmudict.json` | DELETE || `packages/phonetics-data/data/dict/cmudict-stats.json` | DELETE || `packages/phonetics-data/data/dict/cmudict-phoneme-trie.json` | DELETE || [`packages/phonetics-data/src/index.ts`](packages/phonetics-data/src/index.ts) | Remove `cmudictData`, `cmudictStatsData`, `cmudictPhonemeTrieData` exports |
-
-### Update Documentation
-
-| File | Action ||------|--------|| [`apps/web/README.md`](apps/web/README.md) | Add database setup section, update env vars || [`packages/phonetics-data/README.md`](packages/phonetics-data/README.md) | Remove CMUDict JSON references || [`packages/helper-scripts/README.md`](packages/helper-scripts/README.md) | Note scripts are kept for reference || [`AGENTS.md`](AGENTS.md) | Update data architecture description |---

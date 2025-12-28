@@ -6,8 +6,6 @@ import type { G2PResponse, G2PSyllable, G2PWord } from "./_schemas/g2p-api.schem
 import { tokenizeText } from "./_utils/text-processing";
 import { isValidText, validateRequest } from "./_utils/validation";
 
-export const runtime = "nodejs";
-
 export async function POST(request: NextRequest) {
 	const rateLimitResult = await checkRateLimit(request);
 	if (rateLimitResult.isRateLimited) {
