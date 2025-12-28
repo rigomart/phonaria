@@ -4,7 +4,14 @@
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": [".next/**", "!.next/cache/**", "dist/**"],
-			"env": ["UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", "CMUDICT_SRC_URL"],
+			"env": [
+				"UPSTASH_REDIS_REST_URL",
+				"UPSTASH_REDIS_REST_TOKEN",
+				"CMUDICT_SRC_URL",
+				"DATABASE_URL",
+				"GOOGLE_SITE_VERIFICATION",
+				"NEXT_PUBLIC_BUCKET_URL"
+			],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"]
 		},
 		"dev": {
