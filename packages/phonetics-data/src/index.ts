@@ -1,20 +1,8 @@
 import cmudictJson from "../data/dict/cmudict.json";
-import cmudictPhonemeTrieJson from "../data/dict/cmudict-phoneme-trie.json";
 import cmudictStatsJson from "../data/dict/cmudict-stats.json";
-import type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dict/types";
+import type { CmudictPayload, CmudictStatsPayload } from "./dict/types";
 
 export const cmudictData = cmudictJson as CmudictPayload;
-export const cmudictPhonemeTrieData = cmudictPhonemeTrieJson as {
-	meta: {
-		formatVersion: number;
-		source: string;
-		generatedAt: string;
-		wordCount: number;
-		phonemePathCount: number;
-		totalEntries: number;
-	};
-	data: PhonemeTrieNode;
-};
 export const cmudictStatsData = cmudictStatsJson as CmudictStatsPayload;
 
 export type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dict/types";
