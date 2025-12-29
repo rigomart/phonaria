@@ -79,6 +79,46 @@
 		"title": "Page not found",
 		"description": "Please double-check the browser address bar or use the navigation to go to a known page."
 	},
+	"phoneme-search-page": {
+		"meta": {
+			"title": "Phoneme search - Phonaria",
+			"description": "Find English words by building a phoneme path (ARPABET) and exploring next phoneme suggestions."
+		},
+		"builder": {
+			"title": "Phoneme search",
+			"path-empty": "Add phonemes to search.",
+			"remove-phoneme-aria": "Remove phoneme {phoneme}",
+			"remove-phoneme-hint": "Click to remove this phoneme from the path",
+			"clear": "Clear",
+			"depth": "{count}/{max}",
+			"search-placeholder": "ARPABET (K, AE, T)…",
+			"search-aria": "Search phoneme options",
+			"add": "Add",
+			"options": "Phoneme options",
+			"max-depth": "Max depth reached",
+			"no-options": "No matching phonemes.",
+			"next-phonemes": "Next",
+			"next-count": "{count} suggestions"
+		},
+		"results": {
+			"title": "Matches",
+			"total": "{count} words",
+			"empty": {
+				"title": "Build a path",
+				"description": "Type ARPABET and press Enter (example: K, AE, T)."
+			},
+			"loading": "Searching…",
+			"error": {
+				"title": "Search failed",
+				"description": "Please try again in a moment."
+			},
+			"no-matches": {
+				"title": "No matches",
+				"description": "Try removing a phoneme or choosing a different next phoneme."
+			},
+			"word-hint": "Click to copy word"
+		}
+	},
 	"ipa-chart": {
 		"title": "IPA Reference",
 		"description": "Reference tool for understanding English phonemes. Click on any symbol to see articulation details, example words, and audio pronunciation.",
