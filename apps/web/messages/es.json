@@ -82,13 +82,13 @@
 	"phoneme-search-page": {
 		"meta": {
 			"title": "Búsqueda por fonemas - Phonaria",
-			"description": "Encuentra palabras en inglés construyendo una ruta de fonemas (ARPABET) y explorando sugerencias del siguiente fonema."
+			"description": "Encuentra palabras en inglés construyendo una secuencia de fonemas (ARPABET) y explorando sugerencias del siguiente fonema."
 		},
 		"builder": {
 			"title": "Búsqueda por fonemas",
 			"path-empty": "Añade fonemas para buscar.",
 			"remove-phoneme-aria": "Quitar fonema {phoneme}",
-			"remove-phoneme-hint": "Haz clic para quitar este fonema de la ruta",
+			"remove-phoneme-hint": "Haz clic para quitar este fonema",
 			"clear": "Limpiar",
 			"depth": "{count}/{max}",
 			"search-placeholder": "ARPABET (K, AE, T)…",
@@ -104,7 +104,7 @@
 			"title": "Coincidencias",
 			"total": "{count} palabras",
 			"empty": {
-				"title": "Construye una ruta",
+				"title": "Añade fonemas",
 				"description": "Escribe ARPABET y pulsa Enter (ejemplo: K, AE, T)."
 			},
 			"loading": "Buscando…",

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@phonaria/ui/components/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@phonaria/ui/components/empty";
 import { Input } from "@phonaria/ui/components/input";
 import { ScrollArea } from "@phonaria/ui/components/scroll-area";
@@ -55,12 +54,12 @@ export function PhonemeSearchClient() {
 	};
 
 	return (
-		<Card className="min-h-0">
-			<CardHeader className="border-b">
-				<CardTitle>{t("builder.title")}</CardTitle>
-			</CardHeader>
+		<div className="min-h-0 rounded-xl border bg-background-soft ring-1 ring-foreground/10 flex flex-col">
+			<div className="border-b px-4 py-4">
+				<div className="text-base font-medium leading-snug">{t("builder.title")}</div>
+			</div>
 
-			<CardContent className="min-h-0 flex flex-col gap-4">
+			<div className="min-h-0 flex flex-col gap-4 px-4 py-4">
 				<div className="flex flex-wrap items-center gap-2">
 					{path.length === 0 ? (
 						<span className="text-sm text-muted-foreground">{t("builder.path-empty")}</span>
@@ -97,6 +96,7 @@ export function PhonemeSearchClient() {
 					<div className="flex-1">
 						<Input
 							type="search"
+							size="lg"
 							list="phoneme-search-arpabet-options"
 							value={input}
 							onChange={(e) => setInput(e.target.value)}
@@ -123,7 +123,7 @@ export function PhonemeSearchClient() {
 							))}
 						</datalist>
 					</div>
-					<Button variant="outline" size="sm" onClick={addFromInput} disabled={!canAppend}>
+					<Button variant="outline" size="lg" onClick={addFromInput} disabled={!canAppend}>
 						{t("builder.add")}
 					</Button>
 				</div>
@@ -216,7 +216,7 @@ export function PhonemeSearchClient() {
 						</ScrollArea>
 					</div>
 				)}
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	);
 }

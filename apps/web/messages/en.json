@@ -82,13 +82,13 @@
 	"phoneme-search-page": {
 		"meta": {
 			"title": "Phoneme search - Phonaria",
-			"description": "Find English words by building a phoneme path (ARPABET) and exploring next phoneme suggestions."
+			"description": "Find English words by building a phoneme sequence (ARPABET) and exploring next phoneme suggestions."
 		},
 		"builder": {
 			"title": "Phoneme search",
 			"path-empty": "Add phonemes to search.",
 			"remove-phoneme-aria": "Remove phoneme {phoneme}",
-			"remove-phoneme-hint": "Click to remove this phoneme from the path",
+			"remove-phoneme-hint": "Click to remove this phoneme",
 			"clear": "Clear",
 			"depth": "{count}/{max}",
 			"search-placeholder": "ARPABET (K, AE, T)…",
@@ -104,7 +104,7 @@
 			"title": "Matches",
 			"total": "{count} words",
 			"empty": {
-				"title": "Build a path",
+				"title": "Add phonemes",
 				"description": "Type ARPABET and press Enter (example: K, AE, T)."
 			},
 			"loading": "Searching…",
