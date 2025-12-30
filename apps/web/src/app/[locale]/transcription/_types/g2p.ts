@@ -1,13 +1,9 @@
-import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
-import type { G2PStress } from "@/app/api/[[...slugs]]/g2p/model";
+import type { CmuStressLevel, PhonemeSymbolId } from "@phonaria/phonetics-data";
 
 /**
  * Frontend types for G2P (Grapheme-to-Phoneme) functionality
- * Includes frontend-specific extensions for UI display
+ * API types are inferred from the Eden client - these are frontend-specific extensions
  */
-
-// Re-export core types from the backend model
-export type { G2PPhoneme, G2PStress, G2PSyllable, G2PWord } from "@/app/api/[[...slugs]]/g2p/model";
 
 /**
  * Frontend-specific: Enhanced phoneme with metadata for UI display
@@ -29,7 +25,7 @@ export interface TranscribedPhoneme {
 
 export interface TranscribedSyllable {
 	phonemes: TranscribedPhoneme[];
-	stress: G2PStress;
+	stress: CmuStressLevel;
 }
 
 /**

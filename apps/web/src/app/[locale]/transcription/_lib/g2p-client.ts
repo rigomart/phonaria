@@ -1,12 +1,16 @@
 import { PhonemeIpaRegistry, type PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type {
-	G2PPhoneme,
 	TranscribedPhoneme,
 	TranscribedSyllable,
 	TranscribedWord,
 	TranscriptionResult,
 } from "@/app/[locale]/transcription/_types/g2p";
 import { api } from "@/lib/eden/client";
+
+/** Inferred G2P response from the API */
+type G2PResponse = Awaited<ReturnType<typeof api.g2p.post>>["data"];
+type G2PWord = Extract<G2PResponse, { words: unknown[] }>["words"][number];
+type G2PPhoneme = G2PWord["variants"][number][number]["phonemes"][number];
 
 /**
  * Main G2P client function

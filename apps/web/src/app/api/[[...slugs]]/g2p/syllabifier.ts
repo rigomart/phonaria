@@ -1,16 +1,17 @@
 import {
 	type CmuArpaToken,
+	type CmuStressLevel,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	getPhonemeIdForCmuArpa,
 } from "@phonaria/phonetics-data";
-import type { G2PPhoneme, G2PStress, G2PSyllable } from "./model";
+import type { G2PPhoneme, G2PSyllable } from "./model";
 import { isValidOnset } from "./phonotactics";
 
 interface InternalPhoneme {
 	cmuToken: string;
 	isVowel: boolean;
-	stress: G2PStress;
+	stress: CmuStressLevel;
 	originalIndex: number;
 }
 
@@ -23,7 +24,7 @@ export function syllabify(cmuTokens: string[]): G2PSyllable[] {
 		const isVowel = getPhonemeCategory(symbolId) === "vowel";
 
 		// Extract stress from CMU token (e.g., "AH0", "AH1", "AH2")
-		let stress: G2PStress = "none";
+		let stress: CmuStressLevel = "none";
 		if (isVowel) {
 			if (token.endsWith("1")) stress = "primary";
 			else if (token.endsWith("2")) stress = "secondary";

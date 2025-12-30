@@ -23,5 +23,9 @@ export async function fetchPhonemeSearch(args: { path: string[]; limit?: number 
 		throw new Error("No data received from phoneme search service");
 	}
 
+	if ("error" in data) {
+		throw new Error(data.message || "Failed to search phonemes");
+	}
+
 	return data;
 }

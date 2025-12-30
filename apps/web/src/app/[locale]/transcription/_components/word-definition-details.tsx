@@ -2,8 +2,11 @@
 
 import { Badge } from "@phonaria/ui/components/badge";
 import { AlertTriangle, Loader2 } from "lucide-react";
-import type { WordDefinition } from "@/app/api/[[...slugs]]/dictionary/model";
+import type { fetchDefinition } from "@/app/[locale]/transcription/_lib/dictionary-client";
 import { AudioControls } from "@/components/audio-controls";
+
+/** Inferred WordDefinition type from the dictionary client */
+type WordDefinition = Awaited<ReturnType<typeof fetchDefinition>>["data"];
 
 type WordDefinitionDetailsHeaderProps = {
 	word: string;

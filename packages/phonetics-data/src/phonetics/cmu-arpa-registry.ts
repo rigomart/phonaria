@@ -1,6 +1,14 @@
 import type { PhonemeSymbolId } from "./ipa-registry";
 
 /**
+ * CMU stress levels for vowels.
+ * - "none": Unstressed vowel (0 in CMU notation)
+ * - "primary": Primary stress (1 in CMU notation)
+ * - "secondary": Secondary stress (2 in CMU notation)
+ */
+export type CmuStressLevel = "none" | "primary" | "secondary";
+
+/**
  * Maps CMU ARPA tokens to phoneme symbol IDs.
  * Each stress variant (0, 1, 2) for vowels maps to the same base phoneme ID.
  */

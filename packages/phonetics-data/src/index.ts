@@ -9,6 +9,7 @@ export type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dic
 export {
 	CmuArpaRegistry,
 	type CmuArpaToken,
+	type CmuStressLevel,
 	getArpabetForPhonemeId,
 	getCmuArpaForPhonemeId,
 	getPhonemeIdForCmuArpa,
