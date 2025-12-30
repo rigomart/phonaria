@@ -1,16 +1,14 @@
 import { like } from "drizzle-orm";
-import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/drizzle";
 import { words } from "@/db/schema";
-import { checkRateLimit } from "../_lib/rate-limit";
+import type { PhonemeSearchResponse } from "./model";
 import {
 	arpabetToIpa,
 	buildPhonemeKeyPrefix,
 	extractNextPhoneme,
 	isValidArpabetLabel,
 	parsePath,
-} from "./_lib/phoneme-utils";
-import { phonemeSearchQuerySchema } from "./_schemas/phoneme-search.schema";
+} from "./phoneme-utils";
 
 type NextPhonemeAggregation = Map<string, number>;
 
@@ -39,57 +37,28 @@ function formatNextPhonemes(
 		.sort((a, b) => b.count - a.count);
 }
 
-export async function GET(request: NextRequest) {
-	const rateLimitResult = await checkRateLimit(request);
-	if (rateLimitResult.isRateLimited) {
-		await rateLimitResult.pending;
-		return NextResponse.json(
-			{ error: "rate_limit_exceeded", message: "Too many requests" },
-			{ status: 429 },
-		);
-	}
-
-	const { searchParams } = new URL(request.url);
-	const rawPath = searchParams.get("path") ?? "";
-	const rawLimit = searchParams.get("limit") ?? "50";
-
-	const validationResult = phonemeSearchQuerySchema.safeParse({
-		path: rawPath,
-		limit: rawLimit,
-	});
-
-	if (!validationResult.success) {
-		return NextResponse.json(
-			{ error: "invalid_request", message: "Invalid request parameters" },
-			{ status: 400 },
-		);
-	}
-
-	const { path: pathString, limit } = validationResult.data;
-
+export async function searchPhonemes(
+	pathString: string,
+	limit: number,
+): Promise<PhonemeSearchResponse | { error: string; message: string; invalidLabels?: string[] }> {
 	const pathArray = parsePath(pathString);
 
 	if (pathArray.length === 0) {
-		await rateLimitResult.pending;
-		return NextResponse.json({
+		return {
 			words: [],
 			totalCount: 0,
 			nextPhonemes: [],
 			path: [],
-		});
+		};
 	}
 
 	const invalidLabels = pathArray.filter((label) => !isValidArpabetLabel(label));
 	if (invalidLabels.length > 0) {
-		await rateLimitResult.pending;
-		return NextResponse.json(
-			{
-				error: "invalid_path",
-				message: `Invalid ARPABET labels: ${invalidLabels.join(", ")}`,
-				invalidLabels,
-			},
-			{ status: 400 },
-		);
+		return {
+			error: "invalid_path",
+			message: `Invalid ARPABET labels: ${invalidLabels.join(", ")}`,
+			invalidLabels,
+		};
 	}
 
 	const prefix = buildPhonemeKeyPrefix(pathArray);
@@ -106,11 +75,10 @@ export async function GET(request: NextRequest) {
 	const nextPhonemeAggregation = aggregateNextPhonemes(phonemeKeys, pathArray.length);
 	const nextPhonemes = formatNextPhonemes(nextPhonemeAggregation);
 
-	await rateLimitResult.pending;
-	return NextResponse.json({
+	return {
 		words: wordsList,
 		totalCount: wordsList.length,
 		nextPhonemes,
 		path: pathArray,
-	});
+	};
 }

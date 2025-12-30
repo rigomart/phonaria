@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { __resetCmudictCache, lookupCmudict } from "./dictionary";
+import { __resetCmudictCache, lookupCmudict } from "./cmudict";
 
 vi.mock("@phonaria/phonetics-data", () => {
 	const ipaMap: Record<string, string> = {

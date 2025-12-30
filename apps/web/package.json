@@ -16,6 +16,7 @@
 		"db:seed": "bun run src/db/seed.ts"
 	},
 	"dependencies": {
+		"@elysiajs/eden": "^1.4.6",
 		"@neondatabase/serverless": "^1.0.2",
 		"@phonaria/phonetics-data": "workspace:*",
 		"@phonaria/ui": "workspace:*",
@@ -27,6 +28,7 @@
 		"@vercel/speed-insights": "^1.3.1",
 		"clsx": "^2.1.1",
 		"drizzle-orm": "^0.45.1",
+		"elysia": "^1.4.19",
 		"lucide-react": "^0.555.0",
 		"next": "^16.0.10",
 		"next-intl": "^4.5.8",

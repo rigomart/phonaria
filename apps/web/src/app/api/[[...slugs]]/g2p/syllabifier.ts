@@ -4,13 +4,8 @@ import {
 	getPhonemeCategory,
 	getPhonemeIdForCmuArpa,
 } from "@phonaria/phonetics-data";
-import type { G2PPhoneme, G2PStress } from "../_schemas/g2p-api.schema";
+import type { G2PPhoneme, G2PStress, G2PSyllable } from "./model";
 import { isValidOnset } from "./phonotactics";
-
-export interface Syllable {
-	phonemes: G2PPhoneme[];
-	stress: G2PStress;
-}
 
 interface InternalPhoneme {
 	cmuToken: string;
@@ -19,7 +14,7 @@ interface InternalPhoneme {
 	originalIndex: number;
 }
 
-export function syllabify(cmuTokens: string[]): Syllable[] {
+export function syllabify(cmuTokens: string[]): G2PSyllable[] {
 	if (cmuTokens.length === 0) return [];
 
 	// 1. Map to internal representation
@@ -55,7 +50,7 @@ export function syllabify(cmuTokens: string[]): Syllable[] {
 		];
 	}
 
-	const syllables: Syllable[] = [];
+	const syllables: G2PSyllable[] = [];
 	let currentStart = 0;
 
 	// 3. Iterate through Nuclei to form syllables

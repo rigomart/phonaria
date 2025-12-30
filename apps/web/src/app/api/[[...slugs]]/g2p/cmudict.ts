@@ -1,9 +1,9 @@
 import { inArray } from "drizzle-orm";
 import { db } from "@/db/drizzle";
 import { words } from "@/db/schema";
-import type { G2PSyllable } from "../_schemas/g2p-api.schema";
-import { normalizeCmuWord } from "../_utils/text-processing";
+import type { G2PSyllable } from "./model";
 import { syllabify } from "./syllabifier";
+import { normalizeCmuWord } from "./text-processing";
 
 type CmudictVariant = G2PSyllable[];
 export type CmudictLookupResult = CmudictVariant[] | undefined;

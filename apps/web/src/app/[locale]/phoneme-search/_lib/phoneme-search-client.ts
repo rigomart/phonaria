@@ -1,4 +1,4 @@
-import { phonemeSearchResponseSchema } from "@/app/api/phoneme-search/_schemas/phoneme-search.schema";
+import { phonemeSearchResponseSchema } from "@/app/api/[[...slugs]]/phoneme-search/model";
 import { createApiClient } from "@/lib/api/api-client";
 
 const phonemeSearchApiClient = createApiClient({

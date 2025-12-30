@@ -1,10 +1,5 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
-import type {
-	G2PPhoneme,
-	G2PStress,
-	G2PSyllable,
-	G2PWord,
-} from "@/app/api/g2p/_schemas/g2p-api.schema";
+import type { G2PPhoneme, G2PStress, G2PSyllable, G2PWord } from "@/app/api/[[...slugs]]/g2p/model";
 
 /**
  * Frontend types for G2P (Grapheme-to-Phoneme) functionality

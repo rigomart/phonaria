@@ -1,4 +1,4 @@
-import type { G2PPhoneme, G2PSyllable } from "../_schemas/g2p-api.schema";
+import type { G2PPhoneme, G2PSyllable } from "./model";
 
 export class FallbackG2P {
 	generatePronunciation(word: string): G2PSyllable[] {
