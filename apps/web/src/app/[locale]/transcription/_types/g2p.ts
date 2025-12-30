@@ -1,35 +1,13 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
-import type { G2PPhoneme, G2PStress, G2PSyllable, G2PWord } from "@/app/api/[[...slugs]]/g2p/model";
+import type { G2PStress } from "@/app/api/[[...slugs]]/g2p/model";
 
 /**
  * Frontend types for G2P (Grapheme-to-Phoneme) functionality
- * Mirrors the API types but includes frontend-specific extensions
+ * Includes frontend-specific extensions for UI display
  */
 
-/**
- * G2P API request structure
- */
-export interface G2PRequest {
-	text: string;
-}
-
-// Re-export core types from the schema to ensure alignment
-export type { G2PWord, G2PSyllable, G2PPhoneme, G2PStress };
-
-/**
- * G2P API response structure
- */
-export interface G2PResponse {
-	words: G2PWord[];
-}
-
-/**
- * G2P API error structure
- */
-export interface G2PError {
-	error: string;
-	message: string;
-}
+// Re-export core types from the backend model
+export type { G2PPhoneme, G2PStress, G2PSyllable, G2PWord } from "@/app/api/[[...slugs]]/g2p/model";
 
 /**
  * Frontend-specific: Enhanced phoneme with metadata for UI display

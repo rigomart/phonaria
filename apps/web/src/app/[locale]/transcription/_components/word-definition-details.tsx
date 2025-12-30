@@ -2,8 +2,8 @@
 
 import { Badge } from "@phonaria/ui/components/badge";
 import { AlertTriangle, Loader2 } from "lucide-react";
+import type { WordDefinition } from "@/app/api/[[...slugs]]/dictionary/model";
 import { AudioControls } from "@/components/audio-controls";
-import type { WordDefinition } from "../_schemas/dictionary";
 
 type WordDefinitionDetailsHeaderProps = {
 	word: string;
