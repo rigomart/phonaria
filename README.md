@@ -6,7 +6,8 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It’s a too
 
 - **G2P studio** – Paste text for stress‑marked IPA; click words for definitions and click phonemes for articulation, allophones, spelling patterns, and contrasts.
 - **IPA reference hub** – Responsive General American chart with production guidance, minimal pairs, and example words (with audio where available).
-- **Dictionary bridge** – In‑context lookups with audio and clear empty/error states, rate‑limited via Upstash Redis.
+ - **Dictionary bridge** – In‑context lookups with audio and clear empty/error states, rate‑limited via Upstash Redis.
+ - **Phoneme search** – Word search by phoneme pattern for finding words with specific sound sequences.
 - **Insights** – CMUDict coverage, phoneme frequency, and syllable distribution visualizations.
 - **Phonetics data core** – Typed phoneme registries and CMUDict assets power both the UI and helper scripts.
 
@@ -23,7 +24,7 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It’s a too
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) 1.3+
+ - [Bun](https://bun.sh/) 1.3+ (package manager: 1.3.2)
 - Node.js 18.18 or newer (matching the Next.js support matrix)
 
 ### Installation & local development
