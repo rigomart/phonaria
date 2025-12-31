@@ -2,4 +2,4 @@
 "@phonaria/app": patch
 ---
 
-Migrate api routes to ElysiaJS
+Migrate api routes to oRPC
