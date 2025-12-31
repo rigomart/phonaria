@@ -4,6 +4,7 @@
 			"navigation": {
 				"overview": "Overview",
 				"transcription": "Transcription",
+				"find-by-sound": "Find by Sound",
 				"ipa-chart": "IPA Reference",
 				"insights": "Insights"
 			},
@@ -117,6 +118,47 @@
 				"description": "Try removing a phoneme or choosing a different next phoneme."
 			},
 			"word-hint": "Click to copy word"
+		}
+	},
+	"find-by-sound-page": {
+		"meta": {
+			"title": "Find by Sound - Phonaria",
+			"description": "Find English words by selecting phonemes from an interactive IPA keyboard."
+		},
+		"header": {
+			"title": "Find by Sound",
+			"description": "Find words by their sounds using IPA notation."
+		},
+		"search": {
+			"placeholder": "Search sounds...",
+			"aria-label": "Search phonemes"
+		},
+		"sequence": {
+			"title": "Sound Sequence",
+			"empty": "Select sounds to find words",
+			"clear": "Clear",
+			"remove-aria": "Remove {phoneme}"
+		},
+		"suggestions": {
+			"title": "Try next"
+		},
+		"results": {
+			"title": "Results",
+			"count": "{count} words",
+			"loading": "Searching...",
+			"empty": {
+				"title": "Select sounds",
+				"description": "Click phonemes above to search for matching words."
+			},
+			"error": {
+				"title": "Search failed",
+				"description": "Please try again."
+			},
+			"no-matches": {
+				"title": "No matches",
+				"description": "Try removing a sound or choosing a different one."
+			},
+			"word-hint": "Click to copy"
 		}
 	},
 	"ipa-chart": {

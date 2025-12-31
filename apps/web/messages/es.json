@@ -4,6 +4,7 @@
 			"navigation": {
 				"overview": "Inicio",
 				"transcription": "Transcripción",
+				"find-by-sound": "Buscar por sonido",
 				"ipa-chart": "Tabla IPA",
 				"insights": "Estadísticas"
 			},
@@ -117,6 +118,47 @@
 				"description": "Prueba a quitar un fonema o elige un siguiente fonema diferente."
 			},
 			"word-hint": "Haz clic para copiar la palabra"
+		}
+	},
+	"find-by-sound-page": {
+		"meta": {
+			"title": "Buscar por sonido - Phonaria",
+			"description": "Encuentra palabras en inglés seleccionando fonemas desde un teclado IPA interactivo."
+		},
+		"header": {
+			"title": "Buscar por sonido",
+			"description": "Encuentra palabras por sus sonidos usando notación IPA."
+		},
+		"search": {
+			"placeholder": "Buscar sonidos...",
+			"aria-label": "Buscar fonemas"
+		},
+		"sequence": {
+			"title": "Secuencia de sonidos",
+			"empty": "Selecciona sonidos para encontrar palabras",
+			"clear": "Limpiar",
+			"remove-aria": "Quitar {phoneme}"
+		},
+		"suggestions": {
+			"title": "Prueba con"
+		},
+		"results": {
+			"title": "Resultados",
+			"count": "{count} palabras",
+			"loading": "Buscando...",
+			"empty": {
+				"title": "Selecciona sonidos",
+				"description": "Haz clic en los fonemas de arriba para buscar palabras."
+			},
+			"error": {
+				"title": "Error en la búsqueda",
+				"description": "Inténtalo de nuevo."
+			},
+			"no-matches": {
+				"title": "Sin coincidencias",
+				"description": "Prueba a quitar un sonido o elige uno diferente."
+			},
+			"word-hint": "Haz clic para copiar"
 		}
 	},
 	"ipa-chart": {

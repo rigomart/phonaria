@@ -25,6 +25,7 @@ export function Header() {
 
 	const navigationLinks = [
 		{ href: "/transcription", label: t("transcription") },
+		{ href: "/find-by-sound", label: t("find-by-sound") },
 		{ href: "/ipa-chart", label: t("ipa-chart") },
 		{ href: "/insights", label: t("insights") },
 	];
