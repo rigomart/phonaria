@@ -18,8 +18,8 @@
 	"dependencies": {
 		"@neondatabase/serverless": "^1.0.2",
 		"@orpc/client": "^1.13.2",
-		"@orpc/react-query": "^1.13.2",
 		"@orpc/server": "^1.13.2",
+		"@orpc/tanstack-query": "^1.13.2",
 		"@phonaria/phonetics-data": "workspace:*",
 		"@phonaria/ui": "workspace:*",
 		"@tanstack/react-query": "^5.87.1",

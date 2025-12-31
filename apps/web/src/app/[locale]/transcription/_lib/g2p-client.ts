@@ -5,7 +5,7 @@ import type {
 	TranscribedWord,
 	TranscriptionResult,
 } from "@/app/[locale]/transcription/_types/g2p";
-import type { G2PResponse } from "@/app/api/[[...slugs]]/g2p/model";
+import type { G2PResponse } from "@/app/api/services/g2p/model";
 
 /** Inferred types from G2P API response */
 type G2PWord = G2PResponse["words"][number];

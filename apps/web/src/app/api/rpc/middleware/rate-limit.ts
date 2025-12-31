@@ -1,4 +1,4 @@
-import { checkRateLimit } from "@/app/api/[[...slugs]]/_shared/rate-limit";
+import { checkRateLimit } from "@/app/api/services/_shared/rate-limit";
 import { base } from "../base";
 
 export const withRateLimit = base.middleware(async ({ context, next, errors }) => {

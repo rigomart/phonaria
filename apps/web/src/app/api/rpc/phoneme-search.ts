@@ -1,8 +1,8 @@
 import {
 	phonemeSearchQuerySchema,
 	phonemeSearchResponseSchema,
-} from "@/app/api/[[...slugs]]/phoneme-search/model";
-import { searchPhonemes } from "@/app/api/[[...slugs]]/phoneme-search/service";
+} from "@/app/api/services/phoneme-search/model";
+import { searchPhonemes } from "@/app/api/services/phoneme-search/service";
 import { base } from "./base";
 import { withRateLimit } from "./middleware/rate-limit";
 

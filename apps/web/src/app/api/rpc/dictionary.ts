@@ -1,8 +1,5 @@
-import { wordDefinitionSchema } from "@/app/api/[[...slugs]]/dictionary/model";
-import {
-	dictionaryQuerySchema,
-	fetchWordDefinition,
-} from "@/app/api/[[...slugs]]/dictionary/service";
+import { wordDefinitionSchema } from "@/app/api/services/dictionary/model";
+import { dictionaryQuerySchema, fetchWordDefinition } from "@/app/api/services/dictionary/service";
 import { base } from "./base";
 import { withRateLimit } from "./middleware/rate-limit";
 

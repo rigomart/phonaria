@@ -4,10 +4,11 @@ function makeQueryClient() {
 	return new QueryClient({
 		defaultOptions: {
 			queries: {
+				// Prevents immediate refetch on mount
 				staleTime: 60 * 1000,
 			},
 			dehydrate: {
-				// include pending queries in dehydration
+				// Include pending queries in dehydration
 				shouldDehydrateQuery: (query) =>
 					defaultShouldDehydrateQuery(query) || query.state.status === "pending",
 			},

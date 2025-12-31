@@ -4,6 +4,10 @@ import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";
 import type { router } from "@/app/api/rpc/router";
 
+declare global {
+	var $orpcClient: RouterClient<typeof router> | undefined;
+}
+
 const link = new RPCLink({
 	url: () => {
 		if (typeof window === "undefined") {
@@ -13,4 +17,4 @@ const link = new RPCLink({
 	},
 });
 
-export const client: RouterClient<typeof router> = createORPCClient(link);
+export const client: RouterClient<typeof router> = globalThis.$orpcClient ?? createORPCClient(link);

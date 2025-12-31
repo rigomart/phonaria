@@ -18,4 +18,4 @@ if (!globalThis.$orpcClient) {
 	});
 }
 
-export const client: RouterClient<typeof router> = globalThis.$orpcClient;
+export const serverClient: RouterClient<typeof router> = globalThis.$orpcClient;
