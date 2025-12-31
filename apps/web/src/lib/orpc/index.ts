@@ -3,5 +3,12 @@ import { client } from "./client";
 
 export const orpc = createTanstackQueryUtils(client);
 
-// Re-export for type-safe error handling
 export { isDefinedError } from "@orpc/client";
+export type {
+	DictionaryLookupInput,
+	G2PInput,
+	G2PResponse,
+	PhonemeSearchInput,
+	PhonemeSearchOutput,
+	WordDefinition,
+} from "./types";

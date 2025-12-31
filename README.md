@@ -47,6 +47,15 @@ bun build        # build all packages for production
 
 All commits should pass linting, type checking, and relevant tests.
 
+## Tech stack
+
+- Next.js 16, React 19, TypeScript 5, Tailwind CSS v4
+- oRPC for type-safe API with TanStack Query integration
+- Drizzle ORM with Neon PostgreSQL
+- Turborepo + Bun workspaces
+
+See [`apps/web/README.md`](apps/web/README.md) for details.
+
 ## Contributing
 
 Contributions are welcome. Before opening a PR:

@@ -6,7 +6,7 @@ This package hosts the primary Phonaria experience: a Next.js App Router project
 
  - App Router + locale‑based routing under `app/[locale]` (e.g. `/en`, `/es`)
  - Core routes: `/{locale}` overview, `/{locale}/transcription`, `/{locale}/ipa-chart`, `/{locale}/insights`, `/{locale}/credits`
- - API routes powered by Elysia JS via Next.js catch-all route:
+ - API routes powered by oRPC for type-safe client–server contracts:
    - `POST /api/g2p` (G2P transcription)
    - `GET /api/dictionary` (lookup + audio)
    - `GET /api/phoneme-search` (phoneme-based word search)
@@ -20,6 +20,7 @@ This package hosts the primary Phonaria experience: a Next.js App Router project
  - **Dictionary integration** – `GET /api/dictionary` proxies Free Dictionary responses with Upstash Redis rate limiting; transcribed words link straight to definitions and audio.
  - **Themeable & responsive UI** – Tailwind CSS v4, shadcn/ui primitives, and next-themes provide a consistent light/dark experience across devices.
  - **Internationalization** – Locale-based routing via next-intl with support for multiple languages.
+ - **Type-safe API client** – oRPC with TanStack Query integration ensures type safety across client and server boundaries without manually maintaining type definitions.
 
 ## Tech stack
 
@@ -29,8 +30,8 @@ This package hosts the primary Phonaria experience: a Next.js App Router project
  - **Styling** – Tailwind CSS v4, shadcn/ui components, Radix UI primitives, CSS variables in `src/app/[locale]/globals.css`
  - **State Management** – TanStack Query v5 (server state and caching), Zustand (client state stores)
  - **Internationalization** – next-intl with locale-based routing and JSON message catalogs
- - **API Framework** – Elysia JS (via Next.js catch-all route at `/api/[[...slugs]]/route.ts`)
- - **Data Validation** – Elysia types with Zod schemas for API request/response validation
+ - **API Framework** – oRPC with Next.js API routes for type-safe client–server communication
+ - **Data Validation** – Zod schemas for API request/response validation and type safety
  - **Database** – Drizzle ORM with Neon PostgreSQL for persisted data
  - **Rate Limiting** – Upstash Redis for API endpoint protection
 - **Analytics** – Vercel Analytics and Speed Insights
@@ -94,29 +95,31 @@ apps/web
 │   │   │   ├── globals.css
 │   │   │   ├── layout.tsx
 │   │   │   └── providers.tsx
- │   │   ├── api/           # REST API endpoints (Elysia JS via Next.js catch-all route)
- │   │   │   └── [[...slugs]]/       # Catch-all route for Elysia handlers
- │   │   │       ├── route.ts         # Elysia app entry point with GET/POST handlers
- │   │   │       ├── _shared/         # Shared API utilities
- │   │   │       │   └── rate-limit.ts
- │   │   │       ├── dictionary/      # Dictionary lookup with rate limiting
- │   │   │       │   ├── index.ts     # Elysia GET /api/dictionary
- │   │   │       │   ├── service.ts   # Dictionary API service
- │   │   │       │   └── model.ts     # Types and schemas
- │   │   │       ├── g2p/             # Grapheme-to-phoneme transcription
- │   │   │       │   ├── index.ts     # Elysia POST /api/g2p
- │   │   │       │   ├── service.ts   # G2P processing logic
- │   │   │       │   ├── model.ts     # Types and schemas
- │   │   │       │   ├── syllabifier.ts
- │   │   │       │   ├── cmudict.ts
- │   │   │       │   ├── text-processing.ts
- │   │   │       │   ├── phonotactics.ts
- │   │   │       │   └── phoneme-generator.ts
- │   │   │       └── phoneme-search/  # Phoneme-based word search
- │   │   │           ├── index.ts     # Elysia GET /api/phoneme-search
- │   │   │           ├── service.ts   # Search service
- │   │   │           ├── model.ts     # Types and schemas
- │   │   │           └── phoneme-utils.ts
+ │   │   ├── api/                 # oRPC API endpoints
+ │   │   │   ├── [[...rest]]/     # Catch-all route for oRPC handler
+ │   │   │   │   └── route.ts     # RPCHandler with GET/POST exports
+ │   │   │   ├── router.ts        # Router definition combining all procedures
+ │   │   │   ├── _shared/         # Shared API utilities and middleware
+ │   │   │   │   ├── base.ts      # Base procedure with shared context
+ │   │   │   │   └── middleware/  # Rate limiting, auth, etc.
+ │   │   │   ├── dictionary/      # Dictionary lookup with rate limiting
+ │   │   │   │   ├── procedure.ts # oRPC procedure definition
+ │   │   │   │   ├── service.ts   # Dictionary API service
+ │   │   │   │   └── model.ts     # Zod schemas and types
+ │   │   │   ├── g2p/             # Grapheme-to-phoneme transcription
+ │   │   │   │   ├── procedure.ts # oRPC procedure definition
+ │   │   │   │   ├── service.ts   # G2P processing logic
+ │   │   │   │   ├── model.ts     # Zod schemas and types
+ │   │   │   │   ├── syllabifier.ts
+ │   │   │   │   ├── cmudict.ts
+ │   │   │   │   ├── text-processing.ts
+ │   │   │   │   ├── phonotactics.ts
+ │   │   │   │   └── phoneme-generator.ts
+ │   │   │   └── phoneme-search/  # Phoneme-based word search
+ │   │   │       ├── procedure.ts # oRPC procedure definition
+ │   │   │       ├── service.ts   # Search service
+ │   │   │       ├── model.ts     # Zod schemas and types
+ │   │   │       └── phoneme-utils.ts
 │   │   └── favicon.ico
 │   ├── components/        # Shared UI components
 │   │   ├── phoneme-details/  # Phoneme dialog components
@@ -133,7 +136,11 @@ apps/web
 │   │   └── use-media-query.ts
 │   ├── i18n/              # next-intl routing, navigation, and request config
 │   ├── lib/               # Shared utilities
-│   │   ├── api/           # API client utilities
+│   │   ├── orpc/          # oRPC client configuration and types
+│   │   │   ├── client.ts  # oRPC client instance
+│   │   │   ├── server.ts  # Server-side oRPC client
+│   │   │   ├── types.ts   # Inferred types from router (use these!)
+│   │   │   └── index.ts   # TanStack Query utils and exports
 │   │   ├── utils.ts       # General helper functions
 │   │   └── vowel-chart-geometry.ts
 ├── next.config.ts         # Next.js configuration (CSP headers, etc.)
@@ -146,6 +153,20 @@ apps/web
 - **Prefixed directories** (`_components`, `_hooks`, `_lib`, etc.) – Feature-specific code co-located with routes; not exposed as routes by Next.js
 - **Route groups** (`(overview)`) – Share layouts without affecting URL structure
 - **Locale routes** (`[locale]`) – Dynamic routing for internationalization support
+
+## API type patterns
+
+Use oRPC type inference instead of importing from API model files:
+
+```ts
+// Good: Import from @/lib/orpc
+import { orpc, type G2PResponse, type WordDefinition } from "@/lib/orpc";
+
+// Bad: Don't import from API model files
+import type { G2PResponse } from "@/app/api/g2p/model";
+```
+
+Types in `src/lib/orpc/types.ts` are inferred from the router using `InferClientOutputs` and `InferClientInputs`.
 
 ## Data dependencies
 
