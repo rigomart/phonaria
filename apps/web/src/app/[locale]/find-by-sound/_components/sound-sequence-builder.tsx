@@ -27,14 +27,14 @@ export function SoundSequenceBuilder({
 	}
 
 	return (
-		<div className="rounded-lg bg-muted/30 p-3 flex gap-2 justify-between">
-			<div className="flex flex-wrap items-center gap-1.5">
+		<div className="rounded-lg bg-muted/30 flex gap-2 justify-between items-center">
+			<div className="flex flex-wrap items-center gap-1">
 				{phonemes.map((phoneme, index) => (
 					<Button
 						key={`${index}-${phoneme.id}`}
-						size="xs"
+						size="default"
 						variant="outline"
-						className="gap-1.5 bg-background"
+						className="bg-background"
 						onClick={() => onRemove(index)}
 						aria-label={t("remove-aria", { phoneme: phoneme.ipa })}
 					>
@@ -43,7 +43,7 @@ export function SoundSequenceBuilder({
 					</Button>
 				))}
 			</div>
-			<Button variant="ghost" size="xs" onClick={onClearAll}>
+			<Button variant="ghost" size="sm" onClick={onClearAll}>
 				<Trash className="size-3 opacity-70" aria-hidden="true" />
 				{t("clear")}
 			</Button>

@@ -130,7 +130,7 @@
 			"description": "Find words by their sounds using IPA notation."
 		},
 		"search": {
-			"placeholder": "Search sounds...",
+			"placeholder": "Search phonemes by description or IPA...",
 			"aria-label": "Search phonemes"
 		},
 		"sequence": {
@@ -158,7 +158,13 @@
 				"title": "No matches",
 				"description": "Try removing a sound or choosing a different one."
 			},
-			"word-hint": "Click to copy"
+			"word-hint": "Click to copy",
+			"capped-results": "Showing the first {limit} matches"
+		},
+		"source-note": {
+			"prefix": "Data derived from the CMU Pronouncing Dictionary.",
+			"link": "View credits",
+			"suffix": "for authorship and licensing details."
 		}
 	},
 	"ipa-chart": {

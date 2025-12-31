@@ -10,9 +10,11 @@ export {
 	CmuArpaRegistry,
 	type CmuArpaToken,
 	type CmuStressLevel,
+	cmuVariantToIpa,
 	getArpabetForPhonemeId,
 	getCmuArpaForPhonemeId,
 	getPhonemeIdForCmuArpa,
+	isCmuArpaToken,
 	PhonemeArpabetLabel,
 } from "./phonetics/cmu-arpa-registry";
 export type {

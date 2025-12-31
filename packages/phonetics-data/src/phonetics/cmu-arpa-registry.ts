@@ -1,4 +1,4 @@
-import type { PhonemeSymbolId } from "./ipa-registry";
+import { PhonemeIpaRegistry, type PhonemeSymbolId } from "./ipa-registry";
 
 /**
  * CMU stress levels for vowels.
@@ -183,4 +183,40 @@ export const PhonemeArpabetLabel = {
  */
 export function getArpabetForPhonemeId(phonemeId: PhonemeSymbolId): string {
 	return PhonemeArpabetLabel[phonemeId];
+}
+
+/**
+ * Checks if a string is a valid CMU ARPA token.
+ * @param token - The string to check.
+ * @returns True if the token is a valid CMU ARPA token.
+ */
+export function isCmuArpaToken(token: string): token is CmuArpaToken {
+	return token in CmuArpaRegistry;
+}
+
+/**
+ * Converts a CMU pronunciation variant string to an IPA string.
+ * Tokens that don't map to known phonemes are skipped.
+ * @param variant - A space-separated CMU pronunciation string (e.g., "P AE1 T").
+ * @returns The IPA representation (e.g., "pæt").
+ * @example
+ * cmuVariantToIpa("P AE1 T") // "pæt"
+ * cmuVariantToIpa("K AE1 T S") // "kæts"
+ * cmuVariantToIpa("HH AH0 L OW1") // "həloʊ"
+ */
+export function cmuVariantToIpa(variant: string): string {
+	const tokens = variant.split(/\s+/).filter((t) => t.length > 0);
+	const ipaSymbols: string[] = [];
+
+	for (const token of tokens) {
+		if (isCmuArpaToken(token)) {
+			const phonemeId = CmuArpaRegistry[token];
+			const ipa = PhonemeIpaRegistry[phonemeId];
+			if (ipa) {
+				ipaSymbols.push(ipa);
+			}
+		}
+	}
+
+	return ipaSymbols.join("");
 }

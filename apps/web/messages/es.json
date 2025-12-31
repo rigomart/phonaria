@@ -130,7 +130,7 @@
 			"description": "Encuentra palabras por sus sonidos usando notación IPA."
 		},
 		"search": {
-			"placeholder": "Buscar sonidos...",
+			"placeholder": "Buscar fonemas por descripción o IPA...",
 			"aria-label": "Buscar fonemas"
 		},
 		"sequence": {
@@ -158,7 +158,13 @@
 				"title": "Sin coincidencias",
 				"description": "Prueba a quitar un sonido o elige uno diferente."
 			},
-			"word-hint": "Haz clic para copiar"
+			"word-hint": "Haz clic para copiar",
+			"capped-results": "Mostrando los primeros {limit} resultados"
+		},
+		"source-note": {
+			"prefix": "Datos derivados del Diccionario de pronunciación de CMU (CMUDict).",
+			"link": "Ver créditos",
+			"suffix": "para detalles de autoría y licencias."
 		}
 	},
 	"ipa-chart": {

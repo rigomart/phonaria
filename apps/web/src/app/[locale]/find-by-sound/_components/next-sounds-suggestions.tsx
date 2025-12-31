@@ -2,9 +2,10 @@
 
 import { Button } from "@phonaria/ui/components/button";
 import { useTranslations } from "next-intl";
+import type { PhonemeSearchOutput } from "@/lib/orpc";
 
 interface NextSoundsSuggestionsProps {
-	suggestions: Array<{ arpabet: string; ipa: string; count: number }>;
+	suggestions: PhonemeSearchOutput["nextPhonemes"];
 	onSelect: (arpabet: string) => void;
 	disabled?: boolean;
 }

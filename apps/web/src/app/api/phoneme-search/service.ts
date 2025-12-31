@@ -1,3 +1,4 @@
+import { cmuVariantToIpa } from "@phonaria/phonetics-data";
 import { like } from "drizzle-orm";
 import { db } from "@/db/drizzle";
 import { words } from "@/db/schema";
@@ -64,12 +65,22 @@ export async function searchPhonemes(
 	const prefix = buildPhonemeKeyPrefix(pathArray);
 
 	const matchingWords = await db
-		.select({ word: words.word, phonemeKey: words.phonemeKey })
+		.select({
+			word: words.word,
+			phonemeKey: words.phonemeKey,
+			cmuVariants: words.cmuVariants,
+		})
 		.from(words)
 		.where(like(words.phonemeKey, `${prefix}%`))
 		.limit(limit);
 
-	const wordsList = matchingWords.map((row) => row.word.toLowerCase());
+	const wordsList = matchingWords.map((row) => {
+		const firstVariant = row.cmuVariants[0] ?? "";
+		return {
+			word: row.word.toLowerCase(),
+			ipa: cmuVariantToIpa(firstVariant),
+		};
+	});
 	const phonemeKeys = matchingWords.map((row) => row.phonemeKey);
 
 	const nextPhonemeAggregation = aggregateNextPhonemes(phonemeKeys, pathArray.length);

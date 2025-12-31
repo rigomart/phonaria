@@ -5,8 +5,13 @@ export const phonemeSearchQuerySchema = z.object({
 	limit: z.coerce.number().int().min(1).max(200).default(50),
 });
 
+const wordResultSchema = z.object({
+	word: z.string(),
+	ipa: z.string(),
+});
+
 export const phonemeSearchResponseSchema = z.object({
-	words: z.array(z.string()),
+	words: z.array(wordResultSchema),
 	totalCount: z.number(),
 	nextPhonemes: z.array(
 		z.object({

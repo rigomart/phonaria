@@ -3,6 +3,7 @@
 import { skipToken, useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { Link } from "@/i18n/navigation";
 import { orpc } from "@/lib/orpc";
 import { ALL_PHONEMES, type KeyboardPhoneme } from "../_lib/keyboard-layout";
 import { FindBySoundResults } from "./find-by-sound-results";
@@ -73,9 +74,9 @@ export function FindBySoundClient() {
 							onRemove={handleRemovePhoneme}
 							onClearAll={handleClearAll}
 						/>
-						<PhonemeSearchInput onSelectPhoneme={handleSelectPhoneme} />
 					</div>
-					<div className="p-3">
+					<div className="p-3 flex flex-col gap-2">
+						<PhonemeSearchInput onSelectPhoneme={handleSelectPhoneme} />
 						<IpaKeyboard onSelectPhoneme={handleSelectPhoneme} />
 					</div>
 				</div>
@@ -91,10 +92,19 @@ export function FindBySoundClient() {
 				<FindBySoundResults
 					words={words}
 					totalCount={totalCount}
+					limit={DEFAULT_LIMIT}
 					isLoading={searchQuery.isLoading}
 					isError={searchQuery.isError}
 					hasSelection={hasSelection}
 				/>
+			</div>
+
+			<div className="text-center text-sm text-muted-foreground">
+				{t("source-note.prefix")}{" "}
+				<Link href="/credits" className="underline underline-offset-4 hover:text-foreground">
+					{t("source-note.link")}
+				</Link>{" "}
+				{t("source-note.suffix")}
 			</div>
 		</div>
 	);
