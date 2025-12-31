@@ -1,30 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchDefinition } from "../_lib/dictionary-client";
+import { skipToken, useQuery } from "@tanstack/react-query";
+import { isDefinedError, orpc } from "@/lib/orpc";
 
 export function useDictionary(word: string | null) {
-	return useQuery({
-		queryKey: ["dictionary", word],
-		queryFn: async () => {
-			if (!word) {
-				throw new Error("No word");
-			}
-			const result = await fetchDefinition(word);
-			return result.data;
-		},
-		retry(failureCount, error) {
-			// Don't retry on 404 or rate limit errors
-			if (error instanceof Error) {
-				if (error.message.includes("not found") || error.message.includes("rate")) {
-					return false;
-				}
-			}
-			return failureCount < 2;
-		},
-		enabled: !!word,
-		staleTime: 60 * 60 * 1000,
-		gcTime: 24 * 60 * 60 * 1000,
-		refetchOnWindowFocus: false,
-		refetchOnReconnect: false,
-		refetchOnMount: false,
-	});
+	return useQuery(
+		orpc.dictionary.lookup.queryOptions({
+			input: word ? { word } : skipToken,
+			staleTime: 60 * 60 * 1000,
+			gcTime: 24 * 60 * 60 * 1000,
+			refetchOnWindowFocus: false,
+			refetchOnReconnect: false,
+			refetchOnMount: false,
+			retry: (failureCount, error) => {
+				// Don't retry on NOT_FOUND or RATE_LIMITED
+				if (isDefinedError(error)) return false;
+				return failureCount < 2;
+			},
+		}),
+	);
 }

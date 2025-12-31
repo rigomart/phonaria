@@ -5,36 +5,20 @@ import type {
 	TranscribedWord,
 	TranscriptionResult,
 } from "@/app/[locale]/transcription/_types/g2p";
-import { api } from "@/lib/eden/client";
+import type { G2PResponse } from "@/app/api/[[...slugs]]/g2p/model";
 
-/** Inferred G2P response from the API */
-type G2PResponse = Awaited<ReturnType<typeof api.g2p.post>>["data"];
-type G2PWord = Extract<G2PResponse, { words: unknown[] }>["words"][number];
+/** Inferred types from G2P API response */
+type G2PWord = G2PResponse["words"][number];
 type G2PPhoneme = G2PWord["variants"][number][number]["phonemes"][number];
 
 /**
- * Main G2P client function
- * Converts text to phonemic transcription with enhanced metadata
+ * Transform API response into enriched frontend format with UI-specific metadata
+ * This includes wordIndex, phonemeIndex, selectedVariantIndex, and timestamp
  */
-export async function transcribeText(text: string): Promise<TranscriptionResult> {
-	if (!text.trim()) {
-		throw new Error("Text cannot be empty");
-	}
-
-	const { data, error } = await api.g2p.post({ text: text.trim() });
-
-	if (error) {
-		const message =
-			error.value && typeof error.value === "object" && "message" in error.value
-				? String(error.value.message)
-				: "Failed to transcribe text";
-		throw new Error(message);
-	}
-
-	if (!data || !("words" in data)) {
-		throw new Error("No data received from transcription service");
-	}
-
+export function transformToTranscriptionResult(
+	data: G2PResponse,
+	originalText: string,
+): TranscriptionResult {
 	// Transform API response into enriched frontend format
 	const words: TranscribedWord[] = data.words.map((word, wordIndex) => {
 		const variants: TranscribedSyllable[][] = word.variants.map((variant) => {
@@ -63,7 +47,7 @@ export async function transcribeText(text: string): Promise<TranscriptionResult>
 	});
 
 	return {
-		originalText: text,
+		originalText,
 		words,
 		timestamp: new Date(),
 	};

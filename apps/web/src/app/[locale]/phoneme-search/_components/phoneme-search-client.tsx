@@ -6,12 +6,12 @@ import { Input } from "@phonaria/ui/components/input";
 import { ScrollArea } from "@phonaria/ui/components/scroll-area";
 import { Separator } from "@phonaria/ui/components/separator";
 import { Spinner } from "@phonaria/ui/components/spinner";
-import { useQuery } from "@tanstack/react-query";
+import { skipToken, useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { orpc } from "@/lib/orpc";
 import { PHONEME_OPTIONS } from "../_lib/phoneme-options";
-import { fetchPhonemeSearch } from "../_lib/phoneme-search-client";
 
 const MAX_PATH_LENGTH = 20;
 const DEFAULT_LIMIT = 80;
@@ -31,12 +31,12 @@ export function PhonemeSearchClient() {
 
 	const canAppend = path.length < MAX_PATH_LENGTH;
 
-	const searchQuery = useQuery({
-		queryKey: ["phoneme-search", path, DEFAULT_LIMIT],
-		queryFn: async () => fetchPhonemeSearch({ path, limit: DEFAULT_LIMIT }),
-		enabled: path.length > 0,
-		staleTime: 15_000,
-	});
+	const searchQuery = useQuery(
+		orpc.phonemeSearch.search.queryOptions({
+			input: path.length > 0 ? { path: path.join(","), limit: DEFAULT_LIMIT } : skipToken,
+			staleTime: 15_000,
+		}),
+	);
 
 	const removeAt = (index: number) => {
 		setPath((prev) => prev.filter((_, i) => i !== index));
