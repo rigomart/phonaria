@@ -1,7 +1,7 @@
-import { wordDefinitionSchema } from "@/app/api/services/dictionary/model";
-import { dictionaryQuerySchema, fetchWordDefinition } from "@/app/api/services/dictionary/service";
-import { base } from "./base";
-import { withRateLimit } from "./middleware/rate-limit";
+import { wordDefinitionSchema } from "@/app/api/dictionary/model";
+import { dictionaryQuerySchema, fetchWordDefinition } from "@/app/api/dictionary/service";
+import { base } from "../_shared/base";
+import { withRateLimit } from "../_shared/middleware/rate-limit";
 
 export const lookup = base
 	.use(withRateLimit)

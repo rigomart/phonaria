@@ -1,10 +1,10 @@
 import {
 	phonemeSearchQuerySchema,
 	phonemeSearchResponseSchema,
-} from "@/app/api/services/phoneme-search/model";
-import { searchPhonemes } from "@/app/api/services/phoneme-search/service";
-import { base } from "./base";
-import { withRateLimit } from "./middleware/rate-limit";
+} from "@/app/api/phoneme-search/model";
+import { searchPhonemes } from "@/app/api/phoneme-search/service";
+import { base } from "../_shared/base";
+import { withRateLimit } from "../_shared/middleware/rate-limit";
 
 export const search = base
 	.use(withRateLimit)

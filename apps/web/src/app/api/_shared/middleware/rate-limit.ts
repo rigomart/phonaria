@@ -1,5 +1,6 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { base } from "../base";
 
 // Create rate limiter instance
 const ratelimit = new Ratelimit({
@@ -54,3 +55,16 @@ export async function checkRateLimit(request: Request): Promise<RateLimitResult>
 		resetMs: reset,
 	};
 }
+
+export const withRateLimit = base.middleware(async ({ context, next, errors }) => {
+	const { isRateLimited, pending, resetMs } = await checkRateLimit(context.request);
+
+	if (isRateLimited) {
+		await pending;
+		throw errors.RATE_LIMITED({
+			data: { retryAfter: Math.ceil((resetMs - Date.now()) / 1000) },
+		});
+	}
+
+	return next({ context: { pending } });
+});

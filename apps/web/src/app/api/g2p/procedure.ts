@@ -1,7 +1,7 @@
-import { g2pRequestSchema, g2pResponseSchema } from "@/app/api/services/g2p/model";
-import { processG2P } from "@/app/api/services/g2p/service";
-import { base } from "./base";
-import { withRateLimit } from "./middleware/rate-limit";
+import { g2pRequestSchema, g2pResponseSchema } from "@/app/api/g2p/model";
+import { processG2P } from "@/app/api/g2p/service";
+import { base } from "../_shared/base";
+import { withRateLimit } from "../_shared/middleware/rate-limit";
 
 export const transcribe = base
 	.use(withRateLimit)

@@ -1,7 +1,7 @@
 import "server-only";
 import { createRouterClient, type RouterClient } from "@orpc/server";
 import { headers } from "next/headers";
-import { router } from "@/app/api/rpc/router";
+import { router } from "@/app/api/router";
 
 declare global {
 	// eslint-disable-next-line no-var
