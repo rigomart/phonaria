@@ -5,12 +5,17 @@ import type { CmudictPayload, CmudictStatsPayload } from "./dict/types";
 export const cmudictData = cmudictJson as CmudictPayload;
 export const cmudictStatsData = cmudictStatsJson as CmudictStatsPayload;
 
-export type { CmudictPayload, CmudictStatsPayload } from "./dict/types";
+export type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dict/types";
 export {
 	CmuArpaRegistry,
 	type CmuArpaToken,
+	type CmuStressLevel,
+	cmuVariantToIpa,
+	getArpabetForPhonemeId,
 	getCmuArpaForPhonemeId,
 	getPhonemeIdForCmuArpa,
+	isCmuArpaToken,
+	PhonemeArpabetLabel,
 } from "./phonetics/cmu-arpa-registry";
 export type {
 	ConsonantArticulatoryFeatures,

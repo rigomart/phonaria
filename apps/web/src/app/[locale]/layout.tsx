@@ -1,7 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
-import { Noto_Sans, Noto_Sans_Mono, Noto_Serif } from "next/font/google";
+import { Noto_Sans, Noto_Sans_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { Locale } from "next-intl";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -14,16 +14,11 @@ import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import Providers from "./providers";
 import "@phonaria/ui/globals.css";
 
-const notoSerif = Noto_Serif({
-	variable: "--font-noto-serif",
-	subsets: ["latin"],
-	fallback: ["system-ui", "serif"],
-});
-
 const notoSans = Noto_Sans({
 	variable: "--font-noto-sans",
 	subsets: ["latin"],
 	fallback: ["system-ui", "sans-serif"],
+	preload: true,
 });
 
 const notoSansMono = Noto_Sans_Mono({
@@ -89,7 +84,7 @@ export default async function RootLayout({
 		<html
 			lang={locale}
 			suppressHydrationWarning
-			className={`${notoSerif.variable} ${notoSans.variable} ${notoSansMono.variable}`}
+			className={`${notoSans.variable} ${notoSansMono.variable}`}
 		>
 			<body className={`antialiased`}>
 				<NextIntlClientProvider>

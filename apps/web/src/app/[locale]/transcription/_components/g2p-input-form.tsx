@@ -37,7 +37,7 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (hasText && !isLoading) transcribeMutation.mutate(inputText.trim());
+		if (hasText && !isLoading) transcribeMutation.mutate({ text: inputText.trim() });
 	};
 
 	return (

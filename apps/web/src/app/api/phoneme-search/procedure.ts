@@ -1,0 +1,25 @@
+import {
+	phonemeSearchQuerySchema,
+	phonemeSearchResponseSchema,
+} from "@/app/api/phoneme-search/model";
+import { searchPhonemes } from "@/app/api/phoneme-search/service";
+import { base } from "../_shared/base";
+import { withRateLimit } from "../_shared/middleware/rate-limit";
+
+export const search = base
+	.use(withRateLimit)
+	.input(phonemeSearchQuerySchema)
+	.output(phonemeSearchResponseSchema)
+	.handler(async ({ input, context, errors }) => {
+		const result = await searchPhonemes(input.path, input.limit);
+		await context.pending;
+
+		if ("error" in result) {
+			throw errors.INVALID_INPUT({
+				message: result.message,
+				data: { details: result.invalidLabels?.join(", ") },
+			});
+		}
+
+		return result;
+	});

@@ -105,6 +105,7 @@ The web app uses Next.js App Router with internationalization:
 - Use path aliases (`@/components/...`, `@/lib/...`, `@/data/...`) instead of relative dot paths for better maintainability.
 - Feature-specific code should be co-located under route directories using prefixed folders: `_components` for UI, `_hooks` for logic, `_lib` for utilities, `_store` for state, `_types` for types, `_schemas` for validation, `_sections` for page sections.
 - Route groups (e.g. `(overview)`) share layouts without affecting URL structure.
+- AVOID using emojis in the codebase and documentation.
 
 ## Testing Guidelines
 - Vitest drives `apps/web` tests; co-locate specs using `.test.ts` suffix (e.g. `apps/web/src/data/phoneme-details.test.ts`).
@@ -128,6 +129,7 @@ The web app uses Next.js App Router with internationalization:
 ## Design & UX Patterns
 
 Core Design Philosophy: Functional Over Marketing:
+- Use a clean, minimalistic design language.
 - Avoid hero sections, gradients, and marketing copy in favor of functional design
 - Explain what tools do, not what benefits they provide
 
@@ -145,4 +147,3 @@ Styling Guidelines:
 ## Learning Experience Principles
 - Toolbox over coursework: allow learners to enter through any feature and combine tools as needed.
 - Approachable language: keep explanations plain to demystify IPA, minimal pairs, and articulation terms.
-- Progressive disclosure: surface guidance when needed and recede as users explore.

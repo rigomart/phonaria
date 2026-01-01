@@ -12,7 +12,7 @@ export function EmptyState() {
 	const examples = [t(`examples.0`), t(`examples.1`), t(`examples.2`), t(`examples.3`)];
 
 	const handleExampleClick = (example: string) => {
-		transcribeMutation.mutate(example);
+		transcribeMutation.mutate({ text: example });
 	};
 
 	return (

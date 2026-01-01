@@ -1,4 +1,12 @@
-import type { PhonemeSymbolId } from "./ipa-registry";
+import { PhonemeIpaRegistry, type PhonemeSymbolId } from "./ipa-registry";
+
+/**
+ * CMU stress levels for vowels.
+ * - "none": Unstressed vowel (0 in CMU notation)
+ * - "primary": Primary stress (1 in CMU notation)
+ * - "secondary": Secondary stress (2 in CMU notation)
+ */
+export type CmuStressLevel = "none" | "primary" | "secondary";
 
 /**
  * Maps CMU ARPA tokens to phoneme symbol IDs.
@@ -111,4 +119,104 @@ export function getCmuArpaForPhonemeId(phonemeId: PhonemeSymbolId): CmuArpaToken
 	return Object.entries(CmuArpaRegistry)
 		.filter(([, id]) => id === phonemeId)
 		.map(([token]) => token as CmuArpaToken);
+}
+
+/**
+ * Maps phoneme symbol IDs to standard ARPABET labels (without stress markers).
+ * Used as trie keys for phoneme search. Schwa=AX, strut=AH distinction is preserved.
+ */
+export const PhonemeArpabetLabel = {
+	// Consonants
+	"voiceless-bilabial-plosive": "P",
+	"voiced-bilabial-plosive": "B",
+	"voiceless-alveolar-plosive": "T",
+	"voiced-alveolar-plosive": "D",
+	"voiceless-velar-plosive": "K",
+	"voiced-velar-plosive": "G",
+	"voiceless-labiodental-fricative": "F",
+	"voiced-labiodental-fricative": "V",
+	"voiceless-dental-fricative": "TH",
+	"voiced-dental-fricative": "DH",
+	"voiceless-alveolar-fricative": "S",
+	"voiced-alveolar-fricative": "Z",
+	"voiceless-postalveolar-fricative": "SH",
+	"voiced-postalveolar-fricative": "ZH",
+	"voiceless-glottal-fricative": "HH",
+	"voiced-bilabial-nasal": "M",
+	"voiced-alveolar-nasal": "N",
+	"voiced-velar-nasal": "NG",
+	"voiced-alveolar-lateral-approximant": "L",
+	"voiced-postalveolar-approximant": "R",
+	"voiced-labial-velar-approximant": "W",
+	"voiced-palatal-approximant": "Y",
+	"voiceless-postalveolar-affricate": "CH",
+	"voiced-postalveolar-affricate": "JH",
+
+	// Monophthongs
+	"close-front-unrounded": "IY",
+	"close-back-rounded": "UW",
+	"near-close-near-front-unrounded": "IH",
+	"near-close-near-back-rounded": "UH",
+	"mid-central-unrounded": "AX",
+	"open-mid-front-unrounded": "EH",
+	"open-mid-back-unrounded": "AH",
+	"open-mid-back-rounded": "AO",
+	"near-open-front-unrounded": "AE",
+	"open-back-unrounded": "AA",
+	"r-colored-open-mid-central": "ER",
+
+	// Diphthongs
+	"close-mid-front-unrounded-to-near-close-near-front-unrounded": "EY",
+	"close-mid-back-rounded-to-near-close-near-back-rounded": "OW",
+	"open-front-unrounded-to-near-close-near-front-unrounded": "AY",
+	"open-front-unrounded-to-near-close-near-back-rounded": "AW",
+	"open-mid-back-rounded-to-near-close-near-front-unrounded": "OY",
+} as const satisfies Record<PhonemeSymbolId, string>;
+
+/**
+ * Gets the standard ARPABET label for a phoneme ID (without stress markers).
+ * @param phonemeId - The phoneme symbol ID.
+ * @returns The standard ARPABET label.
+ * @example
+ * getArpabetForPhonemeId("voiceless-bilabial-plosive") // "P"
+ * getArpabetForPhonemeId("mid-central-unrounded") // "AX"
+ */
+export function getArpabetForPhonemeId(phonemeId: PhonemeSymbolId): string {
+	return PhonemeArpabetLabel[phonemeId];
+}
+
+/**
+ * Checks if a string is a valid CMU ARPA token.
+ * @param token - The string to check.
+ * @returns True if the token is a valid CMU ARPA token.
+ */
+export function isCmuArpaToken(token: string): token is CmuArpaToken {
+	return token in CmuArpaRegistry;
+}
+
+/**
+ * Converts a CMU pronunciation variant string to an IPA string.
+ * Tokens that don't map to known phonemes are skipped.
+ * @param variant - A space-separated CMU pronunciation string (e.g., "P AE1 T").
+ * @returns The IPA representation (e.g., "pæt").
+ * @example
+ * cmuVariantToIpa("P AE1 T") // "pæt"
+ * cmuVariantToIpa("K AE1 T S") // "kæts"
+ * cmuVariantToIpa("HH AH0 L OW1") // "həloʊ"
+ */
+export function cmuVariantToIpa(variant: string): string {
+	const tokens = variant.split(/\s+/).filter((t) => t.length > 0);
+	const ipaSymbols: string[] = [];
+
+	for (const token of tokens) {
+		if (isCmuArpaToken(token)) {
+			const phonemeId = CmuArpaRegistry[token];
+			const ipa = PhonemeIpaRegistry[phonemeId];
+			if (ipa) {
+				ipaSymbols.push(ipa);
+			}
+		}
+	}
+
+	return ipaSymbols.join("");
 }

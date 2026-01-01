@@ -1,5 +1,11 @@
 import type { PhonemeSymbolId } from "../phonetics/ipa-registry";
 
+export type PhonemeTrieNode = {
+	words: string[];
+	count: number;
+	next: Record<string, PhonemeTrieNode>;
+};
+
 export type CmudictPayload = {
 	meta: {
 		formatVersion: number;

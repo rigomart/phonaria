@@ -4,29 +4,36 @@ This package hosts the primary Phonaria experience: a Next.js App Router project
 
 ## At a glance
 
-- App Router + locale‑based routing under `app/[locale]` (e.g. `/en`, `/es`)
-- Core routes: `/{locale}` overview, `/{locale}/transcription`, `/{locale}/ipa-chart`, `/{locale}/insights`, `/{locale}/credits`
-- API routes: `POST /api/g2p` (G2P transcription) and `GET /api/dictionary` (lookup + audio)
+ - App Router + locale‑based routing under `app/[locale]` (e.g. `/en`, `/es`)
+ - Core routes: `/{locale}` overview, `/{locale}/transcription`, `/{locale}/ipa-chart`, `/{locale}/insights`, `/{locale}/credits`
+ - API routes powered by oRPC for type-safe client–server contracts:
+   - `POST /api/g2p` (G2P transcription)
+   - `GET /api/dictionary` (lookup + audio)
+   - `GET /api/phoneme-search` (phoneme-based word search)
 
 ## Feature overview
 
-- **Transcription workspace** – Stress-marked IPA output with clickable words for dictionary definitions and a phoneme inspector to surface articulation details.
-- **Interactive IPA chart** – Browse consonants, monophthongs (including r-colored vowels), and diphthongs with minimal pairs, spelling patterns, allophones, and example audio.
-- **Insights page** – CMUDict coverage cards, phoneme frequency charts, and syllable histograms powered by the shared CMUDict stats dataset.
-- **Dictionary integration** – `GET /api/dictionary` proxies Free Dictionary responses with Upstash Redis rate limiting; transcribed words link straight to definitions and audio.
-- **Themeable & responsive UI** – Tailwind CSS v4, shadcn/ui primitives, and next-themes provide a consistent light/dark experience across devices.
-- **Internationalization** – Locale-based routing via next-intl with support for multiple languages.
+ - **Transcription workspace** – Stress-marked IPA output with clickable words for dictionary definitions and a phoneme inspector to surface articulation details.
+ - **Interactive IPA chart** – Browse consonants, monophthongs (including r-colored vowels), and diphthongs with minimal pairs, spelling patterns, allophones, and example audio.
+ - **Phoneme search** – Find words by phoneme pattern (e.g., search for words containing /θ/ or specific sound sequences) with `GET /api/phoneme-search`.
+ - **Insights page** – CMUDict coverage cards, phoneme frequency charts, and syllable histograms powered by the shared CMUDict stats dataset.
+ - **Dictionary integration** – `GET /api/dictionary` proxies Free Dictionary responses with Upstash Redis rate limiting; transcribed words link straight to definitions and audio.
+ - **Themeable & responsive UI** – Tailwind CSS v4, shadcn/ui primitives, and next-themes provide a consistent light/dark experience across devices.
+ - **Internationalization** – Locale-based routing via next-intl with support for multiple languages.
+ - **Type-safe API client** – oRPC with TanStack Query integration ensures type safety across client and server boundaries without manually maintaining type definitions.
 
 ## Tech stack
 
-- **Framework** – Next.js 16 (App Router, Turbopack for dev and builds)
-- **UI Library** – React 19.2.3 with TypeScript 5
-- **Language** – TypeScript with strict settings and path aliases (`@/components`, `@/lib`, `@/data`)
-- **Styling** – Tailwind CSS v4, shadcn/ui components, Radix UI primitives, CSS variables in `src/app/[locale]/globals.css`
-- **State Management** – TanStack Query v5 (server state and caching), Zustand (client state stores)
-- **Internationalization** – next-intl with locale-based routing and JSON message catalogs
-- **Data Validation** – Zod schemas for API request/response validation
-- **Rate Limiting** – Upstash Redis for API endpoint protection
+ - **Framework** – Next.js 16.0.10 (App Router, Turbopack for dev and builds)
+ - **UI Library** – React 19.2.3 with TypeScript 5
+ - **Language** – TypeScript with strict settings and path aliases (`@/components`, `@/lib`, `@/data`)
+ - **Styling** – Tailwind CSS v4, shadcn/ui components, Radix UI primitives, CSS variables in `src/app/[locale]/globals.css`
+ - **State Management** – TanStack Query v5 (server state and caching), Zustand (client state stores)
+ - **Internationalization** – next-intl with locale-based routing and JSON message catalogs
+ - **API Framework** – oRPC with Next.js API routes for type-safe client–server communication
+ - **Data Validation** – Zod schemas for API request/response validation and type safety
+ - **Database** – Drizzle ORM with Neon PostgreSQL for persisted data
+ - **Rate Limiting** – Upstash Redis for API endpoint protection
 - **Analytics** – Vercel Analytics and Speed Insights
 - **Testing** – Vitest with utility-first unit coverage for API services, hooks, and data transformations
 - **Linting & Formatting** – Biome (tab indentation, 100-char line width, auto-import organization)
@@ -40,24 +47,19 @@ bun --cwd apps/web dev     # start Next.js at http://localhost:3000
 
 The root `bun dev` will also start this project if you prefer Turborepo orchestration.
 
-## Environment variables
+ ### Useful scripts
 
-- `VERCEL_PROJECT_PRODUCTION_URL` (Vercel system env) is used to build canonical URLs,
-  `metadataBase`, `robots.txt`, and `sitemap.xml`. If it is unavailable (local dev),
-  the app falls back to `http://localhost:3000`. Ensure "Automatically expose System
-  Environment Variables" is enabled in Vercel project settings.
-- `GOOGLE_SITE_VERIFICATION` (custom) enables the Search Console verification meta tag.
-  Set this in Vercel for production and in `apps/web/.env.local` if you want to verify locally.
-
-### Useful scripts
-
-```bash
-bun --cwd apps/web lint            # biome check --write
-bun --cwd apps/web check-types     # tsc --noEmit
-bun --cwd apps/web test            # vitest run
-bun --cwd apps/web build           # next build --turbopack
-bun --cwd apps/web start           # next start (after build)
-```
+ ```bash
+ bun --cwd apps/web lint            # biome check --write
+ bun --cwd apps/web check-types     # tsc --noEmit
+ bun --cwd apps/web test            # vitest run
+ bun --cwd apps/web build           # next build --turbopack
+ bun --cwd apps/web start           # next start (after build)
+ bun --cwd apps/web db:push         # drizzle-kit push (database schema)
+ bun --cwd apps/web db:generate     # drizzle-kit generate (migrations)
+ bun --cwd apps/web db:migrate      # drizzle-kit migrate (run migrations)
+ bun --cwd apps/web db:seed         # seed the database
+ ```
 
 ## Directory structure
 
@@ -93,17 +95,31 @@ apps/web
 │   │   │   ├── globals.css
 │   │   │   ├── layout.tsx
 │   │   │   └── providers.tsx
-│   │   ├── api/           # REST API endpoints
-│   │   │   ├── _lib/      # Shared API utilities
-│   │   │   ├── dictionary/ # Dictionary lookup with rate limiting
-│   │   │   │   ├── _schemas/
-│   │   │   │   ├── _services/
-│   │   │   │   └── route.ts
-│   │   │   └── g2p/       # Grapheme-to-phoneme transcription
-│   │   │       ├── _core/
-│   │   │       ├── _schemas/
-│   │   │       ├── _utils/
-│   │   │       └── route.ts
+ │   │   ├── api/                 # oRPC API endpoints
+ │   │   │   ├── [[...rest]]/     # Catch-all route for oRPC handler
+ │   │   │   │   └── route.ts     # RPCHandler with GET/POST exports
+ │   │   │   ├── router.ts        # Router definition combining all procedures
+ │   │   │   ├── _shared/         # Shared API utilities and middleware
+ │   │   │   │   ├── base.ts      # Base procedure with shared context
+ │   │   │   │   └── middleware/  # Rate limiting, auth, etc.
+ │   │   │   ├── dictionary/      # Dictionary lookup with rate limiting
+ │   │   │   │   ├── procedure.ts # oRPC procedure definition
+ │   │   │   │   ├── service.ts   # Dictionary API service
+ │   │   │   │   └── model.ts     # Zod schemas and types
+ │   │   │   ├── g2p/             # Grapheme-to-phoneme transcription
+ │   │   │   │   ├── procedure.ts # oRPC procedure definition
+ │   │   │   │   ├── service.ts   # G2P processing logic
+ │   │   │   │   ├── model.ts     # Zod schemas and types
+ │   │   │   │   ├── syllabifier.ts
+ │   │   │   │   ├── cmudict.ts
+ │   │   │   │   ├── text-processing.ts
+ │   │   │   │   ├── phonotactics.ts
+ │   │   │   │   └── phoneme-generator.ts
+ │   │   │   └── phoneme-search/  # Phoneme-based word search
+ │   │   │       ├── procedure.ts # oRPC procedure definition
+ │   │   │       ├── service.ts   # Search service
+ │   │   │       ├── model.ts     # Zod schemas and types
+ │   │   │       └── phoneme-utils.ts
 │   │   └── favicon.ico
 │   ├── components/        # Shared UI components
 │   │   ├── phoneme-details/  # Phoneme dialog components
@@ -120,7 +136,11 @@ apps/web
 │   │   └── use-media-query.ts
 │   ├── i18n/              # next-intl routing, navigation, and request config
 │   ├── lib/               # Shared utilities
-│   │   ├── api/           # API client utilities
+│   │   ├── orpc/          # oRPC client configuration and types
+│   │   │   ├── client.ts  # oRPC client instance
+│   │   │   ├── server.ts  # Server-side oRPC client
+│   │   │   ├── types.ts   # Inferred types from router (use these!)
+│   │   │   └── index.ts   # TanStack Query utils and exports
 │   │   ├── utils.ts       # General helper functions
 │   │   └── vowel-chart-geometry.ts
 ├── next.config.ts         # Next.js configuration (CSP headers, etc.)
@@ -133,6 +153,20 @@ apps/web
 - **Prefixed directories** (`_components`, `_hooks`, `_lib`, etc.) – Feature-specific code co-located with routes; not exposed as routes by Next.js
 - **Route groups** (`(overview)`) – Share layouts without affecting URL structure
 - **Locale routes** (`[locale]`) – Dynamic routing for internationalization support
+
+## API type patterns
+
+Use oRPC type inference instead of importing from API model files:
+
+```ts
+// Good: Import from @/lib/orpc
+import { orpc, type G2PResponse, type WordDefinition } from "@/lib/orpc";
+
+// Bad: Don't import from API model files
+import type { G2PResponse } from "@/app/api/g2p/model";
+```
+
+Types in `src/lib/orpc/types.ts` are inferred from the router using `InferClientOutputs` and `InferClientInputs`.
 
 ## Data dependencies
 
@@ -184,21 +218,35 @@ Why not put phoneme detail strings into `messages/*.json`?
 
 Create a `.env.local` file in `apps/web` with the following variables:
 
-```env
-# Required for API rate limiting
-UPSTASH_REDIS_REST_URL=your_upstash_redis_url
-UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
+ ```env
+ # Required for API rate limiting
+ UPSTASH_REDIS_REST_URL=your_upstash_redis_url
+ UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
 
-# Optional: only needed when regenerating CMUDict JSON with helper-scripts
-CMUDICT_SRC_URL=https://example.com/cmudict.dict
-```
+ # Required for database
+ DATABASE_URL=your_neon_database_url
+
+ # Optional: Search Console verification (Vercel system env: VERCEL_PROJECT_PRODUCTION_URL)
+ GOOGLE_SITE_VERIFICATION=your_verification_code
+
+ # Optional: only needed when regenerating CMUDict JSON with helper-scripts
+ CMUDICT_SRC_URL=https://example.com/cmudict.dict
+ ```
+
+ Notes:
+ - `VERCEL_PROJECT_PRODUCTION_URL` (Vercel system env) is used to build canonical URLs,
+   `metadataBase`, `robots.txt`, and `sitemap.xml`. If unavailable (local dev),
+   the app falls back to `http://localhost:3000`. Ensure "Automatically expose System
+   Environment Variables" is enabled in Vercel project settings.
+ - `GOOGLE_SITE_VERIFICATION` enables the Search Console verification meta tag.
+   Set this in Vercel for production and in `apps/web/.env.local` if you want to verify locally.
 
 ## Testing guidance
 
 Unit tests live alongside the code they cover using `.test.ts` suffix (e.g., `src/data/phoneme-details.test.ts`, `src/app/api/g2p/_core/syllabifier.test.ts`, `src/app/api/dictionary/_services/dictionary-service.test.ts`). Run `bun --cwd apps/web test` locally or rely on the root `bun test` command for workspace-wide coverage.
 
-## Security
+ ## Security
 
-- **Content Security Policy** – Configured in `next.config.ts` to restrict script sources, enforce HTTPS upgrades, and prevent clickjacking
-- **Rate Limiting** – Dictionary API endpoint protected by Upstash Redis-based rate limiting to prevent abuse
-- **Input Validation** – All API endpoints use Zod schemas for request validation
+ - **Content Security Policy** – Configured in `next.config.ts` to restrict script sources, enforce HTTPS upgrades, and prevent clickjacking
+ - **Rate Limiting** – All API endpoints protected by Upstash Redis-based rate limiting to prevent abuse
+ - **Input Validation** – All API endpoints use Elysia types with Zod schemas for request validation

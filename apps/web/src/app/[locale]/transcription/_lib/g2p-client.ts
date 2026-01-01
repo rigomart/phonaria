@@ -1,38 +1,26 @@
 import { PhonemeIpaRegistry, type PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type {
-	G2PPhoneme,
 	TranscribedPhoneme,
 	TranscribedSyllable,
 	TranscribedWord,
 	TranscriptionResult,
 } from "@/app/[locale]/transcription/_types/g2p";
-import { createApiClient } from "@/lib/api/api-client";
-import {
-	type G2PRequestData,
-	type G2PResponseData,
-	g2pRequestSchema,
-	g2pResponseSchema,
-} from "./g2p-schema";
+import type { G2PResponse } from "@/lib/orpc/types";
+
+/** Inferred types from G2P API response */
+type G2PWord = G2PResponse["words"][number];
+type G2PPhoneme = G2PWord["variants"][number][number]["phonemes"][number];
 
 /**
- * G2P API client instance
+ * Transform API response into enriched frontend format with UI-specific metadata
+ * This includes wordIndex, phonemeIndex, selectedVariantIndex, and timestamp
  */
-const g2pApiClient = createApiClient({
-	baseUrl: "",
-	defaultHeaders: {
-		"Content-Type": "application/json",
-	},
-	timeout: 15000,
-});
-
-/**
- * Transform API response into enriched frontend format
- */
-function transformG2PResponse(
-	response: G2PResponseData,
+export function transformToTranscriptionResult(
+	data: G2PResponse,
 	originalText: string,
 ): TranscriptionResult {
-	const words: TranscribedWord[] = response.words.map((word, wordIndex) => {
+	// Transform API response into enriched frontend format
+	const words: TranscribedWord[] = data.words.map((word, wordIndex) => {
 		const variants: TranscribedSyllable[][] = word.variants.map((variant) => {
 			let globalPhonemeIndex = 0;
 			return variant.map((syllable) => {
@@ -63,25 +51,6 @@ function transformG2PResponse(
 		words,
 		timestamp: new Date(),
 	};
-}
-
-/**
- * Main G2P client function
- * Converts text to phonemic transcription with enhanced metadata
- */
-export async function transcribeText(text: string): Promise<TranscriptionResult> {
-	if (!text.trim()) {
-		throw new Error("Text cannot be empty");
-	}
-
-	const request: G2PRequestData = { text: text.trim() };
-	const response = await g2pApiClient.post(
-		"/api/g2p",
-		g2pRequestSchema,
-		g2pResponseSchema,
-		request,
-	);
-	return transformG2PResponse(response, text);
 }
 
 function mapPhonemeToTranscribed(

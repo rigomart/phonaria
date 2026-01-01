@@ -4,6 +4,7 @@
 			"navigation": {
 				"overview": "Inicio",
 				"transcription": "Transcripción",
+				"find-by-sound": "Buscar por sonido",
 				"ipa-chart": "Tabla IPA",
 				"insights": "Estadísticas"
 			},
@@ -78,6 +79,93 @@
 	"not-found-page": {
 		"title": "Página no encontrada",
 		"description": "Comprueba la dirección del navegador o usa la navegación para ir a una página conocida."
+	},
+	"phoneme-search-page": {
+		"meta": {
+			"title": "Búsqueda por fonemas - Phonaria",
+			"description": "Encuentra palabras en inglés construyendo una secuencia de fonemas (ARPABET) y explorando sugerencias del siguiente fonema."
+		},
+		"builder": {
+			"title": "Búsqueda por fonemas",
+			"path-empty": "Añade fonemas para buscar.",
+			"remove-phoneme-aria": "Quitar fonema {phoneme}",
+			"remove-phoneme-hint": "Haz clic para quitar este fonema",
+			"clear": "Limpiar",
+			"depth": "{count}/{max}",
+			"search-placeholder": "ARPABET (K, AE, T)…",
+			"search-aria": "Buscar opciones de fonemas",
+			"add": "Añadir",
+			"options": "Opciones de fonemas",
+			"max-depth": "Profundidad máxima alcanzada",
+			"no-options": "No hay fonemas que coincidan.",
+			"next-phonemes": "Siguiente",
+			"next-count": "{count} sugerencias"
+		},
+		"results": {
+			"title": "Coincidencias",
+			"total": "{count} palabras",
+			"empty": {
+				"title": "Añade fonemas",
+				"description": "Escribe ARPABET y pulsa Enter (ejemplo: K, AE, T)."
+			},
+			"loading": "Buscando…",
+			"error": {
+				"title": "Error en la búsqueda",
+				"description": "Inténtalo de nuevo en un momento."
+			},
+			"no-matches": {
+				"title": "Sin coincidencias",
+				"description": "Prueba a quitar un fonema o elige un siguiente fonema diferente."
+			},
+			"word-hint": "Haz clic para copiar la palabra"
+		}
+	},
+	"find-by-sound-page": {
+		"meta": {
+			"title": "Buscar por sonido - Phonaria",
+			"description": "Encuentra palabras en inglés seleccionando fonemas desde un teclado IPA interactivo."
+		},
+		"header": {
+			"title": "Buscar por sonido",
+			"description": "Encuentra palabras por sus sonidos usando notación IPA."
+		},
+		"search": {
+			"placeholder": "Buscar fonemas por descripción o IPA...",
+			"aria-label": "Buscar fonemas"
+		},
+		"sequence": {
+			"title": "Secuencia de sonidos",
+			"empty": "Selecciona sonidos para encontrar palabras",
+			"clear": "Limpiar",
+			"remove-aria": "Quitar {phoneme}"
+		},
+		"suggestions": {
+			"title": "Prueba con"
+		},
+		"results": {
+			"title": "Resultados",
+			"count": "{count} palabras",
+			"loading": "Buscando...",
+			"empty": {
+				"title": "Selecciona sonidos",
+				"description": "Haz clic en los fonemas de arriba para buscar palabras."
+			},
+			"error": {
+				"title": "Error en la búsqueda",
+				"description": "Inténtalo de nuevo."
+			},
+			"no-matches": {
+				"title": "Sin coincidencias",
+				"description": "Prueba a quitar un sonido o elige uno diferente."
+			},
+			"word-hint": "Haz clic para copiar",
+			"capped-results": "Mostrando los primeros {limit} resultados"
+		},
+		"source-note": {
+			"prefix": "Datos derivados del Diccionario de pronunciación de CMU (CMUDict).",
+			"link": "Ver créditos",
+			"suffix": "para detalles de autoría y licencias."
+		}
 	},
 	"ipa-chart": {
 		"title": "Tabla IPA",
@@ -215,6 +303,15 @@
 				"action": "Abrir estudio",
 				"preview": {
 					"header": "Máx. 200 caracteres • inglés"
+				}
+			},
+			"find-by-sound": {
+				"title": "Buscar por sonido",
+				"description": "Busca palabras seleccionando fonemas desde un teclado IPA interactivo.",
+				"action": "Abrir buscador",
+				"preview": {
+					"header": "Selecciona sonidos para buscar palabras",
+					"sample-phonemes": ["k", "æ", "t"]
 				}
 			},
 			"ipa-chart": {
