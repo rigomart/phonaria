@@ -305,6 +305,15 @@
 					"header": "Max 200 characters • English"
 				}
 			},
+			"find-by-sound": {
+				"title": "Find by Sound",
+				"description": "Search for words by selecting phonemes from an interactive IPA keyboard.",
+				"action": "Open Finder",
+				"preview": {
+					"header": "Select sounds to find words",
+					"sample-phonemes": ["k", "æ", "t"]
+				}
+			},
 			"ipa-chart": {
 				"title": "IPA Reference",
 				"description": "Browse the General American English sound inventory.",

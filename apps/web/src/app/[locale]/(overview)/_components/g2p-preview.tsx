@@ -33,7 +33,7 @@ export function G2PPreviewStatic() {
 					<span className="font-medium text-muted-foreground/80">{t("header")}</span>
 				</div>
 
-				<div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+				<div className="mt-3 flex gap-2 sm:items-center">
 					<div className="relative flex-1">
 						<div className="flex h-11 items-center rounded-lg border border-border/70 bg-background px-3 pr-16 text-sm text-muted-foreground shadow-inner shadow-black/5">
 							clear sky

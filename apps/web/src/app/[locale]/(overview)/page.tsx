@@ -1,12 +1,13 @@
-import { BarChart3, BookOpen, Mic } from "lucide-react";
+import { BarChart3, BookOpen, Mic, Search } from "lucide-react";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getLanguageAlternates, getLocalePath } from "@/lib/seo";
-import { G2PPreviewStatic } from "./_components/g2p-preview-static";
+import { FindBySoundPreviewStatic } from "./_components/find-by-sound-preview";
+import { G2PPreviewStatic } from "./_components/g2p-preview";
 import { HeroSection } from "./_components/hero-section";
-import { IpaChartPreviewStatic } from "./_components/ipa-chart-preview-static";
-import { StatsPreviewStatic } from "./_components/stats-preview-static";
+import { IpaChartPreviewStatic } from "./_components/ipa-chart-preview";
+import { StatsPreviewStatic } from "./_components/stats-preview";
 import { ToolCard } from "./_components/tool-card";
 
 export async function generateMetadata({
@@ -45,6 +46,14 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 						href="/transcription"
 						icon={<Mic className="size-5" />}
 						preview={<G2PPreviewStatic />}
+					/>
+
+					<ToolCard
+						title={t("launchpad.find-by-sound.title")}
+						description={t("launchpad.find-by-sound.description")}
+						href="/find-by-sound"
+						icon={<Search className="size-5" />}
+						preview={<FindBySoundPreviewStatic />}
 					/>
 
 					<ToolCard
