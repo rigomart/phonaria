@@ -28,6 +28,10 @@
 			"dark": "Dark",
 			"system": "System"
 		},
+		"audio-player": {
+			"error-title": "Audio unavailable",
+			"error-description": "Could not play the audio sample. Please try again."
+		},
 		"phoneme-details": {
 			"header": {
 				"audio-disclaimer": {

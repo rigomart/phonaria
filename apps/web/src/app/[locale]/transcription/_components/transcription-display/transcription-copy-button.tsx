@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
+import { toastManager } from "@phonaria/ui/components/toast";
 import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -51,8 +52,11 @@ export function TranscriptionCopyButton({ result }: TranscriptionCopyButtonProps
 			await navigator.clipboard.writeText(ipaText);
 			setIsCopied(true);
 			setTimeout(() => setIsCopied(false), 2000);
-		} catch (error) {
-			console.error("Copy failed:", error);
+		} catch {
+			toastManager.add({
+				title: t("toast-error-failed"),
+				type: "error",
+			});
 		}
 	};
 

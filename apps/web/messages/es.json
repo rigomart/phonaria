@@ -28,6 +28,10 @@
 			"dark": "Oscuro",
 			"system": "Sistema"
 		},
+		"audio-player": {
+			"error-title": "Audio no disponible",
+			"error-description": "No se pudo reproducir el audio. Inténtalo de nuevo."
+		},
 		"phoneme-details": {
 			"header": {
 				"audio-disclaimer": {
