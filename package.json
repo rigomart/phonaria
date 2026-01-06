@@ -28,7 +28,11 @@
 		"changeset": "changeset",
 		"changeset:status": "changeset status",
 		"changeset:version": "changeset version",
-		"changeset:tag": "changeset tag"
+		"changeset:tag": "changeset tag",
+		"release": "bun run release:tag && bun run release:push && bun run release:gh",
+		"release:tag": "changeset tag",
+		"release:push": "git push --follow-tags",
+		"release:gh": "git describe --tags --abbrev=0 && gh release create $(git describe --tags --abbrev=0) --generate-notes"
 	},
 	"workspaces": [
 		"packages/*",

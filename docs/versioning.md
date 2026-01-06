@@ -13,8 +13,6 @@ Ignored packages (no version bumps required):
 - @phonaria/phonetics-data
 - @phonaria/ui
 
-Baseline version: 0.5.0.
-
 ## When to add a changeset
 
 Create a changeset for any change that affects the shipped product. Use
@@ -27,31 +25,44 @@ the code change lives in another package. Examples include:
 Do not add a changeset when only touching ignored packages, unless the change affects
 the shipped app (for example, updated CMUDict JSON or UI component behavior).
 
-## Workflow
+## Automated Workflow
 
-Add a changeset (feature branches):
-- bun run changeset
-- choose patch/minor/major
-- write a short summary
+The release pipeline is fully automated:
 
-Prepare a release (main is protected, use a release branch + PR):
-- bun run changeset:status
-- bun run changeset:version
-- commit version bumps (chore(release): vX.Y.Z)
-- open a PR from release/vX.Y.Z and merge into main
-- tag after merge:
-  - bun run changeset:tag
-  - git push origin --follow-tags
+```
+Feature PR → main → Version PR (auto) → Merge (manual) → Release (auto) → Deploy (auto)
+```
 
-Notes on tagging:
-- Changesets creates package tags in monorepos (for example, @phonaria/app@0.5.0).
-- If you want a single global tag (vX.Y.Z), add it manually after merge.
+### 1. Development (feature branch)
 
-## Automation
+```bash
+# Make changes
+bun run changeset        # Select @phonaria/app, choose patch/minor/major
+git add .changeset/
+git commit -m "feat: your feature"
+# Create PR and merge to main
+```
 
-CI (optional) can enforce changesets on pull requests and open a release PR on pushes to main:
-- PRs fail if versioned packages changed without a changeset.
-- The release workflow runs `changeset version` and opens a version bump PR.
+### 2. Version PR (automatic)
+
+When you merge to main with pending changesets, the release workflow:
+- Detects pending changesets
+- Creates a "Version Packages" PR with bumped versions
+- Updates the PR if more changesets are merged
+
+### 3. Review and merge (manual checkpoint)
+
+Review the version PR to:
+- Verify version bumps are correct
+- Batch multiple features into one release if desired
+- Merge when ready to release
+
+### 4. Release and deploy (automatic)
+
+When the version PR is merged, the workflow:
+- Creates git tag (`@phonaria/app@X.Y.Z`)
+- Creates GitHub Release with auto-generated notes
+- Triggers Vercel deployment
 
 ## SemVer meaning
 
@@ -59,7 +70,21 @@ CI (optional) can enforce changesets on pull requests and open a release PR on p
 - minor: new feature or visible UX change
 - major: breaking change
 
+## Manual workflow (fallback)
+
+If automation fails or for special cases:
+
+```bash
+bun run changeset:status    # Check pending changesets
+bun run changeset:version   # Bump versions
+git add -A && git commit -m "chore(release): version packages"
+git push
+bun run release             # Tag, push, and create release
+```
+
 ## Notes
 
-Packages are private and not published to npm. The Changesets config explicitly
-versions private packages and does not publish.
+- Packages are private and not published to npm
+- Tags use package format: `@phonaria/app@X.Y.Z`
+- Deployments only trigger on GitHub Release publish
+- Vercel auto-deploy disabled for `main` branch only (preview deployments still work)
