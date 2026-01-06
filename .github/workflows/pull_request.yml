@@ -28,6 +28,8 @@ jobs:
         uses: oven-sh/setup-bun@v2
       - name: Install dependencies
         run: bun ci
+      - name: Generate Next.js types
+        run: bun --cwd apps/web next typegen
       - name: Type check
         run: bun run check-types
       - name: Test
