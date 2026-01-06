@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { getLocalePath, SITE_URL } from "@/lib/seo";
 
-const ROUTES = ["", "/transcription", "/ipa-chart", "/insights", "/credits"];
+const ROUTES = ["", "/transcription", "/ipa-chart", "/find-by-sound", "/insights", "/credits"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
 	const lastModified = new Date();
