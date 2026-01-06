@@ -1,5 +1,7 @@
 "use client";
 
+import { toastManager } from "@phonaria/ui/components/toast";
+import { useTranslations } from "next-intl";
 import { createContext, useEffect, useRef, useState } from "react";
 
 type PlaybackStatus = "idle" | "loading" | "playing" | "error";
@@ -13,6 +15,7 @@ type AudioManagerContextValue = {
 export const AudioManagerContext = createContext<AudioManagerContextValue | null>(null);
 
 export function AudioManagerProvider({ children }: { children: React.ReactNode }) {
+	const t = useTranslations("components.audio-player");
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const currentSrcRef = useRef<string | null>(null);
 	const [statusMap, setStatusMap] = useState<Map<string, PlaybackStatus>>(new Map());
@@ -110,13 +113,17 @@ export function AudioManagerProvider({ children }: { children: React.ReactNode }
 		audio.currentTime = 0;
 		audio.playbackRate = speed;
 
-		audio.play().catch((e) => {
+		audio.play().catch(() => {
 			setStatusMap((prev) => {
 				const next = new Map(prev);
 				next.set(src, "error");
 				return next;
 			});
-			console.error("Audio play failed:", e);
+			toastManager.add({
+				title: t("error-title"),
+				description: t("error-description"),
+				type: "error",
+			});
 		});
 	};
 
