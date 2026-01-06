@@ -4,7 +4,6 @@
 	"author": "Miguel Rodriguez",
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.6",
-		"@changesets/cli": "^2.29.8",
 		"turbo": "^2.5.6",
 		"typescript": "^5.9.2"
 	},
@@ -24,15 +23,7 @@
 		"lint": "turbo run lint",
 		"dev": "turbo run dev",
 		"check-types": "turbo run check-types",
-		"test": "turbo run test",
-		"changeset": "changeset",
-		"changeset:status": "changeset status",
-		"changeset:version": "changeset version",
-		"changeset:tag": "changeset tag",
-		"release": "bun run release:tag && bun run release:push && bun run release:gh",
-		"release:tag": "changeset tag",
-		"release:push": "git push --follow-tags",
-		"release:gh": "git describe --tags --abbrev=0 && gh release create $(git describe --tags --abbrev=0) --generate-notes"
+		"test": "turbo run test"
 	},
 	"workspaces": [
 		"packages/*",
