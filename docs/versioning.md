@@ -1,59 +1,59 @@
 # Versioning
 
-Phonaria uses a simple version-based release workflow for the web app.
+Phonaria uses [Release Please](https://github.com/googleapis/release-please) for automated releases.
 
 ## How It Works
 
 ```
-Feature PR → main → Version bump PR → main → Tag + Release (auto) → Deploy (auto)
+Conventional Commits → main → Release PR (auto) → Merge → Tag + Release (auto) → Deploy (auto)
 ```
 
-1. **Development**: Work on feature branches, create PRs to main
+1. **Development**: Work on feature branches using conventional commits
 2. **Preview**: PRs get automatic Vercel preview deployments
-3. **Release**: Bump version in `apps/web/package.json` via PR
-4. **Auto-release**: Workflow detects version change, creates tag + GitHub Release
-5. **Auto-deploy**: Release triggers Vercel production deployment
+3. **Release PR**: Release Please auto-creates a PR with version bump + changelog
+4. **Merge**: Merging the release PR creates the tag and GitHub Release
+5. **Deploy**: Release triggers Vercel production deployment
+
+## Conventional Commits
+
+Use these commit prefixes to control version bumps:
+
+```bash
+# Patch release (0.6.0 → 0.6.1) - Bug fixes
+git commit -m "fix: resolve sitemap issue"
+git commit -m "fix(seo): correct meta tags"
+
+# Minor release (0.6.0 → 0.7.0) - New features
+git commit -m "feat: add find-by-sound page"
+git commit -m "feat(ui): implement dark mode"
+
+# Major release (0.6.0 → 1.0.0) - Breaking changes
+git commit -m "feat!: redesign API structure"
+
+# No version bump
+git commit -m "docs: update README"
+git commit -m "chore: update dependencies"
+git commit -m "ci: fix workflow"
+```
 
 ## Creating a Release
 
-1. Create a PR that bumps the version in `apps/web/package.json`:
-   ```json
-   {
-     "version": "0.7.0"  // was "0.6.0"
-   }
-   ```
+1. Write conventional commits in your PRs
+2. Merge PRs to main
+3. Release Please automatically creates/updates a "Release PR"
+4. Review the release PR (shows version bump + changelog)
+5. Merge when ready → tag + release created → deploy triggered
 
-2. Use clear PR title describing what's in the release
+## Files
 
-3. Merge the PR
-
-4. Workflow automatically:
-   - Creates git tag `v0.7.0`
-   - Creates GitHub Release with auto-generated notes from PR titles
-   - Triggers Vercel production deployment
-
-## SemVer Guidelines
-
-- **patch** (0.6.0 → 0.6.1): Bug fixes, small corrections
-- **minor** (0.6.0 → 0.7.0): New features, visible UX changes
-- **major** (0.6.0 → 1.0.0): Breaking changes
-
-## Release Notes
-
-GitHub auto-generates release notes from merged PR titles since the last tag. Write clear, descriptive PR titles for better release notes.
-
-**Example release notes:**
-```markdown
-## What's Changed
-* fix(seo): add find-by-sound route to sitemap by @rigomart in #62
-* feat(ui): improve mobile navigation by @rigomart in #61
-
-**Full Changelog**: https://github.com/rigomart/phonaria/compare/v0.6.0...v0.7.0
-```
+- `.github/release-please-config.json` - Release Please configuration
+- `.github/.release-please-manifest.json` - Current version tracking
+- `apps/web/CHANGELOG.md` - Auto-generated changelog
+- `apps/web/package.json` - Version auto-updated
 
 ## Notes
 
-- Version in `apps/web/package.json` is the source of truth
-- Tags use format `v{version}` (e.g., `v0.7.0`)
+- Only `apps/web` is released (other packages are internal)
+- Tags use format `@phonaria/app-v{version}` (e.g., `@phonaria/app-v0.7.0`)
 - Vercel auto-deploy is disabled for `main` branch (preview deployments still work)
 - Production deploys only happen on GitHub Release publish
