@@ -114,7 +114,29 @@ The web app uses Next.js App Router with internationalization:
 - Before pushing, run `bun test`, `bun lint`, and `bun check-types` to catch issues early.
 
 ## Commit & Pull Request Guidelines
-- Follow the Conventional Commit style: `type(scope): summary` (e.g. `feat(api): add g2p fallback`).
+
+### Conventional Commits (Critical for CI/CD)
+This project uses Release Please for automated releases. Commit message format directly controls version bumps and changelog generation. Always use conventional commits:
+
+```
+type(scope): description
+
+# Examples:
+feat(ui): add dark mode toggle        # Minor release (0.1.0)
+fix(api): resolve timeout issue       # Patch release (0.0.1)
+feat!: redesign authentication        # Major release (1.0.0)
+docs: update README                   # No release
+chore: update dependencies            # No release
+```
+
+| Prefix | Release Impact |
+|--------|----------------|
+| `feat:` | Minor version bump |
+| `fix:` | Patch version bump |
+| `feat!:` or `fix!:` | Major version bump |
+| `docs:`, `chore:`, `ci:`, `test:` | No version bump |
+
+### Pull Request Standards
 - Squash fixups locally and keep scopes aligned with the touched package (`@phonaria/app`, `helper-scripts`, etc.).
 - PRs need a short summary, linked issue or task, and confirmation of `bun lint`, `bun check-types`, and `bun test`. Add UI screenshots or API samples when behavior changes.
 

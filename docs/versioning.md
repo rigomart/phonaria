@@ -1,90 +1,59 @@
 # Versioning
 
-Phonaria uses Changesets to manage a single product version for the web app.
+Phonaria uses [Release Please](https://github.com/googleapis/release-please) for automated releases.
 
-## Scope
-
-Versioned packages:
-- @phonaria/app (apps/web)
-
-Ignored packages (no version bumps required):
-- @phonaria/helper-scripts
-- @phonaria/audio-gen
-- @phonaria/phonetics-data
-- @phonaria/ui
-
-## When to add a changeset
-
-Create a changeset for any change that affects the shipped product. Use
-`@phonaria/app` in the changeset whenever the user-facing app changes, even if
-the code change lives in another package. Examples include:
-- UI or UX changes in the app
-- IPA / phonetics data changes that surface in the app
-- New features or bug fixes
-
-Do not add a changeset when only touching ignored packages, unless the change affects
-the shipped app (for example, updated CMUDict JSON or UI component behavior).
-
-## Automated Workflow
-
-The release pipeline is fully automated:
+## How It Works
 
 ```
-Feature PR → main → Version PR (auto) → Merge (manual) → Release (auto) → Deploy (auto)
+Conventional Commits → main → Release PR (auto) → Merge → Tag + Release (auto) → Deploy (auto)
 ```
 
-### 1. Development (feature branch)
+1. **Development**: Work on feature branches using conventional commits
+2. **Preview**: PRs get automatic Vercel preview deployments
+3. **Release PR**: Release Please auto-creates a PR with version bump + changelog
+4. **Merge**: Merging the release PR creates the tag and GitHub Release
+5. **Deploy**: Release triggers Vercel production deployment
+
+## Conventional Commits
+
+Use these commit prefixes to control version bumps:
 
 ```bash
-# Make changes
-bun run changeset        # Select @phonaria/app, choose patch/minor/major
-git add .changeset/
-git commit -m "feat: your feature"
-# Create PR and merge to main
+# Patch release (0.6.0 → 0.6.1) - Bug fixes
+git commit -m "fix: resolve sitemap issue"
+git commit -m "fix(seo): correct meta tags"
+
+# Minor release (0.6.0 → 0.7.0) - New features
+git commit -m "feat: add find-by-sound page"
+git commit -m "feat(ui): implement dark mode"
+
+# Major release (0.6.0 → 1.0.0) - Breaking changes
+git commit -m "feat!: redesign API structure"
+
+# No version bump
+git commit -m "docs: update README"
+git commit -m "chore: update dependencies"
+git commit -m "ci: fix workflow"
 ```
 
-### 2. Version PR (automatic)
+## Creating a Release
 
-When you merge to main with pending changesets, the release workflow:
-- Detects pending changesets
-- Creates a "Version Packages" PR with bumped versions
-- Updates the PR if more changesets are merged
+1. Write conventional commits in your PRs
+2. Merge PRs to main
+3. Release Please automatically creates/updates a "Release PR"
+4. Review the release PR (shows version bump + changelog)
+5. Merge when ready → tag + release created → deploy triggered
 
-### 3. Review and merge (manual checkpoint)
+## Files
 
-Review the version PR to:
-- Verify version bumps are correct
-- Batch multiple features into one release if desired
-- Merge when ready to release
-
-### 4. Release and deploy (automatic)
-
-When the version PR is merged, the workflow:
-- Creates git tag (`@phonaria/app@X.Y.Z`)
-- Creates GitHub Release with auto-generated notes
-- Triggers Vercel deployment
-
-## SemVer meaning
-
-- patch: bug fix or data correction
-- minor: new feature or visible UX change
-- major: breaking change
-
-## Manual workflow (fallback)
-
-If automation fails or for special cases:
-
-```bash
-bun run changeset:status    # Check pending changesets
-bun run changeset:version   # Bump versions
-git add -A && git commit -m "chore(release): version packages"
-git push
-bun run release             # Tag, push, and create release
-```
+- `.github/release-please-config.json` - Release Please configuration
+- `.github/.release-please-manifest.json` - Current version tracking
+- `apps/web/CHANGELOG.md` - Auto-generated changelog
+- `apps/web/package.json` - Version auto-updated
 
 ## Notes
 
-- Packages are private and not published to npm
-- Tags use package format: `@phonaria/app@X.Y.Z`
-- Deployments only trigger on GitHub Release publish
-- Vercel auto-deploy disabled for `main` branch only (preview deployments still work)
+- Only `apps/web` is released (other packages are internal)
+- Tags use format `@phonaria/app-v{version}` (e.g., `@phonaria/app-v0.7.0`)
+- Vercel auto-deploy is disabled for `main` branch (preview deployments still work)
+- Production deploys only happen on GitHub Release publish
