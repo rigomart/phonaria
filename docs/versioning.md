@@ -87,4 +87,4 @@ bun run release             # Tag, push, and create release
 - Packages are private and not published to npm
 - Tags use package format: `@phonaria/app@X.Y.Z`
 - Deployments only trigger on GitHub Release publish
-- Vercel auto-deploy is disabled (`vercel.json` → `git.deploymentEnabled: false`)
+- Vercel auto-deploy disabled for `main` branch only (preview deployments still work)
