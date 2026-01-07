@@ -61,3 +61,44 @@ The generated JSON has the following structure:
 ```
 
 Consumers should read from the `data` property for dictionary lookups. Logs include entry counts, skipped lines, and file size so you can confirm the generated dictionary before committing it.
+
+## Curated word chunks workflow
+
+`generate-curated-chunks.py` generates frequency-ordered word lists with CMU ARPABET pronunciations for client-side tiered lookup. This is a **Python script** (not TypeScript) because it uses the [wordfreq](https://github.com/rspeer/wordfreq) library.
+
+### Prerequisites
+
+```bash
+pip install wordfreq
+```
+
+### Running the script
+
+```bash
+cd packages/helper-scripts
+python generate-curated-chunks.py
+```
+
+### Output
+
+The script generates two files in `packages/phonetics-data/data/curated/`:
+
+| File | Words | Size |
+| --- | --- | --- |
+| `top-1k.json` | 1,000 | ~22 KB |
+| `top-10k.json` | 10,000 | ~273 KB |
+
+Each file contains:
+- **meta**: Version, license (CC-BY-SA 4.0), attribution, and source URLs
+- **words**: Simple `word → "CMU ARPABET"` mapping
+
+### Data sources
+
+- **Word frequencies**: [wordfreq](https://github.com/rspeer/wordfreq) by Robyn Speer
+  - Combines Google Books Ngrams, OpenSubtitles, SUBTLEX, Wikipedia, and more
+  - License: Apache 2.0 (code), CC-BY-SA 4.0 (data)
+- **Pronunciations**: CMUDict (Public Domain)
+
+### Licensing
+
+The generated files are licensed under **CC-BY-SA 4.0**. See the `phonetics-data` README for full attribution requirements.
