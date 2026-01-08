@@ -11,6 +11,7 @@ export { tokenizeText } from "../g2p/text-processing";
 /**
  * Tier 2 data loader with lazy initialization.
  * Cached at module level - loaded once per page lifecycle.
+ * Safe to call multiple times; returns cached data after first load.
  */
 let tier2Cache: CuratedWordData | null = null;
 
