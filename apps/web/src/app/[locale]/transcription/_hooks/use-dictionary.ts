@@ -14,7 +14,11 @@ const sessionCache = new Map<string, WordDefinition | "not_found">();
 export function useDictionary(word: string | null) {
 	const [isPending, startTransition] = useTransition();
 	const [data, setData] = useState<WordDefinition | null>(null);
-	const [error, setError] = useState<{ message: string } | null>(null);
+	const [error, setError] = useState<{
+		code: string;
+		message: string;
+		details?: unknown;
+	} | null>(null);
 
 	useEffect(() => {
 		if (!word) {
@@ -30,7 +34,7 @@ export function useDictionary(word: string | null) {
 		if (cached !== undefined) {
 			if (cached === "not_found") {
 				setData(null);
-				setError({ message: `No definition found for "${word}"` });
+				setError({ code: "NOT_FOUND", message: `No definition found for "${word}"` });
 			} else {
 				setData(cached);
 				setError(null);

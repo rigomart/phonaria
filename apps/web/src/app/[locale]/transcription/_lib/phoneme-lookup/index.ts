@@ -71,6 +71,7 @@ export async function lookupWordClient(word: string): Promise<WordLookupResult |
 export async function batchLookup(words: string[]): Promise<BatchLookupResult> {
 	const found = new Map<string, WordLookupResult>();
 	const missing: string[] = [];
+	const seen = new Set<string>();
 
 	// Pre-load tier 2 once for all lookups
 	const tier2Data = await loadTier2();
@@ -79,8 +80,9 @@ export async function batchLookup(words: string[]): Promise<BatchLookupResult> {
 		const normalized = word.toLowerCase().trim();
 		if (!normalized) continue;
 
-		// Skip if already found (handles duplicates)
-		if (found.has(normalized)) continue;
+		// Skip if already processed (handles duplicates in both found and missing)
+		if (seen.has(normalized)) continue;
+		seen.add(normalized);
 
 		// Check tier 1
 		const tier1Cmu = lookupTier1(normalized);

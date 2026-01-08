@@ -54,7 +54,7 @@ export function useTranscribe() {
 						return;
 					}
 
-					serverWords = (serverResult?.data as G2PWord[]) ?? [];
+					serverWords = serverResult?.data ?? [];
 				}
 
 				// 4. Build server word lookup map for merging

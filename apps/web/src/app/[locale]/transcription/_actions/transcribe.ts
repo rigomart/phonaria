@@ -1,7 +1,8 @@
 "use server";
 
+import { z } from "zod";
 import { rateLimitedAction } from "@/lib/safe-action";
-import { g2pRequestSchema, g2pWordsRequestSchema } from "../_lib/g2p/model";
+import { g2pRequestSchema, g2pWordSchema, g2pWordsRequestSchema } from "../_lib/g2p/model";
 import { processG2P, processWords } from "../_lib/g2p/service";
 
 /**
@@ -24,6 +25,7 @@ export const transcribeAction = rateLimitedAction
 export const transcribeWordsAction = rateLimitedAction
 	.metadata({ actionName: "g2p-transcribe-words" })
 	.inputSchema(g2pWordsRequestSchema)
+	.outputSchema(z.array(g2pWordSchema))
 	.action(async ({ parsedInput }) => {
 		return processWords(parsedInput.words);
 	});
