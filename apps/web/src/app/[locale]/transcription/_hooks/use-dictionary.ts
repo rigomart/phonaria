@@ -46,20 +46,24 @@ export function useDictionary(word: string | null) {
 			setError(null);
 			const result = await lookupDictionaryAction({ word });
 
-			if (result?.serverError) {
-				// Cache "not found" errors to avoid repeated failed lookups
-				if (result.serverError.code === "NOT_FOUND") {
-					sessionCache.set(normalizedWord, "not_found");
+			// Wrap post-await state updates in a separate startTransition
+			// so they are properly tracked as transition work
+			startTransition(() => {
+				if (result?.serverError) {
+					// Cache "not found" errors to avoid repeated failed lookups
+					if (result.serverError.code === "NOT_FOUND") {
+						sessionCache.set(normalizedWord, "not_found");
+					}
+					setError(result.serverError);
+					setData(null);
+					return;
 				}
-				setError(result.serverError);
-				setData(null);
-				return;
-			}
 
-			if (result?.data) {
-				sessionCache.set(normalizedWord, result.data);
-				setData(result.data);
-			}
+				if (result?.data) {
+					sessionCache.set(normalizedWord, result.data);
+					setData(result.data);
+				}
+			});
 		});
 	}, [word]);
 

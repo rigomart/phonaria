@@ -62,7 +62,12 @@ export const actionClient = createSafeActionClient({
 		});
 	},
 	handleServerError(e) {
-		console.error("[Action Error]", e.message);
+		// Log full error in development for easier debugging
+		if (process.env.NODE_ENV === "development") {
+			console.error("[Action Error]", e);
+		} else {
+			console.error("[Action Error]", e.message);
+		}
 
 		if (e instanceof ActionError) {
 			return {
