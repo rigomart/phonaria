@@ -1,5 +1,5 @@
 import type { CmuStressLevel } from "@phonaria/phonetics-data";
-import { z } from "zod/v3";
+import { z } from "zod";
 
 export const g2pRequestSchema = z.object({
 	text: z
@@ -10,6 +10,13 @@ export const g2pRequestSchema = z.object({
 			/^[\p{L}\p{N}\s.,!?;:'"()\-–—…""''‚„«»‹›@#$%&*+/=[\]{}|\\^_`~]+$/u,
 			"Text contains unsupported characters",
 		),
+});
+
+/**
+ * Schema for processing specific words (used by tiered lookup for server fallback).
+ */
+export const g2pWordsRequestSchema = z.object({
+	words: z.array(z.string().min(1)).min(1).max(100),
 });
 
 const knownPhonemeSchema = z.object({

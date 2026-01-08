@@ -7,12 +7,13 @@ export function isValidText(text: string): boolean {
 	return Boolean(text && text.trim().length > 0);
 }
 
-export async function processG2P(text: string): Promise<G2PResponse> {
-	if (!isValidText(text)) {
-		return { words: [] };
-	}
+/**
+ * Process a list of specific words through CMUDict lookup and fallback.
+ * Used by tiered lookup to process only words not found in client tiers.
+ */
+export async function processWords(words: string[]): Promise<G2PWord[]> {
+	if (words.length === 0) return [];
 
-	const words = tokenizeText(text);
 	const lookups = await lookupManyCmudict(words);
 	const results: G2PWord[] = [];
 
@@ -37,6 +38,21 @@ export async function processG2P(text: string): Promise<G2PResponse> {
 			source,
 		});
 	}
+
+	return results;
+}
+
+/**
+ * Process full text through tokenization, CMUDict lookup, and fallback.
+ * Legacy function - prefer using tiered lookup in client for better performance.
+ */
+export async function processG2P(text: string): Promise<G2PResponse> {
+	if (!isValidText(text)) {
+		return { words: [] };
+	}
+
+	const words = tokenizeText(text);
+	const results = await processWords(words);
 
 	return { words: results };
 }

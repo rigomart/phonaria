@@ -3,7 +3,7 @@
 import { Badge } from "@phonaria/ui/components/badge";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { AudioControls } from "@/components/audio-controls";
-import type { WordDefinition } from "@/lib/orpc/types";
+import type { WordDefinition } from "../_lib/dictionary/model";
 
 type WordDefinitionDetailsHeaderProps = {
 	word: string;

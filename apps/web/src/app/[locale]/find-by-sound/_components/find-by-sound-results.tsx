@@ -7,10 +7,10 @@ import { Spinner } from "@phonaria/ui/components/spinner";
 import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { PhonemeSearchOutput } from "@/lib/orpc";
+import type { PhonemeSearchResponse } from "../_lib/phoneme-search/model";
 
 interface FindBySoundResultsProps {
-	words: PhonemeSearchOutput["words"];
+	words: PhonemeSearchResponse["words"];
 	totalCount: number;
 	limit: number;
 	isLoading: boolean;
