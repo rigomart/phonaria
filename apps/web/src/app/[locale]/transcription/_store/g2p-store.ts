@@ -1,7 +1,11 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { create } from "zustand";
+import type { TranscriptionResult } from "../_types/g2p";
 
 interface G2PStore {
+	// Current transcription result
+	currentResult: TranscriptionResult | null;
+
 	// Selected phoneme state
 	selectedPhonemeId: PhonemeSymbolId | null;
 	hasSelection: boolean;
@@ -11,6 +15,7 @@ interface G2PStore {
 	selectedVariants: number[];
 
 	// Actions
+	setCurrentResult: (result: TranscriptionResult | null) => void;
 	resetVariants: (wordCount: number) => void;
 	clearResult: () => void;
 	selectPhoneme: (phonemeId: PhonemeSymbolId | null) => void;
@@ -20,18 +25,24 @@ interface G2PStore {
 
 export const useG2PStore = create<G2PStore>((set) => ({
 	// Initial state
+	currentResult: null,
 	selectedPhonemeId: null,
 	hasSelection: false,
 	phonemeDialogOpen: false,
 	selectedVariants: [],
 
 	// Actions
+	setCurrentResult: (result: TranscriptionResult | null) => {
+		set({ currentResult: result });
+	},
+
 	resetVariants: (wordCount: number) => {
 		set({ selectedVariants: Array(wordCount).fill(0) });
 	},
 
 	clearResult: () => {
 		set({
+			currentResult: null,
 			selectedPhonemeId: null,
 			hasSelection: false,
 			phonemeDialogOpen: false,

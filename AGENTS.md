@@ -33,14 +33,15 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 - Agents can read the README for any relevant package or app to get a fast overview before making changes.
 - `apps/web`: Next.js 15 App Router project with internationalization via `[locale]` dynamic routes. Feature-specific code uses route groups (e.g. `(overview)`) and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`) to co-locate related code. UI primitives live in `src/components`, shared utilities in `src/lib`, and feature data wiring in `src/data`.
 - `packages/phonetics-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. All types and registries are exported from `src/index.ts`. Key exports include:
-  - `cmudictData` and `cmudictStatsData`: Bundled CMUDict JSON and coverage stats used by the API and insights page
+  - `cmudictData` and `cmudictStatsData`: Bundled CMUDict JSON and coverage stats used by server actions and insights page
+  - `curatedTop1k` and `curatedTop10k`: Curated word lists with CMU pronunciations for client-side tiered lookup (~28KB and ~339KB)
   - `PhonemeSymbolRegistry`: Complete phoneme catalog with IPA symbols, categories, and metadata
   - `PhonemeArticulationRegistry`: Articulatory features and production guidance for each phoneme
   - `ContrastsByPhonemeIdRegistry`: Minimal pairs and contrast information
   - `PhonemeSpellingPatternRegistry`: Common spelling patterns for each phoneme
   - `PhonemeAllophoneRegistry`: Allophonic variations with context keys
   - `CmuSymbolRegistry`: Mapping between CMU ARPABET and IPA symbols
-- `packages/helper-scripts`: TypeScript utilities for ElevenLabs audio generation and CMUDict JSON/stat generation. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`; generated audio is produced locally and manually uploaded to the external audio bucket the app references.
+- `packages/helper-scripts`: Utilities for data generation. TypeScript scripts handle ElevenLabs audio generation and CMUDict processing; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`; generated audio is produced locally and manually uploaded to the external audio bucket the app references.
 - `docs`: Product briefs, project overviews, enhancement plans, and feature deep-dives organized in `enhancements/` and `features/` subdirectories.
 
 ## Internationalization & Translations (Agent Notes)
@@ -54,13 +55,12 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 The web app uses Next.js App Router with internationalization:
 - `app/[locale]/`: Base layout with locale-based routing (e.g. `/en`, `/es`)
   - `(overview)/`: Launchpad landing page rendered at `/{locale}`
-  - `transcription/`: Grapheme-to-phoneme workspace with inspector and dialogs
+  - `transcription/`: Grapheme-to-phoneme workspace with inspector, dialogs, and tiered lookup
   - `ipa-chart/`: Interactive IPA chart with consonants and vowels
+  - `find-by-sound/`: Search words by phoneme patterns
   - `insights/`: CMUDict coverage stats and phoneme distributions
   - `credits/`: Data source acknowledgements
-- `app/api/`: API routes for server-side functionality
-  - `g2p/`: Grapheme-to-phoneme transcription endpoint
-  - `dictionary/`: Dictionary lookup with rate limiting
+- Server actions in `_actions/` directories handle server-side functionality (transcription, dictionary lookup, phoneme search) with tiered client-side caching via TanStack Query
 - Feature-specific code lives in prefixed directories within each route (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`)
 
 ## Build, Test, and Development Commands
@@ -74,6 +74,7 @@ The web app uses Next.js App Router with internationalization:
 - `bun --cwd packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
 - `bun --cwd packages/helper-scripts cmudict-stats`: Build CMUDict coverage statistics used by the insights page.
 - `bun --cwd packages/helper-scripts generate-word-mappings`: Produce CMU ARPA mappings for example words derived from `@phonaria/phonetics-data`.
+- `python3 packages/helper-scripts/generate-curated-chunks.py`: Generate curated top-1k and top-10k word lists for client-side tiered lookup (requires `pip install wordfreq`).
 
 ## Technical Philosophy
 ### Modern Web Standards
@@ -136,17 +137,14 @@ chore: update dependencies            # No release
 | `feat!:` or `fix!:` | Major version bump |
 | `docs:`, `chore:`, `ci:`, `test:` | No version bump |
 
+Choose commit types from the **user's perspective**, not implementation details. Ask: "What changed for the user?"
+
 ### Pull Request Standards
 - Squash fixups locally and keep scopes aligned with the touched package (`@phonaria/app`, `helper-scripts`, etc.).
 - PRs need a short summary, linked issue or task, and confirmation of `bun lint`, `bun check-types`, and `bun test`. Add UI screenshots or API samples when behavior changes.
 
 ## Environment & Configuration Tips
 - Never commit secrets. Keep runtime credentials in `apps/web/.env.local` and ElevenLabs keys in `packages/helper-scripts/.env`.
-- Required environment variables for `apps/web`:
-  - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` for API rate limiting
-  - `CMUDICT_SRC_URL` (optional) for CMUDict source location during builds
-- When updating CMUDict assets, use the helper scripts (`cmudict-to-json`, `cmudict-stats`) and commit JSON outputs under `packages/phonetics-data/data/dict` so deployments stay deterministic.
-- Generated audio files from `packages/helper-scripts generate` are produced locally and manually uploaded to the external audio bucket (alongside any externally sourced audio files) that the app references.
 
 ## Design & UX Patterns
 

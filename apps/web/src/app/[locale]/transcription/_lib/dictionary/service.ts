@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import {
 	freeDictionaryErrorSchema,
@@ -7,11 +8,12 @@ import {
 
 const FREE_DICT_BASE = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
-export async function fetchWordDefinition(word: string): Promise<WordDefinition | null> {
-	const safeWord = word.trim().toLowerCase();
-	if (!safeWord) return null;
-
-	const url = `${FREE_DICT_BASE}/${encodeURIComponent(safeWord)}`;
+/**
+ * Raw fetch implementation for dictionary lookups.
+ * This is wrapped by unstable_cache for server-side caching.
+ */
+async function fetchWordDefinitionRaw(word: string): Promise<WordDefinition | null> {
+	const url = `${FREE_DICT_BASE}/${encodeURIComponent(word)}`;
 	const res = await fetch(url, {
 		method: "GET",
 		headers: { Accept: "application/json" },
@@ -55,9 +57,28 @@ export async function fetchWordDefinition(word: string): Promise<WordDefinition 
 	} catch (e) {
 		// If JSON parsing failed or validation failed, surface generic error
 		throw new Error(
-			`Failed to parse dictionary response for "${safeWord}": ${e instanceof Error ? e.message : String(e)}`,
+			`Failed to parse dictionary response for "${word}": ${e instanceof Error ? e.message : String(e)}`,
 		);
 	}
+}
+
+/**
+ * Cached dictionary lookup with 24-hour TTL.
+ * Uses Next.js unstable_cache for server-side caching across requests.
+ */
+const getCachedDefinition = unstable_cache(fetchWordDefinitionRaw, ["dictionary-lookup"], {
+	revalidate: 86400, // 24 hours
+	tags: ["dictionary"],
+});
+
+/**
+ * Fetch a word definition from the Free Dictionary API.
+ * Results are cached server-side for 24 hours.
+ */
+export async function fetchWordDefinition(word: string): Promise<WordDefinition | null> {
+	const safeWord = word.trim().toLowerCase();
+	if (!safeWord) return null;
+	return getCachedDefinition(safeWord);
 }
 
 export const dictionaryQuerySchema = z.object({

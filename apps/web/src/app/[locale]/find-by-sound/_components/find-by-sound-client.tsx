@@ -1,11 +1,11 @@
 "use client";
 
-import { skipToken, useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
-import { orpc } from "@/lib/orpc";
+import { searchPhonemesAction } from "../_actions/search";
 import { ALL_PHONEMES, type KeyboardPhoneme } from "../_lib/keyboard-layout";
+import type { PhonemeSearchResponse } from "../_lib/phoneme-search/model";
 import { FindBySoundResults } from "./find-by-sound-results";
 import { IpaKeyboard } from "./ipa-keyboard";
 import { NextSoundsSuggestions } from "./next-sounds-suggestions";
@@ -22,17 +22,37 @@ function phonemesToArpabetPath(phonemes: KeyboardPhoneme[]): string {
 export function FindBySoundClient() {
 	const t = useTranslations("find-by-sound-page");
 	const [selectedPhonemes, setSelectedPhonemes] = useState<KeyboardPhoneme[]>([]);
+	const [isPending, startTransition] = useTransition();
+	const [searchResult, setSearchResult] = useState<PhonemeSearchResponse | null>(null);
+	const [isError, setIsError] = useState(false);
 
 	const canAddMore = selectedPhonemes.length < MAX_PATH_LENGTH;
 	const hasSelection = selectedPhonemes.length > 0;
 	const arpabetPath = phonemesToArpabetPath(selectedPhonemes);
 
-	const searchQuery = useQuery(
-		orpc.phonemeSearch.search.queryOptions({
-			input: hasSelection ? { path: arpabetPath, limit: DEFAULT_LIMIT } : skipToken,
-			staleTime: 15_000,
-		}),
-	);
+	// Execute search when phoneme path changes
+	useEffect(() => {
+		if (!hasSelection) {
+			setSearchResult(null);
+			setIsError(false);
+			return;
+		}
+
+		startTransition(async () => {
+			setIsError(false);
+			const result = await searchPhonemesAction({ path: arpabetPath, limit: DEFAULT_LIMIT });
+
+			if (result?.serverError) {
+				setIsError(true);
+				setSearchResult(null);
+				return;
+			}
+
+			if (result?.data) {
+				setSearchResult(result.data);
+			}
+		});
+	}, [arpabetPath, hasSelection]);
 
 	const handleSelectPhoneme = (phoneme: KeyboardPhoneme) => {
 		if (!canAddMore) return;
@@ -55,9 +75,9 @@ export function FindBySoundClient() {
 		setSelectedPhonemes([]);
 	};
 
-	const words = searchQuery.data?.words ?? [];
-	const totalCount = searchQuery.data?.totalCount ?? 0;
-	const nextPhonemes = searchQuery.data?.nextPhonemes ?? [];
+	const words = searchResult?.words ?? [];
+	const totalCount = searchResult?.totalCount ?? 0;
+	const nextPhonemes = searchResult?.nextPhonemes ?? [];
 
 	return (
 		<div className="flex flex-col gap-4 max-w-3xl mx-auto">
@@ -93,8 +113,8 @@ export function FindBySoundClient() {
 					words={words}
 					totalCount={totalCount}
 					limit={DEFAULT_LIMIT}
-					isLoading={searchQuery.isLoading}
-					isError={searchQuery.isError}
+					isLoading={isPending}
+					isError={isError}
 					hasSelection={hasSelection}
 				/>
 			</div>

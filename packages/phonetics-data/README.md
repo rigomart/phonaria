@@ -167,6 +167,67 @@ contrasts?.forEach(contrast => {
 
 > **Note**: CMU ARPA transcriptions are generated dynamically by `helper-scripts` from CMUDict. The default CMUDict JSON lives at `packages/phonetics-data/data/dict/cmudict.json` (generated via `bun --cwd packages/helper-scripts cmudict-to-json`). See the `generate-word-mappings` script for word → CMU ARPA lookups.
 
+## Curated word chunks (`data/curated/`)
+
+Pre-generated word lists for client-side tiered lookup, enabling instant pronunciation lookups without server round-trips.
+
+| File | Words | Description |
+| --- | --- | --- |
+| `top-1k.json` | 1,000 | Most frequent words, bundled inline (~22 KB) |
+| `top-10k.json` | 10,000 | Extended vocabulary, lazy-loaded (~273 KB) |
+
+### Data format
+
+Each file contains metadata and a simple word → CMU ARPABET mapping:
+
+```json
+{
+  "meta": {
+    "version": "1.0.0",
+    "tier": "1k",
+    "wordCount": 1000,
+    "license": "CC-BY-SA-4.0",
+    "attribution": "Derived from wordfreq (Robyn Speer, CC-BY-SA 4.0)...",
+    "sources": {
+      "wordfreq": "https://github.com/rspeer/wordfreq",
+      "cmudict": "https://github.com/cmusphinx/cmudict"
+    }
+  },
+  "words": {
+    "hello": "HH AH0 L OW1",
+    "world": "W ER1 L D"
+  }
+}
+```
+
+IPA conversion, syllabification, and phoneme key generation are handled at runtime using existing TypeScript utilities (`cmuVariantToIpa`, etc.).
+
+### Regenerating curated chunks
+
+```bash
+cd packages/helper-scripts
+pip install wordfreq  # Python dependency
+python generate-curated-chunks.py
+```
+
+### Licensing (CC-BY-SA 4.0)
+
+The curated word chunks are derived from:
+
+- **[wordfreq](https://github.com/rspeer/wordfreq)** by Robyn Speer (Apache 2.0 code, CC-BY-SA 4.0 data)
+  - Incorporates data from Google Books Ngrams, OpenSubtitles, SUBTLEX (Brysbaert et al.), and Wikipedia
+- **[CMUDict](https://github.com/cmusphinx/cmudict)** (Public Domain)
+
+**The generated files are licensed under CC-BY-SA 4.0.** This means:
+
+1. **Attribution required** - You must credit the sources when using or distributing these files
+2. **ShareAlike** - Derivative works must use the same CC-BY-SA 4.0 license
+3. **Commercial use allowed** - No restrictions on commercial use
+
+**Required attribution** (include in your credits/acknowledgments):
+
+> Word frequency data derived from [wordfreq](https://github.com/rspeer/wordfreq) by Robyn Speer (CC-BY-SA 4.0), incorporating data from Google Books Ngrams, OpenSubtitles, SUBTLEX (Brysbaert et al.), and Wikipedia. Pronunciations from [CMUDict](https://github.com/cmusphinx/cmudict) (Public Domain).
+
 ## Contribution guide
 
 1. **Edit the right module**:
