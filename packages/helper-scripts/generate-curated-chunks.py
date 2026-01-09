@@ -62,7 +62,7 @@ def generate_curated_chunk(
         if cmu_key not in cmudict:
             continue
 
-        # Use first pronunciation variant
+        # Get all pronunciation variants from CMUDict
         variants = cmudict[cmu_key]
         if not variants:
             continue
