@@ -33,16 +33,16 @@ export function cmuToSyllables(cmuVariant: string): G2PSyllable[] {
 
 /**
  * Look up a word in tier 1 (inline bundle).
- * Returns CMU string or null if not found.
+ * Returns array of CMU variants or null if not found.
  */
-export function lookupTier1(normalizedWord: string): string | null {
+export function lookupTier1(normalizedWord: string): string[] | null {
 	return curatedTop1k.words[normalizedWord] ?? null;
 }
 
 /**
  * Look up a word in tier 2 (lazy-loaded).
- * Returns CMU string or null if not found.
+ * Returns array of CMU variants or null if not found.
  */
-export function lookupTier2(tier2Data: CuratedWordData, normalizedWord: string): string | null {
+export function lookupTier2(tier2Data: CuratedWordData, normalizedWord: string): string[] | null {
 	return tier2Data.words[normalizedWord] ?? null;
 }

@@ -50,7 +50,7 @@ def generate_curated_chunk(
 ) -> dict:
     """Generate a curated word chunk with CMU ARPABET pronunciations.
 
-    The output is minimal - just word -> CMU ARPABET string mappings.
+    The output maps each word to an array of CMU ARPABET variants.
     IPA conversion, syllabification, and phoneme key generation are
     handled at runtime by the client using existing TypeScript utilities.
     """
@@ -67,8 +67,8 @@ def generate_curated_chunk(
         if not variants:
             continue
 
-        # Store just the CMU ARPABET string
-        entries[word] = variants[0]
+        # Store all CMU ARPABET variants
+        entries[word] = variants
 
     return {
         "meta": {
@@ -98,8 +98,8 @@ def main():
     cmudict_path = project_root / "packages/phonetics-data/data/dict/cmudict.json"
     output_dir = project_root / "packages/phonetics-data/data/curated"
 
-    # Version for cache invalidation
-    version = "1.0.0"
+    # Version for cache invalidation (2.0.0: switched from single string to array of variants)
+    version = "2.0.0"
 
     print("Loading CMUDict...")
     cmudict = load_cmudict(cmudict_path)

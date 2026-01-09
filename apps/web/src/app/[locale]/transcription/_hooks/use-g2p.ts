@@ -15,8 +15,8 @@ import { useG2PStore } from "../_store/g2p-store";
 function lookupResultToG2PWord(result: WordLookupResult): G2PWord {
 	return {
 		word: result.word,
-		// Wrap single variant in array (client tiers only have one variant per word)
-		variants: [result.syllables],
+		// Use all pronunciation variants from curated data
+		variants: result.variants,
 		// All tier1/tier2 words come from CMUDict
 		source: "cmudict",
 	};

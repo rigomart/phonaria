@@ -20,7 +20,8 @@ export interface CuratedWordData {
 		attribution: string;
 		sources: { wordfreq: string; cmudict: string };
 	};
-	words: Record<string, string>;
+	/** Word to CMU ARPABET variants mapping (each word may have multiple pronunciations) */
+	words: Record<string, string[]>;
 }
 
 /**

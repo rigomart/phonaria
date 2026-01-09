@@ -14,10 +14,10 @@ export type LookupSource = "tier1" | "tier2" | "server";
 export interface WordLookupResult {
 	/** Original word (lowercase) */
 	word: string;
-	/** CMU ARPABET pronunciation string (e.g., "HH AH0 L OW1") */
-	cmu: string;
-	/** Syllabified pronunciation */
-	syllables: G2PSyllable[];
+	/** All CMU ARPABET pronunciation variants (e.g., ["DH AH0", "DH IY0"]) */
+	cmuVariants: string[];
+	/** Syllabified pronunciation variants (matches G2PWord.variants structure) */
+	variants: G2PSyllable[][];
 	/** Which tier provided this result */
 	source: LookupSource;
 }
@@ -38,24 +38,24 @@ export async function lookupWordClient(word: string): Promise<WordLookupResult |
 	if (!normalized) return null;
 
 	// Tier 1: Inline bundle
-	const tier1Cmu = lookupTier1(normalized);
-	if (tier1Cmu) {
+	const tier1Variants = lookupTier1(normalized);
+	if (tier1Variants) {
 		return {
 			word: normalized,
-			cmu: tier1Cmu,
-			syllables: cmuToSyllables(tier1Cmu),
+			cmuVariants: tier1Variants,
+			variants: tier1Variants.map(cmuToSyllables),
 			source: "tier1",
 		};
 	}
 
 	// Tier 2: Lazy-loaded
 	const tier2Data = await loadTier2();
-	const tier2Cmu = lookupTier2(tier2Data, normalized);
-	if (tier2Cmu) {
+	const tier2Variants = lookupTier2(tier2Data, normalized);
+	if (tier2Variants) {
 		return {
 			word: normalized,
-			cmu: tier2Cmu,
-			syllables: cmuToSyllables(tier2Cmu),
+			cmuVariants: tier2Variants,
+			variants: tier2Variants.map(cmuToSyllables),
 			source: "tier2",
 		};
 	}
@@ -85,24 +85,24 @@ export async function batchLookup(words: string[]): Promise<BatchLookupResult> {
 		seen.add(normalized);
 
 		// Check tier 1
-		const tier1Cmu = lookupTier1(normalized);
-		if (tier1Cmu) {
+		const tier1Variants = lookupTier1(normalized);
+		if (tier1Variants) {
 			found.set(normalized, {
 				word: normalized,
-				cmu: tier1Cmu,
-				syllables: cmuToSyllables(tier1Cmu),
+				cmuVariants: tier1Variants,
+				variants: tier1Variants.map(cmuToSyllables),
 				source: "tier1",
 			});
 			continue;
 		}
 
 		// Check tier 2
-		const tier2Cmu = lookupTier2(tier2Data, normalized);
-		if (tier2Cmu) {
+		const tier2Variants = lookupTier2(tier2Data, normalized);
+		if (tier2Variants) {
 			found.set(normalized, {
 				word: normalized,
-				cmu: tier2Cmu,
-				syllables: cmuToSyllables(tier2Cmu),
+				cmuVariants: tier2Variants,
+				variants: tier2Variants.map(cmuToSyllables),
 				source: "tier2",
 			});
 			continue;
