@@ -1,71 +1,30 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { lookupDictionaryAction } from "../_actions/dictionary";
-import type { WordDefinition } from "../_lib/dictionary/model";
 
 /**
- * Session-level cache for dictionary lookups.
- * Persists for the page lifecycle (SPA navigation), resets on full page reload.
- * "not_found" sentinel indicates we looked up the word but it wasn't in the dictionary.
+ * Hook to look up dictionary definitions.
+ * Uses TanStack Query for client-side caching and race condition handling.
+ * Server-side caching is handled by unstable_cache in the service layer (24h TTL).
  */
-const sessionCache = new Map<string, WordDefinition | "not_found">();
-
 export function useDictionary(word: string | null) {
-	const [isPending, startTransition] = useTransition();
-	const [data, setData] = useState<WordDefinition | null>(null);
-	const [error, setError] = useState<{
-		code: string;
-		message: string;
-		details?: unknown;
-	} | null>(null);
+	const normalizedWord = word?.trim().toLowerCase() ?? "";
 
-	useEffect(() => {
-		if (!word) {
-			setData(null);
-			setError(null);
-			return;
-		}
+	const { data, isLoading, isError, error } = useQuery({
+		queryKey: ["dictionary", normalizedWord],
+		queryFn: async () => {
+			const result = await lookupDictionaryAction({ word: normalizedWord });
 
-		const normalizedWord = word.trim().toLowerCase();
-
-		// Check session cache first
-		const cached = sessionCache.get(normalizedWord);
-		if (cached !== undefined) {
-			if (cached === "not_found") {
-				setData(null);
-				setError({ code: "NOT_FOUND", message: `No definition found for "${word}"` });
-			} else {
-				setData(cached);
-				setError(null);
+			if (result?.serverError) {
+				throw new Error(result.serverError.message);
 			}
-			return;
-		}
 
-		startTransition(async () => {
-			setError(null);
-			const result = await lookupDictionaryAction({ word });
+			return result?.data ?? null;
+		},
+		enabled: normalizedWord.length > 0,
+		staleTime: 1000 * 60 * 5, // 5 minutes
+	});
 
-			// Wrap post-await state updates in a separate startTransition
-			// so they are properly tracked as transition work
-			startTransition(() => {
-				if (result?.serverError) {
-					// Cache "not found" errors to avoid repeated failed lookups
-					if (result.serverError.code === "NOT_FOUND") {
-						sessionCache.set(normalizedWord, "not_found");
-					}
-					setError(result.serverError);
-					setData(null);
-					return;
-				}
-
-				if (result?.data) {
-					sessionCache.set(normalizedWord, result.data);
-					setData(result.data);
-				}
-			});
-		});
-	}, [word]);
-
-	return { data, isLoading: isPending, isError: !!error, error };
+	return { data: data ?? null, isLoading, isError, error };
 }
