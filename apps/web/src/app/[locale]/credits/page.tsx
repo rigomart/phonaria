@@ -99,6 +99,32 @@ export default function CreditsPage({ params }: PageProps<"/[locale]/credits">) 
 						</a>
 					</section>
 
+					{/* wordfreq Word Frequency Data */}
+					<section className="space-y-3">
+						<h2 className="text-xl font-semibold">{t("sections.wordfreq.title")}</h2>
+						<p className="text-sm text-muted-foreground leading-relaxed">
+							{t("sections.wordfreq.content")}
+						</p>
+						<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+							<a
+								href={t("sections.wordfreq.link-url")}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-block text-sm text-primary hover:underline"
+							>
+								{t("sections.wordfreq.link-text")} →
+							</a>
+							<a
+								href={t("sections.wordfreq.license-url")}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-block text-xs text-muted-foreground hover:underline"
+							>
+								{t("sections.wordfreq.license-text")}
+							</a>
+						</div>
+					</section>
+
 					{/* Free Dictionary API */}
 					<section className="space-y-3">
 						<h2 className="text-xl font-semibold">{t("sections.free-dictionary.title")}</h2>

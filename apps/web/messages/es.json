@@ -376,6 +376,14 @@
 				"link-text": "Más información sobre CMU Dict",
 				"link-url": "https://github.com/cmusphinx/cmudict"
 			},
+			"wordfreq": {
+				"title": "Datos de frecuencia de wordfreq",
+				"content": "Las listas curadas de las 1.000 y 10.000 palabras más frecuentes, usadas para la búsqueda escalonada del lado del cliente, se generan con wordfreq de Robyn Speer. Esta biblioteca agrega datos de frecuencia de palabras de Google Books Ngrams, OpenSubtitles, SUBTLEX, Wikipedia y otros corpus a gran escala para proporcionar rankings de frecuencia precisos para palabras en inglés.",
+				"link-text": "Ver wordfreq en GitHub",
+				"link-url": "https://github.com/rspeer/wordfreq",
+				"license-text": "Ver licencia CC BY-SA 4.0",
+				"license-url": "https://creativecommons.org/licenses/by-sa/4.0/"
+			},
 			"free-dictionary": {
 				"title": "API de Free Dictionary",
 				"content": "Las definiciones del diccionario se proporcionan mediante la API de Free Dictionary (dictionaryapi.dev) usando datos de Wiktionary. Las entradas incluyen metadatos de licencia CC BY-SA 3.0 y el audio de pronunciación se obtiene de Wikimedia Commons, con licencias específicas por archivo.",
