@@ -1,14 +1,11 @@
-import { BarChart3, BookOpen, Mic, Search } from "lucide-react";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getLanguageAlternates, getLocalePath } from "@/lib/seo";
-import { FindBySoundPreviewStatic } from "./_components/find-by-sound-preview";
-import { G2PPreviewStatic } from "./_components/g2p-preview";
 import { HeroSection } from "./_components/hero-section";
-import { IpaChartPreviewStatic } from "./_components/ipa-chart-preview";
-import { StatsPreviewStatic } from "./_components/stats-preview";
-import { ToolCard } from "./_components/tool-card";
+import { IpaIntroSection } from "./_components/ipa-intro-section";
+import { IpaVisualizerSection } from "./_components/ipa-visualizer-section";
+import { SpellingVsSoundSection } from "./_components/spelling-vs-sound-section";
 
 export async function generateMetadata({
 	params,
@@ -32,47 +29,20 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 	const { locale } = await params;
 
 	setRequestLocale(locale as Locale);
-	const t = await getTranslations("overview-page");
 
 	return (
-		<div className="flex flex-1 flex-col bg-background">
-			<HeroSection />
+		<div className="flex flex-1 flex-col items-center bg-background bg-grid-pattern">
+			<div className="w-full max-w-5xl my-4 space-y-8">
+				<HeroSection />
 
-			<section className="container mx-auto p-3 py-6 sm:p-4 lg:p-6">
-				<div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto items-stretch">
-					<ToolCard
-						title={t("launchpad.g2p.title")}
-						description={t("launchpad.g2p.description")}
-						href="/transcription"
-						icon={<Mic className="size-5" />}
-						preview={<G2PPreviewStatic />}
-					/>
+				<div className="flex flex-col bg-background-soft rounded-xl border divide-y">
+					<SpellingVsSoundSection />
 
-					<ToolCard
-						title={t("launchpad.find-by-sound.title")}
-						description={t("launchpad.find-by-sound.description")}
-						href="/find-by-sound"
-						icon={<Search className="size-5" />}
-						preview={<FindBySoundPreviewStatic />}
-					/>
+					<IpaIntroSection />
 
-					<ToolCard
-						title={t("launchpad.ipa-chart.title")}
-						description={t("launchpad.ipa-chart.description")}
-						href="/ipa-chart"
-						icon={<BookOpen className="size-5" />}
-						preview={<IpaChartPreviewStatic />}
-					/>
-
-					<ToolCard
-						title={t("launchpad.stats.title")}
-						description={t("launchpad.stats.description")}
-						href="/insights"
-						icon={<BarChart3 className="size-5" />}
-						preview={<StatsPreviewStatic />}
-					/>
+					<IpaVisualizerSection />
 				</div>
-			</section>
+			</div>
 		</div>
 	);
 }

@@ -10,6 +10,7 @@ const groupVariants = cva(
 	{
 		defaultVariants: {
 			orientation: "horizontal",
+			variant: "default",
 		},
 		variants: {
 			orientation: {
@@ -18,6 +19,10 @@ const groupVariants = cva(
 				vertical:
 					"*:not-first:before:-top-[0.5px] *:not-[&:nth-last-child(1_of_:not(span[data-base-ui-focus-guard],span[data-base-ui-inert]))]:before:-bottom-[0.5px] flex-col *:not-first:rounded-t-none *:not-[&:nth-last-child(1_of_:not(span[data-base-ui-focus-guard],span[data-base-ui-inert]))]:rounded-b-none *:not-first:border-t-0 *:not-[&:nth-last-child(1_of_:not(span[data-base-ui-focus-guard],span[data-base-ui-inert]))]:border-b-0 *:not-[&:nth-last-child(1_of_:not(span[data-base-ui-focus-guard],span[data-base-ui-inert]))]:before:hidden *:not-first:before:rounded-t-none *:not-[&:nth-last-child(1_of_:not(span[data-base-ui-focus-guard],span[data-base-ui-inert]))]:before:rounded-b-none *:after:absolute *:after:top-full *:after:h-px *:pointer-coarse:after:min-h-auto *:after:w-full dark:*:last:before:hidden dark:*:first:before:block",
 			},
+			variant: {
+				default: "",
+				outline: "border border-border rounded-lg bg-transparent",
+			},
 		},
 	},
 );
@@ -25,18 +30,21 @@ const groupVariants = cva(
 function Group({
 	className,
 	orientation,
+	variant = "default",
 	children,
 	...props
 }: {
 	className?: string;
 	orientation?: VariantProps<typeof groupVariants>["orientation"];
+	variant?: VariantProps<typeof groupVariants>["variant"];
 	children: React.ReactNode;
 } & React.ComponentProps<"div">) {
 	return (
 		// biome-ignore lint/a11y/useSemanticElements: Could be different element
 		<div
-			className={cn(groupVariants({ orientation }), className)}
+			className={cn(groupVariants({ orientation, variant }), className)}
 			data-orientation={orientation}
+			data-variant={variant}
 			data-slot="group"
 			role="group"
 			{...props}
