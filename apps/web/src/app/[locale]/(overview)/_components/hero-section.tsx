@@ -37,7 +37,7 @@ export function HeroSection() {
 						English Phonetics Toolkit
 					</h1>
 					<p className="text-muted-foreground text-base max-w-md mx-auto md:mx-0">
-						Tools to help you understand how English words are pronounced.
+						Understand how English words are pronounced.
 					</p>
 				</div>
 

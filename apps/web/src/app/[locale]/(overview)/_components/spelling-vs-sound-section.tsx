@@ -45,24 +45,24 @@ function WordCard({ word, hint, audioPath }: { word: string; hint: string; audio
 			type="button"
 			onClick={() => play()}
 			disabled={isLoading || isPlaying}
-			className="group relative flex flex-col items-center gap-1 rounded-lg border bg-background px-3 py-2.5 transition-all hover:border-primary/50 hover:shadow-sm disabled:opacity-70"
+			className="group relative flex flex-col items-center gap-1.5 rounded-lg bg-background-strong px-3 py-2.5 transition-all hover:bg-muted disabled:opacity-70"
 		>
-			{/* Play indicator */}
-			<div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-				{isLoading ? (
-					<Spinner className="size-3.5" />
-				) : (
-					<Volume2 className="size-3.5 text-muted-foreground" />
-				)}
-			</div>
-
 			{/* Word with highlighted pattern */}
 			<span className="text-base font-medium tracking-tight">
 				{highlightPattern(word, PATTERN)}
 			</span>
 
-			{/* Phonetic hint */}
-			<span className="text-xs text-muted-foreground italic">"{hint}"</span>
+			{/* Phonetic hint with audio indicator */}
+			<div className="flex items-center gap-1.5">
+				{isLoading ? (
+					<Spinner className="size-3" />
+				) : (
+					<Volume2
+						className={`size-3 transition-colors ${isPlaying ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`}
+					/>
+				)}
+				<span className="text-xs text-muted-foreground italic">"{hint}"</span>
+			</div>
 		</button>
 	);
 }
@@ -75,13 +75,13 @@ export function SpellingVsSoundSection() {
 				<h2 className="text-base font-semibold tracking-tight">Spelling Doesn't Match Sound</h2>
 				<p className="text-muted-foreground leading-relaxed text-sm">
 					English spelling is unpredictable. Take{" "}
-					<code className="bg-muted px-1 py-0.5 rounded border font-semibold">{PATTERN}</code> -
-					these four letters sound different in each word. Click to hear them.
+					<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{PATTERN}</code> - these
+					four letters sound different in each word. Click to hear them.
 				</p>
 			</div>
 
 			{/* Interactive Column */}
-			<div className="rounded-xl border bg-muted/30 p-3">
+			<div className="rounded-xl bg-muted/40 p-3">
 				<div className="grid grid-cols-3 gap-2">
 					{WORDS.map((item) => (
 						<WordCard

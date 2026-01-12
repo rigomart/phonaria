@@ -35,7 +35,7 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 			<div className="w-full max-w-5xl my-4 space-y-8">
 				<HeroSection />
 
-				<div className="flex flex-col bg-background-soft rounded-xl border p-4">
+				<div className="flex flex-col bg-background-soft rounded-xl border p-4 divide-y">
 					<SpellingVsSoundSection />
 
 					<IpaIntroSection />

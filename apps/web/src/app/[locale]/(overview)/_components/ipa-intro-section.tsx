@@ -28,8 +28,8 @@ const WORDS: WordExample[] = [
 		pattern: "ough",
 		phonemes: [
 			{ id: "voiceless-dental-fricative", symbol: "θ", isHighlighted: false },
-			{ id: "voiced-postalveolar-approximant", symbol: "r", isHighlighted: false },
-			{ id: "close-back-rounded", symbol: "uː", isHighlighted: true },
+			{ id: "voiced-postalveolar-approximant", symbol: "ɹ", isHighlighted: false },
+			{ id: "close-back-rounded", symbol: "u", isHighlighted: true },
 		],
 	},
 	{
@@ -49,7 +49,7 @@ const WORDS: WordExample[] = [
 		pattern: "ough",
 		phonemes: [
 			{ id: "voiceless-dental-fricative", symbol: "θ", isHighlighted: false },
-			{ id: "open-mid-back-rounded", symbol: "ɔː", isHighlighted: true },
+			{ id: "open-mid-back-rounded", symbol: "ɔ", isHighlighted: true },
 			{ id: "voiceless-alveolar-plosive", symbol: "t", isHighlighted: false },
 		],
 	},
@@ -67,7 +67,7 @@ const WORDS: WordExample[] = [
 		pattern: "ough",
 		phonemes: [
 			{ id: "voiceless-velar-plosive", symbol: "k", isHighlighted: false },
-			{ id: "open-mid-back-rounded", symbol: "ɔː", isHighlighted: true },
+			{ id: "open-mid-back-rounded", symbol: "ɔ", isHighlighted: true },
 			{ id: "voiceless-labiodental-fricative", symbol: "f", isHighlighted: true },
 		],
 	},
@@ -109,7 +109,7 @@ function WordCard({
 	onPhonemeClick: (phonemeId: PhonemeSymbolId) => void;
 }) {
 	return (
-		<div className="flex flex-col items-center gap-2 rounded-lg border bg-background px-3 py-2.5">
+		<div className="flex flex-col items-center gap-2 rounded-lg bg-background-strong px-3 py-2.5">
 			<span className="text-base font-medium tracking-tight">
 				{highlightPattern(example.word, example.pattern)}
 			</span>
@@ -148,10 +148,13 @@ export function IpaIntroSection() {
 						The International Phonetic Alphabet
 					</h2>
 					<p className="text-muted-foreground leading-relaxed text-sm">
-						The IPA solves this. Each symbol represents exactly one sound - no exceptions. Here are
-						the same{" "}
-						<code className="bg-muted px-1 py-0.5 rounded border font-semibold">{PATTERN}</code>{" "}
-						words with their IPA transcriptions. Click any symbol to learn more.
+						One symbol, one sound. The IPA assigns each sound its own letter. Here are the same{" "}
+						<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{PATTERN}</code> words
+						in IPA. The{" "}
+						<span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-serif bg-primary text-primary-foreground">
+							highlighted
+						</span>{" "}
+						symbols mark where spelling and sound diverge.
 					</p>
 				</div>
 
@@ -161,7 +164,7 @@ export function IpaIntroSection() {
 			</div>
 
 			{/* Interactive Column */}
-			<div className="rounded-xl border bg-muted/30 p-3">
+			<div className="rounded-xl bg-muted/40 p-3">
 				<div className="grid grid-cols-3 gap-2">
 					{WORDS.map((example) => (
 						<WordCard key={example.word} example={example} onPhonemeClick={setSelectedPhoneme} />
