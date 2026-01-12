@@ -350,17 +350,17 @@
 			"description": "Credits and sources for Phonaria resources, data, and media."
 		},
 		"title": "Credits & Sources",
-		"description": "Phonaria builds on the work of open source projects, linguistic research, and public domain resources.",
+		"description": "Phonaria uses open source projects, linguistic research, and freely licensed resources.",
 		"sections": {
 			"wikimedia": {
 				"title": "Phonetic Audio Samples",
-				"content": "Phonetic audio samples used in this app are derived from recordings in the \"General phonetics\" gallery on Wikimedia Commons. The original files were created by various Wikimedia Commons contributors, including Peter Isotalo, Erutuon, Denelson83, and Octane, and are used here under Creative Commons Attribution-ShareAlike and other compatible free licenses. For full authorship and licensing details, please see the individual file pages on Wikimedia Commons.",
+				"content": "Phonetic audio samples come from the General phonetics gallery on Wikimedia Commons. The recordings were created by Wikimedia contributors and are used under Creative Commons Attribution-ShareAlike and compatible licenses. See individual file pages for authorship and license details.",
 				"link-text": "View General phonetics gallery",
 				"link-url": "https://commons.wikimedia.org/wiki/General_phonetics"
 			},
 			"sagittal": {
 				"title": "Sagittal Illustrations",
-				"content": "Sagittal view illustrations used in the articulation panels are adapted from a base illustration by Tavin and Nardog. The original artwork was modified to generate consistent variants for the phonemes in this app.",
+				"content": "Sagittal cross-section diagrams in the articulation panels are adapted from illustrations by Tavin and Nardog on Wikimedia Commons. The original artwork was modified to create consistent variants for each phoneme.",
 				"link-text": "View original illustration",
 				"link-url": "https://commons.wikimedia.org/wiki/File:Voiceless_dental_fricative_articulation.svg",
 				"license-text": "View CC BY-SA 4.0 license",
@@ -368,17 +368,17 @@
 			},
 			"example-audio": {
 				"title": "Example Word Audio",
-				"content": "Example word audio in the phoneme details is currently AI-generated. We use synthetic audio while the word list is still evolving; recording human voices for a changing set would mean frequent replacements and uneven coverage. Modern text-to-speech helps, but it does not replace native-speaker recordings for a pronunciation-first experience. Once the set stabilizes, we will replace these with human recordings and update the credits."
+				"content": "Example word recordings in phoneme details are AI-generated. Synthetic audio lets us iterate on the word list without re-recording. When the set stabilizes, we plan to replace these with human recordings."
 			},
 			"cmu": {
 				"title": "CMU Pronouncing Dictionary",
-				"content": "The grapheme-to-phoneme transcription feature uses pronunciation data from the CMU Pronouncing Dictionary, a public domain pronunciation dictionary created by Carnegie Mellon University. The dictionary contains over 134,000 North American English words with their phonetic transcriptions.",
-				"link-text": "Learn more about CMU Dict",
+				"content": "Transcription uses the CMU Pronouncing Dictionary from Carnegie Mellon University. The dictionary contains over 134,000 North American English words with phonetic transcriptions and is released under a BSD license.",
+				"link-text": "View CMUdict on GitHub",
 				"link-url": "https://github.com/cmusphinx/cmudict"
 			},
 			"wordfreq": {
 				"title": "wordfreq Word Frequency Data",
-				"content": "The curated top 1,000 and 10,000 word lists used for client-side tiered lookup are generated using wordfreq by Robyn Speer. This library aggregates word frequency data from Google Books Ngrams, OpenSubtitles, SUBTLEX, Wikipedia, and other large-scale corpora to provide accurate frequency rankings for English words.",
+				"content": "Curated word lists for client-side lookup are generated using wordfreq by Robyn Speer. The library combines frequency data from Google Books Ngrams, OpenSubtitles, SUBTLEX, Wikipedia, and other corpora. Data is licensed under CC BY-SA 4.0.",
 				"link-text": "View wordfreq on GitHub",
 				"link-url": "https://github.com/rspeer/wordfreq",
 				"license-text": "View CC BY-SA 4.0 license",
@@ -386,15 +386,15 @@
 			},
 			"free-dictionary": {
 				"title": "Free Dictionary API",
-				"content": "Dictionary definitions are provided via the Free Dictionary API (dictionaryapi.dev) using Wiktionary data. Entries carry CC BY-SA 3.0 license metadata, and audio assets cite Wikimedia Commons with per-file licenses.",
+				"content": "Dictionary definitions come from the Free Dictionary API using Wiktionary data. Content is licensed under CC BY-SA 3.0. Audio files cite Wikimedia Commons with per-file licenses.",
 				"link-text": "Visit Free Dictionary API",
 				"link-url": "https://dictionaryapi.dev/",
 				"license-text": "View CC BY-SA 3.0 license",
 				"license-url": "https://creativecommons.org/licenses/by-sa/3.0/"
 			},
 			"phonetic-data": {
-				"title": "Phonetic Data & Resources",
-				"content": "Articulatory descriptions, phoneme features, and IPA classifications are compiled from established phonetic resources, linguistic research, and educational materials in the public domain."
+				"title": "Phonetic Data",
+				"content": "Articulatory descriptions, phoneme features, and IPA classifications draw from standard phonetic references and linguistics research."
 			}
 		}
 	},

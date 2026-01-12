@@ -350,17 +350,17 @@
 			"description": "Créditos y fuentes de los recursos, datos y materiales de Phonaria."
 		},
 		"title": "Créditos y fuentes",
-		"description": "Phonaria se basa en el trabajo de proyectos de código abierto, investigación lingüística y recursos de dominio público.",
+		"description": "Phonaria utiliza proyectos de código abierto, investigación lingüística y recursos con licencias libres.",
 		"sections": {
 			"wikimedia": {
 				"title": "Muestras de audio fonético",
-				"content": "Las muestras de audio fonético usadas en esta aplicación provienen de grabaciones en la galería \"General phonetics\" de Wikimedia Commons. Los archivos originales fueron creados por varios colaboradores de Wikimedia Commons, incluidos Peter Isotalo, Erutuon, Denelson83 y Octane, y se usan aquí bajo licencias Creative Commons Atribución-CompartirIgual y otras licencias libres compatibles. Para detalles completos de autoría y licencias, consulta las páginas individuales de los archivos en Wikimedia Commons.",
-				"link-text": "Ver la galería «General phonetics»",
+				"content": "Las muestras de audio fonético provienen de la galería General phonetics en Wikimedia Commons. Las grabaciones fueron creadas por colaboradores de Wikimedia y se usan bajo licencias Creative Commons Atribución-CompartirIgual y compatibles. Consulta las páginas de cada archivo para ver autoría y licencia.",
+				"link-text": "Ver galería General phonetics",
 				"link-url": "https://commons.wikimedia.org/wiki/General_phonetics"
 			},
 			"sagittal": {
 				"title": "Ilustraciones sagitales",
-				"content": "Las ilustraciones de vista sagital usadas en los paneles de articulación se adaptan a partir de una ilustración base de Tavin y Nardog. El trabajo original se modificó para generar variantes consistentes para los fonemas de esta aplicación.",
+				"content": "Los diagramas de corte sagital en los paneles de articulación se adaptan de ilustraciones de Tavin y Nardog en Wikimedia Commons. El trabajo original se modificó para crear variantes consistentes para cada fonema.",
 				"link-text": "Ver ilustración original",
 				"link-url": "https://commons.wikimedia.org/wiki/File:Voiceless_dental_fricative_articulation.svg",
 				"license-text": "Ver licencia CC BY-SA 4.0",
@@ -368,17 +368,17 @@
 			},
 			"example-audio": {
 				"title": "Audio de palabras de ejemplo",
-				"content": "El audio de palabras de ejemplo en los detalles de los fonemas es actualmente generado por IA. Usamos audio sintético mientras la lista de palabras sigue cambiando; grabar voces humanas para un conjunto inestable implicaría reemplazos frecuentes y una cobertura desigual. La síntesis de voz actual ayuda, pero no sustituye las grabaciones de hablantes nativos en una experiencia centrada en la pronunciación. Cuando el conjunto se estabilice, lo reemplazaremos por grabaciones humanas y actualizaremos los créditos."
+				"content": "Las grabaciones de palabras de ejemplo en los detalles de fonemas son generadas por IA. El audio sintético permite iterar la lista de palabras sin regrabar. Cuando el conjunto se estabilice, planeamos reemplazarlas por grabaciones humanas."
 			},
 			"cmu": {
-				"title": "Diccionario de pronunciación de CMU",
-				"content": "La función de transcripción de grafemas a fonemas usa datos de pronunciación del Diccionario de pronunciación de CMU, un diccionario de pronunciación de dominio público creado por la Universidad Carnegie Mellon. El diccionario contiene más de 134.000 palabras del inglés norteamericano con sus transcripciones fonéticas.",
-				"link-text": "Más información sobre CMU Dict",
+				"title": "Diccionario de pronunciación CMU",
+				"content": "La transcripción usa el CMU Pronouncing Dictionary de Carnegie Mellon University. El diccionario contiene más de 134.000 palabras del inglés norteamericano con transcripciones fonéticas y se distribuye bajo licencia BSD.",
+				"link-text": "Ver CMUdict en GitHub",
 				"link-url": "https://github.com/cmusphinx/cmudict"
 			},
 			"wordfreq": {
-				"title": "Datos de frecuencia de wordfreq",
-				"content": "Las listas curadas de las 1.000 y 10.000 palabras más frecuentes, usadas para la búsqueda escalonada del lado del cliente, se generan con wordfreq de Robyn Speer. Esta biblioteca agrega datos de frecuencia de palabras de Google Books Ngrams, OpenSubtitles, SUBTLEX, Wikipedia y otros corpus a gran escala para proporcionar rankings de frecuencia precisos para palabras en inglés.",
+				"title": "Datos de frecuencia wordfreq",
+				"content": "Las listas curadas de palabras para búsqueda local se generan con wordfreq de Robyn Speer. La biblioteca combina datos de frecuencia de Google Books Ngrams, OpenSubtitles, SUBTLEX, Wikipedia y otros corpus. Los datos están bajo licencia CC BY-SA 4.0.",
 				"link-text": "Ver wordfreq en GitHub",
 				"link-url": "https://github.com/rspeer/wordfreq",
 				"license-text": "Ver licencia CC BY-SA 4.0",
@@ -386,15 +386,15 @@
 			},
 			"free-dictionary": {
 				"title": "API de Free Dictionary",
-				"content": "Las definiciones del diccionario se proporcionan mediante la API de Free Dictionary (dictionaryapi.dev) usando datos de Wiktionary. Las entradas incluyen metadatos de licencia CC BY-SA 3.0 y el audio de pronunciación se obtiene de Wikimedia Commons, con licencias específicas por archivo.",
-				"link-text": "Visitar la API de Free Dictionary",
+				"content": "Las definiciones provienen de la API de Free Dictionary usando datos de Wiktionary. El contenido está bajo licencia CC BY-SA 3.0. Los archivos de audio citan Wikimedia Commons con licencias por archivo.",
+				"link-text": "Visitar API de Free Dictionary",
 				"link-url": "https://dictionaryapi.dev/",
 				"license-text": "Ver licencia CC BY-SA 3.0",
 				"license-url": "https://creativecommons.org/licenses/by-sa/3.0/"
 			},
 			"phonetic-data": {
-				"title": "Datos y recursos fonéticos",
-				"content": "Las descripciones articulatorias, los rasgos fonémicos y las clasificaciones IPA se compilan a partir de recursos fonéticos establecidos, investigación lingüística y materiales educativos de dominio público."
+				"title": "Datos fonéticos",
+				"content": "Las descripciones articulatorias, rasgos fonémicos y clasificaciones IPA provienen de referencias fonéticas estándar e investigación lingüística."
 			}
 		}
 	},
