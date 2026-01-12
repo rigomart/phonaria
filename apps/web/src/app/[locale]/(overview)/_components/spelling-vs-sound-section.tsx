@@ -17,12 +17,12 @@ const PATTERN = "ough";
 const baseUrl = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 const WORDS = [
-	{ word: "through", hint: "throo", audioPath: "/audio/words/through.mp3" },
-	{ word: "though", hint: "thoh", audioPath: "/audio/words/though.mp3" },
-	{ word: "thought", hint: "thawt", audioPath: "/audio/words/thought.mp3" },
-	{ word: "tough", hint: "tuff", audioPath: "/audio/words/tough.mp3" },
-	{ word: "cough", hint: "koff", audioPath: "/audio/words/cough.mp3" },
-	{ word: "bough", hint: "bow", audioPath: "/audio/words/bough.mp3" },
+	{ word: "through", hint: "throo", audioPath: "/audio/through.mp3" },
+	{ word: "though", hint: "thoh", audioPath: "/audio/though.mp3" },
+	{ word: "thought", hint: "thawt", audioPath: "/audio/thought.mp3" },
+	{ word: "tough", hint: "tuff", audioPath: "/audio/tough.mp3" },
+	{ word: "cough", hint: "koff", audioPath: "/audio/cough.mp3" },
+	{ word: "bough", hint: "bow", audioPath: "/audio/bough.mp3" },
 ];
 
 function highlightPattern(word: string, pattern: string) {
