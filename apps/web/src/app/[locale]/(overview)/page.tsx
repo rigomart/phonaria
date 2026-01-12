@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getLanguageAlternates, getLocalePath } from "@/lib/seo";
-import { ContrastDemoSection } from "./_components/contrast-demo-section";
 import { HeroSection } from "./_components/hero-section";
+import { IpaIntroSection } from "./_components/ipa-intro-section";
 import { IpaVisualizerSection } from "./_components/ipa-visualizer-section";
 import { SpellingVsSoundSection } from "./_components/spelling-vs-sound-section";
 
@@ -35,12 +35,12 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 			<div className="w-full max-w-5xl my-4 space-y-8">
 				<HeroSection />
 
-				<div className="flex flex-col gap-12 bg-background-soft rounded-xl shadow-sm p-4 py-8">
+				<div className="flex flex-col bg-background-soft rounded-xl border p-4">
 					<SpellingVsSoundSection />
 
-					<IpaVisualizerSection />
+					<IpaIntroSection />
 
-					<ContrastDemoSection />
+					<IpaVisualizerSection />
 				</div>
 			</div>
 		</div>

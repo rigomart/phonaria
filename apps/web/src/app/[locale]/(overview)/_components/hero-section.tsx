@@ -1,5 +1,5 @@
-import { BarChart3, BookOpen, Mic, Search } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight, BarChart3, BookOpen, Mic, Search } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 
 const TOOLS = [
 	{
@@ -46,7 +46,7 @@ export function HeroSection() {
 						<Link
 							key={tool.href}
 							href={tool.href}
-							className="group flex flex-col gap-1 p-2 rounded-lg bg-background-soft border hover:border-primary hover:bg-accent transition-all"
+							className="group relative flex flex-col gap-1 p-2 rounded-lg bg-background-soft border hover:border-primary hover:bg-accent transition-all"
 						>
 							<div className="flex items-center gap-1.5">
 								<tool.icon className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -55,6 +55,10 @@ export function HeroSection() {
 							<span className="text-[11px] text-muted-foreground leading-snug hidden md:block">
 								{tool.description}
 							</span>
+							<ArrowRight
+								className="absolute top-2 right-2 size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+								aria-hidden="true"
+							/>
 						</Link>
 					))}
 				</div>

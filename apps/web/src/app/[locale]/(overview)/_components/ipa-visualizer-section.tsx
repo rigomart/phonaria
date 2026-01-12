@@ -2,143 +2,97 @@
 
 import { PhonemeIpaRegistry, type PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
+import { useState } from "react";
+import { PhonemeDetailsDialog } from "@/components/phoneme-details/phoneme-details-dialog";
+import { Link } from "@/i18n/navigation";
 
-const VOWEL_IDS: PhonemeSymbolId[] = [
-	"close-front-unrounded",
-	"close-back-rounded",
-	"open-back-unrounded",
-	"near-open-front-unrounded",
-];
-
-// Organized as voiced/voiceless pairs to demonstrate IPA's logical structure
-const CONSONANT_PAIRS: [PhonemeSymbolId, PhonemeSymbolId][] = [
-	["voiceless-bilabial-plosive", "voiced-bilabial-plosive"], // p / b
-	["voiceless-alveolar-plosive", "voiced-alveolar-plosive"], // t / d
-	["voiceless-velar-plosive", "voiced-velar-plosive"], // k / g
-	["voiceless-labiodental-fricative", "voiced-labiodental-fricative"], // f / v
+// Organized by place of articulation: front to back of mouth
+const PLACE_GROUPS: {
+	place: string;
+	label: string;
+	pairs: { voiceless: PhonemeSymbolId; voiced: PhonemeSymbolId }[];
+}[] = [
+	{
+		place: "lips",
+		label: "Lips",
+		pairs: [{ voiceless: "voiceless-bilabial-plosive", voiced: "voiced-bilabial-plosive" }],
+	},
+	{
+		place: "tongue",
+		label: "Tongue",
+		pairs: [{ voiceless: "voiceless-alveolar-plosive", voiced: "voiced-alveolar-plosive" }],
+	},
+	{
+		place: "back",
+		label: "Back",
+		pairs: [{ voiceless: "voiceless-velar-plosive", voiced: "voiced-velar-plosive" }],
+	},
 ];
 
 export function IpaVisualizerSection() {
-	const { phonemeDetailsById } = usePhonemeDetailsCopy();
+	const [selectedPhoneme, setSelectedPhoneme] = useState<PhonemeSymbolId | null>(null);
 
-	const getPhonemeData = (id: PhonemeSymbolId) => {
-		const symbol = PhonemeIpaRegistry[id];
-		const label = phonemeDetailsById[id]?.label ?? id;
-		return { symbol, label };
-	};
+	const getSymbol = (id: PhonemeSymbolId) => PhonemeIpaRegistry[id];
 
 	return (
-		<section className="grid md:grid-cols-2 gap-6 md:gap-10 items-start">
+		<section className="grid md:grid-cols-2 gap-6 items-center py-4">
 			{/* Text Column */}
-			<div className="space-y-6">
-				<div className="space-y-3">
-					<h2 className="text-xl font-semibold tracking-tight">
-						One Symbol, One Sound
-					</h2>
-					<p className="text-muted-foreground leading-relaxed">
-						The IPA fixes spelling confusion. Each symbol represents exactly one sound. No
-						exceptions, no guessing.
-					</p>
-					<p className="text-muted-foreground leading-relaxed">
-						Sounds are grouped by how you make them: where your tongue goes, how air moves, and
-						whether your voice box vibrates.
+			<div className="space-y-3">
+				<div className="space-y-2">
+					<h2 className="text-base font-semibold tracking-tight">Sounds Are Organized</h2>
+					<p className="text-muted-foreground leading-relaxed text-sm">
+						IPA organizes sounds by where you make them. These pairs differ only in voicing - click
+						any symbol to explore.
 					</p>
 				</div>
 
-				<Button
-					variant="outline"
-					size="sm"
-					className="w-full sm:w-auto"
-					render={<Link href="/ipa-chart" />}
-				>
-					View the full IPA Chart <ArrowRight className="ml-2 size-3" />
+				<Button variant="outline" render={<Link href="/ipa-chart" />}>
+					Explore the IPA Chart <ArrowRight />
 				</Button>
 			</div>
 
-			{/* Interactive Column */}
-			<div className="rounded-xl border bg-background p-6 space-y-6">
-				<div className="space-y-3">
-					<h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-						Sample Vowels
-					</h3>
-					<div className="flex flex-wrap gap-2">
-						{VOWEL_IDS.map((id) => {
-							const { symbol, label } = getPhonemeData(id);
-							return (
-								<Tooltip key={id}>
-									<TooltipTrigger
-										render={
-											<button
-												type="button"
-												className="size-10 rounded-md border bg-background hover:border-primary hover:text-primary transition-colors flex items-center justify-center text-lg font-serif"
-											/>
-										}
-									>
-										{symbol}
-									</TooltipTrigger>
-									<TooltipContent>
-										<p className="font-medium capitalize text-xs">{label}</p>
-									</TooltipContent>
-								</Tooltip>
-							);
-						})}
-					</div>
-				</div>
-
-				<div className="space-y-3">
-					<h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-						Consonant Pairs (voiceless / voiced)
-					</h3>
-					<div className="flex flex-wrap gap-3">
-						{CONSONANT_PAIRS.map(([voicelessId, voicedId]) => {
-							const voiceless = getPhonemeData(voicelessId);
-							const voiced = getPhonemeData(voicedId);
-							return (
+			{/* Interactive Column - Front to Back Journey */}
+			<div className="rounded-xl border bg-muted/30 p-3">
+				<div className="flex items-center justify-between gap-2">
+					{PLACE_GROUPS.map((group) => (
+						<div key={group.place} className="flex flex-col items-center gap-1.5 flex-1">
+							<span className="text-xs font-medium text-muted-foreground">{group.label}</span>
+							{group.pairs.map((pair) => (
 								<div
-									key={voicelessId}
-									className="flex items-center gap-1 bg-background rounded-md border p-1"
+									key={pair.voiceless}
+									className="flex items-center gap-1 rounded-lg border bg-background p-1"
 								>
-									<Tooltip>
-										<TooltipTrigger
-											render={
-												<button
-													type="button"
-													className="size-9 rounded hover:bg-muted hover:text-primary transition-colors flex items-center justify-center text-lg font-serif"
-												/>
-											}
-										>
-											{voiceless.symbol}
-										</TooltipTrigger>
-										<TooltipContent>
-											<p className="font-medium capitalize text-xs">{voiceless.label}</p>
-										</TooltipContent>
-									</Tooltip>
-									<span className="text-muted-foreground text-xs">/</span>
-									<Tooltip>
-										<TooltipTrigger
-											render={
-												<button
-													type="button"
-													className="size-9 rounded hover:bg-muted hover:text-primary transition-colors flex items-center justify-center text-lg font-serif"
-												/>
-											}
-										>
-											{voiced.symbol}
-										</TooltipTrigger>
-										<TooltipContent>
-											<p className="font-medium capitalize text-xs">{voiced.label}</p>
-										</TooltipContent>
-									</Tooltip>
+									<button
+										type="button"
+										onClick={() => setSelectedPhoneme(pair.voiceless)}
+										className="flex items-center justify-center size-9 rounded-md font-serif text-lg hover:bg-muted transition-colors"
+									>
+										{getSymbol(pair.voiceless)}
+									</button>
+									<span className="text-muted-foreground/50 text-xs">/</span>
+									<button
+										type="button"
+										onClick={() => setSelectedPhoneme(pair.voiced)}
+										className="flex items-center justify-center size-9 rounded-md font-serif text-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+									>
+										{getSymbol(pair.voiced)}
+									</button>
 								</div>
-							);
-						})}
-					</div>
+							))}
+						</div>
+					))}
 				</div>
 			</div>
+
+			{/* Phoneme Details Dialog */}
+			{selectedPhoneme && (
+				<PhonemeDetailsDialog
+					open={!!selectedPhoneme}
+					onOpenChange={(open) => !open && setSelectedPhoneme(null)}
+					phonemeId={selectedPhoneme}
+				/>
+			)}
 		</section>
 	);
 }
