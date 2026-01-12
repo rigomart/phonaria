@@ -7,9 +7,9 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-	--background: oklch(0.971 0.003 257);
-	--background-soft: oklch(0.985 0.003 257);
-	--background-strong: oklch(0.995 0.002 257);
+	--background: oklch(0.967 0.003 257);
+	--background-soft: oklch(0.982 0.003 257);
+	--background-strong: oklch(0.997 0.002 257);
 	--foreground: oklch(0.2 0.012 257);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.2 0.012 257);
@@ -195,5 +195,37 @@
 	button:not(:disabled),
 	[role="button"]:not(:disabled) {
 		cursor: pointer;
+	}
+}
+
+@layer utilities {
+	.bg-grid-pattern {
+		--grid-fade-width: 80%;
+		--grid-fade-height: 80%;
+		--grid-fade-start: 10%;
+		--grid-fade-end: 60%;
+		--grid-spacing: 24px;
+		position: relative;
+	}
+	.bg-grid-pattern::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='24' viewBox='0 0 40 24'%3E%3Ctext x='8' y='17' font-family='system-ui' font-size='14' fill='%239ca3af' opacity='0.3'%3E/%3C/text%3E%3Ctext x='26' y='17' font-family='system-ui' font-size='14' fill='%239ca3af' opacity='0.3'%3E/%3C/text%3E%3C/svg%3E");
+		background-size: var(--grid-spacing) var(--grid-spacing);
+		mask-image: radial-gradient(
+			ellipse var(--grid-fade-width) var(--grid-fade-height) at 0% 0%,
+			black var(--grid-fade-start),
+			transparent var(--grid-fade-end)
+		);
+		pointer-events: none;
+		z-index: 0;
+	}
+	.dark .bg-grid-pattern::before {
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='24' viewBox='0 0 40 24'%3E%3Ctext x='8' y='17' font-family='system-ui' font-size='14' fill='%236b7280' opacity='0.2'%3E/%3C/text%3E%3Ctext x='26' y='17' font-family='system-ui' font-size='14' fill='%236b7280' opacity='0.2'%3E/%3C/text%3E%3C/svg%3E");
+	}
+	.bg-grid-pattern > * {
+		position: relative;
+		z-index: 1;
 	}
 }

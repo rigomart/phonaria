@@ -31,11 +31,11 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
 	setRequestLocale(locale as Locale);
 
 	return (
-		<div className="flex flex-1 flex-col items-center bg-background">
+		<div className="flex flex-1 flex-col items-center bg-background bg-grid-pattern">
 			<div className="w-full max-w-5xl my-4 space-y-8">
 				<HeroSection />
 
-				<div className="flex flex-col bg-background-soft rounded-xl border p-4 divide-y">
+				<div className="flex flex-col bg-background-soft rounded-xl border divide-y">
 					<SpellingVsSoundSection />
 
 					<IpaIntroSection />

@@ -7,6 +7,14 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details/phoneme-details-dialog";
 import { Link } from "@/i18n/navigation";
+import {
+	Section,
+	SectionContent,
+	SectionDescription,
+	SectionHeader,
+	SectionText,
+	SectionTitle,
+} from "./section-layout";
 
 type Phoneme = {
 	id: PhonemeSymbolId;
@@ -109,7 +117,7 @@ function WordCard({
 	onPhonemeClick: (phonemeId: PhonemeSymbolId) => void;
 }) {
 	return (
-		<div className="flex flex-col items-center gap-2 rounded-lg bg-background-strong px-3 py-2.5">
+		<div className="flex flex-col items-center gap-2 rounded-lg border px-3 py-2.5">
 			<span className="text-base font-medium tracking-tight">
 				{highlightPattern(example.word, example.pattern)}
 			</span>
@@ -140,46 +148,41 @@ export function IpaIntroSection() {
 	const [selectedPhoneme, setSelectedPhoneme] = useState<PhonemeSymbolId | null>(null);
 
 	return (
-		<section className="grid md:grid-cols-2 gap-6 items-center py-4">
-			{/* Text Column */}
-			<div className="space-y-3">
-				<div className="space-y-2">
-					<h2 className="text-base font-semibold tracking-tight">
-						The International Phonetic Alphabet
-					</h2>
-					<p className="text-muted-foreground leading-relaxed text-sm">
+		<Section>
+			<SectionText>
+				<SectionHeader>
+					<SectionTitle>The International Phonetic Alphabet</SectionTitle>
+					<SectionDescription>
 						One symbol, one sound. The IPA assigns each sound its own letter. Here are the same{" "}
-						<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{PATTERN}</code> words
-						in IPA. The{" "}
+						<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{PATTERN}</code> words in
+						IPA. The{" "}
 						<span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-serif bg-primary text-primary-foreground">
 							highlighted
 						</span>{" "}
 						symbols mark where spelling and sound diverge.
-					</p>
-				</div>
+					</SectionDescription>
+				</SectionHeader>
 
 				<Button variant="outline" render={<Link href="/transcription" />}>
 					Try the Transcription Studio <ArrowRight />
 				</Button>
-			</div>
+			</SectionText>
 
-			{/* Interactive Column */}
-			<div className="rounded-xl bg-muted/40 p-3">
+			<SectionContent>
 				<div className="grid grid-cols-3 gap-2">
 					{WORDS.map((example) => (
 						<WordCard key={example.word} example={example} onPhonemeClick={setSelectedPhoneme} />
 					))}
 				</div>
-			</div>
 
-			{/* Phoneme Details Dialog */}
-			{selectedPhoneme && (
-				<PhonemeDetailsDialog
-					open={!!selectedPhoneme}
-					onOpenChange={(open) => !open && setSelectedPhoneme(null)}
-					phonemeId={selectedPhoneme}
-				/>
-			)}
-		</section>
+				{selectedPhoneme && (
+					<PhonemeDetailsDialog
+						open={!!selectedPhoneme}
+						onOpenChange={(open) => !open && setSelectedPhoneme(null)}
+						phonemeId={selectedPhoneme}
+					/>
+				)}
+			</SectionContent>
+		</Section>
 	);
 }

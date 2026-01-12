@@ -3,6 +3,14 @@
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { Volume2 } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
+import {
+	Section,
+	SectionContent,
+	SectionDescription,
+	SectionHeader,
+	SectionText,
+	SectionTitle,
+} from "./section-layout";
 
 const PATTERN = "ough";
 
@@ -45,7 +53,7 @@ function WordCard({ word, hint, audioPath }: { word: string; hint: string; audio
 			type="button"
 			onClick={() => play()}
 			disabled={isLoading || isPlaying}
-			className="group relative flex flex-col items-center gap-1.5 rounded-lg bg-background-strong px-3 py-2.5 transition-all hover:bg-muted disabled:opacity-70"
+			className="group relative flex flex-col items-center gap-1.5 rounded-lg border px-3 py-2.5 transition-all hover:bg-muted disabled:opacity-70"
 		>
 			{/* Word with highlighted pattern */}
 			<span className="text-base font-medium tracking-tight">
@@ -69,30 +77,23 @@ function WordCard({ word, hint, audioPath }: { word: string; hint: string; audio
 
 export function SpellingVsSoundSection() {
 	return (
-		<section className="grid md:grid-cols-2 gap-6 items-center py-4">
-			{/* Text Column */}
-			<div className="space-y-2">
-				<h2 className="text-base font-semibold tracking-tight">Spelling Doesn't Match Sound</h2>
-				<p className="text-muted-foreground leading-relaxed text-sm">
-					English spelling is unpredictable. Take{" "}
-					<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{PATTERN}</code> - these
-					four letters sound different in each word. Click to hear them.
-				</p>
-			</div>
+		<Section>
+			<SectionText>
+				<SectionHeader>
+					<SectionTitle>Spelling Doesn't Match Sound</SectionTitle>
+					<SectionDescription>
+						English spelling is unpredictable. Take{" "}
+						<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{PATTERN}</code> - these
+						four letters sound different in each word. Click to hear them.
+					</SectionDescription>
+				</SectionHeader>
+			</SectionText>
 
-			{/* Interactive Column */}
-			<div className="rounded-xl bg-muted/40 p-3">
-				<div className="grid grid-cols-3 gap-2">
-					{WORDS.map((item) => (
-						<WordCard
-							key={item.word}
-							word={item.word}
-							hint={item.hint}
-							audioPath={item.audioPath}
-						/>
-					))}
-				</div>
-			</div>
-		</section>
+			<SectionContent className="grid grid-cols-3 gap-2">
+				{WORDS.map((item) => (
+					<WordCard key={item.word} word={item.word} hint={item.hint} audioPath={item.audioPath} />
+				))}
+			</SectionContent>
+		</Section>
 	);
 }
