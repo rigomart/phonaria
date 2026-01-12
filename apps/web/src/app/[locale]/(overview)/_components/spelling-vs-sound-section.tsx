@@ -2,6 +2,7 @@
 
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { Volume2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useAudioManager } from "@/hooks/use-audio-manager";
 import {
 	Section,
@@ -76,15 +77,20 @@ function WordCard({ word, hint, audioPath }: { word: string; hint: string; audio
 }
 
 export function SpellingVsSoundSection() {
+	const t = useTranslations("overview-page.sections.spelling-vs-sound");
+
 	return (
 		<Section>
 			<SectionText>
 				<SectionHeader>
-					<SectionTitle>Spelling Doesn't Match Sound</SectionTitle>
+					<SectionTitle>{t("title")}</SectionTitle>
 					<SectionDescription>
-						English spelling is unpredictable. Take{" "}
-						<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{PATTERN}</code> - these
-						four letters sound different in each word. Click to hear them.
+						{t.rich("description", {
+							pattern: PATTERN,
+							code: (chunks) => (
+								<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{chunks}</code>
+							),
+						})}
 					</SectionDescription>
 				</SectionHeader>
 			</SectionText>

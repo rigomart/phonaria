@@ -297,44 +297,62 @@
 		},
 		"hero": {
 			"title": "Phoneme based pronunciation toolkit",
-			"description": "A collection of tools designed to decode English spelling. Transcribe text to IPA, explore the sound inventory, and study articulation details.",
-			"hint": "Click any symbol to explore details"
+			"subtitle": "A collection of tools designed to decode English spelling."
 		},
-		"launchpad": {
-			"g2p": {
-				"title": "Transcription Studio",
-				"description": "Type any text to see its pronunciation represented in IPA phonemes.",
-				"action": "Open Studio",
-				"preview": {
-					"header": "Max 200 characters • English"
-				}
+		"tools": {
+			"transcription": {
+				"label": "Transcription",
+				"description": "See how any word or sentence is pronounced"
+			},
+			"ipa-reference": {
+				"label": "IPA Reference",
+				"description": "Browse all English sounds with audio"
 			},
 			"find-by-sound": {
-				"title": "Find by Sound",
-				"description": "Search for words by selecting phonemes from an interactive IPA keyboard.",
-				"action": "Open Finder",
-				"preview": {
-					"header": "Select sounds to find words",
-					"sample-phonemes": ["k", "æ", "t"]
-				}
+				"label": "Find by Sound",
+				"description": "Search words by how they sound"
 			},
-			"ipa-chart": {
-				"title": "IPA Reference",
-				"description": "Browse the General American English sound inventory.",
-				"action": "View Chart",
-				"preview": {
-					"legend": {
-						"unrounded": "Unrounded",
-						"rounded": "Rounded",
-						"voiceless": "Voiceless",
-						"voiced": "Voiced"
+			"insights": {
+				"label": "Insights",
+				"description": "Statistics on English pronunciation"
+			}
+		},
+		"sections": {
+			"spelling-vs-sound": {
+				"title": "Spelling Doesn't Match Sound",
+				"description": "English spelling is unpredictable. Take <code>{pattern}</code>: these four letters sound different in each word. Click to hear them."
+			},
+			"ipa-intro": {
+				"title": "The International Phonetic Alphabet",
+				"description": "One symbol, one sound. The IPA gives each sound its own letter. Here are the same <code>{pattern}</code> words in IPA. <highlight>Highlighted</highlight> symbols mark where spelling and sound diverge.",
+				"action": "Try the Transcription Studio"
+			},
+			"ipa-visualizer": {
+				"title": "Sounds Are Organized",
+				"description": "The IPA organizes consonants by where you make them in your mouth. Each position produces a pair: voiceless (like a whisper) and voiced (vocal cords vibrate). Click any symbol to feel the difference.",
+				"action": "Explore the IPA Chart",
+				"direction": {
+					"front": "Front of mouth",
+					"back": "Back of mouth"
+				},
+				"places": {
+					"lips": {
+						"label": "Lips",
+						"description": "Both lips together"
+					},
+					"tongue": {
+						"label": "Tongue tip",
+						"description": "Tongue behind teeth"
+					},
+					"back": {
+						"label": "Back",
+						"description": "Back of tongue"
 					}
+				},
+				"voicing": {
+					"voiceless": "voiceless",
+					"voiced": "voiced"
 				}
-			},
-			"stats": {
-				"title": "Pronunciation Insights",
-				"description": "Explore phoneme frequency and syllable patterns across the corpus.",
-				"action": "View insights"
 			}
 		}
 	},

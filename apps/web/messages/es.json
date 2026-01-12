@@ -297,44 +297,62 @@
 		},
 		"hero": {
 			"title": "Herramientas de pronunciación basadas en fonemas",
-			"description": "Una colección de herramientas para descifrar la ortografía del inglés. Transcribe texto a IPA, explora el inventario de sonidos y estudia detalles de articulación.",
-			"hint": "Haz clic en cualquier símbolo para explorar detalles"
+			"subtitle": "Una colección de herramientas para descifrar la ortografía del inglés."
 		},
-		"launchpad": {
-			"g2p": {
-				"title": "Estudio de transcripción",
-				"description": "Escribe cualquier texto para ver su pronunciación representada en fonemas IPA.",
-				"action": "Abrir estudio",
-				"preview": {
-					"header": "Máx. 200 caracteres • inglés"
-				}
+		"tools": {
+			"transcription": {
+				"label": "Transcripción",
+				"description": "Ve cómo se pronuncia cualquier palabra u oración"
+			},
+			"ipa-reference": {
+				"label": "Tabla IPA",
+				"description": "Explora todos los sonidos del inglés con audio"
 			},
 			"find-by-sound": {
-				"title": "Buscar por sonido",
-				"description": "Busca palabras seleccionando fonemas desde un teclado IPA interactivo.",
-				"action": "Abrir buscador",
-				"preview": {
-					"header": "Selecciona sonidos para buscar palabras",
-					"sample-phonemes": ["k", "æ", "t"]
-				}
+				"label": "Buscar por sonido",
+				"description": "Busca palabras por cómo suenan"
 			},
-			"ipa-chart": {
-				"title": "Tabla IPA",
-				"description": "Explora el inventario de sonidos del inglés estadounidense estándar en la tabla IPA (AFI).",
-				"action": "Ver tabla",
-				"preview": {
-					"legend": {
-						"unrounded": "No redondeadas",
-						"rounded": "Redondeadas",
-						"voiceless": "Sordas",
-						"voiced": "Sonoras"
+			"insights": {
+				"label": "Estadísticas",
+				"description": "Datos sobre la pronunciación del inglés"
+			}
+		},
+		"sections": {
+			"spelling-vs-sound": {
+				"title": "La ortografía no refleja el sonido",
+				"description": "La ortografía del inglés es impredecible. Observa <code>{pattern}</code>: estas cuatro letras suenan diferente en cada palabra. Haz clic para escucharlas."
+			},
+			"ipa-intro": {
+				"title": "El Alfabeto Fonético Internacional",
+				"description": "Un símbolo, un sonido. El IPA asigna a cada sonido su propia letra. Aquí están las mismas palabras con <code>{pattern}</code> en IPA. Los símbolos <highlight>resaltados</highlight> marcan dónde la ortografía y el sonido difieren.",
+				"action": "Probar el estudio de transcripción"
+			},
+			"ipa-visualizer": {
+				"title": "Los sonidos están organizados",
+				"description": "El IPA organiza las consonantes según dónde se producen en la boca. Cada posición genera un par: sorda (como un susurro) y sonora (las cuerdas vocales vibran). Haz clic en cualquier símbolo para sentir la diferencia.",
+				"action": "Explorar la tabla IPA",
+				"direction": {
+					"front": "Adelante",
+					"back": "Atrás"
+				},
+				"places": {
+					"lips": {
+						"label": "Labios",
+						"description": "Ambos labios juntos"
+					},
+					"tongue": {
+						"label": "Punta de lengua",
+						"description": "Lengua tras los dientes"
+					},
+					"back": {
+						"label": "Posterior",
+						"description": "Parte trasera de la lengua"
 					}
+				},
+				"voicing": {
+					"voiceless": "sorda",
+					"voiced": "sonora"
 				}
-			},
-			"stats": {
-				"title": "Estadísticas de pronunciación",
-				"description": "Explora la frecuencia de fonemas y patrones silábicos en el corpus.",
-				"action": "Ver estadísticas"
 			}
 		}
 	},

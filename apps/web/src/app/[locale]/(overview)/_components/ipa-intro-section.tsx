@@ -4,6 +4,7 @@ import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
 import { ButtonGroup } from "@phonaria/ui/components/group";
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details/phoneme-details-dialog";
 import { Link } from "@/i18n/navigation";
@@ -145,26 +146,31 @@ function WordCard({
 }
 
 export function IpaIntroSection() {
+	const t = useTranslations("overview-page.sections.ipa-intro");
 	const [selectedPhoneme, setSelectedPhoneme] = useState<PhonemeSymbolId | null>(null);
 
 	return (
 		<Section>
 			<SectionText>
 				<SectionHeader>
-					<SectionTitle>The International Phonetic Alphabet</SectionTitle>
+					<SectionTitle>{t("title")}</SectionTitle>
 					<SectionDescription>
-						One symbol, one sound. The IPA assigns each sound its own letter. Here are the same{" "}
-						<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{PATTERN}</code> words in
-						IPA. The{" "}
-						<span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-serif bg-primary text-primary-foreground">
-							highlighted
-						</span>{" "}
-						symbols mark where spelling and sound diverge.
+						{t.rich("description", {
+							pattern: PATTERN,
+							code: (chunks) => (
+								<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{chunks}</code>
+							),
+							highlight: (chunks) => (
+								<span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-serif bg-primary text-primary-foreground">
+									{chunks}
+								</span>
+							),
+						})}
 					</SectionDescription>
 				</SectionHeader>
 
 				<Button variant="outline" render={<Link href="/transcription" />}>
-					Try the Transcription Studio <ArrowRight />
+					{t("action")} <ArrowRight />
 				</Button>
 			</SectionText>
 

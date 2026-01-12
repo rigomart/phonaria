@@ -1,43 +1,42 @@
 import { ArrowRight, BarChart3, BookOpen, Mic, Search } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
 const TOOLS = [
 	{
 		href: "/transcription",
 		icon: Mic,
-		label: "Transcription",
-		description: "See how any word or sentence is pronounced",
+		key: "transcription",
 	},
 	{
 		href: "/ipa-chart",
 		icon: BookOpen,
-		label: "IPA Reference",
-		description: "Browse all English sounds with audio",
+		key: "ipa-reference",
 	},
 	{
 		href: "/find-by-sound",
 		icon: Search,
-		label: "Find by Sound",
-		description: "Search words by how they sound",
+		key: "find-by-sound",
 	},
 	{
 		href: "/insights",
 		icon: BarChart3,
-		label: "Insights",
-		description: "Statistics on English pronunciation",
+		key: "insights",
 	},
-];
+] as const;
 
-export function HeroSection() {
+export async function HeroSection() {
+	const t = await getTranslations("overview-page");
+
 	return (
 		<section className="rounded-xl p-4">
 			<div className="flex flex-col md:flex-row md:items-center gap-4">
-				<div className="space-y-1 text-center md:text-left md:shrink-0">
+				<div className="space-y-3 text-center md:text-left md:shrink-0 max-w-md">
 					<h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
-						English Phonetics Toolkit
+						{t("hero.title")}
 					</h1>
 					<p className="text-muted-foreground text-base max-w-md mx-auto md:mx-0">
-						Understand how English words are pronounced.
+						{t("hero.subtitle")}
 					</p>
 				</div>
 
@@ -50,10 +49,12 @@ export function HeroSection() {
 						>
 							<div className="flex items-center gap-1.5">
 								<tool.icon className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-								<span className="font-medium text-xs md:text-sm">{tool.label}</span>
+								<span className="font-medium text-xs md:text-sm">
+									{t(`tools.${tool.key}.label`)}
+								</span>
 							</div>
 							<span className="text-[11px] text-muted-foreground leading-snug hidden md:block">
-								{tool.description}
+								{t(`tools.${tool.key}.description`)}
 							</span>
 							<ArrowRight
 								className="absolute top-2 right-2 size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
