@@ -2,10 +2,13 @@ import { routing } from "@/i18n/routing";
 
 export const SITE_NAME = "Phonaria";
 
-const host = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "localhost:3000";
-const protocol = host === "localhost:3000" ? "http" : "https";
+const siteUrl = process.env.SITE_URL;
 
-export const SITE_URL = `${protocol}://${host}`;
+if (!siteUrl && process.env.NODE_ENV === "production") {
+	console.warn("SITE_URL environment variable is not set. Canonical URLs will be incorrect.");
+}
+
+export const SITE_URL = siteUrl ?? "http://localhost:3000";
 
 const normalizePath = (path?: string) => {
 	if (!path || path === "/") {
