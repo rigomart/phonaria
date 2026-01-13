@@ -1,0 +1,8 @@
+# Worktrunk project hooks for Phonaria
+# See: https://worktrunk.dev/hook/
+
+[post-create]
+# Copy environment variables from main worktree
+env = "cp {{ main_worktree_path }}/apps/web/.env.local apps/web/.env.local"
+# Install all dependencies
+install = "bun install"
