@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "@phonaria/ui/components/button";
-import { ArrowRightIcon, AudioWaveformIcon, ChevronDownIcon, TypeIcon } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTranscribe } from "../../_hooks/use-g2p";
 
@@ -16,39 +15,22 @@ export function EmptyState() {
 	};
 
 	return (
-		<div className="flex min-h-[420px] items-center justify-center bg-background px-6 py-10">
-			<div className="w-full max-w-2xl space-y-8 rounded-xl border border-dashed border-border/70 bg-background-soft px-6 py-7 text-center shadow-sm">
-				<div className="flex flex-col items-center gap-3">
-					<div className="inline-flex items-center gap-2 rounded-full bg-background px-3 py-1 text-xs font-medium text-muted-foreground/90 ring-1 ring-border/80">
-						<TypeIcon className="size-3.5 text-muted-foreground/60" />
-						<span>{t("description")}</span>
-					</div>
-					<div className="inline-flex items-center gap-2 rounded-lg border border-border/70 bg-background px-5 py-3 shadow-inner shadow-black/5">
-						<div className="text-sm font-medium text-muted-foreground">
-							{t("visual-example.text")}
-						</div>
-						<ChevronDownIcon className="size-4 text-muted-foreground/40" />
-						<div className="flex items-center gap-2 text-lg tracking-wide">
-							<AudioWaveformIcon className="size-4 text-muted-foreground/40" />
-							<span className="font-semibold text-foreground">{t("visual-example.ipa")}</span>
-						</div>
-					</div>
-					<p className="text-sm text-muted-foreground">{t("try-example")}</p>
-				</div>
+		<div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
+			<div className="w-full max-w-md space-y-4 text-center">
+				<p className="text-sm text-muted-foreground">{t("try-example")}</p>
 
-				<div className="grid gap-2 sm:grid-cols-2">
+				<div className="flex flex-wrap justify-center gap-2">
 					{examples.map((example) => (
-						<Button
-							key={example}
+						<button
 							type="button"
+							key={example}
 							onClick={() => handleExampleClick(example)}
-							variant="outline"
 							disabled={transcribeMutation.isPending}
-							className="flex items-center justify-between gap-2 bg-background text-left text-sm font-medium"
+							className="inline-flex items-center gap-1.5 rounded-lg border bg-background px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground disabled:opacity-50"
 						>
-							<span className="truncate text-muted-foreground">{example}</span>
-							<ArrowRightIcon className="size-3.5 text-muted-foreground/50" />
-						</Button>
+							<span>{example}</span>
+							<ArrowRightIcon className="size-3 opacity-50" />
+						</button>
 					))}
 				</div>
 			</div>

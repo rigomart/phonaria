@@ -41,14 +41,14 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 	};
 
 	return (
-		<div className="w-full space-y-3">
+		<div className="w-full space-y-2">
 			{showStartTypingHint ? (
 				<div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-					<span className="inline-flex items-center gap-1">
-						<Keyboard className="size-4" />
+					<span className="inline-flex items-center gap-1.5">
+						<Keyboard className="size-3.5" />
 						{t("hint")}
 					</span>
-					<span className="text-xs text-muted-foreground/80">
+					<span className="text-xs text-muted-foreground">
 						{t("max-characters", { maxLength })}
 					</span>
 				</div>
