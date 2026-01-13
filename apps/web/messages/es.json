@@ -3,8 +3,11 @@
 		"header": {
 			"navigation": {
 				"overview": "Inicio",
+				"tools": "Herramientas",
 				"transcription": "Transcripción",
+				"transcription-description": "Descubre cómo se pronuncia cualquier palabra u oración",
 				"find-by-sound": "Buscar por sonido",
+				"find-by-sound-description": "Busca palabras por su pronunciación",
 				"ipa-chart": "Tabla IPA",
 				"insights": "Estadísticas"
 			},
