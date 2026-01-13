@@ -30,7 +30,7 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Link } from "@/i18n/navigation";
 
 export function Header() {
-	const [open, setOpen] = useState(false);
+	const [sheetOpen, setSheetOpen] = useState(false);
 	const t = useTranslations("components.header.navigation");
 
 	const toolsLinks = [
@@ -59,7 +59,7 @@ export function Header() {
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-6">
 						<div className="flex items-center gap-2">
-							<Sheet open={open} onOpenChange={setOpen}>
+							<Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
 								<SheetTrigger
 									render={<Button variant="outline" size="icon" className="md:hidden" />}
 								>
@@ -88,7 +88,7 @@ export function Header() {
 													variant="ghost"
 													size="lg"
 													className="w-full justify-start text-muted-foreground hover:text-foreground"
-													render={<Link href={link.href} onClick={() => setOpen(false)} />}
+													render={<Link href={link.href} onClick={() => setSheetOpen(false)} />}
 												>
 													{link.label}
 												</Button>

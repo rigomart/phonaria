@@ -268,12 +268,13 @@
 				"aria-label": "Información sobre la transcripción",
 				"title": "Sobre esta transcripción",
 				"description": "Las pronunciaciones se obtienen del Diccionario de pronunciación de CMU (CMUDict), que contiene más de 134.000 palabras del inglés norteamericano.",
-				"limitations-title": "Limitaciones conocidas:",
-				"limitations": {
-					"newer-words": "Palabras recientes, jerga y términos especializados pueden no estar incluidos",
-					"proper-nouns": "A menudo faltan nombres propios y marcas comerciales",
-					"homographs": "Los homógrafos muestran múltiples variantes"
-				}
+				"things-to-know-title": "Ten en cuenta:",
+				"things-to-know": {
+					"american-accent": "Las pronunciaciones reflejan el inglés americano general, no británico u otras variedades",
+					"coverage": "Algunas palabras pueden no encontrarse, especialmente términos recientes, jerga y nombres propios",
+					"multiple-variants": "Las palabras con varias pronunciaciones (como 'read') muestran todas las variantes"
+				},
+				"credits-link": "Más información sobre las fuentes de datos"
 			}
 		},
 		"phoneme-inspector": {
