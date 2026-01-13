@@ -2,6 +2,16 @@
 
 import { Button } from "@phonaria/ui/components/button";
 import {
+	NavigationMenu,
+	NavigationMenuContent,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuList,
+	NavigationMenuPopup,
+	NavigationMenuPositioner,
+	NavigationMenuTrigger,
+} from "@phonaria/ui/components/navigation-menu";
+import {
 	Sheet,
 	SheetDescription,
 	SheetFooter,
@@ -23,12 +33,25 @@ export function Header() {
 	const [open, setOpen] = useState(false);
 	const t = useTranslations("components.header.navigation");
 
-	const navigationLinks = [
-		{ href: "/transcription", label: t("transcription") },
-		{ href: "/find-by-sound", label: t("find-by-sound") },
+	const toolsLinks = [
+		{
+			href: "/transcription",
+			label: t("transcription"),
+			description: t("transcription-description"),
+		},
+		{
+			href: "/find-by-sound",
+			label: t("find-by-sound"),
+			description: t("find-by-sound-description"),
+		},
+	];
+
+	const standaloneLinks = [
 		{ href: "/ipa-chart", label: t("ipa-chart") },
 		{ href: "/insights", label: t("insights") },
 	];
+
+	const allNavigationLinks = [...toolsLinks, ...standaloneLinks];
 
 	return (
 		<header className="sticky top-0 z-40 border-b border-border bg-background-strong">
@@ -59,7 +82,7 @@ export function Header() {
 									<SheetPanel>
 										{/* Navigation links */}
 										<nav className="flex flex-col gap-1">
-											{navigationLinks.map((link) => (
+											{allNavigationLinks.map((link) => (
 												<Button
 													key={link.href}
 													variant="ghost"
@@ -95,17 +118,32 @@ export function Header() {
 							</Link>
 						</div>
 
-						<nav className="hidden items-center gap-3 md:flex">
-							{navigationLinks.map((link) => (
-								<Link
-									key={link.href}
-									href={link.href}
-									className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-								>
-									{link.label}
-								</Link>
-							))}
-						</nav>
+						<NavigationMenu className="hidden md:flex">
+							<NavigationMenuList>
+								<NavigationMenuItem>
+									<NavigationMenuTrigger>{t("tools")}</NavigationMenuTrigger>
+									<NavigationMenuPositioner>
+										<NavigationMenuPopup>
+											<NavigationMenuContent>
+												{toolsLinks.map((link) => (
+													<NavigationMenuLink key={link.href} render={<Link href={link.href} />}>
+														<span className="font-medium">{link.label}</span>
+														<span className="text-muted-foreground">{link.description}</span>
+													</NavigationMenuLink>
+												))}
+											</NavigationMenuContent>
+										</NavigationMenuPopup>
+									</NavigationMenuPositioner>
+								</NavigationMenuItem>
+								{standaloneLinks.map((link) => (
+									<NavigationMenuItem key={link.href}>
+										<NavigationMenuLink render={<Link href={link.href} />}>
+											{link.label}
+										</NavigationMenuLink>
+									</NavigationMenuItem>
+								))}
+							</NavigationMenuList>
+						</NavigationMenu>
 					</div>
 
 					{/* Desktop mode toggle */}
