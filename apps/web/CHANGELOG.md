@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/rigomart/phonaria/compare/phonaria-v1.0.0...phonaria-v1.1.0) (2026-01-13)
+
+
+### Features
+
+* **credits:** Add wordfreq attribution ([#79](https://github.com/rigomart/phonaria/issues/79)) ([d0dd914](https://github.com/rigomart/phonaria/commit/d0dd9141e6f3a63e8d8c008e6d8d2218d14f01ed))
+* **header:** enhance navigation with a navigation menu component ([#81](https://github.com/rigomart/phonaria/issues/81)) ([c1a5e2c](https://github.com/rigomart/phonaria/commit/c1a5e2c3da21cf60617415ac20b77f6c95b9f2a4))
+* **overview:** redesign landing page with interactive phonetics education ([#76](https://github.com/rigomart/phonaria/issues/76)) ([c30bc66](https://github.com/rigomart/phonaria/commit/c30bc666ec8b191ef229c976dddc12c30c7ac357))
+* **transcription:** redesign page to match overview style ([#82](https://github.com/rigomart/phonaria/issues/82)) ([b1f02ae](https://github.com/rigomart/phonaria/commit/b1f02ae562fa8671a9a3dbcf00d8b5ba5a1a75ce))
+
+
+### Bug Fixes
+
+* **transcription:** improve info disclaimers and navigation menu UX ([#83](https://github.com/rigomart/phonaria/issues/83)) ([09b23b5](https://github.com/rigomart/phonaria/commit/09b23b5483e266fb24fdfd5aea927af4f9968e29))
+
 ## [1.0.0](https://github.com/rigomart/phonaria/compare/phonaria-v0.6.1...phonaria-v1.0.0) (2026-01-09)
 
 
