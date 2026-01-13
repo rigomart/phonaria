@@ -106,8 +106,8 @@ export function TranscriptionDisplay() {
 	if (!result) return <EmptyState />;
 
 	return (
-		<div className="relative flex flex-wrap items-start justify-center gap-6 md:gap-8 overflow-x-auto rounded-b-xl border-t px-4 py-5 md:px-6">
-			<ButtonGroup className="absolute right-1 top-1 bg-background-strong rounded-xl border border-border/70 shadow-sm">
+		<div className="relative flex flex-1 flex-wrap content-start items-start justify-center gap-x-6 gap-y-4 md:gap-x-8 md:gap-y-6 overflow-x-auto px-4 py-6">
+			<ButtonGroup className="absolute right-2 top-2 bg-background rounded-lg border shadow-sm">
 				<TranscriptionInfoButton />
 				<ButtonGroupSeparator />
 				<TranscriptionCopyButton result={result} />

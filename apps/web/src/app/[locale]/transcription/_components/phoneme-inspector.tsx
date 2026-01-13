@@ -27,15 +27,15 @@ export function PhonemeInspector() {
 	if (!hasSelection) {
 		return (
 			<div className="flex h-full min-h-0 flex-1 flex-col">
-				<Empty className="h-full border-0 bg-transparent px-6 py-8 text-center">
+				<Empty className="h-full border-0 bg-transparent px-4 py-6 text-center">
 					<EmptyHeader>
 						<EmptyMedia variant="icon">
 							<MousePointerClickIcon />
 						</EmptyMedia>
-						<EmptyTitle className="text-base font-semibold text-foreground">
+						<EmptyTitle className="text-sm font-semibold text-foreground">
 							{t("no-selection.title")}
 						</EmptyTitle>
-						<EmptyDescription className="text-sm text-muted-foreground">
+						<EmptyDescription className="text-sm text-muted-foreground leading-relaxed">
 							{t("no-selection.description")}
 						</EmptyDescription>
 					</EmptyHeader>
@@ -47,12 +47,12 @@ export function PhonemeInspector() {
 	if (!selectedPhonemeId) {
 		return (
 			<div className="flex h-full min-h-0 flex-1 flex-col">
-				<Empty className="h-full border-0 bg-transparent px-6 py-8 text-center">
+				<Empty className="h-full border-0 bg-transparent px-4 py-6 text-center">
 					<EmptyHeader>
 						<EmptyMedia variant="icon">
 							<InfoIcon />
 						</EmptyMedia>
-						<EmptyDescription className="text-sm text-muted-foreground">
+						<EmptyDescription className="text-sm text-muted-foreground leading-relaxed">
 							{t("unmapped.description")}
 						</EmptyDescription>
 					</EmptyHeader>
@@ -63,13 +63,17 @@ export function PhonemeInspector() {
 
 	return (
 		<PhonemeDetails phonemeId={selectedPhonemeId}>
-			<PhonemeDetailsHeader />
-			<PhonemeDetailsContent className="p-3">
-				<PhonemeDetailsArticulation />
-				<PhonemeDetailsPatterns />
-				<PhonemeDetailsContrasts />
-				<PhonemeDetailsAllophones />
-			</PhonemeDetailsContent>
+			<div className="flex h-full flex-col min-h-0">
+				<div className="shrink-0">
+					<PhonemeDetailsHeader />
+				</div>
+				<PhonemeDetailsContent className="p-4 flex-1 min-h-0">
+					<PhonemeDetailsArticulation />
+					<PhonemeDetailsPatterns />
+					<PhonemeDetailsContrasts />
+					<PhonemeDetailsAllophones />
+				</PhonemeDetailsContent>
+			</div>
 		</PhonemeDetails>
 	);
 }

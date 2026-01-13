@@ -1,75 +1,64 @@
-import { useEffect, useState } from "react";
-
-/**
- * Utility function to detect if the device is likely mobile/touch-based
- */
-function isMobileDevice(): boolean {
-	if (typeof window === "undefined") return false;
-
-	return (
-		/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-		"ontouchstart" in window ||
-		navigator.maxTouchPoints > 0
-	);
-}
+import { useEffect, useRef } from "react";
 
 interface UseStartTypingAnywhereOptions {
-	/** Callback function when typing is detected */
+	/** Callback when a character is typed */
 	onTyping: (character: string) => void;
-	/** Ref to the input element to focus */
-	inputRef: React.RefObject<HTMLInputElement | null>;
 	/** Whether the feature is disabled */
 	disabled?: boolean;
-	/** Whether to prevent default behavior when typing is detected */
-	preventDefault?: boolean;
 }
 
 /**
- * Hook that enables "start typing anywhere" functionality
- * Users can start typing and the input will automatically focus and capture the input
+ * Hook that enables "start typing anywhere" functionality.
+ * Users can start typing anywhere on the page and the input will
+ * automatically focus and capture the keystroke.
+ *
+ * Returns a ref to attach to the input element.
+ *
+ * @example
+ * const inputRef = useStartTypingAnywhere({
+ *   onTyping: (char) => setText(prev => prev + char)
+ * });
+ * return <input ref={inputRef} />;
  */
 export function useStartTypingAnywhere({
 	onTyping,
-	inputRef,
 	disabled = false,
-	preventDefault = true,
 }: UseStartTypingAnywhereOptions) {
-	const [isMobile, setIsMobile] = useState<boolean | null>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
-		setIsMobile(isMobileDevice());
-	}, []);
+		if (disabled) return;
 
-	useEffect(() => {
-		// Skip on mobile devices to avoid keyboard popup issues
-		if (isMobile !== false || disabled) return;
+		// Skip on mobile/touch devices to avoid unexpected keyboard popup
+		const isTouchDevice =
+			"ontouchstart" in window ||
+			navigator.maxTouchPoints > 0 ||
+			/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-		const handleTyping = (e: KeyboardEvent) => {
-			const inputElement = inputRef.current;
-			if (
-				!inputElement ||
-				document.activeElement === inputElement ||
-				["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName || "") ||
-				e.key.length !== 1 ||
-				e.ctrlKey ||
-				e.metaKey ||
-				e.altKey ||
-				inputElement.hasAttribute("disabled")
-			) {
-				return;
-			}
+		if (isTouchDevice) return;
 
-			inputElement.focus();
+		function handleKeyDown(e: KeyboardEvent) {
+			const input = inputRef.current;
+			if (!input) return;
+
+			// Skip if already focused on an input
+			const activeTag = document.activeElement?.tagName;
+			if (activeTag === "INPUT" || activeTag === "TEXTAREA") return;
+
+			// Only capture single printable characters without modifiers
+			if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+
+			// Skip if input is disabled
+			if (input.disabled) return;
+
+			input.focus();
 			onTyping(e.key);
+			e.preventDefault();
+		}
 
-			if (preventDefault) {
-				e.preventDefault();
-			}
-		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [disabled, onTyping]);
 
-		document.addEventListener("keydown", handleTyping);
-		return () => document.removeEventListener("keydown", handleTyping);
-	}, [disabled, inputRef, isMobile, onTyping, preventDefault]);
-
-	return { isMobileDevice: isMobile };
+	return inputRef;
 }

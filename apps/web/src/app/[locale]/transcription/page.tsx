@@ -31,17 +31,19 @@ export async function generateMetadata({
 
 export default function Index() {
 	return (
-		<div className="flex-1 min-h-0 h-full bg-background">
-			<div className="container mx-auto h-full min-h-0 px-2 py-2 lg:py-3">
-				<div className="grid h-full min-h-0 grid-rows-1 gap-3 grid-cols-1 lg:grid-cols-12 lg:grid-rows-1 lg:items-stretch">
-					<div className="flex h-full min-h-0 flex-col rounded-xl border bg-background-soft shadow-sm lg:col-span-7">
-						<div className="border-b px-4 py-3 lg:px-5 lg:py-4">
+		<div className="flex flex-1 flex-col items-center bg-background bg-grid-pattern overflow-hidden">
+			<div className="w-full max-w-6xl my-3 px-3 h-[calc(100dvh-6.5rem)]">
+				<div className="grid h-full grid-cols-1 lg:grid-cols-[1fr_400px] bg-background-soft rounded-xl border">
+					<div className="flex min-h-0 flex-col border-b lg:border-b-0 lg:border-r overflow-hidden">
+						<div className="border-b p-3 shrink-0">
 							<G2PInputForm />
 						</div>
-						<TranscriptionDisplay />
+						<div className="flex-1 min-h-0 overflow-y-auto">
+							<TranscriptionDisplay />
+						</div>
 					</div>
 
-					<div className="hidden lg:flex lg:min-h-0 lg:max-h-[calc(100dvh-9rem)] lg:flex-1 lg:flex-col rounded-xl bg-background-soft overflow-hidden shadow-sm lg:col-span-5">
+					<div className="hidden lg:flex lg:flex-col min-h-0 overflow-hidden">
 						<PhonemeInspector />
 					</div>
 				</div>
