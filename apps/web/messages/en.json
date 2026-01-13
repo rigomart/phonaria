@@ -268,12 +268,13 @@
 				"aria-label": "Transcription information",
 				"title": "About This Transcription",
 				"description": "Pronunciations are obtained from the CMU Pronouncing Dictionary, which contains over 134,000 North American English words.",
-				"limitations-title": "Known limitations:",
-				"limitations": {
-					"newer-words": "Newer words, slang, and specialized terms may not be included",
-					"proper-nouns": "Proper nouns and brand names often missing",
-					"homographs": "Homographs show multiple variants"
-				}
+				"things-to-know-title": "Things to know:",
+				"things-to-know": {
+					"american-accent": "Pronunciations reflect General American English, not British or other varieties",
+					"coverage": "Some words may not be found, especially newer terms, slang, and proper nouns",
+					"multiple-variants": "Words with multiple pronunciations (like 'read') show all variants"
+				},
+				"credits-link": "Learn more about data sources"
 			}
 		},
 		"phoneme-inspector": {

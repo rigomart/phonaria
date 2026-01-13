@@ -4,6 +4,7 @@ import { Button } from "@phonaria/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export function TranscriptionInfoButton() {
 	const t = useTranslations("g2p-page.transcription-display.info-button");
@@ -27,12 +28,18 @@ export function TranscriptionInfoButton() {
 					<h4 className="font-semibold text-sm">{t("title")}</h4>
 					<div className="space-y-2 text-xs sm:text-sm text-muted-foreground">
 						<p>{t("description")}</p>
-						<p className="font-semibold">{t("limitations-title")}</p>
+						<p className="font-semibold">{t("things-to-know-title")}</p>
 						<ul className="list-disc list-inside space-y-1 ml-2">
-							<li>{t("limitations.newer-words")}</li>
-							<li>{t("limitations.proper-nouns")}</li>
-							<li>{t("limitations.homographs")}</li>
+							<li>{t("things-to-know.american-accent")}</li>
+							<li>{t("things-to-know.coverage")}</li>
+							<li>{t("things-to-know.multiple-variants")}</li>
 						</ul>
+						<Link
+							href="/credits"
+							className="inline-block pt-1 text-xs underline underline-offset-2 hover:text-foreground"
+						>
+							{t("credits-link")}
+						</Link>
 					</div>
 				</div>
 			</PopoverContent>
