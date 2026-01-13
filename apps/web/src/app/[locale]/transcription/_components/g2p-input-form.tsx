@@ -4,7 +4,7 @@ import { Button } from "@phonaria/ui/components/button";
 import { Input } from "@phonaria/ui/components/input";
 import { Keyboard, Loader2, SendHorizonal } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTranscribe } from "../_hooks/use-g2p";
 import { useStartTypingAnywhere } from "../_hooks/use-start-typing-anywhere";
@@ -19,20 +19,15 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 	const [inputText, setInputText] = useState("");
 	const transcribeMutation = useTranscribe();
 	const isLoading = transcribeMutation.isPending;
-	const inputRef = useRef<HTMLInputElement>(null);
 
 	const hasText = inputText.trim().length > 0;
 	const characterCount = inputText.length;
 
-	const { isMobileDevice } = useStartTypingAnywhere({
-		inputRef,
+	const inputRef = useStartTypingAnywhere({
 		disabled: isLoading,
-		onTyping: (character) => {
-			setInputText((current) => current + character);
-		},
+		onTyping: (char) => setInputText((prev) => prev + char),
 	});
 
-	const showStartTypingHint = isMobileDevice === false;
 	const placeholderText = placeholder ?? t("placeholder");
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -42,17 +37,13 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 
 	return (
 		<div className="w-full space-y-2">
-			{showStartTypingHint ? (
-				<div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-					<span className="inline-flex items-center gap-1.5">
-						<Keyboard className="size-3.5" />
-						{t("hint")}
-					</span>
-					<span className="text-xs text-muted-foreground">
-						{t("max-characters", { maxLength })}
-					</span>
-				</div>
-			) : null}
+			<div className="hidden md:flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+				<span className="inline-flex items-center gap-1.5">
+					<Keyboard className="size-3.5" />
+					{t("hint")}
+				</span>
+				<span>{t("max-characters", { maxLength })}</span>
+			</div>
 
 			<form onSubmit={handleSubmit} className="flex gap-2 flex-row">
 				<div className="relative flex-1">
