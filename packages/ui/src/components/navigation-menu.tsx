@@ -131,9 +131,14 @@ function NavigationMenuViewport({ className, ...props }: NavigationMenuPrimitive
 	);
 }
 
-function NavigationMenuLink({ className, ...props }: NavigationMenuPrimitive.Link.Props) {
+function NavigationMenuLink({
+	className,
+	closeOnClick = true,
+	...props
+}: NavigationMenuPrimitive.Link.Props) {
 	return (
 		<NavigationMenuPrimitive.Link
+			closeOnClick={closeOnClick}
 			className={cn(
 				"flex cursor-pointer select-none flex-col gap-0.5 rounded-sm px-2 py-1.5 text-base outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-active:bg-accent data-active:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-64 sm:text-sm [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
 				className,
