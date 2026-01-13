@@ -1,18 +1,17 @@
-name: Deploy to Vercel on Release
+name: Deploy to Vercel
+
+on:
+  workflow_dispatch:
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-on:
-  release:
-    types: [published]
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
