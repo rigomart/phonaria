@@ -219,6 +219,9 @@ Why not put phoneme detail strings into `messages/*.json`?
 Create a `.env.local` file in `apps/web` with the following variables:
 
  ```env
+ # Required for production: canonical URLs, sitemap, and robots.txt
+ SITE_URL=https://your-domain.com
+
  # Required for API rate limiting
  UPSTASH_REDIS_REST_URL=your_upstash_redis_url
  UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
@@ -226,7 +229,7 @@ Create a `.env.local` file in `apps/web` with the following variables:
  # Required for database
  DATABASE_URL=your_neon_database_url
 
- # Optional: Search Console verification (Vercel system env: VERCEL_PROJECT_PRODUCTION_URL)
+ # Optional: Search Console verification
  GOOGLE_SITE_VERIFICATION=your_verification_code
 
  # Optional: only needed when regenerating CMUDict JSON with helper-scripts
@@ -234,10 +237,9 @@ Create a `.env.local` file in `apps/web` with the following variables:
  ```
 
  Notes:
- - `VERCEL_PROJECT_PRODUCTION_URL` (Vercel system env) is used to build canonical URLs,
-   `metadataBase`, `robots.txt`, and `sitemap.xml`. If unavailable (local dev),
-   the app falls back to `http://localhost:3000`. Ensure "Automatically expose System
-   Environment Variables" is enabled in Vercel project settings.
+ - `SITE_URL` is used to build canonical URLs, `metadataBase`, `robots.txt`, and `sitemap.xml`.
+   Set this to your production domain (e.g., `https://phonaria.example.com`) in Vercel.
+   Falls back to `http://localhost:3000` in development.
  - `GOOGLE_SITE_VERIFICATION` enables the Search Console verification meta tag.
    Set this in Vercel for production and in `apps/web/.env.local` if you want to verify locally.
 
