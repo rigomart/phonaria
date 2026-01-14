@@ -3,6 +3,7 @@ import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { getLanguageAlternates, getLocalePath } from "@/lib/seo";
+import { IntroSection } from "./_sections/intro-section";
 
 export async function generateMetadata({
 	params,
@@ -22,6 +23,19 @@ export async function generateMetadata({
 	};
 }
 
-export default function IpaChartLayout({ children }: { children: React.ReactNode }) {
-	return <Suspense fallback={null}>{children}</Suspense>;
+export default async function IpaChartLayout({
+	children,
+	params,
+}: {
+	children: React.ReactNode;
+	params: Promise<{ locale: string }>;
+}) {
+	const { locale } = await params;
+
+	return (
+		<>
+			<IntroSection locale={locale as Locale} />
+			<Suspense fallback={null}>{children}</Suspense>
+		</>
+	);
 }
