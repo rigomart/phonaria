@@ -26,6 +26,10 @@ export async function generateMetadata({
 			canonical: getLocalePath(locale, "/credits"),
 			languages: getLanguageAlternates("/credits"),
 		},
+		robots: {
+			index: false,
+			follow: true,
+		},
 	};
 }
 
