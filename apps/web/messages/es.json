@@ -177,6 +177,10 @@
 	"ipa-chart": {
 		"title": "Tabla IPA",
 		"description": "Tabla interactiva para entender los fonemas del inglés (IPA, también conocido como AFI en español). Haz clic en cualquier símbolo para ver detalles de articulación, palabras de ejemplo y pronunciación con audio.",
+		"intro": {
+			"title": "Cómo leer la tabla IPA",
+			"description": "El Alfabeto Fonético Internacional organiza los sonidos según cómo y dónde se producen. Esta tabla cubre las {consonantCount} consonantes y {vowelCount} vocales del inglés americano estándar."
+		},
 		"meta": {
 			"title": "Tabla IPA del inglés - Phonaria",
 			"description": "Tabla IPA interactiva del inglés con detalles de fonemas, guía de articulación, palabras de ejemplo y audio."
