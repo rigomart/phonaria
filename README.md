@@ -15,8 +15,9 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It’s a too
 
 | Package | Description |
 | --- | --- |
-| [`apps/web`](apps/web/README.md) | Next.js App Router project containing the learner experience and API routes. |
+| [`apps/web`](apps/web/README.md) | Next.js App Router project containing the learner experience and server actions. |
 | [`packages/phonetics-data`](packages/phonetics-data/README.md) | Source of truth for phoneme metadata, articulation registries, and helper utilities. |
+| [`packages/ui`](packages/ui/README.md) | Shared UI components sourced from shadcn/ui. |
 | [`packages/helper-scripts`](packages/helper-scripts/README.md) | ElevenLabs audio generation and CMUDict tooling that feed the web app. |
 | [`docs`](docs/README.md) | Product briefs, technical design notes, and feature deep-dives. |
 
@@ -50,7 +51,7 @@ All commits should pass linting, type checking, and relevant tests.
 ## Tech stack
 
 - Next.js 16, React 19, TypeScript 5, Tailwind CSS v4
-- oRPC for type-safe API with TanStack Query integration
+- next-safe-action for type-safe server actions with TanStack Query caching
 - Drizzle ORM with Neon PostgreSQL
 - Turborepo + Bun workspaces
 

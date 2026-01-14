@@ -5,22 +5,19 @@ This package hosts the primary Phonaria experience: a Next.js App Router project
 ## At a glance
 
  - App Router + locale‑based routing under `app/[locale]` (e.g. `/en`, `/es`)
- - Core routes: `/{locale}` overview, `/{locale}/transcription`, `/{locale}/ipa-chart`, `/{locale}/insights`, `/{locale}/credits`
- - API routes powered by oRPC for type-safe client–server contracts:
-   - `POST /api/g2p` (G2P transcription)
-   - `GET /api/dictionary` (lookup + audio)
-   - `GET /api/phoneme-search` (phoneme-based word search)
+ - Core routes: `/{locale}` overview, `/{locale}/transcription`, `/{locale}/ipa-chart`, `/{locale}/find-by-sound`, `/{locale}/insights`, `/{locale}/credits`
+ - Server actions powered by next-safe-action for type-safe mutations with rate limiting
 
 ## Feature overview
 
  - **Transcription workspace** – Stress-marked IPA output with clickable words for dictionary definitions and a phoneme inspector to surface articulation details.
  - **Interactive IPA chart** – Browse consonants, monophthongs (including r-colored vowels), and diphthongs with minimal pairs, spelling patterns, allophones, and example audio.
- - **Phoneme search** – Find words by phoneme pattern (e.g., search for words containing /θ/ or specific sound sequences) with `GET /api/phoneme-search`.
+ - **Phoneme search** – Find words by phoneme pattern (e.g., search for words containing /θ/ or specific sound sequences).
  - **Insights page** – CMUDict coverage cards, phoneme frequency charts, and syllable histograms powered by the shared CMUDict stats dataset.
- - **Dictionary integration** – `GET /api/dictionary` proxies Free Dictionary responses with Upstash Redis rate limiting; transcribed words link straight to definitions and audio.
+ - **Dictionary integration** – Server action proxies Free Dictionary responses with Upstash Redis rate limiting; transcribed words link straight to definitions and audio.
  - **Themeable & responsive UI** – Tailwind CSS v4, shadcn/ui primitives, and next-themes provide a consistent light/dark experience across devices.
  - **Internationalization** – Locale-based routing via next-intl with support for multiple languages.
- - **Type-safe API client** – oRPC with TanStack Query integration ensures type safety across client and server boundaries without manually maintaining type definitions.
+ - **Type-safe server actions** – next-safe-action with Zod schemas ensures type safety and input validation with TanStack Query caching on the client.
 
 ## Tech stack
 
@@ -30,8 +27,8 @@ This package hosts the primary Phonaria experience: a Next.js App Router project
  - **Styling** – Tailwind CSS v4, shadcn/ui components, Radix UI primitives, CSS variables in `src/app/[locale]/globals.css`
  - **State Management** – TanStack Query v5 (server state and caching), Zustand (client state stores)
  - **Internationalization** – next-intl with locale-based routing and JSON message catalogs
- - **API Framework** – oRPC with Next.js API routes for type-safe client–server communication
- - **Data Validation** – Zod schemas for API request/response validation and type safety
+ - **Server Actions** – next-safe-action for type-safe server actions with middleware support
+ - **Data Validation** – Zod schemas for action input/output validation and type safety
  - **Database** – Drizzle ORM with Neon PostgreSQL for persisted data
  - **Rate Limiting** – Upstash Redis for API endpoint protection
 - **Analytics** – Vercel Analytics and Speed Insights
@@ -74,9 +71,10 @@ apps/web
 │   │   ├── [locale]/     # Locale-based routing (e.g., /en, /es)
 │   │   │   ├── (overview)/       # Launchpad rendered at /{locale}
 │   │   │   ├── transcription/    # G2P workspace with phoneme inspector + dialogs
+│   │   │   │   ├── _actions/     # Server actions (transcribe, dictionary lookup)
 │   │   │   │   ├── _components/
 │   │   │   │   ├── _hooks/
-│   │   │   │   ├── _lib/
+│   │   │   │   ├── _lib/         # G2P logic (service, syllabifier, cmudict, etc.)
 │   │   │   │   ├── _schemas/
 │   │   │   │   ├── _store/
 │   │   │   │   ├── _types/
@@ -87,6 +85,10 @@ apps/web
 │   │   │   │   ├── _sections/
 │   │   │   │   ├── _store/
 │   │   │   │   └── page.tsx
+│   │   │   ├── find-by-sound/    # Phoneme-based word search
+│   │   │   │   ├── _actions/     # Search server action
+│   │   │   │   ├── _components/
+│   │   │   │   └── page.tsx
 │   │   │   ├── insights/         # CMUDict stats and coverage visualizations
 │   │   │   │   ├── _components/
 │   │   │   │   └── page.tsx
@@ -95,31 +97,6 @@ apps/web
 │   │   │   ├── globals.css
 │   │   │   ├── layout.tsx
 │   │   │   └── providers.tsx
- │   │   ├── api/                 # oRPC API endpoints
- │   │   │   ├── [[...rest]]/     # Catch-all route for oRPC handler
- │   │   │   │   └── route.ts     # RPCHandler with GET/POST exports
- │   │   │   ├── router.ts        # Router definition combining all procedures
- │   │   │   ├── _shared/         # Shared API utilities and middleware
- │   │   │   │   ├── base.ts      # Base procedure with shared context
- │   │   │   │   └── middleware/  # Rate limiting, auth, etc.
- │   │   │   ├── dictionary/      # Dictionary lookup with rate limiting
- │   │   │   │   ├── procedure.ts # oRPC procedure definition
- │   │   │   │   ├── service.ts   # Dictionary API service
- │   │   │   │   └── model.ts     # Zod schemas and types
- │   │   │   ├── g2p/             # Grapheme-to-phoneme transcription
- │   │   │   │   ├── procedure.ts # oRPC procedure definition
- │   │   │   │   ├── service.ts   # G2P processing logic
- │   │   │   │   ├── model.ts     # Zod schemas and types
- │   │   │   │   ├── syllabifier.ts
- │   │   │   │   ├── cmudict.ts
- │   │   │   │   ├── text-processing.ts
- │   │   │   │   ├── phonotactics.ts
- │   │   │   │   └── phoneme-generator.ts
- │   │   │   └── phoneme-search/  # Phoneme-based word search
- │   │   │       ├── procedure.ts # oRPC procedure definition
- │   │   │       ├── service.ts   # Search service
- │   │   │       ├── model.ts     # Zod schemas and types
- │   │   │       └── phoneme-utils.ts
 │   │   └── favicon.ico
 │   ├── components/        # Shared UI components
 │   │   ├── phoneme-details/  # Phoneme dialog components
@@ -136,11 +113,7 @@ apps/web
 │   │   └── use-media-query.ts
 │   ├── i18n/              # next-intl routing, navigation, and request config
 │   ├── lib/               # Shared utilities
-│   │   ├── orpc/          # oRPC client configuration and types
-│   │   │   ├── client.ts  # oRPC client instance
-│   │   │   ├── server.ts  # Server-side oRPC client
-│   │   │   ├── types.ts   # Inferred types from router (use these!)
-│   │   │   └── index.ts   # TanStack Query utils and exports
+│   │   ├── safe-action.ts # next-safe-action client with rate limiting middleware
 │   │   ├── utils.ts       # General helper functions
 │   │   └── vowel-chart-geometry.ts
 ├── next.config.ts         # Next.js configuration (CSP headers, etc.)
@@ -154,19 +127,24 @@ apps/web
 - **Route groups** (`(overview)`) – Share layouts without affecting URL structure
 - **Locale routes** (`[locale]`) – Dynamic routing for internationalization support
 
-## API type patterns
+## Server action patterns
 
-Use oRPC type inference instead of importing from API model files:
+Server actions are co-located with their feature routes in `_actions/` directories. Use `next-safe-action` with `rateLimitedAction` for public-facing actions:
 
 ```ts
-// Good: Import from @/lib/orpc
-import { orpc, type G2PResponse, type WordDefinition } from "@/lib/orpc";
+// In _actions/transcribe.ts
+import { rateLimitedAction } from "@/lib/safe-action";
+import { g2pRequestSchema } from "../_lib/g2p/model";
 
-// Bad: Don't import from API model files
-import type { G2PResponse } from "@/app/api/g2p/model";
+export const transcribeAction = rateLimitedAction
+  .metadata({ actionName: "g2p-transcribe" })
+  .inputSchema(g2pRequestSchema)
+  .action(async ({ parsedInput }) => {
+    return processG2P(parsedInput.text);
+  });
 ```
 
-Types in `src/lib/orpc/types.ts` are inferred from the router using `InferClientOutputs` and `InferClientInputs`.
+Import actions directly from the feature's `_actions/` directory. Types are inferred from Zod schemas.
 
 ## Data dependencies
 
@@ -245,10 +223,10 @@ Create a `.env.local` file in `apps/web` with the following variables:
 
 ## Testing guidance
 
-Unit tests live alongside the code they cover using `.test.ts` suffix (e.g., `src/data/phoneme-details.test.ts`, `src/app/api/g2p/_core/syllabifier.test.ts`, `src/app/api/dictionary/_services/dictionary-service.test.ts`). Run `bun --cwd apps/web test` locally or rely on the root `bun test` command for workspace-wide coverage.
+Unit tests live alongside the code they cover using `.test.ts` suffix (e.g., `src/data/phoneme-details.test.ts`). Run `bun --cwd apps/web test` locally or rely on the root `bun test` command for workspace-wide coverage.
 
  ## Security
 
  - **Content Security Policy** – Configured in `next.config.ts` to restrict script sources, enforce HTTPS upgrades, and prevent clickjacking
- - **Rate Limiting** – All API endpoints protected by Upstash Redis-based rate limiting to prevent abuse
- - **Input Validation** – All API endpoints use Elysia types with Zod schemas for request validation
+ - **Rate Limiting** – All server actions protected by Upstash Redis-based rate limiting to prevent abuse
+ - **Input Validation** – All server actions use Zod schemas for input validation and type safety
