@@ -8,6 +8,73 @@ Canonical phoneme metadata for the Phonaria workspace. Everything in this packag
 - Typed datasets that can be consumed by `apps/web`, helper scripts, or future tooling without duplication.
 - Metadata only. Consumers are responsible for presenting text, translations, or UX copy.
 
+## Phoneme ID System
+
+Phoneme IDs are short, file-safe identifiers that prioritize phonetic intuition while remaining practical for filenames, URLs, and code references.
+
+### Design Constraints
+
+| Constraint | Rule | Rationale |
+| --- | --- | --- |
+| **Case** | UPPERCASE only | File-safe across all systems |
+| **Characters** | A-Z alphanumeric only | No special characters, diacritics, or numbers in base IDs |
+| **Length** | 1-2 characters max | Compact for storage and display |
+| **Stress suffix** | Optional 0, 1, 2 | Only in pronunciation data (cmudict.json), not in registry keys |
+
+### ID Categories
+
+**Consonants** (24 IDs): Single letters where possible, digraphs for sounds without ASCII equivalents.
+
+| Pattern | Examples | Notes |
+| --- | --- | --- |
+| Single letter | `P`, `B`, `T`, `D`, `K`, `G`, `F`, `V`, `S`, `Z`, `M`, `N`, `L`, `R`, `Y`, `W`, `H`, `J` | Matches IPA where possible |
+| Digraph | `TH`, `DH`, `SH`, `ZH`, `CH`, `NG` | For sounds like theta, eth, esh |
+
+**Monophthongs** (11 IDs): Tense vowels get clean letters; lax vowels use `X` suffix.
+
+| Pattern | Examples | Notes |
+| --- | --- | --- |
+| Tense vowels | `I`, `U`, `E`, `O`, `A` | Clean single letters |
+| Lax vowels | `IX`, `UX`, `AX` | X suffix indicates lax quality |
+| Special | `AH`, `AE`, `ER` | Historical/phonetic notation |
+
+**Diphthongs** (5 IDs): Start vowel + target vowel notation.
+
+| ID | IPA | Lexical set |
+| --- | --- | --- |
+| `EI` | eɪ | FACE |
+| `OU` | oʊ | GOAT |
+| `AI` | aɪ | PRICE |
+| `AU` | aʊ | MOUTH |
+| `OI` | ɔɪ | CHOICE |
+
+### Stress Notation (Pronunciation Data Only)
+
+In `cmudict.json` and curated word lists, vowel tokens include stress suffixes:
+
+- `0` = No stress (unstressed)
+- `1` = Primary stress
+- `2` = Secondary stress
+
+```json
+{
+  "HELLO": ["H AX0 L OU1"],
+  "ABOUT": ["AX0 B AU1 T"]
+}
+```
+
+Registry keys (`PhonemeSymbolId`) never include stress—stress is pronunciation metadata, not phoneme identity.
+
+### Extending for New Languages
+
+When adding phonemes for new language varieties:
+
+1. **Check existing IDs first**: The current 40 IDs cover General American English. Many extend to other varieties.
+2. **Follow the patterns**: Use the same conventions (uppercase, 1-2 chars, digraphs for complex sounds).
+3. **Avoid collisions**: New IDs must not conflict with existing ones. Consider prefixes for language-specific sounds (e.g., `FR` prefix for French-specific phonemes).
+4. **Update all registries**: New phonemes need entries in `ipa-registry.ts`, `phoneme-articulations.ts`, and optionally in contrast/pattern/allophone registries.
+5. **Document the addition**: Add the new phoneme to this README's ID tables.
+
 ## Exports at a glance
 
 All canonical phonetics datasets use PascalCase `*Registry` names (or `*Catalog` for arrays) to signal their role as source-of-truth data exports from `@phonaria/phonetics-data`. This naming convention makes it visually obvious that these are global data registries, not local constants.
@@ -76,8 +143,8 @@ import {
 ```ts
 import { getIpaForPhonemeId } from "@phonaria/phonetics-data";
 
-const ipa = getIpaForPhonemeId("voiceless-bilabial-plosive"); // "p"
-const vowelIpa = getIpaForPhonemeId("close-front-unrounded"); // "i"
+const ipa = getIpaForPhonemeId("P"); // "p"
+const vowelIpa = getIpaForPhonemeId("I"); // "i"
 ```
 
 ### Convert CMU ARPA to phoneme ID and IPA
@@ -85,7 +152,7 @@ const vowelIpa = getIpaForPhonemeId("close-front-unrounded"); // "i"
 ```ts
 import { getPhonemeIdForCmuArpa, getIpaForPhonemeId } from "@phonaria/phonetics-data";
 
-const phonemeId = getPhonemeIdForCmuArpa("AH0"); // "mid-central-unrounded" (schwa)
+const phonemeId = getPhonemeIdForCmuArpa("AH0"); // "AX" (schwa)
 const ipa = getIpaForPhonemeId(phonemeId); // "ə"
 ```
 
@@ -94,18 +161,17 @@ const ipa = getIpaForPhonemeId(phonemeId); // "ə"
 ```ts
 import { getCmuArpaForPhonemeId } from "@phonaria/phonetics-data";
 
-const tokens = getCmuArpaForPhonemeId("close-front-unrounded");
+const tokens = getCmuArpaForPhonemeId("I");
 // ["IY0", "IY1", "IY2"] - all stress variants
 ```
 
 ### Check phoneme category
 
 ```ts
-import { isVowelPhoneme, isConsonantPhoneme, getPhonemeCategory } from "@phonaria/phonetics-data";
+import { getPhonemeCategory } from "@phonaria/phonetics-data";
 
-isVowelPhoneme("close-front-unrounded"); // true
-isConsonantPhoneme("voiceless-bilabial-plosive"); // true
-getPhonemeCategory("close-front-unrounded"); // "vowel"
+getPhonemeCategory("I"); // "vowel"
+getPhonemeCategory("P"); // "consonant"
 ```
 
 ### Access articulation features
@@ -113,7 +179,7 @@ getPhonemeCategory("close-front-unrounded"); // "vowel"
 ```ts
 import { PhonemeArticulationRegistry } from "@phonaria/phonetics-data";
 
-const articulation = PhonemeArticulationRegistry["close-front-unrounded"];
+const articulation = PhonemeArticulationRegistry["I"];
 // { category: "vowel", vowelType: "monophthong", features: { ... } }
 
 if (articulation.vowelType === "diphthong") {
@@ -141,14 +207,14 @@ import {
 } from "@phonaria/phonetics-data";
 
 // Spelling pattern examples
-const pattern = PhonemeSpellingPatternRegistry["voiceless-bilabial-plosive"];
+const pattern = PhonemeSpellingPatternRegistry["P"];
 pattern?.examples.forEach(ex => {
   console.log(`${ex.word}: ${ex.phonemic}`);
   // "pen: pɛn"
 });
 
 // Allophone examples
-const allophones = PhonemeAllophoneRegistry["voiceless-alveolar-plosive"];
+const allophones = PhonemeAllophoneRegistry["T"];
 allophones?.forEach(variant => {
   variant.examples.forEach(ex => {
     console.log(`${ex.word}: ${ex.phonemic}`);
@@ -156,7 +222,7 @@ allophones?.forEach(variant => {
 });
 
 // Minimal pair examples
-const contrasts = ContrastsByPhonemeIdRegistry["voiceless-bilabial-plosive"];
+const contrasts = ContrastsByPhonemeIdRegistry["P"];
 contrasts?.forEach(contrast => {
   contrast.minimalPairs.forEach(([pair1, pair2]) => {
     console.log(`${pair1.word} vs ${pair2.word}`);
@@ -178,7 +244,7 @@ Pre-generated word lists for client-side tiered lookup, enabling instant pronunc
 
 ### Data format
 
-Each file contains metadata and a simple word → CMU ARPABET mapping:
+Each file contains metadata and a simple word → phoneme ID mapping (with stress suffixes on vowels):
 
 ```json
 {
@@ -194,7 +260,7 @@ Each file contains metadata and a simple word → CMU ARPABET mapping:
     }
   },
   "words": {
-    "hello": "HH AH0 L OW1",
+    "hello": "H AX0 L OU1",
     "world": "W ER1 L D"
   }
 }
