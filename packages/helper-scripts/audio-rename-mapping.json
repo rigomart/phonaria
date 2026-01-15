@@ -1,0 +1,43 @@
+{
+	"description": "Audio file rename mapping for phoneme ID migration (verbose -> short IDs)",
+	"note": "These .ogg files need to be renamed on the CDN before/during deploy",
+	"consonants": {
+		"voiceless-bilabial-plosive.ogg": "P.ogg",
+		"voiced-bilabial-plosive.ogg": "B.ogg",
+		"voiceless-alveolar-plosive.ogg": "T.ogg",
+		"voiced-alveolar-plosive.ogg": "D.ogg",
+		"voiceless-velar-plosive.ogg": "K.ogg",
+		"voiced-velar-plosive.ogg": "G.ogg",
+		"voiceless-labiodental-fricative.ogg": "F.ogg",
+		"voiced-labiodental-fricative.ogg": "V.ogg",
+		"voiceless-dental-fricative.ogg": "TH.ogg",
+		"voiced-dental-fricative.ogg": "DH.ogg",
+		"voiceless-alveolar-fricative.ogg": "S.ogg",
+		"voiced-alveolar-fricative.ogg": "Z.ogg",
+		"voiceless-postalveolar-fricative.ogg": "SH.ogg",
+		"voiced-postalveolar-fricative.ogg": "ZH.ogg",
+		"voiceless-glottal-fricative.ogg": "H.ogg",
+		"voiceless-postalveolar-affricate.ogg": "CH.ogg",
+		"voiced-postalveolar-affricate.ogg": "J.ogg",
+		"voiced-bilabial-nasal.ogg": "M.ogg",
+		"voiced-alveolar-nasal.ogg": "N.ogg",
+		"voiced-velar-nasal.ogg": "NG.ogg",
+		"voiced-alveolar-lateral-approximant.ogg": "L.ogg",
+		"voiced-postalveolar-approximant.ogg": "R.ogg",
+		"voiced-palatal-approximant.ogg": "Y.ogg",
+		"voiced-labial-velar-approximant.ogg": "W.ogg"
+	},
+	"monophthongs": {
+		"close-front-unrounded.ogg": "I.ogg",
+		"close-back-rounded.ogg": "U.ogg",
+		"near-close-near-front-unrounded.ogg": "IX.ogg",
+		"near-close-near-back-rounded.ogg": "UX.ogg",
+		"mid-central-unrounded.ogg": "AX.ogg",
+		"open-mid-front-unrounded.ogg": "E.ogg",
+		"open-mid-back-unrounded.ogg": "AH.ogg",
+		"open-mid-back-rounded.ogg": "O.ogg",
+		"near-open-front-unrounded.ogg": "AE.ogg",
+		"open-back-unrounded.ogg": "A.ogg",
+		"r-colored-open-mid-central.ogg": "ER.ogg"
+	}
+}

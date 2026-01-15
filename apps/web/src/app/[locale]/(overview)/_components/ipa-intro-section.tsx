@@ -36,18 +36,18 @@ const WORDS: WordExample[] = [
 		word: "through",
 		pattern: "ough",
 		phonemes: [
-			{ id: "voiceless-dental-fricative", symbol: "θ", isHighlighted: false },
-			{ id: "voiced-postalveolar-approximant", symbol: "ɹ", isHighlighted: false },
-			{ id: "close-back-rounded", symbol: "u", isHighlighted: true },
+			{ id: "TH", symbol: "θ", isHighlighted: false },
+			{ id: "R", symbol: "ɹ", isHighlighted: false },
+			{ id: "U", symbol: "u", isHighlighted: true },
 		],
 	},
 	{
 		word: "though",
 		pattern: "ough",
 		phonemes: [
-			{ id: "voiced-dental-fricative", symbol: "ð", isHighlighted: false },
+			{ id: "DH", symbol: "ð", isHighlighted: false },
 			{
-				id: "close-mid-back-rounded-to-near-close-near-back-rounded",
+				id: "OU",
 				symbol: "oʊ",
 				isHighlighted: true,
 			},
@@ -57,36 +57,36 @@ const WORDS: WordExample[] = [
 		word: "thought",
 		pattern: "ough",
 		phonemes: [
-			{ id: "voiceless-dental-fricative", symbol: "θ", isHighlighted: false },
-			{ id: "open-mid-back-rounded", symbol: "ɔ", isHighlighted: true },
-			{ id: "voiceless-alveolar-plosive", symbol: "t", isHighlighted: false },
+			{ id: "TH", symbol: "θ", isHighlighted: false },
+			{ id: "O", symbol: "ɔ", isHighlighted: true },
+			{ id: "T", symbol: "t", isHighlighted: false },
 		],
 	},
 	{
 		word: "tough",
 		pattern: "ough",
 		phonemes: [
-			{ id: "voiceless-alveolar-plosive", symbol: "t", isHighlighted: false },
-			{ id: "open-mid-back-unrounded", symbol: "ʌ", isHighlighted: true },
-			{ id: "voiceless-labiodental-fricative", symbol: "f", isHighlighted: true },
+			{ id: "T", symbol: "t", isHighlighted: false },
+			{ id: "AH", symbol: "ʌ", isHighlighted: true },
+			{ id: "F", symbol: "f", isHighlighted: true },
 		],
 	},
 	{
 		word: "cough",
 		pattern: "ough",
 		phonemes: [
-			{ id: "voiceless-velar-plosive", symbol: "k", isHighlighted: false },
-			{ id: "open-mid-back-rounded", symbol: "ɔ", isHighlighted: true },
-			{ id: "voiceless-labiodental-fricative", symbol: "f", isHighlighted: true },
+			{ id: "K", symbol: "k", isHighlighted: false },
+			{ id: "O", symbol: "ɔ", isHighlighted: true },
+			{ id: "F", symbol: "f", isHighlighted: true },
 		],
 	},
 	{
 		word: "bough",
 		pattern: "ough",
 		phonemes: [
-			{ id: "voiced-bilabial-plosive", symbol: "b", isHighlighted: false },
+			{ id: "B", symbol: "b", isHighlighted: false },
 			{
-				id: "open-front-unrounded-to-near-close-near-back-rounded",
+				id: "AU",
 				symbol: "aʊ",
 				isHighlighted: true,
 			},

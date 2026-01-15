@@ -14,21 +14,21 @@ export type SpellingPattern = {
 
 export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, SpellingPattern>> = {
 	// Plosives
-	"voiceless-bilabial-plosive": {
+	P: {
 		patterns: ["p", "pp"],
 		examples: [
 			{ word: "pat", phonemic: "pæt" },
 			{ word: "happy", phonemic: "ˈhæpi" },
 		],
 	},
-	"voiced-bilabial-plosive": {
+	B: {
 		patterns: ["b", "bb"],
 		examples: [
 			{ word: "bat", phonemic: "bæt" },
 			{ word: "rabbit", phonemic: "ˈɹæbɪt" },
 		],
 	},
-	"voiceless-alveolar-plosive": {
+	T: {
 		patterns: ["t", "tt", "-ed"],
 		examples: [
 			{ word: "top", phonemic: "tɑp" },
@@ -36,7 +36,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "jumped", phonemic: "dʒʌmpt" },
 		],
 	},
-	"voiced-alveolar-plosive": {
+	D: {
 		patterns: ["d", "dd", "-ed"],
 		examples: [
 			{ word: "day", phonemic: "deɪ" },
@@ -44,7 +44,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "rained", phonemic: "ɹeɪnd" },
 		],
 	},
-	"voiceless-velar-plosive": {
+	K: {
 		patterns: ["c", "k", "ck"],
 		examples: [
 			{ word: "cat", phonemic: "kæt" },
@@ -52,7 +52,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "back", phonemic: "bæk" },
 		],
 	},
-	"voiced-velar-plosive": {
+	G: {
 		patterns: ["g", "gg"],
 		examples: [
 			{ word: "gum", phonemic: "ɡʌm" },
@@ -61,14 +61,14 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Nasals
-	"voiced-bilabial-nasal": {
+	M: {
 		patterns: ["m", "mm"],
 		examples: [
 			{ word: "ram", phonemic: "ræm" },
 			{ word: "summer", phonemic: "ˈsʌmɝ" },
 		],
 	},
-	"voiced-alveolar-nasal": {
+	N: {
 		patterns: ["n", "nn", "kn-"],
 		examples: [
 			{ word: "sun", phonemic: "sʌn" },
@@ -76,7 +76,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "know", phonemic: "noʊ" },
 		],
 	},
-	"voiced-velar-nasal": {
+	NG: {
 		patterns: ["-ng", "n"],
 		examples: [
 			{ word: "sing", phonemic: "sɪŋ" },
@@ -85,28 +85,28 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Liquids & Approximants
-	"voiced-alveolar-lateral-approximant": {
+	L: {
 		patterns: ["l", "ll"],
 		examples: [
 			{ word: "let", phonemic: "lɛt" },
 			{ word: "hello", phonemic: "hɛˈloʊ" },
 		],
 	},
-	"voiced-postalveolar-approximant": {
+	R: {
 		patterns: ["r", "rr", "wr-"],
 		examples: [
 			{ word: "red", phonemic: "ɹɛd" },
 			{ word: "write", phonemic: "ɹaɪt" },
 		],
 	},
-	"voiced-labial-velar-approximant": {
+	W: {
 		patterns: ["w"],
 		examples: [
 			{ word: "west", phonemic: "wɛst" },
 			{ word: "away", phonemic: "əˈweɪ" },
 		],
 	},
-	"voiced-palatal-approximant": {
+	Y: {
 		patterns: ["y"],
 		examples: [
 			{ word: "yoke", phonemic: "joʊk" },
@@ -115,7 +115,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Fricatives
-	"voiceless-labiodental-fricative": {
+	F: {
 		patterns: ["f", "ff", "ph"],
 		examples: [
 			{ word: "fan", phonemic: "fæn" },
@@ -123,35 +123,35 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "phone", phonemic: "foʊn" },
 		],
 	},
-	"voiced-labiodental-fricative": {
+	V: {
 		patterns: ["v"],
 		examples: [
 			{ word: "van", phonemic: "væn" },
 			{ word: "save", phonemic: "seɪv" },
 		],
 	},
-	"voiceless-dental-fricative": {
+	TH: {
 		patterns: ["th"],
 		examples: [
 			{ word: "thin", phonemic: "θɪn" },
 			{ word: "think", phonemic: "θɪŋk" },
 		],
 	},
-	"voiced-dental-fricative": {
+	DH: {
 		patterns: ["th"],
 		examples: [
 			{ word: "this", phonemic: "ðɪs" },
 			{ word: "mother", phonemic: "ˈmʌðɝ" },
 		],
 	},
-	"voiceless-alveolar-fricative": {
+	S: {
 		patterns: ["s", "ss", "c"],
 		examples: [
 			{ word: "sun", phonemic: "sʌn" },
 			{ word: "city", phonemic: "ˈsɪti" },
 		],
 	},
-	"voiced-alveolar-fricative": {
+	Z: {
 		patterns: ["z", "-s", "zz"],
 		examples: [
 			{ word: "zoo", phonemic: "zu" },
@@ -159,21 +159,21 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "buzz", phonemic: "bʌz" },
 		],
 	},
-	"voiceless-postalveolar-fricative": {
+	SH: {
 		patterns: ["sh", "-tion", "-sion"],
 		examples: [
 			{ word: "shop", phonemic: "ʃɑp" },
 			{ word: "nation", phonemic: "ˈneɪʃən" },
 		],
 	},
-	"voiced-postalveolar-fricative": {
+	ZH: {
 		patterns: ["-sion", "-sure"],
 		examples: [
 			{ word: "vision", phonemic: "ˈvɪʒən" },
 			{ word: "measure", phonemic: "ˈmɛʒɝ" },
 		],
 	},
-	"voiceless-glottal-fricative": {
+	H: {
 		patterns: ["h"],
 		examples: [
 			{ word: "house", phonemic: "haʊs" },
@@ -182,14 +182,14 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Affricates
-	"voiceless-postalveolar-affricate": {
+	CH: {
 		patterns: ["ch", "tch"],
 		examples: [
 			{ word: "cheap", phonemic: "tʃip" },
 			{ word: "catch", phonemic: "kætʃ" },
 		],
 	},
-	"voiced-postalveolar-affricate": {
+	J: {
 		patterns: ["j", "-dge", "-ge"],
 		examples: [
 			{ word: "jeep", phonemic: "dʒip" },
@@ -199,7 +199,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Monophthongs - High Vowels
-	"close-front-unrounded": {
+	I: {
 		patterns: ["ee", "ea", "-y", "e"],
 		examples: [
 			{ word: "seed", phonemic: "sid" },
@@ -208,14 +208,14 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "be", phonemic: "bi" },
 		],
 	},
-	"near-close-near-front-unrounded": {
+	IX: {
 		patterns: ["i"],
 		examples: [
 			{ word: "sit", phonemic: "sɪt" },
 			{ word: "big", phonemic: "bɪɡ" },
 		],
 	},
-	"close-back-rounded": {
+	U: {
 		patterns: ["oo", "u-e", "ew"],
 		examples: [
 			{ word: "food", phonemic: "fud" },
@@ -223,7 +223,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "new", phonemic: "nu" },
 		],
 	},
-	"near-close-near-back-rounded": {
+	UX: {
 		patterns: ["oo", "u"],
 		examples: [
 			{ word: "book", phonemic: "bʊk" },
@@ -232,28 +232,28 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Monophthongs - Mid Vowels
-	"open-mid-front-unrounded": {
+	E: {
 		patterns: ["e", "ea"],
 		examples: [
 			{ word: "red", phonemic: "ɹɛd" },
 			{ word: "bread", phonemic: "bɹɛd" },
 		],
 	},
-	"mid-central-unrounded": {
+	AX: {
 		patterns: ["a", "e", "o"],
 		examples: [
 			{ word: "sofa", phonemic: "ˈsoʊfə" },
 			{ word: "lemon", phonemic: "ˈlɛmən" },
 		],
 	},
-	"open-mid-back-unrounded": {
+	AH: {
 		patterns: ["u", "o"],
 		examples: [
 			{ word: "cup", phonemic: "kʌp" },
 			{ word: "love", phonemic: "lʌv" },
 		],
 	},
-	"open-mid-back-rounded": {
+	O: {
 		patterns: ["aw", "au", "al"],
 		examples: [
 			{ word: "saw", phonemic: "sɔ" },
@@ -263,14 +263,14 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Monophthongs - Low Vowels
-	"near-open-front-unrounded": {
+	AE: {
 		patterns: ["a"],
 		examples: [
 			{ word: "cat", phonemic: "kæt" },
 			{ word: "back", phonemic: "bæk" },
 		],
 	},
-	"open-back-unrounded": {
+	A: {
 		patterns: ["o", "a"],
 		examples: [
 			{ word: "hot", phonemic: "hɑt" },
@@ -279,7 +279,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// Diphthongs
-	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
+	EI: {
 		patterns: ["a-e", "ai", "-ay"],
 		examples: [
 			{ word: "make", phonemic: "meɪk" },
@@ -287,7 +287,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "day", phonemic: "deɪ" },
 		],
 	},
-	"open-front-unrounded-to-near-close-near-front-unrounded": {
+	AI: {
 		patterns: ["i-e", "igh", "-y"],
 		examples: [
 			{ word: "time", phonemic: "taɪm" },
@@ -295,14 +295,14 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "my", phonemic: "maɪ" },
 		],
 	},
-	"open-mid-back-rounded-to-near-close-near-front-unrounded": {
+	OI: {
 		patterns: ["oi", "-oy"],
 		examples: [
 			{ word: "coin", phonemic: "kɔɪn" },
 			{ word: "boy", phonemic: "bɔɪ" },
 		],
 	},
-	"close-mid-back-rounded-to-near-close-near-back-rounded": {
+	OU: {
 		patterns: ["o", "oa", "o-e"],
 		examples: [
 			{ word: "code", phonemic: "koʊd" },
@@ -310,7 +310,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 			{ word: "home", phonemic: "hoʊm" },
 		],
 	},
-	"open-front-unrounded-to-near-close-near-back-rounded": {
+	AU: {
 		patterns: ["ou", "ow"],
 		examples: [
 			{ word: "out", phonemic: "aʊt" },
@@ -319,7 +319,7 @@ export const PhonemeSpellingPatternRegistry: Partial<Record<PhonemeSymbolId, Spe
 	},
 
 	// R-colored vowels
-	"r-colored-open-mid-central": {
+	ER: {
 		patterns: ["er", "ir", "ur", "or"],
 		examples: [
 			{ word: "her", phonemic: "hɝ" },

@@ -21,35 +21,32 @@ export type ConsonantArticulatoryFeatures = {
 
 export type ConsonantPhonemeArticulatoryFeatureKey = keyof ConsonantArticulatoryFeatures;
 
-type ConsonantPhonemeIdPattern =
-	`${ConsonantArticulatoryFeatures["voicing"]}-${ConsonantArticulatoryFeatures["place"]}-${ConsonantArticulatoryFeatures["manner"]}`;
-
 export const ConsonantIpaRegistry = {
-	"voiceless-bilabial-plosive": "p",
-	"voiced-bilabial-plosive": "b",
-	"voiceless-alveolar-plosive": "t",
-	"voiced-alveolar-plosive": "d",
-	"voiced-velar-plosive": "ɡ",
-	"voiceless-velar-plosive": "k",
-	"voiced-dental-fricative": "ð",
-	"voiceless-dental-fricative": "θ",
-	"voiceless-labiodental-fricative": "f",
-	"voiced-labiodental-fricative": "v",
-	"voiceless-glottal-fricative": "h",
-	"voiceless-alveolar-fricative": "s",
-	"voiceless-postalveolar-fricative": "ʃ",
-	"voiced-alveolar-fricative": "z",
-	"voiced-postalveolar-fricative": "ʒ",
-	"voiced-postalveolar-affricate": "dʒ",
-	"voiceless-postalveolar-affricate": "tʃ",
-	"voiced-bilabial-nasal": "m",
-	"voiced-alveolar-nasal": "n",
-	"voiced-velar-nasal": "ŋ",
-	"voiced-alveolar-lateral-approximant": "l",
-	"voiced-postalveolar-approximant": "ɹ",
-	"voiced-palatal-approximant": "j",
-	"voiced-labial-velar-approximant": "w",
-} as const satisfies Partial<Record<ConsonantPhonemeIdPattern, string>>;
+	P: "p",
+	B: "b",
+	T: "t",
+	D: "d",
+	G: "ɡ",
+	K: "k",
+	DH: "ð",
+	TH: "θ",
+	F: "f",
+	V: "v",
+	H: "h",
+	S: "s",
+	SH: "ʃ",
+	Z: "z",
+	ZH: "ʒ",
+	J: "dʒ",
+	CH: "tʃ",
+	M: "m",
+	N: "n",
+	NG: "ŋ",
+	L: "l",
+	R: "ɹ",
+	Y: "j",
+	W: "w",
+} as const;
 
 export type ConsonantSymbolId = keyof typeof ConsonantIpaRegistry;
 export type ConsonantSymbolIpa = (typeof ConsonantIpaRegistry)[ConsonantSymbolId];
@@ -68,57 +65,42 @@ export type VowelPhonemeArticulatoryFeatureKey = keyof VowelArticulatoryFeatures
 
 // Vowels - Monophthongs
 
-type StandardMonophthongPhonemeIdPattern =
-	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}`;
-type RColoredMonophthongPhonemeIdPattern =
-	`r-colored-${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}`;
-type MonophthongPhonemeIdPattern =
-	| StandardMonophthongPhonemeIdPattern
-	| RColoredMonophthongPhonemeIdPattern;
-
 export const MonophthongIpaRegistry = {
-	"close-front-unrounded": "i",
-	"close-back-rounded": "u",
-	"near-close-near-front-unrounded": "ɪ",
-	"near-close-near-back-rounded": "ʊ",
-	"mid-central-unrounded": "ə",
-	"open-mid-front-unrounded": "ɛ",
-	"open-mid-back-unrounded": "ʌ",
-	"open-mid-back-rounded": "ɔ",
-	"near-open-front-unrounded": "æ",
-	"open-back-unrounded": "ɑ",
-	"r-colored-open-mid-central": "ɝ",
-} as const satisfies Partial<Record<MonophthongPhonemeIdPattern, string>>;
+	I: "i",
+	U: "u",
+	IX: "ɪ",
+	UX: "ʊ",
+	AX: "ə",
+	E: "ɛ",
+	AH: "ʌ",
+	O: "ɔ",
+	AE: "æ",
+	A: "ɑ",
+	ER: "ɝ",
+} as const;
 
 export type MonophthongSymbolId = keyof typeof MonophthongIpaRegistry;
 export type MonophthongSymbolIpa = (typeof MonophthongIpaRegistry)[MonophthongSymbolId];
 
 // Vowels - Diphthongs
 
-//? Keep an eye on the definition of these types. They can hold a disproportionate amount of combinations.
-//? They are fine here for their purpose as guards, but don't try to export them as they are.
-type DiphthongPhonemeIdPattern =
-	`${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}-to-${VowelArticulatoryFeatures["height"]}-${VowelArticulatoryFeatures["backness"]}-${VowelArticulatoryFeatures["roundness"]}`;
-
 export const DiphthongIpaRegistry = {
-	"close-mid-front-unrounded-to-near-close-near-front-unrounded": "eɪ",
-	"close-mid-back-rounded-to-near-close-near-back-rounded": "oʊ",
-	"open-front-unrounded-to-near-close-near-front-unrounded": "aɪ",
-	"open-front-unrounded-to-near-close-near-back-rounded": "aʊ",
-	"open-mid-back-rounded-to-near-close-near-front-unrounded": "ɔɪ",
-} as const satisfies Partial<Record<DiphthongPhonemeIdPattern, string>>;
+	EI: "eɪ",
+	OU: "oʊ",
+	AI: "aɪ",
+	AU: "aʊ",
+	OI: "ɔɪ",
+} as const;
 
 export type DiphthongSymbolId = keyof typeof DiphthongIpaRegistry;
 export type DiphthongSymbolIpa = (typeof DiphthongIpaRegistry)[DiphthongSymbolId];
 
 // Vowels - All
 
-type VowelPhonemeIdPattern = MonophthongPhonemeIdPattern | DiphthongPhonemeIdPattern;
-
 export const VowelIpaRegistry = {
 	...MonophthongIpaRegistry,
 	...DiphthongIpaRegistry,
-} as const satisfies Partial<Record<VowelPhonemeIdPattern, string>>;
+} as const;
 
 export type VowelSymbolId = keyof typeof VowelIpaRegistry;
 export type VowelSymbolIpa = (typeof VowelIpaRegistry)[VowelSymbolId];
@@ -166,8 +148,8 @@ export function getPhonemeType(phonemeId: PhonemeSymbolId) {
  * @param phonemeId - The phoneme symbol ID.
  * @returns The IPA symbol.
  * @example
- * getIpaForPhonemeId("voiceless-bilabial-plosive") // "p"
- * getIpaForPhonemeId("close-front-unrounded") // "i"
+ * getIpaForPhonemeId("P") // "p"
+ * getIpaForPhonemeId("I") // "i"
  */
 export function getIpaForPhonemeId(phonemeId: PhonemeSymbolId): string {
 	return PhonemeIpaRegistry[phonemeId];

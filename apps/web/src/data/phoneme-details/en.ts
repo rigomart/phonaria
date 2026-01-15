@@ -1,124 +1,124 @@
 import type { PhonemeDetailsCopy } from "./types";
 
 const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
-	"voiceless-bilabial-plosive": {
+	P: {
 		label: "Voiceless bilabial plosive",
 	},
-	"voiced-bilabial-plosive": {
+	B: {
 		label: "Voiced bilabial plosive",
 	},
-	"voiceless-alveolar-plosive": {
+	T: {
 		label: "Voiceless alveolar plosive",
 	},
-	"voiced-alveolar-plosive": {
+	D: {
 		label: "Voiced alveolar plosive",
 	},
-	"voiced-velar-plosive": {
+	G: {
 		label: "Voiced velar plosive",
 	},
-	"voiceless-velar-plosive": {
+	K: {
 		label: "Voiceless velar plosive",
 	},
-	"voiced-dental-fricative": {
+	DH: {
 		label: "Voiced dental fricative",
 	},
-	"voiceless-dental-fricative": {
+	TH: {
 		label: "Voiceless dental fricative",
 	},
-	"voiceless-labiodental-fricative": {
+	F: {
 		label: "Voiceless labiodental fricative",
 	},
-	"voiced-labiodental-fricative": {
+	V: {
 		label: "Voiced labiodental fricative",
 	},
-	"voiceless-glottal-fricative": {
+	H: {
 		label: "Voiceless glottal fricative",
 	},
-	"voiceless-alveolar-fricative": {
+	S: {
 		label: "Voiceless alveolar fricative",
 	},
-	"voiceless-postalveolar-fricative": {
+	SH: {
 		label: "Voiceless postalveolar fricative",
 	},
-	"voiced-alveolar-fricative": {
+	Z: {
 		label: "Voiced alveolar fricative",
 	},
-	"voiced-postalveolar-fricative": {
+	ZH: {
 		label: "Voiced postalveolar fricative",
 	},
-	"voiced-postalveolar-affricate": {
+	J: {
 		label: "Voiced postalveolar affricate",
 	},
-	"voiceless-postalveolar-affricate": {
+	CH: {
 		label: "Voiceless postalveolar affricate",
 	},
-	"voiced-bilabial-nasal": {
+	M: {
 		label: "Voiced bilabial nasal",
 	},
-	"voiced-alveolar-nasal": {
+	N: {
 		label: "Voiced alveolar nasal",
 	},
-	"voiced-velar-nasal": {
+	NG: {
 		label: "Voiced velar nasal",
 	},
-	"voiced-alveolar-lateral-approximant": {
+	L: {
 		label: "Voiced alveolar lateral approximant",
 	},
-	"voiced-postalveolar-approximant": {
+	R: {
 		label: "Voiced postalveolar approximant",
 	},
-	"voiced-palatal-approximant": {
+	Y: {
 		label: "Voiced palatal approximant",
 	},
-	"voiced-labial-velar-approximant": {
+	W: {
 		label: "Voiced labial-velar approximant",
 	},
-	"close-front-unrounded": {
+	I: {
 		label: "Close front unrounded vowel",
 	},
-	"close-back-rounded": {
+	U: {
 		label: "Close back rounded vowel",
 	},
-	"near-close-near-front-unrounded": {
+	IX: {
 		label: "Near-close near-front unrounded vowel",
 	},
-	"near-close-near-back-rounded": {
+	UX: {
 		label: "Near-close near-back rounded vowel",
 	},
-	"mid-central-unrounded": {
+	AX: {
 		label: "Mid central unrounded vowel",
 	},
-	"open-mid-front-unrounded": {
+	E: {
 		label: "Open-mid front unrounded vowel",
 	},
-	"open-mid-back-unrounded": {
+	AH: {
 		label: "Open-mid back unrounded vowel",
 	},
-	"open-mid-back-rounded": {
+	O: {
 		label: "Open-mid back rounded vowel",
 	},
-	"near-open-front-unrounded": {
+	AE: {
 		label: "Near-open front unrounded vowel",
 	},
-	"open-back-unrounded": {
+	A: {
 		label: "Open back unrounded vowel",
 	},
-	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
+	EI: {
 		label: "Close-mid front unrounded to near-close near-front unrounded diphthong",
 	},
-	"close-mid-back-rounded-to-near-close-near-back-rounded": {
+	OU: {
 		label: "Close-mid back rounded to near-close near-back rounded diphthong",
 	},
-	"open-front-unrounded-to-near-close-near-front-unrounded": {
+	AI: {
 		label: "Open front unrounded to near-close near-front unrounded diphthong",
 	},
-	"open-front-unrounded-to-near-close-near-back-rounded": {
+	AU: {
 		label: "Open front unrounded to near-close near-back rounded diphthong",
 	},
-	"open-mid-back-rounded-to-near-close-near-front-unrounded": {
+	OI: {
 		label: "Open-mid back rounded to near-close near-front unrounded diphthong",
 	},
-	"r-colored-open-mid-central": {
+	ER: {
 		label: "Open-mid central r-colored vowel",
 	},
 };

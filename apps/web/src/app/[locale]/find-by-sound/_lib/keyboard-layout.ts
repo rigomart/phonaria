@@ -22,62 +22,56 @@ export type KeyboardPhoneme = {
 
 const CONSONANT_ORDER: ConsonantSymbolId[] = [
 	// Plosives (6)
-	"voiceless-bilabial-plosive",
-	"voiced-bilabial-plosive",
-	"voiceless-alveolar-plosive",
-	"voiced-alveolar-plosive",
-	"voiceless-velar-plosive",
-	"voiced-velar-plosive",
+	"P",
+	"B",
+	"T",
+	"D",
+	"K",
+	"G",
 	// Fricatives (9)
-	"voiceless-labiodental-fricative",
-	"voiced-labiodental-fricative",
-	"voiceless-dental-fricative",
-	"voiced-dental-fricative",
-	"voiceless-alveolar-fricative",
-	"voiced-alveolar-fricative",
-	"voiceless-postalveolar-fricative",
-	"voiced-postalveolar-fricative",
-	"voiceless-glottal-fricative",
+	"F",
+	"V",
+	"TH",
+	"DH",
+	"S",
+	"Z",
+	"SH",
+	"ZH",
+	"H",
 	// Affricates (2)
-	"voiceless-postalveolar-affricate",
-	"voiced-postalveolar-affricate",
+	"CH",
+	"J",
 	// Nasals (3)
-	"voiced-bilabial-nasal",
-	"voiced-alveolar-nasal",
-	"voiced-velar-nasal",
+	"M",
+	"N",
+	"NG",
 	// Approximants (4)
-	"voiced-alveolar-lateral-approximant",
-	"voiced-postalveolar-approximant",
-	"voiced-palatal-approximant",
-	"voiced-labial-velar-approximant",
+	"L",
+	"R",
+	"Y",
+	"W",
 ];
 
 // Monophthongs organized by height for compact display
 const MONOPHTHONG_ORDER: MonophthongSymbolId[] = [
 	// High (4)
-	"close-front-unrounded",
-	"near-close-near-front-unrounded",
-	"near-close-near-back-rounded",
-	"close-back-rounded",
+	"I",
+	"IX",
+	"UX",
+	"U",
 	// Mid (4)
-	"open-mid-front-unrounded",
-	"mid-central-unrounded",
-	"open-mid-back-unrounded",
-	"open-mid-back-rounded",
+	"E",
+	"AX",
+	"AH",
+	"O",
 	// Low (3)
-	"near-open-front-unrounded",
-	"open-back-unrounded",
-	"r-colored-open-mid-central",
+	"AE",
+	"A",
+	"ER",
 ];
 
 // Diphthongs in a single row
-const DIPHTHONG_ORDER: DiphthongSymbolId[] = [
-	"close-mid-front-unrounded-to-near-close-near-front-unrounded",
-	"close-mid-back-rounded-to-near-close-near-back-rounded",
-	"open-front-unrounded-to-near-close-near-front-unrounded",
-	"open-front-unrounded-to-near-close-near-back-rounded",
-	"open-mid-back-rounded-to-near-close-near-front-unrounded",
-];
+const DIPHTHONG_ORDER: DiphthongSymbolId[] = ["EI", "OU", "AI", "AU", "OI"];
 
 function mapToKeyboardPhoneme<T extends PhonemeSymbolId>(
 	id: T,

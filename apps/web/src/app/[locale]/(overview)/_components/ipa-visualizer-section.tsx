@@ -23,15 +23,15 @@ const PLACE_GROUPS: {
 }[] = [
 	{
 		place: "lips",
-		pairs: [{ voiceless: "voiceless-bilabial-plosive", voiced: "voiced-bilabial-plosive" }],
+		pairs: [{ voiceless: "P", voiced: "B" }],
 	},
 	{
 		place: "tongue",
-		pairs: [{ voiceless: "voiceless-alveolar-plosive", voiced: "voiced-alveolar-plosive" }],
+		pairs: [{ voiceless: "T", voiced: "D" }],
 	},
 	{
 		place: "back",
-		pairs: [{ voiceless: "voiceless-velar-plosive", voiced: "voiced-velar-plosive" }],
+		pairs: [{ voiceless: "K", voiced: "G" }],
 	},
 ];
 
