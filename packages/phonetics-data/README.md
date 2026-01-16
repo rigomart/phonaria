@@ -260,8 +260,8 @@ Each file contains metadata and a simple word → phoneme ID mapping (with stres
     }
   },
   "words": {
-    "hello": "H AX0 L OU1",
-    "world": "W ER1 L D"
+    "hello": ["H AX0 L OU1"],
+    "world": ["W ER1 L D"]
   }
 }
 ```

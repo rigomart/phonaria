@@ -5,8 +5,9 @@ import { loadEnvConfig } from "@next/env";
 import {
 	type CmudictPayload,
 	type CmudictStatsPayload,
+	extractBasePhonemeId,
 	getArpabetForPhonemeId,
-	PhonemeIpaRegistry,
+	isValidPhonemeToken,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
 import { and, eq } from "drizzle-orm";
@@ -15,22 +16,6 @@ function normalizeCmuWord(input: string): string {
 	const trimmed = input.trim();
 	const withoutVariant = trimmed.replace(/\(\d+\)$/, "");
 	return withoutVariant.toUpperCase();
-}
-
-/**
- * Extracts the base phoneme ID from a token with optional stress suffix.
- * cmudict.json now stores phoneme IDs with stress (e.g., "AX0", "OU1").
- */
-function extractBasePhonemeId(token: string): PhonemeSymbolId {
-	return token.replace(/[012]$/, "") as PhonemeSymbolId;
-}
-
-/**
- * Checks if a token (with stress removed) is a valid phoneme ID.
- */
-function isValidPhonemeToken(token: string): boolean {
-	const baseId = extractBasePhonemeId(token);
-	return baseId in PhonemeIpaRegistry;
 }
 
 /** Proxying vowels with stress markers to syllables. */

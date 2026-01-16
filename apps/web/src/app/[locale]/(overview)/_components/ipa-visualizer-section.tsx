@@ -93,7 +93,7 @@ export function IpaVisualizerSection() {
 										<button
 											type="button"
 											onClick={() => setSelectedPhoneme(pair.voiced)}
-											className="flex items-center justify-center size-9 rounded-md font-serif text-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+											className="flex items-center justify-center size-9 rounded-md font-serif text-lg bg-muted text-primary hover:bg-accent transition-colors"
 											title={t("voicing.voiced")}
 										>
 											{getSymbol(pair.voiced)}

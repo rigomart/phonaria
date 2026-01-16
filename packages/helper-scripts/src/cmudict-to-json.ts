@@ -1,5 +1,5 @@
 import * as path from "node:path";
-import { CmuArpaRegistry, type CmuArpaToken, isCmuArpaToken } from "@phonaria/phonetics-data";
+import { CmuArpaRegistry, isCmuArpaToken } from "@phonaria/phonetics-data";
 import { config } from "dotenv";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
@@ -16,15 +16,15 @@ function normalizeCmuWord(input: string): string {
  * @example
  * convertArpaToken("P") // "P"
  * convertArpaToken("AW1") // "AU1"
- * convertArpaToken("AH0") // "AX"  (unstressed schwa)
+ * convertArpaToken("AH0") // "AX0"  (unstressed schwa)
  * convertArpaToken("AH1") // "AH1" (stressed strut)
  */
 function convertArpaToken(token: string): string | null {
-	if (!isCmuArpaToken(token as CmuArpaToken)) {
+	if (!isCmuArpaToken(token)) {
 		return null;
 	}
 
-	const phonemeId = CmuArpaRegistry[token as CmuArpaToken];
+	const phonemeId = CmuArpaRegistry[token];
 
 	// Check if token ends with stress marker (0, 1, 2)
 	const stressMatch = token.match(/([012])$/);
@@ -222,7 +222,7 @@ async function fetchCmudict(): Promise<string> {
 
 function saveToJson(payload: CmudictPayload): void {
 	const wordCount = payload.meta.wordCount;
-	console.log(`Saving ${wordCount} words to ${payload.meta.sourceUrl}`);
+	console.log(`Saving ${wordCount} words to ${outputPath}`);
 
 	const bytesWritten = writeJsonFile(outputPath, payload);
 	console.log(`Saved ${bytesWritten} bytes to ${outputPath}`);
