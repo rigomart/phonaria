@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/rigomart/phonaria/compare/phonaria-v1.1.0...phonaria-v1.2.0) (2026-01-16)
+
+
+### Features
+
+* **ipa-chart:** add educational intro section for SEO ([#94](https://github.com/rigomart/phonaria/issues/94)) ([0480a4e](https://github.com/rigomart/phonaria/commit/0480a4ee4f4b4f141d37edb2713fab88e12053b6))
+* migrate phoneme IDs from verbose to short alphanumeric format ([#95](https://github.com/rigomart/phonaria/issues/95)) ([fac401a](https://github.com/rigomart/phonaria/commit/fac401a177befbb9233a9e355cb2557bb7621c8d))
+
+
+### Bug Fixes
+
+* **seo:** add noindex to credits page ([#91](https://github.com/rigomart/phonaria/issues/91)) ([9f63c43](https://github.com/rigomart/phonaria/commit/9f63c43e9d96efc6139c583d5c0322d969194973)), closes [#88](https://github.com/rigomart/phonaria/issues/88)
+
 ## [1.1.0](https://github.com/rigomart/phonaria/compare/phonaria-v1.0.0...phonaria-v1.1.0) (2026-01-13)
 
 
