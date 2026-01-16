@@ -1,10 +1,10 @@
-import type { CmuArpaToken } from "@phonaria/phonetics-data";
+import type { ConsonantSymbolId } from "@phonaria/phonetics-data";
 
 /**
  * Valid English onsets for syllabification using Maximum Onset Principle.
- * These are defined using CMU ARPA tokens.
+ * These use phoneme IDs (H, J) not ARPABET tokens (HH, JH).
  */
-const ONSETS: CmuArpaToken[][] = [
+const ONSETS: ConsonantSymbolId[][] = [
 	// Single Consonants (all except NG)
 	["P"],
 	["B"],
@@ -20,7 +20,7 @@ const ONSETS: CmuArpaToken[][] = [
 	["Z"],
 	["SH"],
 	["ZH"],
-	["HH"],
+	["H"],
 	["M"],
 	["N"],
 	["L"],
@@ -28,7 +28,7 @@ const ONSETS: CmuArpaToken[][] = [
 	["W"],
 	["Y"],
 	["CH"],
-	["JH"],
+	["J"],
 
 	// Two-Consonant Clusters
 	// Stop + Liquid
@@ -58,7 +58,7 @@ const ONSETS: CmuArpaToken[][] = [
 	["S", "L"],
 	["S", "W"],
 	// Other
-	["HH", "Y"], // hue
+	["H", "Y"], // hue
 	["K", "W"], // quick
 	["G", "W"], // guava (rare but possible)
 
@@ -76,7 +76,7 @@ const ONSETS: CmuArpaToken[][] = [
 export const VALID_ONSETS = new Set(ONSETS.map((tokens) => tokens.join(" ")));
 
 /**
- * Checks if a sequence of CMU tokens forms a valid onset.
+ * Checks if a sequence of phoneme ID tokens forms a valid onset.
  */
 export function isValidOnset(tokens: string[]): boolean {
 	if (tokens.length === 0) return false;
