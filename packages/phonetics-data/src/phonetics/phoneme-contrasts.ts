@@ -13,7 +13,7 @@ export type PhonemeContrastPair = {
 type PhonemeContrastType = keyof ConsonantArticulatoryFeatures | keyof VowelArticulatoryFeatures;
 
 export type PhonemeContrast = {
-	phonemeIds: [PhonemeSymbolId, PhonemeSymbolId]; // The pair. e.g. ["voiced-bilabial-plosive", "voiced-labiodental-fricative"]
+	phonemeIds: [PhonemeSymbolId, PhonemeSymbolId]; // The pair. e.g. ["B", "V"]
 	contrastType: PhonemeArticulatoryFeatureKey[]; // Usually one, but can be multiple. e.g. ["manner", "place"]
 	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
 };
@@ -22,7 +22,7 @@ export type PhonemeContrast = {
 export const PhonemeContrastCatalog: PhonemeContrast[] = [
 	// Consonants: Voicing
 	{
-		phonemeIds: ["voiceless-bilabial-plosive", "voiced-bilabial-plosive"],
+		phonemeIds: ["P", "B"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
@@ -32,7 +32,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-alveolar-plosive", "voiced-alveolar-plosive"],
+		phonemeIds: ["T", "D"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
@@ -42,7 +42,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-velar-plosive", "voiced-velar-plosive"],
+		phonemeIds: ["K", "G"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
@@ -52,7 +52,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-labiodental-fricative", "voiced-labiodental-fricative"],
+		phonemeIds: ["F", "V"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
@@ -62,7 +62,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-alveolar-fricative", "voiced-alveolar-fricative"],
+		phonemeIds: ["S", "Z"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
@@ -74,7 +74,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 
 	// Consonants: Place/Manner
 	{
-		phonemeIds: ["voiceless-alveolar-fricative", "voiceless-postalveolar-fricative"],
+		phonemeIds: ["S", "SH"],
 		contrastType: ["place"],
 		minimalPairs: [
 			[
@@ -84,7 +84,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-postalveolar-affricate", "voiceless-postalveolar-fricative"],
+		phonemeIds: ["CH", "SH"],
 		contrastType: ["manner"],
 		minimalPairs: [
 			[
@@ -94,7 +94,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-postalveolar-affricate", "voiced-postalveolar-affricate"],
+		phonemeIds: ["CH", "J"],
 		contrastType: ["voicing"],
 		minimalPairs: [
 			[
@@ -104,7 +104,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-dental-fricative", "voiceless-alveolar-plosive"],
+		phonemeIds: ["TH", "T"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
@@ -114,7 +114,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiceless-dental-fricative", "voiceless-alveolar-fricative"],
+		phonemeIds: ["TH", "S"],
 		contrastType: ["place"],
 		minimalPairs: [
 			[
@@ -124,7 +124,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-dental-fricative", "voiced-alveolar-plosive"],
+		phonemeIds: ["DH", "D"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
@@ -134,7 +134,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-dental-fricative", "voiced-alveolar-fricative"],
+		phonemeIds: ["DH", "Z"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
@@ -144,7 +144,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-alveolar-nasal", "voiced-velar-nasal"],
+		phonemeIds: ["N", "NG"],
 		contrastType: ["place"],
 		minimalPairs: [
 			[
@@ -154,7 +154,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-bilabial-nasal", "voiced-alveolar-nasal"],
+		phonemeIds: ["M", "N"],
 		contrastType: ["place"],
 		minimalPairs: [
 			[
@@ -164,7 +164,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-labial-velar-approximant", "voiced-labiodental-fricative"],
+		phonemeIds: ["W", "V"],
 		contrastType: ["manner", "place"],
 		minimalPairs: [
 			[
@@ -174,7 +174,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-alveolar-lateral-approximant", "voiced-postalveolar-approximant"],
+		phonemeIds: ["L", "R"],
 		contrastType: ["place", "manner"],
 		minimalPairs: [
 			[
@@ -184,7 +184,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-palatal-approximant", "voiced-postalveolar-affricate"],
+		phonemeIds: ["Y", "J"],
 		contrastType: ["manner", "place"],
 		minimalPairs: [
 			[
@@ -194,7 +194,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["voiced-bilabial-plosive", "voiced-labiodental-fricative"],
+		phonemeIds: ["B", "V"],
 		contrastType: ["manner", "place"],
 		minimalPairs: [
 			[
@@ -206,7 +206,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 
 	// Vowels: Height/Backness/Roundness/Tenseness ---
 	{
-		phonemeIds: ["close-front-unrounded", "near-close-near-front-unrounded"], // /i/ vs /ɪ/
+		phonemeIds: ["I", "IX"], // /i/ vs /ɪ/
 		contrastType: ["tenseness", "height"],
 		minimalPairs: [
 			[
@@ -216,7 +216,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["close-back-rounded", "near-close-near-back-rounded"], // /u/ vs /ʊ/
+		phonemeIds: ["U", "UX"], // /u/ vs /ʊ/
 		contrastType: ["tenseness", "height"],
 		minimalPairs: [
 			[
@@ -226,7 +226,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["open-mid-front-unrounded", "near-open-front-unrounded"], // /ɛ/ vs /æ/
+		phonemeIds: ["E", "AE"], // /ɛ/ vs /æ/
 		contrastType: ["height"],
 		minimalPairs: [
 			[
@@ -236,7 +236,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["near-close-near-back-rounded", "open-mid-back-unrounded"], // /ʊ/ vs /ʌ/
+		phonemeIds: ["UX", "AH"], // /ʊ/ vs /ʌ/
 		contrastType: ["height", "roundness"],
 		minimalPairs: [
 			[
@@ -246,7 +246,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: ["open-mid-back-unrounded", "open-back-unrounded"], // /ʌ/ vs /ɑ/
+		phonemeIds: ["AH", "A"], // /ʌ/ vs /ɑ/
 		contrastType: ["height", "backness"],
 		minimalPairs: [
 			[
@@ -258,10 +258,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 
 	// Diphthong vs Diphthong: Height cues
 	{
-		phonemeIds: [
-			"open-front-unrounded-to-near-close-near-front-unrounded",
-			"close-mid-front-unrounded-to-near-close-near-front-unrounded",
-		], // /aɪ/ vs /eɪ/
+		phonemeIds: ["AI", "EI"], // /aɪ/ vs /eɪ/
 		contrastType: ["height"],
 		minimalPairs: [
 			[
@@ -271,10 +268,7 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 		],
 	},
 	{
-		phonemeIds: [
-			"close-mid-back-rounded-to-near-close-near-back-rounded",
-			"open-front-unrounded-to-near-close-near-back-rounded",
-		], // /oʊ/ vs /aʊ/
+		phonemeIds: ["OU", "AU"], // /oʊ/ vs /aʊ/
 		contrastType: ["height"],
 		minimalPairs: [
 			[

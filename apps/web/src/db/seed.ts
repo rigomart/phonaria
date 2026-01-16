@@ -3,12 +3,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnvConfig } from "@next/env";
 import {
-	CmuArpaRegistry,
-	type CmuArpaToken,
 	type CmudictPayload,
 	type CmudictStatsPayload,
+	extractBasePhonemeId,
 	getArpabetForPhonemeId,
-	getPhonemeIdForCmuArpa,
+	isValidPhonemeToken,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
 import { and, eq } from "drizzle-orm";
@@ -17,10 +16,6 @@ function normalizeCmuWord(input: string): string {
 	const trimmed = input.trim();
 	const withoutVariant = trimmed.replace(/\(\d+\)$/, "");
 	return withoutVariant.toUpperCase();
-}
-
-function isCmuArpaToken(token: string): token is CmuArpaToken {
-	return Object.hasOwn(CmuArpaRegistry, token);
 }
 
 /** Proxying vowels with stress markers to syllables. */
@@ -51,8 +46,8 @@ function buildPhonemeKey(variant: string): string {
 	const tokens = variant.split(/\s+/).filter(Boolean);
 	const labels: string[] = [];
 	for (const token of tokens) {
-		if (!isCmuArpaToken(token)) continue;
-		const phonemeId = getPhonemeIdForCmuArpa(token);
+		if (!isValidPhonemeToken(token)) continue;
+		const phonemeId = extractBasePhonemeId(token);
 		labels.push(getArpabetForPhonemeId(phonemeId));
 	}
 	return labels.join("-");
@@ -92,8 +87,8 @@ function aggregateCounts(data: CmudictPayload["data"]): AggregatedCounts {
 
 		for (const tokens of tokensPerVariant) {
 			for (const token of tokens) {
-				if (!isCmuArpaToken(token)) continue;
-				const phonemeId = getPhonemeIdForCmuArpa(token);
+				if (!isValidPhonemeToken(token)) continue;
+				const phonemeId = extractBasePhonemeId(token);
 				increment(phonemeTokenCounts, phonemeId);
 				uniquePhonemesInWord.add(phonemeId);
 			}

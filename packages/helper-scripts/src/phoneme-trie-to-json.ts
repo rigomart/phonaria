@@ -1,11 +1,8 @@
 import * as path from "node:path";
 import cmudictJson from "../../phonetics-data/data/dict/cmudict.json";
 import type { CmudictPayload } from "../../phonetics-data/src/dict/types";
-import type { CmuArpaToken } from "../../phonetics-data/src/phonetics/cmu-arpa-registry";
-import {
-	getArpabetForPhonemeId,
-	getPhonemeIdForCmuArpa,
-} from "../../phonetics-data/src/phonetics/cmu-arpa-registry";
+import { getArpabetForPhonemeId } from "../../phonetics-data/src/phonetics/cmu-arpa-registry";
+import type { PhonemeSymbolId } from "../../phonetics-data/src/phonetics/ipa-registry";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 type PhonemeTrieNode = {
@@ -59,6 +56,19 @@ function normalizeCmuWord(input: string): string {
 	return base.toUpperCase();
 }
 
+/**
+ * Extracts the base phoneme ID from a stressed phoneme token.
+ * Our cmudict.json format uses phoneme IDs with optional stress suffix (0, 1, 2).
+ * @example
+ * extractBasePhonemeId("AU1") // "AU"
+ * extractBasePhonemeId("P") // "P"
+ * extractBasePhonemeId("AX") // "AX"
+ */
+function extractBasePhonemeId(token: string): PhonemeSymbolId {
+	// Remove trailing stress marker (0, 1, 2) if present
+	return token.replace(/[012]$/, "") as PhonemeSymbolId;
+}
+
 function buildTrieFromCmudict(cmudict: CmudictPayload): {
 	trie: PhonemeTrieNode;
 	phonemePathCount: number;
@@ -79,7 +89,9 @@ function buildTrieFromCmudict(cmudict: CmudictPayload): {
 
 			for (const token of tokens) {
 				try {
-					const phonemeId = getPhonemeIdForCmuArpa(token as CmuArpaToken);
+					// Extract base phoneme ID (remove stress suffix)
+					const phonemeId = extractBasePhonemeId(token);
+					// Get standard ARPABET label for trie key
 					const standardArpabet = getArpabetForPhonemeId(phonemeId);
 					standardArpabetPhonemes.push(standardArpabet);
 				} catch {
@@ -126,7 +138,7 @@ async function main(): Promise<void> {
 
 		const payload: PhonemeTriePayload = {
 			meta: {
-				formatVersion: 1,
+				formatVersion: 2, // Bump version for new format
 				source: "cmudict",
 				generatedAt: new Date().toISOString(),
 				wordCount: (cmudictJson as unknown as CmudictPayload).meta.wordCount,

@@ -31,99 +31,99 @@ type PhonemeArticulationBase<
 type ConsonantArticulation = PhonemeArticulationBase<"consonant", ConsonantArticulatoryFeatures>;
 
 export const ConsonantArticulationRegistry: Record<ConsonantSymbolId, ConsonantArticulation> = {
-	"voiceless-bilabial-plosive": {
+	P: {
 		category: "consonant",
 		features: { manner: "plosive", place: "bilabial", voicing: "voiceless" },
 	},
-	"voiced-bilabial-plosive": {
+	B: {
 		category: "consonant",
 		features: { manner: "plosive", place: "bilabial", voicing: "voiced" },
 	},
-	"voiceless-alveolar-plosive": {
+	T: {
 		category: "consonant",
 		features: { manner: "plosive", place: "alveolar", voicing: "voiceless" },
 	},
-	"voiced-alveolar-plosive": {
+	D: {
 		category: "consonant",
 		features: { manner: "plosive", place: "alveolar", voicing: "voiced" },
 	},
-	"voiced-velar-plosive": {
+	G: {
 		category: "consonant",
 		features: { manner: "plosive", place: "velar", voicing: "voiced" },
 	},
-	"voiceless-velar-plosive": {
+	K: {
 		category: "consonant",
 		features: { manner: "plosive", place: "velar", voicing: "voiceless" },
 	},
-	"voiced-dental-fricative": {
+	DH: {
 		category: "consonant",
 		features: { manner: "fricative", place: "dental", voicing: "voiced" },
 	},
-	"voiceless-dental-fricative": {
+	TH: {
 		category: "consonant",
 		features: { manner: "fricative", place: "dental", voicing: "voiceless" },
 	},
-	"voiceless-labiodental-fricative": {
+	F: {
 		category: "consonant",
 		features: { manner: "fricative", place: "labiodental", voicing: "voiceless" },
 	},
-	"voiced-labiodental-fricative": {
+	V: {
 		category: "consonant",
 		features: { manner: "fricative", place: "labiodental", voicing: "voiced" },
 	},
-	"voiceless-glottal-fricative": {
+	H: {
 		category: "consonant",
 		features: { manner: "fricative", place: "glottal", voicing: "voiceless" },
 	},
-	"voiceless-alveolar-fricative": {
+	S: {
 		category: "consonant",
 		features: { manner: "fricative", place: "alveolar", voicing: "voiceless" },
 	},
-	"voiceless-postalveolar-fricative": {
+	SH: {
 		category: "consonant",
 		features: { manner: "fricative", place: "postalveolar", voicing: "voiceless" },
 	},
-	"voiced-alveolar-fricative": {
+	Z: {
 		category: "consonant",
 		features: { manner: "fricative", place: "alveolar", voicing: "voiced" },
 	},
-	"voiced-postalveolar-fricative": {
+	ZH: {
 		category: "consonant",
 		features: { manner: "fricative", place: "postalveolar", voicing: "voiced" },
 	},
-	"voiced-postalveolar-affricate": {
+	J: {
 		category: "consonant",
 		features: { manner: "affricate", place: "postalveolar", voicing: "voiced" },
 	},
-	"voiceless-postalveolar-affricate": {
+	CH: {
 		category: "consonant",
 		features: { manner: "affricate", place: "postalveolar", voicing: "voiceless" },
 	},
-	"voiced-bilabial-nasal": {
+	M: {
 		category: "consonant",
 		features: { manner: "nasal", place: "bilabial", voicing: "voiced" },
 	},
-	"voiced-alveolar-nasal": {
+	N: {
 		category: "consonant",
 		features: { manner: "nasal", place: "alveolar", voicing: "voiced" },
 	},
-	"voiced-velar-nasal": {
+	NG: {
 		category: "consonant",
 		features: { manner: "nasal", place: "velar", voicing: "voiced" },
 	},
-	"voiced-alveolar-lateral-approximant": {
+	L: {
 		category: "consonant",
 		features: { manner: "lateral-approximant", place: "alveolar", voicing: "voiced" },
 	},
-	"voiced-postalveolar-approximant": {
+	R: {
 		category: "consonant",
 		features: { manner: "approximant", place: "postalveolar", voicing: "voiced" },
 	},
-	"voiced-palatal-approximant": {
+	Y: {
 		category: "consonant",
 		features: { manner: "approximant", place: "palatal", voicing: "voiced" },
 	},
-	"voiced-labial-velar-approximant": {
+	W: {
 		category: "consonant",
 		features: { manner: "approximant", place: "labial-velar", voicing: "voiced" },
 	},
@@ -141,7 +141,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 	MonophthongSymbolId,
 	MonophthongVowelArticulation
 > = {
-	"close-front-unrounded": {
+	I: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -151,7 +151,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "tense",
 		},
 	},
-	"close-back-rounded": {
+	U: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -161,7 +161,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "tense",
 		},
 	},
-	"near-close-near-front-unrounded": {
+	IX: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -171,7 +171,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "lax",
 		},
 	},
-	"near-close-near-back-rounded": {
+	UX: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -181,7 +181,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "lax",
 		},
 	},
-	"mid-central-unrounded": {
+	AX: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -191,7 +191,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "lax",
 		},
 	},
-	"open-mid-front-unrounded": {
+	E: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -201,7 +201,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "lax",
 		},
 	},
-	"open-mid-back-unrounded": {
+	AH: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -211,7 +211,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "lax",
 		},
 	},
-	"open-mid-back-rounded": {
+	O: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -221,7 +221,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "tense",
 		},
 	},
-	"near-open-front-unrounded": {
+	AE: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -231,7 +231,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "lax",
 		},
 	},
-	"open-back-unrounded": {
+	A: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -241,7 +241,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 			tenseness: "lax",
 		},
 	},
-	"r-colored-open-mid-central": {
+	ER: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -273,7 +273,7 @@ export const DiphthongVowelArticulationRegistry: Record<
 	DiphthongSymbolId,
 	DiphthongVowelArticulation
 > = {
-	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
+	EI: {
 		category: "vowel",
 		vowelType: "diphthong",
 		features: {
@@ -285,7 +285,7 @@ export const DiphthongVowelArticulationRegistry: Record<
 			targetRoundness: "unrounded",
 		},
 	},
-	"close-mid-back-rounded-to-near-close-near-back-rounded": {
+	OU: {
 		category: "vowel",
 		vowelType: "diphthong",
 		features: {
@@ -297,7 +297,7 @@ export const DiphthongVowelArticulationRegistry: Record<
 			targetRoundness: "rounded",
 		},
 	},
-	"open-front-unrounded-to-near-close-near-front-unrounded": {
+	AI: {
 		category: "vowel",
 		vowelType: "diphthong",
 		features: {
@@ -309,7 +309,7 @@ export const DiphthongVowelArticulationRegistry: Record<
 			targetRoundness: "unrounded",
 		},
 	},
-	"open-front-unrounded-to-near-close-near-back-rounded": {
+	AU: {
 		category: "vowel",
 		vowelType: "diphthong",
 		features: {
@@ -321,7 +321,7 @@ export const DiphthongVowelArticulationRegistry: Record<
 			targetRoundness: "rounded",
 		},
 	},
-	"open-mid-back-rounded-to-near-close-near-front-unrounded": {
+	OI: {
 		category: "vowel",
 		vowelType: "diphthong",
 		features: {

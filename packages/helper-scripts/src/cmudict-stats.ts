@@ -5,7 +5,7 @@ import type {
 	CmudictStatsPayload,
 	PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
-import { CmuArpaRegistry, getPhonemeIdForCmuArpa } from "@phonaria/phonetics-data";
+import { PhonemeIpaRegistry } from "@phonaria/phonetics-data";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 const cmudictPath =
@@ -15,7 +15,27 @@ const statsOutputPath =
 	process.env.CMUDICT_STATS_JSON_PATH ||
 	path.resolve(__dirname, "../../phonetics-data/data/dict/cmudict-stats.json");
 
-/** Proxying vowels with stress markers to syllables. */
+/**
+ * Extracts the base phoneme ID from a stressed phoneme token.
+ * Our cmudict.json format uses phoneme IDs with optional stress suffix (0, 1, 2).
+ * @example
+ * extractBasePhonemeId("AU1") // "AU"
+ * extractBasePhonemeId("P") // "P"
+ * extractBasePhonemeId("AX") // "AX"
+ */
+function extractBasePhonemeId(token: string): PhonemeSymbolId {
+	return token.replace(/[012]$/, "") as PhonemeSymbolId;
+}
+
+/**
+ * Checks if a token (with stress removed) is a valid phoneme ID.
+ */
+function isValidPhonemeToken(token: string): boolean {
+	const baseId = extractBasePhonemeId(token);
+	return baseId in PhonemeIpaRegistry;
+}
+
+/** Vowels with stress markers count as syllables. */
 function countSyllables(tokens: string[]): number {
 	return tokens.filter((token) => /[012]$/.test(token)).length;
 }
@@ -37,10 +57,6 @@ function countSyllablesForWord(
 	}
 
 	return { syllableCount: representativeSyllableCount, tokensPerVariant };
-}
-
-function isCmuArpaToken(token: string): token is keyof typeof CmuArpaRegistry {
-	return Object.hasOwn(CmuArpaRegistry, token);
 }
 
 type AggregatedCounts = {
@@ -83,8 +99,8 @@ function aggregateCounts(data: CmudictPayload["data"]): AggregatedCounts {
 
 		for (const tokens of tokensPerVariant) {
 			for (const token of tokens) {
-				if (!isCmuArpaToken(token)) continue;
-				const phonemeId = getPhonemeIdForCmuArpa(token);
+				if (!isValidPhonemeToken(token)) continue;
+				const phonemeId = extractBasePhonemeId(token);
 				increment(phonemeTokenCounts, phonemeId);
 				getOrCreateWordSet(phonemeId).add(word);
 			}

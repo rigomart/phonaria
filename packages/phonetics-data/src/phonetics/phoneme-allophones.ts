@@ -13,7 +13,7 @@ type BasePhonemeAllophone<ContextKey extends string = string> = {
 
 const phonemeAllophonesData = {
 	// Voiceless plosives: aspiration vs s-clusters; plus key /t/ variants
-	"voiceless-bilabial-plosive": [
+	P: [
 		{
 			ipaVariant: "pʰ",
 			contextKey: "stressed-onset-aspirated",
@@ -25,7 +25,7 @@ const phonemeAllophonesData = {
 			examples: [{ word: "spin", phonemic: "spɪn" }],
 		},
 	],
-	"voiceless-alveolar-plosive": [
+	T: [
 		{
 			ipaVariant: "tʰ",
 			contextKey: "stressed-onset-aspirated",
@@ -45,7 +45,7 @@ const phonemeAllophonesData = {
 			examples: [{ word: "button", phonemic: "ˈbʌtən" }],
 		},
 	],
-	"voiceless-velar-plosive": [
+	K: [
 		{
 			ipaVariant: "kʰ",
 			contextKey: "stressed-onset-aspirated",
@@ -57,7 +57,7 @@ const phonemeAllophonesData = {
 			examples: [{ word: "skate", phonemic: "skeɪt" }],
 		},
 	],
-	"voiced-alveolar-plosive": [
+	D: [
 		{
 			ipaVariant: "ɾ",
 			contextKey: "vowel-to-vowel-flap",
@@ -66,7 +66,7 @@ const phonemeAllophonesData = {
 	],
 
 	// Common assimilations & syllabic consonants
-	"voiced-alveolar-lateral-approximant": [
+	L: [
 		{
 			ipaVariant: "ɫ",
 			contextKey: "coda-dark-l",
@@ -75,7 +75,7 @@ const phonemeAllophonesData = {
 	],
 
 	// Vowel length cue before voiced vs voiceless codas
-	"close-front-unrounded": [
+	I: [
 		{
 			ipaVariant: "iː",
 			contextKey: "pre-voiced-coda-lengthened",
@@ -87,7 +87,7 @@ const phonemeAllophonesData = {
 			examples: [{ word: "seat", phonemic: "sit" }],
 		},
 	],
-	"near-open-front-unrounded": [
+	AE: [
 		{
 			ipaVariant: "æː",
 			contextKey: "pre-voiced-coda-lengthened",
@@ -101,7 +101,7 @@ const phonemeAllophonesData = {
 	],
 
 	// R-colored vowel stress variants
-	"r-colored-open-mid-central": [
+	ER: [
 		{
 			ipaVariant: "ɝ",
 			contextKey: "stressed-r-colored",

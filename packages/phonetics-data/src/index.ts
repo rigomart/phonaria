@@ -42,10 +42,12 @@ export {
 	type CmuArpaToken,
 	type CmuStressLevel,
 	cmuVariantToIpa,
+	extractBasePhonemeId,
 	getArpabetForPhonemeId,
 	getCmuArpaForPhonemeId,
 	getPhonemeIdForCmuArpa,
 	isCmuArpaToken,
+	isValidPhonemeToken,
 	PhonemeArpabetLabel,
 } from "./phonetics/cmu-arpa-registry";
 export type {

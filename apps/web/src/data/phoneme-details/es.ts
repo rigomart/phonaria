@@ -1,127 +1,127 @@
 import type { PhonemeDetailsCopy } from "./types";
 
 const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
-	"voiceless-bilabial-plosive": {
+	P: {
 		label: "Oclusiva bilabial sorda",
 	},
-	"voiced-bilabial-plosive": {
+	B: {
 		label: "Oclusiva bilabial sonora",
 	},
-	"voiceless-alveolar-plosive": {
+	T: {
 		label: "Oclusiva alveolar sorda",
 	},
-	"voiced-alveolar-plosive": {
+	D: {
 		label: "Oclusiva alveolar sonora",
 	},
-	"voiced-velar-plosive": {
+	G: {
 		label: "Oclusiva velar sonora",
 	},
-	"voiceless-velar-plosive": {
+	K: {
 		label: "Oclusiva velar sorda",
 	},
-	"voiced-dental-fricative": {
+	DH: {
 		label: "Fricativa dental sonora",
 	},
-	"voiceless-dental-fricative": {
+	TH: {
 		label: "Fricativa dental sorda",
 	},
-	"voiceless-labiodental-fricative": {
+	F: {
 		label: "Fricativa labiodental sorda",
 	},
-	"voiced-labiodental-fricative": {
+	V: {
 		label: "Fricativa labiodental sonora",
 	},
-	"voiceless-glottal-fricative": {
+	H: {
 		label: "Fricativa glotal sorda",
 	},
-	"voiceless-alveolar-fricative": {
+	S: {
 		label: "Fricativa alveolar sorda",
 	},
-	"voiceless-postalveolar-fricative": {
+	SH: {
 		label: "Fricativa postalveolar sorda",
 	},
-	"voiced-alveolar-fricative": {
+	Z: {
 		label: "Fricativa alveolar sonora",
 	},
-	"voiced-postalveolar-fricative": {
+	ZH: {
 		label: "Fricativa postalveolar sonora",
 	},
-	"voiced-postalveolar-affricate": {
+	J: {
 		label: "Africada postalveolar sonora",
 	},
-	"voiceless-postalveolar-affricate": {
+	CH: {
 		label: "Africada postalveolar sorda",
 	},
-	"voiced-bilabial-nasal": {
+	M: {
 		label: "Nasal bilabial sonora",
 	},
-	"voiced-alveolar-nasal": {
+	N: {
 		label: "Nasal alveolar sonora",
 	},
-	"voiced-velar-nasal": {
+	NG: {
 		label: "Nasal velar sonora",
 	},
-	"voiced-alveolar-lateral-approximant": {
+	L: {
 		label: "Aproximante lateral alveolar sonora",
 	},
-	"voiced-postalveolar-approximant": {
+	R: {
 		label: "Aproximante postalveolar sonora",
 	},
-	"voiced-palatal-approximant": {
+	Y: {
 		label: "Aproximante palatal sonora",
 	},
-	"voiced-labial-velar-approximant": {
+	W: {
 		label: "Aproximante labial-velar sonora",
 	},
-	"close-front-unrounded": {
+	I: {
 		label: "Vocal cerrada anterior no redondeada",
 	},
-	"close-back-rounded": {
+	U: {
 		label: "Vocal cerrada posterior redondeada",
 	},
-	"near-close-near-front-unrounded": {
+	IX: {
 		label: "Vocal casi cerrada casi anterior no redondeada",
 	},
-	"near-close-near-back-rounded": {
+	UX: {
 		label: "Vocal casi cerrada casi posterior redondeada",
 	},
-	"mid-central-unrounded": {
+	AX: {
 		label: "Vocal media central no redondeada",
 	},
-	"open-mid-front-unrounded": {
+	E: {
 		label: "Vocal media abierta anterior no redondeada",
 	},
-	"open-mid-back-unrounded": {
+	AH: {
 		label: "Vocal media abierta posterior no redondeada",
 	},
-	"open-mid-back-rounded": {
+	O: {
 		label: "Vocal media abierta posterior redondeada",
 	},
-	"near-open-front-unrounded": {
+	AE: {
 		label: "Vocal casi abierta anterior no redondeada",
 	},
-	"open-back-unrounded": {
+	A: {
 		label: "Vocal abierta posterior no redondeada",
 	},
-	"close-mid-front-unrounded-to-near-close-near-front-unrounded": {
+	EI: {
 		label:
 			"Diptongo de media cerrada anterior no redondeada a casi cerrada casi anterior no redondeada",
 	},
-	"close-mid-back-rounded-to-near-close-near-back-rounded": {
+	OU: {
 		label:
 			"Diptongo de media cerrada posterior redondeada a casi cerrada casi posterior redondeada",
 	},
-	"open-front-unrounded-to-near-close-near-front-unrounded": {
+	AI: {
 		label: "Diptongo de abierta anterior no redondeada a casi cerrada casi anterior no redondeada",
 	},
-	"open-front-unrounded-to-near-close-near-back-rounded": {
+	AU: {
 		label: "Diptongo de abierta anterior no redondeada a casi cerrada casi posterior redondeada",
 	},
-	"open-mid-back-rounded-to-near-close-near-front-unrounded": {
+	OI: {
 		label:
 			"Diptongo de media abierta posterior redondeada a casi cerrada casi anterior no redondeada",
 	},
-	"r-colored-open-mid-central": {
+	ER: {
 		label: "Vocal media abierta central rótica",
 	},
 };

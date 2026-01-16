@@ -1,4 +1,5 @@
 import * as path from "node:path";
+import { CmuArpaRegistry, isCmuArpaToken } from "@phonaria/phonetics-data";
 import { config } from "dotenv";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
@@ -7,6 +8,56 @@ config();
 function normalizeCmuWord(input: string): string {
 	const base = input.includes("(") ? input.replace(/\(\d+\)$/, "") : input;
 	return base.toUpperCase();
+}
+
+/**
+ * Converts a single ARPABET token to our phoneme ID format.
+ * Preserves stress markers on vowels (0, 1, 2).
+ * @example
+ * convertArpaToken("P") // "P"
+ * convertArpaToken("AW1") // "AU1"
+ * convertArpaToken("AH0") // "AX0"  (unstressed schwa)
+ * convertArpaToken("AH1") // "AH1" (stressed strut)
+ */
+function convertArpaToken(token: string): string | null {
+	if (!isCmuArpaToken(token)) {
+		return null;
+	}
+
+	const phonemeId = CmuArpaRegistry[token];
+
+	// Check if token ends with stress marker (0, 1, 2)
+	const stressMatch = token.match(/([012])$/);
+	if (stressMatch) {
+		const stress = stressMatch[1];
+		// Append stress to phoneme ID (e.g., "AU" + "1" = "AU1")
+		return `${phonemeId}${stress}`;
+	}
+
+	// Consonant or no stress marker
+	return phonemeId;
+}
+
+/**
+ * Converts a full ARPABET pronunciation string to our phoneme ID format.
+ * @example
+ * convertArpaVariant("AH0 B AW1 T") // "AX B AU1 T"
+ * convertArpaVariant("K AE1 T") // "K AE1 T"
+ */
+function convertArpaVariant(variant: string): string {
+	const tokens = variant.split(/\s+/).filter((t) => t.length > 0);
+	const converted: string[] = [];
+
+	for (const token of tokens) {
+		const phonemeId = convertArpaToken(token);
+		if (phonemeId) {
+			converted.push(phonemeId);
+		} else {
+			console.warn(`Warning: Unknown ARPABET token '${token}', skipping`);
+		}
+	}
+
+	return converted.join(" ");
 }
 
 type CompactCmudict = Record<string, string[]>;
@@ -82,23 +133,29 @@ function parseCmudict(content: string): {
 			continue;
 		}
 
-		const sanitizedVariant = arpaPhonemes.replace(/\s+/g, " ").trim();
+		// Convert ARPABET to our phoneme ID format
+		const convertedVariant = convertArpaVariant(arpaPhonemes);
+		if (!convertedVariant) {
+			skipped++;
+			continue;
+		}
+
 		const existingVariants = dictMap.get(normalizedWord);
 		if (existingVariants) {
 			const sizeBefore = existingVariants.size;
-			existingVariants.add(sanitizedVariant);
+			existingVariants.add(convertedVariant);
 			if (existingVariants.size === sizeBefore) {
 				deduplicatedVariants++;
 			}
 		} else {
-			dictMap.set(normalizedWord, new Set([sanitizedVariant]));
+			dictMap.set(normalizedWord, new Set([convertedVariant]));
 		}
 
 		processed++;
 	}
 
 	console.log(`Parsed ${processed} entries, skipped ${skipped} invalid lines`);
-	console.log(`Removed ${deduplicatedVariants} duplicate ARPAbet variants`);
+	console.log(`Removed ${deduplicatedVariants} duplicate variants`);
 
 	// Convert Map back to object for return type compatibility
 	const result: CompactCmudict = {};
@@ -165,7 +222,7 @@ async function fetchCmudict(): Promise<string> {
 
 function saveToJson(payload: CmudictPayload): void {
 	const wordCount = payload.meta.wordCount;
-	console.log(`Saving ${wordCount} words to ${payload.meta.sourceUrl}`);
+	console.log(`Saving ${wordCount} words to ${outputPath}`);
 
 	const bytesWritten = writeJsonFile(outputPath, payload);
 	console.log(`Saved ${bytesWritten} bytes to ${outputPath}`);
@@ -182,7 +239,7 @@ async function main(): Promise<void> {
 
 		const payload: CmudictPayload = {
 			meta: {
-				formatVersion: 1,
+				formatVersion: 2, // Bump version for new format
 				source: "cmudict",
 				sourceUrl: safeCmudictUrl,
 				generatedAt: new Date().toISOString(),
