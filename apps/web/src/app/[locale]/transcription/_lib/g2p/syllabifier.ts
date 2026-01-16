@@ -1,9 +1,9 @@
 import {
-	type CmuArpaToken,
 	type CmuStressLevel,
+	extractBasePhonemeId,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
-	getPhonemeIdForCmuArpa,
+	isValidPhonemeToken,
 } from "@phonaria/phonetics-data";
 import type { G2PPhoneme, G2PSyllable } from "./model";
 import { isValidOnset } from "./phonotactics";
@@ -18,25 +18,27 @@ interface InternalPhoneme {
 export function syllabify(cmuTokens: string[]): G2PSyllable[] {
 	if (cmuTokens.length === 0) return [];
 
-	// 1. Map to internal representation
-	const phonemes: InternalPhoneme[] = cmuTokens.map((token, index) => {
-		const symbolId = getPhonemeIdForCmuArpa(token as CmuArpaToken);
-		const isVowel = getPhonemeCategory(symbolId) === "vowel";
+	// 1. Map to internal representation (filter invalid tokens first)
+	const phonemes: InternalPhoneme[] = cmuTokens
+		.filter((token) => isValidPhonemeToken(token))
+		.map((token, index) => {
+			const symbolId = extractBasePhonemeId(token);
+			const isVowel = getPhonemeCategory(symbolId) === "vowel";
 
-		// Extract stress from CMU token (e.g., "AH0", "AH1", "AH2")
-		let stress: CmuStressLevel = "none";
-		if (isVowel) {
-			if (token.endsWith("1")) stress = "primary";
-			else if (token.endsWith("2")) stress = "secondary";
-		}
+			// Extract stress from token (e.g., "AX0", "AU1", "O2")
+			let stress: CmuStressLevel = "none";
+			if (isVowel) {
+				if (token.endsWith("1")) stress = "primary";
+				else if (token.endsWith("2")) stress = "secondary";
+			}
 
-		return {
-			cmuToken: token,
-			isVowel,
-			stress,
-			originalIndex: index,
-		};
-	});
+			return {
+				cmuToken: token,
+				isVowel,
+				stress,
+				originalIndex: index,
+			};
+		});
 
 	// 2. Identify Nuclei
 	const nucleiIndices = phonemes.map((p, i) => (p.isVowel ? i : -1)).filter((i) => i !== -1);
@@ -118,7 +120,7 @@ function findMaximalOnsetSplit(consonants: InternalPhoneme[]): number {
 
 function mapToG2PPhonemes(internalPhonemes: InternalPhoneme[]): G2PPhoneme[] {
 	return internalPhonemes.map((p) => {
-		const symbolId = getPhonemeIdForCmuArpa(p.cmuToken as CmuArpaToken);
+		const symbolId = extractBasePhonemeId(p.cmuToken);
 		const ipa = getIpaForPhonemeId(symbolId);
 		return {
 			ipa,

@@ -200,22 +200,43 @@ export function isCmuArpaToken(token: string): token is CmuArpaToken {
 }
 
 /**
- * Converts a CMU pronunciation variant string to an IPA string.
+ * Extracts the base phoneme ID from a token with optional stress suffix.
+ * cmudict.json stores phoneme IDs with stress (e.g., "AX0", "OU1").
+ * @example
+ * extractBasePhonemeId("AU1") // "AU"
+ * extractBasePhonemeId("P") // "P"
+ * extractBasePhonemeId("AX0") // "AX"
+ */
+export function extractBasePhonemeId(token: string): PhonemeSymbolId {
+	return token.replace(/[012]$/, "") as PhonemeSymbolId;
+}
+
+/**
+ * Checks if a token (with stress removed) is a valid phoneme ID.
+ */
+export function isValidPhonemeToken(token: string): boolean {
+	const baseId = extractBasePhonemeId(token);
+	return baseId in PhonemeIpaRegistry;
+}
+
+/**
+ * Converts a pronunciation variant string to an IPA string.
+ * Accepts phoneme IDs with stress suffixes (e.g., "P AE1 T" or "AX0 B AU1 T").
  * Tokens that don't map to known phonemes are skipped.
- * @param variant - A space-separated CMU pronunciation string (e.g., "P AE1 T").
+ * @param variant - A space-separated pronunciation string.
  * @returns The IPA representation (e.g., "pæt").
  * @example
  * cmuVariantToIpa("P AE1 T") // "pæt"
  * cmuVariantToIpa("K AE1 T S") // "kæts"
- * cmuVariantToIpa("HH AH0 L OW1") // "həloʊ"
+ * cmuVariantToIpa("H AX0 L OU1") // "həloʊ"
  */
 export function cmuVariantToIpa(variant: string): string {
 	const tokens = variant.split(/\s+/).filter((t) => t.length > 0);
 	const ipaSymbols: string[] = [];
 
 	for (const token of tokens) {
-		if (isCmuArpaToken(token)) {
-			const phonemeId = CmuArpaRegistry[token];
+		if (isValidPhonemeToken(token)) {
+			const phonemeId = extractBasePhonemeId(token);
 			const ipa = PhonemeIpaRegistry[phonemeId];
 			if (ipa) {
 				ipaSymbols.push(ipa);

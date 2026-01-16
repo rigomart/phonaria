@@ -2,25 +2,31 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { __resetCmudictCache, lookupCmudict } from "./cmudict";
 
 vi.mock("@phonaria/phonetics-data", () => {
+	// IPA map using new phoneme IDs (base IDs without stress)
 	const ipaMap: Record<string, string> = {
-		HH: "h",
-		AH0: "ə",
+		H: "h",
+		AX: "ə",
 		L: "l",
-		OW1: "oʊ",
+		OU: "oʊ",
 		W: "w",
-		ER1: "ɝ",
+		ER: "ɝ",
 		D: "d",
 	};
 
 	return {
-		getPhonemeIdForCmuArpa: (token: string) => token,
+		extractBasePhonemeId: (token: string) => token.replace(/[012]$/, ""),
+		isValidPhonemeToken: (token: string) => {
+			const baseId = token.replace(/[012]$/, "");
+			return baseId in ipaMap;
+		},
 		getPhonemeCategory: (token: string) => (/[012]$/.test(token) ? "vowel" : "consonant"),
 		getIpaForPhonemeId: (token: string) => ipaMap[token] ?? token.toLowerCase(),
 	};
 });
 
+// Mock data uses new phoneme ID format (H, AX, OU instead of HH, AH, OW)
 const mockRows = [
-	{ word: "HELLO", cmuVariants: ["HH AH0 L OW1"] },
+	{ word: "HELLO", cmuVariants: ["H AX0 L OU1"] },
 	{ word: "WORLD", cmuVariants: ["W ER1 L D"] },
 ] as const;
 

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Partial mock for @phonaria/phonetics-data - override only curated data
+// Mock data uses new phoneme ID format (H, AX, OU instead of HH, AH, OW)
 vi.mock("@phonaria/phonetics-data", async () => {
 	const actual = await vi.importActual<typeof import("@phonaria/phonetics-data")>(
 		"@phonaria/phonetics-data",
@@ -10,21 +11,21 @@ vi.mock("@phonaria/phonetics-data", async () => {
 		curatedTop1k: {
 			meta: { tier: "1k", wordCount: 3 },
 			words: {
-				// "the" has multiple variants
-				the: ["DH AH0", "DH AH1", "DH IY0"],
-				hello: ["HH AH0 L OW1"],
+				// "the" has multiple variants (phoneme ID format)
+				the: ["DH AX0", "DH AH1", "DH I0"],
+				hello: ["H AX0 L OU1"],
 				world: ["W ER1 L D"],
 			},
 		},
 		curatedTop10k: {
 			meta: { tier: "10k", wordCount: 5 },
 			words: {
-				// Tier 2 includes tier 1 words plus additional
-				the: ["DH AH0", "DH AH1", "DH IY0"],
-				hello: ["HH AH0 L OW1"],
+				// Tier 2 includes tier 1 words plus additional (phoneme ID format)
+				the: ["DH AX0", "DH AH1", "DH I0"],
+				hello: ["H AX0 L OU1"],
 				world: ["W ER1 L D"],
-				phonetics: ["F AH0 N EH1 T IH0 K S"],
-				transcription: ["T R AE2 N S K R IH1 P SH AH0 N"],
+				phonetics: ["F AX0 N E1 T IX0 K S"],
+				transcription: ["T R AE2 N S K R IX1 P SH AX0 N"],
 			},
 		},
 	};
@@ -46,7 +47,7 @@ describe("phoneme-lookup", () => {
 			expect(result).not.toBeNull();
 			expect(result?.source).toBe("tier1");
 			expect(result?.word).toBe("hello");
-			expect(result?.cmuVariants).toEqual(["HH AH0 L OW1"]);
+			expect(result?.cmuVariants).toEqual(["H AX0 L OU1"]);
 			expect(result?.variants.length).toBeGreaterThan(0);
 		});
 
@@ -56,7 +57,7 @@ describe("phoneme-lookup", () => {
 			expect(result).not.toBeNull();
 			expect(result?.source).toBe("tier2");
 			expect(result?.word).toBe("phonetics");
-			expect(result?.cmuVariants).toEqual(["F AH0 N EH1 T IH0 K S"]);
+			expect(result?.cmuVariants).toEqual(["F AX0 N E1 T IX0 K S"]);
 		});
 
 		it("returns multiple variants for words with alternate pronunciations", async () => {
@@ -64,8 +65,8 @@ describe("phoneme-lookup", () => {
 
 			expect(result).not.toBeNull();
 			expect(result?.cmuVariants).toHaveLength(3);
-			expect(result?.cmuVariants).toContain("DH AH0");
-			expect(result?.cmuVariants).toContain("DH IY0");
+			expect(result?.cmuVariants).toContain("DH AX0");
+			expect(result?.cmuVariants).toContain("DH I0");
 			expect(result?.variants).toHaveLength(3);
 		});
 
