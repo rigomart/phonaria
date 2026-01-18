@@ -124,15 +124,15 @@ function WordCard({
 			</span>
 
 			{/* IPA transcription with individual phoneme buttons */}
-			<div className="flex items-center gap-0.5 text-sm">
+			<div className="flex items-center gap-0.5 text-base">
 				<span className="text-muted-foreground">/</span>
 				<ButtonGroup>
 					{example.phonemes.map((phoneme, index) => (
 						<Button
 							key={`${example.word}-${phoneme.symbol}-${index}`}
-							size="xs"
+							size="sm"
 							variant={phoneme.isHighlighted ? "default" : "outline"}
-							className="min-w-6 font-serif"
+							className="min-w-7 font-serif text-base"
 							onClick={() => onPhonemeClick(phoneme.id)}
 						>
 							{phoneme.symbol}
@@ -161,7 +161,7 @@ export function IpaIntroSection() {
 								<code className="bg-muted px-1.5 py-0.5 rounded font-semibold">{chunks}</code>
 							),
 							highlight: (chunks) => (
-								<span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-serif bg-primary text-primary-foreground">
+								<span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-sm font-serif bg-primary text-primary-foreground">
 									{chunks}
 								</span>
 							),
