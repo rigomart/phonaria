@@ -231,9 +231,9 @@ contrasts?.forEach(contrast => {
 });
 ```
 
-> **Note**: CMU ARPA transcriptions are generated dynamically by `helper-scripts` from CMUDict. The default CMUDict JSON lives at `packages/phonetics-data/data/dict/cmudict.json` (generated via `bun --cwd packages/helper-scripts cmudict-to-json`). See the `generate-word-mappings` script for word → CMU ARPA lookups.
+> **Note**: CMU ARPA transcriptions are generated dynamically by `helper-scripts` from CMUDict. The default CMUDict JSON lives at `packages/phonetics-data/data/en/dict/cmudict.json` (generated via `bun --cwd packages/helper-scripts cmudict-to-json`). See the `generate-word-mappings` script for word → CMU ARPA lookups.
 
-## Curated word chunks (`data/curated/`)
+## Curated word chunks (`data/en/curated/`)
 
 Pre-generated word lists for client-side tiered lookup, enabling instant pronunciation lookups without server round-trips.
 

@@ -1,14 +1,16 @@
 import type {
 	ConsonantArticulatoryFeatures,
+	PhonemeArticulatoryFeatureKey,
+	PhonemeArticulatoryFeatures,
+	VowelArticulatoryFeatures,
+} from "../core/articulatory-features";
+import type {
 	ConsonantSymbolId,
 	DiphthongSymbolId,
 	MonophthongSymbolId,
-	PhonemeArticulatoryFeatureKey,
-	PhonemeArticulatoryFeatures,
-	PhonemeCategory,
 	PhonemeSymbolId,
-	VowelArticulatoryFeatures,
-} from "./ipa-registry";
+} from "../core/ipa-registry";
+import type { PhonemeCategory } from "../core/types";
 
 export type VowelType = "monophthong" | "diphthong";
 

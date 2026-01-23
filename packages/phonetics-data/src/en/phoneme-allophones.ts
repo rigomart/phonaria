@@ -1,4 +1,4 @@
-import type { PhonemeSymbolId } from "./ipa-registry";
+import type { PhonemeSymbolId } from "../core/ipa-registry";
 
 export type AllophoneExample = {
 	word: string;

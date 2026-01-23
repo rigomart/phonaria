@@ -148,7 +148,7 @@ Import actions directly from the feature's `_actions/` directory. Types are infe
 
 ## Data dependencies
 
-- **CMU Pronouncing Dictionary** – Shipped via `@phonaria/phonetics-data` at `packages/phonetics-data/data/dict/cmudict.json`; the companion `cmudict-stats.json` feeds the insights page. Regenerate with:
+- **CMU Pronouncing Dictionary** – Shipped via `@phonaria/phonetics-data` at `packages/phonetics-data/data/en/dict/cmudict.json`; the companion `cmudict-stats.json` feeds the insights page. Regenerate with:
   ```bash
   CMUDICT_SRC_URL="<remote .dict file>" bun --cwd packages/helper-scripts cmudict-to-json
   bun --cwd packages/helper-scripts cmudict-stats

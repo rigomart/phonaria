@@ -1,4 +1,4 @@
-import { PhonemeIpaRegistry, type PhonemeSymbolId } from "./ipa-registry";
+import { PhonemeIpaRegistry, type PhonemeSymbolId } from "../core/ipa-registry";
 
 /**
  * CMU stress levels for vowels.
