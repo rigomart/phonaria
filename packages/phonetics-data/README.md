@@ -124,17 +124,31 @@ import {
 } from "@phonaria/phonetics-data";
 ```
 
-## Module map (`src/phonetics`)
+## Module map
+
+### `src/core/` — Language-agnostic
 
 | File | Purpose |
 | --- | --- |
-| `ipa-registry.ts` | IPA registries mapping `PhonemeSymbolId` → IPA symbol. Includes consonants, monophthongs (with optional `rhoticity`), and diphthongs. Also provides helper functions for category detection and IPA lookup. |
+| `ipa-registry.ts` | Universal IPA phoneme catalog mapping `PhonemeSymbolId` → IPA symbol. Includes sub-registries (consonants, monophthongs, diphthongs) and helper functions for category detection and IPA lookup. |
+| `articulatory-features.ts` | Articulatory feature unions (`MannerOfArticulation`, `PlaceOfArticulation`, `VowelHeight`, etc.) and composite feature types used by language-specific articulation data. |
+| `types.ts` | Shared base types: `TargetLanguage`, `PhonemeCategory`. |
+
+### `src/en/` — English-specific
+
+| File | Purpose |
+| --- | --- |
 | `cmu-arpa-registry.ts` | CMU ARPA registry mapping CMU ARPABET tokens (with stress digits) → `PhonemeSymbolId`. Includes bidirectional lookup helpers. |
 | `phoneme-articulations.ts` | Maps each `PhonemeSymbolId` to its articulatory feature set (manner/place/voicing for consonants; height/backness/roundness for vowels). Also defines `VowelType` (monophthong/diphthong) and supports `rhoticity` on vowels. |
 | `phoneme-contrasts.ts` | Minimal-pair style relationships (`ContrastsByPhonemeIdRegistry`) that highlight challenging sound pairs. Each example includes `word` and `phonemic` (IPA). |
 | `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. Each example includes `word` and `phonemic` (IPA). |
 | `phoneme-allophones.ts` | Allophonic variations with context keys for each phoneme. Each example includes `word` and `phonemic` (IPA). |
-| `index.ts` | Barrel re-export for all of the above so consumers import from `@phonaria/phonetics-data`. |
+
+### Root barrel
+
+| File | Purpose |
+| --- | --- |
+| `src/index.ts` | Re-exports core and English modules so consumers import from `@phonaria/phonetics-data`. |
 
 ## Usage examples
 
