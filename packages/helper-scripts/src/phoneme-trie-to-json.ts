@@ -1,8 +1,8 @@
 import * as path from "node:path";
-import cmudictJson from "../../phonetics-data/data/dict/cmudict.json";
+import cmudictJson from "../../phonetics-data/data/en/dict/cmudict.json";
+import type { PhonemeSymbolId } from "../../phonetics-data/src/core/ipa-registry";
 import type { CmudictPayload } from "../../phonetics-data/src/dict/types";
-import { getArpabetForPhonemeId } from "../../phonetics-data/src/phonetics/cmu-arpa-registry";
-import type { PhonemeSymbolId } from "../../phonetics-data/src/phonetics/ipa-registry";
+import { getArpabetForPhonemeId } from "../../phonetics-data/src/en/cmu-arpa-registry";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 type PhonemeTrieNode = {
@@ -25,7 +25,7 @@ type PhonemeTriePayload = {
 
 const outputPath = path.resolve(
 	__dirname,
-	"../../phonetics-data/data/dict/cmudict-phoneme-trie.json",
+	"../../phonetics-data/data/en/dict/cmudict-phoneme-trie.json",
 );
 
 function createTrieNode(): PhonemeTrieNode {

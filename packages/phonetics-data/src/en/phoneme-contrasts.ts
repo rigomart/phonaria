@@ -1,9 +1,9 @@
 import type {
 	ConsonantArticulatoryFeatures,
 	PhonemeArticulatoryFeatureKey,
-	PhonemeSymbolId,
 	VowelArticulatoryFeatures,
-} from "./ipa-registry";
+} from "../core/articulatory-features";
+import type { PhonemeSymbolId } from "../core/ipa-registry";
 
 export type PhonemeContrastPair = {
 	word: string;

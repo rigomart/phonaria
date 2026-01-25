@@ -10,10 +10,10 @@ import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 const cmudictPath =
 	process.env.CMUDICT_JSON_PATH ||
-	path.resolve(__dirname, "../../phonetics-data/data/dict/cmudict.json");
+	path.resolve(__dirname, "../../phonetics-data/data/en/dict/cmudict.json");
 const statsOutputPath =
 	process.env.CMUDICT_STATS_JSON_PATH ||
-	path.resolve(__dirname, "../../phonetics-data/data/dict/cmudict-stats.json");
+	path.resolve(__dirname, "../../phonetics-data/data/en/dict/cmudict-stats.json");
 
 /**
  * Extracts the base phoneme ID from a stressed phoneme token.

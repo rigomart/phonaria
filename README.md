@@ -71,7 +71,7 @@ See `docs/project-overview.md` for product context and `docs/README.md` for enha
 
 Phonaria ships with pre-generated assets but also supports regeneration when source data changes:
 
-- **CMU Pronouncing Dictionary** – Stored at `packages/phonetics-data/data/dict/cmudict.json` and bundled through the `@phonaria/phonetics-data` package. The `cmudict-stats.json` companion file powers the insights page. Regenerate with:
+- **CMU Pronouncing Dictionary** – Stored at `packages/phonetics-data/data/en/dict/cmudict.json` and bundled through the `@phonaria/phonetics-data` package. The `cmudict-stats.json` companion file powers the insights page. Regenerate with:
   ```bash
   CMUDICT_SRC_URL="<remote .dict file>" bun --cwd packages/helper-scripts cmudict-to-json
   bun --cwd packages/helper-scripts cmudict-stats

@@ -1,7 +1,7 @@
-import curatedTop1kJson from "../data/curated/top-1k.json";
-import curatedTop10kJson from "../data/curated/top-10k.json";
-import cmudictJson from "../data/dict/cmudict.json";
-import cmudictStatsJson from "../data/dict/cmudict-stats.json";
+import curatedTop1kJson from "../data/en/curated/top-1k.json";
+import curatedTop10kJson from "../data/en/curated/top-10k.json";
+import cmudictJson from "../data/en/dict/cmudict.json";
+import cmudictStatsJson from "../data/en/dict/cmudict-stats.json";
 import type { CmudictPayload, CmudictStatsPayload } from "./dict/types";
 
 export const cmudictData = cmudictJson as CmudictPayload;
@@ -36,6 +36,34 @@ export const curatedTop1k = curatedTop1kJson as CuratedWordData;
  */
 export const curatedTop10k = curatedTop10kJson as CuratedWordData;
 
+export type {
+	ConsonantArticulatoryFeatures,
+	ConsonantPhonemeArticulatoryFeatureKey,
+	PhonemeArticulatoryFeatureKey,
+	PhonemeArticulatoryFeatures,
+	VowelArticulatoryFeatures,
+	VowelPhonemeArticulatoryFeatureKey,
+} from "./core/articulatory-features";
+export type {
+	ConsonantSymbolId,
+	ConsonantSymbolIpa,
+	DiphthongSymbolIpa,
+	PhonemeSymbolId,
+	PhonemeSymbolIpa,
+	VowelSymbolIpa,
+} from "./core/ipa-registry";
+export {
+	ConsonantIpaRegistry,
+	DiphthongIpaRegistry,
+	getIpaForPhonemeId,
+	getPhonemeCategory,
+	getPhonemeType,
+	MonophthongIpaRegistry,
+	PhonemeCount,
+	PhonemeIpaRegistry,
+	VowelIpaRegistry,
+} from "./core/ipa-registry";
+export type { PhonemeCategory, TargetLanguage } from "./core/types";
 export type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dict/types";
 export {
 	CmuArpaRegistry,
@@ -49,39 +77,13 @@ export {
 	isCmuArpaToken,
 	isValidPhonemeToken,
 	PhonemeArpabetLabel,
-} from "./phonetics/cmu-arpa-registry";
-export type {
-	ConsonantArticulatoryFeatures,
-	ConsonantPhonemeArticulatoryFeatureKey,
-	ConsonantSymbolId,
-	ConsonantSymbolIpa,
-	DiphthongSymbolIpa,
-	PhonemeArticulatoryFeatureKey,
-	PhonemeArticulatoryFeatures,
-	PhonemeCategory,
-	PhonemeSymbolId,
-	PhonemeSymbolIpa,
-	VowelArticulatoryFeatures,
-	VowelPhonemeArticulatoryFeatureKey,
-	VowelSymbolIpa,
-} from "./phonetics/ipa-registry";
-export {
-	ConsonantIpaRegistry,
-	DiphthongIpaRegistry,
-	getIpaForPhonemeId,
-	getPhonemeCategory,
-	getPhonemeType,
-	MonophthongIpaRegistry,
-	PhonemeCount,
-	PhonemeIpaRegistry,
-	VowelIpaRegistry,
-} from "./phonetics/ipa-registry";
+} from "./en/cmu-arpa-registry";
 export {
 	type AllophoneExample,
 	type PhonemeAllophone,
 	type PhonemeAllophoneContextKey,
 	PhonemeAllophoneRegistry,
-} from "./phonetics/phoneme-allophones";
+} from "./en/phoneme-allophones";
 export {
 	ConsonantArticulationRegistry,
 	DiphthongVowelArticulationRegistry,
@@ -90,13 +92,13 @@ export {
 	type PhonemeArticulation,
 	PhonemeArticulationRegistry,
 	type VowelType,
-} from "./phonetics/phoneme-articulations";
+} from "./en/phoneme-articulations";
 export {
 	ContrastsByPhonemeIdRegistry,
 	type PhonemeContrast,
 	type PhonemeContrastPair,
-} from "./phonetics/phoneme-contrasts";
+} from "./en/phoneme-contrasts";
 export {
 	PhonemeSpellingPatternRegistry,
 	type SpellingPattern,
-} from "./phonetics/phoneme-patterns";
+} from "./en/phoneme-patterns";

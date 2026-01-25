@@ -169,7 +169,7 @@ function buildStats(payload: CmudictPayload): {
 
 function getDefaultCmudictJsonPath(projectDir: string): string {
 	const repoRoot = path.resolve(projectDir, "../..");
-	return path.resolve(repoRoot, "packages/phonetics-data/data/dict/cmudict.json");
+	return path.resolve(repoRoot, "packages/phonetics-data/data/en/dict/cmudict.json");
 }
 
 async function loadFullPayload(projectDir: string): Promise<CmudictPayload> {

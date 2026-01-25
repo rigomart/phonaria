@@ -1,25 +1,6 @@
-// Base types
-
-export type PhonemeCategory = "consonant" | "vowel";
+import type { PhonemeCategory } from "./types";
 
 // Consonants
-
-export type ConsonantArticulatoryFeatures = {
-	voicing: "voiced" | "voiceless";
-	place:
-		| "bilabial"
-		| "alveolar"
-		| "velar"
-		| "labial-velar"
-		| "palatal"
-		| "labiodental"
-		| "glottal"
-		| "postalveolar"
-		| "dental";
-	manner: "plosive" | "fricative" | "affricate" | "nasal" | "approximant" | "lateral-approximant";
-};
-
-export type ConsonantPhonemeArticulatoryFeatureKey = keyof ConsonantArticulatoryFeatures;
 
 export const ConsonantIpaRegistry = {
 	P: "p",
@@ -50,18 +31,6 @@ export const ConsonantIpaRegistry = {
 
 export type ConsonantSymbolId = keyof typeof ConsonantIpaRegistry;
 export type ConsonantSymbolIpa = (typeof ConsonantIpaRegistry)[ConsonantSymbolId];
-
-// Vowels
-
-export type VowelArticulatoryFeatures = {
-	height: "close" | "near-close" | "close-mid" | "mid" | "open-mid" | "near-open" | "open";
-	backness: "front" | "near-front" | "central" | "near-back" | "back";
-	roundness: "rounded" | "unrounded";
-	tenseness: "tense" | "lax";
-	rhoticity?: "r-colored";
-};
-
-export type VowelPhonemeArticulatoryFeatureKey = keyof VowelArticulatoryFeatures;
 
 // Vowels - Monophthongs
 
@@ -106,20 +75,17 @@ export type VowelSymbolId = keyof typeof VowelIpaRegistry;
 export type VowelSymbolIpa = (typeof VowelIpaRegistry)[VowelSymbolId];
 
 // All
+
 export const PhonemeIpaRegistry = {
 	...ConsonantIpaRegistry,
 	...VowelIpaRegistry,
 } as const;
 
-export type PhonemeArticulatoryFeatures = ConsonantArticulatoryFeatures & VowelArticulatoryFeatures;
-export type PhonemeArticulatoryFeatureKey =
-	| ConsonantPhonemeArticulatoryFeatureKey
-	| VowelPhonemeArticulatoryFeatureKey;
-
 export type PhonemeSymbolId = keyof typeof PhonemeIpaRegistry;
 export type PhonemeSymbolIpa = (typeof PhonemeIpaRegistry)[PhonemeSymbolId];
 
-// Helper functions to derive phoneme category from registry structure
+// Helper functions
+
 function isVowelPhoneme(phonemeId: PhonemeSymbolId): boolean {
 	return phonemeId in VowelIpaRegistry;
 }

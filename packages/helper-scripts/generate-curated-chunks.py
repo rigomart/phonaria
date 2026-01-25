@@ -13,8 +13,8 @@ Usage:
     python generate-curated-chunks.py
 
 Output:
-    packages/phonetics-data/data/curated/top-1k.json
-    packages/phonetics-data/data/curated/top-10k.json
+    packages/phonetics-data/data/en/curated/top-1k.json
+    packages/phonetics-data/data/en/curated/top-10k.json
 
 License:
     The generated word lists are derived from:
@@ -95,8 +95,8 @@ def main():
     # Paths
     script_dir = Path(__file__).parent
     project_root = script_dir.parent.parent
-    cmudict_path = project_root / "packages/phonetics-data/data/dict/cmudict.json"
-    output_dir = project_root / "packages/phonetics-data/data/curated"
+    cmudict_path = project_root / "packages/phonetics-data/data/en/dict/cmudict.json"
+    output_dir = project_root / "packages/phonetics-data/data/en/curated"
 
     # Version for cache invalidation (2.0.0: switched from single string to array of variants)
     version = "2.0.0"

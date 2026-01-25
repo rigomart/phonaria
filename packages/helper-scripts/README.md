@@ -31,14 +31,14 @@ bun --cwd packages/helper-scripts generate-word-mappings   # Generate word mappi
 - Output: `packages/audio-gen/data/cmu-arpa-mappings.json` (regenerate when phoneme data changes)
 - Run: `bun --cwd packages/helper-scripts generate-word-mappings`
 - Includes: word, IPA phonemic transcription, CMU ARPA tokens, lookup status, and variant info
-- Input: `CMUDICT_JSON_PATH` if set, otherwise `packages/phonetics-data/data/dict/cmudict.json`
+- Input: `CMUDICT_JSON_PATH` if set, otherwise `packages/phonetics-data/data/en/dict/cmudict.json`
 
 ## CMUDict JSON workflow
 
 `cmudict-to-json.ts` downloads the raw CMU Pronouncing Dictionary, normalizes entries, and writes a JSON payload with metadata and a compact map of uppercase words to sanitized ARPAbet variants used by the web API.
 
 1. Configure `CMUDICT_SRC_URL` (see `.env` example above).
-2. Optionally set `CMUDICT_JSON_PATH`; otherwise the output defaults to `packages/phonetics-data/data/dict/cmudict.json` (the shared default for all consumers).
+2. Optionally set `CMUDICT_JSON_PATH`; otherwise the output defaults to `packages/phonetics-data/data/en/dict/cmudict.json` (the shared default for all consumers).
 3. Run `bun --cwd packages/helper-scripts cmudict-to-json`.
 
 The generated JSON has the following structure:
@@ -81,7 +81,7 @@ python generate-curated-chunks.py
 
 ### Output
 
-The script generates two files in `packages/phonetics-data/data/curated/`:
+The script generates two files in `packages/phonetics-data/data/en/curated/`:
 
 | File | Words | Size |
 | --- | --- | --- |
