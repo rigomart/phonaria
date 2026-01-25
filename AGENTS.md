@@ -35,12 +35,12 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 - `packages/phonetics-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. All types and registries are exported from `src/index.ts`. Key exports include:
   - `cmudictData` and `cmudictStatsData`: Bundled CMUDict JSON and coverage stats used by server actions and insights page
   - `curatedTop1k` and `curatedTop10k`: Curated word lists with CMU pronunciations for client-side tiered lookup (~28KB and ~339KB)
-  - `PhonemeSymbolRegistry`: Complete phoneme catalog with IPA symbols, categories, and metadata
+  - `PhonemeIpaRegistry`: Complete phoneme catalog with IPA symbols, categories, and metadata
   - `PhonemeArticulationRegistry`: Articulatory features and production guidance for each phoneme
   - `ContrastsByPhonemeIdRegistry`: Minimal pairs and contrast information
   - `PhonemeSpellingPatternRegistry`: Common spelling patterns for each phoneme
   - `PhonemeAllophoneRegistry`: Allophonic variations with context keys
-  - `CmuSymbolRegistry`: Mapping between CMU ARPABET and IPA symbols
+  - `CmuArpaRegistry`: Mapping between CMU ARPABET and IPA symbols
 - `packages/helper-scripts`: Utilities for data generation. TypeScript scripts handle ElevenLabs audio generation and CMUDict processing; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`; generated audio is produced locally and manually uploaded to the external audio bucket the app references.
 - `docs`: Product briefs, project overviews, enhancement plans, and feature deep-dives organized in `enhancements/` and `features/` subdirectories.
 

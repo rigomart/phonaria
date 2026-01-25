@@ -55,6 +55,7 @@ function getCmudictPath(): string {
 		"..",
 		"phonetics-data",
 		"data",
+		"en",
 		"dict",
 		"cmudict.json",
 	);
