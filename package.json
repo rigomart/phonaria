@@ -23,7 +23,8 @@
 		"lint": "turbo run lint",
 		"dev": "turbo run dev",
 		"check-types": "turbo run check-types",
-		"test": "turbo run test"
+		"test": "turbo run test",
+		"e2e": "turbo run e2e"
 	},
 	"workspaces": [
 		"packages/*",

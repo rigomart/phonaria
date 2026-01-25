@@ -25,13 +25,20 @@ export class ActionError extends Error {
 /**
  * Rate limiter instance using Upstash Redis.
  * 20 requests per 10 seconds sliding window.
+ * Lazily initialized to avoid connection errors when Redis env vars are absent (e.g. E2E tests).
  */
-const ratelimit = new Ratelimit({
-	redis: Redis.fromEnv(),
-	limiter: Ratelimit.slidingWindow(20, "10 s"),
-	analytics: true,
-	timeout: 10000,
-});
+let _ratelimit: Ratelimit | null = null;
+function getRatelimit(): Ratelimit {
+	if (!_ratelimit) {
+		_ratelimit = new Ratelimit({
+			redis: Redis.fromEnv(),
+			limiter: Ratelimit.slidingWindow(20, "10 s"),
+			analytics: true,
+			timeout: 10000,
+		});
+	}
+	return _ratelimit;
+}
 
 /**
  * Get client IP address from request headers.
@@ -89,8 +96,12 @@ export const actionClient = createSafeActionClient({
  * Use this for public-facing actions.
  */
 export const rateLimitedAction = actionClient.use(async ({ next }) => {
+	if (process.env.SKIP_RATE_LIMIT === "true" && process.env.NODE_ENV !== "production") {
+		return next();
+	}
+
 	const ip = await getClientIP();
-	const { success, pending, reset } = await ratelimit.limit(ip);
+	const { success, pending, reset } = await getRatelimit().limit(ip);
 
 	if (!success) {
 		await pending;

@@ -26,6 +26,11 @@
 		},
 		"test": {
 			"dependsOn": ["^test"]
+		},
+		"e2e": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"env": ["SKIP_RATE_LIMIT", "DATABASE_URL"]
 		}
 	}
 }
