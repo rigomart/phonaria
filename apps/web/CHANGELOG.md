@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/rigomart/phonaria/compare/phonaria-v1.2.0...phonaria-v1.2.1) (2026-01-25)
+
+
+### Bug Fixes
+
+* **ui:** increase IPA symbol prominence in overview section ([#98](https://github.com/rigomart/phonaria/issues/98)) ([77086b1](https://github.com/rigomart/phonaria/commit/77086b1b4e1466a62ba683be47e2c712a94b78b1)), closes [#96](https://github.com/rigomart/phonaria/issues/96)
+
 ## [1.2.0](https://github.com/rigomart/phonaria/compare/phonaria-v1.1.0...phonaria-v1.2.0) (2026-01-16)
 
 
