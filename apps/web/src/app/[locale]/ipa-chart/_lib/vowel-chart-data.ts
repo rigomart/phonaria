@@ -1,9 +1,10 @@
 import {
-	DiphthongVowelArticulationRegistry,
+	getDiphthongVowelArticulationRegistryForLanguage,
 	getIpaForPhonemeId,
-	MonophthongVowelArticulationRegistry,
+	getMonophthongVowelArticulationRegistryForLanguage,
 	type PhonemeArticulation,
 	type PhonemeSymbolId,
+	type TargetLanguage,
 } from "@phonaria/phonetics-data";
 
 type StaticVowelFeatures = Extract<PhonemeArticulation, { vowelType: "monophthong" }>["features"];
@@ -30,30 +31,44 @@ export type DiphthongVowelChartEntry = {
 
 export type VowelChartEntry = StaticVowelChartEntry | DiphthongVowelChartEntry;
 
-export function getStaticVowelEntries(phonemeDetailsById: PhonemeLabelById) {
-	return Object.entries(MonophthongVowelArticulationRegistry).map(([id, articulation]) => {
+export function getStaticVowelEntries(
+	phonemeDetailsById: PhonemeLabelById,
+	targetLanguage: TargetLanguage,
+) {
+	const monophthongs = getMonophthongVowelArticulationRegistryForLanguage(targetLanguage);
+	return Object.entries(monophthongs).flatMap(([id, articulation]) => {
+		if (!articulation) return [];
 		const phonemeId = id as PhonemeSymbolId;
 		const ipa = getIpaForPhonemeId(phonemeId);
-		return {
-			id: phonemeId,
-			ipa,
-			label: phonemeDetailsById[phonemeId].label,
-			vowelType: articulation.vowelType,
-			features: articulation.features,
-		} satisfies StaticVowelChartEntry;
+		return [
+			{
+				id: phonemeId,
+				ipa,
+				label: phonemeDetailsById[phonemeId].label,
+				vowelType: articulation.vowelType,
+				features: articulation.features,
+			} satisfies StaticVowelChartEntry,
+		];
 	});
 }
 
-export function getDiphthongVowelEntries(phonemeDetailsById: PhonemeLabelById) {
-	return Object.entries(DiphthongVowelArticulationRegistry).map(([id, articulation]) => {
+export function getDiphthongVowelEntries(
+	phonemeDetailsById: PhonemeLabelById,
+	targetLanguage: TargetLanguage,
+) {
+	const diphthongs = getDiphthongVowelArticulationRegistryForLanguage(targetLanguage);
+	return Object.entries(diphthongs).flatMap(([id, articulation]) => {
+		if (!articulation) return [];
 		const phonemeId = id as PhonemeSymbolId;
 		const ipa = getIpaForPhonemeId(phonemeId);
-		return {
-			id: phonemeId,
-			ipa,
-			label: phonemeDetailsById[phonemeId].label,
-			vowelType: articulation.vowelType,
-			features: articulation.features,
-		} satisfies DiphthongVowelChartEntry;
+		return [
+			{
+				id: phonemeId,
+				ipa,
+				label: phonemeDetailsById[phonemeId].label,
+				vowelType: articulation.vowelType,
+				features: articulation.features,
+			} satisfies DiphthongVowelChartEntry,
+		];
 	});
 }

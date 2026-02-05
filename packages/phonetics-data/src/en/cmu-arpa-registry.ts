@@ -1,4 +1,5 @@
 import { PhonemeIpaRegistry, type PhonemeSymbolId } from "../core/ipa-registry";
+import type { EnglishPhonemeSymbolId } from "../core/language-phoneme-inventories";
 
 /**
  * CMU stress levels for vowels.
@@ -90,7 +91,7 @@ export const CmuArpaRegistry = {
 	ER0: "ER",
 	ER1: "ER",
 	ER2: "ER",
-} as const satisfies Record<string, PhonemeSymbolId>;
+} as const satisfies Record<string, EnglishPhonemeSymbolId>;
 
 export type CmuArpaToken = keyof typeof CmuArpaRegistry;
 
@@ -103,7 +104,7 @@ export type CmuArpaToken = keyof typeof CmuArpaRegistry;
  * getPhonemeIdForCmuArpa("P") // "P"
  * getPhonemeIdForCmuArpa("AH0") // "AX"
  */
-export function getPhonemeIdForCmuArpa(token: CmuArpaToken): PhonemeSymbolId {
+export function getPhonemeIdForCmuArpa(token: CmuArpaToken): EnglishPhonemeSymbolId {
 	return CmuArpaRegistry[token];
 }
 
@@ -176,7 +177,7 @@ export const PhonemeArpabetLabel = {
 	AI: "AY",
 	AU: "AW",
 	OI: "OY",
-} as const satisfies Record<PhonemeSymbolId, string>;
+} as const satisfies Record<EnglishPhonemeSymbolId, string>;
 
 /**
  * Gets the standard ARPABET label for a phoneme ID (without stress markers).
@@ -187,7 +188,16 @@ export const PhonemeArpabetLabel = {
  * getArpabetForPhonemeId("AX") // "AX"
  */
 export function getArpabetForPhonemeId(phonemeId: PhonemeSymbolId): string {
+	if (!isEnglishPhonemeSymbolId(phonemeId)) {
+		throw new Error(`No CMU ARPABET label exists for non-English phoneme ID: ${phonemeId}`);
+	}
 	return PhonemeArpabetLabel[phonemeId];
+}
+
+export function isEnglishPhonemeSymbolId(
+	phonemeId: PhonemeSymbolId,
+): phonemeId is EnglishPhonemeSymbolId {
+	return phonemeId in PhonemeArpabetLabel;
 }
 
 /**

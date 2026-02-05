@@ -1,6 +1,6 @@
 "use client";
 
-import { PhonemeCount } from "@phonaria/phonetics-data";
+import { getLanguagePhonemeCount } from "@phonaria/phonetics-data";
 import {
 	Select,
 	SelectContent,
@@ -12,21 +12,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@phonaria/ui/component
 import { useTranslations } from "next-intl";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { PhonemeDialog } from "./_components/phoneme-dialog";
+import { getIpaChartTargetLanguage } from "./_lib/target-language";
 import { ConsonantsSection } from "./_sections/consonants-section";
 import { VowelChartSection } from "./_sections/vowels-section";
 
 const IPA_CHART_TABS = ["consonants", "monophthongs", "diphthongs"] as const;
 type IpaChartTab = (typeof IPA_CHART_TABS)[number];
 
-const COUNT_BY_TAB = {
-	consonants: PhonemeCount.consonants,
-	monophthongs: PhonemeCount.monophthongs,
-	diphthongs: PhonemeCount.diphthongs,
-} as const;
-
 export default function IpaChartPage() {
 	const tabs = useTranslations("ipa-chart.nav-tabs");
 	const hint = useTranslations("ipa-chart.hint");
+	const targetLanguage = getIpaChartTargetLanguage();
+	const counts = getLanguagePhonemeCount(targetLanguage);
+
+	const COUNT_BY_TAB = {
+		consonants: counts.consonants,
+		monophthongs: counts.monophthongs,
+		diphthongs: counts.diphthongs,
+	} as const;
 
 	const [activeTab, setActiveTab] = useQueryState(
 		"tab",
@@ -47,13 +50,13 @@ export default function IpaChartPage() {
 						<div className="flex flex-col gap-2">
 							<TabsList className="bg-background-strong self-center hidden sm:flex">
 								<TabsTrigger className="rounded-xl px-4" value="consonants">
-									{tabs("consonants")} ({PhonemeCount.consonants})
+									{tabs("consonants")} ({counts.consonants})
 								</TabsTrigger>
 								<TabsTrigger className="rounded-xl px-4" value="monophthongs">
-									{tabs("monophthongs")} ({PhonemeCount.monophthongs})
+									{tabs("monophthongs")} ({counts.monophthongs})
 								</TabsTrigger>
 								<TabsTrigger className="rounded-xl px-4" value="diphthongs">
-									{tabs("diphthongs")} ({PhonemeCount.diphthongs})
+									{tabs("diphthongs")} ({counts.diphthongs})
 								</TabsTrigger>
 							</TabsList>
 
@@ -67,13 +70,13 @@ export default function IpaChartPage() {
 								</SelectTrigger>
 								<SelectContent>
 									<SelectItem value="consonants">
-										{tabs("consonants")} ({PhonemeCount.consonants})
+										{tabs("consonants")} ({counts.consonants})
 									</SelectItem>
 									<SelectItem value="monophthongs">
-										{tabs("monophthongs")} ({PhonemeCount.monophthongs})
+										{tabs("monophthongs")} ({counts.monophthongs})
 									</SelectItem>
 									<SelectItem value="diphthongs">
-										{tabs("diphthongs")} ({PhonemeCount.diphthongs})
+										{tabs("diphthongs")} ({counts.diphthongs})
 									</SelectItem>
 								</SelectContent>
 							</Select>
@@ -84,13 +87,13 @@ export default function IpaChartPage() {
 						</div>
 
 						<TabsContent value="consonants">
-							<ConsonantsSection />
+							<ConsonantsSection targetLanguage={targetLanguage} />
 						</TabsContent>
 						<TabsContent value="monophthongs">
-							<VowelChartSection variant="monophthongs" />
+							<VowelChartSection variant="monophthongs" targetLanguage={targetLanguage} />
 						</TabsContent>
 						<TabsContent value="diphthongs">
-							<VowelChartSection variant="diphthongs" />
+							<VowelChartSection variant="diphthongs" targetLanguage={targetLanguage} />
 						</TabsContent>
 					</Tabs>
 				</div>

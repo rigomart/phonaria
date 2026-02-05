@@ -61,11 +61,20 @@ const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
 	NG: {
 		label: "Voiced velar nasal",
 	},
+	NY: {
+		label: "Voiced palatal nasal",
+	},
 	L: {
 		label: "Voiced alveolar lateral approximant",
 	},
 	R: {
 		label: "Voiced postalveolar approximant",
+	},
+	RX: {
+		label: "Voiced alveolar tap",
+	},
+	RR: {
+		label: "Voiced alveolar trill",
 	},
 	Y: {
 		label: "Voiced palatal approximant",
@@ -73,11 +82,20 @@ const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
 	W: {
 		label: "Voiced labial-velar approximant",
 	},
+	X: {
+		label: "Voiceless velar fricative",
+	},
+	YH: {
+		label: "Voiced palatal fricative",
+	},
 	I: {
 		label: "Close front unrounded vowel",
 	},
 	U: {
 		label: "Close back rounded vowel",
+	},
+	AA: {
+		label: "Open central unrounded vowel",
 	},
 	IX: {
 		label: "Near-close near-front unrounded vowel",
@@ -152,6 +170,14 @@ const featureDefinitions: PhonemeDetailsCopy["featureDefinitions"] = {
 				label: "Lateral approximant",
 				description:
 					"Tongue blocks the center at the ridge while air flows along the sides of the tongue.",
+			},
+			tap: {
+				label: "Tap",
+				description: "Tongue makes one quick contact with the alveolar ridge.",
+			},
+			trill: {
+				label: "Trill",
+				description: "Tongue vibrates in repeated contacts with the alveolar ridge.",
 			},
 		},
 	},

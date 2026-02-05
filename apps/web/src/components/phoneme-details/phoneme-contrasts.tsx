@@ -1,6 +1,6 @@
 import {
 	ContrastsByPhonemeIdRegistry,
-	FeatureValueByPhonemeRegistry,
+	getFeatureValueByPhonemeRegistryForLanguage,
 	getIpaForPhonemeId,
 	type PhonemeArticulatoryFeatureKey,
 	type PhonemeArticulatoryFeatures,
@@ -51,6 +51,7 @@ export function PhonemeDetailsContrasts() {
 
 	const t = useTranslations(`components.phoneme-details.contrasts`);
 	const { featureDefinitions } = usePhonemeDetailsCopy();
+	const featureValuesByPhoneme = getFeatureValueByPhonemeRegistryForLanguage("en");
 
 	const contrasts = ContrastsByPhonemeIdRegistry[phonemeId];
 	const currentIpa = getIpaForPhonemeId(phonemeId);
@@ -78,8 +79,8 @@ export function PhonemeDetailsContrasts() {
 								<span className="text-sm text-muted-foreground">{t("differs-in")}</span>
 								<div className="flex gap-1">
 									{contrast.contrastType.map((type) => {
-										const phonemeValueKey = FeatureValueByPhonemeRegistry[type][phonemeId];
-										const partnerValueKey = FeatureValueByPhonemeRegistry[type][contrast.partnerId];
+										const phonemeValueKey = featureValuesByPhoneme[type][phonemeId];
+										const partnerValueKey = featureValuesByPhoneme[type][contrast.partnerId];
 										const phonemeValueDef = getFeatureValueDefinition(
 											featureDefinitions,
 											type,

@@ -4,7 +4,9 @@ export type MannerOfArticulation =
 	| "affricate"
 	| "nasal"
 	| "approximant"
-	| "lateral-approximant";
+	| "lateral-approximant"
+	| "tap"
+	| "trill";
 
 export type PlaceOfArticulation =
 	| "bilabial"

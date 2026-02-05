@@ -17,9 +17,13 @@ export type {
 export type {
 	ConsonantSymbolId,
 	ConsonantSymbolIpa,
+	DiphthongSymbolId,
 	DiphthongSymbolIpa,
+	MonophthongSymbolId,
+	MonophthongSymbolIpa,
 	PhonemeSymbolId,
 	PhonemeSymbolIpa,
+	VowelSymbolId,
 	VowelSymbolIpa,
 } from "./ipa-registry";
 export {
@@ -28,9 +32,37 @@ export {
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	getPhonemeType,
+	isConsonantPhoneme,
+	isVowelPhoneme,
 	MonophthongIpaRegistry,
 	PhonemeCount,
 	PhonemeIpaRegistry,
 	VowelIpaRegistry,
 } from "./ipa-registry";
+export type {
+	EnglishConsonantSymbolId,
+	EnglishDiphthongSymbolId,
+	EnglishMonophthongSymbolId,
+	EnglishPhonemeSymbolId,
+	LanguageConsonantSymbolId,
+	LanguageDiphthongSymbolId,
+	LanguageMonophthongSymbolId,
+	LanguagePhonemeCount,
+	LanguagePhonemeId,
+	LanguagePhonemeInventory,
+	LanguagePhonemeSubset,
+	SpanishConsonantSymbolId,
+	SpanishDiphthongSymbolId,
+	SpanishMonophthongSymbolId,
+	SpanishPhonemeSymbolId,
+} from "./language-phoneme-inventories";
+export {
+	EnglishPhonemeInventory,
+	getLanguagePhonemeCount,
+	getLanguagePhonemeIds,
+	getLanguagePhonemeInventory,
+	isPhonemeInLanguage,
+	LanguagePhonemeInventoryRegistry,
+	SpanishPhonemeInventory,
+} from "./language-phoneme-inventories";
 export type { PhonemeCategory, TargetLanguage } from "./types";

@@ -8,6 +8,13 @@ Canonical phoneme metadata for the Phonaria workspace. Everything in this packag
 - Typed datasets that can be consumed by `apps/web`, helper scripts, or future tooling without duplication.
 - Metadata only. Consumers are responsible for presenting text, translations, or UX copy.
 
+## Terminology
+
+- **Target language**: the language being taught by phoneme data and feature inventories (for example `en` or `es`).
+- **Display language**: the UI language used to present labels and copy (for example `/en` or `/es` in `apps/web`).
+
+This package models target language. Display language belongs to the consuming app.
+
 ## Phoneme ID System
 
 Phoneme IDs are short, file-safe identifiers that prioritize phonetic intuition while remaining practical for filenames, URLs, and code references.
@@ -48,6 +55,8 @@ Phoneme IDs are short, file-safe identifiers that prioritize phonetic intuition 
 | `AU` | aʊ | MOUTH |
 | `OI` | ɔɪ | CHOICE |
 
+**Spanish inventory additions** (6 IDs): `AA` (/a/), `NY` (/ɲ/), `RX` (/ɾ/), `RR` (/r/), `X` (/x/), `YH` (/ʝ/).
+
 ### Stress Notation (Pronunciation Data Only)
 
 In `cmudict.json` and curated word lists, vowel tokens include stress suffixes:
@@ -69,7 +78,7 @@ Registry keys (`PhonemeSymbolId`) never include stress—stress is pronunciation
 
 When adding phonemes for new language varieties:
 
-1. **Check existing IDs first**: The current 40 IDs cover General American English. Many extend to other varieties.
+1. **Check existing IDs first**: The current shared inventory has 46 IDs across English and Spanish.
 2. **Follow the patterns**: Use the same conventions (uppercase, 1-2 chars, digraphs for complex sounds).
 3. **Avoid collisions**: New IDs must not conflict with existing ones. Consider prefixes for language-specific sounds (e.g., `FR` prefix for French-specific phonemes).
 4. **Update all registries**: New phonemes need entries in `ipa-registry.ts`, `phoneme-articulations.ts`, and optionally in contrast/pattern/allophone registries.
@@ -131,7 +140,9 @@ import {
 | File | Purpose |
 | --- | --- |
 | `ipa-registry.ts` | Universal IPA phoneme catalog mapping `PhonemeSymbolId` → IPA symbol. Includes sub-registries (consonants, monophthongs, diphthongs) and helper functions for category detection and IPA lookup. |
+| `language-phoneme-inventories.ts` | Language-specific phoneme grouping (`TargetLanguage` → consonants/monophthongs/diphthongs/vowels/phonemes) plus lookup/count helpers such as `getLanguagePhonemeInventory` and `getLanguagePhonemeCount`. |
 | `articulatory-features.ts` | Articulatory feature unions (`MannerOfArticulation`, `PlaceOfArticulation`, `VowelHeight`, etc.) and composite feature types used by language-specific articulation data. |
+| `phoneme-articulations.ts` | Shared articulation model types (`PhonemeArticulation`, `VowelType`) and feature lookup builder utilities used by language modules. |
 | `types.ts` | Shared base types: `TargetLanguage`, `PhonemeCategory`. |
 
 ### `src/en/` — English-specific
@@ -144,11 +155,17 @@ import {
 | `phoneme-patterns.ts` | Common spelling patterns per phoneme for downstream pattern explorers. Each example includes `word` and `phonemic` (IPA). |
 | `phoneme-allophones.ts` | Allophonic variations with context keys for each phoneme. Each example includes `word` and `phonemic` (IPA). |
 
+### `src/es/` — Spanish-specific
+
+| File | Purpose |
+| --- | --- |
+| `phoneme-articulations.ts` | Neutral Latin American Spanish articulation inventory for chart-ready consonants and monophthongs. |
+
 ### Root barrel
 
 | File | Purpose |
 | --- | --- |
-| `src/index.ts` | Re-exports core and English modules so consumers import from `@phonaria/phonetics-data`. |
+| `src/index.ts` | Re-exports core, English, and Spanish modules so consumers import from `@phonaria/phonetics-data`. |
 
 ## Usage examples
 

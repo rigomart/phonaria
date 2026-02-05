@@ -1,7 +1,10 @@
 "use client";
 
-import type { ConsonantSymbolId } from "@phonaria/phonetics-data";
-import { ConsonantArticulationRegistry, getIpaForPhonemeId } from "@phonaria/phonetics-data";
+import type { ConsonantSymbolId, TargetLanguage } from "@phonaria/phonetics-data";
+import {
+	getConsonantArticulationRegistryForLanguage,
+	getIpaForPhonemeId,
+} from "@phonaria/phonetics-data";
 import { Fragment, useMemo } from "react";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
@@ -23,12 +26,14 @@ interface ConsonantPhoneme {
 	place: PlaceOfArticulation;
 }
 
-export function ConsonantChart() {
+export function ConsonantChart({ targetLanguage }: { targetLanguage: TargetLanguage }) {
 	const { featureDefinitions } = usePhonemeDetailsCopy();
 	const consonants = useMemo(() => {
+		const consonantArticulations = getConsonantArticulationRegistryForLanguage(targetLanguage);
 		const phonemes: ConsonantPhoneme[] = [];
 
-		for (const [id, articulation] of Object.entries(ConsonantArticulationRegistry)) {
+		for (const [id, articulation] of Object.entries(consonantArticulations)) {
+			if (!articulation) continue;
 			const phonemeId = id as ConsonantSymbolId;
 			const ipa = getIpaForPhonemeId(phonemeId);
 
@@ -42,7 +47,7 @@ export function ConsonantChart() {
 		}
 
 		return phonemes;
-	}, []);
+	}, [targetLanguage]);
 
 	const cells = useMemo(() => {
 		const map = new Map<string, { voiceless?: ConsonantPhoneme; voiced?: ConsonantPhoneme }>();

@@ -1,6 +1,7 @@
-import { PhonemeCount } from "@phonaria/phonetics-data";
+import { getLanguagePhonemeCount } from "@phonaria/phonetics-data";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { getIpaChartTargetLanguage } from "../_lib/target-language";
 
 type Props = {
 	locale: Locale;
@@ -8,6 +9,8 @@ type Props = {
 
 export async function IntroSection({ locale }: Props) {
 	const t = await getTranslations({ locale, namespace: "ipa-chart.intro" });
+	const targetLanguage = getIpaChartTargetLanguage();
+	const counts = getLanguagePhonemeCount(targetLanguage);
 
 	return (
 		<section className="border-b bg-muted/30">
@@ -15,8 +18,8 @@ export async function IntroSection({ locale }: Props) {
 				<h1 className="text-base font-semibold tracking-tight">{t("title")}</h1>
 				<p className="mt-1 text-sm text-muted-foreground">
 					{t("description", {
-						consonantCount: PhonemeCount.consonants,
-						vowelCount: PhonemeCount.vowels,
+						consonantCount: counts.consonants,
+						vowelCount: counts.vowels,
 					})}
 				</p>
 			</div>

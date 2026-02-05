@@ -47,9 +47,13 @@ export type {
 export type {
 	ConsonantSymbolId,
 	ConsonantSymbolIpa,
+	DiphthongSymbolId,
 	DiphthongSymbolIpa,
+	MonophthongSymbolId,
+	MonophthongSymbolIpa,
 	PhonemeSymbolId,
 	PhonemeSymbolIpa,
+	VowelSymbolId,
 	VowelSymbolIpa,
 } from "./core/ipa-registry";
 export {
@@ -58,11 +62,39 @@ export {
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	getPhonemeType,
+	isConsonantPhoneme,
+	isVowelPhoneme,
 	MonophthongIpaRegistry,
 	PhonemeCount,
 	PhonemeIpaRegistry,
 	VowelIpaRegistry,
 } from "./core/ipa-registry";
+export type {
+	EnglishConsonantSymbolId,
+	EnglishDiphthongSymbolId,
+	EnglishMonophthongSymbolId,
+	EnglishPhonemeSymbolId,
+	LanguageConsonantSymbolId,
+	LanguageDiphthongSymbolId,
+	LanguageMonophthongSymbolId,
+	LanguagePhonemeCount,
+	LanguagePhonemeId,
+	LanguagePhonemeInventory,
+	LanguagePhonemeSubset,
+	SpanishConsonantSymbolId,
+	SpanishDiphthongSymbolId,
+	SpanishMonophthongSymbolId,
+	SpanishPhonemeSymbolId,
+} from "./core/language-phoneme-inventories";
+export {
+	EnglishPhonemeInventory,
+	getLanguagePhonemeCount,
+	getLanguagePhonemeIds,
+	getLanguagePhonemeInventory,
+	isPhonemeInLanguage,
+	LanguagePhonemeInventoryRegistry,
+	SpanishPhonemeInventory,
+} from "./core/language-phoneme-inventories";
 export type { PhonemeCategory, TargetLanguage } from "./core/types";
 export type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dict/types";
 export {
@@ -102,3 +134,25 @@ export {
 	PhonemeSpellingPatternRegistry,
 	type SpellingPattern,
 } from "./en/phoneme-patterns";
+export {
+	SpanishConsonantArticulationRegistry,
+	SpanishDiphthongVowelArticulationRegistry,
+	SpanishFeatureValueByPhonemeRegistry,
+	SpanishMonophthongVowelArticulationRegistry,
+	type SpanishPhonemeArticulation,
+	SpanishPhonemeArticulationRegistry,
+} from "./es/phoneme-articulations";
+export type {
+	LanguageConsonantArticulationRegistry,
+	LanguageDiphthongVowelArticulationRegistry,
+	LanguageFeatureValueByPhonemeRegistry,
+	LanguageMonophthongVowelArticulationRegistry,
+	LanguagePhonemeArticulationRegistry,
+} from "./language-articulation-registry";
+export {
+	getConsonantArticulationRegistryForLanguage,
+	getDiphthongVowelArticulationRegistryForLanguage,
+	getFeatureValueByPhonemeRegistryForLanguage,
+	getMonophthongVowelArticulationRegistryForLanguage,
+	getPhonemeArticulationRegistryForLanguage,
+} from "./language-articulation-registry";

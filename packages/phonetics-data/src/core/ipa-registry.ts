@@ -18,13 +18,18 @@ export const ConsonantIpaRegistry = {
 	SH: "ʃ",
 	Z: "z",
 	ZH: "ʒ",
+	X: "x",
+	YH: "ʝ",
 	J: "dʒ",
 	CH: "tʃ",
 	M: "m",
 	N: "n",
+	NY: "ɲ",
 	NG: "ŋ",
 	L: "l",
 	R: "ɹ",
+	RX: "ɾ",
+	RR: "r",
 	Y: "j",
 	W: "w",
 } as const;
@@ -37,6 +42,7 @@ export type ConsonantSymbolIpa = (typeof ConsonantIpaRegistry)[ConsonantSymbolId
 export const MonophthongIpaRegistry = {
 	I: "i",
 	U: "u",
+	AA: "a",
 	IX: "ɪ",
 	UX: "ʊ",
 	AX: "ə",
@@ -86,8 +92,12 @@ export type PhonemeSymbolIpa = (typeof PhonemeIpaRegistry)[PhonemeSymbolId];
 
 // Helper functions
 
-function isVowelPhoneme(phonemeId: PhonemeSymbolId): boolean {
+export function isVowelPhoneme(phonemeId: PhonemeSymbolId): boolean {
 	return phonemeId in VowelIpaRegistry;
+}
+
+export function isConsonantPhoneme(phonemeId: PhonemeSymbolId): boolean {
+	return phonemeId in ConsonantIpaRegistry;
 }
 
 export function getPhonemeCategory(phonemeId: PhonemeSymbolId): PhonemeCategory {
