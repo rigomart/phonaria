@@ -1,4 +1,4 @@
-import { cmudictStatsData } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data";
 import { Badge } from "@phonaria/ui/components/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@phonaria/ui/components/card";
 import type { Metadata } from "next";
@@ -43,7 +43,7 @@ export default function InsightsPage({ params }: PageProps<"/[locale]/insights">
 	const t = useTranslations("stats-page");
 	const format = useFormatter();
 
-	const lastUpdated = format.dateTime(cmudictStatsData.meta.generatedAt, "long-date-time");
+	const lastUpdated = format.dateTime(EnglishCmudictStatsData.meta.generatedAt, "long-date-time");
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">

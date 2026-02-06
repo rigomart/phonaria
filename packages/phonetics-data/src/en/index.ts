@@ -4,34 +4,38 @@ export {
 	type CmuStressLevel,
 	cmuVariantToIpa,
 	extractBasePhonemeId,
-	getArpabetForPhonemeId,
-	getCmuArpaForPhonemeId,
+	getArpabetForEnglishPhonemeId,
+	getCmuArpaForEnglishPhonemeId,
 	getPhonemeIdForCmuArpa,
 	isCmuArpaToken,
+	isEnglishPhonemeSymbolId,
 	isValidPhonemeToken,
 	PhonemeArpabetLabel,
+	tryExtractBasePhonemeId,
 } from "./cmu-arpa-registry";
 export {
 	type AllophoneExample,
+	EnglishPhonemeAllophoneRegistry,
+	type LanguagePhonemeAllophoneRegistry,
 	type PhonemeAllophone,
 	type PhonemeAllophoneContextKey,
-	PhonemeAllophoneRegistry,
 } from "./phoneme-allophones";
 export {
 	ConsonantArticulationRegistry,
 	DiphthongVowelArticulationRegistry,
-	FeatureValueByPhonemeRegistry,
 	MonophthongVowelArticulationRegistry,
 	type PhonemeArticulation,
 	PhonemeArticulationRegistry,
 	type VowelType,
 } from "./phoneme-articulations";
 export {
-	ContrastsByPhonemeIdRegistry,
+	EnglishContrastsByPhonemeIdRegistry,
+	type LanguagePhonemeContrastRegistry,
 	type PhonemeContrast,
 	type PhonemeContrastPair,
 } from "./phoneme-contrasts";
 export {
-	PhonemeSpellingPatternRegistry,
+	EnglishPhonemeSpellingPatternRegistry,
+	type LanguageSpellingPatternRegistry,
 	type SpellingPattern,
 } from "./phoneme-patterns";

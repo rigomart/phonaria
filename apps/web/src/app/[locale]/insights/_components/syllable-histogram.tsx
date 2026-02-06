@@ -1,6 +1,6 @@
 "use client";
 
-import { cmudictStatsData } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data";
 import {
 	Card,
 	CardContent,
@@ -18,7 +18,7 @@ import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export function SyllableHistogram() {
-	const stats = cmudictStatsData;
+	const stats = EnglishCmudictStatsData;
 	const t = useTranslations("stats-page.sections.syllables");
 
 	const chartData = stats.syllables.map((s) => ({

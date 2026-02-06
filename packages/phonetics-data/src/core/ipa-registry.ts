@@ -89,6 +89,7 @@ export const PhonemeIpaRegistry = {
 
 export type PhonemeSymbolId = keyof typeof PhonemeIpaRegistry;
 export type PhonemeSymbolIpa = (typeof PhonemeIpaRegistry)[PhonemeSymbolId];
+export type PhonemeType = "consonant" | "monophthong" | "diphthong";
 
 // Helper functions
 
@@ -108,7 +109,7 @@ export function getPhonemeCategory(phonemeId: PhonemeSymbolId): PhonemeCategory 
  * Returns the type of a phoneme ("consonant", "monophthong", "diphthong")
  * based on which registry it is found in.
  */
-export function getPhonemeType(phonemeId: PhonemeSymbolId) {
+export function getPhonemeType(phonemeId: PhonemeSymbolId): PhonemeType {
 	if (phonemeId in MonophthongIpaRegistry) {
 		return "monophthong";
 	}

@@ -1,123 +1,120 @@
 import type {
-	PhonemeArticulatoryFeatureKey,
-	PhonemeArticulatoryFeatures,
-} from "./core/articulatory-features";
-import type {
-	ConsonantSymbolId,
-	DiphthongSymbolId,
-	MonophthongSymbolId,
-	PhonemeSymbolId,
-} from "./core/ipa-registry";
-import type {
-	ConsonantArticulation,
-	DiphthongVowelArticulation,
-	MonophthongVowelArticulation,
-	PhonemeArticulation,
+	LanguageConsonantSymbolId,
+	LanguageDiphthongSymbolId,
+	LanguageMonophthongSymbolId,
+	LanguagePhonemeId,
+} from "./core/language-phoneme-inventories";
+import { getLanguagePhonemeIds } from "./core/language-phoneme-inventories";
+import {
+	buildFeatureValueByPhoneme,
+	type ConsonantArticulation,
+	type DiphthongVowelArticulation,
+	type FeatureValueLookup,
+	type MonophthongVowelArticulation,
+	type PhonemeArticulation,
 } from "./core/phoneme-articulations";
 import type { TargetLanguage } from "./core/types";
 import {
 	ConsonantArticulationRegistry,
 	DiphthongVowelArticulationRegistry,
-	FeatureValueByPhonemeRegistry,
 	MonophthongVowelArticulationRegistry,
 	PhonemeArticulationRegistry,
 } from "./en/phoneme-articulations";
 import {
 	SpanishConsonantArticulationRegistry,
 	SpanishDiphthongVowelArticulationRegistry,
-	SpanishFeatureValueByPhonemeRegistry,
 	SpanishMonophthongVowelArticulationRegistry,
 	SpanishPhonemeArticulationRegistry,
 } from "./es/phoneme-articulations";
 
-export type LanguageConsonantArticulationRegistry = Partial<
-	Record<ConsonantSymbolId, ConsonantArticulation>
->;
+export type LanguageConsonantArticulationRegistry<
+	TLanguage extends TargetLanguage = TargetLanguage,
+> = Record<LanguageConsonantSymbolId<TLanguage>, ConsonantArticulation>;
 
-export type LanguageMonophthongVowelArticulationRegistry = Partial<
-	Record<MonophthongSymbolId, MonophthongVowelArticulation>
->;
+export type LanguageMonophthongVowelArticulationRegistry<
+	TLanguage extends TargetLanguage = TargetLanguage,
+> = Record<LanguageMonophthongSymbolId<TLanguage>, MonophthongVowelArticulation>;
 
-export type LanguageDiphthongVowelArticulationRegistry = Partial<
-	Record<DiphthongSymbolId, DiphthongVowelArticulation>
->;
+export type LanguageDiphthongVowelArticulationRegistry<
+	TLanguage extends TargetLanguage = TargetLanguage,
+> = Record<LanguageDiphthongSymbolId<TLanguage>, DiphthongVowelArticulation>;
 
-export type LanguagePhonemeArticulationRegistry = Partial<
-	Record<PhonemeSymbolId, PhonemeArticulation>
->;
+export type LanguagePhonemeArticulationRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
+	Record<LanguagePhonemeId<TLanguage>, PhonemeArticulation>;
 
-export type LanguageFeatureValueByPhonemeRegistry = {
-	[K in PhonemeArticulatoryFeatureKey]: Partial<
-		Record<PhonemeSymbolId, PhonemeArticulatoryFeatures[K]>
-	>;
+export type LanguageFeatureValueByPhonemeRegistry<
+	TLanguage extends TargetLanguage = TargetLanguage,
+> = FeatureValueLookup<LanguagePhonemeId<TLanguage>>;
+
+export type LanguageArticulationData<TLanguage extends TargetLanguage> = {
+	consonants: LanguageConsonantArticulationRegistry<TLanguage>;
+	monophthongs: LanguageMonophthongVowelArticulationRegistry<TLanguage>;
+	diphthongs: LanguageDiphthongVowelArticulationRegistry<TLanguage>;
+	phonemes: LanguagePhonemeArticulationRegistry<TLanguage>;
+	featureValuesByPhoneme: LanguageFeatureValueByPhonemeRegistry<TLanguage>;
 };
 
-const languageConsonantArticulationRegistry: Record<
-	TargetLanguage,
-	LanguageConsonantArticulationRegistry
-> = {
-	en: ConsonantArticulationRegistry,
-	es: SpanishConsonantArticulationRegistry,
+const EnglishLanguageArticulationData = {
+	consonants: ConsonantArticulationRegistry,
+	monophthongs: MonophthongVowelArticulationRegistry,
+	diphthongs: DiphthongVowelArticulationRegistry,
+	phonemes: PhonemeArticulationRegistry,
+	featureValuesByPhoneme: buildFeatureValueByPhoneme(
+		getLanguagePhonemeIds("en"),
+		PhonemeArticulationRegistry,
+	),
+} satisfies LanguageArticulationData<"en">;
+
+const SpanishLanguageArticulationData = {
+	consonants: SpanishConsonantArticulationRegistry,
+	monophthongs: SpanishMonophthongVowelArticulationRegistry,
+	diphthongs: SpanishDiphthongVowelArticulationRegistry,
+	phonemes: SpanishPhonemeArticulationRegistry,
+	featureValuesByPhoneme: buildFeatureValueByPhoneme(
+		getLanguagePhonemeIds("es"),
+		SpanishPhonemeArticulationRegistry,
+	),
+} satisfies LanguageArticulationData<"es">;
+
+export const LanguageArticulationRegistry = {
+	en: EnglishLanguageArticulationData,
+	es: SpanishLanguageArticulationData,
+} satisfies {
+	[L in TargetLanguage]: LanguageArticulationData<L>;
 };
 
-const languageMonophthongArticulationRegistry: Record<
-	TargetLanguage,
-	LanguageMonophthongVowelArticulationRegistry
-> = {
-	en: MonophthongVowelArticulationRegistry,
-	es: SpanishMonophthongVowelArticulationRegistry,
-};
-
-const languageDiphthongArticulationRegistry: Record<
-	TargetLanguage,
-	LanguageDiphthongVowelArticulationRegistry
-> = {
-	en: DiphthongVowelArticulationRegistry,
-	es: SpanishDiphthongVowelArticulationRegistry,
-};
-
-const languagePhonemeArticulationRegistry: Record<
-	TargetLanguage,
-	LanguagePhonemeArticulationRegistry
-> = {
-	en: PhonemeArticulationRegistry,
-	es: SpanishPhonemeArticulationRegistry,
-};
-
-const languageFeatureValueByPhonemeRegistry: Record<
-	TargetLanguage,
-	LanguageFeatureValueByPhonemeRegistry
-> = {
-	en: FeatureValueByPhonemeRegistry as LanguageFeatureValueByPhonemeRegistry,
-	es: SpanishFeatureValueByPhonemeRegistry as LanguageFeatureValueByPhonemeRegistry,
-};
-
-export function getConsonantArticulationRegistryForLanguage(
-	language: TargetLanguage,
-): LanguageConsonantArticulationRegistry {
-	return languageConsonantArticulationRegistry[language];
+export function getLanguageArticulationData<TLanguage extends TargetLanguage>(
+	language: TLanguage,
+): (typeof LanguageArticulationRegistry)[TLanguage] {
+	return LanguageArticulationRegistry[language];
 }
 
-export function getMonophthongVowelArticulationRegistryForLanguage(
-	language: TargetLanguage,
-): LanguageMonophthongVowelArticulationRegistry {
-	return languageMonophthongArticulationRegistry[language];
+export function getConsonantArticulationRegistryForLanguage<TLanguage extends TargetLanguage>(
+	language: TLanguage,
+): (typeof LanguageArticulationRegistry)[TLanguage]["consonants"] {
+	return getLanguageArticulationData(language).consonants;
 }
 
-export function getDiphthongVowelArticulationRegistryForLanguage(
-	language: TargetLanguage,
-): LanguageDiphthongVowelArticulationRegistry {
-	return languageDiphthongArticulationRegistry[language];
+export function getMonophthongVowelArticulationRegistryForLanguage<
+	TLanguage extends TargetLanguage,
+>(language: TLanguage): (typeof LanguageArticulationRegistry)[TLanguage]["monophthongs"] {
+	return getLanguageArticulationData(language).monophthongs;
 }
 
-export function getPhonemeArticulationRegistryForLanguage(
-	language: TargetLanguage,
-): LanguagePhonemeArticulationRegistry {
-	return languagePhonemeArticulationRegistry[language];
+export function getDiphthongVowelArticulationRegistryForLanguage<TLanguage extends TargetLanguage>(
+	language: TLanguage,
+): (typeof LanguageArticulationRegistry)[TLanguage]["diphthongs"] {
+	return getLanguageArticulationData(language).diphthongs;
 }
 
-export function getFeatureValueByPhonemeRegistryForLanguage(
-	language: TargetLanguage,
-): LanguageFeatureValueByPhonemeRegistry {
-	return languageFeatureValueByPhonemeRegistry[language];
+export function getPhonemeArticulationRegistryForLanguage<TLanguage extends TargetLanguage>(
+	language: TLanguage,
+): (typeof LanguageArticulationRegistry)[TLanguage]["phonemes"] {
+	return getLanguageArticulationData(language).phonemes;
+}
+
+export function getFeatureValueByPhonemeRegistryForLanguage<TLanguage extends TargetLanguage>(
+	language: TLanguage,
+): (typeof LanguageArticulationRegistry)[TLanguage]["featureValuesByPhoneme"] {
+	return getLanguageArticulationData(language).featureValuesByPhoneme;
 }

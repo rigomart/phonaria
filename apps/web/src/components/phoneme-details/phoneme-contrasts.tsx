@@ -1,7 +1,8 @@
 import {
-	ContrastsByPhonemeIdRegistry,
+	EnglishContrastsByPhonemeIdRegistry,
 	getFeatureValueByPhonemeRegistryForLanguage,
 	getIpaForPhonemeId,
+	isPhonemeInLanguage,
 	type PhonemeArticulatoryFeatureKey,
 	type PhonemeArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
@@ -48,13 +49,17 @@ function getFeatureValueDefinition<K extends PhonemeArticulatoryFeatureKey>(
 
 export function PhonemeDetailsContrasts() {
 	const { phonemeId } = usePhonemeDetailsContext();
-
 	const t = useTranslations(`components.phoneme-details.contrasts`);
 	const { featureDefinitions } = usePhonemeDetailsCopy();
-	const featureValuesByPhoneme = getFeatureValueByPhonemeRegistryForLanguage("en");
+	if (!isPhonemeInLanguage("en", phonemeId)) {
+		return null;
+	}
 
-	const contrasts = ContrastsByPhonemeIdRegistry[phonemeId];
-	const currentIpa = getIpaForPhonemeId(phonemeId);
+	const featureValuesByPhoneme = getFeatureValueByPhonemeRegistryForLanguage("en");
+	const currentPhonemeId = phonemeId;
+
+	const contrasts = EnglishContrastsByPhonemeIdRegistry[currentPhonemeId];
+	const currentIpa = getIpaForPhonemeId(currentPhonemeId);
 	const vsLabel = t("vs");
 
 	if (!contrasts || contrasts.length === 0) {
@@ -69,18 +74,22 @@ export function PhonemeDetailsContrasts() {
 			</PhonemeSectionHeader>
 			<PhonemeSectionContent>
 				{contrasts.map((contrast) => {
-					const partnerIpa = getIpaForPhonemeId(contrast.partnerId);
+					if (!isPhonemeInLanguage("en", contrast.partnerId)) {
+						return null;
+					}
+					const partnerPhonemeId = contrast.partnerId;
+					const partnerIpa = getIpaForPhonemeId(partnerPhonemeId);
 					// Limit to first pair
 					const displayPairs = contrast.minimalPairs[0];
 
 					return (
-						<article key={contrast.partnerId} className="flex flex-col">
+						<article key={partnerPhonemeId} className="flex flex-col">
 							<header className="flex items-center border rounded-t-lg py-2 px-3 gap-2">
 								<span className="text-sm text-muted-foreground">{t("differs-in")}</span>
 								<div className="flex gap-1">
 									{contrast.contrastType.map((type) => {
-										const phonemeValueKey = featureValuesByPhoneme[type][phonemeId];
-										const partnerValueKey = featureValuesByPhoneme[type][contrast.partnerId];
+										const phonemeValueKey = featureValuesByPhoneme[type][currentPhonemeId];
+										const partnerValueKey = featureValuesByPhoneme[type][partnerPhonemeId];
 										const phonemeValueDef = getFeatureValueDefinition(
 											featureDefinitions,
 											type,

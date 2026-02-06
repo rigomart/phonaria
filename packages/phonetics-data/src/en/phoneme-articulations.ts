@@ -4,14 +4,12 @@ import type {
 	EnglishMonophthongSymbolId,
 	EnglishPhonemeSymbolId,
 } from "../core/language-phoneme-inventories";
-import {
-	buildFeatureValueByPhoneme,
-	type ConsonantArticulation,
-	type DiphthongVowelArticulation,
-	type FeatureValueLookup,
-	type MonophthongVowelArticulation,
-	type PhonemeArticulation,
-	type VowelType,
+import type {
+	ConsonantArticulation,
+	DiphthongVowelArticulation,
+	MonophthongVowelArticulation,
+	PhonemeArticulation,
+	VowelType,
 } from "../core/phoneme-articulations";
 
 export type { PhonemeArticulation, VowelType };
@@ -310,6 +308,3 @@ export const PhonemeArticulationRegistry = {
 	...MonophthongVowelArticulationRegistry,
 	...DiphthongVowelArticulationRegistry,
 } as const satisfies Record<EnglishPhonemeSymbolId, PhonemeArticulation>;
-
-export const FeatureValueByPhonemeRegistry: FeatureValueLookup<EnglishPhonemeSymbolId> =
-	buildFeatureValueByPhoneme(PhonemeArticulationRegistry);

@@ -114,10 +114,10 @@ export function getPhonemeIdForCmuArpa(token: CmuArpaToken): EnglishPhonemeSymbo
  * @param phonemeId - The phoneme symbol ID.
  * @returns Array of CMU ARPA tokens that map to this phoneme.
  * @example
- * getCmuArpaForPhonemeId("I") // ["IY0", "IY1", "IY2"]
- * getCmuArpaForPhonemeId("P") // ["P"]
+ * getCmuArpaForEnglishPhonemeId("I") // ["IY0", "IY1", "IY2"]
+ * getCmuArpaForEnglishPhonemeId("P") // ["P"]
  */
-export function getCmuArpaForPhonemeId(phonemeId: PhonemeSymbolId): CmuArpaToken[] {
+export function getCmuArpaForEnglishPhonemeId(phonemeId: EnglishPhonemeSymbolId): CmuArpaToken[] {
 	return Object.entries(CmuArpaRegistry)
 		.filter(([, id]) => id === phonemeId)
 		.map(([token]) => token as CmuArpaToken);
@@ -184,13 +184,10 @@ export const PhonemeArpabetLabel = {
  * @param phonemeId - The phoneme symbol ID.
  * @returns The standard ARPABET label.
  * @example
- * getArpabetForPhonemeId("P") // "P"
- * getArpabetForPhonemeId("AX") // "AX"
+ * getArpabetForEnglishPhonemeId("P") // "P"
+ * getArpabetForEnglishPhonemeId("AX") // "AX"
  */
-export function getArpabetForPhonemeId(phonemeId: PhonemeSymbolId): string {
-	if (!isEnglishPhonemeSymbolId(phonemeId)) {
-		throw new Error(`No CMU ARPABET label exists for non-English phoneme ID: ${phonemeId}`);
-	}
+export function getArpabetForEnglishPhonemeId(phonemeId: EnglishPhonemeSymbolId): string {
 	return PhonemeArpabetLabel[phonemeId];
 }
 
@@ -217,16 +214,27 @@ export function isCmuArpaToken(token: string): token is CmuArpaToken {
  * extractBasePhonemeId("P") // "P"
  * extractBasePhonemeId("AX0") // "AX"
  */
+export function tryExtractBasePhonemeId(token: string): PhonemeSymbolId | null {
+	const baseId = token.replace(/[012]$/, "");
+	if (!(baseId in PhonemeIpaRegistry)) {
+		return null;
+	}
+	return baseId as PhonemeSymbolId;
+}
+
 export function extractBasePhonemeId(token: string): PhonemeSymbolId {
-	return token.replace(/[012]$/, "") as PhonemeSymbolId;
+	const baseId = tryExtractBasePhonemeId(token);
+	if (!baseId) {
+		throw new Error(`Invalid phoneme token: ${token}`);
+	}
+	return baseId;
 }
 
 /**
  * Checks if a token (with stress removed) is a valid phoneme ID.
  */
 export function isValidPhonemeToken(token: string): boolean {
-	const baseId = extractBasePhonemeId(token);
-	return baseId in PhonemeIpaRegistry;
+	return tryExtractBasePhonemeId(token) !== null;
 }
 
 /**
@@ -245,12 +253,14 @@ export function cmuVariantToIpa(variant: string): string {
 	const ipaSymbols: string[] = [];
 
 	for (const token of tokens) {
-		if (isValidPhonemeToken(token)) {
-			const phonemeId = extractBasePhonemeId(token);
-			const ipa = PhonemeIpaRegistry[phonemeId];
-			if (ipa) {
-				ipaSymbols.push(ipa);
-			}
+		const phonemeId = tryExtractBasePhonemeId(token);
+		if (!phonemeId) {
+			continue;
+		}
+
+		const ipa = PhonemeIpaRegistry[phonemeId];
+		if (ipa) {
+			ipaSymbols.push(ipa);
 		}
 	}
 

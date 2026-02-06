@@ -8,7 +8,7 @@ vi.mock("@phonaria/phonetics-data", async () => {
 	);
 	return {
 		...actual,
-		curatedTop1k: {
+		EnglishCuratedTop1k: {
 			meta: { tier: "1k", wordCount: 3 },
 			words: {
 				// "the" has multiple variants (phoneme ID format)
@@ -17,7 +17,7 @@ vi.mock("@phonaria/phonetics-data", async () => {
 				world: ["W ER1 L D"],
 			},
 		},
-		curatedTop10k: {
+		EnglishCuratedTop10k: {
 			meta: { tier: "10k", wordCount: 5 },
 			words: {
 				// Tier 2 includes tier 1 words plus additional (phoneme ID format)

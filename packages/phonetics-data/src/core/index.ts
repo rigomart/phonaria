@@ -4,6 +4,7 @@ export type {
 	MannerOfArticulation,
 	PhonemeArticulatoryFeatureKey,
 	PhonemeArticulatoryFeatures,
+	PhonemeArticulatoryFeatureValueMap,
 	PlaceOfArticulation,
 	Rhoticity,
 	Voicing,
@@ -14,6 +15,7 @@ export type {
 	VowelRoundness,
 	VowelTenseness,
 } from "./articulatory-features";
+export { PHONEME_ARTICULATORY_FEATURE_KEYS } from "./articulatory-features";
 export type {
 	ConsonantSymbolId,
 	ConsonantSymbolIpa,
@@ -23,6 +25,7 @@ export type {
 	MonophthongSymbolIpa,
 	PhonemeSymbolId,
 	PhonemeSymbolIpa,
+	PhonemeType,
 	VowelSymbolId,
 	VowelSymbolIpa,
 } from "./ipa-registry";
@@ -65,4 +68,14 @@ export {
 	LanguagePhonemeInventoryRegistry,
 	SpanishPhonemeInventory,
 } from "./language-phoneme-inventories";
-export type { PhonemeCategory, TargetLanguage } from "./types";
+export type {
+	ConsonantArticulation,
+	DiphthongVowelArticulation,
+	DiphthongVowelArticulatoryFeatures,
+	FeatureValueLookup,
+	MonophthongVowelArticulation,
+	PhonemeArticulation,
+	VowelType,
+} from "./phoneme-articulations";
+export { buildFeatureValueByPhoneme } from "./phoneme-articulations";
+export { type PhonemeCategory, TARGET_LANGUAGES, type TargetLanguage } from "./types";

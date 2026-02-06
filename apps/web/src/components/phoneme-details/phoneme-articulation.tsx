@@ -1,6 +1,7 @@
 import {
 	getIpaForPhonemeId,
 	getPhonemeArticulationRegistryForLanguage,
+	isPhonemeInLanguage,
 	type PhonemeArticulation,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
@@ -34,17 +35,15 @@ import { VowelChartCard } from "./phoneme-vowel-chart";
 export function PhonemeDetailsArticulation() {
 	const { phonemeId } = usePhonemeDetailsContext();
 	const articulationRegistry = getPhonemeArticulationRegistryForLanguage("en");
-
-	const articulation = articulationRegistry[phonemeId];
 	const { phonemeDetailsById, featureDefinitions, diphthongTargetDefinitions } =
 		usePhonemeDetailsCopy();
-	const phonemeLabel = phonemeDetailsById[phonemeId].label;
-
 	const t = useTranslations(`components.phoneme-details.articulation`);
-
-	if (!articulation) {
+	if (!isPhonemeInLanguage("en", phonemeId)) {
 		return null;
 	}
+
+	const articulation = articulationRegistry[phonemeId];
+	const phonemeLabel = phonemeDetailsById[phonemeId].label;
 
 	return (
 		<PhonemeSection>

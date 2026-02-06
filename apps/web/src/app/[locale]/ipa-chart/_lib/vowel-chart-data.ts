@@ -1,6 +1,7 @@
 import {
 	getDiphthongVowelArticulationRegistryForLanguage,
 	getIpaForPhonemeId,
+	getLanguagePhonemeIds,
 	getMonophthongVowelArticulationRegistryForLanguage,
 	type PhonemeArticulation,
 	type PhonemeSymbolId,
@@ -31,44 +32,78 @@ export type DiphthongVowelChartEntry = {
 
 export type VowelChartEntry = StaticVowelChartEntry | DiphthongVowelChartEntry;
 
+function getEnglishStaticVowelEntries(phonemeDetailsById: PhonemeLabelById) {
+	const monophthongs = getMonophthongVowelArticulationRegistryForLanguage("en");
+	const monophthongIds = getLanguagePhonemeIds("en", "monophthongs");
+
+	return monophthongIds.map((phonemeId) => {
+		const articulation = monophthongs[phonemeId];
+		const ipa = getIpaForPhonemeId(phonemeId);
+		return {
+			id: phonemeId,
+			ipa,
+			label: phonemeDetailsById[phonemeId].label,
+			vowelType: articulation.vowelType,
+			features: articulation.features,
+		} satisfies StaticVowelChartEntry;
+	});
+}
+
+function getSpanishStaticVowelEntries(phonemeDetailsById: PhonemeLabelById) {
+	const monophthongs = getMonophthongVowelArticulationRegistryForLanguage("es");
+	const monophthongIds = getLanguagePhonemeIds("es", "monophthongs");
+
+	return monophthongIds.map((phonemeId) => {
+		const articulation = monophthongs[phonemeId];
+		const ipa = getIpaForPhonemeId(phonemeId);
+		return {
+			id: phonemeId,
+			ipa,
+			label: phonemeDetailsById[phonemeId].label,
+			vowelType: articulation.vowelType,
+			features: articulation.features,
+		} satisfies StaticVowelChartEntry;
+	});
+}
+
 export function getStaticVowelEntries(
 	phonemeDetailsById: PhonemeLabelById,
 	targetLanguage: TargetLanguage,
 ) {
-	const monophthongs = getMonophthongVowelArticulationRegistryForLanguage(targetLanguage);
-	return Object.entries(monophthongs).flatMap(([id, articulation]) => {
-		if (!articulation) return [];
-		const phonemeId = id as PhonemeSymbolId;
+	if (targetLanguage === "en") {
+		return getEnglishStaticVowelEntries(phonemeDetailsById);
+	}
+	return getSpanishStaticVowelEntries(phonemeDetailsById);
+}
+
+function getEnglishDiphthongVowelEntries(phonemeDetailsById: PhonemeLabelById) {
+	const diphthongs = getDiphthongVowelArticulationRegistryForLanguage("en");
+	const diphthongIds = getLanguagePhonemeIds("en", "diphthongs");
+
+	return diphthongIds.map((phonemeId) => {
+		const articulation = diphthongs[phonemeId];
 		const ipa = getIpaForPhonemeId(phonemeId);
-		return [
-			{
-				id: phonemeId,
-				ipa,
-				label: phonemeDetailsById[phonemeId].label,
-				vowelType: articulation.vowelType,
-				features: articulation.features,
-			} satisfies StaticVowelChartEntry,
-		];
+		return {
+			id: phonemeId,
+			ipa,
+			label: phonemeDetailsById[phonemeId].label,
+			vowelType: articulation.vowelType,
+			features: articulation.features,
+		} satisfies DiphthongVowelChartEntry;
 	});
+}
+
+function getSpanishDiphthongVowelEntries(_phonemeDetailsById: PhonemeLabelById) {
+	const entries: DiphthongVowelChartEntry[] = [];
+	return entries;
 }
 
 export function getDiphthongVowelEntries(
 	phonemeDetailsById: PhonemeLabelById,
 	targetLanguage: TargetLanguage,
 ) {
-	const diphthongs = getDiphthongVowelArticulationRegistryForLanguage(targetLanguage);
-	return Object.entries(diphthongs).flatMap(([id, articulation]) => {
-		if (!articulation) return [];
-		const phonemeId = id as PhonemeSymbolId;
-		const ipa = getIpaForPhonemeId(phonemeId);
-		return [
-			{
-				id: phonemeId,
-				ipa,
-				label: phonemeDetailsById[phonemeId].label,
-				vowelType: articulation.vowelType,
-				features: articulation.features,
-			} satisfies DiphthongVowelChartEntry,
-		];
-	});
+	if (targetLanguage === "en") {
+		return getEnglishDiphthongVowelEntries(phonemeDetailsById);
+	}
+	return getSpanishDiphthongVowelEntries(phonemeDetailsById);
 }

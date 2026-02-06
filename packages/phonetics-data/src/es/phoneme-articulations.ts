@@ -4,13 +4,11 @@ import type {
 	SpanishMonophthongSymbolId,
 	SpanishPhonemeSymbolId,
 } from "../core/language-phoneme-inventories";
-import {
-	buildFeatureValueByPhoneme,
-	type ConsonantArticulation,
-	type DiphthongVowelArticulation,
-	type FeatureValueLookup,
-	type MonophthongVowelArticulation,
-	type PhonemeArticulation,
+import type {
+	ConsonantArticulation,
+	DiphthongVowelArticulation,
+	MonophthongVowelArticulation,
+	PhonemeArticulation,
 } from "../core/phoneme-articulations";
 
 export type SpanishPhonemeArticulation = PhonemeArticulation;
@@ -163,6 +161,3 @@ export const SpanishPhonemeArticulationRegistry = {
 	...SpanishMonophthongVowelArticulationRegistry,
 	...SpanishDiphthongVowelArticulationRegistry,
 } as const satisfies Record<SpanishPhonemeSymbolId, PhonemeArticulation>;
-
-export const SpanishFeatureValueByPhonemeRegistry: FeatureValueLookup<SpanishPhonemeSymbolId> =
-	buildFeatureValueByPhoneme(SpanishPhonemeArticulationRegistry);

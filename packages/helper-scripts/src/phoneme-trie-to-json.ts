@@ -1,8 +1,11 @@
 import * as path from "node:path";
 import cmudictJson from "../../phonetics-data/data/en/dict/cmudict.json";
-import type { PhonemeSymbolId } from "../../phonetics-data/src/core/ipa-registry";
 import type { CmudictPayload } from "../../phonetics-data/src/dict/types";
-import { getArpabetForPhonemeId } from "../../phonetics-data/src/en/cmu-arpa-registry";
+import {
+	getArpabetForEnglishPhonemeId,
+	isEnglishPhonemeSymbolId,
+	tryExtractBasePhonemeId,
+} from "../../phonetics-data/src/en/cmu-arpa-registry";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 type PhonemeTrieNode = {
@@ -56,19 +59,6 @@ function normalizeCmuWord(input: string): string {
 	return base.toUpperCase();
 }
 
-/**
- * Extracts the base phoneme ID from a stressed phoneme token.
- * Our cmudict.json format uses phoneme IDs with optional stress suffix (0, 1, 2).
- * @example
- * extractBasePhonemeId("AU1") // "AU"
- * extractBasePhonemeId("P") // "P"
- * extractBasePhonemeId("AX") // "AX"
- */
-function extractBasePhonemeId(token: string): PhonemeSymbolId {
-	// Remove trailing stress marker (0, 1, 2) if present
-	return token.replace(/[012]$/, "") as PhonemeSymbolId;
-}
-
 function buildTrieFromCmudict(cmudict: CmudictPayload): {
 	trie: PhonemeTrieNode;
 	phonemePathCount: number;
@@ -88,17 +78,16 @@ function buildTrieFromCmudict(cmudict: CmudictPayload): {
 			let allMapped = true;
 
 			for (const token of tokens) {
-				try {
-					// Extract base phoneme ID (remove stress suffix)
-					const phonemeId = extractBasePhonemeId(token);
-					// Get standard ARPABET label for trie key
-					const standardArpabet = getArpabetForPhonemeId(phonemeId);
-					standardArpabetPhonemes.push(standardArpabet);
-				} catch {
+				const phonemeId = tryExtractBasePhonemeId(token);
+				if (!phonemeId || !isEnglishPhonemeSymbolId(phonemeId)) {
 					console.warn(`Warning: Could not map token '${token}' for word '${word}'`);
 					allMapped = false;
 					break;
 				}
+
+				// Get standard ARPABET label for trie key
+				const standardArpabet = getArpabetForEnglishPhonemeId(phonemeId);
+				standardArpabetPhonemes.push(standardArpabet);
 			}
 
 			if (allMapped && standardArpabetPhonemes.length > 0) {

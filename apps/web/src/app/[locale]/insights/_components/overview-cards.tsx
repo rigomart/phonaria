@@ -1,6 +1,6 @@
 "use client";
 
-import { cmudictStatsData } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data";
 import { BookOpen, Layers, Volume2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -9,24 +9,24 @@ const CARD_CONFIG = [
 		key: "words",
 		translationKey: "words",
 		icon: BookOpen,
-		value: (stats: typeof cmudictStatsData) => stats.overview.words,
+		value: (stats: typeof EnglishCmudictStatsData) => stats.overview.words,
 	},
 	{
 		key: "variants",
 		translationKey: "variants",
 		icon: Volume2,
-		value: (stats: typeof cmudictStatsData) => stats.overview.variants,
+		value: (stats: typeof EnglishCmudictStatsData) => stats.overview.variants,
 	},
 	{
 		key: "multiPron",
 		translationKey: "multiple-pronunciations",
 		icon: Layers,
-		value: (stats: typeof cmudictStatsData) => stats.meta.multiplePronunciationCount,
+		value: (stats: typeof EnglishCmudictStatsData) => stats.meta.multiplePronunciationCount,
 	},
 ] as const;
 
 export function OverviewCards() {
-	const stats = cmudictStatsData;
+	const stats = EnglishCmudictStatsData;
 	const t = useTranslations("stats-page.sections.overview.cards");
 
 	return (

@@ -4,6 +4,7 @@ import type { ConsonantSymbolId, TargetLanguage } from "@phonaria/phonetics-data
 import {
 	getConsonantArticulationRegistryForLanguage,
 	getIpaForPhonemeId,
+	getLanguagePhonemeIds,
 } from "@phonaria/phonetics-data";
 import { Fragment, useMemo } from "react";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
@@ -26,28 +27,61 @@ interface ConsonantPhoneme {
 	place: PlaceOfArticulation;
 }
 
+function getEnglishConsonantPhonemes(): ConsonantPhoneme[] {
+	const consonantArticulations = getConsonantArticulationRegistryForLanguage("en");
+	const consonantIds = getLanguagePhonemeIds("en", "consonants");
+	const phonemes: ConsonantPhoneme[] = [];
+
+	for (const phonemeId of consonantIds) {
+		const articulation = consonantArticulations[phonemeId];
+		const ipa = getIpaForPhonemeId(phonemeId);
+
+		phonemes.push({
+			id: phonemeId,
+			symbol: ipa,
+			voicing: articulation.features.voicing,
+			manner: articulation.features.manner,
+			place: articulation.features.place,
+		});
+	}
+
+	return phonemes;
+}
+
+function getSpanishConsonantPhonemes(): ConsonantPhoneme[] {
+	const consonantArticulations = getConsonantArticulationRegistryForLanguage("es");
+	const consonantIds = getLanguagePhonemeIds("es", "consonants");
+	const phonemes: ConsonantPhoneme[] = [];
+
+	for (const phonemeId of consonantIds) {
+		const articulation = consonantArticulations[phonemeId];
+		const ipa = getIpaForPhonemeId(phonemeId);
+
+		phonemes.push({
+			id: phonemeId,
+			symbol: ipa,
+			voicing: articulation.features.voicing,
+			manner: articulation.features.manner,
+			place: articulation.features.place,
+		});
+	}
+
+	return phonemes;
+}
+
+function getConsonantPhonemesForLanguage(targetLanguage: TargetLanguage): ConsonantPhoneme[] {
+	if (targetLanguage === "en") {
+		return getEnglishConsonantPhonemes();
+	}
+	return getSpanishConsonantPhonemes();
+}
+
 export function ConsonantChart({ targetLanguage }: { targetLanguage: TargetLanguage }) {
 	const { featureDefinitions } = usePhonemeDetailsCopy();
-	const consonants = useMemo(() => {
-		const consonantArticulations = getConsonantArticulationRegistryForLanguage(targetLanguage);
-		const phonemes: ConsonantPhoneme[] = [];
-
-		for (const [id, articulation] of Object.entries(consonantArticulations)) {
-			if (!articulation) continue;
-			const phonemeId = id as ConsonantSymbolId;
-			const ipa = getIpaForPhonemeId(phonemeId);
-
-			phonemes.push({
-				id: phonemeId,
-				symbol: ipa,
-				voicing: articulation.features.voicing,
-				manner: articulation.features.manner,
-				place: articulation.features.place,
-			});
-		}
-
-		return phonemes;
-	}, [targetLanguage]);
+	const consonants = useMemo(
+		() => getConsonantPhonemesForLanguage(targetLanguage),
+		[targetLanguage],
+	);
 
 	const cells = useMemo(() => {
 		const map = new Map<string, { voiceless?: ConsonantPhoneme; voiced?: ConsonantPhoneme }>();

@@ -1,7 +1,7 @@
 /**
  * Shared utilities for tiered phoneme lookup.
  */
-import { type CuratedWordData, curatedTop1k } from "@phonaria/phonetics-data";
+import { type CuratedWordData, EnglishCuratedTop1k } from "@phonaria/phonetics-data";
 import type { G2PSyllable } from "../g2p/model";
 import { syllabify } from "../g2p/syllabifier";
 
@@ -18,7 +18,7 @@ let tier2Cache: CuratedWordData | null = null;
 export async function loadTier2(): Promise<CuratedWordData> {
 	if (!tier2Cache) {
 		const module = await import("@phonaria/phonetics-data");
-		tier2Cache = module.curatedTop10k;
+		tier2Cache = module.EnglishCuratedTop10k;
 	}
 	return tier2Cache;
 }
@@ -36,7 +36,7 @@ export function cmuToSyllables(cmuVariant: string): G2PSyllable[] {
  * Returns array of CMU variants or null if not found.
  */
 export function lookupTier1(normalizedWord: string): string[] | null {
-	return curatedTop1k.words[normalizedWord] ?? null;
+	return EnglishCuratedTop1k.words[normalizedWord] ?? null;
 }
 
 /**

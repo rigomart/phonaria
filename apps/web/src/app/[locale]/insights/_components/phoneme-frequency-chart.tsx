@@ -1,7 +1,7 @@
 "use client";
 
 import {
-	cmudictStatsData,
+	EnglishCmudictStatsData,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeCategory,
@@ -38,7 +38,7 @@ type ChartDataItem = {
 };
 
 export function PhonemeFrequencyChart() {
-	const stats = cmudictStatsData;
+	const stats = EnglishCmudictStatsData;
 	const t = useTranslations("stats-page.sections.phonemes");
 	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 	const [selectedPhonemeId, setSelectedPhonemeId] = useState<PhonemeSymbolId | null>(null);

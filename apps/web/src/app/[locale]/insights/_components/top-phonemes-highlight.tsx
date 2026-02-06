@@ -1,7 +1,7 @@
 "use client";
 
 import {
-	cmudictStatsData,
+	EnglishCmudictStatsData,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeSymbolId,
@@ -28,7 +28,7 @@ function getTopPhonemesByCategory(
 	phonemeDetailsById: Record<PhonemeSymbolId, { label: string }>,
 	category: "vowel" | "consonant",
 ): PhonemeItem[] {
-	return [...cmudictStatsData.phonemes]
+	return [...EnglishCmudictStatsData.phonemes]
 		.filter((p) => getPhonemeCategory(p.phonemeId) === category)
 		.sort((a, b) => b.wordCoverage.percentage - a.wordCoverage.percentage)
 		.slice(0, TOP_COUNT)

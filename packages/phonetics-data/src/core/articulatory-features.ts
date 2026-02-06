@@ -43,8 +43,6 @@ export type ConsonantArticulatoryFeatures = {
 	manner: MannerOfArticulation;
 };
 
-export type ConsonantPhonemeArticulatoryFeatureKey = keyof ConsonantArticulatoryFeatures;
-
 export type VowelArticulatoryFeatures = {
 	height: VowelHeight;
 	backness: VowelBackness;
@@ -53,9 +51,31 @@ export type VowelArticulatoryFeatures = {
 	rhoticity?: Rhoticity;
 };
 
-export type VowelPhonemeArticulatoryFeatureKey = keyof VowelArticulatoryFeatures;
+export type PhonemeArticulatoryFeatureValueMap = {
+	voicing: Voicing;
+	place: PlaceOfArticulation;
+	manner: MannerOfArticulation;
+	height: VowelHeight;
+	backness: VowelBackness;
+	roundness: VowelRoundness;
+	tenseness: VowelTenseness;
+	rhoticity?: Rhoticity;
+};
 
-export type PhonemeArticulatoryFeatures = ConsonantArticulatoryFeatures & VowelArticulatoryFeatures;
-export type PhonemeArticulatoryFeatureKey =
-	| ConsonantPhonemeArticulatoryFeatureKey
-	| VowelPhonemeArticulatoryFeatureKey;
+export type ConsonantPhonemeArticulatoryFeatureKey = keyof ConsonantArticulatoryFeatures;
+export type VowelPhonemeArticulatoryFeatureKey = keyof VowelArticulatoryFeatures;
+export type PhonemeArticulatoryFeatureKey = keyof PhonemeArticulatoryFeatureValueMap;
+
+// Backwards-compatible alias used throughout app data and tests.
+export type PhonemeArticulatoryFeatures = PhonemeArticulatoryFeatureValueMap;
+
+export const PHONEME_ARTICULATORY_FEATURE_KEYS = [
+	"voicing",
+	"place",
+	"manner",
+	"height",
+	"backness",
+	"roundness",
+	"tenseness",
+	"rhoticity",
+] as const satisfies readonly PhonemeArticulatoryFeatureKey[];

@@ -1,7 +1,6 @@
 export {
 	SpanishConsonantArticulationRegistry,
 	SpanishDiphthongVowelArticulationRegistry,
-	SpanishFeatureValueByPhonemeRegistry,
 	SpanishMonophthongVowelArticulationRegistry,
 	type SpanishPhonemeArticulation,
 	SpanishPhonemeArticulationRegistry,

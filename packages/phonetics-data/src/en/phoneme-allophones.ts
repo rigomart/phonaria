@@ -1,4 +1,8 @@
-import type { PhonemeSymbolId } from "../core/ipa-registry";
+import type {
+	EnglishPhonemeSymbolId,
+	LanguagePhonemeId,
+} from "../core/language-phoneme-inventories";
+import type { TargetLanguage } from "../core/types";
 
 export type AllophoneExample = {
 	word: string;
@@ -121,6 +125,11 @@ export type PhonemeAllophoneContextKey = AllophoneCollections[number]["contextKe
 
 export type PhonemeAllophone = BasePhonemeAllophone<PhonemeAllophoneContextKey>;
 
-export const PhonemeAllophoneRegistry: Partial<
-	Record<PhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>
+export const EnglishPhonemeAllophoneRegistry: Partial<
+	Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>
 > = phonemeAllophonesData;
+
+export type LanguagePhonemeAllophoneRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
+	TLanguage extends "en"
+		? Partial<Record<LanguagePhonemeId<"en">, ReadonlyArray<PhonemeAllophone>>>
+		: Partial<Record<LanguagePhonemeId<TLanguage>, ReadonlyArray<never>>>;

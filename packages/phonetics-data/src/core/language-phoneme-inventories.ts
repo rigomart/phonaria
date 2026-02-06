@@ -5,7 +5,7 @@ import type {
 	PhonemeSymbolId,
 	VowelSymbolId,
 } from "./ipa-registry";
-import type { TargetLanguage } from "./types";
+import { TARGET_LANGUAGES, type TargetLanguage } from "./types";
 
 const ENGLISH_CONSONANTS = [
 	"P",
@@ -147,9 +147,13 @@ export const EnglishPhonemeInventory = LanguagePhonemeInventoryRegistry.en;
 export const SpanishPhonemeInventory = LanguagePhonemeInventoryRegistry.es;
 
 const languagePhonemeSets: Record<TargetLanguage, ReadonlySet<PhonemeSymbolId>> = {
-	en: new Set(LanguagePhonemeInventoryRegistry.en.phonemes),
-	es: new Set(LanguagePhonemeInventoryRegistry.es.phonemes),
+	en: new Set(),
+	es: new Set(),
 };
+
+for (const language of TARGET_LANGUAGES) {
+	languagePhonemeSets[language] = new Set(LanguagePhonemeInventoryRegistry[language].phonemes);
+}
 
 export function getLanguagePhonemeInventory<TLanguage extends TargetLanguage>(
 	language: TLanguage,
@@ -182,21 +186,19 @@ export type LanguagePhonemeCount = {
 	total: number;
 };
 
+function createLanguagePhonemeCount(inventory: LanguagePhonemeInventory): LanguagePhonemeCount {
+	return {
+		consonants: inventory.consonants.length,
+		monophthongs: inventory.monophthongs.length,
+		diphthongs: inventory.diphthongs.length,
+		vowels: inventory.vowels.length,
+		total: inventory.phonemes.length,
+	};
+}
+
 const languagePhonemeCountRegistry: Record<TargetLanguage, LanguagePhonemeCount> = {
-	en: {
-		consonants: LanguagePhonemeInventoryRegistry.en.consonants.length,
-		monophthongs: LanguagePhonemeInventoryRegistry.en.monophthongs.length,
-		diphthongs: LanguagePhonemeInventoryRegistry.en.diphthongs.length,
-		vowels: LanguagePhonemeInventoryRegistry.en.vowels.length,
-		total: LanguagePhonemeInventoryRegistry.en.phonemes.length,
-	},
-	es: {
-		consonants: LanguagePhonemeInventoryRegistry.es.consonants.length,
-		monophthongs: LanguagePhonemeInventoryRegistry.es.monophthongs.length,
-		diphthongs: LanguagePhonemeInventoryRegistry.es.diphthongs.length,
-		vowels: LanguagePhonemeInventoryRegistry.es.vowels.length,
-		total: LanguagePhonemeInventoryRegistry.es.phonemes.length,
-	},
+	en: createLanguagePhonemeCount(LanguagePhonemeInventoryRegistry.en),
+	es: createLanguagePhonemeCount(LanguagePhonemeInventoryRegistry.es),
 };
 
 export function getLanguagePhonemeCount(language: TargetLanguage): LanguagePhonemeCount {

@@ -1,11 +1,11 @@
 import type {
 	ConsonantArticulatoryFeatures,
 	PhonemeArticulatoryFeatureKey,
-	PhonemeArticulatoryFeatures,
+	PhonemeArticulatoryFeatureValueMap,
 	VowelArticulatoryFeatures,
 } from "./articulatory-features";
+import { PHONEME_ARTICULATORY_FEATURE_KEYS } from "./articulatory-features";
 import type { PhonemeSymbolId } from "./ipa-registry";
-import type { PhonemeCategory } from "./types";
 
 export type VowelType = "monophthong" | "diphthong";
 
@@ -18,37 +18,22 @@ export type DiphthongVowelArticulatoryFeatures = {
 	targetRoundness: VowelArticulatoryFeatures["roundness"];
 };
 
-type PhonemeArticulationBase<
-	Category extends PhonemeCategory,
-	Features extends Record<string, string>,
-	VowelTypeArg extends VowelType | undefined = undefined,
-> = Category extends "vowel"
-	? {
-			category: Category;
-			vowelType: VowelTypeArg extends VowelType ? VowelTypeArg : never;
-			features: Features;
-		}
-	: {
-			category: Category;
-			features: Features;
-		};
+export type ConsonantArticulation = {
+	category: "consonant";
+	features: ConsonantArticulatoryFeatures;
+};
 
-export type ConsonantArticulation = PhonemeArticulationBase<
-	"consonant",
-	ConsonantArticulatoryFeatures
->;
+export type MonophthongVowelArticulation = {
+	category: "vowel";
+	vowelType: "monophthong";
+	features: VowelArticulatoryFeatures;
+};
 
-export type MonophthongVowelArticulation = PhonemeArticulationBase<
-	"vowel",
-	VowelArticulatoryFeatures,
-	"monophthong"
->;
-
-export type DiphthongVowelArticulation = PhonemeArticulationBase<
-	"vowel",
-	DiphthongVowelArticulatoryFeatures,
-	"diphthong"
->;
+export type DiphthongVowelArticulation = {
+	category: "vowel";
+	vowelType: "diphthong";
+	features: DiphthongVowelArticulatoryFeatures;
+};
 
 export type PhonemeArticulation =
 	| ConsonantArticulation
@@ -56,46 +41,60 @@ export type PhonemeArticulation =
 	| DiphthongVowelArticulation;
 
 export type FeatureValueLookup<TPhonemeId extends PhonemeSymbolId> = {
-	[K in PhonemeArticulatoryFeatureKey]: Partial<Record<TPhonemeId, PhonemeArticulatoryFeatures[K]>>;
+	[K in PhonemeArticulatoryFeatureKey]: Partial<
+		Record<TPhonemeId, PhonemeArticulatoryFeatureValueMap[K]>
+	>;
 };
 
+function hasCompleteFeatureLookup<TPhonemeId extends PhonemeSymbolId>(
+	lookup: Partial<FeatureValueLookup<TPhonemeId>>,
+): lookup is FeatureValueLookup<TPhonemeId> {
+	return PHONEME_ARTICULATORY_FEATURE_KEYS.every((featureKey) => featureKey in lookup);
+}
+
+function assignFeatureValueByKey<
+	TPhonemeId extends PhonemeSymbolId,
+	TFeatureKey extends PhonemeArticulatoryFeatureKey,
+>(
+	lookup: Partial<FeatureValueLookup<TPhonemeId>>,
+	featureKey: TFeatureKey,
+	phonemeId: TPhonemeId,
+	featureValues: Partial<PhonemeArticulatoryFeatureValueMap>,
+): void {
+	const value = featureValues[featureKey];
+	if (value === undefined) {
+		return;
+	}
+
+	const featureLookup = lookup[featureKey];
+	if (!featureLookup) {
+		return;
+	}
+
+	featureLookup[phonemeId] = value;
+}
+
 export function buildFeatureValueByPhoneme<TPhonemeId extends PhonemeSymbolId>(
-	phonemeArticulationRegistry: Partial<Record<TPhonemeId, PhonemeArticulation>>,
+	phonemeIds: readonly TPhonemeId[],
+	phonemeArticulationRegistry: Record<TPhonemeId, PhonemeArticulation>,
 ): FeatureValueLookup<TPhonemeId> {
-	const lookup: FeatureValueLookup<TPhonemeId> = {
-		voicing: {},
-		place: {},
-		manner: {},
-		height: {},
-		backness: {},
-		roundness: {},
-		tenseness: {},
-		rhoticity: {},
-	};
+	const lookup: Partial<FeatureValueLookup<TPhonemeId>> = {};
 
-	const assignFeatureValue = <K extends PhonemeArticulatoryFeatureKey>(
-		key: K,
-		phonemeId: TPhonemeId,
-		value: PhonemeArticulatoryFeatures[K] | undefined,
-	) => {
-		if (!value) return;
-		lookup[key][phonemeId] = value as FeatureValueLookup<TPhonemeId>[K][TPhonemeId];
-	};
+	for (const featureKey of PHONEME_ARTICULATORY_FEATURE_KEYS) {
+		lookup[featureKey] = {};
+	}
 
-	for (const [phonemeId, articulation] of Object.entries(phonemeArticulationRegistry) as [
-		TPhonemeId,
-		PhonemeArticulation,
-	][]) {
-		const features = articulation.features as Partial<PhonemeArticulatoryFeatures>;
+	for (const phonemeId of phonemeIds) {
+		const articulation = phonemeArticulationRegistry[phonemeId];
+		const featureValues: Partial<PhonemeArticulatoryFeatureValueMap> = articulation.features;
 
-		assignFeatureValue("voicing", phonemeId, features.voicing);
-		assignFeatureValue("place", phonemeId, features.place);
-		assignFeatureValue("manner", phonemeId, features.manner);
-		assignFeatureValue("height", phonemeId, features.height);
-		assignFeatureValue("backness", phonemeId, features.backness);
-		assignFeatureValue("roundness", phonemeId, features.roundness);
-		assignFeatureValue("tenseness", phonemeId, features.tenseness);
-		assignFeatureValue("rhoticity", phonemeId, features.rhoticity);
+		for (const featureKey of PHONEME_ARTICULATORY_FEATURE_KEYS) {
+			assignFeatureValueByKey(lookup, featureKey, phonemeId, featureValues);
+		}
+	}
+
+	if (!hasCompleteFeatureLookup(lookup)) {
+		throw new Error("Feature lookup initialization failed.");
 	}
 
 	return lookup;
