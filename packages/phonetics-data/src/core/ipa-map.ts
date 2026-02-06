@@ -47,8 +47,10 @@ export const MonophthongIpaMap = {
 	UX: "ʊ",
 	AX: "ə",
 	E: "ɛ",
+	EE: "e",
 	AH: "ʌ",
 	O: "ɔ",
+	OO: "o",
 	AE: "æ",
 	A: "ɑ",
 	ER: "ɝ",
@@ -121,12 +123,11 @@ export function getPhonemeType(phonemeId: PhonemeSymbolId): PhonemeType {
 
 /**
  * Gets the IPA symbol for a phoneme ID.
- * Type-safe: only accepts valid phoneme IDs.
  * @param phonemeId - The phoneme symbol ID.
  * @returns The IPA symbol.
  * @example
  * getIpaForPhonemeId("P") // "p"
- * getIpaForPhonemeId("I") // "i"
+ * getIpaForPhonemeId("EE") // "e"
  */
 export function getIpaForPhonemeId(phonemeId: PhonemeSymbolId): string {
 	return PhonemeIpaMap[phonemeId];

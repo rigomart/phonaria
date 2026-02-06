@@ -20,6 +20,10 @@ const capabilities = getLanguageFeatureCapabilities(language);
 const spellingPatterns = getSpellingPatternRegistryForLanguage(language); // null for es today
 ```
 
+## Phoneme ID system
+
+`src/core/ipa-map.ts` defines custom uppercase IDs that each map to exactly one IPA symbol. The map is the single source of truth regardless of language. IDs are extensible: when two languages need phonemically distinct sounds (e.g. English `E`=/ɛ/ vs Spanish `EE`=/e/), add a new ID rather than overriding an existing one. Existing IDs can be renamed or reorganized when it improves clarity.
+
 ## Architecture model
 
 - Core layer (`src/core/`): language-agnostic IPA IDs and articulatory feature types.

@@ -109,11 +109,17 @@ const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
 	E: {
 		label: "Vocal media abierta anterior no redondeada",
 	},
+	EE: {
+		label: "Vocal media cerrada anterior no redondeada",
+	},
 	AH: {
 		label: "Vocal media abierta posterior no redondeada",
 	},
 	O: {
 		label: "Vocal media abierta posterior redondeada",
+	},
+	OO: {
+		label: "Vocal media cerrada posterior redondeada",
 	},
 	AE: {
 		label: "Vocal casi abierta anterior no redondeada",

@@ -109,7 +109,7 @@ export const SpanishMonophthongArticulations: Record<
 			tenseness: "tense",
 		},
 	},
-	E: {
+	EE: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {
@@ -129,7 +129,7 @@ export const SpanishMonophthongArticulations: Record<
 			tenseness: "tense",
 		},
 	},
-	O: {
+	OO: {
 		category: "vowel",
 		vowelType: "monophthong",
 		features: {

@@ -9,7 +9,7 @@ import {
 	SelectValue,
 } from "@phonaria/ui/components/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@phonaria/ui/components/tabs";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { getIpaChartTargetLanguage } from "./_lib/target-language";
@@ -20,9 +20,10 @@ const IPA_CHART_TABS = ["consonants", "monophthongs", "diphthongs"] as const;
 type IpaChartTab = (typeof IPA_CHART_TABS)[number];
 
 export default function IpaChartPage() {
+	const locale = useLocale();
 	const tabs = useTranslations("ipa-chart.nav-tabs");
 	const hint = useTranslations("ipa-chart.hint");
-	const targetLanguage = getIpaChartTargetLanguage();
+	const targetLanguage = getIpaChartTargetLanguage(locale);
 	const counts = getLanguagePhonemeCount(targetLanguage);
 
 	const COUNT_BY_TAB = {

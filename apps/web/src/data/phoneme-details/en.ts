@@ -109,11 +109,17 @@ const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
 	E: {
 		label: "Open-mid front unrounded vowel",
 	},
+	EE: {
+		label: "Close-mid front unrounded vowel",
+	},
 	AH: {
 		label: "Open-mid back unrounded vowel",
 	},
 	O: {
 		label: "Open-mid back rounded vowel",
+	},
+	OO: {
+		label: "Close-mid back rounded vowel",
 	},
 	AE: {
 		label: "Near-open front unrounded vowel",

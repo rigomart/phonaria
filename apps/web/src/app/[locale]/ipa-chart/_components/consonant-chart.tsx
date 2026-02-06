@@ -83,8 +83,10 @@ export function ConsonantChart({ targetLanguage }: { targetLanguage: TargetLangu
 		[targetLanguage],
 	);
 
-	const cells = useMemo(() => {
+	const { cells, mannerOrder, placeOrder } = useMemo(() => {
 		const map = new Map<string, { voiceless?: ConsonantPhoneme; voiced?: ConsonantPhoneme }>();
+		const usedManners = new Set<MannerOfArticulation>();
+		const usedPlaces = new Set<PlaceOfArticulation>();
 
 		for (const phoneme of consonants) {
 			const { manner, place, voicing } = phoneme;
@@ -98,17 +100,23 @@ export function ConsonantChart({ targetLanguage }: { targetLanguage: TargetLangu
 			}
 
 			map.set(key, current);
+			usedManners.add(manner);
+			usedPlaces.add(place);
 		}
 
-		return map;
+		return {
+			cells: map,
+			mannerOrder: MANNER_ORDER.filter((m) => usedManners.has(m)),
+			placeOrder: PLACE_ORDER.filter((p) => usedPlaces.has(p)),
+		};
 	}, [consonants]);
 
-	const gridTemplateColumns = `auto repeat(${PLACE_ORDER.length}, minmax(4.5rem, 1fr))`;
+	const gridTemplateColumns = `auto repeat(${placeOrder.length}, minmax(4.5rem, 1fr))`;
 
 	return (
 		<div className="inline-grid w-full min-w-max gap-1.5" style={{ gridTemplateColumns }}>
 			<div />
-			{PLACE_ORDER.map((place) => (
+			{placeOrder.map((place) => (
 				<div
 					key={place}
 					className="px-1.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
@@ -117,12 +125,12 @@ export function ConsonantChart({ targetLanguage }: { targetLanguage: TargetLangu
 				</div>
 			))}
 
-			{MANNER_ORDER.map((manner) => (
+			{mannerOrder.map((manner) => (
 				<Fragment key={manner}>
 					<div className="flex items-center justify-end pr-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 						{featureDefinitions.manner.values[manner].label}
 					</div>
-					{PLACE_ORDER.map((place) => {
+					{placeOrder.map((place) => {
 						const key = getCellKey(manner, place);
 						const cell = cells.get(key);
 						const hasPhonemes = cell && (cell.voiceless || cell.voiced);

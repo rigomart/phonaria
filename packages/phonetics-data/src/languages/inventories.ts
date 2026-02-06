@@ -80,9 +80,9 @@ const SPANISH_CONSONANTS = [
 
 const SPANISH_MONOPHTHONGS = [
 	"I",
-	"E",
+	"EE",
 	"AA",
-	"O",
+	"OO",
 	"U",
 ] as const satisfies readonly MonophthongSymbolId[];
 
