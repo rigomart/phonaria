@@ -1,45 +1,36 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-// Partial mock for @phonaria/phonetics-data - override only curated data
-// Mock data uses new phoneme ID format (H, AX, OU instead of HH, AH, OW)
-vi.mock("@phonaria/phonetics-data", async () => {
-	const actual = await vi.importActual<typeof import("@phonaria/phonetics-data")>(
-		"@phonaria/phonetics-data",
-	);
-	return {
-		...actual,
-		curatedTop1k: {
-			meta: { tier: "1k", wordCount: 3 },
-			words: {
-				// "the" has multiple variants (phoneme ID format)
-				the: ["DH AX0", "DH AH1", "DH I0"],
-				hello: ["H AX0 L OU1"],
-				world: ["W ER1 L D"],
-			},
+// Mock subpath modules with test data using new phoneme ID format (H, AX, OU instead of HH, AH, OW)
+vi.mock("@phonaria/phonetics-data/data/en/curated-1k", () => ({
+	EnglishCuratedTop1k: {
+		meta: { tier: "1k", wordCount: 3 },
+		words: {
+			// "the" has multiple variants (phoneme ID format)
+			the: ["DH AX0", "DH AH1", "DH I0"],
+			hello: ["H AX0 L OU1"],
+			world: ["W ER1 L D"],
 		},
-		curatedTop10k: {
-			meta: { tier: "10k", wordCount: 5 },
-			words: {
-				// Tier 2 includes tier 1 words plus additional (phoneme ID format)
-				the: ["DH AX0", "DH AH1", "DH I0"],
-				hello: ["H AX0 L OU1"],
-				world: ["W ER1 L D"],
-				phonetics: ["F AX0 N E1 T IX0 K S"],
-				transcription: ["T R AE2 N S K R IX1 P SH AX0 N"],
-			},
+	},
+}));
+
+vi.mock("@phonaria/phonetics-data/data/en/curated-10k", () => ({
+	EnglishCuratedTop10k: {
+		meta: { tier: "10k", wordCount: 5 },
+		words: {
+			// Tier 2 includes tier 1 words plus additional (phoneme ID format)
+			the: ["DH AX0", "DH AH1", "DH I0"],
+			hello: ["H AX0 L OU1"],
+			world: ["W ER1 L D"],
+			phonetics: ["F AX0 N E1 T IX0 K S"],
+			transcription: ["T R AE2 N S K R IX1 P SH AX0 N"],
 		},
-	};
-});
+	},
+}));
 
 // Import after mock setup
 import { batchLookup, lookupWordClient } from "./index";
 
 describe("phoneme-lookup", () => {
-	// Reset module state between tests
-	beforeEach(() => {
-		vi.resetModules();
-	});
-
 	describe("lookupWordClient", () => {
 		it("returns tier1 result for common words", async () => {
 			const result = await lookupWordClient("hello");

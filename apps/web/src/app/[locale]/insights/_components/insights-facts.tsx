@@ -1,11 +1,12 @@
 "use client";
 
-import { cmudictStatsData, getIpaForPhonemeId, getPhonemeCategory } from "@phonaria/phonetics-data";
+import { getIpaForPhonemeId, getPhonemeCategory } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data/data/en/cmudict-stats";
 import { Lightbulb } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 function getTopPhoneme() {
-	const sorted = [...cmudictStatsData.phonemes].sort(
+	const sorted = [...EnglishCmudictStatsData.phonemes].sort(
 		(a, b) => b.wordCoverage.percentage - a.wordCoverage.percentage,
 	);
 	const top = sorted[0];
@@ -17,7 +18,7 @@ function getTopPhoneme() {
 }
 
 function getTopSyllableCount() {
-	const sorted = [...cmudictStatsData.syllables].sort((a, b) => b.percentage - a.percentage);
+	const sorted = [...EnglishCmudictStatsData.syllables].sort((a, b) => b.percentage - a.percentage);
 	const top = sorted[0];
 	return {
 		count: top.count,
@@ -26,7 +27,7 @@ function getTopSyllableCount() {
 }
 
 function getPhonemeWithHighestDensity() {
-	const sorted = [...cmudictStatsData.phonemes]
+	const sorted = [...EnglishCmudictStatsData.phonemes]
 		.filter((p) => p.averageTokensPerWord > 1)
 		.sort((a, b) => b.averageTokensPerWord - a.averageTokensPerWord);
 	const top = sorted[0];

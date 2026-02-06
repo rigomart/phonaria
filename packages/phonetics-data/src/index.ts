@@ -1,104 +1,138 @@
-import curatedTop1kJson from "../data/en/curated/top-1k.json";
-import curatedTop10kJson from "../data/en/curated/top-10k.json";
-import cmudictJson from "../data/en/dict/cmudict.json";
-import cmudictStatsJson from "../data/en/dict/cmudict-stats.json";
-import type { CmudictPayload, CmudictStatsPayload } from "./dict/types";
-
-export const cmudictData = cmudictJson as CmudictPayload;
-export const cmudictStatsData = cmudictStatsJson as CmudictStatsPayload;
-
-/**
- * Curated word data structure for tiered client-side lookup.
- */
-export interface CuratedWordData {
-	meta: {
-		version: string;
-		tier: string;
-		wordCount: number;
-		generatedAt: string;
-		license: string;
-		attribution: string;
-		sources: { wordfreq: string; cmudict: string };
-	};
-	/** Word to CMU ARPABET variants mapping (each word may have multiple pronunciations) */
-	words: Record<string, string[]>;
-}
-
-/**
- * Top 1,000 most frequent English words with CMU pronunciations.
- * Covers ~80% of everyday usage. Bundled inline (~22KB).
- */
-export const curatedTop1k = curatedTop1kJson as CuratedWordData;
-
-/**
- * Top 10,000 most frequent English words with CMU pronunciations.
- * Covers ~95% of learner vocabulary. Lazy-loaded (~273KB).
- */
-export const curatedTop10k = curatedTop10kJson as CuratedWordData;
-
 export type {
 	ConsonantArticulatoryFeatures,
 	ConsonantPhonemeArticulatoryFeatureKey,
 	PhonemeArticulatoryFeatureKey,
 	PhonemeArticulatoryFeatures,
+	PhonemeArticulatoryFeatureValueMap,
 	VowelArticulatoryFeatures,
 	VowelPhonemeArticulatoryFeatureKey,
 } from "./core/articulatory-features";
+export { PHONEME_ARTICULATORY_FEATURE_KEYS } from "./core/articulatory-features";
 export type {
 	ConsonantSymbolId,
 	ConsonantSymbolIpa,
+	DiphthongSymbolId,
 	DiphthongSymbolIpa,
+	MonophthongSymbolId,
+	MonophthongSymbolIpa,
 	PhonemeSymbolId,
 	PhonemeSymbolIpa,
+	PhonemeType,
+	VowelSymbolId,
 	VowelSymbolIpa,
-} from "./core/ipa-registry";
+} from "./core/ipa-map";
 export {
-	ConsonantIpaRegistry,
-	DiphthongIpaRegistry,
+	ConsonantIpaMap,
+	DiphthongIpaMap,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	getPhonemeType,
-	MonophthongIpaRegistry,
+	isConsonantPhoneme,
+	isVowelPhoneme,
+	MonophthongIpaMap,
 	PhonemeCount,
-	PhonemeIpaRegistry,
-	VowelIpaRegistry,
-} from "./core/ipa-registry";
-export type { PhonemeCategory, TargetLanguage } from "./core/types";
+	PhonemeIpaMap,
+	VowelIpaMap,
+} from "./core/ipa-map";
+export type {
+	ConsonantArticulation,
+	DiphthongVowelArticulation,
+	DiphthongVowelArticulatoryFeatures,
+	FeatureValueLookup,
+	MonophthongVowelArticulation,
+	PhonemeArticulation,
+	VowelType,
+} from "./core/phoneme-articulations";
+export { type PhonemeCategory, TARGET_LANGUAGES, type TargetLanguage } from "./core/types";
+export type { CuratedWordData } from "./data/en/curated-1k";
 export type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dict/types";
+export { EnglishPhonemeAllophones } from "./languages/en/allophones";
 export {
-	CmuArpaRegistry,
+	CmuArpaMap,
 	type CmuArpaToken,
 	type CmuStressLevel,
 	cmuVariantToIpa,
 	extractBasePhonemeId,
-	getArpabetForPhonemeId,
-	getCmuArpaForPhonemeId,
+	getArpabetForEnglishPhonemeId,
+	getCmuArpaForEnglishPhonemeId,
 	getPhonemeIdForCmuArpa,
 	isCmuArpaToken,
+	isEnglishPhonemeSymbolId,
 	isValidPhonemeToken,
 	PhonemeArpabetLabel,
-} from "./en/cmu-arpa-registry";
+	tryExtractBasePhonemeId,
+} from "./languages/en/cmu-arpa";
+export { EnglishContrastsByPhonemeId } from "./languages/en/contrasts";
+export { EnglishPhonemeSpellingPatterns } from "./languages/en/patterns";
+export type {
+	EnglishConsonantSymbolId,
+	EnglishDiphthongSymbolId,
+	EnglishMonophthongSymbolId,
+	EnglishPhonemeSymbolId,
+	LanguageConsonantSymbolId,
+	LanguageDiphthongSymbolId,
+	LanguageMonophthongSymbolId,
+	LanguagePhonemeCount,
+	LanguagePhonemeId,
+	LanguagePhonemeInventory,
+	LanguagePhonemeSubset,
+	SpanishConsonantSymbolId,
+	SpanishDiphthongSymbolId,
+	SpanishMonophthongSymbolId,
+	SpanishPhonemeSymbolId,
+} from "./languages/inventories";
 export {
-	type AllophoneExample,
-	type PhonemeAllophone,
-	type PhonemeAllophoneContextKey,
-	PhonemeAllophoneRegistry,
-} from "./en/phoneme-allophones";
+	EnglishPhonemeInventory,
+	getLanguagePhonemeCount,
+	getLanguagePhonemeIds,
+	getLanguagePhonemeInventory,
+	isPhonemeInLanguage,
+	LanguagePhonemeInventoryMap,
+	SpanishPhonemeInventory,
+} from "./languages/inventories";
+export type {
+	AllophoneExample,
+	LanguagePhonemeAllophoneRegistry,
+	LanguagePhonemeContrastRegistry,
+	LanguageSpellingPatternRegistry,
+	PhonemeAllophone,
+	PhonemeAllophoneContextKey,
+	PhonemeContrast,
+	PhonemeContrastPair,
+	SpellingPattern,
+} from "./languages/types";
+export type {
+	LanguageFeatureCapabilities,
+	LanguageFeatureKey,
+} from "./registries/capabilities";
 export {
-	ConsonantArticulationRegistry,
-	DiphthongVowelArticulationRegistry,
-	FeatureValueByPhonemeRegistry,
-	MonophthongVowelArticulationRegistry,
-	type PhonemeArticulation,
-	PhonemeArticulationRegistry,
-	type VowelType,
-} from "./en/phoneme-articulations";
+	getLanguageFeatureCapabilities,
+	hasLanguageFeature,
+	LANGUAGE_FEATURE_KEYS,
+	LanguageFeatureCapabilitiesRegistry,
+} from "./registries/capabilities";
+export type {
+	LanguageArticulationData,
+	LanguageConsonantArticulationRegistry,
+	LanguageDiphthongVowelArticulationRegistry,
+	LanguageFeatureValueByPhonemeRegistry,
+	LanguageMonophthongVowelArticulationRegistry,
+	LanguagePhonemeArticulationRegistry,
+} from "./registries/registries";
 export {
-	ContrastsByPhonemeIdRegistry,
-	type PhonemeContrast,
-	type PhonemeContrastPair,
-} from "./en/phoneme-contrasts";
-export {
-	PhonemeSpellingPatternRegistry,
-	type SpellingPattern,
-} from "./en/phoneme-patterns";
+	getAllophoneRegistryForLanguage,
+	getCmuArpaRegistryForLanguage,
+	getConsonantArticulationRegistryForLanguage,
+	getContrastRegistryForLanguage,
+	getDiphthongVowelArticulationRegistryForLanguage,
+	getFeatureValueByPhonemeRegistryForLanguage,
+	getLanguageArticulationData,
+	getMonophthongVowelArticulationRegistryForLanguage,
+	getPhonemeArticulationRegistryForLanguage,
+	getSpellingPatternRegistryForLanguage,
+	LanguageAllophoneDataRegistry,
+	LanguageArticulationRegistry,
+	LanguageCmuArpaDataRegistry,
+	LanguageContrastDataRegistry,
+	LanguageSpellingPatternDataRegistry,
+} from "./registries/registries";

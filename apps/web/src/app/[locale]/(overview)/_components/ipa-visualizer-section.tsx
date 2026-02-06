@@ -1,6 +1,6 @@
 "use client";
 
-import { PhonemeIpaRegistry, type PhonemeSymbolId } from "@phonaria/phonetics-data";
+import { PhonemeIpaMap, type PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
 import { ArrowRight, MoveRight } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -39,7 +39,7 @@ export function IpaVisualizerSection() {
 	const t = useTranslations("overview-page.sections.ipa-visualizer");
 	const [selectedPhoneme, setSelectedPhoneme] = useState<PhonemeSymbolId | null>(null);
 
-	const getSymbol = (id: PhonemeSymbolId) => PhonemeIpaRegistry[id];
+	const getSymbol = (id: PhonemeSymbolId) => PhonemeIpaMap[id];
 
 	return (
 		<Section>

@@ -8,6 +8,7 @@ import {
 	DialogPopup,
 	DialogTitle,
 } from "@phonaria/ui/components/dialog";
+import { useTranslations } from "next-intl";
 import {
 	PhonemeDetails,
 	PhonemeDetailsAllophones,
@@ -26,13 +27,15 @@ type PhonemeDetailsDialogProps = {
 };
 
 export function PhonemeDetailsDialog({ open, onOpenChange, phonemeId }: PhonemeDetailsDialogProps) {
+	const t = useTranslations("components.phoneme-details.dialog");
+
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<PhonemeDetails phonemeId={phonemeId}>
 				<DialogPopup>
 					<DialogHeader className="p-0">
 						<PhonemeDetailsHeader />
-						<DialogTitle className="sr-only">Phoneme details</DialogTitle>
+						<DialogTitle className="sr-only">{t("title")}</DialogTitle>
 					</DialogHeader>
 					<DialogPanel>
 						<PhonemeDetailsContent>

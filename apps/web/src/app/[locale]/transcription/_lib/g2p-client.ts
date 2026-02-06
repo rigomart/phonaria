@@ -1,4 +1,4 @@
-import { PhonemeIpaRegistry, type PhonemeSymbolId } from "@phonaria/phonetics-data";
+import { PhonemeIpaMap, type PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type {
 	TranscribedPhoneme,
 	TranscribedSyllable,
@@ -84,5 +84,5 @@ function isKnownPhoneme(
 	if (typeof phoneme.phonemeId !== "string") {
 		return false;
 	}
-	return phoneme.phonemeId in PhonemeIpaRegistry;
+	return phoneme.phonemeId in PhonemeIpaMap;
 }

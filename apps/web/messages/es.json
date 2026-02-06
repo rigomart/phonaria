@@ -76,6 +76,9 @@
 			"allophones": {
 				"title": "Variaciones",
 				"description": "Este sonido tiene variaciones sutiles según su posición en una palabra o el acento."
+			},
+			"dialog": {
+				"title": "Detalles del fonema"
 			}
 		}
 	},
@@ -210,6 +213,7 @@
 			"sounds": "sonidos",
 			"click-for-details": "Haz clic en un fonema para ver detalles"
 		},
+		"vowel-grid-title": "Cuadrícula del diagrama de vocales",
 		"sections": {
 			"consonants": {
 				"diagram": "Consonantes organizadas por modo (filas: cómo se produce el sonido) y lugar (columnas: dónde se produce en la boca). En cada celda: sorda a la izquierda, sonora a la derecha.",

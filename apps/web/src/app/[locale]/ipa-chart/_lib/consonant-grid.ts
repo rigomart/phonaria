@@ -16,6 +16,8 @@ export const MANNER_ORDER: MannerOfArticulation[] = [
 	"nasal",
 	"fricative",
 	"affricate",
+	"tap",
+	"trill",
 	"approximant",
 	"lateral-approximant",
 ];
@@ -44,6 +46,8 @@ export const MANNER_LABELS: Record<MannerOfArticulation, string> = {
 	nasal: "Nasal",
 	fricative: "Fricative",
 	affricate: "Affricate",
+	tap: "Tap",
+	trill: "Trill",
 	approximant: "Approximant",
 	"lateral-approximant": "Lateral approximant",
 };

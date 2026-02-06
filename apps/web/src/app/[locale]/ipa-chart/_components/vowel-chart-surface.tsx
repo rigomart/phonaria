@@ -1,6 +1,7 @@
 "use client";
 
 import type { VowelArticulatoryFeatures } from "@phonaria/phonetics-data";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,8 @@ export function VowelChartSurface({
 	svgOverlay,
 	arrowMarkerId,
 }: VowelChartSurfaceProps & { arrowMarkerId?: string }) {
+	const t = useTranslations("ipa-chart");
+
 	return (
 		<div className="relative w-full" style={{ aspectRatio }}>
 			<svg
@@ -35,7 +38,7 @@ export function VowelChartSurface({
 				className="h-full w-full"
 				aria-hidden
 			>
-				<title>Vowel chart grid</title>
+				<title>{t("vowel-grid-title")}</title>
 				<defs>
 					<marker
 						id={arrowMarkerId ?? "vowel-arrow-head"}

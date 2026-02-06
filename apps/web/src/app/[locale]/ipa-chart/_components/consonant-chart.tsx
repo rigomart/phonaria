@@ -1,7 +1,11 @@
 "use client";
 
-import type { ConsonantSymbolId } from "@phonaria/phonetics-data";
-import { ConsonantArticulationRegistry, getIpaForPhonemeId } from "@phonaria/phonetics-data";
+import type { ConsonantSymbolId, TargetLanguage } from "@phonaria/phonetics-data";
+import {
+	getConsonantArticulationRegistryForLanguage,
+	getIpaForPhonemeId,
+	getLanguagePhonemeIds,
+} from "@phonaria/phonetics-data";
 import { Fragment, useMemo } from "react";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
@@ -23,29 +27,66 @@ interface ConsonantPhoneme {
 	place: PlaceOfArticulation;
 }
 
-export function ConsonantChart() {
+function getEnglishConsonantPhonemes(): ConsonantPhoneme[] {
+	const consonantArticulations = getConsonantArticulationRegistryForLanguage("en");
+	const consonantIds = getLanguagePhonemeIds("en", "consonants");
+	const phonemes: ConsonantPhoneme[] = [];
+
+	for (const phonemeId of consonantIds) {
+		const articulation = consonantArticulations[phonemeId];
+		const ipa = getIpaForPhonemeId(phonemeId);
+
+		phonemes.push({
+			id: phonemeId,
+			symbol: ipa,
+			voicing: articulation.features.voicing,
+			manner: articulation.features.manner,
+			place: articulation.features.place,
+		});
+	}
+
+	return phonemes;
+}
+
+function getSpanishConsonantPhonemes(): ConsonantPhoneme[] {
+	const consonantArticulations = getConsonantArticulationRegistryForLanguage("es");
+	const consonantIds = getLanguagePhonemeIds("es", "consonants");
+	const phonemes: ConsonantPhoneme[] = [];
+
+	for (const phonemeId of consonantIds) {
+		const articulation = consonantArticulations[phonemeId];
+		const ipa = getIpaForPhonemeId(phonemeId);
+
+		phonemes.push({
+			id: phonemeId,
+			symbol: ipa,
+			voicing: articulation.features.voicing,
+			manner: articulation.features.manner,
+			place: articulation.features.place,
+		});
+	}
+
+	return phonemes;
+}
+
+function getConsonantPhonemesForLanguage(targetLanguage: TargetLanguage): ConsonantPhoneme[] {
+	if (targetLanguage === "en") {
+		return getEnglishConsonantPhonemes();
+	}
+	return getSpanishConsonantPhonemes();
+}
+
+export function ConsonantChart({ targetLanguage }: { targetLanguage: TargetLanguage }) {
 	const { featureDefinitions } = usePhonemeDetailsCopy();
-	const consonants = useMemo(() => {
-		const phonemes: ConsonantPhoneme[] = [];
+	const consonants = useMemo(
+		() => getConsonantPhonemesForLanguage(targetLanguage),
+		[targetLanguage],
+	);
 
-		for (const [id, articulation] of Object.entries(ConsonantArticulationRegistry)) {
-			const phonemeId = id as ConsonantSymbolId;
-			const ipa = getIpaForPhonemeId(phonemeId);
-
-			phonemes.push({
-				id: phonemeId,
-				symbol: ipa,
-				voicing: articulation.features.voicing,
-				manner: articulation.features.manner,
-				place: articulation.features.place,
-			});
-		}
-
-		return phonemes;
-	}, []);
-
-	const cells = useMemo(() => {
+	const { cells, mannerOrder, placeOrder } = useMemo(() => {
 		const map = new Map<string, { voiceless?: ConsonantPhoneme; voiced?: ConsonantPhoneme }>();
+		const usedManners = new Set<MannerOfArticulation>();
+		const usedPlaces = new Set<PlaceOfArticulation>();
 
 		for (const phoneme of consonants) {
 			const { manner, place, voicing } = phoneme;
@@ -59,17 +100,23 @@ export function ConsonantChart() {
 			}
 
 			map.set(key, current);
+			usedManners.add(manner);
+			usedPlaces.add(place);
 		}
 
-		return map;
+		return {
+			cells: map,
+			mannerOrder: MANNER_ORDER.filter((m) => usedManners.has(m)),
+			placeOrder: PLACE_ORDER.filter((p) => usedPlaces.has(p)),
+		};
 	}, [consonants]);
 
-	const gridTemplateColumns = `auto repeat(${PLACE_ORDER.length}, minmax(4.5rem, 1fr))`;
+	const gridTemplateColumns = `auto repeat(${placeOrder.length}, minmax(4.5rem, 1fr))`;
 
 	return (
 		<div className="inline-grid w-full min-w-max gap-1.5" style={{ gridTemplateColumns }}>
 			<div />
-			{PLACE_ORDER.map((place) => (
+			{placeOrder.map((place) => (
 				<div
 					key={place}
 					className="px-1.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
@@ -78,12 +125,12 @@ export function ConsonantChart() {
 				</div>
 			))}
 
-			{MANNER_ORDER.map((manner) => (
+			{mannerOrder.map((manner) => (
 				<Fragment key={manner}>
 					<div className="flex items-center justify-end pr-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 						{featureDefinitions.manner.values[manner].label}
 					</div>
-					{PLACE_ORDER.map((place) => {
+					{placeOrder.map((place) => {
 						const key = getCellKey(manner, place);
 						const cell = cells.get(key);
 						const hasPhonemes = cell && (cell.voiceless || cell.voiced);

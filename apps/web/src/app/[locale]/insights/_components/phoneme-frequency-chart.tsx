@@ -1,12 +1,12 @@
 "use client";
 
 import {
-	cmudictStatsData,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeCategory,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data/data/en/cmudict-stats";
 import {
 	Card,
 	CardContent,
@@ -38,7 +38,7 @@ type ChartDataItem = {
 };
 
 export function PhonemeFrequencyChart() {
-	const stats = cmudictStatsData;
+	const stats = EnglishCmudictStatsData;
 	const t = useTranslations("stats-page.sections.phonemes");
 	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 	const [selectedPhonemeId, setSelectedPhonemeId] = useState<PhonemeSymbolId | null>(null);

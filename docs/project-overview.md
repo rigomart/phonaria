@@ -6,6 +6,11 @@ alwaysApply: true
 
 Phonaria is a learner-first pronunciation toolkit for people studying English as a second language. Rather than a single curriculum, it gathers the core resources learners need to understand how English sounds work, explore spelling and phoneme patterns, and connect what they read with how it should sound.
 
+## Terminology
+
+- **Target language**: the language being taught by the phonetics toolkit (for example English or Spanish).
+- **Display language**: the UI language used to render copy and navigation.
+
 # Learner Challenges We Address
 
 1. **English spelling unpredictability** – Learners regularly meet words whose pronunciation cannot be guessed from spelling alone.

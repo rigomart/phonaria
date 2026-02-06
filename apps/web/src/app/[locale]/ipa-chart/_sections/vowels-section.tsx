@@ -1,3 +1,4 @@
+import type { TargetLanguage } from "@phonaria/phonetics-data";
 import { useTranslations } from "next-intl";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
@@ -15,17 +16,18 @@ type Variant = "monophthongs" | "diphthongs";
 
 type Props = {
 	variant: Variant;
+	targetLanguage: TargetLanguage;
 	className?: string;
 };
 
-export function VowelChartSection({ variant, className }: Props) {
+export function VowelChartSection({ variant, targetLanguage, className }: Props) {
 	const t = useTranslations("ipa-chart.sections.vowels");
 	const ariaT = useTranslations("ipa-chart.info-button");
 	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 	const entries: VowelChartEntry[] =
 		variant === "monophthongs"
-			? getStaticVowelEntries(phonemeDetailsById)
-			: getDiphthongVowelEntries(phonemeDetailsById);
+			? getStaticVowelEntries(phonemeDetailsById, targetLanguage)
+			: getDiphthongVowelEntries(phonemeDetailsById, targetLanguage);
 
 	const ariaLabel =
 		variant === "monophthongs" ? ariaT("aria-monophthongs") : ariaT("aria-diphthongs");

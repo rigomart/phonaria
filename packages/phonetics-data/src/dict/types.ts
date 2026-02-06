@@ -1,4 +1,4 @@
-import type { PhonemeSymbolId } from "../core/ipa-registry";
+import type { PhonemeSymbolId } from "../core/ipa-map";
 
 export type PhonemeTrieNode = {
 	words: string[];

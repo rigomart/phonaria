@@ -1,25 +1,8 @@
-import type {
-	ConsonantArticulatoryFeatures,
-	PhonemeArticulatoryFeatureKey,
-	VowelArticulatoryFeatures,
-} from "../core/articulatory-features";
-import type { PhonemeSymbolId } from "../core/ipa-registry";
-
-export type PhonemeContrastPair = {
-	word: string;
-	phonemic: string;
-};
-
-type PhonemeContrastType = keyof ConsonantArticulatoryFeatures | keyof VowelArticulatoryFeatures;
-
-export type PhonemeContrast = {
-	phonemeIds: [PhonemeSymbolId, PhonemeSymbolId]; // The pair. e.g. ["B", "V"]
-	contrastType: PhonemeArticulatoryFeatureKey[]; // Usually one, but can be multiple. e.g. ["manner", "place"]
-	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
-};
+import type { EnglishPhonemeSymbolId } from "../inventories";
+import type { PhonemeContrast, PhonemeContrastMatch } from "../types";
 
 // TODO: Refine the contrasts for accuracy and completeness.
-export const PhonemeContrastCatalog: PhonemeContrast[] = [
+export const PhonemeContrastCatalog: PhonemeContrast<"en">[] = [
 	// Consonants: Voicing
 	{
 		phonemeIds: ["P", "B"],
@@ -279,23 +262,17 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 	},
 ];
 
-export type PhonemeContrastMatch = {
-	partnerId: PhonemeSymbolId;
-	contrastType: PhonemeContrastType[];
-	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
-};
-
 // Scoped record generation using IIFE for O(1) access in consumption
-export const ContrastsByPhonemeIdRegistry: Partial<
-	Record<PhonemeSymbolId, PhonemeContrastMatch[]>
+export const EnglishContrastsByPhonemeId: Partial<
+	Record<EnglishPhonemeSymbolId, PhonemeContrastMatch<"en">[]>
 > = (() => {
-	const record: Partial<Record<PhonemeSymbolId, PhonemeContrastMatch[]>> = {};
+	const record: Partial<Record<EnglishPhonemeSymbolId, PhonemeContrastMatch<"en">[]>> = {};
 
 	for (const contrast of PhonemeContrastCatalog) {
 		const [leftId, rightId] = contrast.phonemeIds;
 
-		const addEntry = (fromId: PhonemeSymbolId, toId: PhonemeSymbolId) => {
-			const entry: PhonemeContrastMatch = {
+		const addEntry = (fromId: EnglishPhonemeSymbolId, toId: EnglishPhonemeSymbolId) => {
+			const entry: PhonemeContrastMatch<"en"> = {
 				partnerId: toId,
 				contrastType: contrast.contrastType,
 				minimalPairs: contrast.minimalPairs,

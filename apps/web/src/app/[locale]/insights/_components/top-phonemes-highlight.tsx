@@ -1,11 +1,11 @@
 "use client";
 
 import {
-	cmudictStatsData,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data/data/en/cmudict-stats";
 import { Badge } from "@phonaria/ui/components/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Info } from "lucide-react";
@@ -28,7 +28,7 @@ function getTopPhonemesByCategory(
 	phonemeDetailsById: Record<PhonemeSymbolId, { label: string }>,
 	category: "vowel" | "consonant",
 ): PhonemeItem[] {
-	return [...cmudictStatsData.phonemes]
+	return [...EnglishCmudictStatsData.phonemes]
 		.filter((p) => getPhonemeCategory(p.phonemeId) === category)
 		.sort((a, b) => b.wordCoverage.percentage - a.wordCoverage.percentage)
 		.slice(0, TOP_COUNT)

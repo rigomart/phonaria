@@ -1,18 +1,16 @@
 import {
-	ConsonantIpaRegistry,
-	type ConsonantSymbolId,
-	DiphthongIpaRegistry,
-	MonophthongIpaRegistry,
+	ConsonantIpaMap,
+	DiphthongIpaMap,
+	type EnglishConsonantSymbolId,
+	type EnglishDiphthongSymbolId,
+	type EnglishMonophthongSymbolId,
+	type EnglishPhonemeSymbolId,
+	MonophthongIpaMap,
 	PhonemeArpabetLabel,
-	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
 
-// Infer types from registries
-type MonophthongSymbolId = keyof typeof MonophthongIpaRegistry;
-type DiphthongSymbolId = keyof typeof DiphthongIpaRegistry;
-
 export type KeyboardPhoneme = {
-	id: PhonemeSymbolId;
+	id: EnglishPhonemeSymbolId;
 	ipa: string;
 	arpabet: string;
 };
@@ -20,7 +18,7 @@ export type KeyboardPhoneme = {
 // Consonants organized by manner of articulation for compact display
 // Order: plosives, fricatives, affricates, nasals, approximants
 
-const CONSONANT_ORDER: ConsonantSymbolId[] = [
+const CONSONANT_ORDER: EnglishConsonantSymbolId[] = [
 	// Plosives (6)
 	"P",
 	"B",
@@ -53,7 +51,7 @@ const CONSONANT_ORDER: ConsonantSymbolId[] = [
 ];
 
 // Monophthongs organized by height for compact display
-const MONOPHTHONG_ORDER: MonophthongSymbolId[] = [
+const MONOPHTHONG_ORDER: EnglishMonophthongSymbolId[] = [
 	// High (4)
 	"I",
 	"IX",
@@ -71,9 +69,9 @@ const MONOPHTHONG_ORDER: MonophthongSymbolId[] = [
 ];
 
 // Diphthongs in a single row
-const DIPHTHONG_ORDER: DiphthongSymbolId[] = ["EI", "OU", "AI", "AU", "OI"];
+const DIPHTHONG_ORDER: EnglishDiphthongSymbolId[] = ["EI", "OU", "AI", "AU", "OI"];
 
-function mapToKeyboardPhoneme<T extends PhonemeSymbolId>(
+function mapToKeyboardPhoneme<T extends EnglishPhonemeSymbolId>(
 	id: T,
 	registry: Record<T, string>,
 ): KeyboardPhoneme {
@@ -85,15 +83,15 @@ function mapToKeyboardPhoneme<T extends PhonemeSymbolId>(
 }
 
 export const CONSONANT_KEYBOARD: KeyboardPhoneme[] = CONSONANT_ORDER.map((id) =>
-	mapToKeyboardPhoneme(id, ConsonantIpaRegistry),
+	mapToKeyboardPhoneme(id, ConsonantIpaMap),
 );
 
 export const MONOPHTHONG_KEYBOARD: KeyboardPhoneme[] = MONOPHTHONG_ORDER.map((id) =>
-	mapToKeyboardPhoneme(id, MonophthongIpaRegistry),
+	mapToKeyboardPhoneme(id, MonophthongIpaMap),
 );
 
 export const DIPHTHONG_KEYBOARD: KeyboardPhoneme[] = DIPHTHONG_ORDER.map((id) =>
-	mapToKeyboardPhoneme(id, DiphthongIpaRegistry),
+	mapToKeyboardPhoneme(id, DiphthongIpaMap),
 );
 
 export const VOWEL_KEYBOARD: KeyboardPhoneme[] = [...MONOPHTHONG_KEYBOARD, ...DIPHTHONG_KEYBOARD];

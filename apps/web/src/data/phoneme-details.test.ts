@@ -1,5 +1,9 @@
 import type { PhonemeArticulatoryFeatures } from "@phonaria/phonetics-data";
-import { PhonemeAllophoneRegistry, PhonemeArticulationRegistry } from "@phonaria/phonetics-data";
+import {
+	EnglishPhonemeAllophones,
+	getLanguagePhonemeIds,
+	getPhonemeArticulationRegistryForLanguage,
+} from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import { phonemeDetailsCopyByLocale } from "./phoneme-details";
 
@@ -28,16 +32,16 @@ describe("phoneme details data", () => {
 
 		describe(locale, () => {
 			it("exposes details for every articulated phoneme", () => {
-				for (const phonemeId of Object.keys(PhonemeArticulationRegistry)) {
-					expect(
-						copy.phonemeDetailsById[phonemeId as keyof typeof copy.phonemeDetailsById],
-					).toBeDefined();
+				for (const phonemeId of getLanguagePhonemeIds("en")) {
+					expect(copy.phonemeDetailsById[phonemeId]).toBeDefined();
 				}
 			});
 
 			it("covers every articulation feature with definitions", () => {
-				for (const articulation of Object.values(PhonemeArticulationRegistry)) {
-					const features = articulation.features as Partial<PhonemeArticulatoryFeatures>;
+				const articulationRegistry = getPhonemeArticulationRegistryForLanguage("en");
+				for (const phonemeId of getLanguagePhonemeIds("en")) {
+					const articulation = articulationRegistry[phonemeId];
+					const features: Partial<PhonemeArticulatoryFeatures> = articulation.features;
 
 					for (const featureKey of allFeatureKeys) {
 						const featureValue = features[featureKey];
@@ -50,7 +54,7 @@ describe("phoneme details data", () => {
 			});
 
 			it("covers every allophone context with definitions", () => {
-				for (const allophones of Object.values(PhonemeAllophoneRegistry)) {
+				for (const allophones of Object.values(EnglishPhonemeAllophones)) {
 					if (!allophones) continue;
 					for (const allophone of allophones) {
 						expect(copy.allophoneContextDefinitions[allophone.contextKey]).toBeDefined();

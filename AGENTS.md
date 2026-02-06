@@ -32,15 +32,12 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 ## Project Structure & Module Organization
 - Agents can read the README for any relevant package or app to get a fast overview before making changes.
 - `apps/web`: Next.js 15 App Router project with internationalization via `[locale]` dynamic routes. Feature-specific code uses route groups (e.g. `(overview)`) and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`) to co-locate related code. UI primitives live in `src/components`, shared utilities in `src/lib`, and feature data wiring in `src/data`.
-- `packages/phonetics-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. All types and registries are exported from `src/index.ts`. Key exports include:
-  - `cmudictData` and `cmudictStatsData`: Bundled CMUDict JSON and coverage stats used by server actions and insights page
-  - `curatedTop1k` and `curatedTop10k`: Curated word lists with CMU pronunciations for client-side tiered lookup (~28KB and ~339KB)
-  - `PhonemeIpaRegistry`: Complete phoneme catalog with IPA symbols, categories, and metadata
-  - `PhonemeArticulationRegistry`: Articulatory features and production guidance for each phoneme
-  - `ContrastsByPhonemeIdRegistry`: Minimal pairs and contrast information
-  - `PhonemeSpellingPatternRegistry`: Common spelling patterns for each phoneme
-  - `PhonemeAllophoneRegistry`: Allophonic variations with context keys
-  - `CmuArpaRegistry`: Mapping between CMU ARPABET and IPA symbols
+- `packages/phonetics-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. See the package README for architecture details. Key API surface:
+  - `PhonemeIpaMap` / `getIpaForPhonemeId()`: Core ID-to-IPA symbol map (language-agnostic)
+  - Language-aware getters: `getConsonantArticulationRegistryForLanguage()`, `getLanguagePhonemeIds()`, `getLanguagePhonemeCount()`, etc.
+  - `hasLanguageFeature()` / `getLanguageFeatureCapabilities()`: Feature flags per language (Spanish currently has articulations only)
+  - English-specific data: `EnglishContrastsByPhonemeId`, `EnglishPhonemeAllophones`, `EnglishPhonemeSpellingPatterns`, `CmuArpaMap`
+  - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`
 - `packages/helper-scripts`: Utilities for data generation. TypeScript scripts handle ElevenLabs audio generation and CMUDict processing; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`; generated audio is produced locally and manually uploaded to the external audio bucket the app references.
 - `docs`: Product briefs, project overviews, enhancement plans, and feature deep-dives organized in `enhancements/` and `features/` subdirectories.
 
@@ -50,6 +47,11 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 - This split exists because phoneme copy is keyed by `@phonaria/phonetics-data` IDs/types; keeping it in TypeScript preserves type safety, prevents missing keys, and reduces drift as phoneme registries evolve.
 - Translation tone: neutral, natural, and learner-first; keep labels short and functional (avoid marketing language and regionalisms).
 - Terminology: use `IPA` as the primary label; `IPA (AFI)` is acceptable on first mention in explanatory copy.
+
+## Phoneme ID System & Target Language
+- `packages/phonetics-data/src/core/ipa-map.ts` defines custom uppercase IDs that each map to exactly one IPA symbol. The map is the single source of truth regardless of language. IDs are extensible: when two languages need phonemically distinct sounds (e.g. English `E`=/ɛ/ vs Spanish `EE`=/e/), add a new ID rather than overriding an existing one.
+- `TargetLanguage` (`"en" | "es"`) is the language whose sounds are being taught. It is separate from locale (UI display language), though they currently map 1:1. Components that render language-specific phoneme data (charts, articulations) should accept `targetLanguage` as a prop rather than deriving it implicitly.
+- Per-language phoneme inventories live in `packages/phonetics-data/src/languages/inventories.ts` and bridge core IDs to language scopes. Articulation data lives in `src/languages/{lang}/articulations.ts`.
 
 ## App Routes & Organization
 The web app uses Next.js App Router with internationalization:
@@ -85,20 +87,8 @@ The web app uses Next.js App Router with internationalization:
 - Data fetching and caching with TanStack Query; client state management with Zustand.
 - API rate limiting via Upstash Redis; analytics via Vercel Analytics and Speed Insights.
 
-### Key Dependencies
-- **UI Framework**: React 19.1.0 with Next.js 15.5.5 App Router
-- **Styling**: Tailwind CSS v4 with shadcn/ui components built on Radix UI primitives
-- **State Management**: Zustand for client state, TanStack Query for server state
-- **Data Validation**: Zod schemas for runtime type safety
-- **Internationalization**: next-intl for locale-based routing and content
-- **Developer Tools**: Biome for linting/formatting, TypeScript 5 for type checking, Vitest for testing
-- **Build Tools**: Turborepo for monorepo orchestration, Bun for package management and runtime
-
-### Development Standards
-- Monorepo architecture (Bun workspaces + Turborepo) keeps shared data, helper scripts, and the web app aligned.
-- Strict TypeScript adoption across all packages to maintain end-to-end type safety.
-- Composable UI patterns with Radix UI primitives and data-driven layouts to prevent duplication.
-- Co-located feature code using route groups and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`).
+### Key Stack
+React 19 + Next.js 15 App Router, Tailwind CSS v4 + shadcn/ui (Radix), Zustand + TanStack Query, next-intl, Zod, Biome, Vitest, Turborepo + Bun.
 
 ## Coding Style & Naming Conventions
 - Biome formats with tab indentation (visual width 2), 100-character line width, double quotes, and automatic import organization—accept formatter output instead of hand-tuning.

@@ -61,11 +61,20 @@ const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
 	NG: {
 		label: "Nasal velar sonora",
 	},
+	NY: {
+		label: "Nasal palatal sonora",
+	},
 	L: {
 		label: "Aproximante lateral alveolar sonora",
 	},
 	R: {
 		label: "Aproximante postalveolar sonora",
+	},
+	RX: {
+		label: "Vibrante simple alveolar sonora",
+	},
+	RR: {
+		label: "Vibrante múltiple alveolar sonora",
 	},
 	Y: {
 		label: "Aproximante palatal sonora",
@@ -73,11 +82,20 @@ const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
 	W: {
 		label: "Aproximante labial-velar sonora",
 	},
+	X: {
+		label: "Fricativa velar sorda",
+	},
+	YH: {
+		label: "Fricativa palatal sonora",
+	},
 	I: {
 		label: "Vocal cerrada anterior no redondeada",
 	},
 	U: {
 		label: "Vocal cerrada posterior redondeada",
+	},
+	AA: {
+		label: "Vocal abierta central no redondeada",
 	},
 	IX: {
 		label: "Vocal casi cerrada casi anterior no redondeada",
@@ -91,11 +109,17 @@ const phonemeDetailsById: PhonemeDetailsCopy["phonemeDetailsById"] = {
 	E: {
 		label: "Vocal media abierta anterior no redondeada",
 	},
+	EE: {
+		label: "Vocal media cerrada anterior no redondeada",
+	},
 	AH: {
 		label: "Vocal media abierta posterior no redondeada",
 	},
 	O: {
 		label: "Vocal media abierta posterior redondeada",
+	},
+	OO: {
+		label: "Vocal media cerrada posterior redondeada",
 	},
 	AE: {
 		label: "Vocal casi abierta anterior no redondeada",
@@ -155,6 +179,14 @@ const featureDefinitions: PhonemeDetailsCopy["featureDefinitions"] = {
 				label: "Aproximante lateral",
 				description:
 					"La lengua bloquea el centro en el reborde alveolar, mientras el aire pasa por los lados.",
+			},
+			tap: {
+				label: "Vibrante simple",
+				description: "La lengua toca una sola vez el reborde alveolar.",
+			},
+			trill: {
+				label: "Vibrante múltiple",
+				description: "La lengua vibra con contactos repetidos en el reborde alveolar.",
 			},
 		},
 	},

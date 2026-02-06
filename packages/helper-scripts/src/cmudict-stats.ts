@@ -5,7 +5,7 @@ import type {
 	CmudictStatsPayload,
 	PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
-import { PhonemeIpaRegistry } from "@phonaria/phonetics-data";
+import { PhonemeIpaMap } from "@phonaria/phonetics-data";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 const cmudictPath =
@@ -32,7 +32,7 @@ function extractBasePhonemeId(token: string): PhonemeSymbolId {
  */
 function isValidPhonemeToken(token: string): boolean {
 	const baseId = extractBasePhonemeId(token);
-	return baseId in PhonemeIpaRegistry;
+	return baseId in PhonemeIpaMap;
 }
 
 /** Vowels with stress markers count as syllables. */

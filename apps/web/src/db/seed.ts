@@ -6,7 +6,8 @@ import {
 	type CmudictPayload,
 	type CmudictStatsPayload,
 	extractBasePhonemeId,
-	getArpabetForPhonemeId,
+	getArpabetForEnglishPhonemeId,
+	isEnglishPhonemeSymbolId,
 	isValidPhonemeToken,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
@@ -48,7 +49,8 @@ function buildPhonemeKey(variant: string): string {
 	for (const token of tokens) {
 		if (!isValidPhonemeToken(token)) continue;
 		const phonemeId = extractBasePhonemeId(token);
-		labels.push(getArpabetForPhonemeId(phonemeId));
+		if (!isEnglishPhonemeSymbolId(phonemeId)) continue;
+		labels.push(getArpabetForEnglishPhonemeId(phonemeId));
 	}
 	return labels.join("-");
 }
@@ -89,6 +91,7 @@ function aggregateCounts(data: CmudictPayload["data"]): AggregatedCounts {
 			for (const token of tokens) {
 				if (!isValidPhonemeToken(token)) continue;
 				const phonemeId = extractBasePhonemeId(token);
+				if (!isEnglishPhonemeSymbolId(phonemeId)) continue;
 				increment(phonemeTokenCounts, phonemeId);
 				uniquePhonemesInWord.add(phonemeId);
 			}

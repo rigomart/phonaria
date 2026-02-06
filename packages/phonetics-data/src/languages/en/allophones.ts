@@ -1,15 +1,5 @@
-import type { PhonemeSymbolId } from "../core/ipa-registry";
-
-export type AllophoneExample = {
-	word: string;
-	phonemic: string;
-};
-
-type BasePhonemeAllophone<ContextKey extends string = string> = {
-	ipaVariant: string; // e.g., ɾ, ʔ, tʰ, ɫ, etc.
-	contextKey: ContextKey; // e.g., "stressed-syllable-onset", "after-s-in-onset"
-	examples: ReadonlyArray<AllophoneExample>;
-};
+import type { EnglishPhonemeSymbolId } from "../inventories";
+import type { PhonemeAllophone } from "../types";
 
 const phonemeAllophonesData = {
 	// Voiceless plosives: aspiration vs s-clusters; plus key /t/ variants
@@ -113,14 +103,8 @@ const phonemeAllophonesData = {
 			examples: [{ word: "water", phonemic: "ˈwɔtɚ" }],
 		},
 	],
-} as const;
+} as const satisfies Partial<Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>>;
 
-type AllophoneCollections = (typeof phonemeAllophonesData)[keyof typeof phonemeAllophonesData];
-
-export type PhonemeAllophoneContextKey = AllophoneCollections[number]["contextKey"];
-
-export type PhonemeAllophone = BasePhonemeAllophone<PhonemeAllophoneContextKey>;
-
-export const PhonemeAllophoneRegistry: Partial<
-	Record<PhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>
+export const EnglishPhonemeAllophones: Partial<
+	Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>
 > = phonemeAllophonesData;
