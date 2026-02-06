@@ -1,7 +1,10 @@
 /**
  * Shared utilities for tiered phoneme lookup.
  */
-import { type CuratedWordData, EnglishCuratedTop1k } from "@phonaria/phonetics-data";
+import {
+	type CuratedWordData,
+	EnglishCuratedTop1k,
+} from "@phonaria/phonetics-data/data/en/curated-1k";
 import type { G2PSyllable } from "../g2p/model";
 import { syllabify } from "../g2p/syllabifier";
 
@@ -17,7 +20,7 @@ let tier2Cache: CuratedWordData | null = null;
 
 export async function loadTier2(): Promise<CuratedWordData> {
 	if (!tier2Cache) {
-		const module = await import("@phonaria/phonetics-data");
+		const module = await import("@phonaria/phonetics-data/data/en/curated-10k");
 		tier2Cache = module.EnglishCuratedTop10k;
 	}
 	return tier2Cache;

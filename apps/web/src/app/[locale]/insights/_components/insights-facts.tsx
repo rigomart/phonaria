@@ -1,10 +1,7 @@
 "use client";
 
-import {
-	EnglishCmudictStatsData,
-	getIpaForPhonemeId,
-	getPhonemeCategory,
-} from "@phonaria/phonetics-data";
+import { getIpaForPhonemeId, getPhonemeCategory } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data/data/en/cmudict-stats";
 import { Lightbulb } from "lucide-react";
 import { useTranslations } from "next-intl";
 

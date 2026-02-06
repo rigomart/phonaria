@@ -1,11 +1,11 @@
 "use client";
 
 import {
-	EnglishCmudictStatsData,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data/data/en/cmudict-stats";
 import { Badge } from "@phonaria/ui/components/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Info } from "lucide-react";

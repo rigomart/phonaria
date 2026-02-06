@@ -30,6 +30,7 @@ const spellingPatterns = getSpellingPatternRegistryForLanguage(language); // nul
 - Registries layer (`src/registries/`): composition and app-facing API.
   - `registries.ts`: typed accessors that compose per-language data into language-indexed registries.
   - `capabilities.ts`: feature flags declaring what each language supports.
+- Data layer (`src/data/en/`): typed wrapper modules that import raw JSON and expose subpath exports (e.g., `@phonaria/phonetics-data/data/en/curated-1k`). Consumers import from these modules instead of the barrel to avoid pulling unrelated JSON into their bundles.
 - Data assets (`data/en/`): static dictionaries and curated lists currently available for English.
 
 ```mermaid
@@ -41,7 +42,8 @@ graph TD
   D --> E
   E --> F["Consumers\napps/web, helper-scripts"]
   G["src/registries/capabilities.ts\nFeature support matrix"] --> F
-  H["data/en/dict + data/en/curated\nCMUDict + curated word lists"] --> F
+  H["data/en/dict + data/en/curated\nRaw JSON assets"] --> I["src/data/en/\nTyped subpath exports"]
+  I --> F
 ```
 
 ## Naming conventions

@@ -1,12 +1,12 @@
 "use client";
 
 import {
-	EnglishCmudictStatsData,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	type PhonemeCategory,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data/data/en/cmudict-stats";
 import {
 	Card,
 	CardContent,

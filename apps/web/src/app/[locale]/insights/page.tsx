@@ -1,4 +1,4 @@
-import { EnglishCmudictStatsData } from "@phonaria/phonetics-data";
+import { EnglishCmudictStatsData } from "@phonaria/phonetics-data/data/en/cmudict-stats";
 import { Badge } from "@phonaria/ui/components/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@phonaria/ui/components/card";
 import type { Metadata } from "next";
