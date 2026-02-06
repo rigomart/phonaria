@@ -4,8 +4,8 @@ import type {
 	MonophthongSymbolId,
 	PhonemeSymbolId,
 	VowelSymbolId,
-} from "./ipa-registry";
-import { TARGET_LANGUAGES, type TargetLanguage } from "./types";
+} from "../core/ipa-map";
+import type { TargetLanguage } from "../core/types";
 
 const ENGLISH_CONSONANTS = [
 	"P",
@@ -88,7 +88,7 @@ const SPANISH_MONOPHTHONGS = [
 
 const SPANISH_DIPHTHONGS = [] as const satisfies readonly DiphthongSymbolId[];
 
-export const LanguagePhonemeInventoryRegistry = {
+export const LanguagePhonemeInventoryMap = {
 	en: {
 		consonants: ENGLISH_CONSONANTS,
 		monophthongs: ENGLISH_MONOPHTHONGS,
@@ -114,24 +114,24 @@ export const LanguagePhonemeInventoryRegistry = {
 	}
 >;
 
-type LanguagePhonemeInventoryRegistryType = typeof LanguagePhonemeInventoryRegistry;
+type LanguagePhonemeInventoryMapType = typeof LanguagePhonemeInventoryMap;
 
 export type LanguagePhonemeInventory<TLanguage extends TargetLanguage = TargetLanguage> =
-	LanguagePhonemeInventoryRegistryType[TLanguage];
+	LanguagePhonemeInventoryMapType[TLanguage];
 
 export type LanguagePhonemeSubset = keyof LanguagePhonemeInventory;
 
 export type LanguagePhonemeId<TLanguage extends TargetLanguage> =
-	LanguagePhonemeInventoryRegistryType[TLanguage]["phonemes"][number];
+	LanguagePhonemeInventoryMapType[TLanguage]["phonemes"][number];
 
 export type LanguageConsonantSymbolId<TLanguage extends TargetLanguage> =
-	LanguagePhonemeInventoryRegistryType[TLanguage]["consonants"][number];
+	LanguagePhonemeInventoryMapType[TLanguage]["consonants"][number];
 
 export type LanguageMonophthongSymbolId<TLanguage extends TargetLanguage> =
-	LanguagePhonemeInventoryRegistryType[TLanguage]["monophthongs"][number];
+	LanguagePhonemeInventoryMapType[TLanguage]["monophthongs"][number];
 
 export type LanguageDiphthongSymbolId<TLanguage extends TargetLanguage> =
-	LanguagePhonemeInventoryRegistryType[TLanguage]["diphthongs"][number];
+	LanguagePhonemeInventoryMapType[TLanguage]["diphthongs"][number];
 
 export type EnglishPhonemeSymbolId = LanguagePhonemeId<"en">;
 export type EnglishConsonantSymbolId = LanguageConsonantSymbolId<"en">;
@@ -143,22 +143,18 @@ export type SpanishConsonantSymbolId = LanguageConsonantSymbolId<"es">;
 export type SpanishMonophthongSymbolId = LanguageMonophthongSymbolId<"es">;
 export type SpanishDiphthongSymbolId = LanguageDiphthongSymbolId<"es">;
 
-export const EnglishPhonemeInventory = LanguagePhonemeInventoryRegistry.en;
-export const SpanishPhonemeInventory = LanguagePhonemeInventoryRegistry.es;
+export const EnglishPhonemeInventory = LanguagePhonemeInventoryMap.en;
+export const SpanishPhonemeInventory = LanguagePhonemeInventoryMap.es;
 
 const languagePhonemeSets: Record<TargetLanguage, ReadonlySet<PhonemeSymbolId>> = {
-	en: new Set(),
-	es: new Set(),
+	en: new Set(LanguagePhonemeInventoryMap.en.phonemes),
+	es: new Set(LanguagePhonemeInventoryMap.es.phonemes),
 };
-
-for (const language of TARGET_LANGUAGES) {
-	languagePhonemeSets[language] = new Set(LanguagePhonemeInventoryRegistry[language].phonemes);
-}
 
 export function getLanguagePhonemeInventory<TLanguage extends TargetLanguage>(
 	language: TLanguage,
 ): LanguagePhonemeInventory<TLanguage> {
-	return LanguagePhonemeInventoryRegistry[language];
+	return LanguagePhonemeInventoryMap[language];
 }
 
 export function getLanguagePhonemeIds<
@@ -168,7 +164,7 @@ export function getLanguagePhonemeIds<
 	language: TLanguage,
 	subset: TSubset = "phonemes" as TSubset,
 ): LanguagePhonemeInventory<TLanguage>[TSubset] {
-	return LanguagePhonemeInventoryRegistry[language][subset];
+	return LanguagePhonemeInventoryMap[language][subset];
 }
 
 export function isPhonemeInLanguage<TLanguage extends TargetLanguage>(
@@ -197,8 +193,8 @@ function createLanguagePhonemeCount(inventory: LanguagePhonemeInventory): Langua
 }
 
 const languagePhonemeCountRegistry: Record<TargetLanguage, LanguagePhonemeCount> = {
-	en: createLanguagePhonemeCount(LanguagePhonemeInventoryRegistry.en),
-	es: createLanguagePhonemeCount(LanguagePhonemeInventoryRegistry.es),
+	en: createLanguagePhonemeCount(LanguagePhonemeInventoryMap.en),
+	es: createLanguagePhonemeCount(LanguagePhonemeInventoryMap.es),
 };
 
 export function getLanguagePhonemeCount(language: TargetLanguage): LanguagePhonemeCount {

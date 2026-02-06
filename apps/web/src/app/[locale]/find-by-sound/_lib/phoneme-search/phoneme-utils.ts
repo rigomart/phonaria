@@ -1,8 +1,4 @@
-import {
-	PhonemeArpabetLabel,
-	PhonemeIpaRegistry,
-	type PhonemeSymbolId,
-} from "@phonaria/phonetics-data";
+import { PhonemeArpabetLabel, PhonemeIpaMap, type PhonemeSymbolId } from "@phonaria/phonetics-data";
 
 const ARPABET_TO_PHONEME_ID_MAP: Record<string, PhonemeSymbolId> = Object.entries(
 	PhonemeArpabetLabel,
@@ -25,7 +21,7 @@ export function getPhonemeIdForArpabet(arpabet: string): PhonemeSymbolId | null 
 export function arpabetToIpa(arpabet: string): string | null {
 	const phonemeId = ARPABET_TO_PHONEME_ID_MAP[arpabet];
 	if (!phonemeId) return null;
-	return PhonemeIpaRegistry[phonemeId];
+	return PhonemeIpaMap[phonemeId];
 }
 
 export function getAllValidArpabetLabels(): string[] {

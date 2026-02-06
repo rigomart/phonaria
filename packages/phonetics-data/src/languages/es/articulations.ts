@@ -1,19 +1,19 @@
 import type {
-	SpanishConsonantSymbolId,
-	SpanishDiphthongSymbolId,
-	SpanishMonophthongSymbolId,
-	SpanishPhonemeSymbolId,
-} from "../core/language-phoneme-inventories";
-import type {
 	ConsonantArticulation,
 	DiphthongVowelArticulation,
 	MonophthongVowelArticulation,
 	PhonemeArticulation,
-} from "../core/phoneme-articulations";
+} from "../../core/phoneme-articulations";
+import type {
+	SpanishConsonantSymbolId,
+	SpanishDiphthongSymbolId,
+	SpanishMonophthongSymbolId,
+	SpanishPhonemeSymbolId,
+} from "../inventories";
 
 export type SpanishPhonemeArticulation = PhonemeArticulation;
 
-export const SpanishConsonantArticulationRegistry: Record<
+export const SpanishConsonantArticulations: Record<
 	SpanishConsonantSymbolId,
 	ConsonantArticulation
 > = {
@@ -95,7 +95,7 @@ export const SpanishConsonantArticulationRegistry: Record<
 	},
 };
 
-export const SpanishMonophthongVowelArticulationRegistry: Record<
+export const SpanishMonophthongArticulations: Record<
 	SpanishMonophthongSymbolId,
 	MonophthongVowelArticulation
 > = {
@@ -151,13 +151,13 @@ export const SpanishMonophthongVowelArticulationRegistry: Record<
 	},
 };
 
-export const SpanishDiphthongVowelArticulationRegistry: Record<
+export const SpanishDiphthongArticulations: Record<
 	SpanishDiphthongSymbolId,
 	DiphthongVowelArticulation
 > = {};
 
-export const SpanishPhonemeArticulationRegistry = {
-	...SpanishConsonantArticulationRegistry,
-	...SpanishMonophthongVowelArticulationRegistry,
-	...SpanishDiphthongVowelArticulationRegistry,
+export const SpanishPhonemeArticulations = {
+	...SpanishConsonantArticulations,
+	...SpanishMonophthongArticulations,
+	...SpanishDiphthongArticulations,
 } as const satisfies Record<SpanishPhonemeSymbolId, PhonemeArticulation>;

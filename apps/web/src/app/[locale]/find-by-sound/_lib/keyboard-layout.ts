@@ -1,11 +1,11 @@
 import {
-	ConsonantIpaRegistry,
-	DiphthongIpaRegistry,
+	ConsonantIpaMap,
+	DiphthongIpaMap,
 	type EnglishConsonantSymbolId,
 	type EnglishDiphthongSymbolId,
 	type EnglishMonophthongSymbolId,
 	type EnglishPhonemeSymbolId,
-	MonophthongIpaRegistry,
+	MonophthongIpaMap,
 	PhonemeArpabetLabel,
 } from "@phonaria/phonetics-data";
 
@@ -83,15 +83,15 @@ function mapToKeyboardPhoneme<T extends EnglishPhonemeSymbolId>(
 }
 
 export const CONSONANT_KEYBOARD: KeyboardPhoneme[] = CONSONANT_ORDER.map((id) =>
-	mapToKeyboardPhoneme(id, ConsonantIpaRegistry),
+	mapToKeyboardPhoneme(id, ConsonantIpaMap),
 );
 
 export const MONOPHTHONG_KEYBOARD: KeyboardPhoneme[] = MONOPHTHONG_ORDER.map((id) =>
-	mapToKeyboardPhoneme(id, MonophthongIpaRegistry),
+	mapToKeyboardPhoneme(id, MonophthongIpaMap),
 );
 
 export const DIPHTHONG_KEYBOARD: KeyboardPhoneme[] = DIPHTHONG_ORDER.map((id) =>
-	mapToKeyboardPhoneme(id, DiphthongIpaRegistry),
+	mapToKeyboardPhoneme(id, DiphthongIpaMap),
 );
 
 export const VOWEL_KEYBOARD: KeyboardPhoneme[] = [...MONOPHTHONG_KEYBOARD, ...DIPHTHONG_KEYBOARD];

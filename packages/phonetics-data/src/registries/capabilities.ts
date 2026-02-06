@@ -1,4 +1,4 @@
-import type { TargetLanguage } from "./core/types";
+import type { TargetLanguage } from "../core/types";
 
 export const LANGUAGE_FEATURE_KEYS = [
 	"articulations",

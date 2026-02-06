@@ -2,9 +2,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 import {
-	EnglishContrastsByPhonemeIdRegistry,
-	EnglishPhonemeAllophoneRegistry,
-	EnglishPhonemeSpellingPatternRegistry,
+	EnglishContrastsByPhonemeId,
+	EnglishPhonemeAllophones,
+	EnglishPhonemeSpellingPatterns,
 } from "@phonaria/phonetics-data";
 
 type CMUDict = {
@@ -118,7 +118,7 @@ function lookupCMUArpa(word: string, cmudict: CMUDict): WordMapping {
 function collectFromSpellingPatterns(cmudict: CMUDict): WordMapping[] {
 	const mappings: WordMapping[] = [];
 
-	for (const entry of Object.values(EnglishPhonemeSpellingPatternRegistry ?? {})) {
+	for (const entry of Object.values(EnglishPhonemeSpellingPatterns ?? {})) {
 		if (!entry) continue;
 		for (const example of entry.examples) {
 			const mapping = lookupCMUArpa(example.word, cmudict);
@@ -133,7 +133,7 @@ function collectFromSpellingPatterns(cmudict: CMUDict): WordMapping[] {
 function collectFromContrasts(cmudict: CMUDict): WordMapping[] {
 	const mappings: WordMapping[] = [];
 
-	for (const matches of Object.values(EnglishContrastsByPhonemeIdRegistry ?? {})) {
+	for (const matches of Object.values(EnglishContrastsByPhonemeId ?? {})) {
 		if (!matches) continue;
 		for (const match of matches) {
 			for (const pair of match.minimalPairs) {
@@ -152,7 +152,7 @@ function collectFromContrasts(cmudict: CMUDict): WordMapping[] {
 function collectFromAllophones(cmudict: CMUDict): WordMapping[] {
 	const mappings: WordMapping[] = [];
 
-	for (const entry of Object.values(EnglishPhonemeAllophoneRegistry ?? {})) {
+	for (const entry of Object.values(EnglishPhonemeAllophones ?? {})) {
 		if (!entry) continue;
 		for (const variant of entry) {
 			for (const example of variant.examples) {

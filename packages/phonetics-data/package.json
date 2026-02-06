@@ -7,8 +7,9 @@
 	"exports": {
 		".": "./src/index.ts",
 		"./core": "./src/core/index.ts",
-		"./en": "./src/en/index.ts",
-		"./es": "./src/es/index.ts"
+		"./languages": "./src/languages/index.ts",
+		"./languages/en": "./src/languages/en/index.ts",
+		"./languages/es": "./src/languages/es/index.ts"
 	},
 	"packageManager": "bun@1.3.2",
 	"scripts": {

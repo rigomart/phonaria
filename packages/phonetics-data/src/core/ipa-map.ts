@@ -2,7 +2,7 @@ import type { PhonemeCategory } from "./types";
 
 // Consonants
 
-export const ConsonantIpaRegistry = {
+export const ConsonantIpaMap = {
 	P: "p",
 	B: "b",
 	T: "t",
@@ -34,12 +34,12 @@ export const ConsonantIpaRegistry = {
 	W: "w",
 } as const;
 
-export type ConsonantSymbolId = keyof typeof ConsonantIpaRegistry;
-export type ConsonantSymbolIpa = (typeof ConsonantIpaRegistry)[ConsonantSymbolId];
+export type ConsonantSymbolId = keyof typeof ConsonantIpaMap;
+export type ConsonantSymbolIpa = (typeof ConsonantIpaMap)[ConsonantSymbolId];
 
 // Vowels - Monophthongs
 
-export const MonophthongIpaRegistry = {
+export const MonophthongIpaMap = {
 	I: "i",
 	U: "u",
 	AA: "a",
@@ -54,12 +54,12 @@ export const MonophthongIpaRegistry = {
 	ER: "ɝ",
 } as const;
 
-export type MonophthongSymbolId = keyof typeof MonophthongIpaRegistry;
-export type MonophthongSymbolIpa = (typeof MonophthongIpaRegistry)[MonophthongSymbolId];
+export type MonophthongSymbolId = keyof typeof MonophthongIpaMap;
+export type MonophthongSymbolIpa = (typeof MonophthongIpaMap)[MonophthongSymbolId];
 
 // Vowels - Diphthongs
 
-export const DiphthongIpaRegistry = {
+export const DiphthongIpaMap = {
 	EI: "eɪ",
 	OU: "oʊ",
 	AI: "aɪ",
@@ -67,38 +67,38 @@ export const DiphthongIpaRegistry = {
 	OI: "ɔɪ",
 } as const;
 
-export type DiphthongSymbolId = keyof typeof DiphthongIpaRegistry;
-export type DiphthongSymbolIpa = (typeof DiphthongIpaRegistry)[DiphthongSymbolId];
+export type DiphthongSymbolId = keyof typeof DiphthongIpaMap;
+export type DiphthongSymbolIpa = (typeof DiphthongIpaMap)[DiphthongSymbolId];
 
 // Vowels - All
 
-export const VowelIpaRegistry = {
-	...MonophthongIpaRegistry,
-	...DiphthongIpaRegistry,
+export const VowelIpaMap = {
+	...MonophthongIpaMap,
+	...DiphthongIpaMap,
 } as const;
 
-export type VowelSymbolId = keyof typeof VowelIpaRegistry;
-export type VowelSymbolIpa = (typeof VowelIpaRegistry)[VowelSymbolId];
+export type VowelSymbolId = keyof typeof VowelIpaMap;
+export type VowelSymbolIpa = (typeof VowelIpaMap)[VowelSymbolId];
 
 // All
 
-export const PhonemeIpaRegistry = {
-	...ConsonantIpaRegistry,
-	...VowelIpaRegistry,
+export const PhonemeIpaMap = {
+	...ConsonantIpaMap,
+	...VowelIpaMap,
 } as const;
 
-export type PhonemeSymbolId = keyof typeof PhonemeIpaRegistry;
-export type PhonemeSymbolIpa = (typeof PhonemeIpaRegistry)[PhonemeSymbolId];
+export type PhonemeSymbolId = keyof typeof PhonemeIpaMap;
+export type PhonemeSymbolIpa = (typeof PhonemeIpaMap)[PhonemeSymbolId];
 export type PhonemeType = "consonant" | "monophthong" | "diphthong";
 
 // Helper functions
 
 export function isVowelPhoneme(phonemeId: PhonemeSymbolId): boolean {
-	return phonemeId in VowelIpaRegistry;
+	return phonemeId in VowelIpaMap;
 }
 
 export function isConsonantPhoneme(phonemeId: PhonemeSymbolId): boolean {
-	return phonemeId in ConsonantIpaRegistry;
+	return phonemeId in ConsonantIpaMap;
 }
 
 export function getPhonemeCategory(phonemeId: PhonemeSymbolId): PhonemeCategory {
@@ -110,10 +110,10 @@ export function getPhonemeCategory(phonemeId: PhonemeSymbolId): PhonemeCategory 
  * based on which registry it is found in.
  */
 export function getPhonemeType(phonemeId: PhonemeSymbolId): PhonemeType {
-	if (phonemeId in MonophthongIpaRegistry) {
+	if (phonemeId in MonophthongIpaMap) {
 		return "monophthong";
 	}
-	if (phonemeId in DiphthongIpaRegistry) {
+	if (phonemeId in DiphthongIpaMap) {
 		return "diphthong";
 	}
 	return "consonant";
@@ -129,14 +129,14 @@ export function getPhonemeType(phonemeId: PhonemeSymbolId): PhonemeType {
  * getIpaForPhonemeId("I") // "i"
  */
 export function getIpaForPhonemeId(phonemeId: PhonemeSymbolId): string {
-	return PhonemeIpaRegistry[phonemeId];
+	return PhonemeIpaMap[phonemeId];
 }
 
 // Phoneme counts
 export const PhonemeCount = {
-	consonants: Object.keys(ConsonantIpaRegistry).length,
-	monophthongs: Object.keys(MonophthongIpaRegistry).length,
-	diphthongs: Object.keys(DiphthongIpaRegistry).length,
+	consonants: Object.keys(ConsonantIpaMap).length,
+	monophthongs: Object.keys(MonophthongIpaMap).length,
+	diphthongs: Object.keys(DiphthongIpaMap).length,
 	get vowels() {
 		return this.monophthongs + this.diphthongs;
 	},

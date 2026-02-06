@@ -5,7 +5,7 @@ import {
 	getArpabetForEnglishPhonemeId,
 	isEnglishPhonemeSymbolId,
 	tryExtractBasePhonemeId,
-} from "../../phonetics-data/src/en/cmu-arpa-registry";
+} from "../../phonetics-data/src/languages/en/cmu-arpa";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 type PhonemeTrieNode = {

@@ -1,20 +1,20 @@
 import type {
-	EnglishConsonantSymbolId,
-	EnglishDiphthongSymbolId,
-	EnglishMonophthongSymbolId,
-	EnglishPhonemeSymbolId,
-} from "../core/language-phoneme-inventories";
-import type {
 	ConsonantArticulation,
 	DiphthongVowelArticulation,
 	MonophthongVowelArticulation,
 	PhonemeArticulation,
 	VowelType,
-} from "../core/phoneme-articulations";
+} from "../../core/phoneme-articulations";
+import type {
+	EnglishConsonantSymbolId,
+	EnglishDiphthongSymbolId,
+	EnglishMonophthongSymbolId,
+	EnglishPhonemeSymbolId,
+} from "../inventories";
 
 export type { PhonemeArticulation, VowelType };
 
-export const ConsonantArticulationRegistry: Record<
+export const EnglishConsonantArticulations: Record<
 	EnglishConsonantSymbolId,
 	ConsonantArticulation
 > = {
@@ -118,7 +118,7 @@ export const ConsonantArticulationRegistry: Record<
 
 // Monophthong vowel articulations
 
-export const MonophthongVowelArticulationRegistry: Record<
+export const EnglishMonophthongArticulations: Record<
 	EnglishMonophthongSymbolId,
 	MonophthongVowelArticulation
 > = {
@@ -237,7 +237,7 @@ export const MonophthongVowelArticulationRegistry: Record<
 
 // Diphthong vowel articulations
 
-export const DiphthongVowelArticulationRegistry: Record<
+export const EnglishDiphthongArticulations: Record<
 	EnglishDiphthongSymbolId,
 	DiphthongVowelArticulation
 > = {
@@ -303,8 +303,8 @@ export const DiphthongVowelArticulationRegistry: Record<
 	},
 };
 
-export const PhonemeArticulationRegistry = {
-	...ConsonantArticulationRegistry,
-	...MonophthongVowelArticulationRegistry,
-	...DiphthongVowelArticulationRegistry,
+export const EnglishPhonemeArticulations = {
+	...EnglishConsonantArticulations,
+	...EnglishMonophthongArticulations,
+	...EnglishDiphthongArticulations,
 } as const satisfies Record<EnglishPhonemeSymbolId, PhonemeArticulation>;

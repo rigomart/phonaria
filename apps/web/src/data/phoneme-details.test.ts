@@ -1,6 +1,6 @@
 import type { PhonemeArticulatoryFeatures } from "@phonaria/phonetics-data";
 import {
-	EnglishPhonemeAllophoneRegistry,
+	EnglishPhonemeAllophones,
 	getLanguagePhonemeIds,
 	getPhonemeArticulationRegistryForLanguage,
 } from "@phonaria/phonetics-data";
@@ -54,7 +54,7 @@ describe("phoneme details data", () => {
 			});
 
 			it("covers every allophone context with definitions", () => {
-				for (const allophones of Object.values(EnglishPhonemeAllophoneRegistry)) {
+				for (const allophones of Object.values(EnglishPhonemeAllophones)) {
 					if (!allophones) continue;
 					for (const allophone of allophones) {
 						expect(copy.allophoneContextDefinitions[allophone.contextKey]).toBeDefined();

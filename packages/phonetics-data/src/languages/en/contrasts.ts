@@ -1,26 +1,5 @@
-import type {
-	ConsonantArticulatoryFeatures,
-	PhonemeArticulatoryFeatureKey,
-	VowelArticulatoryFeatures,
-} from "../core/articulatory-features";
-import type {
-	EnglishPhonemeSymbolId,
-	LanguagePhonemeId,
-} from "../core/language-phoneme-inventories";
-import type { TargetLanguage } from "../core/types";
-
-export type PhonemeContrastPair = {
-	word: string;
-	phonemic: string;
-};
-
-type PhonemeContrastType = keyof ConsonantArticulatoryFeatures | keyof VowelArticulatoryFeatures;
-
-export type PhonemeContrast = {
-	phonemeIds: [EnglishPhonemeSymbolId, EnglishPhonemeSymbolId]; // The pair. e.g. ["B", "V"]
-	contrastType: PhonemeArticulatoryFeatureKey[]; // Usually one, but can be multiple. e.g. ["manner", "place"]
-	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
-};
+import type { EnglishPhonemeSymbolId } from "../inventories";
+import type { PhonemeContrast, PhonemeContrastMatch } from "../types";
 
 // TODO: Refine the contrasts for accuracy and completeness.
 export const PhonemeContrastCatalog: PhonemeContrast[] = [
@@ -283,14 +262,8 @@ export const PhonemeContrastCatalog: PhonemeContrast[] = [
 	},
 ];
 
-export type PhonemeContrastMatch = {
-	partnerId: EnglishPhonemeSymbolId;
-	contrastType: PhonemeContrastType[];
-	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
-};
-
 // Scoped record generation using IIFE for O(1) access in consumption
-export const EnglishContrastsByPhonemeIdRegistry: Partial<
+export const EnglishContrastsByPhonemeId: Partial<
 	Record<EnglishPhonemeSymbolId, PhonemeContrastMatch[]>
 > = (() => {
 	const record: Partial<Record<EnglishPhonemeSymbolId, PhonemeContrastMatch[]>> = {};
@@ -319,8 +292,3 @@ export const EnglishContrastsByPhonemeIdRegistry: Partial<
 
 	return record;
 })();
-
-export type LanguagePhonemeContrastRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
-	TLanguage extends "en"
-		? Partial<Record<LanguagePhonemeId<"en">, PhonemeContrastMatch[]>>
-		: Partial<Record<LanguagePhonemeId<TLanguage>, never>>;

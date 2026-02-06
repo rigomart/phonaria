@@ -1,22 +1,12 @@
 // Common spelling patterns for English phonemes
 // Because English spelling is historically inconsistent, these represent general tendencies rather than fixed rules
 
-import type {
-	EnglishPhonemeSymbolId,
-	LanguagePhonemeId,
-} from "../core/language-phoneme-inventories";
-import type { TargetLanguage } from "../core/types";
+import type { EnglishPhonemeSymbolId } from "../inventories";
+import type { SpellingPattern } from "../types";
 
 //? Future:examples should be per pattern, also add fields for position (coda, onset, etc.)
-export type SpellingPattern = {
-	patterns: ReadonlyArray<string>;
-	examples: ReadonlyArray<{
-		word: string;
-		phonemic: string;
-	}>;
-};
 
-export const EnglishPhonemeSpellingPatternRegistry = {
+export const EnglishPhonemeSpellingPatterns = {
 	// Plosives
 	P: {
 		patterns: ["p", "pp"],
@@ -333,8 +323,3 @@ export const EnglishPhonemeSpellingPatternRegistry = {
 		],
 	},
 } as const satisfies Partial<Record<EnglishPhonemeSymbolId, SpellingPattern>>;
-
-export type LanguageSpellingPatternRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
-	TLanguage extends "en"
-		? Partial<Record<LanguagePhonemeId<"en">, SpellingPattern>>
-		: Partial<Record<LanguagePhonemeId<TLanguage>, never>>;

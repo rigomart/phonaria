@@ -1,19 +1,5 @@
-import type {
-	EnglishPhonemeSymbolId,
-	LanguagePhonemeId,
-} from "../core/language-phoneme-inventories";
-import type { TargetLanguage } from "../core/types";
-
-export type AllophoneExample = {
-	word: string;
-	phonemic: string;
-};
-
-type BasePhonemeAllophone<ContextKey extends string = string> = {
-	ipaVariant: string; // e.g., ɾ, ʔ, tʰ, ɫ, etc.
-	contextKey: ContextKey; // e.g., "stressed-syllable-onset", "after-s-in-onset"
-	examples: ReadonlyArray<AllophoneExample>;
-};
+import type { EnglishPhonemeSymbolId } from "../inventories";
+import type { PhonemeAllophone } from "../types";
 
 const phonemeAllophonesData = {
 	// Voiceless plosives: aspiration vs s-clusters; plus key /t/ variants
@@ -117,19 +103,8 @@ const phonemeAllophonesData = {
 			examples: [{ word: "water", phonemic: "ˈwɔtɚ" }],
 		},
 	],
-} as const;
+} as const satisfies Partial<Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>>;
 
-type AllophoneCollections = (typeof phonemeAllophonesData)[keyof typeof phonemeAllophonesData];
-
-export type PhonemeAllophoneContextKey = AllophoneCollections[number]["contextKey"];
-
-export type PhonemeAllophone = BasePhonemeAllophone<PhonemeAllophoneContextKey>;
-
-export const EnglishPhonemeAllophoneRegistry: Partial<
+export const EnglishPhonemeAllophones: Partial<
 	Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>
 > = phonemeAllophonesData;
-
-export type LanguagePhonemeAllophoneRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
-	TLanguage extends "en"
-		? Partial<Record<LanguagePhonemeId<"en">, ReadonlyArray<PhonemeAllophone>>>
-		: Partial<Record<LanguagePhonemeId<TLanguage>, ReadonlyArray<never>>>;

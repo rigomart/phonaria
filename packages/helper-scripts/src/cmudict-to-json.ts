@@ -1,5 +1,5 @@
 import * as path from "node:path";
-import { CmuArpaRegistry, isCmuArpaToken } from "@phonaria/phonetics-data";
+import { CmuArpaMap, isCmuArpaToken } from "@phonaria/phonetics-data";
 import { config } from "dotenv";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
@@ -24,7 +24,7 @@ function convertArpaToken(token: string): string | null {
 		return null;
 	}
 
-	const phonemeId = CmuArpaRegistry[token];
+	const phonemeId = CmuArpaMap[token];
 
 	// Check if token ends with stress marker (0, 1, 2)
 	const stressMatch = token.match(/([012])$/);

@@ -1,5 +1,5 @@
 import {
-	EnglishContrastsByPhonemeIdRegistry,
+	EnglishContrastsByPhonemeId,
 	getFeatureValueByPhonemeRegistryForLanguage,
 	getIpaForPhonemeId,
 	isPhonemeInLanguage,
@@ -58,7 +58,7 @@ export function PhonemeDetailsContrasts() {
 	const featureValuesByPhoneme = getFeatureValueByPhonemeRegistryForLanguage("en");
 	const currentPhonemeId = phonemeId;
 
-	const contrasts = EnglishContrastsByPhonemeIdRegistry[currentPhonemeId];
+	const contrasts = EnglishContrastsByPhonemeId[currentPhonemeId];
 	const currentIpa = getIpaForPhonemeId(currentPhonemeId);
 	const vsLabel = t("vs");
 

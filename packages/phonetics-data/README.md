@@ -22,40 +22,48 @@ const spellingPatterns = getSpellingPatternRegistryForLanguage(language); // nul
 
 ## Architecture model
 
-- Core layer (`src/core/*`): language-agnostic IPA IDs, phoneme inventories, and articulatory feature types.
-- Language layer (`src/en/*`, `src/es/*`): per-language registries constrained by core types.
-- Selector layer (`src/language-*.ts`): typed accessors that return language data or `null` for unsupported features.
-- Data assets (`data/en/*`): static dictionaries and curated lists currently available for English.
+- Core layer (`src/core/`): language-agnostic IPA IDs and articulatory feature types.
+- Languages layer (`src/languages/`): per-language data and shared language-aware types.
+  - `inventories.ts`: per-language phoneme subsets (bridges core IDs to language scopes).
+  - `types.ts`: generic `Language*Registry` types shared across languages.
+  - `en/`, `es/`: per-language data constrained by core types.
+- Registries layer (`src/registries/`): composition and app-facing API.
+  - `registries.ts`: typed accessors that compose per-language data into language-indexed registries.
+  - `capabilities.ts`: feature flags declaring what each language supports.
+- Data assets (`data/en/`): static dictionaries and curated lists currently available for English.
 
 ```mermaid
 graph TD
-  A["src/core/*\nIPA ids, inventories, feature types"] --> B["src/en/*\nEnglish phoneme registries"]
-  A --> C["src/es/*\nSpanish phoneme registries"]
-  B --> D["src/language-articulation-registry.ts\nArticulation selectors"]
-  B --> E["src/language-data-selectors.ts\nEnglish-only feature selectors"]
-  C --> D
-  D --> F["Consumers\napps/web, helper-scripts"]
-  E --> F
-  G["src/language-feature-capabilities.ts\nFeature support matrix"] --> F
-  H["data/en/dict + data/en/curated\nCMUDict + curated word lists"] --> E
+  A["src/core/\nIPA ids, feature types"] --> B["src/languages/inventories.ts\nPer-language phoneme subsets"]
+  B --> C["src/languages/en/\nEnglish data"]
+  B --> D["src/languages/es/\nSpanish data"]
+  C --> E["src/registries/registries.ts\nComposition + selectors"]
+  D --> E
+  E --> F["Consumers\napps/web, helper-scripts"]
+  G["src/registries/capabilities.ts\nFeature support matrix"] --> F
+  H["data/en/dict + data/en/curated\nCMUDict + curated word lists"] --> F
 ```
+
+## Naming conventions
+
+- **"Registry"** suffix is reserved for the composition layer: constants that map `TargetLanguage` to data (e.g., `LanguageArticulationRegistry`).
+- **"Map"** suffix is used for static lookup objects in core and language modules (e.g., `PhonemeIpaMap`, `CmuArpaMap`).
+- **Plain descriptive nouns** are used for per-language data (e.g., `EnglishConsonantArticulations`, `EnglishPhonemeAllophones`).
 
 ## Type-safety strategy
 
 - `TargetLanguage` is the top-level discriminator (`"en" | "es"`).
 - `LanguagePhonemeId<TLanguage>` narrows valid phoneme IDs by language at compile time.
 - English-only features are explicit (`English*` naming) and gated through selectors returning `null` when unavailable for other languages.
+- Selector return types use indexed access on `as const satisfies` registries, so TypeScript resolves the exact type per language without casts.
 - Capability checks (`hasLanguageFeature`, `getLanguageFeatureCapabilities`) prevent invalid assumptions in consumers.
-- Shared helpers use language-specific overload-style APIs where possible instead of broad unions.
 
 ## Extension workflow (adding a language or feature)
 
-1. Add or update inventory IDs in `src/core/language-phoneme-inventories.ts`.
-2. Create language registries under `src/<language>/` and type them against core types.
-3. Wire data into selector registries:
-   - `src/language-articulation-registry.ts`
-   - `src/language-data-selectors.ts` (only if the feature exists for that language)
-4. Update `src/language-feature-capabilities.ts` for feature flags.
+1. Add or update inventory IDs in `src/languages/inventories.ts`.
+2. Create language data under `src/languages/<language>/` and type it against core types.
+3. Register data in `src/registries/registries.ts` (add the new entry to the relevant per-feature registry).
+4. Update `src/registries/capabilities.ts` for feature flags.
 5. Add tests for selectors/capabilities and any new data transforms.
 
 ## Consumer guidance
@@ -70,7 +78,7 @@ import {
   getContrastRegistryForLanguage,
 } from "@phonaria/phonetics-data";
 
-if (hasLanguageFeature("es", "phoneme-contrasts")) {
+if (hasLanguageFeature("es", "contrasts")) {
   const contrasts = getContrastRegistryForLanguage("es");
   // consume contrasts
 }
@@ -87,6 +95,6 @@ Run before merging package changes:
 
 ## Current scope
 
-- Spanish currently ships core inventory + articulatory data architecture.
-- English currently provides CMU/ARPABET registries, spelling patterns, allophones, contrasts, and curated dictionary datasets.
-- Selectors intentionally return `null` for not-yet-implemented language features instead of widening types with placeholder data.
+- Spanish currently ships core inventory + articulatory data.
+- English currently provides CMU/ARPABET mappings, spelling patterns, allophones, contrasts, and curated dictionary datasets.
+- Selectors return `null` for not-yet-implemented language features instead of widening types with placeholder data.

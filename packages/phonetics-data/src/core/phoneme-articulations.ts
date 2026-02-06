@@ -5,7 +5,7 @@ import type {
 	VowelArticulatoryFeatures,
 } from "./articulatory-features";
 import { PHONEME_ARTICULATORY_FEATURE_KEYS } from "./articulatory-features";
-import type { PhonemeSymbolId } from "./ipa-registry";
+import type { PhonemeSymbolId } from "./ipa-map";
 
 export type VowelType = "monophthong" | "diphthong";
 

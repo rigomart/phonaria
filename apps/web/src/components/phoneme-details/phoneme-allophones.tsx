@@ -1,4 +1,4 @@
-import { EnglishPhonemeAllophoneRegistry, isPhonemeInLanguage } from "@phonaria/phonetics-data";
+import { EnglishPhonemeAllophones, isPhonemeInLanguage } from "@phonaria/phonetics-data";
 import {
 	Item,
 	ItemActions,
@@ -26,7 +26,7 @@ export function PhonemeDetailsAllophones() {
 		return null;
 	}
 
-	const allophones = EnglishPhonemeAllophoneRegistry[phonemeId];
+	const allophones = EnglishPhonemeAllophones[phonemeId];
 
 	if (!allophones) return null;
 

@@ -1,5 +1,5 @@
-import { PhonemeIpaRegistry, type PhonemeSymbolId } from "../core/ipa-registry";
-import type { EnglishPhonemeSymbolId } from "../core/language-phoneme-inventories";
+import { PhonemeIpaMap, type PhonemeSymbolId } from "../../core/ipa-map";
+import type { EnglishPhonemeSymbolId } from "../inventories";
 
 /**
  * CMU stress levels for vowels.
@@ -14,7 +14,7 @@ export type CmuStressLevel = "none" | "primary" | "secondary";
  * Each stress variant (0, 1, 2) for vowels maps to the same base phoneme ID.
  * Note: AH0 maps to schwa (AX), while AH1/AH2 map to strut (AH).
  */
-export const CmuArpaRegistry = {
+export const CmuArpaMap = {
 	// Consonants
 	P: "P",
 	B: "B",
@@ -93,7 +93,7 @@ export const CmuArpaRegistry = {
 	ER2: "ER",
 } as const satisfies Record<string, EnglishPhonemeSymbolId>;
 
-export type CmuArpaToken = keyof typeof CmuArpaRegistry;
+export type CmuArpaToken = keyof typeof CmuArpaMap;
 
 /**
  * Maps a CMU ARPA token to a phoneme symbol ID.
@@ -105,7 +105,7 @@ export type CmuArpaToken = keyof typeof CmuArpaRegistry;
  * getPhonemeIdForCmuArpa("AH0") // "AX"
  */
 export function getPhonemeIdForCmuArpa(token: CmuArpaToken): EnglishPhonemeSymbolId {
-	return CmuArpaRegistry[token];
+	return CmuArpaMap[token];
 }
 
 /**
@@ -118,9 +118,10 @@ export function getPhonemeIdForCmuArpa(token: CmuArpaToken): EnglishPhonemeSymbo
  * getCmuArpaForEnglishPhonemeId("P") // ["P"]
  */
 export function getCmuArpaForEnglishPhonemeId(phonemeId: EnglishPhonemeSymbolId): CmuArpaToken[] {
-	return Object.entries(CmuArpaRegistry)
+	return Object.entries(CmuArpaMap)
 		.filter(([, id]) => id === phonemeId)
-		.map(([token]) => token as CmuArpaToken);
+		.map(([token]) => token)
+		.filter(isCmuArpaToken);
 }
 
 /**
@@ -203,7 +204,7 @@ export function isEnglishPhonemeSymbolId(
  * @returns True if the token is a valid CMU ARPA token.
  */
 export function isCmuArpaToken(token: string): token is CmuArpaToken {
-	return token in CmuArpaRegistry;
+	return token in CmuArpaMap;
 }
 
 /**
@@ -216,7 +217,7 @@ export function isCmuArpaToken(token: string): token is CmuArpaToken {
  */
 export function tryExtractBasePhonemeId(token: string): PhonemeSymbolId | null {
 	const baseId = token.replace(/[012]$/, "");
-	if (!(baseId in PhonemeIpaRegistry)) {
+	if (!(baseId in PhonemeIpaMap)) {
 		return null;
 	}
 	return baseId as PhonemeSymbolId;
@@ -258,7 +259,7 @@ export function cmuVariantToIpa(variant: string): string {
 			continue;
 		}
 
-		const ipa = PhonemeIpaRegistry[phonemeId];
+		const ipa = PhonemeIpaMap[phonemeId];
 		if (ipa) {
 			ipaSymbols.push(ipa);
 		}

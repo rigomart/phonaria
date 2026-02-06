@@ -28,46 +28,20 @@ export type {
 	PhonemeType,
 	VowelSymbolId,
 	VowelSymbolIpa,
-} from "./ipa-registry";
+} from "./ipa-map";
 export {
-	ConsonantIpaRegistry,
-	DiphthongIpaRegistry,
+	ConsonantIpaMap,
+	DiphthongIpaMap,
 	getIpaForPhonemeId,
 	getPhonemeCategory,
 	getPhonemeType,
 	isConsonantPhoneme,
 	isVowelPhoneme,
-	MonophthongIpaRegistry,
+	MonophthongIpaMap,
 	PhonemeCount,
-	PhonemeIpaRegistry,
-	VowelIpaRegistry,
-} from "./ipa-registry";
-export type {
-	EnglishConsonantSymbolId,
-	EnglishDiphthongSymbolId,
-	EnglishMonophthongSymbolId,
-	EnglishPhonemeSymbolId,
-	LanguageConsonantSymbolId,
-	LanguageDiphthongSymbolId,
-	LanguageMonophthongSymbolId,
-	LanguagePhonemeCount,
-	LanguagePhonemeId,
-	LanguagePhonemeInventory,
-	LanguagePhonemeSubset,
-	SpanishConsonantSymbolId,
-	SpanishDiphthongSymbolId,
-	SpanishMonophthongSymbolId,
-	SpanishPhonemeSymbolId,
-} from "./language-phoneme-inventories";
-export {
-	EnglishPhonemeInventory,
-	getLanguagePhonemeCount,
-	getLanguagePhonemeIds,
-	getLanguagePhonemeInventory,
-	isPhonemeInLanguage,
-	LanguagePhonemeInventoryRegistry,
-	SpanishPhonemeInventory,
-} from "./language-phoneme-inventories";
+	PhonemeIpaMap,
+	VowelIpaMap,
+} from "./ipa-map";
 export type {
 	ConsonantArticulation,
 	DiphthongVowelArticulation,

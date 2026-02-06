@@ -1,10 +1,4 @@
-import type {
-	LanguageConsonantSymbolId,
-	LanguageDiphthongSymbolId,
-	LanguageMonophthongSymbolId,
-	LanguagePhonemeId,
-} from "./core/language-phoneme-inventories";
-import { getLanguagePhonemeIds } from "./core/language-phoneme-inventories";
+import type { PhonemeSymbolId } from "../core/ipa-map";
 import {
 	buildFeatureValueByPhoneme,
 	type ConsonantArticulation,
@@ -12,20 +6,34 @@ import {
 	type FeatureValueLookup,
 	type MonophthongVowelArticulation,
 	type PhonemeArticulation,
-} from "./core/phoneme-articulations";
-import type { TargetLanguage } from "./core/types";
+} from "../core/phoneme-articulations";
+import type { TargetLanguage } from "../core/types";
+import { EnglishPhonemeAllophones } from "../languages/en/allophones";
 import {
-	ConsonantArticulationRegistry,
-	DiphthongVowelArticulationRegistry,
-	MonophthongVowelArticulationRegistry,
-	PhonemeArticulationRegistry,
-} from "./en/phoneme-articulations";
+	EnglishConsonantArticulations,
+	EnglishDiphthongArticulations,
+	EnglishMonophthongArticulations,
+	EnglishPhonemeArticulations,
+} from "../languages/en/articulations";
+import { CmuArpaMap, type CmuArpaToken, type CmuStressLevel } from "../languages/en/cmu-arpa";
+import { EnglishContrastsByPhonemeId } from "../languages/en/contrasts";
+import { EnglishPhonemeSpellingPatterns } from "../languages/en/patterns";
 import {
-	SpanishConsonantArticulationRegistry,
-	SpanishDiphthongVowelArticulationRegistry,
-	SpanishMonophthongVowelArticulationRegistry,
-	SpanishPhonemeArticulationRegistry,
-} from "./es/phoneme-articulations";
+	SpanishConsonantArticulations,
+	SpanishDiphthongArticulations,
+	SpanishMonophthongArticulations,
+	SpanishPhonemeArticulations,
+} from "../languages/es/articulations";
+import type {
+	LanguageConsonantSymbolId,
+	LanguageDiphthongSymbolId,
+	LanguageMonophthongSymbolId,
+	LanguagePhonemeId,
+} from "../languages/inventories";
+import { getLanguagePhonemeIds } from "../languages/inventories";
+import type { PhonemeAllophone, PhonemeContrastMatch, SpellingPattern } from "../languages/types";
+
+// Language articulation registry types
 
 export type LanguageConsonantArticulationRegistry<
 	TLanguage extends TargetLanguage = TargetLanguage,
@@ -55,24 +63,24 @@ export type LanguageArticulationData<TLanguage extends TargetLanguage> = {
 };
 
 const EnglishLanguageArticulationData = {
-	consonants: ConsonantArticulationRegistry,
-	monophthongs: MonophthongVowelArticulationRegistry,
-	diphthongs: DiphthongVowelArticulationRegistry,
-	phonemes: PhonemeArticulationRegistry,
+	consonants: EnglishConsonantArticulations,
+	monophthongs: EnglishMonophthongArticulations,
+	diphthongs: EnglishDiphthongArticulations,
+	phonemes: EnglishPhonemeArticulations,
 	featureValuesByPhoneme: buildFeatureValueByPhoneme(
 		getLanguagePhonemeIds("en"),
-		PhonemeArticulationRegistry,
+		EnglishPhonemeArticulations,
 	),
 } satisfies LanguageArticulationData<"en">;
 
 const SpanishLanguageArticulationData = {
-	consonants: SpanishConsonantArticulationRegistry,
-	monophthongs: SpanishMonophthongVowelArticulationRegistry,
-	diphthongs: SpanishDiphthongVowelArticulationRegistry,
-	phonemes: SpanishPhonemeArticulationRegistry,
+	consonants: SpanishConsonantArticulations,
+	monophthongs: SpanishMonophthongArticulations,
+	diphthongs: SpanishDiphthongArticulations,
+	phonemes: SpanishPhonemeArticulations,
 	featureValuesByPhoneme: buildFeatureValueByPhoneme(
 		getLanguagePhonemeIds("es"),
-		SpanishPhonemeArticulationRegistry,
+		SpanishPhonemeArticulations,
 	),
 } satisfies LanguageArticulationData<"es">;
 
@@ -118,3 +126,61 @@ export function getFeatureValueByPhonemeRegistryForLanguage<TLanguage extends Ta
 ): (typeof LanguageArticulationRegistry)[TLanguage]["featureValuesByPhoneme"] {
 	return getLanguageArticulationData(language).featureValuesByPhoneme;
 }
+
+// Per-feature language registries.
+// To add support for a new language, register its data in the relevant registry.
+
+export const LanguageCmuArpaDataRegistry = {
+	en: CmuArpaMap,
+	es: null,
+} as const satisfies Record<TargetLanguage, Readonly<Record<string, string>> | null>;
+
+export const LanguageAllophoneDataRegistry = {
+	en: EnglishPhonemeAllophones,
+	es: null,
+} as const satisfies Record<
+	TargetLanguage,
+	Partial<Record<PhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>> | null
+>;
+
+export const LanguageContrastDataRegistry = {
+	en: EnglishContrastsByPhonemeId,
+	es: null,
+} as const satisfies Record<
+	TargetLanguage,
+	Partial<Record<PhonemeSymbolId, PhonemeContrastMatch[]>> | null
+>;
+
+export const LanguageSpellingPatternDataRegistry = {
+	en: EnglishPhonemeSpellingPatterns,
+	es: null,
+} as const satisfies Record<
+	TargetLanguage,
+	Partial<Record<PhonemeSymbolId, SpellingPattern>> | null
+>;
+
+export function getCmuArpaRegistryForLanguage<TLanguage extends TargetLanguage>(
+	language: TLanguage,
+): (typeof LanguageCmuArpaDataRegistry)[TLanguage] {
+	return LanguageCmuArpaDataRegistry[language];
+}
+
+export function getAllophoneRegistryForLanguage<TLanguage extends TargetLanguage>(
+	language: TLanguage,
+): (typeof LanguageAllophoneDataRegistry)[TLanguage] {
+	return LanguageAllophoneDataRegistry[language];
+}
+
+export function getContrastRegistryForLanguage<TLanguage extends TargetLanguage>(
+	language: TLanguage,
+): (typeof LanguageContrastDataRegistry)[TLanguage] {
+	return LanguageContrastDataRegistry[language];
+}
+
+export function getSpellingPatternRegistryForLanguage<TLanguage extends TargetLanguage>(
+	language: TLanguage,
+): (typeof LanguageSpellingPatternDataRegistry)[TLanguage] {
+	return LanguageSpellingPatternDataRegistry[language];
+}
+
+export type { CmuArpaToken, CmuStressLevel };
