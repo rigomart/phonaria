@@ -1,12 +1,11 @@
-import { TARGET_LANGUAGES, type TargetLanguage } from "@phonaria/phonetics-data";
-
-const targetLanguageSet: ReadonlySet<string> = new Set(TARGET_LANGUAGES);
+import type { TargetLanguage } from "@phonaria/phonetics-data";
 
 /**
- * Phase 1 target-language resolver for IPA chart.
- * Maps the route locale to the matching target language; falls back to English
- * when the locale has no corresponding phoneme inventory.
+ * Target-language resolver for IPA chart.
+ * Target language (which sounds to teach) is independent of locale (UI language).
+ * Currently hardcoded to English; will become user-selectable when more
+ * target languages are fully supported.
  */
-export function getIpaChartTargetLanguage(locale: string): TargetLanguage {
-	return targetLanguageSet.has(locale) ? (locale as TargetLanguage) : "en";
+export function getIpaChartTargetLanguage(): TargetLanguage {
+	return "en";
 }

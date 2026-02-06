@@ -9,7 +9,7 @@ type Props = {
 
 export async function IntroSection({ locale }: Props) {
 	const t = await getTranslations({ locale, namespace: "ipa-chart.intro" });
-	const targetLanguage = getIpaChartTargetLanguage(locale);
+	const targetLanguage = getIpaChartTargetLanguage();
 	const counts = getLanguagePhonemeCount(targetLanguage);
 
 	return (
