@@ -1,6 +1,6 @@
 import type { PhonemeArticulatoryFeatureKey } from "../core/articulatory-features";
 import type { TargetLanguage } from "../core/types";
-import type { EnglishPhonemeSymbolId, LanguagePhonemeId } from "./inventories";
+import type { LanguagePhonemeId } from "./inventories";
 
 // Allophone types
 
@@ -36,20 +36,20 @@ export type PhonemeContrastPair = {
 	phonemic: string;
 };
 
-export type PhonemeContrast = {
-	phonemeIds: [EnglishPhonemeSymbolId, EnglishPhonemeSymbolId];
+export type PhonemeContrast<TLanguage extends TargetLanguage = TargetLanguage> = {
+	phonemeIds: [LanguagePhonemeId<TLanguage>, LanguagePhonemeId<TLanguage>];
 	contrastType: PhonemeArticulatoryFeatureKey[];
 	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
 };
 
-export type PhonemeContrastMatch = {
-	partnerId: EnglishPhonemeSymbolId;
+export type PhonemeContrastMatch<TLanguage extends TargetLanguage = TargetLanguage> = {
+	partnerId: LanguagePhonemeId<TLanguage>;
 	contrastType: PhonemeArticulatoryFeatureKey[];
 	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
 };
 
 export type LanguagePhonemeContrastRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
-	Partial<Record<LanguagePhonemeId<TLanguage>, PhonemeContrastMatch[]>>;
+	Partial<Record<LanguagePhonemeId<TLanguage>, PhonemeContrastMatch<TLanguage>[]>>;
 
 // Spelling pattern types
 
