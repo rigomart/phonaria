@@ -182,7 +182,7 @@
 		"description": "Reference tool for understanding English phonemes. Click on any symbol to see articulation details, example words, and audio pronunciation.",
 		"intro": {
 			"title": "Understanding the IPA Chart",
-			"description": "The International Phonetic Alphabet organizes sounds by how and where they are produced. This chart covers the {consonantCount} consonants and {vowelCount} vowels of General American English."
+			"description": "The International Phonetic Alphabet organizes sounds by how and where they are produced. Select any symbol to explore articulation details, example words, and audio."
 		},
 		"meta": {
 			"title": "English IPA Chart - Phonaria",
@@ -212,6 +212,11 @@
 		"hint": {
 			"sounds": "sounds",
 			"click-for-details": "Click on a phoneme for details"
+		},
+		"target-language": {
+			"label": "Target language",
+			"en": "English",
+			"es": "Spanish"
 		},
 		"vowel-grid-title": "Vowel chart grid",
 		"sections": {

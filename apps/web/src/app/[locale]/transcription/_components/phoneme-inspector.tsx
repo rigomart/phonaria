@@ -62,7 +62,7 @@ export function PhonemeInspector() {
 	}
 
 	return (
-		<PhonemeDetails phonemeId={selectedPhonemeId}>
+		<PhonemeDetails phonemeId={selectedPhonemeId} targetLanguage="en">
 			<div className="flex h-full flex-col min-h-0">
 				<div className="shrink-0">
 					<PhonemeDetailsHeader />

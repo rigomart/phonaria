@@ -1,4 +1,9 @@
-import { EnglishPhonemeSpellingPatterns, isPhonemeInLanguage } from "@phonaria/phonetics-data";
+import {
+	getSpellingPatternRegistryForLanguage,
+	hasLanguageFeature,
+	isPhonemeInLanguage,
+	type LanguageSpellingPatternRegistry,
+} from "@phonaria/phonetics-data";
 import { Badge } from "@phonaria/ui/components/badge";
 import {
 	Item,
@@ -19,14 +24,21 @@ import {
 } from "./phoneme-section";
 
 export function PhonemeDetailsPatterns() {
-	const { phonemeId } = usePhonemeDetailsContext();
+	const { phonemeId, targetLanguage } = usePhonemeDetailsContext();
 	const t = useTranslations("components.phoneme-details.patterns");
 
-	if (!isPhonemeInLanguage("en", phonemeId)) {
+	if (!hasLanguageFeature(targetLanguage, "spellingPatterns")) {
+		return null;
+	}
+	if (!isPhonemeInLanguage(targetLanguage, phonemeId)) {
 		return null;
 	}
 
-	const spellingData = EnglishPhonemeSpellingPatterns[phonemeId];
+	const spellingPatternRegistry = getSpellingPatternRegistryForLanguage(
+		targetLanguage,
+	) as LanguageSpellingPatternRegistry | null;
+	if (!spellingPatternRegistry) return null;
+	const spellingData = spellingPatternRegistry[phonemeId];
 
 	if (!spellingData) {
 		return null;

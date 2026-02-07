@@ -1,11 +1,11 @@
 import type { TargetLanguage } from "@phonaria/phonetics-data";
 
 /**
- * Target-language resolver for IPA chart.
- * Target language (which sounds to teach) is independent of locale (UI language).
- * Currently hardcoded to English; will become user-selectable when more
- * target languages are fully supported.
+ * Returns the default target language for the IPA chart based on the current locale.
+ * Target language (which sounds to teach) is independent of locale (UI language),
+ * but defaults to a 1:1 match when possible.
  */
-export function getIpaChartTargetLanguage(): TargetLanguage {
+export function getDefaultTargetLanguage(locale: string): TargetLanguage {
+	if (locale === "es") return "es";
 	return "en";
 }
