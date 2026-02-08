@@ -1,8 +1,11 @@
 import {
-	EnglishContrastsByPhonemeId,
+	getContrastRegistryForLanguage,
 	getFeatureValueByPhonemeRegistryForLanguage,
 	getIpaForPhonemeId,
+	hasLanguageFeature,
 	isPhonemeInLanguage,
+	type LanguageFeatureValueByPhonemeRegistry,
+	type LanguagePhonemeContrastRegistry,
 	type PhonemeArticulatoryFeatureKey,
 	type PhonemeArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
@@ -48,17 +51,26 @@ function getFeatureValueDefinition<K extends PhonemeArticulatoryFeatureKey>(
 }
 
 export function PhonemeDetailsContrasts() {
-	const { phonemeId } = usePhonemeDetailsContext();
+	const { phonemeId, targetLanguage } = usePhonemeDetailsContext();
 	const t = useTranslations(`components.phoneme-details.contrasts`);
 	const { featureDefinitions } = usePhonemeDetailsCopy();
-	if (!isPhonemeInLanguage("en", phonemeId)) {
+	if (!hasLanguageFeature(targetLanguage, "contrasts")) {
+		return null;
+	}
+	if (!isPhonemeInLanguage(targetLanguage, phonemeId)) {
 		return null;
 	}
 
-	const featureValuesByPhoneme = getFeatureValueByPhonemeRegistryForLanguage("en");
+	const featureValuesByPhoneme = getFeatureValueByPhonemeRegistryForLanguage(
+		targetLanguage,
+	) as LanguageFeatureValueByPhonemeRegistry;
+	const contrastRegistry = getContrastRegistryForLanguage(
+		targetLanguage,
+	) as LanguagePhonemeContrastRegistry | null;
+	if (!contrastRegistry) return null;
 	const currentPhonemeId = phonemeId;
 
-	const contrasts = EnglishContrastsByPhonemeId[currentPhonemeId];
+	const contrasts = contrastRegistry[currentPhonemeId];
 	const currentIpa = getIpaForPhonemeId(currentPhonemeId);
 	const vsLabel = t("vs");
 
@@ -74,7 +86,7 @@ export function PhonemeDetailsContrasts() {
 			</PhonemeSectionHeader>
 			<PhonemeSectionContent>
 				{contrasts.map((contrast) => {
-					if (!isPhonemeInLanguage("en", contrast.partnerId)) {
+					if (!isPhonemeInLanguage(targetLanguage, contrast.partnerId)) {
 						return null;
 					}
 					const partnerPhonemeId = contrast.partnerId;

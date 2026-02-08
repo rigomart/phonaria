@@ -1,4 +1,9 @@
-import { EnglishPhonemeAllophones, isPhonemeInLanguage } from "@phonaria/phonetics-data";
+import {
+	getAllophoneRegistryForLanguage,
+	hasLanguageFeature,
+	isPhonemeInLanguage,
+	type LanguagePhonemeAllophoneRegistry,
+} from "@phonaria/phonetics-data";
 import {
 	Item,
 	ItemActions,
@@ -19,14 +24,21 @@ import {
 } from "./phoneme-section";
 
 export function PhonemeDetailsAllophones() {
-	const { phonemeId } = usePhonemeDetailsContext();
+	const { phonemeId, targetLanguage } = usePhonemeDetailsContext();
 	const t = useTranslations("components.phoneme-details.allophones");
 	const { allophoneContextDefinitions } = usePhonemeDetailsCopy();
-	if (!isPhonemeInLanguage("en", phonemeId)) {
+	if (!hasLanguageFeature(targetLanguage, "allophones")) {
+		return null;
+	}
+	if (!isPhonemeInLanguage(targetLanguage, phonemeId)) {
 		return null;
 	}
 
-	const allophones = EnglishPhonemeAllophones[phonemeId];
+	const allophoneRegistry = getAllophoneRegistryForLanguage(
+		targetLanguage,
+	) as LanguagePhonemeAllophoneRegistry | null;
+	if (!allophoneRegistry) return null;
+	const allophones = allophoneRegistry[phonemeId];
 
 	if (!allophones) return null;
 

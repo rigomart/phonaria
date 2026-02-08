@@ -17,9 +17,11 @@
 		"cmudict-to-json": "tsx src/cmudict-to-json.ts",
 		"cmudict-stats": "tsx src/cmudict-stats.ts",
 		"generate-word-mappings": "tsx src/generate-word-mappings.ts",
-		"phoneme-trie-to-json": "tsx src/phoneme-trie-to-json.ts"
+		"phoneme-trie-to-json": "tsx src/phoneme-trie-to-json.ts",
+		"migrate-diagrams": "tsx src/migrate-diagrams.ts"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.985.0",
 		"@phonaria/phonetics-data": "workspace:*",
 		"@types/node": "^24.0.10",
 		"dotenv": "^17.2.0"

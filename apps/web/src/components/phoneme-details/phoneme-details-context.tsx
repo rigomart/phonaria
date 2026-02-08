@@ -1,8 +1,9 @@
-import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
+import type { PhonemeSymbolId, TargetLanguage } from "@phonaria/phonetics-data";
 import { createContext, use, useRef } from "react";
 
 type PhonemeDetailsContextType = {
 	phonemeId: PhonemeSymbolId;
+	targetLanguage: TargetLanguage;
 	contentRef: React.RefObject<HTMLDivElement | null>;
 };
 
@@ -18,13 +19,17 @@ export function usePhonemeDetailsContext() {
 
 export function PhonemeDetailsProvider({
 	phonemeId,
+	targetLanguage,
 	children,
 }: {
 	phonemeId: PhonemeSymbolId;
+	targetLanguage: TargetLanguage;
 	children: React.ReactNode;
 }) {
 	const contentRef = useRef<HTMLDivElement | null>(null);
 	return (
-		<PhonemeDetailsContext value={{ phonemeId, contentRef }}>{children}</PhonemeDetailsContext>
+		<PhonemeDetailsContext value={{ phonemeId, targetLanguage, contentRef }}>
+			{children}
+		</PhonemeDetailsContext>
 	);
 }
