@@ -72,6 +72,9 @@ The web app uses Next.js App Router with internationalization:
 - `bun lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
 - `bun check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
 - `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter @phonaria/app test` for targeted runs.
+- `bun e2e`: Run Playwright E2E tests against the web app (requires `SKIP_RATE_LIMIT=true` and `DATABASE_URL`).
+- `bun --cwd apps/web e2e:ui`: Open Playwright UI for interactive test debugging.
+- `bun --cwd apps/web e2e:install`: Install Playwright browsers (Chromium).
 - `bun --cwd packages/helper-scripts generate`: Regenerate ElevenLabs pronunciation audio (requires `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env`).
 - `bun --cwd packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
 - `bun --cwd packages/helper-scripts cmudict-stats`: Build CMUDict coverage statistics used by the insights page.
@@ -99,9 +102,11 @@ React 19 + Next.js 15 App Router, Tailwind CSS v4 + shadcn/ui (Radix), Zustand +
 - AVOID using emojis in the codebase and documentation.
 
 ## Testing Guidelines
-- Vitest drives `apps/web` tests; co-locate specs using `.test.ts` suffix (e.g. `apps/web/src/data/phoneme-details.test.ts`).
+- Vitest drives `apps/web` unit tests; co-locate specs using `.test.ts` suffix (e.g. `apps/web/src/data/phoneme-details.test.ts`).
 - Favor fast unit coverage on data transformations, API helpers, and utilities; integration tests should mock network boundaries.
 - Test phonetics-data packages separately to ensure metadata integrity.
+- E2E tests live in `apps/web/e2e/` using Playwright; they test main user flows (transcription, find-by-sound, navigation).
+- E2E tests run automatically on push to main via `.github/workflows/e2e.yml`.
 - Before pushing, run `bun test`, `bun lint`, and `bun check-types` to catch issues early.
 
 ## Commit & Pull Request Guidelines

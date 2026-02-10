@@ -32,7 +32,7 @@ This package hosts the primary Phonaria experience: a Next.js App Router project
  - **Database** – Drizzle ORM with Neon PostgreSQL for persisted data
  - **Rate Limiting** – Upstash Redis for API endpoint protection
 - **Analytics** – Vercel Analytics and Speed Insights
-- **Testing** – Vitest with utility-first unit coverage for API services, hooks, and data transformations
+- **Testing** – Vitest for unit tests, Playwright for E2E tests covering main user flows
 - **Linting & Formatting** – Biome (tab indentation, 100-char line width, auto-import organization)
 
 ## Running locally
@@ -49,7 +49,10 @@ The root `bun dev` will also start this project if you prefer Turborepo orchestr
  ```bash
  bun --cwd apps/web lint            # biome check --write
  bun --cwd apps/web check-types     # tsc --noEmit
- bun --cwd apps/web test            # vitest run
+ bun --cwd apps/web test            # vitest run (unit tests)
+ bun --cwd apps/web e2e             # playwright test (E2E tests)
+ bun --cwd apps/web e2e:ui          # playwright test --ui (interactive)
+ bun --cwd apps/web e2e:install     # install playwright browsers
  bun --cwd apps/web build           # next build --turbopack
  bun --cwd apps/web start           # next start (after build)
  bun --cwd apps/web db:push         # drizzle-kit push (database schema)
@@ -64,6 +67,7 @@ The tree below is illustrative; prefixed folders (`_components`, `_hooks`, `_lib
 
 ```
 apps/web
+├── e2e/                  # Playwright E2E tests
 ├── messages/             # next-intl message catalogs (e.g., en.json, es.json)
 ├── public/               # Static assets (SVG icons, optional audio)
 ├── src/
@@ -117,6 +121,7 @@ apps/web
 │   │   ├── utils.ts       # General helper functions
 │   │   └── vowel-chart-geometry.ts
 ├── next.config.ts         # Next.js configuration (CSP headers, etc.)
+├── playwright.config.ts   # Playwright E2E test configuration
 ├── tsconfig.json          # TypeScript configuration
 └── vitest.config.ts       # Vitest test runner configuration
 ```
@@ -229,7 +234,14 @@ Create a `.env.local` file in `apps/web` with the following variables:
 
 ## Testing guidance
 
-Unit tests live alongside the code they cover using `.test.ts` suffix (e.g., `src/data/phoneme-details.test.ts`). Run `bun --cwd apps/web test` locally or rely on the root `bun test` command for workspace-wide coverage.
+**Unit tests** live alongside the code they cover using `.test.ts` suffix (e.g., `src/data/phoneme-details.test.ts`). Run `bun --cwd apps/web test` locally or rely on the root `bun test` command for workspace-wide coverage.
+
+**E2E tests** live in `e2e/` and use Playwright to test main user flows:
+- `transcription.spec.ts` – Transcribe text, view phoneme details, copy button
+- `find-by-sound.spec.ts` – Search by phoneme patterns, build sequences
+- `navigation.spec.ts` – Navigate between pages, switch locale
+
+Run E2E tests locally with `SKIP_RATE_LIMIT=true bun --cwd apps/web e2e`. E2E tests run automatically on push to main via GitHub Actions.
 
  ## Security
 
