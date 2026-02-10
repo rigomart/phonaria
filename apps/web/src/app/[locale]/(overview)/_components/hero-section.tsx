@@ -19,12 +19,12 @@ export async function HeroSection() {
 				<p className="mt-1.5 text-muted-foreground text-sm max-w-lg">{t("hero.subtitle")}</p>
 			</div>
 
-			<div className="flex flex-wrap gap-2 md:grid md:grid-cols-4 md:gap-3">
+			<div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
 				{TOOLS.map((tool) => (
 					<Link
 						key={tool.href}
 						href={tool.href}
-						className="group flex items-center gap-2 px-3 py-2 rounded-lg bg-background border hover:border-primary hover:shadow-sm transition-all md:flex-col md:items-start md:gap-2 md:p-3.5 md:rounded-xl"
+						className="group flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-background border hover:border-primary hover:shadow-sm transition-all md:flex-col md:items-start md:justify-start md:gap-2 md:p-3.5 md:rounded-xl"
 					>
 						<div className="size-7 rounded-md bg-muted flex items-center justify-center shrink-0">
 							<tool.icon className="size-3.5 text-muted-foreground" />
