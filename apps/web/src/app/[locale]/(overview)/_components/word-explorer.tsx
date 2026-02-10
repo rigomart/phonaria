@@ -102,13 +102,13 @@ export function WordExplorer() {
 				</div>
 			</div>
 
-			<div className="flex items-center gap-1 px-3 py-2.5 border-t">
+			<div className="grid grid-cols-3 md:grid-cols-6 gap-1 px-3 py-2.5 border-t">
 				{OUGH_WORDS.map((item, index) => (
 					<button
 						type="button"
 						key={item.word}
 						onClick={() => setCurrentIndex(index)}
-						className={`flex-1 text-xs py-1 rounded-md transition-colors text-center ${
+						className={`text-xs py-1 rounded-md transition-colors text-center ${
 							index === currentIndex
 								? "bg-primary text-primary-foreground"
 								: "text-muted-foreground hover:text-foreground hover:bg-muted"

@@ -31,7 +31,7 @@ export function PhonemeMap() {
 						key={item.word}
 						className="flex items-center gap-3 px-4 py-2.5 border-b last:border-b-0"
 					>
-						<span className="text-sm font-medium w-20">{item.word}</span>
+						<span className="text-sm font-medium w-16 md:w-20">{item.word}</span>
 
 						<ArrowRight className="size-3 text-muted-foreground shrink-0" />
 
