@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details/phoneme-details-dialog";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 import { OUGH_WORDS } from "../_lib/homepage-data";
 
 export function PhonemeMap() {
@@ -41,11 +42,12 @@ export function PhonemeMap() {
 									key={`${item.word}-${phoneme.id}-${i}`}
 									type="button"
 									onClick={() => setSelectedPhoneme(phoneme.id)}
-									className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-sm font-serif transition-colors hover:ring-1 hover:ring-primary ${
+									className={cn(
+										"inline-flex items-center justify-center px-2 py-0.5 rounded text-sm font-serif transition-colors hover:ring-1 hover:ring-primary",
 										phoneme.isHighlighted
 											? "bg-primary text-primary-foreground"
-											: "text-muted-foreground hover:text-foreground"
-									}`}
+											: "text-muted-foreground hover:text-foreground",
+									)}
 								>
 									{PhonemeIpaMap[phoneme.id]}
 								</button>
@@ -61,7 +63,7 @@ export function PhonemeMap() {
 
 			{selectedPhoneme && (
 				<PhonemeDetailsDialog
-					open={!!selectedPhoneme}
+					open
 					onOpenChange={(open) => !open && setSelectedPhoneme(null)}
 					phonemeId={selectedPhoneme}
 				/>

@@ -5,9 +5,10 @@ import { ChevronLeft, ChevronRight, Volume2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
+import { cn } from "@/lib/utils";
 import { OUGH_PATTERN, OUGH_WORDS } from "../_lib/homepage-data";
 
-const baseUrl = process.env.NEXT_PUBLIC_BUCKET_URL;
+const baseUrl = process.env.NEXT_PUBLIC_BUCKET_URL ?? "";
 
 function highlightPattern(word: string, pattern: string) {
 	const index = word.indexOf(pattern);
@@ -77,7 +78,7 @@ export function WordExplorer() {
 						type="button"
 						onClick={prev}
 						className="size-7 rounded-md flex items-center justify-center hover:bg-background transition-colors"
-						aria-label="Previous word"
+						aria-label={t("prev-aria")}
 					>
 						<ChevronLeft className="size-4" />
 					</button>
@@ -88,7 +89,7 @@ export function WordExplorer() {
 						type="button"
 						onClick={next}
 						className="size-7 rounded-md flex items-center justify-center hover:bg-background transition-colors"
-						aria-label="Next word"
+						aria-label={t("next-aria")}
 					>
 						<ChevronRight className="size-4" />
 					</button>
@@ -108,11 +109,12 @@ export function WordExplorer() {
 						type="button"
 						key={item.word}
 						onClick={() => setCurrentIndex(index)}
-						className={`text-xs py-1 rounded-md transition-colors text-center ${
+						className={cn(
+							"text-xs py-1 rounded-md transition-colors text-center",
 							index === currentIndex
 								? "bg-primary text-primary-foreground"
-								: "text-muted-foreground hover:text-foreground hover:bg-muted"
-						}`}
+								: "text-muted-foreground hover:text-foreground hover:bg-muted",
+						)}
 					>
 						{item.word}
 					</button>

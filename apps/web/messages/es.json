@@ -342,11 +342,13 @@
 			"spelling-vs-sound": {
 				"title": "Ortografía vs. sonido",
 				"hint": "Las mismas cuatro letras, un sonido diferente cada vez.",
-				"sounds-like": "suena como \"{hint}\""
+				"sounds-like": "suena como \"{hint}\"",
+				"prev-aria": "Palabra anterior",
+				"next-aria": "Palabra siguiente"
 			},
 			"ipa-transcription": {
 				"title": "Transcripción IPA",
-				"action": "Estudio de transcripción"
+				"action": "Ir a Transcripción"
 			},
 			"sound-contrasts": {
 				"title": "Contrastes de sonido",

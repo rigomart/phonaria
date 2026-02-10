@@ -342,11 +342,13 @@
 			"spelling-vs-sound": {
 				"title": "Spelling vs. Sound",
 				"hint": "Same four letters, different sound every time.",
-				"sounds-like": "sounds like \"{hint}\""
+				"sounds-like": "sounds like \"{hint}\"",
+				"prev-aria": "Previous word",
+				"next-aria": "Next word"
 			},
 			"ipa-transcription": {
 				"title": "IPA Transcription",
-				"action": "Transcription Studio"
+				"action": "Go to Transcription"
 			},
 			"sound-contrasts": {
 				"title": "Sound Contrasts",

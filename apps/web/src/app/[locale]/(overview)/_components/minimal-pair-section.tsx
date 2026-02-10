@@ -64,7 +64,7 @@ export function MinimalPairSection() {
 
 			{selectedPhoneme && (
 				<PhonemeDetailsDialog
-					open={!!selectedPhoneme}
+					open
 					onOpenChange={(open) => !open && setSelectedPhoneme(null)}
 					phonemeId={selectedPhoneme}
 				/>
