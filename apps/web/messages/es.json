@@ -313,62 +313,49 @@
 			"description": "Convierte texto a IPA, explora la tabla de fonemas del inglés y practica la pronunciación con detalles de articulación y ejemplos."
 		},
 		"hero": {
-			"title": "Herramientas de pronunciación basadas en fonemas",
-			"subtitle": "Una colección de herramientas para descifrar la ortografía del inglés."
+			"title": "Pronunciación mediante fonemas",
+			"subtitle": "Herramientas para descifrar la ortografía del inglés y explorar cómo funcionan los sonidos."
 		},
 		"tools": {
 			"transcription": {
 				"label": "Transcripción",
-				"description": "Ve cómo se pronuncia cualquier palabra u oración"
+				"description": "Convierte cualquier texto a símbolos IPA",
+				"preview": "hello → /hɛˈloʊ/"
 			},
 			"ipa-reference": {
 				"label": "Tabla IPA",
-				"description": "Explora todos los sonidos del inglés con audio"
+				"description": "Explora todos los sonidos del inglés con audio",
+				"preview": "44 fonemas con audio"
 			},
 			"find-by-sound": {
 				"label": "Buscar por sonido",
-				"description": "Busca palabras por cómo suenan"
+				"description": "Busca palabras por cómo suenan",
+				"preview": "¿Qué palabras tienen /θ/?"
 			},
 			"insights": {
 				"label": "Estadísticas",
-				"description": "Datos sobre la pronunciación del inglés"
+				"description": "Datos sobre la pronunciación del inglés",
+				"preview": "Cobertura y distribuciones"
 			}
 		},
 		"sections": {
 			"spelling-vs-sound": {
-				"title": "La ortografía no refleja el sonido",
-				"description": "La ortografía del inglés es impredecible. Observa <code>{pattern}</code>: estas cuatro letras suenan diferente en cada palabra. Haz clic para escucharlas."
+				"title": "Ortografía vs. sonido",
+				"hint": "Las mismas cuatro letras, un sonido diferente cada vez.",
+				"sounds-like": "suena como \"{hint}\""
 			},
-			"ipa-intro": {
-				"title": "El Alfabeto Fonético Internacional",
-				"description": "Un símbolo, un sonido. El IPA asigna a cada sonido su propia letra. Aquí están las mismas palabras con <code>{pattern}</code> en IPA. Los símbolos <highlight>resaltados</highlight> marcan dónde la ortografía y el sonido difieren.",
-				"action": "Probar el estudio de transcripción"
+			"ipa-transcription": {
+				"title": "Transcripción IPA",
+				"action": "Estudio de transcripción"
 			},
-			"ipa-visualizer": {
-				"title": "Los sonidos están organizados",
-				"description": "El IPA organiza las consonantes según dónde se producen en la boca. Cada posición genera un par: sorda (como un susurro) y sonora (las cuerdas vocales vibran). Haz clic en cualquier símbolo para sentir la diferencia.",
-				"action": "Explorar la tabla IPA",
-				"direction": {
-					"front": "Adelante",
-					"back": "Atrás"
-				},
-				"places": {
-					"lips": {
-						"label": "Labios",
-						"description": "Ambos labios juntos"
-					},
-					"tongue": {
-						"label": "Punta de lengua",
-						"description": "Lengua tras los dientes"
-					},
-					"back": {
-						"label": "Posterior",
-						"description": "Parte trasera de la lengua"
-					}
-				},
-				"voicing": {
-					"voiceless": "sorda",
-					"voiced": "sonora"
+			"sound-contrasts": {
+				"title": "Contrastes de sonido",
+				"action": "Tabla IPA completa",
+				"vs": "vs",
+				"labels": {
+					"vowel-length": "Longitud vocal",
+					"vowel-height": "Altura vocal",
+					"consonant-place": "Lugar de consonante"
 				}
 			}
 		}
