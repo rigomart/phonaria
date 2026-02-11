@@ -313,62 +313,51 @@
 			"description": "Convert text to IPA, explore the English phoneme chart, and practice pronunciation with articulation details and examples."
 		},
 		"hero": {
-			"title": "Phoneme based pronunciation toolkit",
-			"subtitle": "A collection of tools designed to decode English spelling."
+			"title": "Pronunciation through phonemes",
+			"subtitle": "Tools to decode English spelling and explore how sounds work."
 		},
 		"tools": {
 			"transcription": {
 				"label": "Transcription",
-				"description": "See how any word or sentence is pronounced"
+				"description": "Convert any text to IPA symbols",
+				"preview": "hello → /hɛˈloʊ/"
 			},
 			"ipa-reference": {
 				"label": "IPA Reference",
-				"description": "Browse all English sounds with audio"
+				"description": "Browse all English sounds with audio",
+				"preview": "44 phonemes with audio"
 			},
 			"find-by-sound": {
 				"label": "Find by Sound",
-				"description": "Search words by how they sound"
+				"description": "Search words by how they sound",
+				"preview": "Which words have /θ/?"
 			},
 			"insights": {
 				"label": "Insights",
-				"description": "Statistics on English pronunciation"
+				"description": "Statistics on English pronunciation",
+				"preview": "Coverage and distributions"
 			}
 		},
 		"sections": {
 			"spelling-vs-sound": {
-				"title": "Spelling Doesn't Match Sound",
-				"description": "English spelling is unpredictable. Take <code>{pattern}</code>: these four letters sound different in each word. Click to hear them."
+				"title": "Spelling vs. Sound",
+				"hint": "Same four letters, different sound every time.",
+				"sounds-like": "sounds like \"{hint}\"",
+				"prev-aria": "Previous word",
+				"next-aria": "Next word"
 			},
-			"ipa-intro": {
-				"title": "The International Phonetic Alphabet",
-				"description": "One symbol, one sound. The IPA gives each sound its own letter. Here are the same <code>{pattern}</code> words in IPA. <highlight>Highlighted</highlight> symbols mark where spelling and sound diverge.",
-				"action": "Try the Transcription Studio"
+			"ipa-transcription": {
+				"title": "IPA Transcription",
+				"action": "Go to Transcription"
 			},
-			"ipa-visualizer": {
-				"title": "Sounds Are Organized",
-				"description": "The IPA organizes consonants by where you make them in your mouth. Each position produces a pair: voiceless (like a whisper) and voiced (vocal cords vibrate). Click any symbol to feel the difference.",
-				"action": "Explore the IPA Chart",
-				"direction": {
-					"front": "Front of mouth",
-					"back": "Back of mouth"
-				},
-				"places": {
-					"lips": {
-						"label": "Lips",
-						"description": "Both lips together"
-					},
-					"tongue": {
-						"label": "Tongue tip",
-						"description": "Tongue behind teeth"
-					},
-					"back": {
-						"label": "Back",
-						"description": "Back of tongue"
-					}
-				},
-				"voicing": {
-					"voiceless": "voiceless",
-					"voiced": "voiced"
+			"sound-contrasts": {
+				"title": "Sound Contrasts",
+				"action": "Full IPA Chart",
+				"vs": "vs",
+				"labels": {
+					"vowel-length": "Vowel length",
+					"vowel-height": "Vowel height",
+					"consonant-place": "Consonant place"
 				}
 			}
 		}
