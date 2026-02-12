@@ -1,93 +1,112 @@
 # Phonaria
 
-Phonaria is a learner-first pronunciation toolkit for ESL learners. It’s a toolbox rather than a course: interactive IPA references, instant grapheme‑to‑phoneme (G2P) transcription, contrast guidance, and in‑context dictionary lookups live in one responsive, phoneme‑focused workspace.
+Pronunciation toolkit for ESL learners -- interactive IPA charts, instant grapheme-to-phoneme transcription, dictionary lookups, and contrast practice in one responsive workspace.
 
-## Highlights
+**Live app:** [phonaria.rigos.dev](https://phonaria.rigos.dev)
 
-- **G2P studio** – Paste text for stress‑marked IPA; click words for definitions and click phonemes for articulation, allophones, spelling patterns, and contrasts.
-- **IPA reference hub** – Responsive General American chart with production guidance, minimal pairs, and example words (with audio where available).
- - **Dictionary bridge** – In‑context lookups with audio and clear empty/error states, rate‑limited via Upstash Redis.
- - **Phoneme search** – Word search by phoneme pattern for finding words with specific sound sequences.
-- **Insights** – CMUDict coverage, phoneme frequency, and syllable distribution visualizations.
-- **Phonetics data core** – Typed phoneme registries and CMUDict assets power both the UI and helper scripts.
+## Tech Stack
 
-## Monorepo layout
+- **Framework:** Next.js 16 (App Router, Turbopack), React 19, TypeScript 5
+- **Styling:** Tailwind CSS v4, shadcn/ui (Radix), Lucide icons
+- **Data fetching:** next-safe-action (server actions) + TanStack Query (client cache) + Zustand (client state)
+- **Database:** Neon PostgreSQL via Drizzle ORM
+- **Rate limiting:** Upstash Redis (sliding window)
+- **i18n:** next-intl with locale-based routing (`en`, `es`)
+- **Monorepo:** Turborepo + Bun workspaces
+- **Testing:** Vitest (unit), Playwright (E2E)
+- **Formatting:** Biome (tabs, double quotes, 100-char lines)
+- **Deployment:** Vercel (auto-deploy from `prod` branch on GitHub Release)
 
-| Package | Description |
-| --- | --- |
-| [`apps/web`](apps/web/README.md) | Next.js App Router project containing the learner experience and server actions. |
-| [`packages/phonetics-data`](packages/phonetics-data/README.md) | Source of truth for phoneme metadata, articulation registries, and helper utilities. |
-| [`packages/ui`](packages/ui/README.md) | Shared UI components sourced from shadcn/ui. |
-| [`packages/helper-scripts`](packages/helper-scripts/README.md) | ElevenLabs audio generation and CMUDict tooling that feed the web app. |
-| [`docs`](docs/README.md) | Product briefs, technical design notes, and feature deep-dives. |
+## How It Works
 
-## Getting started
+The core flow is the **G2P transcription workspace**. A learner pastes text, and each word is resolved to stress-marked IPA through a three-tier lookup:
+
+1. **Tier 1** -- top 1k words (~22 KB) bundled inline, resolves instantly.
+2. **Tier 2** -- top 10k words (~273 KB) lazy-loaded on first miss, still client-side.
+3. **Tier 3** -- full 130k-entry CMUDict queried from PostgreSQL via a rate-limited server action.
+
+This covers ~95% of lookups without a network request. Each word and phoneme in the result is interactive: clicking a word opens a dictionary lookup (another server action), clicking a phoneme opens articulation details, allophones, spelling patterns, and contrast notes sourced from `packages/phonetics-data`.
+
+All phoneme data is keyed by a **language-agnostic ID system** -- a single map of uppercase IDs to IPA symbols (`PhonemeIpaMap`). Each language declares an inventory that selects a subset of these IDs, and a capabilities registry gates what features are available per language (English has full coverage; Spanish currently has articulations only). Adding a new language means adding IDs and an inventory, not modifying existing ones.
+
+The **IPA chart** and **find-by-sound** tools share the same phoneme metadata and detail system, so the learner gets consistent articulation guidance regardless of entry point.
+
+## Project Structure
+
+```
+apps/web/                   Next.js app (routes, server actions, UI)
+packages/phonetics-data/    Phoneme metadata and CMUDict assets
+packages/ui/                Shared shadcn/ui components
+packages/helper-scripts/    CMUDict processing and word list generation
+packages/audio-gen/         ElevenLabs TTS audio generation
+docs/                       Product briefs and feature design notes
+```
+
+**Why a monorepo?** Phoneme data is consumed by both the web app and the helper scripts that generate audio and word lists. Keeping it in a shared package (`phonetics-data`) means one source of truth with typed exports.
+
+**Why co-located feature code?** Each route under `apps/web/src/app/[locale]/` groups its own `_components`, `_hooks`, `_lib`, `_store`, `_types`, and `_actions` in prefixed directories. This keeps feature code close to where it's used -- the transcription route alone has server actions, Zustand stores, Zod schemas, and several specialized hooks that don't belong anywhere else.
+
+**Why typed phoneme copy instead of JSON catalogs?** General UI strings use next-intl JSON files (`messages/{locale}.json`). But phoneme descriptions, allophone contexts, and contrast notes live in TypeScript modules keyed by phoneme ID (`src/data/phoneme-details/{locale}.ts`). This preserves compile-time checks against the phoneme registry -- a missing or mistyped key is a type error, not a silent gap.
+
+## Getting Started
 
 ### Prerequisites
 
- - [Bun](https://bun.sh/) 1.3+ (package manager: 1.3.2)
-- Node.js 18.18 or newer (matching the Next.js support matrix)
+- [Bun](https://bun.sh/) 1.3+ (package manager)
+- Node.js 18.18+
 
-### Installation & local development
-
-```bash
-bun install            # install workspace dependencies once
-bun --cwd apps/web dev    # launch the learner experience at http://localhost:3000
-```
-
-The root `bun dev` command delegates to Turborepo and will start every package with a `dev` script. Use package-specific commands (shown above) for a focused workflow.
-
-## Common workspace tasks
+### Install and run
 
 ```bash
-bun lint         # run Biome across packages
-bun check-types  # run TypeScript in --noEmit mode
-bun test         # execute Vitest suites (filtered via Turborepo)
-bun build        # build all packages for production
+git clone https://github.com/rigomart/phonaria.git
+cd phonaria
+bun install
 ```
 
-All commits should pass linting, type checking, and relevant tests.
+Create `apps/web/.env.local`:
 
-## Tech stack
+```bash
+DATABASE_URL=postgresql://...              # Neon PostgreSQL connection string
+UPSTASH_REDIS_REST_URL=https://...         # Upstash Redis for rate limiting
+UPSTASH_REDIS_REST_TOKEN=...
+SITE_URL=http://localhost:3000             # Used for sitemap/canonical URLs
+SKIP_RATE_LIMIT=true                       # Bypass rate limiting in dev
+```
 
-- Next.js 16, React 19, TypeScript 5, Tailwind CSS v4
-- next-safe-action for type-safe server actions with TanStack Query caching
-- Drizzle ORM with Neon PostgreSQL
-- Turborepo + Bun workspaces
+```bash
+bun dev                                    # Start all packages (Turborepo)
+# or
+bun --cwd apps/web dev                    # Just the web app at localhost:3000
+```
 
-See [`apps/web/README.md`](apps/web/README.md) for details.
+## Scripts
 
-## Contributing
+```bash
+bun dev            # Start dev servers (Turborepo)
+bun build          # Production build
+bun lint           # Biome check with auto-fix
+bun check-types    # TypeScript --noEmit across packages
+bun test           # Vitest unit tests
+bun e2e            # Playwright E2E tests (needs SKIP_RATE_LIMIT + DATABASE_URL)
+```
 
-Contributions are welcome. Before opening a PR:
+Database (apps/web):
 
-- Use the scoped scripts above and keep changes aligned to the relevant package (`apps/web`, `packages/phonetics-data`, etc.).
-- Run `bun lint`, `bun check-types`, and `bun test`.
-- Prefer small, focused commits and follow Conventional Commit messages.
+```bash
+bun --cwd apps/web db:push       # Push Drizzle schema to Neon
+bun --cwd apps/web db:migrate    # Run migrations
+bun --cwd apps/web db:seed       # Seed database
+```
 
-See `docs/project-overview.md` for product context and `docs/README.md` for enhancement plans and feature briefs.
+Data generation (packages/helper-scripts):
 
-## Data & helper workflows
+```bash
+bun --cwd packages/helper-scripts cmudict-to-json          # Convert CMUDict to JSON
+bun --cwd packages/helper-scripts cmudict-stats            # Generate coverage stats
+bun --cwd packages/helper-scripts generate-word-mappings   # CMU ARPA mappings for example words
+python3 packages/helper-scripts/generate-curated-chunks.py # Tier 1/2 word lists (needs wordfreq)
+```
 
-Phonaria ships with pre-generated assets but also supports regeneration when source data changes:
+## License
 
-- **CMU Pronouncing Dictionary** – Stored at `packages/phonetics-data/data/en/dict/cmudict.json` and bundled through the `@phonaria/phonetics-data` package. The `cmudict-stats.json` companion file powers the insights page. Regenerate with:
-  ```bash
-  CMUDICT_SRC_URL="<remote .dict file>" bun --cwd packages/helper-scripts cmudict-to-json
-  bun --cwd packages/helper-scripts cmudict-stats
-  ```
-  Use `CMUDICT_JSON_PATH` to override the default output location.
-- **Example word audio** – AI-generated `.mp3` files (currently produced via ElevenLabs) are generated locally, then uploaded manually to the audio bucket the app references. These are temporary while the example word list is still evolving; human recordings can replace them once the set stabilizes. Provide an `ELEVENLABS_API_KEY` in `packages/helper-scripts/.env` and run:
-  ```bash
-  bun --cwd packages/helper-scripts generate
-  ```
-
-Generated assets are committed so deployments remain deterministic.
-
-## Documentation
-
-Deeper product context, enhancement plans, and feature briefs live in the [`docs`](docs/README.md) directory. Start with the [project overview](docs/project-overview.md) for a guided tour and explore enhancement plans or feature notes as needed.
-
-## Licensing
-
-Phonaria is distributed under the MIT License. The embedded CMU Pronouncing Dictionary follows its original [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).
+MIT. The embedded CMU Pronouncing Dictionary follows its original [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).
