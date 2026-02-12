@@ -1,4 +1,3 @@
-import { getIpaForPhonemeId } from "@phonaria/phonetics-data";
 import type { G2PResponse, G2PWord } from "../g2p/model";
 import { spanishGraphemeToPhonemes } from "./rules";
 import { assignSpanishStressWithAccentIndex } from "./stress";
@@ -18,7 +17,7 @@ export function transcribeSpanishWord(word: string): G2PWord {
 		variants: [
 			stressed.map((syl) => ({
 				phonemes: syl.phonemes.map((p) => ({
-					ipa: getIpaForPhonemeId(p.phonemeId),
+					ipa: p.ipa,
 					phonemeId: p.phonemeId,
 					cmuToken: p.phonemeId,
 				})),

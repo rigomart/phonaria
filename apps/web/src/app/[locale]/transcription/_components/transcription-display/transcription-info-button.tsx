@@ -8,11 +8,24 @@ import { Link } from "@/i18n/navigation";
 import { useTargetLanguageStore } from "@/store/target-language-store";
 
 export function TranscriptionInfoButton() {
+	const t = useTranslations("g2p-page.transcription-display.info-button");
 	const tEn = useTranslations("g2p-page.transcription-display.info-button.en");
 	const tEs = useTranslations("g2p-page.transcription-display.info-button.es");
-	const t = useTranslations("g2p-page.transcription-display.info-button");
 	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
 	const tLang = targetLanguage === "es" ? tEs : tEn;
+
+	const thingsToKnow =
+		targetLanguage === "es"
+			? ([
+					tEs("things-to-know.dialect"),
+					tEs("things-to-know.rule-based"),
+					tEs("things-to-know.stress"),
+				] as const)
+			: ([
+					tEn("things-to-know.american-accent"),
+					tEn("things-to-know.coverage"),
+					tEn("things-to-know.multiple-variants"),
+				] as const);
 
 	return (
 		<Popover>
@@ -34,19 +47,11 @@ export function TranscriptionInfoButton() {
 					<div className="space-y-2 text-xs sm:text-sm text-muted-foreground">
 						<p>{tLang("description")}</p>
 						<p className="font-semibold">{tLang("things-to-know-title")}</p>
-						{targetLanguage === "es" ? (
-							<ul className="list-disc list-inside space-y-1 ml-2">
-								<li>{tEs("things-to-know.dialect")}</li>
-								<li>{tEs("things-to-know.rule-based")}</li>
-								<li>{tEs("things-to-know.stress")}</li>
-							</ul>
-						) : (
-							<ul className="list-disc list-inside space-y-1 ml-2">
-								<li>{tEn("things-to-know.american-accent")}</li>
-								<li>{tEn("things-to-know.coverage")}</li>
-								<li>{tEn("things-to-know.multiple-variants")}</li>
-							</ul>
-						)}
+						<ul className="list-disc list-inside space-y-1 ml-2">
+							{thingsToKnow.map((text) => (
+								<li key={text}>{text}</li>
+							))}
+						</ul>
 						<Link
 							href="/credits"
 							className="inline-block pt-1 text-xs underline underline-offset-2 hover:text-foreground"

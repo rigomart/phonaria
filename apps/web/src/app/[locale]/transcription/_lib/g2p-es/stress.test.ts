@@ -31,7 +31,7 @@ describe("assignSpanishStressWithAccentIndex", () => {
 		expect(stressPattern("café")).toEqual(["none", "primary"]);
 	});
 
-	it("accent overrides to antepenultimate: árbol", () => {
+	it("accent overrides to penultimate: árbol", () => {
 		expect(stressPattern("árbol")).toEqual(["primary", "none"]);
 	});
 

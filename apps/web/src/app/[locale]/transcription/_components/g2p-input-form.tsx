@@ -45,6 +45,9 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 				</span>
 				<TargetLanguageSelector />
 			</div>
+			<div className="flex md:hidden items-center justify-end">
+				<TargetLanguageSelector />
+			</div>
 
 			<form onSubmit={handleSubmit} className="flex gap-2 flex-row">
 				<div className="relative flex-1">

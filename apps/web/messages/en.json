@@ -294,7 +294,7 @@
 					}
 				},
 				"es": {
-					"description": "Pronunciations are generated using rule-based grapheme-to-phoneme conversion for Latin American Spanish (seseo, yeismo).",
+					"description": "Pronunciations are generated using rule-based grapheme-to-phoneme conversion for Latin American Spanish (seseo, yeísmo).",
 					"things-to-know-title": "Things to know:",
 					"things-to-know": {
 						"dialect": "Pronunciations reflect Latin American Spanish, not Peninsular Spanish",
