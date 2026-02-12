@@ -1,7 +1,8 @@
 "use client";
 
 import { toastManager } from "@phonaria/ui/components/toast";
-import { useTransition } from "react";
+import { useEffect, useRef, useTransition } from "react";
+import { useTargetLanguageStore } from "@/store/target-language-store";
 import { transcribeWordsAction } from "../_actions/transcribe";
 import type { G2PWord } from "../_lib/g2p/model";
 import { transformToTranscriptionResult } from "../_lib/g2p-client";
@@ -26,10 +27,35 @@ export function useTranscribe() {
 	const [isPending, startTransition] = useTransition();
 	const resetVariants = useG2PStore((s) => s.resetVariants);
 	const setCurrentResult = useG2PStore((s) => s.setCurrentResult);
+	const clearResult = useG2PStore((s) => s.clearResult);
+	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
+
+	// Clear transcription result when target language changes
+	const prevLanguageRef = useRef(targetLanguage);
+	useEffect(() => {
+		if (prevLanguageRef.current !== targetLanguage) {
+			prevLanguageRef.current = targetLanguage;
+			clearResult();
+		}
+	}, [targetLanguage, clearResult]);
 
 	const mutate = (input: { text: string }) => {
 		startTransition(async () => {
 			try {
+				if (targetLanguage === "es") {
+					const { transcribeSpanishText } = await import("../_lib/g2p-es/engine");
+					const response = transcribeSpanishText(input.text);
+					if (response.words.length === 0) {
+						setCurrentResult(null);
+						return;
+					}
+					const transformed = transformToTranscriptionResult(response, input.text);
+					setCurrentResult(transformed);
+					resetVariants(transformed.words.length);
+					return;
+				}
+
+				// English pipeline
 				// 1. Tokenize text on client
 				const tokens = tokenizeText(input.text);
 				if (tokens.length === 0) {
