@@ -1,4 +1,12 @@
 {
+	"common": {
+		"target-language": {
+			"label": "Idioma objetivo",
+			"en": "Inglés",
+			"es": "Español",
+			"beta": "Beta"
+		}
+	},
 	"components": {
 		"header": {
 			"navigation": {
@@ -212,11 +220,6 @@
 		"hint": {
 			"sounds": "sonidos",
 			"click-for-details": "Haz clic en un fonema para ver detalles"
-		},
-		"target-language": {
-			"label": "Idioma objetivo",
-			"en": "Inglés",
-			"es": "Español"
 		},
 		"vowel-grid-title": "Cuadrícula del diagrama de vocales",
 		"sections": {

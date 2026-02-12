@@ -1,4 +1,12 @@
 {
+	"common": {
+		"target-language": {
+			"label": "Target language",
+			"en": "English",
+			"es": "Spanish",
+			"beta": "Beta"
+		}
+	},
 	"components": {
 		"header": {
 			"navigation": {
@@ -212,11 +220,6 @@
 		"hint": {
 			"sounds": "sounds",
 			"click-for-details": "Click on a phoneme for details"
-		},
-		"target-language": {
-			"label": "Target language",
-			"en": "English",
-			"es": "Spanish"
 		},
 		"vowel-grid-title": "Vowel chart grid",
 		"sections": {
