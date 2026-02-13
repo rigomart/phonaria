@@ -328,28 +328,25 @@
 		},
 		"hero": {
 			"title": "Pronunciación mediante fonemas",
-			"subtitle": "Herramientas para descifrar la ortografía del inglés y explorar cómo funcionan los sonidos."
+			"subtitle": "Herramientas para explorar cómo funcionan los sonidos en diferentes idiomas."
 		},
 		"tools": {
+			"coming-soon": "Próximamente",
 			"transcription": {
 				"label": "Transcripción",
-				"description": "Convierte cualquier texto a símbolos IPA",
-				"preview": "hello → /hɛˈloʊ/"
+				"description": "Convierte cualquier texto a símbolos IPA"
 			},
 			"ipa-reference": {
 				"label": "Tabla IPA",
-				"description": "Explora todos los sonidos del inglés con audio",
-				"preview": "44 fonemas con audio"
+				"description": "Explora sonidos con articulación y audio"
 			},
 			"find-by-sound": {
 				"label": "Buscar por sonido",
-				"description": "Busca palabras por cómo suenan",
-				"preview": "¿Qué palabras tienen /θ/?"
+				"description": "Busca palabras por cómo suenan"
 			},
 			"insights": {
 				"label": "Estadísticas",
-				"description": "Datos sobre la pronunciación del inglés",
-				"preview": "Cobertura y distribuciones"
+				"description": "Datos sobre patrones de pronunciación"
 			}
 		},
 		"sections": {
