@@ -328,28 +328,25 @@
 		},
 		"hero": {
 			"title": "Pronunciation through phonemes",
-			"subtitle": "Tools to decode English spelling and explore how sounds work."
+			"subtitle": "Tools to explore how sounds work across languages."
 		},
 		"tools": {
+			"coming-soon": "Coming soon",
 			"transcription": {
 				"label": "Transcription",
-				"description": "Convert any text to IPA symbols",
-				"preview": "hello → /hɛˈloʊ/"
+				"description": "Convert any text to IPA symbols"
 			},
 			"ipa-reference": {
 				"label": "IPA Reference",
-				"description": "Browse all English sounds with audio",
-				"preview": "44 phonemes with audio"
+				"description": "Browse sounds with articulation and audio"
 			},
 			"find-by-sound": {
 				"label": "Find by Sound",
-				"description": "Search words by how they sound",
-				"preview": "Which words have /θ/?"
+				"description": "Search words by how they sound"
 			},
 			"insights": {
 				"label": "Insights",
-				"description": "Statistics on English pronunciation",
-				"preview": "Coverage and distributions"
+				"description": "Statistics on pronunciation patterns"
 			}
 		},
 		"sections": {
