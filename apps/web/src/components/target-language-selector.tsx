@@ -15,16 +15,24 @@ import { useTargetLanguageStore } from "@/store/target-language-store";
 
 type TargetLanguageSelectorProps = {
 	className?: string;
+	hideLabel?: boolean;
 };
 
-export function TargetLanguageSelector({ className }: TargetLanguageSelectorProps) {
+export function TargetLanguageSelector({
+	className,
+	hideLabel = true,
+}: TargetLanguageSelectorProps) {
 	const t = useTranslations("common.target-language");
 	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
 	const setTargetLanguage = useTargetLanguageStore((s) => s.setTargetLanguage);
 
 	return (
 		<div className={cn("flex items-center gap-2", className)}>
-			<span className="hidden sm:inline text-xs text-muted-foreground whitespace-nowrap">
+			<span
+				className={cn("text-xs text-muted-foreground whitespace-nowrap", {
+					"hidden sm:inline": hideLabel,
+				})}
+			>
 				{t("label")}
 			</span>
 			<Select

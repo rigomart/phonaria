@@ -38,15 +38,12 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 
 	return (
 		<div className="w-full space-y-2">
-			<div className="hidden md:flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-				<span className="inline-flex items-center gap-1.5">
+			<div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+				<span className="hidden md:inline-flex items-center gap-1.5">
 					<Keyboard className="size-3.5" />
 					{t("hint")}
 				</span>
-				<TargetLanguageSelector />
-			</div>
-			<div className="flex md:hidden items-center justify-end">
-				<TargetLanguageSelector />
+				<TargetLanguageSelector hideLabel={false} />
 			</div>
 
 			<form onSubmit={handleSubmit} className="flex gap-2 flex-row">
