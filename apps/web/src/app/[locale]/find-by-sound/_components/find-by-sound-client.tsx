@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
+import { TargetAccentSelector } from "@/components/target-accent-selector";
 import { Link } from "@/i18n/navigation";
 import { searchPhonemesAction } from "../_actions/search";
 import { ALL_PHONEMES, type KeyboardPhoneme } from "../_lib/keyboard-layout";
@@ -82,7 +83,10 @@ export function FindBySoundClient() {
 	return (
 		<div className="flex flex-col gap-4 max-w-3xl mx-auto">
 			<header>
-				<h1 className="text-xl font-semibold">{t("header.title")}</h1>
+				<div className="flex items-center justify-between gap-2">
+					<h1 className="text-xl font-semibold">{t("header.title")}</h1>
+					<TargetAccentSelector supportedAccents={["en-us"]} />
+				</div>
 				<p className="text-sm text-muted-foreground">{t("header.description")}</p>
 			</header>
 
