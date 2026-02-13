@@ -12,7 +12,7 @@ import {
   getSpellingPatternRegistryForLanguage,
 } from "@phonaria/phonetics-data";
 
-const language = "es" as const;
+const language = "es-419" as const;
 
 const inventory = getLanguagePhonemeInventory(language);
 const articulations = getLanguageArticulationData(language);
@@ -52,13 +52,13 @@ graph TD
 
 ## Naming conventions
 
-- **"Registry"** suffix is reserved for the composition layer: constants that map `TargetLanguage` to data (e.g., `LanguageArticulationRegistry`).
+- **"Registry"** suffix is reserved for the composition layer: constants that map `TargetAccent` to data (e.g., `LanguageArticulationRegistry`).
 - **"Map"** suffix is used for static lookup objects in core and language modules (e.g., `PhonemeIpaMap`, `CmuArpaMap`).
 - **Plain descriptive nouns** are used for per-language data (e.g., `EnglishConsonantArticulations`, `EnglishPhonemeAllophones`).
 
 ## Type-safety strategy
 
-- `TargetLanguage` is the top-level discriminator (`"en" | "es"`).
+- `TargetAccent` is the top-level discriminator (`"en-us" | "es-419"`).
 - `LanguagePhonemeId<TLanguage>` narrows valid phoneme IDs by language at compile time.
 - English-only features are explicit (`English*` naming) and gated through selectors returning `null` when unavailable for other languages.
 - Selector return types use indexed access on `as const satisfies` registries, so TypeScript resolves the exact type per language without casts.
@@ -84,8 +84,8 @@ import {
   getContrastRegistryForLanguage,
 } from "@phonaria/phonetics-data";
 
-if (hasLanguageFeature("es", "contrasts")) {
-  const contrasts = getContrastRegistryForLanguage("es");
+if (hasLanguageFeature("es-419", "contrasts")) {
+  const contrasts = getContrastRegistryForLanguage("es-419");
   // consume contrasts
 }
 ```

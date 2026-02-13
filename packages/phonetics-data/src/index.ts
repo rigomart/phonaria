@@ -43,7 +43,7 @@ export type {
 	PhonemeArticulation,
 	VowelType,
 } from "./core/phoneme-articulations";
-export { type PhonemeCategory, TARGET_LANGUAGES, type TargetLanguage } from "./core/types";
+export { type PhonemeCategory, TARGET_ACCENTS, type TargetAccent } from "./core/types";
 export type { CuratedWordData } from "./data/en/curated-1k";
 export type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dict/types";
 export { EnglishPhonemeAllophones } from "./languages/en/allophones";

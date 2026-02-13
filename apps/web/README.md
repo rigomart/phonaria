@@ -178,11 +178,10 @@ Phonaria uses **two complementary translation layers**:
 - Client components: `usePhonemeDetailsCopy()` from `@/data/phoneme-details/client`
 - Non-React contexts/tests: `getPhonemeDetailsCopy(locale)` from `@/data/phoneme-details`
 
-### Target language vs display language
+### Target accent vs display language
 
 - **Display language** is controlled by route locale (`/en`, `/es`) and selects translated UI copy.
-- **Target language** is the phonetic system being taught (`en`, `es`) and is modeled by `@phonaria/phonetics-data` language inventories.
-- For the current IPA chart implementation, target language is explicitly fixed to English in `src/app/[locale]/ipa-chart/_lib/target-language.ts`.
+- **Target accent** is the phonetic system being taught (`en-us`, `es-419`) and is modeled by `@phonaria/phonetics-data` accent inventories.
 
 Why not put phoneme detail strings into `messages/*.json`?
 

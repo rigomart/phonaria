@@ -1,10 +1,10 @@
-import type { TargetLanguage } from "@phonaria/phonetics-data";
+import type { TargetAccent } from "@phonaria/phonetics-data";
 import { ScrollArea, ScrollBar } from "@phonaria/ui/components/scroll-area";
 import { useTranslations } from "next-intl";
 import { ChartInfoButton } from "../_components/chart-info-button";
 import { ConsonantChart } from "../_components/consonant-chart";
 
-export function ConsonantsSection({ targetLanguage }: { targetLanguage: TargetLanguage }) {
+export function ConsonantsSection({ targetAccent }: { targetAccent: TargetAccent }) {
 	const t = useTranslations("ipa-chart.sections.consonants");
 	const ariaT = useTranslations("ipa-chart.info-button");
 	return (
@@ -24,7 +24,7 @@ export function ConsonantsSection({ targetLanguage }: { targetLanguage: TargetLa
 			</div>
 			<ScrollArea className="-mx-1">
 				<div className="px-1">
-					<ConsonantChart targetLanguage={targetLanguage} />
+					<ConsonantChart targetAccent={targetAccent} />
 				</div>
 				<ScrollBar orientation="horizontal" />
 			</ScrollArea>

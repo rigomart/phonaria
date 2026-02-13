@@ -1,4 +1,4 @@
-import type { TargetLanguage } from "../core/types";
+import type { TargetAccent } from "../core/types";
 
 export const LANGUAGE_FEATURE_KEYS = [
 	"articulations",
@@ -15,7 +15,7 @@ export type LanguageFeatureKey = (typeof LANGUAGE_FEATURE_KEYS)[number];
 export type LanguageFeatureCapabilities = Record<LanguageFeatureKey, boolean>;
 
 export const LanguageFeatureCapabilitiesRegistry = {
-	en: {
+	"en-us": {
 		articulations: true,
 		cmuArpa: true,
 		allophones: true,
@@ -24,7 +24,7 @@ export const LanguageFeatureCapabilitiesRegistry = {
 		curatedWordData: true,
 		transcription: true,
 	},
-	es: {
+	"es-419": {
 		articulations: true,
 		cmuArpa: false,
 		allophones: false,
@@ -33,14 +33,14 @@ export const LanguageFeatureCapabilitiesRegistry = {
 		curatedWordData: false,
 		transcription: true,
 	},
-} as const satisfies Record<TargetLanguage, LanguageFeatureCapabilities>;
+} as const satisfies Record<TargetAccent, LanguageFeatureCapabilities>;
 
 export function getLanguageFeatureCapabilities(
-	language: TargetLanguage,
+	language: TargetAccent,
 ): LanguageFeatureCapabilities {
 	return LanguageFeatureCapabilitiesRegistry[language];
 }
 
-export function hasLanguageFeature(language: TargetLanguage, feature: LanguageFeatureKey): boolean {
+export function hasLanguageFeature(language: TargetAccent, feature: LanguageFeatureKey): boolean {
 	return LanguageFeatureCapabilitiesRegistry[language][feature];
 }

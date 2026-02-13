@@ -24,18 +24,18 @@ import {
 } from "./phoneme-section";
 
 export function PhonemeDetailsPatterns() {
-	const { phonemeId, targetLanguage } = usePhonemeDetailsContext();
+	const { phonemeId, targetAccent } = usePhonemeDetailsContext();
 	const t = useTranslations("components.phoneme-details.patterns");
 
-	if (!hasLanguageFeature(targetLanguage, "spellingPatterns")) {
+	if (!hasLanguageFeature(targetAccent, "spellingPatterns")) {
 		return null;
 	}
-	if (!isPhonemeInLanguage(targetLanguage, phonemeId)) {
+	if (!isPhonemeInLanguage(targetAccent, phonemeId)) {
 		return null;
 	}
 
 	const spellingPatternRegistry = getSpellingPatternRegistryForLanguage(
-		targetLanguage,
+		targetAccent,
 	) as LanguageSpellingPatternRegistry | null;
 	if (!spellingPatternRegistry) return null;
 	const spellingData = spellingPatternRegistry[phonemeId];

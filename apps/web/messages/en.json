@@ -1,9 +1,9 @@
 {
 	"common": {
-		"target-language": {
-			"label": "Target language",
-			"en": "English",
-			"es": "Spanish",
+		"accent": {
+			"label": "Accent",
+			"en-us": "American English",
+			"es-419": "Latin American Spanish",
 			"beta": "Beta"
 		}
 	},
@@ -284,7 +284,7 @@
 				"aria-label": "Transcription information",
 				"title": "About This Transcription",
 				"credits-link": "Learn more about data sources",
-				"en": {
+				"en-us": {
 					"description": "Pronunciations are obtained from the CMU Pronouncing Dictionary, which contains over 134,000 North American English words.",
 					"things-to-know-title": "Things to know:",
 					"things-to-know": {
@@ -293,7 +293,7 @@
 						"multiple-variants": "Words with multiple pronunciations (like 'read') show all variants"
 					}
 				},
-				"es": {
+				"es-419": {
 					"description": "Pronunciations are generated using rule-based grapheme-to-phoneme conversion for Latin American Spanish (seseo, yeísmo).",
 					"things-to-know-title": "Things to know:",
 					"things-to-know": {

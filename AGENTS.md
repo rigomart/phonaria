@@ -48,9 +48,9 @@ Phonaria is a learner-first pronunciation toolkit for ESL learners. It combines 
 - Translation tone: neutral, natural, and learner-first; keep labels short and functional (avoid marketing language and regionalisms).
 - Terminology: use `IPA` as the primary label; `IPA (AFI)` is acceptable on first mention in explanatory copy.
 
-## Phoneme ID System & Target Language
+## Phoneme ID System & Target Accent
 - `packages/phonetics-data/src/core/ipa-map.ts` defines custom uppercase IDs that each map to exactly one IPA symbol. The map is the single source of truth regardless of language. IDs are extensible: when two languages need phonemically distinct sounds (e.g. English `E`=/ɛ/ vs Spanish `EE`=/e/), add a new ID rather than overriding an existing one.
-- `TargetLanguage` (`"en" | "es"`) is the language whose sounds are being taught. It is separate from locale (UI display language), though they currently map 1:1. Components that render language-specific phoneme data (charts, articulations) should accept `targetLanguage` as a prop rather than deriving it implicitly.
+- `TargetAccent` (`"en-us" | "es-419"`) is the accent whose sounds are being taught. It is separate from locale (UI display language). Components that render accent-specific phoneme data (charts, articulations) should accept `targetAccent` as a prop rather than deriving it implicitly.
 - Per-language phoneme inventories live in `packages/phonetics-data/src/languages/inventories.ts` and bridge core IDs to language scopes. Articulation data lives in `src/languages/{lang}/articulations.ts`.
 
 ## App Routes & Organization

@@ -12,8 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@phonaria/ui/component
 import { useTranslations } from "next-intl";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useEffect, useMemo } from "react";
-import { TargetLanguageSelector } from "@/components/target-language-selector";
-import { useTargetLanguageStore } from "@/store/target-language-store";
+import { TargetAccentSelector } from "@/components/target-accent-selector";
+import { useTargetAccentStore } from "@/store/target-accent-store";
 import { PhonemeDialog } from "./_components/phoneme-dialog";
 import { ConsonantsSection } from "./_sections/consonants-section";
 import { VowelChartSection } from "./_sections/vowels-section";
@@ -26,9 +26,9 @@ export default function IpaChartPage() {
 	const tabs = useTranslations("ipa-chart.nav-tabs");
 	const hint = useTranslations("ipa-chart.hint");
 
-	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
+	const targetAccent = useTargetAccentStore((s) => s.targetAccent);
 
-	const counts = getLanguagePhonemeCount(targetLanguage);
+	const counts = getLanguagePhonemeCount(targetAccent);
 
 	const COUNT_BY_TAB = {
 		consonants: counts.consonants,
@@ -36,36 +36,29 @@ export default function IpaChartPage() {
 		diphthongs: counts.diphthongs,
 	} as const;
 
-	const availableTabs = useMemo(
-		() =>
-			IPA_CHART_TABS.filter((tab) => {
-				const tabCounts = getLanguagePhonemeCount(targetLanguage);
-				return tabCounts[tab] > 0;
-			}),
-		[targetLanguage],
-	);
+	const availableTabs = useMemo(() => IPA_CHART_TABS.filter((tab) => counts[tab] > 0), [counts]);
 
 	const [activeTab, setActiveTab] = useQueryState(
 		"tab",
 		parseAsStringEnum<IpaChartTabValue>([...IPA_CHART_TABS]).withDefault("consonants"),
 	);
 
-	// Reset tab if current tab is not available for this target language
+	// Reset tab if current tab is not available for this target accent
 	useEffect(() => {
 		if (!availableTabs.includes(activeTab)) {
 			setActiveTab("consonants");
 		}
 	}, [availableTabs, activeTab, setActiveTab]);
 
-	// Clear phoneme selection if the selected phoneme is not in the new target language
+	// Clear phoneme selection if the selected phoneme is not in the new target accent
 	const selectedPhonemeId = useIpaChartStore((s) => s.selectedPhonemeId);
 	const clearSelection = useIpaChartStore((s) => s.clearSelection);
 
 	useEffect(() => {
-		if (selectedPhonemeId && !isPhonemeInLanguage(targetLanguage, selectedPhonemeId)) {
+		if (selectedPhonemeId && !isPhonemeInLanguage(targetAccent, selectedPhonemeId)) {
 			clearSelection();
 		}
-	}, [targetLanguage, selectedPhonemeId, clearSelection]);
+	}, [targetAccent, selectedPhonemeId, clearSelection]);
 
 	const activeCount = COUNT_BY_TAB[activeTab];
 
@@ -87,7 +80,7 @@ export default function IpaChartPage() {
 									</TabsTrigger>
 								))}
 							</TabsList>
-							<TargetLanguageSelector />
+							<TargetAccentSelector />
 						</div>
 
 						{/* Mobile: both selects side by side */}
@@ -108,7 +101,7 @@ export default function IpaChartPage() {
 									))}
 								</SelectContent>
 							</Select>
-							<TargetLanguageSelector className="shrink-0" />
+							<TargetAccentSelector className="shrink-0" />
 						</div>
 
 						<p className="text-xs text-muted-foreground text-center">
@@ -117,17 +110,17 @@ export default function IpaChartPage() {
 					</div>
 
 					<TabsContent value="consonants">
-						<ConsonantsSection targetLanguage={targetLanguage} />
+						<ConsonantsSection targetAccent={targetAccent} />
 					</TabsContent>
 					<TabsContent value="monophthongs">
-						<VowelChartSection variant="monophthongs" targetLanguage={targetLanguage} />
+						<VowelChartSection variant="monophthongs" targetAccent={targetAccent} />
 					</TabsContent>
 					<TabsContent value="diphthongs">
-						<VowelChartSection variant="diphthongs" targetLanguage={targetLanguage} />
+						<VowelChartSection variant="diphthongs" targetAccent={targetAccent} />
 					</TabsContent>
 				</Tabs>
 
-				<PhonemeDialog targetLanguage={targetLanguage} />
+				<PhonemeDialog targetAccent={targetAccent} />
 			</div>
 		</div>
 	);

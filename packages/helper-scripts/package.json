@@ -18,7 +18,8 @@
 		"cmudict-stats": "tsx src/cmudict-stats.ts",
 		"generate-word-mappings": "tsx src/generate-word-mappings.ts",
 		"phoneme-trie-to-json": "tsx src/phoneme-trie-to-json.ts",
-		"migrate-diagrams": "tsx src/migrate-diagrams.ts"
+		"migrate-diagrams": "tsx src/migrate-diagrams.ts",
+		"migrate-diagrams-to-accent": "tsx src/migrate-diagrams-to-accent.ts"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.985.0",

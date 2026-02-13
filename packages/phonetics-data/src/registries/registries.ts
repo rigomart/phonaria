@@ -7,7 +7,7 @@ import {
 	type MonophthongVowelArticulation,
 	type PhonemeArticulation,
 } from "../core/phoneme-articulations";
-import type { TargetLanguage } from "../core/types";
+import type { TargetAccent } from "../core/types";
 import { EnglishPhonemeAllophones } from "../languages/en/allophones";
 import {
 	EnglishConsonantArticulations,
@@ -35,26 +35,24 @@ import type { PhonemeAllophone, PhonemeContrastMatch, SpellingPattern } from "..
 
 // Language articulation registry types
 
-export type LanguageConsonantArticulationRegistry<
-	TLanguage extends TargetLanguage = TargetLanguage,
-> = Record<LanguageConsonantSymbolId<TLanguage>, ConsonantArticulation>;
+export type LanguageConsonantArticulationRegistry<TLanguage extends TargetAccent = TargetAccent> =
+	Record<LanguageConsonantSymbolId<TLanguage>, ConsonantArticulation>;
 
 export type LanguageMonophthongVowelArticulationRegistry<
-	TLanguage extends TargetLanguage = TargetLanguage,
+	TLanguage extends TargetAccent = TargetAccent,
 > = Record<LanguageMonophthongSymbolId<TLanguage>, MonophthongVowelArticulation>;
 
 export type LanguageDiphthongVowelArticulationRegistry<
-	TLanguage extends TargetLanguage = TargetLanguage,
+	TLanguage extends TargetAccent = TargetAccent,
 > = Record<LanguageDiphthongSymbolId<TLanguage>, DiphthongVowelArticulation>;
 
-export type LanguagePhonemeArticulationRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
+export type LanguagePhonemeArticulationRegistry<TLanguage extends TargetAccent = TargetAccent> =
 	Record<LanguagePhonemeId<TLanguage>, PhonemeArticulation>;
 
-export type LanguageFeatureValueByPhonemeRegistry<
-	TLanguage extends TargetLanguage = TargetLanguage,
-> = FeatureValueLookup<LanguagePhonemeId<TLanguage>>;
+export type LanguageFeatureValueByPhonemeRegistry<TLanguage extends TargetAccent = TargetAccent> =
+	FeatureValueLookup<LanguagePhonemeId<TLanguage>>;
 
-export type LanguageArticulationData<TLanguage extends TargetLanguage> = {
+export type LanguageArticulationData<TLanguage extends TargetAccent> = {
 	consonants: LanguageConsonantArticulationRegistry<TLanguage>;
 	monophthongs: LanguageMonophthongVowelArticulationRegistry<TLanguage>;
 	diphthongs: LanguageDiphthongVowelArticulationRegistry<TLanguage>;
@@ -68,10 +66,10 @@ const EnglishLanguageArticulationData = {
 	diphthongs: EnglishDiphthongArticulations,
 	phonemes: EnglishPhonemeArticulations,
 	featureValuesByPhoneme: buildFeatureValueByPhoneme(
-		getLanguagePhonemeIds("en"),
+		getLanguagePhonemeIds("en-us"),
 		EnglishPhonemeArticulations,
 	),
-} satisfies LanguageArticulationData<"en">;
+} satisfies LanguageArticulationData<"en-us">;
 
 const SpanishLanguageArticulationData = {
 	consonants: SpanishConsonantArticulations,
@@ -79,49 +77,49 @@ const SpanishLanguageArticulationData = {
 	diphthongs: SpanishDiphthongArticulations,
 	phonemes: SpanishPhonemeArticulations,
 	featureValuesByPhoneme: buildFeatureValueByPhoneme(
-		getLanguagePhonemeIds("es"),
+		getLanguagePhonemeIds("es-419"),
 		SpanishPhonemeArticulations,
 	),
-} satisfies LanguageArticulationData<"es">;
+} satisfies LanguageArticulationData<"es-419">;
 
 export const LanguageArticulationRegistry = {
-	en: EnglishLanguageArticulationData,
-	es: SpanishLanguageArticulationData,
+	"en-us": EnglishLanguageArticulationData,
+	"es-419": SpanishLanguageArticulationData,
 } satisfies {
-	[L in TargetLanguage]: LanguageArticulationData<L>;
+	[L in TargetAccent]: LanguageArticulationData<L>;
 };
 
-export function getLanguageArticulationData<TLanguage extends TargetLanguage>(
+export function getLanguageArticulationData<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageArticulationRegistry)[TLanguage] {
 	return LanguageArticulationRegistry[language];
 }
 
-export function getConsonantArticulationRegistryForLanguage<TLanguage extends TargetLanguage>(
+export function getConsonantArticulationRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageArticulationRegistry)[TLanguage]["consonants"] {
 	return getLanguageArticulationData(language).consonants;
 }
 
-export function getMonophthongVowelArticulationRegistryForLanguage<
-	TLanguage extends TargetLanguage,
->(language: TLanguage): (typeof LanguageArticulationRegistry)[TLanguage]["monophthongs"] {
+export function getMonophthongVowelArticulationRegistryForLanguage<TLanguage extends TargetAccent>(
+	language: TLanguage,
+): (typeof LanguageArticulationRegistry)[TLanguage]["monophthongs"] {
 	return getLanguageArticulationData(language).monophthongs;
 }
 
-export function getDiphthongVowelArticulationRegistryForLanguage<TLanguage extends TargetLanguage>(
+export function getDiphthongVowelArticulationRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageArticulationRegistry)[TLanguage]["diphthongs"] {
 	return getLanguageArticulationData(language).diphthongs;
 }
 
-export function getPhonemeArticulationRegistryForLanguage<TLanguage extends TargetLanguage>(
+export function getPhonemeArticulationRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageArticulationRegistry)[TLanguage]["phonemes"] {
 	return getLanguageArticulationData(language).phonemes;
 }
 
-export function getFeatureValueByPhonemeRegistryForLanguage<TLanguage extends TargetLanguage>(
+export function getFeatureValueByPhonemeRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageArticulationRegistry)[TLanguage]["featureValuesByPhoneme"] {
 	return getLanguageArticulationData(language).featureValuesByPhoneme;
@@ -131,53 +129,50 @@ export function getFeatureValueByPhonemeRegistryForLanguage<TLanguage extends Ta
 // To add support for a new language, register its data in the relevant registry.
 
 export const LanguageCmuArpaDataRegistry = {
-	en: CmuArpaMap,
-	es: null,
-} as const satisfies Record<TargetLanguage, Readonly<Record<string, string>> | null>;
+	"en-us": CmuArpaMap,
+	"es-419": null,
+} as const satisfies Record<TargetAccent, Readonly<Record<string, string>> | null>;
 
 export const LanguageAllophoneDataRegistry = {
-	en: EnglishPhonemeAllophones,
-	es: null,
+	"en-us": EnglishPhonemeAllophones,
+	"es-419": null,
 } as const satisfies Record<
-	TargetLanguage,
+	TargetAccent,
 	Partial<Record<PhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>> | null
 >;
 
 export const LanguageContrastDataRegistry = {
-	en: EnglishContrastsByPhonemeId,
-	es: null,
+	"en-us": EnglishContrastsByPhonemeId,
+	"es-419": null,
 } as const satisfies Record<
-	TargetLanguage,
+	TargetAccent,
 	Partial<Record<PhonemeSymbolId, PhonemeContrastMatch[]>> | null
 >;
 
 export const LanguageSpellingPatternDataRegistry = {
-	en: EnglishPhonemeSpellingPatterns,
-	es: null,
-} as const satisfies Record<
-	TargetLanguage,
-	Partial<Record<PhonemeSymbolId, SpellingPattern>> | null
->;
+	"en-us": EnglishPhonemeSpellingPatterns,
+	"es-419": null,
+} as const satisfies Record<TargetAccent, Partial<Record<PhonemeSymbolId, SpellingPattern>> | null>;
 
-export function getCmuArpaRegistryForLanguage<TLanguage extends TargetLanguage>(
+export function getCmuArpaRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageCmuArpaDataRegistry)[TLanguage] {
 	return LanguageCmuArpaDataRegistry[language];
 }
 
-export function getAllophoneRegistryForLanguage<TLanguage extends TargetLanguage>(
+export function getAllophoneRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageAllophoneDataRegistry)[TLanguage] {
 	return LanguageAllophoneDataRegistry[language];
 }
 
-export function getContrastRegistryForLanguage<TLanguage extends TargetLanguage>(
+export function getContrastRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageContrastDataRegistry)[TLanguage] {
 	return LanguageContrastDataRegistry[language];
 }
 
-export function getSpellingPatternRegistryForLanguage<TLanguage extends TargetLanguage>(
+export function getSpellingPatternRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageSpellingPatternDataRegistry)[TLanguage] {
 	return LanguageSpellingPatternDataRegistry[language];

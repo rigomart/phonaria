@@ -1,16 +1,16 @@
-import type { PhonemeSymbolId, TargetLanguage } from "@phonaria/phonetics-data";
+import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
 import { cn } from "@/lib/utils";
 import { PhonemeDetailsProvider, usePhonemeDetailsContext } from "./phoneme-details-context";
 
 type Props = {
 	phonemeId: PhonemeSymbolId;
-	targetLanguage: TargetLanguage;
+	targetAccent: TargetAccent;
 	children: React.ReactNode;
 };
 
-export function PhonemeDetails({ phonemeId, targetLanguage, children }: Props) {
+export function PhonemeDetails({ phonemeId, targetAccent, children }: Props) {
 	return (
-		<PhonemeDetailsProvider phonemeId={phonemeId} targetLanguage={targetLanguage}>
+		<PhonemeDetailsProvider phonemeId={phonemeId} targetAccent={targetAccent}>
 			{children}
 		</PhonemeDetailsProvider>
 	);

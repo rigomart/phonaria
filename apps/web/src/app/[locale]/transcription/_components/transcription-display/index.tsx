@@ -4,7 +4,7 @@ import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group
 import { useEffect, useMemo, useState } from "react";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
-import { useTargetLanguageStore } from "@/store/target-language-store";
+import { useTargetAccentStore } from "@/store/target-accent-store";
 import { useCurrentTranscription } from "../../_hooks/use-g2p";
 import { useDictionaryStore } from "../../_store/dictionary-store";
 import { useG2PStore } from "../../_store/g2p-store";
@@ -96,8 +96,8 @@ export function TranscriptionDisplay() {
 	const selectPhoneme = useG2PStore((state) => state.selectPhoneme);
 	const setPhonemeDialogOpen = useG2PStore((state) => state.setPhonemeDialogOpen);
 	const isMobile = useIsMobile();
-	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
-	const hasDictionary = targetLanguage === "en";
+	const targetAccent = useTargetAccentStore((s) => s.targetAccent);
+	const hasDictionary = targetAccent === "en-us";
 	const { data: result } = useCurrentTranscription();
 	const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
 	const resultTimestamp = result?.timestamp?.valueOf();
