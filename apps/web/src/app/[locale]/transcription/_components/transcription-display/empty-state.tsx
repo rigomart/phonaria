@@ -1,9 +1,9 @@
 "use client";
 
-import { useTargetLanguageStore } from "@/store/target-language-store";
 import type { TargetLanguage } from "@phonaria/phonetics-data";
 import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useTargetLanguageStore } from "@/store/target-language-store";
 import { useTranscribe } from "../../_hooks/use-g2p";
 
 const EXAMPLES_BY_LANGUAGE: Record<TargetLanguage, string[]> = {
