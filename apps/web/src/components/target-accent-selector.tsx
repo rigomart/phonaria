@@ -16,12 +16,21 @@ import { useTargetAccentStore } from "@/store/target-accent-store";
 type TargetAccentSelectorProps = {
 	className?: string;
 	hideLabel?: boolean;
+	supportedAccents?: readonly TargetAccent[];
 };
 
-export function TargetAccentSelector({ className, hideLabel = true }: TargetAccentSelectorProps) {
+export function TargetAccentSelector({
+	className,
+	hideLabel = true,
+	supportedAccents = TARGET_ACCENTS,
+}: TargetAccentSelectorProps) {
 	const t = useTranslations("common.accent");
-	const targetAccent = useTargetAccentStore((s) => s.targetAccent);
+	const preferredAccent = useTargetAccentStore((s) => s.targetAccent);
 	const setTargetAccent = useTargetAccentStore((s) => s.setTargetAccent);
+
+	const effectiveAccent = supportedAccents.includes(preferredAccent)
+		? preferredAccent
+		: supportedAccents[0];
 
 	return (
 		<div className={cn("flex items-center gap-2", className)}>
@@ -33,7 +42,7 @@ export function TargetAccentSelector({ className, hideLabel = true }: TargetAcce
 				{t("label")}
 			</span>
 			<Select
-				value={targetAccent}
+				value={effectiveAccent}
 				onValueChange={(v) => setTargetAccent(v as TargetAccent)}
 				itemToStringLabel={(item) => t(item as TargetAccent)}
 			>
@@ -42,7 +51,7 @@ export function TargetAccentSelector({ className, hideLabel = true }: TargetAcce
 				</SelectTrigger>
 				<SelectContent>
 					{TARGET_ACCENTS.map((accent) => (
-						<SelectItem key={accent} value={accent}>
+						<SelectItem key={accent} value={accent} disabled={!supportedAccents.includes(accent)}>
 							<span className="flex items-center gap-1.5">
 								{t(accent)}
 								{accent === "es-419" && (
