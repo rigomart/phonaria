@@ -283,14 +283,25 @@
 			"info-button": {
 				"aria-label": "Información sobre la transcripción",
 				"title": "Sobre esta transcripción",
-				"description": "Las pronunciaciones se obtienen del Diccionario de pronunciación de CMU (CMUDict), que contiene más de 134.000 palabras del inglés norteamericano.",
-				"things-to-know-title": "Ten en cuenta:",
-				"things-to-know": {
-					"american-accent": "Las pronunciaciones reflejan el inglés americano general, no británico u otras variedades",
-					"coverage": "Algunas palabras pueden no encontrarse, especialmente términos recientes, jerga y nombres propios",
-					"multiple-variants": "Las palabras con varias pronunciaciones (como 'read') muestran todas las variantes"
+				"credits-link": "Más información sobre las fuentes de datos",
+				"en": {
+					"description": "Las pronunciaciones se obtienen del Diccionario de pronunciación de CMU (CMUDict), que contiene más de 134.000 palabras del inglés norteamericano.",
+					"things-to-know-title": "Ten en cuenta:",
+					"things-to-know": {
+						"american-accent": "Las pronunciaciones reflejan el inglés americano general, no británico u otras variedades",
+						"coverage": "Algunas palabras pueden no encontrarse, especialmente términos recientes, jerga y nombres propios",
+						"multiple-variants": "Las palabras con varias pronunciaciones (como 'read') muestran todas las variantes"
+					}
 				},
-				"credits-link": "Más información sobre las fuentes de datos"
+				"es": {
+					"description": "Las pronunciaciones se generan mediante conversión de grafema a fonema basada en reglas para el español latinoamericano (seseo, yeísmo).",
+					"things-to-know-title": "Ten en cuenta:",
+					"things-to-know": {
+						"dialect": "Las pronunciaciones reflejan el español latinoamericano, no el español peninsular",
+						"rule-based": "La transcripción se basa en reglas y se ejecuta completamente en tu navegador, sin necesidad de consultar un diccionario",
+						"stress": "La acentuación se asigna automáticamente según las reglas ortográficas del español y las tildes"
+					}
+				}
 			}
 		},
 		"phoneme-inspector": {

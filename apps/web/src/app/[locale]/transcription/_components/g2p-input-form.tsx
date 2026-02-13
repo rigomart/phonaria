@@ -5,6 +5,7 @@ import { Input } from "@phonaria/ui/components/input";
 import { Keyboard, Loader2, SendHorizonal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { TargetLanguageSelector } from "@/components/target-language-selector";
 import { cn } from "@/lib/utils";
 import { useTranscribe } from "../_hooks/use-g2p";
 import { useStartTypingAnywhere } from "../_hooks/use-start-typing-anywhere";
@@ -37,12 +38,12 @@ export function G2PInputForm({ placeholder, maxLength = 200 }: G2PInputFormProps
 
 	return (
 		<div className="w-full space-y-2">
-			<div className="hidden md:flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-				<span className="inline-flex items-center gap-1.5">
+			<div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+				<span className="hidden md:inline-flex items-center gap-1.5">
 					<Keyboard className="size-3.5" />
 					{t("hint")}
 				</span>
-				<span>{t("max-characters", { maxLength })}</span>
+				<TargetLanguageSelector hideLabel={false} />
 			</div>
 
 			<form onSubmit={handleSubmit} className="flex gap-2 flex-row">

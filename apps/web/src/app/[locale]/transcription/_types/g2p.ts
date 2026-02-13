@@ -41,7 +41,7 @@ export interface TranscribedWord {
 	/** Index in the original text */
 	wordIndex: number;
 	/** Source that provided the transcription */
-	source: "cmudict" | "fallback";
+	source: "cmudict" | "fallback" | "rules";
 }
 
 /**

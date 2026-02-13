@@ -7,6 +7,7 @@ export const LANGUAGE_FEATURE_KEYS = [
 	"contrasts",
 	"spellingPatterns",
 	"curatedWordData",
+	"transcription",
 ] as const;
 
 export type LanguageFeatureKey = (typeof LANGUAGE_FEATURE_KEYS)[number];
@@ -21,6 +22,7 @@ export const LanguageFeatureCapabilitiesRegistry = {
 		contrasts: true,
 		spellingPatterns: true,
 		curatedWordData: true,
+		transcription: true,
 	},
 	es: {
 		articulations: true,
@@ -29,6 +31,7 @@ export const LanguageFeatureCapabilitiesRegistry = {
 		contrasts: false,
 		spellingPatterns: false,
 		curatedWordData: false,
+		transcription: true,
 	},
 } as const satisfies Record<TargetLanguage, LanguageFeatureCapabilities>;
 

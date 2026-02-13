@@ -4,6 +4,7 @@ import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group
 import { useEffect, useMemo, useState } from "react";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
+import { useTargetLanguageStore } from "@/store/target-language-store";
 import { useCurrentTranscription } from "../../_hooks/use-g2p";
 import { useDictionaryStore } from "../../_store/dictionary-store";
 import { useG2PStore } from "../../_store/g2p-store";
@@ -18,12 +19,13 @@ interface WordColumnProps {
 	word: TranscribedWord;
 	onPhonemeClick: (phoneme: TranscribedPhoneme) => void;
 	selectedSymbol: string | null;
+	hasDictionary: boolean;
 }
 
 /**
  * Word column showing original word above IPA transcription
  */
-function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
+function WordColumn({ word, onPhonemeClick, selectedSymbol, hasDictionary }: WordColumnProps) {
 	const { selectedVariants, setVariant } = useG2PStore();
 	const { setSelectedWord } = useDictionaryStore();
 	const selected = selectedVariants[word.wordIndex] ?? 0;
@@ -32,24 +34,35 @@ function WordColumn({ word, onPhonemeClick, selectedSymbol }: WordColumnProps) {
 
 	return (
 		<div className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2">
-			<button
-				type="button"
-				className={cn(
-					"text-base md:text-lg font-semibold whitespace-nowrap px-3 py-1 rounded-lg transition-colors duration-200",
-					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-					"cursor-pointer border border-transparent hover:border-border/70 hover:bg-muted/40 hover:text-foreground",
-					isUnknown ? "text-muted-foreground/60" : "text-foreground",
-				)}
-				onClick={() => setSelectedWord(word.word)}
-				aria-label={`Show definition for ${word.word}`}
-				title={
-					isUnknown
-						? `Click to see definition for ${word.word} (pronunciation not in dictionary)`
-						: `Click to see definition for ${word.word}`
-				}
-			>
-				{word.word}
-			</button>
+			{hasDictionary ? (
+				<button
+					type="button"
+					className={cn(
+						"text-base md:text-lg font-semibold whitespace-nowrap px-3 py-1 rounded-lg transition-colors duration-200",
+						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+						"cursor-pointer border border-transparent hover:border-border/70 hover:bg-muted/40 hover:text-foreground",
+						isUnknown ? "text-muted-foreground/60" : "text-foreground",
+					)}
+					onClick={() => setSelectedWord(word.word)}
+					aria-label={`Show definition for ${word.word}`}
+					title={
+						isUnknown
+							? `Click to see definition for ${word.word} (pronunciation not in dictionary)`
+							: `Click to see definition for ${word.word}`
+					}
+				>
+					{word.word}
+				</button>
+			) : (
+				<span
+					className={cn(
+						"text-base md:text-lg font-semibold whitespace-nowrap px-3 py-1",
+						"text-foreground",
+					)}
+				>
+					{word.word}
+				</span>
+			)}
 
 			<div className="flex items-center gap-2">
 				{isUnknown ? (
@@ -83,6 +96,8 @@ export function TranscriptionDisplay() {
 	const selectPhoneme = useG2PStore((state) => state.selectPhoneme);
 	const setPhonemeDialogOpen = useG2PStore((state) => state.setPhonemeDialogOpen);
 	const isMobile = useIsMobile();
+	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
+	const hasDictionary = targetLanguage === "en";
 	const { data: result } = useCurrentTranscription();
 	const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
 	const resultTimestamp = result?.timestamp?.valueOf();
@@ -119,6 +134,7 @@ export function TranscriptionDisplay() {
 					word={word}
 					onPhonemeClick={handlePhonemeClick}
 					selectedSymbol={selectedSymbol}
+					hasDictionary={hasDictionary}
 				/>
 			))}
 		</div>

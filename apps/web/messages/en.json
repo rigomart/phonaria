@@ -283,14 +283,25 @@
 			"info-button": {
 				"aria-label": "Transcription information",
 				"title": "About This Transcription",
-				"description": "Pronunciations are obtained from the CMU Pronouncing Dictionary, which contains over 134,000 North American English words.",
-				"things-to-know-title": "Things to know:",
-				"things-to-know": {
-					"american-accent": "Pronunciations reflect General American English, not British or other varieties",
-					"coverage": "Some words may not be found, especially newer terms, slang, and proper nouns",
-					"multiple-variants": "Words with multiple pronunciations (like 'read') show all variants"
+				"credits-link": "Learn more about data sources",
+				"en": {
+					"description": "Pronunciations are obtained from the CMU Pronouncing Dictionary, which contains over 134,000 North American English words.",
+					"things-to-know-title": "Things to know:",
+					"things-to-know": {
+						"american-accent": "Pronunciations reflect General American English, not British or other varieties",
+						"coverage": "Some words may not be found, especially newer terms, slang, and proper nouns",
+						"multiple-variants": "Words with multiple pronunciations (like 'read') show all variants"
+					}
 				},
-				"credits-link": "Learn more about data sources"
+				"es": {
+					"description": "Pronunciations are generated using rule-based grapheme-to-phoneme conversion for Latin American Spanish (seseo, yeísmo).",
+					"things-to-know-title": "Things to know:",
+					"things-to-know": {
+						"dialect": "Pronunciations reflect Latin American Spanish, not Peninsular Spanish",
+						"rule-based": "Transcription is rule-based and runs entirely in your browser, no dictionary lookup needed",
+						"stress": "Stress is assigned automatically based on Spanish orthographic rules and accent marks"
+					}
+				}
 			}
 		},
 		"phoneme-inspector": {

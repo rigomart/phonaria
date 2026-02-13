@@ -5,9 +5,27 @@ import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { useTargetLanguageStore } from "@/store/target-language-store";
 
 export function TranscriptionInfoButton() {
 	const t = useTranslations("g2p-page.transcription-display.info-button");
+	const tEn = useTranslations("g2p-page.transcription-display.info-button.en");
+	const tEs = useTranslations("g2p-page.transcription-display.info-button.es");
+	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
+	const tLang = targetLanguage === "es" ? tEs : tEn;
+
+	const thingsToKnow =
+		targetLanguage === "es"
+			? ([
+					tEs("things-to-know.dialect"),
+					tEs("things-to-know.rule-based"),
+					tEs("things-to-know.stress"),
+				] as const)
+			: ([
+					tEn("things-to-know.american-accent"),
+					tEn("things-to-know.coverage"),
+					tEn("things-to-know.multiple-variants"),
+				] as const);
 
 	return (
 		<Popover>
@@ -27,12 +45,12 @@ export function TranscriptionInfoButton() {
 				<div className="space-y-2">
 					<h4 className="font-semibold text-sm">{t("title")}</h4>
 					<div className="space-y-2 text-xs sm:text-sm text-muted-foreground">
-						<p>{t("description")}</p>
-						<p className="font-semibold">{t("things-to-know-title")}</p>
+						<p>{tLang("description")}</p>
+						<p className="font-semibold">{tLang("things-to-know-title")}</p>
 						<ul className="list-disc list-inside space-y-1 ml-2">
-							<li>{t("things-to-know.american-accent")}</li>
-							<li>{t("things-to-know.coverage")}</li>
-							<li>{t("things-to-know.multiple-variants")}</li>
+							{thingsToKnow.map((text) => (
+								<li key={text}>{text}</li>
+							))}
 						</ul>
 						<Link
 							href="/credits"

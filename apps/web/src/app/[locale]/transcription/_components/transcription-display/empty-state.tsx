@@ -1,14 +1,22 @@
 "use client";
 
+import type { TargetLanguage } from "@phonaria/phonetics-data";
 import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useTargetLanguageStore } from "@/store/target-language-store";
 import { useTranscribe } from "../../_hooks/use-g2p";
+
+const EXAMPLES_BY_LANGUAGE: Record<TargetLanguage, string[]> = {
+	en: ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"],
+	es: ["Hola mundo", "El perro corre", "Buenas noches", "Ciudad antigua"],
+};
 
 export function EmptyState() {
 	const transcribeMutation = useTranscribe();
 	const t = useTranslations("g2p-page.empty-state");
+	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
 
-	const examples = [t(`examples.0`), t(`examples.1`), t(`examples.2`), t(`examples.3`)];
+	const examples = EXAMPLES_BY_LANGUAGE[targetLanguage];
 
 	const handleExampleClick = (example: string) => {
 		transcribeMutation.mutate({ text: example });
