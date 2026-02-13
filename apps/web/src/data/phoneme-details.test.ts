@@ -32,14 +32,14 @@ describe("phoneme details data", () => {
 
 		describe(locale, () => {
 			it("exposes details for every articulated phoneme", () => {
-				for (const phonemeId of getLanguagePhonemeIds("en")) {
+				for (const phonemeId of getLanguagePhonemeIds("en-us")) {
 					expect(copy.phonemeDetailsById[phonemeId]).toBeDefined();
 				}
 			});
 
 			it("covers every articulation feature with definitions", () => {
-				const articulationRegistry = getPhonemeArticulationRegistryForLanguage("en");
-				for (const phonemeId of getLanguagePhonemeIds("en")) {
+				const articulationRegistry = getPhonemeArticulationRegistryForLanguage("en-us");
+				for (const phonemeId of getLanguagePhonemeIds("en-us")) {
 					const articulation = articulationRegistry[phonemeId];
 					const features: Partial<PhonemeArticulatoryFeatures> = articulation.features;
 

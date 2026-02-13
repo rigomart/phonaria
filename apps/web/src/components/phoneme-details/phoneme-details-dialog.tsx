@@ -1,6 +1,6 @@
 "use client";
 
-import type { PhonemeSymbolId, TargetLanguage } from "@phonaria/phonetics-data";
+import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
 import {
 	Dialog,
 	DialogHeader,
@@ -23,7 +23,7 @@ type PhonemeDetailsDialogProps = {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	phonemeId: PhonemeSymbolId;
-	targetLanguage?: TargetLanguage;
+	targetAccent?: TargetAccent;
 	maxWidth?: string;
 };
 
@@ -31,13 +31,13 @@ export function PhonemeDetailsDialog({
 	open,
 	onOpenChange,
 	phonemeId,
-	targetLanguage = "en",
+	targetAccent = "en-us",
 }: PhonemeDetailsDialogProps) {
 	const t = useTranslations("components.phoneme-details.dialog");
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<PhonemeDetails phonemeId={phonemeId} targetLanguage={targetLanguage}>
+			<PhonemeDetails phonemeId={phonemeId} targetAccent={targetAccent}>
 				<DialogPopup>
 					<DialogHeader className="p-0">
 						<PhonemeDetailsHeader />

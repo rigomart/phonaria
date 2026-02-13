@@ -51,21 +51,21 @@ function getFeatureValueDefinition<K extends PhonemeArticulatoryFeatureKey>(
 }
 
 export function PhonemeDetailsContrasts() {
-	const { phonemeId, targetLanguage } = usePhonemeDetailsContext();
+	const { phonemeId, targetAccent } = usePhonemeDetailsContext();
 	const t = useTranslations(`components.phoneme-details.contrasts`);
 	const { featureDefinitions } = usePhonemeDetailsCopy();
-	if (!hasLanguageFeature(targetLanguage, "contrasts")) {
+	if (!hasLanguageFeature(targetAccent, "contrasts")) {
 		return null;
 	}
-	if (!isPhonemeInLanguage(targetLanguage, phonemeId)) {
+	if (!isPhonemeInLanguage(targetAccent, phonemeId)) {
 		return null;
 	}
 
 	const featureValuesByPhoneme = getFeatureValueByPhonemeRegistryForLanguage(
-		targetLanguage,
+		targetAccent,
 	) as LanguageFeatureValueByPhonemeRegistry;
 	const contrastRegistry = getContrastRegistryForLanguage(
-		targetLanguage,
+		targetAccent,
 	) as LanguagePhonemeContrastRegistry | null;
 	if (!contrastRegistry) return null;
 	const currentPhonemeId = phonemeId;
@@ -86,7 +86,7 @@ export function PhonemeDetailsContrasts() {
 			</PhonemeSectionHeader>
 			<PhonemeSectionContent>
 				{contrasts.map((contrast) => {
-					if (!isPhonemeInLanguage(targetLanguage, contrast.partnerId)) {
+					if (!isPhonemeInLanguage(targetAccent, contrast.partnerId)) {
 						return null;
 					}
 					const partnerPhonemeId = contrast.partnerId;

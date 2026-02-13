@@ -8,13 +8,13 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { useIsMobile } from "@/hooks/use-media-query";
-import { useTargetLanguageStore } from "@/store/target-language-store";
+import { useTargetAccentStore } from "@/store/target-accent-store";
 import { useG2PStore } from "../_store/g2p-store";
 
 export function PhonemeDialog() {
 	const t = useTranslations("g2p-page.phoneme-inspector");
 	const isMobile = useIsMobile();
-	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
+	const targetAccent = useTargetAccentStore((s) => s.targetAccent);
 	const selectedPhonemeId = useG2PStore((state) => state.selectedPhonemeId);
 	const hasSelection = useG2PStore((state) => state.hasSelection);
 	const phonemeDialogOpen = useG2PStore((state) => state.phonemeDialogOpen);
@@ -68,7 +68,7 @@ export function PhonemeDialog() {
 			open={open}
 			onOpenChange={setPhonemeDialogOpen}
 			phonemeId={selectedPhonemeId}
-			targetLanguage={targetLanguage}
+			targetAccent={targetAccent}
 		/>
 	);
 }

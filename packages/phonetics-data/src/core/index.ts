@@ -52,4 +52,4 @@ export type {
 	VowelType,
 } from "./phoneme-articulations";
 export { buildFeatureValueByPhoneme } from "./phoneme-articulations";
-export { type PhonemeCategory, TARGET_LANGUAGES, type TargetLanguage } from "./types";
+export { type PhonemeCategory, TARGET_ACCENTS, type TargetAccent } from "./types";

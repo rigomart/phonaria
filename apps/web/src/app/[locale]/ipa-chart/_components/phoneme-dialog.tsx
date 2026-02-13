@@ -1,14 +1,14 @@
 "use client";
 
-import type { TargetLanguage } from "@phonaria/phonetics-data";
+import type { TargetAccent } from "@phonaria/phonetics-data";
 import { PhonemeDetailsDialog } from "@/components/phoneme-details";
 import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 type PhonemeDialogProps = {
-	targetLanguage: TargetLanguage;
+	targetAccent: TargetAccent;
 };
 
-export function PhonemeDialog({ targetLanguage }: PhonemeDialogProps) {
+export function PhonemeDialog({ targetAccent }: PhonemeDialogProps) {
 	const dialogOpen = useIpaChartStore((s) => s.dialogOpen);
 	const setDialogOpen = useIpaChartStore((s) => s.setDialogOpen);
 	const selectedPhonemeId = useIpaChartStore((s) => s.selectedPhonemeId);
@@ -22,7 +22,7 @@ export function PhonemeDialog({ targetLanguage }: PhonemeDialogProps) {
 			open={dialogOpen}
 			onOpenChange={setDialogOpen}
 			phonemeId={selectedPhonemeId}
-			targetLanguage={targetLanguage}
+			targetAccent={targetAccent}
 		/>
 	);
 }

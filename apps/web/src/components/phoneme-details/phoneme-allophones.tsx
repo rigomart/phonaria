@@ -24,18 +24,18 @@ import {
 } from "./phoneme-section";
 
 export function PhonemeDetailsAllophones() {
-	const { phonemeId, targetLanguage } = usePhonemeDetailsContext();
+	const { phonemeId, targetAccent } = usePhonemeDetailsContext();
 	const t = useTranslations("components.phoneme-details.allophones");
 	const { allophoneContextDefinitions } = usePhonemeDetailsCopy();
-	if (!hasLanguageFeature(targetLanguage, "allophones")) {
+	if (!hasLanguageFeature(targetAccent, "allophones")) {
 		return null;
 	}
-	if (!isPhonemeInLanguage(targetLanguage, phonemeId)) {
+	if (!isPhonemeInLanguage(targetAccent, phonemeId)) {
 		return null;
 	}
 
 	const allophoneRegistry = getAllophoneRegistryForLanguage(
-		targetLanguage,
+		targetAccent,
 	) as LanguagePhonemeAllophoneRegistry | null;
 	if (!allophoneRegistry) return null;
 	const allophones = allophoneRegistry[phonemeId];

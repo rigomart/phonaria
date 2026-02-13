@@ -5,26 +5,26 @@ import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { useTargetLanguageStore } from "@/store/target-language-store";
+import { useTargetAccentStore } from "@/store/target-accent-store";
 
 export function TranscriptionInfoButton() {
 	const t = useTranslations("g2p-page.transcription-display.info-button");
-	const tEn = useTranslations("g2p-page.transcription-display.info-button.en");
-	const tEs = useTranslations("g2p-page.transcription-display.info-button.es");
-	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
-	const tLang = targetLanguage === "es" ? tEs : tEn;
+	const tEnUs = useTranslations("g2p-page.transcription-display.info-button.en-us");
+	const tEs419 = useTranslations("g2p-page.transcription-display.info-button.es-419");
+	const targetAccent = useTargetAccentStore((s) => s.targetAccent);
+	const tLang = targetAccent === "es-419" ? tEs419 : tEnUs;
 
 	const thingsToKnow =
-		targetLanguage === "es"
+		targetAccent === "es-419"
 			? ([
-					tEs("things-to-know.dialect"),
-					tEs("things-to-know.rule-based"),
-					tEs("things-to-know.stress"),
+					tEs419("things-to-know.dialect"),
+					tEs419("things-to-know.rule-based"),
+					tEs419("things-to-know.stress"),
 				] as const)
 			: ([
-					tEn("things-to-know.american-accent"),
-					tEn("things-to-know.coverage"),
-					tEn("things-to-know.multiple-variants"),
+					tEnUs("things-to-know.american-accent"),
+					tEnUs("things-to-know.coverage"),
+					tEnUs("things-to-know.multiple-variants"),
 				] as const);
 
 	return (

@@ -4,7 +4,7 @@ import {
 	isPhonemeInLanguage,
 	type PhonemeArticulation,
 	type PhonemeSymbolId,
-	type TargetLanguage,
+	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { AspectRatio } from "@phonaria/ui/components/aspect-ratio";
 import { Button } from "@phonaria/ui/components/button";
@@ -34,12 +34,12 @@ import {
 import { VowelChartCard } from "./phoneme-vowel-chart";
 
 export function PhonemeDetailsArticulation() {
-	const { phonemeId, targetLanguage } = usePhonemeDetailsContext();
-	const articulationRegistry = getPhonemeArticulationRegistryForLanguage(targetLanguage);
+	const { phonemeId, targetAccent } = usePhonemeDetailsContext();
+	const articulationRegistry = getPhonemeArticulationRegistryForLanguage(targetAccent);
 	const { phonemeDetailsById, featureDefinitions, diphthongTargetDefinitions } =
 		usePhonemeDetailsCopy();
 	const t = useTranslations(`components.phoneme-details.articulation`);
-	if (!isPhonemeInLanguage(targetLanguage, phonemeId)) {
+	if (!isPhonemeInLanguage(targetAccent, phonemeId)) {
 		return null;
 	}
 
@@ -60,7 +60,7 @@ export function PhonemeDetailsArticulation() {
 								phonemeId={phonemeId}
 								phonemeLabel={phonemeLabel}
 								articulation={articulation}
-								targetLanguage={targetLanguage}
+								targetAccent={targetAccent}
 							/>
 						</div>
 						<div className="rounded-lg w-full col-span-1 space-y-3">
@@ -94,7 +94,7 @@ type ArticulationIllustrationProps = {
 	phonemeId: PhonemeSymbolId;
 	phonemeLabel: string;
 	articulation: PhonemeArticulation;
-	targetLanguage: TargetLanguage;
+	targetAccent: TargetAccent;
 };
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
@@ -103,7 +103,7 @@ function ArticulationIllustration({
 	phonemeId,
 	phonemeLabel,
 	articulation,
-	targetLanguage,
+	targetAccent,
 }: ArticulationIllustrationProps) {
 	const phonemeIpa = getIpaForPhonemeId(phonemeId);
 
@@ -113,7 +113,7 @@ function ArticulationIllustration({
 				<AffricateIllustration
 					phonemeId={phonemeId}
 					phonemeLabel={phonemeLabel}
-					targetLanguage={targetLanguage}
+					targetAccent={targetAccent}
 				/>
 			);
 		}
@@ -121,7 +121,7 @@ function ArticulationIllustration({
 		return (
 			<AspectRatio ratio={1} className="bg-neutral-900/60 rounded-lg overflow-hidden">
 				<Image
-					src={`${BUCKET_URL}/diagrams/${targetLanguage}/${phonemeId}.svg`}
+					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}.svg`}
 					alt={`${phonemeLabel} articulation`}
 					fill
 					className="object-cover"
@@ -162,11 +162,11 @@ type AffricatePhase = "stop" | "fricative";
 function AffricateIllustration({
 	phonemeId,
 	phonemeLabel,
-	targetLanguage,
+	targetAccent,
 }: {
 	phonemeId: PhonemeSymbolId;
 	phonemeLabel: string;
-	targetLanguage: TargetLanguage;
+	targetAccent: TargetAccent;
 }) {
 	const t = useTranslations("components.phoneme-details.articulation");
 	const [phase, setPhase] = useState<AffricatePhase>("stop");
@@ -177,7 +177,7 @@ function AffricateIllustration({
 		<AspectRatio ratio={1} className="bg-neutral-900/60 rounded-lg overflow-hidden">
 			<div className="relative h-full w-full">
 				<Image
-					src={`${BUCKET_URL}/diagrams/${targetLanguage}/${phonemeId}_stop.svg`}
+					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}_stop.svg`}
 					alt={`${phonemeLabel} (${stopLabel})`}
 					fill
 					className={cn(
@@ -187,7 +187,7 @@ function AffricateIllustration({
 					aria-hidden={phase !== "stop"}
 				/>
 				<Image
-					src={`${BUCKET_URL}/diagrams/${targetLanguage}/${phonemeId}_fricative.svg`}
+					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}_fricative.svg`}
 					alt={`${phonemeLabel} (${fricativeLabel})`}
 					fill
 					className={cn(

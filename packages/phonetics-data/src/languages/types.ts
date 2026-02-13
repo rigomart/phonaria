@@ -1,5 +1,5 @@
 import type { PhonemeArticulatoryFeatureKey } from "../core/articulatory-features";
-import type { TargetLanguage } from "../core/types";
+import type { TargetAccent } from "../core/types";
 import type { LanguagePhonemeId } from "./inventories";
 
 // Allophone types
@@ -26,7 +26,7 @@ export type PhonemeAllophone = {
 	examples: ReadonlyArray<AllophoneExample>;
 };
 
-export type LanguagePhonemeAllophoneRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
+export type LanguagePhonemeAllophoneRegistry<TLanguage extends TargetAccent = TargetAccent> =
 	Partial<Record<LanguagePhonemeId<TLanguage>, ReadonlyArray<PhonemeAllophone>>>;
 
 // Contrast types
@@ -36,19 +36,19 @@ export type PhonemeContrastPair = {
 	phonemic: string;
 };
 
-export type PhonemeContrast<TLanguage extends TargetLanguage = TargetLanguage> = {
+export type PhonemeContrast<TLanguage extends TargetAccent = TargetAccent> = {
 	phonemeIds: [LanguagePhonemeId<TLanguage>, LanguagePhonemeId<TLanguage>];
 	contrastType: PhonemeArticulatoryFeatureKey[];
 	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
 };
 
-export type PhonemeContrastMatch<TLanguage extends TargetLanguage = TargetLanguage> = {
+export type PhonemeContrastMatch<TLanguage extends TargetAccent = TargetAccent> = {
 	partnerId: LanguagePhonemeId<TLanguage>;
 	contrastType: PhonemeArticulatoryFeatureKey[];
 	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
 };
 
-export type LanguagePhonemeContrastRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
+export type LanguagePhonemeContrastRegistry<TLanguage extends TargetAccent = TargetAccent> =
 	Partial<Record<LanguagePhonemeId<TLanguage>, PhonemeContrastMatch<TLanguage>[]>>;
 
 // Spelling pattern types
@@ -61,5 +61,5 @@ export type SpellingPattern = {
 	}>;
 };
 
-export type LanguageSpellingPatternRegistry<TLanguage extends TargetLanguage = TargetLanguage> =
+export type LanguageSpellingPatternRegistry<TLanguage extends TargetAccent = TargetAccent> =
 	Partial<Record<LanguagePhonemeId<TLanguage>, SpellingPattern>>;

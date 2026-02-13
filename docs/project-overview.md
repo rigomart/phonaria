@@ -8,7 +8,7 @@ Phonaria is a learner-first pronunciation toolkit for people studying English as
 
 ## Terminology
 
-- **Target language**: the language being taught by the phonetics toolkit (for example English or Spanish).
+- **Target accent**: the accent being taught by the phonetics toolkit (for example General American English or Latin American Spanish).
 - **Display language**: the UI language used to render copy and navigation.
 
 # Learner Challenges We Address

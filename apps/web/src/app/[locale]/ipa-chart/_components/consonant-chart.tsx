@@ -1,6 +1,6 @@
 "use client";
 
-import type { ConsonantSymbolId, TargetLanguage } from "@phonaria/phonetics-data";
+import type { ConsonantSymbolId, TargetAccent } from "@phonaria/phonetics-data";
 import {
 	getConsonantArticulationRegistryForLanguage,
 	getIpaForPhonemeId,
@@ -28,8 +28,8 @@ interface ConsonantPhoneme {
 }
 
 function getEnglishConsonantPhonemes(): ConsonantPhoneme[] {
-	const consonantArticulations = getConsonantArticulationRegistryForLanguage("en");
-	const consonantIds = getLanguagePhonemeIds("en", "consonants");
+	const consonantArticulations = getConsonantArticulationRegistryForLanguage("en-us");
+	const consonantIds = getLanguagePhonemeIds("en-us", "consonants");
 	const phonemes: ConsonantPhoneme[] = [];
 
 	for (const phonemeId of consonantIds) {
@@ -49,8 +49,8 @@ function getEnglishConsonantPhonemes(): ConsonantPhoneme[] {
 }
 
 function getSpanishConsonantPhonemes(): ConsonantPhoneme[] {
-	const consonantArticulations = getConsonantArticulationRegistryForLanguage("es");
-	const consonantIds = getLanguagePhonemeIds("es", "consonants");
+	const consonantArticulations = getConsonantArticulationRegistryForLanguage("es-419");
+	const consonantIds = getLanguagePhonemeIds("es-419", "consonants");
 	const phonemes: ConsonantPhoneme[] = [];
 
 	for (const phonemeId of consonantIds) {
@@ -69,19 +69,16 @@ function getSpanishConsonantPhonemes(): ConsonantPhoneme[] {
 	return phonemes;
 }
 
-function getConsonantPhonemesForLanguage(targetLanguage: TargetLanguage): ConsonantPhoneme[] {
-	if (targetLanguage === "en") {
+function getConsonantPhonemesForLanguage(targetAccent: TargetAccent): ConsonantPhoneme[] {
+	if (targetAccent === "en-us") {
 		return getEnglishConsonantPhonemes();
 	}
 	return getSpanishConsonantPhonemes();
 }
 
-export function ConsonantChart({ targetLanguage }: { targetLanguage: TargetLanguage }) {
+export function ConsonantChart({ targetAccent }: { targetAccent: TargetAccent }) {
 	const { featureDefinitions } = usePhonemeDetailsCopy();
-	const consonants = useMemo(
-		() => getConsonantPhonemesForLanguage(targetLanguage),
-		[targetLanguage],
-	);
+	const consonants = useMemo(() => getConsonantPhonemesForLanguage(targetAccent), [targetAccent]);
 
 	const { cells, mannerOrder, placeOrder } = useMemo(() => {
 		const map = new Map<string, { voiceless?: ConsonantPhoneme; voiced?: ConsonantPhoneme }>();

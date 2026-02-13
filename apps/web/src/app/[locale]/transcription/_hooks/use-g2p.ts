@@ -1,9 +1,9 @@
 "use client";
 
-import type { TargetLanguage } from "@phonaria/phonetics-data";
+import type { TargetAccent } from "@phonaria/phonetics-data";
 import { toastManager } from "@phonaria/ui/components/toast";
 import { useCallback, useEffect, useRef, useTransition } from "react";
-import { useTargetLanguageStore } from "@/store/target-language-store";
+import { useTargetAccentStore } from "@/store/target-accent-store";
 import { transcribeWordsAction } from "../_actions/transcribe";
 import type { G2PWord } from "../_lib/g2p/model";
 import { transformToTranscriptionResult } from "../_lib/g2p-client";
@@ -32,27 +32,27 @@ export function useTranscribe() {
 	const resetVariants = useG2PStore((s) => s.resetVariants);
 	const setCurrentResult = useG2PStore((s) => s.setCurrentResult);
 	const clearResult = useG2PStore((s) => s.clearResult);
-	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
+	const targetAccent = useTargetAccentStore((s) => s.targetAccent);
 	const latestRequestRef = useRef(0);
 
-	// Clear transcription result when target language changes
-	const prevLanguageRef = useRef(targetLanguage);
+	// Clear transcription result when target accent changes
+	const prevAccentRef = useRef(targetAccent);
 	useEffect(() => {
-		if (prevLanguageRef.current !== targetLanguage) {
-			prevLanguageRef.current = targetLanguage;
+		if (prevAccentRef.current !== targetAccent) {
+			prevAccentRef.current = targetAccent;
 			clearResult();
 		}
-	}, [targetLanguage, clearResult]);
+	}, [targetAccent, clearResult]);
 
 	const mutate = useCallback(
 		(input: { text: string }) => {
 			const requestId = ++nextRequestId;
 			latestRequestRef.current = requestId;
-			const requestLanguage: TargetLanguage = targetLanguage;
+			const requestAccent: TargetAccent = targetAccent;
 
 			startTransition(async () => {
 				try {
-					if (requestLanguage === "es") {
+					if (requestAccent === "es-419") {
 						const { transcribeSpanishText } = await import("../_lib/g2p-es/engine");
 						const response = transcribeSpanishText(input.text);
 						if (latestRequestRef.current !== requestId) return;
@@ -132,7 +132,7 @@ export function useTranscribe() {
 				}
 			});
 		},
-		[targetLanguage, setCurrentResult, resetVariants],
+		[targetAccent, setCurrentResult, resetVariants],
 	);
 
 	return { mutate, isPending };

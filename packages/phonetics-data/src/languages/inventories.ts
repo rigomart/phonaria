@@ -5,7 +5,7 @@ import type {
 	PhonemeSymbolId,
 	VowelSymbolId,
 } from "../core/ipa-map";
-import type { TargetLanguage } from "../core/types";
+import type { TargetAccent } from "../core/types";
 
 const ENGLISH_CONSONANTS = [
 	"P",
@@ -89,14 +89,14 @@ const SPANISH_MONOPHTHONGS = [
 const SPANISH_DIPHTHONGS = [] as const satisfies readonly DiphthongSymbolId[];
 
 export const LanguagePhonemeInventoryMap = {
-	en: {
+	"en-us": {
 		consonants: ENGLISH_CONSONANTS,
 		monophthongs: ENGLISH_MONOPHTHONGS,
 		diphthongs: ENGLISH_DIPHTHONGS,
 		vowels: [...ENGLISH_MONOPHTHONGS, ...ENGLISH_DIPHTHONGS],
 		phonemes: [...ENGLISH_CONSONANTS, ...ENGLISH_MONOPHTHONGS, ...ENGLISH_DIPHTHONGS],
 	},
-	es: {
+	"es-419": {
 		consonants: SPANISH_CONSONANTS,
 		monophthongs: SPANISH_MONOPHTHONGS,
 		diphthongs: SPANISH_DIPHTHONGS,
@@ -104,7 +104,7 @@ export const LanguagePhonemeInventoryMap = {
 		phonemes: [...SPANISH_CONSONANTS, ...SPANISH_MONOPHTHONGS, ...SPANISH_DIPHTHONGS],
 	},
 } as const satisfies Record<
-	TargetLanguage,
+	TargetAccent,
 	{
 		consonants: readonly ConsonantSymbolId[];
 		monophthongs: readonly MonophthongSymbolId[];
@@ -116,49 +116,49 @@ export const LanguagePhonemeInventoryMap = {
 
 type LanguagePhonemeInventoryMapType = typeof LanguagePhonemeInventoryMap;
 
-export type LanguagePhonemeInventory<TLanguage extends TargetLanguage = TargetLanguage> =
+export type LanguagePhonemeInventory<TLanguage extends TargetAccent = TargetAccent> =
 	LanguagePhonemeInventoryMapType[TLanguage];
 
 export type LanguagePhonemeSubset = keyof LanguagePhonemeInventory;
 
-export type LanguagePhonemeId<TLanguage extends TargetLanguage> =
+export type LanguagePhonemeId<TLanguage extends TargetAccent> =
 	LanguagePhonemeInventoryMapType[TLanguage]["phonemes"][number];
 
-export type LanguageConsonantSymbolId<TLanguage extends TargetLanguage> =
+export type LanguageConsonantSymbolId<TLanguage extends TargetAccent> =
 	LanguagePhonemeInventoryMapType[TLanguage]["consonants"][number];
 
-export type LanguageMonophthongSymbolId<TLanguage extends TargetLanguage> =
+export type LanguageMonophthongSymbolId<TLanguage extends TargetAccent> =
 	LanguagePhonemeInventoryMapType[TLanguage]["monophthongs"][number];
 
-export type LanguageDiphthongSymbolId<TLanguage extends TargetLanguage> =
+export type LanguageDiphthongSymbolId<TLanguage extends TargetAccent> =
 	LanguagePhonemeInventoryMapType[TLanguage]["diphthongs"][number];
 
-export type EnglishPhonemeSymbolId = LanguagePhonemeId<"en">;
-export type EnglishConsonantSymbolId = LanguageConsonantSymbolId<"en">;
-export type EnglishMonophthongSymbolId = LanguageMonophthongSymbolId<"en">;
-export type EnglishDiphthongSymbolId = LanguageDiphthongSymbolId<"en">;
+export type EnglishPhonemeSymbolId = LanguagePhonemeId<"en-us">;
+export type EnglishConsonantSymbolId = LanguageConsonantSymbolId<"en-us">;
+export type EnglishMonophthongSymbolId = LanguageMonophthongSymbolId<"en-us">;
+export type EnglishDiphthongSymbolId = LanguageDiphthongSymbolId<"en-us">;
 
-export type SpanishPhonemeSymbolId = LanguagePhonemeId<"es">;
-export type SpanishConsonantSymbolId = LanguageConsonantSymbolId<"es">;
-export type SpanishMonophthongSymbolId = LanguageMonophthongSymbolId<"es">;
-export type SpanishDiphthongSymbolId = LanguageDiphthongSymbolId<"es">;
+export type SpanishPhonemeSymbolId = LanguagePhonemeId<"es-419">;
+export type SpanishConsonantSymbolId = LanguageConsonantSymbolId<"es-419">;
+export type SpanishMonophthongSymbolId = LanguageMonophthongSymbolId<"es-419">;
+export type SpanishDiphthongSymbolId = LanguageDiphthongSymbolId<"es-419">;
 
-export const EnglishPhonemeInventory = LanguagePhonemeInventoryMap.en;
-export const SpanishPhonemeInventory = LanguagePhonemeInventoryMap.es;
+export const EnglishPhonemeInventory = LanguagePhonemeInventoryMap["en-us"];
+export const SpanishPhonemeInventory = LanguagePhonemeInventoryMap["es-419"];
 
-const languagePhonemeSets: Record<TargetLanguage, ReadonlySet<PhonemeSymbolId>> = {
-	en: new Set(LanguagePhonemeInventoryMap.en.phonemes),
-	es: new Set(LanguagePhonemeInventoryMap.es.phonemes),
+const languagePhonemeSets: Record<TargetAccent, ReadonlySet<PhonemeSymbolId>> = {
+	"en-us": new Set(LanguagePhonemeInventoryMap["en-us"].phonemes),
+	"es-419": new Set(LanguagePhonemeInventoryMap["es-419"].phonemes),
 };
 
-export function getLanguagePhonemeInventory<TLanguage extends TargetLanguage>(
+export function getLanguagePhonemeInventory<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): LanguagePhonemeInventory<TLanguage> {
 	return LanguagePhonemeInventoryMap[language];
 }
 
 export function getLanguagePhonemeIds<
-	TLanguage extends TargetLanguage,
+	TLanguage extends TargetAccent,
 	TSubset extends LanguagePhonemeSubset = "phonemes",
 >(
 	language: TLanguage,
@@ -167,7 +167,7 @@ export function getLanguagePhonemeIds<
 	return LanguagePhonemeInventoryMap[language][subset];
 }
 
-export function isPhonemeInLanguage<TLanguage extends TargetLanguage>(
+export function isPhonemeInLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 	phonemeId: PhonemeSymbolId,
 ): phonemeId is LanguagePhonemeId<TLanguage> {
@@ -192,11 +192,11 @@ function createLanguagePhonemeCount(inventory: LanguagePhonemeInventory): Langua
 	};
 }
 
-const languagePhonemeCountRegistry: Record<TargetLanguage, LanguagePhonemeCount> = {
-	en: createLanguagePhonemeCount(LanguagePhonemeInventoryMap.en),
-	es: createLanguagePhonemeCount(LanguagePhonemeInventoryMap.es),
+const languagePhonemeCountRegistry: Record<TargetAccent, LanguagePhonemeCount> = {
+	"en-us": createLanguagePhonemeCount(LanguagePhonemeInventoryMap["en-us"]),
+	"es-419": createLanguagePhonemeCount(LanguagePhonemeInventoryMap["es-419"]),
 };
 
-export function getLanguagePhonemeCount(language: TargetLanguage): LanguagePhonemeCount {
+export function getLanguagePhonemeCount(language: TargetAccent): LanguagePhonemeCount {
 	return languagePhonemeCountRegistry[language];
 }

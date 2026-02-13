@@ -1,9 +1,9 @@
 {
 	"common": {
-		"target-language": {
-			"label": "Idioma objetivo",
-			"en": "Inglés",
-			"es": "Español",
+		"accent": {
+			"label": "Acento",
+			"en-us": "Inglés americano",
+			"es-419": "Español latinoamericano",
 			"beta": "Beta"
 		}
 	},
@@ -284,7 +284,7 @@
 				"aria-label": "Información sobre la transcripción",
 				"title": "Sobre esta transcripción",
 				"credits-link": "Más información sobre las fuentes de datos",
-				"en": {
+				"en-us": {
 					"description": "Las pronunciaciones se obtienen del Diccionario de pronunciación de CMU (CMUDict), que contiene más de 134.000 palabras del inglés norteamericano.",
 					"things-to-know-title": "Ten en cuenta:",
 					"things-to-know": {
@@ -293,7 +293,7 @@
 						"multiple-variants": "Las palabras con varias pronunciaciones (como 'read') muestran todas las variantes"
 					}
 				},
-				"es": {
+				"es-419": {
 					"description": "Las pronunciaciones se generan mediante conversión de grafema a fonema basada en reglas para el español latinoamericano (seseo, yeísmo).",
 					"things-to-know-title": "Ten en cuenta:",
 					"things-to-know": {

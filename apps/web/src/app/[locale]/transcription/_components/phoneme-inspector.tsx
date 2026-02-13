@@ -18,12 +18,12 @@ import {
 	PhonemeDetailsHeader,
 	PhonemeDetailsPatterns,
 } from "@/components/phoneme-details";
-import { useTargetLanguageStore } from "@/store/target-language-store";
+import { useTargetAccentStore } from "@/store/target-accent-store";
 import { useG2PStore } from "../_store/g2p-store";
 
 export function PhonemeInspector() {
 	const { selectedPhonemeId, hasSelection } = useG2PStore();
-	const targetLanguage = useTargetLanguageStore((s) => s.targetLanguage);
+	const targetAccent = useTargetAccentStore((s) => s.targetAccent);
 	const t = useTranslations("g2p-page.phoneme-inspector");
 
 	if (!hasSelection) {
@@ -64,7 +64,7 @@ export function PhonemeInspector() {
 	}
 
 	return (
-		<PhonemeDetails phonemeId={selectedPhonemeId} targetLanguage={targetLanguage}>
+		<PhonemeDetails phonemeId={selectedPhonemeId} targetAccent={targetAccent}>
 			<div className="flex h-full flex-col min-h-0">
 				<div className="shrink-0">
 					<PhonemeDetailsHeader />

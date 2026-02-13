@@ -2,7 +2,7 @@ import type { EnglishPhonemeSymbolId } from "../inventories";
 import type { PhonemeContrast, PhonemeContrastMatch } from "../types";
 
 // TODO: Refine the contrasts for accuracy and completeness.
-export const PhonemeContrastCatalog: PhonemeContrast<"en">[] = [
+export const PhonemeContrastCatalog: PhonemeContrast<"en-us">[] = [
 	// Consonants: Voicing
 	{
 		phonemeIds: ["P", "B"],
@@ -264,15 +264,15 @@ export const PhonemeContrastCatalog: PhonemeContrast<"en">[] = [
 
 // Scoped record generation using IIFE for O(1) access in consumption
 export const EnglishContrastsByPhonemeId: Partial<
-	Record<EnglishPhonemeSymbolId, PhonemeContrastMatch<"en">[]>
+	Record<EnglishPhonemeSymbolId, PhonemeContrastMatch<"en-us">[]>
 > = (() => {
-	const record: Partial<Record<EnglishPhonemeSymbolId, PhonemeContrastMatch<"en">[]>> = {};
+	const record: Partial<Record<EnglishPhonemeSymbolId, PhonemeContrastMatch<"en-us">[]>> = {};
 
 	for (const contrast of PhonemeContrastCatalog) {
 		const [leftId, rightId] = contrast.phonemeIds;
 
 		const addEntry = (fromId: EnglishPhonemeSymbolId, toId: EnglishPhonemeSymbolId) => {
-			const entry: PhonemeContrastMatch<"en"> = {
+			const entry: PhonemeContrastMatch<"en-us"> = {
 				partnerId: toId,
 				contrastType: contrast.contrastType,
 				minimalPairs: contrast.minimalPairs,
