@@ -1,33 +1,36 @@
 # Versioning
 
-Phonaria uses [Release Please](https://github.com/googleapis/release-please) for automated releases.
+Phonaria uses [Semantic Release](https://semantic-release.gitbook.io/semantic-release/) for
+automated tags and GitHub Releases.
 
 ## How It Works
 
 ```
-Conventional Commits → main → Release PR (auto) → Merge → Tag + Release (auto) → Deploy (auto)
+Conventional Commits → main → CI passes → Semantic Release → Tag + GitHub Release
 ```
 
-1. **Development**: Work on feature branches using conventional commits
-2. **Preview**: PRs get automatic Vercel preview deployments
-3. **Release PR**: Release Please auto-creates a PR with version bump + changelog
-4. **Merge**: Merging the release PR creates the tag and GitHub Release
-5. **Deploy**: Release triggers Vercel production deployment
+1. **Development**: Work on feature branches using conventional commits.
+2. **Preview**: PRs get Vercel preview deployments.
+3. **Merge**: Merge PRs into `main`.
+4. **CI**: The `CI` workflow must pass for that `main` push.
+5. **Release**: A separate release workflow runs after CI success and creates the Git tag and
+   GitHub Release.
+6. **Deploy**: Vercel production deploy comes from the `main` merge (single deploy path).
 
 ## Conventional Commits
 
 Use these commit prefixes to control version bumps:
 
 ```bash
-# Patch release (0.6.0 → 0.6.1) - Bug fixes
+# Patch release (0.5.0 → 0.5.1) - Bug fixes
 git commit -m "fix: resolve sitemap issue"
 git commit -m "fix(seo): correct meta tags"
 
-# Minor release (0.6.0 → 0.7.0) - New features
+# Minor release (0.5.0 → 0.6.0) - New features
 git commit -m "feat: add find-by-sound page"
 git commit -m "feat(ui): implement dark mode"
 
-# Major release (0.6.0 → 1.0.0) - Breaking changes
+# Major release (0.5.0 → 1.0.0) - Breaking changes
 git commit -m "feat!: redesign API structure"
 
 # No version bump
@@ -38,22 +41,19 @@ git commit -m "ci: fix workflow"
 
 ## Creating a Release
 
-1. Write conventional commits in your PRs
-2. Merge PRs to main
-3. Release Please automatically creates/updates a "Release PR"
-4. Review the release PR (shows version bump + changelog)
-5. Merge when ready → tag + release created → deploy triggered
+1. Write conventional commits in your PRs.
+2. Merge PRs to `main`.
+3. Wait for CI to pass.
+4. Release workflow runs automatically and publishes the new tag and GitHub Release.
 
 ## Files
 
-- `.github/release-please-config.json` - Release Please configuration
-- `.github/.release-please-manifest.json` - Current version tracking
-- `apps/web/CHANGELOG.md` - Auto-generated changelog
-- `apps/web/package.json` - Version auto-updated
+- `.releaserc.json` - Semantic Release configuration
+- `.github/workflows/release-semantic.yml` - Release workflow triggered after CI success
 
 ## Notes
 
-- Only `apps/web` is released (other packages are internal)
-- Tags use format `@phonaria/app-v{version}` (e.g., `@phonaria/app-v0.7.0`)
-- Vercel auto-deploy is disabled for `main` branch (preview deployments still work)
-- Production deploys only happen on GitHub Release publish
+- Tags use format `phonaria-v{version}` (for example, `phonaria-v0.5.0`).
+- Git tags and GitHub Releases are the source of truth for released versions.
+- `apps/web/package.json` is not auto-bumped by the release workflow.
+- Changelog is tracked in GitHub Releases (no committed `CHANGELOG.md` file).

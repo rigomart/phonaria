@@ -112,7 +112,7 @@ React 19 + Next.js 15 App Router, Tailwind CSS v4 + shadcn/ui (Radix), Zustand +
 ## Commit & Pull Request Guidelines
 
 ### Conventional Commits (Critical for CI/CD)
-This project uses Release Please for automated releases. Commit message format directly controls version bumps and changelog generation. Always use conventional commits:
+This project uses Semantic Release for automated releases. Commit message format directly controls version bumps. Always use conventional commits:
 
 ```
 type(scope): description
