@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.3.0](https://github.com/rigomart/phonaria/compare/phonaria-v1.2.1...phonaria-v1.3.0) (2026-02-13)
+
+
+### Features
+
+* **multilingual:** wire target language through IPA chart and phoneme details ([#104](https://github.com/rigomart/phonaria/issues/104)) ([394135c](https://github.com/rigomart/phonaria/commit/394135c724060e5bde7bc1c3976fe5db10b3614a))
+* **test:** add Playwright E2E testing infrastructure ([#101](https://github.com/rigomart/phonaria/issues/101)) ([462e27f](https://github.com/rigomart/phonaria/commit/462e27f8d3c67ed0b56e362c486a81c420332015))
+* **transcription:** add rule-based Spanish G2P engine ([#108](https://github.com/rigomart/phonaria/issues/108)) ([d2e4079](https://github.com/rigomart/phonaria/commit/d2e40793df15d135f859a92c77721b16ba2b4b46))
+* **ui:** accent-grouped tool navigation on overview hero ([#114](https://github.com/rigomart/phonaria/issues/114)) ([ddf3511](https://github.com/rigomart/phonaria/commit/ddf3511457877ec888a4dd87e10a21a12e895ef1))
+* **ui:** add per-route accent fallback with disabled selector options ([#113](https://github.com/rigomart/phonaria/issues/113)) ([492fde4](https://github.com/rigomart/phonaria/commit/492fde4dfb0c74e0f1b666131145d914a3bde805)), closes [#112](https://github.com/rigomart/phonaria/issues/112)
+* **ui:** persist target language selection with Zustand store ([#107](https://github.com/rigomart/phonaria/issues/107)) ([6901963](https://github.com/rigomart/phonaria/commit/6901963f93e88077b45b7ccba32eababf456c23b))
+* **ui:** redesign homepage with 3-zone layout ([#105](https://github.com/rigomart/phonaria/issues/105)) ([053a7d3](https://github.com/rigomart/phonaria/commit/053a7d3de3bd4f1d9918051e9c78c0cca7fe54e0))
+
+
+### Bug Fixes
+
+* **multilingual:** wire IPA chart to route locale and add Spanish vowel IDs ([#102](https://github.com/rigomart/phonaria/issues/102)) ([a82a2d8](https://github.com/rigomart/phonaria/commit/a82a2d8a09ea43d7eddddf3aaa6e40dcc7e7cdb8))
+
 ## [1.2.1](https://github.com/rigomart/phonaria/compare/phonaria-v1.2.0...phonaria-v1.2.1) (2026-01-25)
 
 
