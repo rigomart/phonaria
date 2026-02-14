@@ -15,7 +15,7 @@ Pronunciation toolkit for ESL learners -- interactive IPA charts, instant graphe
 - **Monorepo:** Turborepo + Bun workspaces
 - **Testing:** Vitest (unit), Playwright (E2E)
 - **Formatting:** Biome (tabs, double quotes, 100-char lines)
-- **Deployment:** Vercel (auto-deploy from `prod` branch on GitHub Release)
+- **Deployment:** Vercel (auto-deploy from `main` branch), Semantic Release for GitHub releases
 
 ## How It Works
 
