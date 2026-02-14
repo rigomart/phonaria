@@ -5,7 +5,7 @@ automated tags and GitHub Releases.
 
 ## How It Works
 
-```
+```text
 Conventional Commits → main → CI passes → Semantic Release → Tag + GitHub Release
 ```
 
@@ -53,7 +53,8 @@ git commit -m "ci: fix workflow"
 
 ## Notes
 
-- Tags use format `phonaria-v{version}` (for example, `phonaria-v0.5.0`).
+- Tags use format `phonaria-v${version}` (for example, `phonaria-v0.5.0`).
 - Git tags and GitHub Releases are the source of truth for released versions.
 - `apps/web/package.json` is not auto-bumped by the release workflow.
 - Changelog is tracked in GitHub Releases (no committed `CHANGELOG.md` file).
+- `apps/web/package.json` was reset to `0.5.0` intentionally as the new version baseline.
