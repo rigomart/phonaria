@@ -206,16 +206,13 @@
 		},
 		"nav-tabs": {
 			"consonants": "Consonants",
-			"vowels": "Vowels",
-			"monophthongs": "Vowels · Monophthongs",
-			"diphthongs": "Vowels · Diphthongs"
+			"vowels": "Vowels"
 		},
 		"info-button": {
 			"label": "How to read this chart",
 			"label-short": "Guide",
 			"aria-consonants": "How to read the consonant chart",
-			"aria-monophthongs": "How to read the monophthong vowel chart",
-			"aria-diphthongs": "How to read the diphthong vowel chart"
+			"aria-vowels": "How to read the vowel chart"
 		},
 		"hint": {
 			"sounds": "sounds",
@@ -231,16 +228,17 @@
 				}
 			},
 			"vowels": {
-				"monophthongs": {
-					"diagram": "Vowels plotted by tongue position. Vertical axis shows tongue height (high to low). Horizontal axis shows tongue backness (front to back)."
-				},
-				"diphthongs": {
-					"diagram": "Vowels that glide between two positions. Each arrow traces the tongue's movement from start to end."
-				},
+				"diagram": "Vowels plotted by tongue position. Vertical axis shows tongue height (high to low). Horizontal axis shows tongue backness (front to back).",
 				"legend": {
 					"rounded": "Rounded",
 					"unrounded": "Unrounded",
 					"r-colored": "R-colored"
+				},
+				"diphthong-note": {
+					"title": "What about diphthongs?",
+					"description": "This chart shows monophthongs — vowels with a single, steady tongue position. {accent} also uses {count} diphthongs: vowel sounds where the tongue glides from one position to another within a single syllable.",
+					"symbols-label": "Diphthongs in this accent",
+					"transcription-hint": "Diphthongs appear in the transcription tool. Click any diphthong in a transcription result to see how it works."
 				}
 			}
 		},
