@@ -235,7 +235,7 @@
 					"r-colored": "Róticas"
 				},
 				"diphthong-note": {
-					"title": "Y los diptongos?",
+					"title": "¿Y los diptongos?",
 					"description": "Esta tabla muestra monoptongos: vocales con una posición fija de la lengua. {accent} también usa {count} diptongos: sonidos vocálicos donde la lengua se desliza de una posición a otra dentro de una misma sílaba.",
 					"symbols-label": "Diptongos en este acento",
 					"transcription-hint": "Los diptongos aparecen en la herramienta de transcripción. Haz clic en cualquier diptongo en un resultado de transcripción para ver cómo funciona."

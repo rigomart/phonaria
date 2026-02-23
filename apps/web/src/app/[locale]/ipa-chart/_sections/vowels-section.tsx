@@ -47,6 +47,7 @@ export function VowelChartSection({ targetAccent, className }: Props) {
 function DiphthongNote({ targetAccent, count }: { targetAccent: TargetAccent; count: number }) {
 	const t = useTranslations("ipa-chart.sections.vowels.diphthong-note");
 	const accentT = useTranslations("common.accent");
+	const { phonemeDetailsById } = usePhonemeDetailsCopy();
 
 	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
 	const diphthongIds = getLanguagePhonemeIds(targetAccent, "diphthongs");
@@ -71,7 +72,13 @@ function DiphthongNote({ targetAccent, count }: { targetAccent: TargetAccent; co
 				<p className="text-xs font-medium text-muted-foreground">{t("symbols-label")}</p>
 				<div className="flex flex-wrap gap-1.5">
 					{diphthongIds.map((id) => (
-						<Pressable key={id} size="sm" variant="outline" onClick={() => handleClick(id)}>
+						<Pressable
+							key={id}
+							size="sm"
+							variant="outline"
+							aria-label={phonemeDetailsById[id].label}
+							onClick={() => handleClick(id)}
+						>
 							/{getIpaForPhonemeId(id)}/
 						</Pressable>
 					))}

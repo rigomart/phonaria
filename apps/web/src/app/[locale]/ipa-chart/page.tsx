@@ -30,10 +30,14 @@ export default function IpaChartPage() {
 
 	const counts = getLanguagePhonemeCount(targetAccent);
 
-	const COUNT_BY_TAB = {
-		consonants: counts.consonants,
-		vowels: counts.monophthongs,
-	} as const;
+	const COUNT_BY_TAB = useMemo(
+		() =>
+			({
+				consonants: counts.consonants,
+				vowels: counts.monophthongs,
+			}) as const,
+		[counts.consonants, counts.monophthongs],
+	);
 
 	const availableTabs = useMemo(
 		() => IPA_CHART_TABS.filter((tab) => COUNT_BY_TAB[tab] > 0),
