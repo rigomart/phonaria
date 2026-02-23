@@ -19,7 +19,7 @@ import { ConsonantsSection } from "./_sections/consonants-section";
 import { VowelChartSection } from "./_sections/vowels-section";
 import { useIpaChartStore } from "./_store/ipa-chart-store";
 
-const IPA_CHART_TABS = ["consonants", "monophthongs", "diphthongs"] as const;
+const IPA_CHART_TABS = ["consonants", "vowels"] as const;
 type IpaChartTabValue = (typeof IPA_CHART_TABS)[number];
 
 export default function IpaChartPage() {
@@ -32,11 +32,13 @@ export default function IpaChartPage() {
 
 	const COUNT_BY_TAB = {
 		consonants: counts.consonants,
-		monophthongs: counts.monophthongs,
-		diphthongs: counts.diphthongs,
+		vowels: counts.monophthongs,
 	} as const;
 
-	const availableTabs = useMemo(() => IPA_CHART_TABS.filter((tab) => counts[tab] > 0), [counts]);
+	const availableTabs = useMemo(
+		() => IPA_CHART_TABS.filter((tab) => COUNT_BY_TAB[tab] > 0),
+		[COUNT_BY_TAB],
+	);
 
 	const [activeTab, setActiveTab] = useQueryState(
 		"tab",
@@ -112,11 +114,8 @@ export default function IpaChartPage() {
 					<TabsContent value="consonants">
 						<ConsonantsSection targetAccent={targetAccent} />
 					</TabsContent>
-					<TabsContent value="monophthongs">
-						<VowelChartSection variant="monophthongs" targetAccent={targetAccent} />
-					</TabsContent>
-					<TabsContent value="diphthongs">
-						<VowelChartSection variant="diphthongs" targetAccent={targetAccent} />
+					<TabsContent value="vowels">
+						<VowelChartSection targetAccent={targetAccent} />
 					</TabsContent>
 				</Tabs>
 

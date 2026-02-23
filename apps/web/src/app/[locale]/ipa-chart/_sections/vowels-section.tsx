@@ -1,52 +1,84 @@
-import type { TargetAccent } from "@phonaria/phonetics-data";
+import {
+	getIpaForPhonemeId,
+	getLanguagePhonemeCount,
+	getLanguagePhonemeIds,
+	type PhonemeSymbolId,
+	type TargetAccent,
+} from "@phonaria/phonetics-data";
+import { Pressable } from "@phonaria/ui/components/pressable";
 import { useTranslations } from "next-intl";
 import { usePhonemeDetailsCopy } from "@/data/phoneme-details/client";
 import { cn } from "@/lib/utils";
 import { ChartInfoButton } from "../_components/chart-info-button";
-import { DiphthongVowelChart } from "../_components/diphthong-chart";
 import { MonophthongVowelChart, VowelChartLegend } from "../_components/vowel-chart";
-import type {
-	DiphthongVowelChartEntry,
-	StaticVowelChartEntry,
-	VowelChartEntry,
-} from "../_lib/vowel-chart-data";
-import { getDiphthongVowelEntries, getStaticVowelEntries } from "../_lib/vowel-chart-data";
-
-type Variant = "monophthongs" | "diphthongs";
+import { getStaticVowelEntries } from "../_lib/vowel-chart-data";
+import { useIpaChartStore } from "../_store/ipa-chart-store";
 
 type Props = {
-	variant: Variant;
 	targetAccent: TargetAccent;
 	className?: string;
 };
 
-export function VowelChartSection({ variant, targetAccent, className }: Props) {
+export function VowelChartSection({ targetAccent, className }: Props) {
 	const t = useTranslations("ipa-chart.sections.vowels");
 	const ariaT = useTranslations("ipa-chart.info-button");
 	const { phonemeDetailsById } = usePhonemeDetailsCopy();
-	const entries: VowelChartEntry[] =
-		variant === "monophthongs"
-			? getStaticVowelEntries(phonemeDetailsById, targetAccent)
-			: getDiphthongVowelEntries(phonemeDetailsById, targetAccent);
+	const entries = getStaticVowelEntries(phonemeDetailsById, targetAccent);
 
-	const ariaLabel =
-		variant === "monophthongs" ? ariaT("aria-monophthongs") : ariaT("aria-diphthongs");
+	const diphthongCount = getLanguagePhonemeCount(targetAccent).diphthongs;
 
 	return (
-		<section className={cn("max-w-3xl mx-auto", className)}>
+		<section className={cn("max-w-3xl mx-auto space-y-4", className)}>
 			<div className="rounded-xl border bg-background-soft p-2 sm:p-3 shadow-sm space-y-3">
 				<div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
 					<VowelChartLegend />
-					<ChartInfoButton content={t(`${variant}.diagram`)} ariaLabel={ariaLabel} />
+					<ChartInfoButton content={t("diagram")} ariaLabel={ariaT("aria-vowels")} />
 				</div>
 				<div className="-mx-2">
-					{variant === "monophthongs" ? (
-						<MonophthongVowelChart entries={entries as StaticVowelChartEntry[]} />
-					) : (
-						<DiphthongVowelChart entries={entries as DiphthongVowelChartEntry[]} />
-					)}
+					<MonophthongVowelChart entries={entries} />
 				</div>
 			</div>
+
+			{diphthongCount > 0 && <DiphthongNote targetAccent={targetAccent} count={diphthongCount} />}
 		</section>
+	);
+}
+
+function DiphthongNote({ targetAccent, count }: { targetAccent: TargetAccent; count: number }) {
+	const t = useTranslations("ipa-chart.sections.vowels.diphthong-note");
+	const accentT = useTranslations("common.accent");
+
+	const selectPhoneme = useIpaChartStore((s) => s.selectPhoneme);
+	const diphthongIds = getLanguagePhonemeIds(targetAccent, "diphthongs");
+
+	const handleClick = (phonemeId: PhonemeSymbolId) => {
+		selectPhoneme(phonemeId);
+	};
+
+	return (
+		<div className="rounded-xl border bg-background-soft p-3 sm:p-4 space-y-3">
+			<div className="space-y-1.5">
+				<h3 className="text-sm font-semibold">{t("title")}</h3>
+				<p className="text-sm text-muted-foreground leading-relaxed">
+					{t("description", {
+						accent: accentT(targetAccent),
+						count: String(count),
+					})}
+				</p>
+			</div>
+
+			<div className="space-y-1.5">
+				<p className="text-xs font-medium text-muted-foreground">{t("symbols-label")}</p>
+				<div className="flex flex-wrap gap-1.5">
+					{diphthongIds.map((id) => (
+						<Pressable key={id} size="sm" variant="outline" onClick={() => handleClick(id)}>
+							/{getIpaForPhonemeId(id)}/
+						</Pressable>
+					))}
+				</div>
+			</div>
+
+			<p className="text-xs text-muted-foreground leading-relaxed">{t("transcription-hint")}</p>
+		</div>
 	);
 }

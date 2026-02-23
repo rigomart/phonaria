@@ -1,5 +1,4 @@
 import {
-	getDiphthongVowelArticulationRegistryForLanguage,
 	getIpaForPhonemeId,
 	getLanguagePhonemeIds,
 	getMonophthongVowelArticulationRegistryForLanguage,
@@ -10,8 +9,6 @@ import {
 
 type StaticVowelFeatures = Extract<PhonemeArticulation, { vowelType: "monophthong" }>["features"];
 
-type DiphthongVowelFeatures = Extract<PhonemeArticulation, { vowelType: "diphthong" }>["features"];
-
 type PhonemeLabelById = Record<PhonemeSymbolId, { label: string }>;
 
 export type StaticVowelChartEntry = {
@@ -21,16 +18,6 @@ export type StaticVowelChartEntry = {
 	vowelType: "monophthong";
 	features: StaticVowelFeatures;
 };
-
-export type DiphthongVowelChartEntry = {
-	id: PhonemeSymbolId;
-	ipa: string;
-	label: string;
-	vowelType: "diphthong";
-	features: DiphthongVowelFeatures;
-};
-
-export type VowelChartEntry = StaticVowelChartEntry | DiphthongVowelChartEntry;
 
 function getEnglishStaticVowelEntries(phonemeDetailsById: PhonemeLabelById) {
 	const monophthongs = getMonophthongVowelArticulationRegistryForLanguage("en-us");
@@ -74,36 +61,4 @@ export function getStaticVowelEntries(
 		return getEnglishStaticVowelEntries(phonemeDetailsById);
 	}
 	return getSpanishStaticVowelEntries(phonemeDetailsById);
-}
-
-function getEnglishDiphthongVowelEntries(phonemeDetailsById: PhonemeLabelById) {
-	const diphthongs = getDiphthongVowelArticulationRegistryForLanguage("en-us");
-	const diphthongIds = getLanguagePhonemeIds("en-us", "diphthongs");
-
-	return diphthongIds.map((phonemeId) => {
-		const articulation = diphthongs[phonemeId];
-		const ipa = getIpaForPhonemeId(phonemeId);
-		return {
-			id: phonemeId,
-			ipa,
-			label: phonemeDetailsById[phonemeId].label,
-			vowelType: articulation.vowelType,
-			features: articulation.features,
-		} satisfies DiphthongVowelChartEntry;
-	});
-}
-
-function getSpanishDiphthongVowelEntries(_phonemeDetailsById: PhonemeLabelById) {
-	const entries: DiphthongVowelChartEntry[] = [];
-	return entries;
-}
-
-export function getDiphthongVowelEntries(
-	phonemeDetailsById: PhonemeLabelById,
-	targetAccent: TargetAccent,
-) {
-	if (targetAccent === "en-us") {
-		return getEnglishDiphthongVowelEntries(phonemeDetailsById);
-	}
-	return getSpanishDiphthongVowelEntries(phonemeDetailsById);
 }

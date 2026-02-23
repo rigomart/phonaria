@@ -206,16 +206,13 @@
 		},
 		"nav-tabs": {
 			"consonants": "Consonantes",
-			"vowels": "Vocales",
-			"monophthongs": "Vocales · Monoptongos",
-			"diphthongs": "Vocales · Diptongos"
+			"vowels": "Vocales"
 		},
 		"info-button": {
 			"label": "Cómo leer esta tabla",
 			"label-short": "Guía",
 			"aria-consonants": "Cómo leer la tabla de consonantes",
-			"aria-monophthongs": "Cómo leer la tabla de vocales monoptongas",
-			"aria-diphthongs": "Cómo leer la tabla de vocales diptongas"
+			"aria-vowels": "Cómo leer la tabla de vocales"
 		},
 		"hint": {
 			"sounds": "sonidos",
@@ -231,16 +228,17 @@
 				}
 			},
 			"vowels": {
-				"monophthongs": {
-					"diagram": "Vocales trazadas según la posición de la lengua. El eje vertical muestra la altura de la lengua (alta a baja). El eje horizontal muestra la anterioridad (frontal a posterior)."
-				},
-				"diphthongs": {
-					"diagram": "Vocales que se deslizan entre dos posiciones. Cada flecha traza el movimiento de la lengua desde el inicio hasta el final."
-				},
+				"diagram": "Vocales trazadas según la posición de la lengua. El eje vertical muestra la altura de la lengua (alta a baja). El eje horizontal muestra la anterioridad (frontal a posterior).",
 				"legend": {
 					"rounded": "Redondeadas",
 					"unrounded": "No redondeadas",
 					"r-colored": "Róticas"
+				},
+				"diphthong-note": {
+					"title": "Y los diptongos?",
+					"description": "Esta tabla muestra monoptongos: vocales con una posición fija de la lengua. {accent} también usa {count} diptongos: sonidos vocálicos donde la lengua se desliza de una posición a otra dentro de una misma sílaba.",
+					"symbols-label": "Diptongos en este acento",
+					"transcription-hint": "Los diptongos aparecen en la herramienta de transcripción. Haz clic en cualquier diptongo en un resultado de transcripción para ver cómo funciona."
 				}
 			}
 		},
