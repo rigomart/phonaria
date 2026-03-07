@@ -6,6 +6,7 @@ export default defineConfig({
 		environment: "node",
 		globals: true,
 		include: ["src/**/*.{test,spec}.{js,ts,jsx,tsx}"],
+		passWithNoTests: true,
 		exclude: ["**/node_modules/**", "**/.next/**", "**/dist/**"],
 		setupFiles: [],
 		testTimeout: 10000,
