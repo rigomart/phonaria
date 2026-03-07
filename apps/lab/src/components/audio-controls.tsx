@@ -11,28 +11,34 @@ type Props = {
 	label: string;
 };
 
-const baseUrl = process.env.NEXT_PUBLIC_BUCKET_URL;
+const baseUrl = process.env.NEXT_PUBLIC_BUCKET_URL?.replace(/\/+$/, "");
+
+function buildAudioSrc(path: string) {
+	if (!baseUrl) return null;
+	return `${baseUrl}/${path.replace(/^\/+/, "")}`;
+}
 
 export function AudioControls({ path, label }: Props) {
-	const { play, status } = useAudioManager(`${baseUrl}${path}`);
+	const audioSrc = buildAudioSrc(path);
+	const { play, status } = useAudioManager(audioSrc ?? "");
 
 	return (
 		<ButtonGroup>
 			<Button
 				size="xs"
 				variant="outline"
-				onClick={() => play()}
+				onClick={() => audioSrc && play()}
 				aria-label={`Play ${label}`}
-				disabled={status === "loading" || status === "playing"}
+				disabled={!audioSrc || status === "loading" || status === "playing"}
 			>
 				{status === "loading" ? <Spinner /> : <PlayIcon />}
 			</Button>
 			<Button
 				size="xs"
 				variant="outline"
-				onClick={() => play(0.75)}
+				onClick={() => audioSrc && play(0.75)}
 				aria-label={`Play slow ${label}`}
-				disabled={status === "loading" || status === "playing"}
+				disabled={!audioSrc || status === "loading" || status === "playing"}
 			>
 				{status === "loading" ? <Spinner /> : <Turtle />}
 			</Button>

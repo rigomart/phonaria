@@ -16,7 +16,7 @@ const cspHeader = `
 
 const nextConfig: NextConfig = {
 	images: {
-		remotePatterns: [{ hostname: "assets.rigos.dev" }],
+		remotePatterns: [{ protocol: "https", hostname: "assets.rigos.dev" }],
 	},
 	headers: async () => {
 		return [

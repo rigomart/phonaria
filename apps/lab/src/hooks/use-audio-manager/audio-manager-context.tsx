@@ -16,6 +16,7 @@ export const AudioManagerContext = createContext<AudioManagerContextValue | null
 export function AudioManagerProvider({ children }: { children: React.ReactNode }) {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const currentSrcRef = useRef<string | null>(null);
+	const playRequestIdRef = useRef(0);
 	const [statusMap, setStatusMap] = useState<Map<string, PlaybackStatus>>(new Map());
 	const [currentSrc, setCurrentSrc] = useState<string | null>(null);
 
@@ -89,6 +90,8 @@ export function AudioManagerProvider({ children }: { children: React.ReactNode }
 		const audio = audioRef.current;
 		if (!audio) return;
 
+		const requestId = ++playRequestIdRef.current;
+
 		const previousSrc = currentSrcRef.current;
 		if (previousSrc && previousSrc !== src) {
 			audio.pause();
@@ -112,6 +115,7 @@ export function AudioManagerProvider({ children }: { children: React.ReactNode }
 		audio.playbackRate = speed;
 
 		audio.play().catch(() => {
+			if (requestId !== playRequestIdRef.current) return;
 			setStatusMap((prev) => {
 				const next = new Map(prev);
 				next.set(src, "error");

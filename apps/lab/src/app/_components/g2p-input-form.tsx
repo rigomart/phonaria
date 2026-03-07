@@ -24,13 +24,12 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 			}
 
 			const active = document.activeElement;
-			const isInteractive =
-				active instanceof HTMLInputElement ||
-				active instanceof HTMLTextAreaElement ||
-				active instanceof HTMLSelectElement ||
-				(active instanceof HTMLElement && active.isContentEditable);
+			const hasFocusedControl =
+				active instanceof HTMLElement &&
+				active !== document.body &&
+				active !== document.documentElement;
 
-			if (!isInteractive && e.key.length === 1) {
+			if (!hasFocusedControl && e.key.length === 1) {
 				inputRef.current?.focus();
 			}
 		}
