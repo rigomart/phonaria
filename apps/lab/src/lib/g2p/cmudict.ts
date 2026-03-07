@@ -67,3 +67,7 @@ export async function lookupManyCmudict(
 
 	return output;
 }
+
+export function __resetCmudictCache(): void {
+	cache.clear();
+}

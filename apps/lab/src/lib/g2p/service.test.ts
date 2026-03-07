@@ -13,6 +13,7 @@ vi.mock("@/db/schema", () => ({
 // Must import after mocks are set up
 const { db } = await import("@/db/drizzle");
 const { processWords } = await import("./service");
+const { __resetCmudictCache } = await import("./cmudict");
 
 function mockDbResults(rows: { word: string; pronunciations: string }[]) {
 	const chain = {
@@ -25,7 +26,7 @@ function mockDbResults(rows: { word: string; pronunciations: string }[]) {
 describe("processWords (tier 3 — DB lookup)", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		// Reset the module-level cache in cmudict.ts between tests
+		__resetCmudictCache();
 	});
 
 	it('returns source "cmudict" for words found in DB', async () => {

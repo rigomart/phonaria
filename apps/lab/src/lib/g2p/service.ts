@@ -21,9 +21,10 @@ export async function processWords(inputWords: string[]): Promise<G2PWord[]> {
 				source: "cmudict",
 			});
 		} else {
+			const lowerWord = word.toLowerCase();
 			results.push({
-				word: word.toLowerCase(),
-				variants: [fallbackG2P.generatePronunciation(word)],
+				word: lowerWord,
+				variants: [fallbackG2P.generatePronunciation(lowerWord)],
 				source: "fallback",
 			});
 		}

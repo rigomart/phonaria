@@ -38,15 +38,16 @@ const db = new Database(outPath, { create: true });
 
 db.run("PRAGMA journal_mode=WAL");
 
+db.run("DROP TABLE IF EXISTS words");
 db.run(`
-  CREATE TABLE IF NOT EXISTS words (
+  CREATE TABLE words (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     word TEXT NOT NULL UNIQUE,
     pronunciations TEXT NOT NULL
   )
 `);
 
-const insert = db.prepare("INSERT OR IGNORE INTO words (word, pronunciations) VALUES (?, ?)");
+const insert = db.prepare("INSERT INTO words (word, pronunciations) VALUES (?, ?)");
 
 const batchInsert = db.transaction((rows: [string, string][]) => {
 	for (const [word, pronunciations] of rows) {
