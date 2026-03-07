@@ -1,3 +1,4 @@
+/// <reference types="bun" />
 /**
  * Converts cmudict.json into a SQLite .db file for Turso import.
  *
