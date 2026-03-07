@@ -17,9 +17,26 @@ const notoSansMono = Noto_Sans_Mono({
 	fallback: ["system-ui", "monospace"],
 });
 
+const SITE_NAME = "Phonaria Lab";
+const DESCRIPTION = "Experimental workspace for phonetic transcription tools";
+
 export const metadata: Metadata = {
-	title: "Phonaria Lab",
-	description: "Phonaria experimental workspace",
+	title: {
+		default: SITE_NAME,
+		template: `%s - ${SITE_NAME}`,
+	},
+	description: DESCRIPTION,
+	openGraph: {
+		title: SITE_NAME,
+		description: DESCRIPTION,
+		siteName: SITE_NAME,
+	},
+	twitter: {
+		card: "summary",
+		title: SITE_NAME,
+		description: DESCRIPTION,
+	},
+	robots: { index: false, follow: true },
 };
 
 export default function RootLayout({
