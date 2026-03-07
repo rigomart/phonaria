@@ -27,7 +27,7 @@ function WordColumn({ word, index }: WordColumnProps) {
 			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
 			style={{ animationDelay: `${index * 50}ms`, animationDuration: "300ms" }}
 		>
-			<span className="text-base md:text-lg font-semibold whitespace-nowrap px-3 py-1 text-foreground">
+			<span className="text-base md:text-lg  whitespace-nowrap px-3 py-1 text-muted-foreground">
 				{word.word}
 			</span>
 
@@ -60,7 +60,7 @@ export function TranscriptionDisplay() {
 	if (!result) return <EmptyState />;
 
 	return (
-		<div className="relative flex flex-1 items-center justify-center overflow-x-auto px-4 py-6">
+		<div className="relative flex flex-1 items-start justify-center overflow-x-auto px-4 pt-12 pb-6 md:pt-16">
 			<ButtonGroup className="absolute right-2 top-2 bg-background rounded-lg border shadow-sm animate-in fade-in duration-300">
 				<TranscriptionInfoButton />
 				<ButtonGroupSeparator />

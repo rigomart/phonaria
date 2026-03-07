@@ -67,6 +67,20 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 		},
 	},
 	{
+		key: "phoneme-audio",
+		title: "Phoneme Audio Samples",
+		content:
+			"Phoneme audio samples come from the General phonetics gallery on Wikimedia Commons. Recordings were created by Wikimedia contributors including Dvortygirl, Peter Isotalo, Denelson83, and Erutuon, and are used under Creative Commons Attribution-ShareAlike and compatible licenses. See individual file pages for authorship and license details.",
+		link: {
+			text: "View General phonetics gallery",
+			url: "https://commons.wikimedia.org/wiki/General_phonetics",
+		},
+		license: {
+			text: "CC BY-SA 3.0+",
+			url: "https://creativecommons.org/licenses/by-sa/3.0/",
+		},
+	},
+	{
 		key: "wordfreq",
 		title: "wordfreq Word Frequency Data",
 		content:
