@@ -1,0 +1,32 @@
+import {
+	type CuratedWordData,
+	EnglishCuratedTop1k,
+} from "@phonaria/phonetics-data/data/en/curated-1k";
+import type { G2PSyllable } from "../g2p/model";
+import { syllabify } from "../g2p/syllabifier";
+
+export { tokenizeText } from "../g2p/text-processing";
+
+let tier2Promise: Promise<CuratedWordData> | null = null;
+
+export function loadTier2(): Promise<CuratedWordData> {
+	if (!tier2Promise) {
+		tier2Promise = import("@phonaria/phonetics-data/data/en/curated-10k").then(
+			(module) => module.EnglishCuratedTop10k,
+		);
+	}
+	return tier2Promise;
+}
+
+export function cmuToSyllables(cmuVariant: string): G2PSyllable[] {
+	const tokens = cmuVariant.split(" ").filter((t) => t.length > 0);
+	return syllabify(tokens);
+}
+
+export function lookupTier1(normalizedWord: string): string[] | null {
+	return EnglishCuratedTop1k.words[normalizedWord] ?? null;
+}
+
+export function lookupTier2(tier2Data: CuratedWordData, normalizedWord: string): string[] | null {
+	return tier2Data.words[normalizedWord] ?? null;
+}
