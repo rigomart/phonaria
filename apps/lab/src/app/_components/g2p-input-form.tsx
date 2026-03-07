@@ -3,7 +3,7 @@
 import { Button } from "@phonaria/ui/components/button";
 import { Input } from "@phonaria/ui/components/input";
 import { Loader2, SendHorizontal } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTranscribe } from "../_hooks/use-transcribe";
 
@@ -15,6 +15,29 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 	const [inputText, setInputText] = useState("");
 	const transcribeMutation = useTranscribe();
 	const isLoading = transcribeMutation.isPending;
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		function handleKeyDown(e: KeyboardEvent) {
+			if (e.metaKey || e.ctrlKey || e.altKey || e.key === "Escape" || e.key === "Tab") {
+				return;
+			}
+
+			const active = document.activeElement;
+			const isInteractive =
+				active instanceof HTMLInputElement ||
+				active instanceof HTMLTextAreaElement ||
+				active instanceof HTMLSelectElement ||
+				(active instanceof HTMLElement && active.isContentEditable);
+
+			if (!isInteractive && e.key.length === 1) {
+				inputRef.current?.focus();
+			}
+		}
+
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, []);
 
 	const hasText = inputText.trim().length > 0;
 	const characterCount = inputText.length;
@@ -28,6 +51,7 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 		<form onSubmit={handleSubmit} className="flex gap-2 flex-row w-full">
 			<div className="relative flex-1">
 				<Input
+					ref={inputRef}
 					value={inputText}
 					onChange={(e) => setInputText(e.target.value)}
 					placeholder="Type a word or phrase..."
