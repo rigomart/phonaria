@@ -2,7 +2,7 @@
 
 import { Button } from "@phonaria/ui/components/button";
 import { Input } from "@phonaria/ui/components/input";
-import { Loader2, SendHorizonal } from "lucide-react";
+import { Loader2, SendHorizontal } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTranscribe } from "../_hooks/use-transcribe";
@@ -51,11 +51,17 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 				</div>
 			</div>
 
-			<Button type="submit" size="lg" disabled={!hasText || isLoading} className="gap-2">
+			<Button
+				type="submit"
+				size="lg"
+				disabled={!hasText || isLoading}
+				className="gap-2"
+				aria-label="Transcribe text"
+			>
 				{isLoading ? (
 					<Loader2 className="size-4 animate-spin" />
 				) : (
-					<SendHorizonal className="size-4" />
+					<SendHorizontal className="size-4" />
 				)}
 			</Button>
 		</form>

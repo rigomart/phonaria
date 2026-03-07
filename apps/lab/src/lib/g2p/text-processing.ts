@@ -6,6 +6,8 @@ export function normalizeCmuWord(input: string): string {
 
 export function tokenizeText(text: string): string[] {
 	return text
+		.replace(/[\u2018\u2019]/g, "'")
+		.replace(/[\u2010-\u2015]/g, "-")
 		.replace(/[^\w\s'-]/g, " ")
 		.split(/\s+/)
 		.filter((word) => word.length > 0)

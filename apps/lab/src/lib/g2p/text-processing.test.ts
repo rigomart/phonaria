@@ -33,6 +33,14 @@ describe("tokenizeText", () => {
 	it("strips surrounding punctuation but preserves internal", () => {
 		expect(tokenizeText('"hello" world.')).toEqual(["hello", "world"]);
 	});
+
+	it("normalizes curly apostrophes", () => {
+		expect(tokenizeText("don\u2019t")).toEqual(["don't"]);
+	});
+
+	it("normalizes Unicode dashes", () => {
+		expect(tokenizeText("rock\u2013solid")).toEqual(["rock-solid"]);
+	});
 });
 
 describe("normalizeCmuWord", () => {
@@ -53,6 +61,6 @@ describe("normalizeCmuWord", () => {
 	});
 
 	it("does not strip non-variant parentheses", () => {
-		expect(normalizeCmuWord("HELLO")).toBe("HELLO");
+		expect(normalizeCmuWord("HELLO(TEST)")).toBe("HELLO(TEST)");
 	});
 });

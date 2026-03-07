@@ -7,14 +7,15 @@ import { syllabify } from "../g2p/syllabifier";
 
 export { tokenizeText } from "../g2p/text-processing";
 
-let tier2Cache: CuratedWordData | null = null;
+let tier2Promise: Promise<CuratedWordData> | null = null;
 
-export async function loadTier2(): Promise<CuratedWordData> {
-	if (!tier2Cache) {
-		const module = await import("@phonaria/phonetics-data/data/en/curated-10k");
-		tier2Cache = module.EnglishCuratedTop10k;
+export function loadTier2(): Promise<CuratedWordData> {
+	if (!tier2Promise) {
+		tier2Promise = import("@phonaria/phonetics-data/data/en/curated-10k").then(
+			(module) => module.EnglishCuratedTop10k,
+		);
 	}
-	return tier2Cache;
+	return tier2Promise;
 }
 
 export function cmuToSyllables(cmuVariant: string): G2PSyllable[] {

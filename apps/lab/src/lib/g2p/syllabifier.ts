@@ -38,6 +38,8 @@ export function syllabify(cmuTokens: string[]): G2PSyllable[] {
 			};
 		});
 
+	if (phonemes.length === 0) return [];
+
 	const nucleiIndices = phonemes.map((p, i) => (p.isVowel ? i : -1)).filter((i) => i !== -1);
 
 	if (nucleiIndices.length === 0) {
