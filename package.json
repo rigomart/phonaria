@@ -25,7 +25,7 @@
 	"scripts": {
 		"build": "turbo run build",
 		"lint": "turbo run lint",
-		"dev": "turbo run dev",
+		"dev": "turbo run dev --filter=@phonaria/lab",
 		"check-types": "turbo run check-types",
 		"test": "turbo run test",
 		"e2e": "turbo run e2e",
