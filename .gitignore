@@ -27,3 +27,9 @@ playwright/.cache/
 .vercel
 
 .codex
+
+# Generated data files
+*.csv
+*.db
+*.db-wal
+*.db-shm

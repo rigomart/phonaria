@@ -19,7 +19,8 @@
 		"generate-word-mappings": "tsx src/generate-word-mappings.ts",
 		"phoneme-trie-to-json": "tsx src/phoneme-trie-to-json.ts",
 		"migrate-diagrams": "tsx src/migrate-diagrams.ts",
-		"migrate-diagrams-to-accent": "tsx src/migrate-diagrams-to-accent.ts"
+		"migrate-diagrams-to-accent": "tsx src/migrate-diagrams-to-accent.ts",
+		"cmudict-to-sqlite": "bun src/cmudict-to-sqlite.ts"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.985.0",
@@ -28,6 +29,7 @@
 		"dotenv": "^17.2.0"
 	},
 	"devDependencies": {
+		"@types/bun": "^1.3.10",
 		"tsx": "^4.20.3",
 		"typescript": "~5.8.3"
 	}

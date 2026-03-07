@@ -5,6 +5,7 @@ import type { G2PWord } from "@/lib/g2p/model";
 import { fallbackG2P } from "@/lib/g2p/phoneme-generator";
 import { transformToTranscriptionResult } from "@/lib/g2p-client";
 import { batchLookup, tokenizeText, type WordLookupResult } from "@/lib/phoneme-lookup";
+import { transcribeWordsAction } from "../_actions/transcribe";
 import { useG2PStore } from "../_store/g2p-store";
 
 function lookupResultToG2PWord(result: WordLookupResult): G2PWord {
@@ -39,12 +40,29 @@ export function useTranscribe() {
 					const tierResult = await batchLookup(tokens);
 					if (latestRequestRef.current !== requestId) return;
 
+					const serverWordMap = new Map<string, G2PWord>();
+					if (tierResult.missing.length > 0) {
+						const serverWords = await transcribeWordsAction({
+							words: tierResult.missing,
+						});
+						if (latestRequestRef.current !== requestId) return;
+
+						for (const w of serverWords) {
+							serverWordMap.set(w.word, w);
+						}
+					}
+
 					const mergedWords: G2PWord[] = tokens.map((token) => {
 						const normalized = token.toLowerCase().trim();
 
 						const tierWord = tierResult.found.get(normalized);
 						if (tierWord) {
 							return lookupResultToG2PWord(tierWord);
+						}
+
+						const serverWord = serverWordMap.get(normalized);
+						if (serverWord) {
+							return serverWord;
 						}
 
 						return {
