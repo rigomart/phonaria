@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans, Noto_Sans_Mono } from "next/font/google";
+import { Footer } from "@/components/footer";
 import Providers from "./providers";
 import "@phonaria/ui/globals.css";
 
@@ -36,6 +37,7 @@ export default function RootLayout({
 				<Providers>
 					<div className="min-h-screen flex flex-col">
 						<main className="flex-1 flex min-h-0 flex-col">{children}</main>
+						<Footer />
 					</div>
 				</Providers>
 			</body>
