@@ -60,17 +60,23 @@ export function TranscriptionDisplay() {
 	if (!result) return <EmptyState />;
 
 	return (
-		<div className="relative flex flex-1 items-start justify-center overflow-x-auto px-4 pt-12 pb-6 md:pt-16">
-			<ButtonGroup className="absolute right-2 top-2 bg-background rounded-lg border shadow-sm animate-in fade-in duration-300">
-				<TranscriptionInfoButton />
-				<ButtonGroupSeparator />
-				<CopyButton result={result} />
-			</ButtonGroup>
-
+		<div className="flex flex-col items-center overflow-x-auto px-4 pt-6 pb-6">
 			<div className="flex flex-wrap justify-center gap-x-6 gap-y-4 md:gap-x-8 md:gap-y-6">
 				{result.words.map((word, wordIndex) => (
 					<WordColumn key={`${word.word}-${wordIndex}`} word={word} index={wordIndex} />
 				))}
+			</div>
+
+			<div
+				className="mt-6 flex items-center gap-3 animate-in fade-in duration-500 fill-mode-both"
+				style={{ animationDelay: `${result.words.length * 50 + 400}ms` }}
+			>
+				<p className="text-xs text-muted-foreground">Click any phoneme for details</p>
+				<ButtonGroup className="bg-background rounded-lg border shadow-sm">
+					<TranscriptionInfoButton />
+					<ButtonGroupSeparator />
+					<CopyButton result={result} />
+				</ButtonGroup>
 			</div>
 		</div>
 	);
