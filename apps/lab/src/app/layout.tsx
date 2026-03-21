@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
-import { Noto_Sans, Noto_Sans_Mono } from "next/font/google";
+import { Noto_Sans, Sora } from "next/font/google";
 import { Footer } from "@/components/footer";
 import Providers from "./providers";
 import "@phonaria/ui/globals.css";
+
+const sora = Sora({
+	variable: "--font-display-serif",
+	subsets: ["latin"],
+	fallback: ["system-ui", "sans-serif"],
+});
 
 const notoSans = Noto_Sans({
 	variable: "--font-noto-sans",
 	subsets: ["latin"],
 	fallback: ["system-ui", "sans-serif"],
 	preload: true,
-});
-
-const notoSansMono = Noto_Sans_Mono({
-	variable: "--font-noto-sans-mono",
-	subsets: ["latin"],
-	fallback: ["system-ui", "monospace"],
 });
 
 const SITE_NAME = "Phonaria Lab";
@@ -45,11 +45,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html
-			lang="en"
-			suppressHydrationWarning
-			className={`${notoSans.variable} ${notoSansMono.variable}`}
-		>
+		<html lang="en" suppressHydrationWarning className={`${sora.variable} ${notoSans.variable}`}>
 			<body className="antialiased">
 				<Providers>
 					<div className="min-h-screen flex flex-col">

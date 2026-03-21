@@ -3,7 +3,7 @@ import { ThemeSwitcher } from "./theme-switcher";
 
 export function Footer() {
 	return (
-		<footer>
+		<footer className="animate-in fade-in duration-700 delay-300 fill-mode-both">
 			<div className="container mx-auto px-4 py-3">
 				<div className="flex flex-col sm:flex-row gap-3 justify-between items-center text-sm">
 					<nav className="flex gap-4 items-center">

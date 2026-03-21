@@ -15,7 +15,7 @@ export function EmptyState() {
 	return (
 		<div className="flex flex-col items-center px-4 pt-6 pb-8 animate-in fade-in duration-700 delay-200 fill-mode-both">
 			<div className="w-full max-w-md space-y-4 text-center">
-				<p className="text-sm text-muted-foreground">Try an example</p>
+				<p className="text-sm text-muted-foreground font-display">Try an example</p>
 
 				<div className="flex flex-wrap justify-center gap-2">
 					{EXAMPLES.map((example, i) => (
