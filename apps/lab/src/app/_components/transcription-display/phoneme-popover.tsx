@@ -256,9 +256,7 @@ function GlidePositionButton({
 			)}
 		>
 			<span className="text-lg font-medium leading-none">{ipa}</span>
-			<span className="text-[10px] text-muted-foreground leading-tight">
-				{roundness}
-			</span>
+			<span className="text-[10px] text-muted-foreground leading-tight">{roundness}</span>
 			<ChevronDown
 				className={cn(
 					"size-3 shrink-0 ml-auto text-muted-foreground transition-transform duration-150",

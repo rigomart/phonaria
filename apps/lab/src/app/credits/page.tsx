@@ -1,7 +1,7 @@
-import { Logo } from "@/components/logo";
 import { Badge } from "@phonaria/ui/components/badge";
 import { ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
+import { Logo } from "@/components/logo";
 
 export const metadata: Metadata = {
 	title: "Credits & Sources - Phonaria Lab",
@@ -116,7 +116,9 @@ export default function CreditsPage() {
 
 			<div className="container mx-auto p-4 sm:p-6 max-w-4xl space-y-6 pt-14">
 				<div className="flex flex-col gap-1">
-					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Credits & Sources</h1>
+					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">
+						Credits & Sources
+					</h1>
 					<p className="text-sm text-muted-foreground">
 						Phonaria uses open source projects, linguistic research, and freely licensed resources.
 					</p>
