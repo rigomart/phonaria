@@ -9,6 +9,11 @@ import {
 	type PhonemeSymbolId,
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
+import {
+	ToggleGroup,
+	ToggleGroupItem,
+	ToggleGroupSeparator,
+} from "@phonaria/ui/components/toggle-group";
 import { ChevronDown, MoveRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -70,6 +75,10 @@ function ArticulationDiagram({
 	const phonemeIpa = getIpaForPhonemeId(phonemeId);
 
 	if (articulation.category === "consonant") {
+		if (articulation.features.manner === "affricate") {
+			return <AffricateConsonantDiagram phonemeId={phonemeId} />;
+		}
+
 		return (
 			<div className="relative aspect-square w-full rounded-md bg-neutral-900/60 overflow-hidden">
 				<Image
@@ -94,13 +103,70 @@ function ArticulationDiagram({
 	return null;
 }
 
+// --- Affricate (stop + fricative phases) ---
+
+type AffricatePhase = "stop" | "fricative";
+
+function AffricateConsonantDiagram({ phonemeId }: { phonemeId: PhonemeSymbolId }) {
+	const [phase, setPhase] = useState<AffricatePhase>("stop");
+	const label = phonemeLabels[phonemeId];
+	const stopLabel = "Stop";
+	const fricativeLabel = "Fricative";
+
+	return (
+		<div className="flex flex-col gap-2">
+			<div className="relative aspect-square w-full rounded-md bg-neutral-900/60 overflow-hidden">
+				<Image
+					src={`${BUCKET_URL}/diagrams/${TARGET_ACCENT}/${phonemeId}_stop.svg`}
+					alt={`${label} (${stopLabel})`}
+					fill
+					unoptimized
+					className={cn(
+						"absolute inset-0 object-cover transition-opacity duration-200 ease-out motion-reduce:transition-none",
+						phase === "stop" ? "opacity-100" : "opacity-0",
+					)}
+					aria-hidden={phase !== "stop"}
+				/>
+				<Image
+					src={`${BUCKET_URL}/diagrams/${TARGET_ACCENT}/${phonemeId}_fricative.svg`}
+					alt={`${label} (${fricativeLabel})`}
+					fill
+					unoptimized
+					className={cn(
+						"absolute inset-0 object-cover transition-opacity duration-200 ease-out motion-reduce:transition-none",
+						phase === "fricative" ? "opacity-100" : "opacity-0",
+					)}
+					aria-hidden={phase !== "fricative"}
+				/>
+			</div>
+
+			<ToggleGroup
+				aria-label="Affricate phase"
+				className="self-start rounded-lg bg-background-strong"
+				value={[phase]}
+				onValueChange={(nextPhase) => {
+					const [nextValue] = nextPhase;
+					if (!nextValue) return;
+					setPhase(nextValue as AffricatePhase);
+				}}
+				variant="outline"
+				size="sm"
+			>
+				<ToggleGroupItem value="stop" aria-label={stopLabel}>
+					{stopLabel}
+				</ToggleGroupItem>
+				<ToggleGroupSeparator orientation="vertical" />
+				<ToggleGroupItem value="fricative" aria-label={fricativeLabel}>
+					{fricativeLabel}
+				</ToggleGroupItem>
+			</ToggleGroup>
+		</div>
+	);
+}
+
 // --- Diphthong Glide ---
 
 type GlidePosition = "start" | "target";
-
-function capitalize(s: string) {
-	return s.charAt(0).toUpperCase() + s.slice(1);
-}
 
 function DiphthongGlide({
 	phonemeId,
@@ -112,24 +178,22 @@ function DiphthongGlide({
 	const [expanded, setExpanded] = useState<GlidePosition | null>(null);
 	const { features } = articulation;
 
-	const startLabel = `${capitalize(features.height)} ${features.backness}`;
-	const targetLabel = `${capitalize(features.targetHeight)} ${features.targetBackness}`;
+	const fullIpa = getIpaForPhonemeId(phonemeId);
+	const startIpa = fullIpa.charAt(0);
+	const targetIpa = fullIpa.slice(-1);
 
 	return (
 		<div className="flex flex-col gap-2.5">
-			<p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-				Glide
-			</p>
 			<div className="flex items-center gap-1.5">
 				<GlidePositionButton
-					label={startLabel}
+					ipa={startIpa}
 					roundness={features.roundness}
 					active={expanded === "start"}
 					onClick={() => setExpanded(expanded === "start" ? null : "start")}
 				/>
 				<MoveRight className="size-3 shrink-0 text-muted-foreground" />
 				<GlidePositionButton
-					label={targetLabel}
+					ipa={targetIpa}
 					roundness={features.targetRoundness}
 					active={expanded === "target"}
 					onClick={() => setExpanded(expanded === "target" ? null : "target")}
@@ -170,12 +234,12 @@ function DiphthongGlide({
 }
 
 function GlidePositionButton({
-	label,
+	ipa,
 	roundness,
 	active,
 	onClick,
 }: {
-	label: string;
+	ipa: string;
 	roundness: VowelArticulatoryFeatures["roundness"];
 	active: boolean;
 	onClick: () => void;
@@ -185,21 +249,19 @@ function GlidePositionButton({
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"group flex-1 flex items-start gap-1.5 rounded-lg border px-2.5 py-2 text-left transition-all duration-150 cursor-pointer",
+				"group flex-1 flex items-center gap-1.5 rounded-lg border px-2.5 py-2 text-left transition-all duration-150 cursor-pointer",
 				active
 					? "border-primary bg-primary/10 text-foreground shadow-sm"
 					: "border-border hover:border-primary/50 hover:bg-muted/50",
 			)}
 		>
-			<div className="flex-1 min-w-0">
-				<span className="block text-xs font-medium leading-tight">{label}</span>
-				<span className="block text-[10px] text-muted-foreground leading-tight mt-0.5">
-					{roundness}
-				</span>
-			</div>
+			<span className="text-lg font-medium leading-none">{ipa}</span>
+			<span className="text-[10px] text-muted-foreground leading-tight">
+				{roundness}
+			</span>
 			<ChevronDown
 				className={cn(
-					"size-3 shrink-0 mt-0.5 text-muted-foreground transition-transform duration-150",
+					"size-3 shrink-0 ml-auto text-muted-foreground transition-transform duration-150",
 					active && "rotate-180 text-primary",
 				)}
 			/>

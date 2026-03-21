@@ -7,18 +7,21 @@ export default function HomePage() {
 		<div className="flex flex-1 flex-col">
 			<a
 				href="/"
-				className="absolute top-3 left-4 z-10 text-foreground hover:text-primary transition-colors animate-in fade-in duration-500"
+				className="group absolute top-3 left-4 z-10 flex items-center gap-1.5 text-foreground hover:text-primary transition-colors animate-in fade-in duration-500"
 				aria-label="Phonaria Lab"
 			>
 				<Logo className="size-6" />
+				<span className="font-display text-sm font-medium opacity-0 blur-[4px] transition-[opacity,filter] duration-200 group-hover:opacity-100 group-hover:blur-[0px]">
+					Phonaria
+				</span>
 			</a>
 
-			<div className="flex flex-1 flex-col items-center justify-center pb-[10vh]">
+			<div className="flex flex-1 flex-col items-center pt-[12vh]">
 				<div className="w-full max-w-2xl px-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
 					<G2PInputForm />
 				</div>
 
-				<div className="w-full min-h-0 mt-2">
+				<div className="w-full min-h-0">
 					<TranscriptionDisplay />
 				</div>
 			</div>

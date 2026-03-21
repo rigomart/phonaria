@@ -22,13 +22,13 @@ export function TranscriptionInfoButton() {
 			</PopoverTrigger>
 			<PopoverContent align="end" className="sm:w-96">
 				<div className="space-y-2">
-					<h4 className="font-semibold text-sm">About This Transcription</h4>
+					<h4 className="font-semibold text-sm font-display">About This Transcription</h4>
 					<div className="space-y-2 text-xs sm:text-sm text-muted-foreground">
 						<p>
 							Pronunciations are obtained from the CMU Pronouncing Dictionary, which contains over
 							134,000 North American English words.
 						</p>
-						<p className="font-semibold">Things to know:</p>
+						<p className="font-semibold font-display">Things to know:</p>
 						<ul className="list-disc list-inside space-y-1 ml-2">
 							<li>
 								Pronunciations reflect General American English, not British or other varieties

@@ -1,13 +1,10 @@
 "use client";
 
-import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group";
 import { useMemo } from "react";
 import type { TranscribedWord } from "@/lib/types/g2p";
 import { useCurrentTranscription } from "../../_hooks/use-transcribe";
 import { useG2PStore } from "../../_store/g2p-store";
-import { CopyButton } from "./copy-button";
 import { EmptyState } from "./empty-state";
-import { TranscriptionInfoButton } from "./info-button";
 import { IpaSequence } from "./ipa-sequence";
 import { VariantSelector } from "./variant-selector";
 
@@ -60,7 +57,7 @@ export function TranscriptionDisplay() {
 	if (!result) return <EmptyState />;
 
 	return (
-		<div className="flex flex-col items-center overflow-x-auto px-4 pt-6 pb-6">
+		<div className="flex flex-col items-center overflow-x-auto px-4 py-4">
 			<div className="flex flex-wrap justify-center gap-x-6 gap-y-4 md:gap-x-8 md:gap-y-6">
 				{result.words.map((word, wordIndex) => (
 					<WordColumn key={`${word.word}-${wordIndex}`} word={word} index={wordIndex} />
@@ -68,15 +65,10 @@ export function TranscriptionDisplay() {
 			</div>
 
 			<div
-				className="mt-6 flex items-center gap-3 animate-in fade-in duration-500 fill-mode-both"
+				className="mt-6 flex justify-center animate-in fade-in duration-500 fill-mode-both"
 				style={{ animationDelay: `${result.words.length * 50 + 400}ms` }}
 			>
 				<p className="text-xs text-muted-foreground">Click any phoneme for details</p>
-				<ButtonGroup className="bg-background rounded-lg border shadow-sm">
-					<TranscriptionInfoButton />
-					<ButtonGroupSeparator />
-					<CopyButton result={result} />
-				</ButtonGroup>
 			</div>
 		</div>
 	);

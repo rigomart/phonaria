@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { Noto_Sans, Noto_Sans_Mono } from "next/font/google";
+import { Sora, Noto_Sans } from "next/font/google";
 import { Footer } from "@/components/footer";
 import Providers from "./providers";
 import "@phonaria/ui/globals.css";
+
+const sora = Sora({
+	variable: "--font-display-serif",
+	subsets: ["latin"],
+	fallback: ["system-ui", "sans-serif"],
+});
 
 const notoSans = Noto_Sans({
 	variable: "--font-noto-sans",
@@ -11,11 +17,6 @@ const notoSans = Noto_Sans({
 	preload: true,
 });
 
-const notoSansMono = Noto_Sans_Mono({
-	variable: "--font-noto-sans-mono",
-	subsets: ["latin"],
-	fallback: ["system-ui", "monospace"],
-});
 
 const SITE_NAME = "Phonaria Lab";
 const DESCRIPTION = "Experimental workspace for phonetic transcription tools";
@@ -48,7 +49,7 @@ export default function RootLayout({
 		<html
 			lang="en"
 			suppressHydrationWarning
-			className={`${notoSans.variable} ${notoSansMono.variable}`}
+			className={`${sora.variable} ${notoSans.variable}`}
 		>
 			<body className="antialiased">
 				<Providers>

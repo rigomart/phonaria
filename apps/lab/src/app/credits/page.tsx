@@ -1,3 +1,4 @@
+import { Logo } from "@/components/logo";
 import { Badge } from "@phonaria/ui/components/badge";
 import { ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
@@ -19,7 +20,7 @@ function CreditCard({ title, content, link, license }: CreditCardProps) {
 	return (
 		<div className="flex flex-col rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 overflow-hidden h-full">
 			<div className="p-4">
-				<h2 className="text-base font-semibold tracking-tight">{title}</h2>
+				<h2 className="text-base font-semibold tracking-tight font-display">{title}</h2>
 				<p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{content}</p>
 			</div>
 
@@ -102,9 +103,20 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 export default function CreditsPage() {
 	return (
 		<div className="flex flex-1 flex-col bg-background">
-			<div className="container mx-auto p-4 sm:p-6 max-w-4xl space-y-6">
+			<a
+				href="/"
+				className="group absolute top-3 left-4 z-10 flex items-center gap-1.5 text-foreground hover:text-primary transition-colors"
+				aria-label="Phonaria Lab"
+			>
+				<Logo className="size-6" />
+				<span className="font-display text-sm font-medium opacity-0 blur-[4px] transition-[opacity,filter] duration-200 group-hover:opacity-100 group-hover:blur-[0px]">
+					Phonaria
+				</span>
+			</a>
+
+			<div className="container mx-auto p-4 sm:p-6 max-w-4xl space-y-6 pt-14">
 				<div className="flex flex-col gap-1">
-					<h1 className="text-xl sm:text-2xl font-bold tracking-tight">Credits & Sources</h1>
+					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Credits & Sources</h1>
 					<p className="text-sm text-muted-foreground">
 						Phonaria uses open source projects, linguistic research, and freely licensed resources.
 					</p>
