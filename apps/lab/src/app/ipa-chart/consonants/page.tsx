@@ -17,8 +17,8 @@ export default function ConsonantsPage() {
 			<div className="w-full max-w-5xl flex flex-col gap-1">
 				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Consonants</h1>
 				<p className="text-sm text-muted-foreground">
-					{phonemeCounts.consonants} American English consonant sounds. Click any sound for details and
-					audio.
+					{phonemeCounts.consonants} American English consonant sounds. Click any sound for details
+					and audio.
 				</p>
 			</div>
 

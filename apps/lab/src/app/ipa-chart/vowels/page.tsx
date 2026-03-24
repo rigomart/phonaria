@@ -19,15 +19,17 @@ export default function VowelsPage() {
 				<div className="flex flex-col gap-1">
 					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Vowels</h1>
 					<p className="text-sm text-muted-foreground">
-						{phonemeCounts.monophthongs} American English monophthong vowel sounds. Click any sound for
-						details and audio.
+						{phonemeCounts.monophthongs} American English monophthong vowel sounds. Click any sound
+						for details and audio.
 					</p>
 				</div>
 
 				<VowelChartLegend />
 
-				<div className="max-w-2xl mx-auto min-w-96">
-					<MonophthongVowelChart entries={vowelEntries} />
+				<div className="w-full overflow-x-auto flex justify-center">
+					<div className="max-w-2xl min-w-96 shrink-0">
+						<MonophthongVowelChart entries={vowelEntries} />
+					</div>
 				</div>
 			</div>
 		</div>
