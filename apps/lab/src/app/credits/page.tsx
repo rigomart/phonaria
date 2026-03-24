@@ -1,7 +1,6 @@
 import { Badge } from "@phonaria/ui/components/badge";
 import { ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
-import { Logo } from "@/components/logo";
 
 export const metadata: Metadata = {
 	title: "Credits & Sources - Phonaria Lab",
@@ -93,6 +92,20 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 		},
 	},
 	{
+		key: "ipa-chart",
+		title: "IPA Chart",
+		content:
+			"The IPA chart is based on the International Phonetic Alphabet, maintained by the International Phonetic Association. Consonant and vowel classifications, symbols, and chart layout follow the official IPA chart.",
+		link: {
+			text: "View full IPA chart",
+			url: "https://www.internationalphoneticassociation.org/content/full-ipa-chart",
+		},
+		license: {
+			text: "CC BY-SA 3.0",
+			url: "https://creativecommons.org/licenses/by-sa/3.0/",
+		},
+	},
+	{
 		key: "phonetic-data",
 		title: "Phonetic Data",
 		content:
@@ -103,18 +116,7 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 export default function CreditsPage() {
 	return (
 		<div className="flex flex-1 flex-col bg-background">
-			<a
-				href="/"
-				className="group absolute top-3 left-4 z-10 flex items-center gap-1.5 text-foreground hover:text-primary transition-colors"
-				aria-label="Phonaria Lab"
-			>
-				<Logo className="size-6" />
-				<span className="font-display text-sm font-medium opacity-0 blur-[4px] transition-[opacity,filter] duration-200 group-hover:opacity-100 group-hover:blur-[0px]">
-					Phonaria
-				</span>
-			</a>
-
-			<div className="container mx-auto p-4 sm:p-6 max-w-4xl space-y-6 pt-14">
+			<div className="container mx-auto p-4 sm:p-6 max-w-4xl space-y-6">
 				<div className="flex flex-col gap-1">
 					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">
 						Credits & Sources

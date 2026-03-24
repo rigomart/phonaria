@@ -197,6 +197,29 @@
 	[role="button"]:not(:disabled) {
 		cursor: pointer;
 	}
+
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent) transparent;
+	}
+
+	*::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+	}
+
+	*::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	*::-webkit-scrollbar-thumb {
+		background-color: color-mix(in oklch, var(--foreground) 20%, transparent);
+		border-radius: 9999px;
+	}
+
+	*::-webkit-scrollbar-thumb:hover {
+		background-color: color-mix(in oklch, var(--foreground) 35%, transparent);
+	}
 }
 
 @layer utilities {

@@ -1,9 +1,9 @@
 "use client";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
+import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
 import type { TranscribedPhoneme } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
-import { PhonemePopoverContent } from "./phoneme-popover";
 
 interface ClickablePhonemeProps {
 	phoneme: TranscribedPhoneme;
