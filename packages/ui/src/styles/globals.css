@@ -200,7 +200,7 @@
 
 	* {
 		scrollbar-width: thin;
-		scrollbar-color: hsl(var(--foreground) / 0.2) transparent;
+		scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent) transparent;
 	}
 
 	*::-webkit-scrollbar {
@@ -213,12 +213,12 @@
 	}
 
 	*::-webkit-scrollbar-thumb {
-		background-color: hsl(var(--foreground) / 0.2);
+		background-color: color-mix(in oklch, var(--foreground) 20%, transparent);
 		border-radius: 9999px;
 	}
 
 	*::-webkit-scrollbar-thumb:hover {
-		background-color: hsl(var(--foreground) / 0.35);
+		background-color: color-mix(in oklch, var(--foreground) 35%, transparent);
 	}
 }
 

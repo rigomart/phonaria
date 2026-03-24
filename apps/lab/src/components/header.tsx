@@ -19,7 +19,7 @@ const navLinkClass =
 export function Header() {
 	return (
 		<header className="relative flex items-center justify-center px-4 py-3 animate-in fade-in duration-500">
-			<a
+			<Link
 				href="/"
 				className="group absolute left-4 flex items-center gap-1.5 text-foreground hover:text-primary transition-colors"
 				aria-label="Phonaria Lab"
@@ -28,7 +28,7 @@ export function Header() {
 				<span className="font-display text-sm font-medium opacity-0 blur-[4px] transition-[opacity,filter] duration-200 group-hover:opacity-100 group-hover:blur-[0px]">
 					Phonaria
 				</span>
-			</a>
+			</Link>
 			<nav className="flex items-center gap-3 text-sm">
 				<Link href="/" className={navLinkClass}>
 					Transcription
