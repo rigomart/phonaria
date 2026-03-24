@@ -92,6 +92,20 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 		},
 	},
 	{
+		key: "ipa-chart",
+		title: "IPA Chart",
+		content:
+			"The IPA chart is based on the International Phonetic Alphabet, maintained by the International Phonetic Association. Consonant and vowel classifications, symbols, and chart layout follow the official IPA chart.",
+		link: {
+			text: "View full IPA chart",
+			url: "https://www.internationalphoneticassociation.org/content/full-ipa-chart",
+		},
+		license: {
+			text: "CC BY-SA 3.0",
+			url: "https://creativecommons.org/licenses/by-sa/3.0/",
+		},
+	},
+	{
 		key: "phonetic-data",
 		title: "Phonetic Data",
 		content:

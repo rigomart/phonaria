@@ -1,4 +1,5 @@
 import { getLanguagePhonemeCount } from "@phonaria/phonetics-data";
+import { ScrollArea } from "@phonaria/ui/components/scroll-area";
 import type { Metadata } from "next";
 import { MonophthongVowelChart, VowelChartLegend } from "../_components/vowel-chart";
 import { getMonophthongEntries } from "../_lib/vowel-chart-data";
@@ -26,11 +27,13 @@ export default function VowelsPage() {
 
 				<VowelChartLegend />
 
-				<div className="w-full overflow-x-auto flex justify-center">
-					<div className="max-w-2xl min-w-96 shrink-0">
-						<MonophthongVowelChart entries={vowelEntries} />
+				<ScrollArea className="w-full">
+					<div className="flex justify-center">
+						<div className="w-full max-w-2xl min-w-96 shrink-0">
+							<MonophthongVowelChart entries={vowelEntries} />
+						</div>
 					</div>
-				</div>
+				</ScrollArea>
 			</div>
 		</div>
 	);
