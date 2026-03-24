@@ -40,6 +40,24 @@ export const SMALL_VOWEL_CHART_LAYOUT: VowelChartLayout = {
 	backX: 150,
 };
 
+export const LARGE_VOWEL_CHART_LAYOUT: VowelChartLayout = {
+	viewBoxWidth: 360,
+	viewBoxHeight: 260,
+	chartTop: 20,
+	chartBottom: 238,
+	frontTopX: 72,
+	frontBottomX: 120,
+	backX: 340,
+};
+
+export const VOWEL_BACKNESS_ORDER: ReadonlyArray<VowelArticulatoryFeatures["backness"]> = [
+	"front",
+	"near-front",
+	"central",
+	"near-back",
+	"back",
+] as const;
+
 const VOWEL_BACKNESS_RATIOS: Record<VowelArticulatoryFeatures["backness"], number> = {
 	front: 0,
 	"near-front": 0.25,
