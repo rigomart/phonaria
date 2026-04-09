@@ -3,9 +3,10 @@ import { PhonemeChip } from "./phoneme-chip";
 
 type InputDisplayProps = {
 	phonemes: EnglishPhonemeSymbolId[];
+	onRemove: (index: number) => void;
 };
 
-export function InputDisplay({ phonemes }: InputDisplayProps) {
+export function InputDisplay({ phonemes, onRemove }: InputDisplayProps) {
 	if (phonemes.length === 0) {
 		return (
 			<div className="flex min-h-14 items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 px-4 py-3 text-sm text-muted-foreground">
@@ -19,7 +20,7 @@ export function InputDisplay({ phonemes }: InputDisplayProps) {
 			{phonemes.map((phonemeId, index) => (
 				// biome-ignore lint/suspicious/noArrayIndexKey: phoneme list has duplicate IDs, index is the only stable key
 				<span key={`${phonemeId}-${index}`} className="animate-pop-in">
-					<PhonemeChip phonemeId={phonemeId} />
+					<PhonemeChip phonemeId={phonemeId} onClick={() => onRemove(index)} />
 				</span>
 			))}
 			<span className="ml-0.5 inline-block h-5 w-0.5 animate-pulse rounded-full bg-primary/50" />

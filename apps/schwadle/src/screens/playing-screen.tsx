@@ -17,6 +17,7 @@ export function PlayingScreen() {
 	const difficulty = useGameStore((s) => s.difficulty);
 	const addPhoneme = useGameStore((s) => s.addPhoneme);
 	const removeLastPhoneme = useGameStore((s) => s.removeLastPhoneme);
+	const removePhonemeAtIndex = useGameStore((s) => s.removePhonemeAtIndex);
 	const clearInput = useGameStore((s) => s.clearInput);
 	const submitAnswer = useGameStore((s) => s.submitAnswer);
 
@@ -50,7 +51,7 @@ export function PlayingScreen() {
 
 				{/* Input area */}
 				<div className="w-full animate-fade-in" style={{ animationDelay: "100ms" }}>
-					<InputDisplay phonemes={currentInput} />
+					<InputDisplay phonemes={currentInput} onRemove={removePhonemeAtIndex} />
 				</div>
 
 				{/* Controls */}

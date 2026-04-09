@@ -35,6 +35,7 @@ type GameState = {
 	startGame: (difficulty: Difficulty) => void;
 	addPhoneme: (phonemeId: EnglishPhonemeSymbolId) => void;
 	removeLastPhoneme: () => void;
+	removePhonemeAtIndex: (index: number) => void;
 	clearInput: () => void;
 	submitAnswer: () => void;
 	resetGame: () => void;
@@ -80,6 +81,12 @@ export const useGameStore = create<GameState>((set, get) => ({
 	removeLastPhoneme: () => {
 		set((state) => ({
 			currentInput: state.currentInput.slice(0, -1),
+		}));
+	},
+
+	removePhonemeAtIndex: (index) => {
+		set((state) => ({
+			currentInput: state.currentInput.filter((_, i) => i !== index),
 		}));
 	},
 

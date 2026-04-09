@@ -6,6 +6,8 @@ import { PhonemePopoverContent } from "./phoneme-popover-content";
 type PhonemeChipProps = {
 	phonemeId: PhonemeSymbolId;
 	status?: "correct" | "wrong" | "missing" | "extra" | "neutral";
+	/** When provided, clicking triggers this callback instead of opening a popover. */
+	onClick?: () => void;
 };
 
 const statusStyles: Record<NonNullable<PhonemeChipProps["status"]>, string> = {
@@ -19,19 +21,23 @@ const statusStyles: Record<NonNullable<PhonemeChipProps["status"]>, string> = {
 		"border-orange-500/50 bg-orange-500/15 text-orange-700 dark:border-orange-500/30 dark:text-orange-400",
 };
 
-export function PhonemeChip({ phonemeId, status = "neutral" }: PhonemeChipProps) {
+const chipClassName =
+	"inline-flex min-w-9 cursor-pointer items-center justify-center rounded-lg border px-2 py-1.5 text-sm font-semibold transition-all duration-150 hover:brightness-95 active:scale-95";
+
+export function PhonemeChip({ phonemeId, status = "neutral", onClick }: PhonemeChipProps) {
 	const ipa = getIpaForPhonemeId(phonemeId);
+
+	if (onClick) {
+		return (
+			<button type="button" onClick={onClick} className={cn(chipClassName, statusStyles[status])}>
+				{ipa}
+			</button>
+		);
+	}
 
 	return (
 		<Popover>
-			<PopoverTrigger
-				className={cn(
-					"inline-flex min-w-9 cursor-pointer items-center justify-center rounded-lg border px-2 py-1.5 text-sm font-semibold transition-all duration-150 hover:brightness-95 active:scale-95",
-					statusStyles[status],
-				)}
-			>
-				{ipa}
-			</PopoverTrigger>
+			<PopoverTrigger className={cn(chipClassName, statusStyles[status])}>{ipa}</PopoverTrigger>
 			<PopoverContent className="w-auto p-3">
 				<PhonemePopoverContent phonemeId={phonemeId} />
 			</PopoverContent>
