@@ -37,18 +37,21 @@ export function PlayingScreen() {
 				<RoundProgress currentRound={currentRound} totalRounds={totalRounds} />
 			</div>
 
-			{/* Center section: word + input + controls */}
-			<div className="flex flex-1 flex-col items-center justify-center gap-5 py-6">
-				{/* Word display */}
-				<div key={currentWord} className="animate-fade-in-down flex flex-col items-center gap-2">
-					<p className="text-4xl font-bold tracking-tight">{currentWord}</p>
-					{isEasy && (
-						<Badge variant="secondary" className="animate-scale-in">
-							{syllableCount} {syllableCount === 1 ? "syllable" : "syllables"}
-						</Badge>
-					)}
-				</div>
+			{/* Word display */}
+			<div
+				key={currentWord}
+				className="flex flex-1 flex-col items-center justify-center gap-2 animate-fade-in-down"
+			>
+				<p className="text-4xl font-bold tracking-tight">{currentWord}</p>
+				{isEasy && (
+					<Badge variant="secondary" className="animate-scale-in">
+						{syllableCount} {syllableCount === 1 ? "syllable" : "syllables"}
+					</Badge>
+				)}
+			</div>
 
+			{/* Input + controls + keyboard grouped together */}
+			<div className="flex flex-col gap-3 pb-2">
 				{/* Input area — z-20 so the search dropdown floats above controls and keyboard */}
 				<div className="relative z-20 w-full animate-fade-in" style={{ animationDelay: "100ms" }}>
 					<InputDisplay
@@ -85,11 +88,11 @@ export function PlayingScreen() {
 						Guess
 					</Button>
 				</div>
-			</div>
 
-			{/* Keyboard — anchored to bottom */}
-			<div className="animate-slide-up-keyboard rounded-xl border bg-muted/30 p-3">
-				<IpaKeyboard onSelectPhoneme={handleSelectPhoneme} audioEnabled={isEasy} />
+				{/* Keyboard */}
+				<div className="animate-slide-up-keyboard rounded-xl border bg-muted/30 p-3">
+					<IpaKeyboard onSelectPhoneme={handleSelectPhoneme} audioEnabled={isEasy} />
+				</div>
 			</div>
 		</div>
 	);
