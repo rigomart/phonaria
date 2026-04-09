@@ -64,7 +64,7 @@ export function InputDisplay({ phonemes, onRemove, onAdd, onRemoveLast }: InputD
 	}
 
 	return (
-		<div ref={containerRef} className="relative">
+		<div ref={containerRef} className="relative z-10">
 			{/* biome-ignore lint/a11y/noStaticElementInteractions: click delegates focus to the inner input */}
 			{/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard is handled by the inner input */}
 			<div
