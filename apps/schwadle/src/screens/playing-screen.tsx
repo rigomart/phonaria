@@ -31,17 +31,14 @@ export function PlayingScreen() {
 	}
 
 	return (
-		<div className="flex flex-1 flex-col px-4 py-4">
-			{/* Progress */}
-			<div className="animate-fade-in">
+		<div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-4">
+			{/* Progress — full width */}
+			<div className="w-full animate-fade-in">
 				<RoundProgress currentRound={currentRound} totalRounds={totalRounds} />
 			</div>
 
-			{/* Word display */}
-			<div
-				key={currentWord}
-				className="flex flex-1 flex-col items-center justify-center gap-2 animate-fade-in-down"
-			>
+			{/* Word display — extra breathing room */}
+			<div key={currentWord} className="flex flex-col items-center gap-2 py-4 animate-fade-in-down">
 				<p className="text-4xl font-bold tracking-tight">{currentWord}</p>
 				{isEasy && (
 					<Badge variant="secondary" className="animate-scale-in">
@@ -50,8 +47,8 @@ export function PlayingScreen() {
 				)}
 			</div>
 
-			{/* Input + controls + keyboard grouped together */}
-			<div className="flex flex-col gap-3 pb-2">
+			{/* Input + controls + keyboard */}
+			<div className="flex w-full flex-col gap-3">
 				{/* Input area — z-20 so the search dropdown floats above controls and keyboard */}
 				<div className="relative z-20 w-full animate-fade-in" style={{ animationDelay: "100ms" }}>
 					<InputDisplay
