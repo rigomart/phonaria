@@ -51,7 +51,12 @@ export function PlayingScreen() {
 
 				{/* Input area */}
 				<div className="w-full animate-fade-in" style={{ animationDelay: "100ms" }}>
-					<InputDisplay phonemes={currentInput} onRemove={removePhonemeAtIndex} />
+					<InputDisplay
+						phonemes={currentInput}
+						onRemove={removePhonemeAtIndex}
+						onAdd={addPhoneme}
+						onRemoveLast={removeLastPhoneme}
+					/>
 				</div>
 
 				{/* Controls */}
