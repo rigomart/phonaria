@@ -12,7 +12,8 @@
 				"GOOGLE_SITE_VERIFICATION",
 				"NEXT_PUBLIC_BUCKET_URL",
 				"TURSO_DATABASE_URL",
-				"TURSO_AUTH_TOKEN"
+				"TURSO_AUTH_TOKEN",
+				"VITE_BUCKET_URL"
 			],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"]
 		},
