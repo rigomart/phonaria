@@ -9,11 +9,14 @@ type PhonemeChipProps = {
 };
 
 const statusStyles: Record<NonNullable<PhonemeChipProps["status"]>, string> = {
-	neutral: "border-border bg-card text-foreground",
-	correct: "border-green-600 bg-green-500/15 text-green-700 dark:text-green-400",
-	wrong: "border-red-600 bg-red-500/15 text-red-700 dark:text-red-400",
-	missing: "border-muted-foreground/40 bg-muted/50 text-muted-foreground line-through",
-	extra: "border-orange-600 bg-orange-500/15 text-orange-700 dark:text-orange-400",
+	neutral: "border-border bg-card text-foreground shadow-sm",
+	correct:
+		"border-green-500/50 bg-green-500/15 text-green-700 dark:border-green-500/30 dark:text-green-400",
+	wrong: "border-red-500/50 bg-red-500/15 text-red-700 dark:border-red-500/30 dark:text-red-400",
+	missing:
+		"border-muted-foreground/30 bg-muted/40 text-muted-foreground/60 line-through decoration-2",
+	extra:
+		"border-orange-500/50 bg-orange-500/15 text-orange-700 dark:border-orange-500/30 dark:text-orange-400",
 };
 
 export function PhonemeChip({ phonemeId, status = "neutral" }: PhonemeChipProps) {
@@ -23,7 +26,7 @@ export function PhonemeChip({ phonemeId, status = "neutral" }: PhonemeChipProps)
 		<Popover>
 			<PopoverTrigger
 				className={cn(
-					"inline-flex min-w-8 items-center justify-center rounded-md border px-1.5 py-1 text-sm font-medium transition-colors hover:opacity-80",
+					"inline-flex min-w-9 cursor-pointer items-center justify-center rounded-lg border px-2 py-1.5 text-sm font-semibold transition-all duration-150 hover:brightness-95 active:scale-95",
 					statusStyles[status],
 				)}
 			>

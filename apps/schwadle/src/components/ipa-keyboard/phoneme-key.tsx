@@ -26,7 +26,7 @@ export function PhonemeKey({ phoneme, onSelect, audioEnabled }: PhonemeKeyProps)
 			<TooltipTrigger
 				type="button"
 				onClick={handleClick}
-				className="flex size-10 items-center justify-center rounded-md border bg-card text-sm font-medium transition-colors hover:bg-muted active:bg-muted-foreground/10"
+				className="flex size-9 items-center justify-center rounded-lg border bg-card text-sm font-medium shadow-sm transition-all duration-100 hover:bg-muted hover:shadow-none active:scale-95 active:bg-muted-foreground/10"
 			>
 				{phoneme.ipa}
 			</TooltipTrigger>

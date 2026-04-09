@@ -2,6 +2,7 @@ import { Button } from "@phonaria/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@phonaria/ui/components/card";
 import { Ear, EarOff } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { type Difficulty, useGameStore } from "@/store/game-store";
 
 export function MenuScreen() {
@@ -9,13 +10,20 @@ export function MenuScreen() {
 	const [difficulty, setDifficulty] = useState<Difficulty>("easy");
 
 	return (
-		<div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-12">
-			<div className="text-center">
+		<div className="flex flex-1 flex-col items-center justify-center gap-10 px-4 py-12">
+			{/* Title */}
+			<div className="animate-fade-in-down text-center">
 				<h1 className="text-5xl font-bold tracking-tight">Schwadle</h1>
-				<p className="mt-2 text-muted-foreground">Guess the GA pronunciation of English words</p>
+				<p className="mt-2 text-sm text-muted-foreground">
+					Guess the GA pronunciation of English words
+				</p>
 			</div>
 
-			<div className="grid w-full max-w-md gap-3 sm:grid-cols-2">
+			{/* Difficulty selector */}
+			<div
+				className="grid w-full max-w-sm gap-3 animate-fade-in-up sm:grid-cols-2"
+				style={{ animationDelay: "100ms" }}
+			>
 				<DifficultyCard
 					title="Easy"
 					description="Phoneme audio and syllable hints"
@@ -32,11 +40,18 @@ export function MenuScreen() {
 				/>
 			</div>
 
-			<Button size="lg" className="w-full max-w-md" onClick={() => startGame(difficulty)}>
-				Play
-			</Button>
+			{/* Play button */}
+			<div className="w-full max-w-sm animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+				<Button size="lg" className="w-full text-base" onClick={() => startGame(difficulty)}>
+					Play
+				</Button>
+			</div>
 
-			<p className="max-w-sm text-center text-xs text-muted-foreground">
+			{/* Description */}
+			<p
+				className="max-w-xs text-center text-xs leading-relaxed text-muted-foreground animate-fade-in"
+				style={{ animationDelay: "400ms" }}
+			>
 				5 rounds per game. Build each word's IPA transcription using the phoneme keyboard. Score
 				revealed at the end.
 			</p>
@@ -68,12 +83,19 @@ function DifficultyCard({
 					onClick();
 				}
 			}}
-			className={`cursor-pointer transition-all ${
-				selected ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"
-			}`}
+			className={cn(
+				"cursor-pointer transition-all duration-200",
+				selected
+					? "border-primary shadow-md ring-2 ring-primary/20"
+					: "border-border hover:border-primary/40 hover:shadow-sm",
+			)}
 		>
 			<CardHeader className="flex flex-row items-center gap-2 pb-1">
-				{icon}
+				<span
+					className={cn("transition-colors", selected ? "text-primary" : "text-muted-foreground")}
+				>
+					{icon}
+				</span>
 				<CardTitle className="text-base">{title}</CardTitle>
 			</CardHeader>
 			<CardContent>

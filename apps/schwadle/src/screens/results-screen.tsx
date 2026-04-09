@@ -2,7 +2,6 @@ import { getIpaForPhonemeId, type PhonemeSymbolId } from "@phonaria/phonetics-da
 import { cmuVariantToIpa } from "@phonaria/phonetics-data/languages/en";
 import { Button } from "@phonaria/ui/components/button";
 import { Card, CardContent, CardHeader } from "@phonaria/ui/components/card";
-import { Separator } from "@phonaria/ui/components/separator";
 import { Check, RotateCcw, X } from "lucide-react";
 import { PhonemeChip } from "@/components/phoneme-chip";
 import type { PhonemeResult } from "@/lib/answer-checker";
@@ -16,25 +15,61 @@ export function ResultsScreen() {
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 px-4 py-8">
-			<div className="text-center">
-				<p className="text-6xl font-bold tabular-nums">
-					{score}/{totalRounds}
+			{/* Score header */}
+			<div className="flex flex-col items-center gap-1 animate-count-pop">
+				<p className="text-7xl font-bold tabular-nums tracking-tight">
+					{score}
+					<span className="text-3xl text-muted-foreground">/{totalRounds}</span>
 				</p>
-				<p className="mt-1 text-muted-foreground">
-					{score === totalRounds ? "Perfect!" : score >= 3 ? "Nice work!" : "Keep practicing!"}
+				<p className="text-sm text-muted-foreground">
+					{score === totalRounds
+						? "Perfect score!"
+						: score >= 4
+							? "Almost there!"
+							: score >= 3
+								? "Nice work!"
+								: score >= 1
+									? "Keep practicing!"
+									: "Tough round!"}
 				</p>
 			</div>
 
-			<Separator />
-
-			<div className="flex flex-col gap-4">
-				{roundResults.map((result, index) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: results are static after game ends
-					<WordResult key={index} index={index} result={result} />
+			{/* Score bar visualization */}
+			<div
+				className="flex justify-center gap-1.5 animate-fade-in"
+				style={{ animationDelay: "200ms" }}
+			>
+				{roundResults.map((r, i) => (
+					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: static result list
+						key={i}
+						className={`h-2 w-8 rounded-full transition-all ${
+							r.answerResult.isCorrect ? "bg-green-500" : "bg-red-400"
+						}`}
+					/>
 				))}
 			</div>
 
-			<Button size="lg" className="mt-4" onClick={resetGame}>
+			{/* Per-word breakdown */}
+			<div className="flex flex-col gap-3">
+				{roundResults.map((result, index) => (
+					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: results are static after game ends
+						key={index}
+						className="animate-fade-in-up"
+						style={{ animationDelay: `${300 + index * 100}ms` }}
+					>
+						<WordResult index={index} result={result} />
+					</div>
+				))}
+			</div>
+
+			<Button
+				size="lg"
+				className="mt-2 animate-fade-in-up"
+				style={{ animationDelay: "800ms" }}
+				onClick={resetGame}
+			>
 				<RotateCcw className="size-4" />
 				Play Again
 			</Button>
@@ -60,24 +95,38 @@ function WordResult({
 	const correctIpa = cmuVariantToIpa(answerResult.bestMatchVariant);
 
 	return (
-		<Card>
+		<Card className={answerResult.isCorrect ? "border-green-500/30" : ""}>
 			<CardHeader className="flex flex-row items-center gap-3 pb-2">
-				<span className="text-xs tabular-nums text-muted-foreground">#{index + 1}</span>
+				<span className="flex size-6 items-center justify-center rounded-full bg-muted text-xs font-semibold tabular-nums">
+					{index + 1}
+				</span>
 				<span className="text-lg font-bold">{word}</span>
-				{answerResult.isCorrect ? (
-					<Check className="ml-auto size-5 text-green-600" />
-				) : (
-					<X className="ml-auto size-5 text-red-500" />
-				)}
+				<span className="ml-auto">
+					{answerResult.isCorrect ? (
+						<span className="flex size-6 items-center justify-center rounded-full bg-green-500/15">
+							<Check className="size-3.5 text-green-600" />
+						</span>
+					) : (
+						<span className="flex size-6 items-center justify-center rounded-full bg-red-500/15">
+							<X className="size-3.5 text-red-500" />
+						</span>
+					)}
+				</span>
 			</CardHeader>
-			<CardContent className="flex flex-col gap-2">
+			<CardContent className="flex flex-col gap-3">
+				{/* Correct pronunciation */}
 				<div>
-					<p className="mb-1 text-xs text-muted-foreground">Correct pronunciation</p>
-					<p className="font-mono text-sm">/{correctIpa}/</p>
+					<p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+						Correct
+					</p>
+					<p className="font-mono text-sm tracking-wide text-foreground/80">/{correctIpa}/</p>
 				</div>
 
+				{/* Your answer */}
 				<div>
-					<p className="mb-1 text-xs text-muted-foreground">Your answer</p>
+					<p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+						Your answer
+					</p>
 					<div className="flex flex-wrap gap-1">
 						{answerResult.phonemeResults.map((pr, i) => (
 							<PhonemeChip
@@ -89,9 +138,12 @@ function WordResult({
 					</div>
 				</div>
 
+				{/* Expected breakdown (only for wrong answers) */}
 				{!answerResult.isCorrect && (
 					<div>
-						<p className="mb-1 text-xs text-muted-foreground">Expected</p>
+						<p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+							Expected
+						</p>
 						<div className="flex flex-wrap gap-1">
 							{answerResult.bestMatchVariant
 								.split(" ")
@@ -103,7 +155,7 @@ function WordResult({
 										<span
 											// biome-ignore lint/suspicious/noArrayIndexKey: CMU tokens can repeat, index needed for uniqueness
 											key={`${token}-${i}`}
-											className="inline-flex min-w-8 items-center justify-center rounded-md border border-green-600/30 bg-green-500/10 px-1.5 py-1 text-sm font-medium text-green-700 dark:text-green-400"
+											className="inline-flex min-w-9 items-center justify-center rounded-lg border border-green-500/30 bg-green-500/10 px-2 py-1.5 text-sm font-semibold text-green-700 dark:text-green-400"
 										>
 											{ipa}
 										</span>

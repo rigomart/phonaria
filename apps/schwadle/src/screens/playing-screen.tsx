@@ -30,51 +30,66 @@ export function PlayingScreen() {
 	}
 
 	return (
-		<div className="flex flex-1 flex-col gap-4 px-4 py-6">
-			<RoundProgress currentRound={currentRound} totalRounds={totalRounds} />
-
-			<div className="flex flex-col items-center gap-2 py-4">
-				<p className="text-4xl font-bold tracking-tight">{currentWord}</p>
-				{isEasy && (
-					<Badge variant="secondary">
-						{syllableCount} {syllableCount === 1 ? "syllable" : "syllables"}
-					</Badge>
-				)}
+		<div className="flex flex-1 flex-col px-4 py-4">
+			{/* Progress */}
+			<div className="animate-fade-in">
+				<RoundProgress currentRound={currentRound} totalRounds={totalRounds} />
 			</div>
 
-			<InputDisplay phonemes={currentInput} />
+			{/* Center section: word + input + controls */}
+			<div className="flex flex-1 flex-col items-center justify-center gap-5 py-6">
+				{/* Word display */}
+				<div key={currentWord} className="animate-fade-in-down flex flex-col items-center gap-2">
+					<p className="text-4xl font-bold tracking-tight">{currentWord}</p>
+					{isEasy && (
+						<Badge variant="secondary" className="animate-scale-in">
+							{syllableCount} {syllableCount === 1 ? "syllable" : "syllables"}
+						</Badge>
+					)}
+				</div>
 
-			<div className="flex gap-2">
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={removeLastPhoneme}
-					disabled={currentInput.length === 0}
-					aria-label="Remove last phoneme"
+				{/* Input area */}
+				<div className="w-full animate-fade-in" style={{ animationDelay: "100ms" }}>
+					<InputDisplay phonemes={currentInput} />
+				</div>
+
+				{/* Controls */}
+				<div
+					className="flex w-full items-center gap-2 animate-fade-in"
+					style={{ animationDelay: "150ms" }}
 				>
-					<Delete className="size-4" />
-				</Button>
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={clearInput}
-					disabled={currentInput.length === 0}
-					aria-label="Clear all"
-				>
-					<RotateCcw className="size-4" />
-				</Button>
-				<Button
-					size="sm"
-					className="ml-auto"
-					onClick={submitAnswer}
-					disabled={currentInput.length === 0}
-				>
-					<SendHorizonal className="size-4" />
-					Submit
-				</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={removeLastPhoneme}
+						disabled={currentInput.length === 0}
+						aria-label="Remove last phoneme"
+					>
+						<Delete className="size-4" />
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={clearInput}
+						disabled={currentInput.length === 0}
+						aria-label="Clear all"
+					>
+						<RotateCcw className="size-4" />
+					</Button>
+					<Button
+						size="sm"
+						className="ml-auto"
+						onClick={submitAnswer}
+						disabled={currentInput.length === 0}
+					>
+						<SendHorizonal className="size-4" />
+						Submit
+					</Button>
+				</div>
 			</div>
 
-			<div className="mt-auto">
+			{/* Keyboard — anchored to bottom */}
+			<div className="animate-slide-up-keyboard rounded-xl border bg-muted/30 p-3">
 				<IpaKeyboard onSelectPhoneme={handleSelectPhoneme} audioEnabled={isEasy} />
 			</div>
 		</div>
