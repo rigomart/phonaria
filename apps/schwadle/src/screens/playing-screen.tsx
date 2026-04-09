@@ -49,8 +49,8 @@ export function PlayingScreen() {
 					)}
 				</div>
 
-				{/* Input area */}
-				<div className="w-full animate-fade-in" style={{ animationDelay: "100ms" }}>
+				{/* Input area — z-20 so the search dropdown floats above controls and keyboard */}
+				<div className="relative z-20 w-full animate-fade-in" style={{ animationDelay: "100ms" }}>
 					<InputDisplay
 						phonemes={currentInput}
 						onRemove={removePhonemeAtIndex}
