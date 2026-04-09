@@ -2,6 +2,7 @@ import { Button } from "@phonaria/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@phonaria/ui/components/card";
 import { Ear, EarOff } from "lucide-react";
 import { useState } from "react";
+import { SchwaLogo } from "@/components/schwa-logo";
 import { cn } from "@/lib/utils";
 import { type Difficulty, useGameStore } from "@/store/game-store";
 
@@ -11,12 +12,15 @@ export function MenuScreen() {
 
 	return (
 		<div className="flex flex-1 flex-col items-center justify-center gap-10 px-4 py-12">
-			{/* Title */}
-			<div className="animate-fade-in-down text-center">
-				<h1 className="text-5xl font-bold tracking-tight">Schwadle</h1>
-				<p className="mt-2 text-sm text-muted-foreground">
-					Guess the GA pronunciation of English words
-				</p>
+			{/* Logo + Title */}
+			<div className="animate-fade-in-down flex flex-col items-center gap-4 text-center">
+				<SchwaLogo className="size-16 animate-scale-in text-5xl" />
+				<div>
+					<h1 className="text-5xl font-bold tracking-tight">Schwadle</h1>
+					<p className="mt-2 text-sm text-muted-foreground">
+						Guess the GA pronunciation of English words
+					</p>
+				</div>
 			</div>
 
 			{/* Difficulty selector */}
