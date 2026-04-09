@@ -66,7 +66,6 @@ export function PlayingScreen() {
 				>
 					<Button
 						variant="outline"
-						size="sm"
 						onClick={removeLastPhoneme}
 						disabled={currentInput.length === 0}
 						aria-label="Remove last phoneme"
@@ -75,21 +74,15 @@ export function PlayingScreen() {
 					</Button>
 					<Button
 						variant="outline"
-						size="sm"
 						onClick={clearInput}
 						disabled={currentInput.length === 0}
 						aria-label="Clear all"
 					>
 						<RotateCcw className="size-4" />
 					</Button>
-					<Button
-						size="sm"
-						className="ml-auto"
-						onClick={submitAnswer}
-						disabled={currentInput.length === 0}
-					>
+					<Button className="ml-auto" onClick={submitAnswer} disabled={currentInput.length === 0}>
 						<SendHorizonal className="size-4" />
-						Submit
+						Guess
 					</Button>
 				</div>
 			</div>
