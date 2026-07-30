@@ -3,16 +3,13 @@
 /**
  * PROTOTYPE ONLY — throwaway.
  *
- * `ghost` — the palette is present but recessed.
+ * PLACEMENT: central. The palette sits in the page flow directly under the
+ * field, so the whole session — word, answer, sounds, navigation — is one
+ * centred column that never touches the viewport edges.
  *
- * No card, no border, no background, no group headings: just the 40 glyphs in a
- * loose centred wrap at low contrast, coming forward on hover and when search
- * matches them. The word and the field keep all the visual weight, which is what
- * made the original C feel calm.
- *
- * This is also the only variant with NO explain affordance — assistance comes
- * from the chips you placed and from the search results' labels. It is here to
- * test whether the explain toggle is needed at all.
+ * Trade-off against `bottom`: the palette is part of the composition, so it
+ * shares the word's visual space; but nothing is pinned, so the page reads as a
+ * single object and there is no fixed chrome to collide with Lab's footer.
  */
 
 import { useState } from "react";
@@ -22,9 +19,10 @@ import { useSessionDraft } from "../_lib/use-session-draft";
 import { ComposerField } from "./composer-field";
 import { FinishPanel } from "./finish-panel";
 import { PaletteKey } from "./palette-key";
+import { type PaletteTreatment, TREATMENT_KEY_CLASS } from "./palette-treatment";
 import { BackAction, ForwardAction, RoundDots } from "./session-nav";
 
-export function VariantGhost() {
+export function VariantCenter({ treatment }: { treatment: PaletteTreatment }) {
 	const [round, setRound] = useState(0);
 	const [finishing, setFinishing] = useState(false);
 	const { drafts, append, removeLast, removeAt } = useSessionDraft();
@@ -64,17 +62,17 @@ export function VariantGhost() {
 				onRemoveAt={(index) => removeAt(round, index)}
 			/>
 
-			{/* Recessed — glyphs only. Consonants and vowels break on their own lines
-			    so the wrap reads as ordered without needing headings. */}
+			{/* In the flow. Consonants and vowels break on their own lines so the
+			    wrap reads as ordered without needing headings. */}
 			<div className="flex flex-col items-center gap-3">
 				{[CONSONANT_KEYS, VOWEL_KEYS].map((group) => (
 					<div
-						className="flex max-w-md flex-wrap justify-center gap-x-1 gap-y-0.5"
+						className="flex max-w-lg flex-wrap justify-center gap-x-1 gap-y-0.5"
 						key={group[0].id}
 					>
 						{group.map((key) => (
 							<PaletteKey
-								className="size-8 rounded-md text-lg text-muted-foreground hover:bg-background-soft hover:text-foreground"
+								className={TREATMENT_KEY_CLASS[treatment]}
 								id={key.id}
 								key={key.id}
 								onInsert={composer.commit}

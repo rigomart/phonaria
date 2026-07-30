@@ -3,12 +3,13 @@
 /**
  * PROTOTYPE ONLY — throwaway.
  *
- * `dock` — the palette is chrome, not content.
+ * PLACEMENT: bottom. The palette is pinned to the bottom edge as chrome, the way
+ * a phone keyboard sits below an app, so it is out of the word's composition
+ * entirely and always in the same place regardless of answer length.
  *
- * Two tight rows welded to the bottom edge of the viewport with no card, no
- * border box and no group headings, the way a phone keyboard sits below an app.
- * The page above it is the original C, untouched: dots, big word, field. The
- * palette is always visible but never competes with the word for attention.
+ * Trade-off against `center`: the word and field get the whole upper page and the
+ * palette never moves; but it is fixed furniture that has to coexist with Lab's
+ * own footer, and it claims a fixed slice of every viewport.
  */
 
 import { useState } from "react";
@@ -18,9 +19,10 @@ import { useSessionDraft } from "../_lib/use-session-draft";
 import { ComposerField } from "./composer-field";
 import { FinishPanel } from "./finish-panel";
 import { PaletteKey } from "./palette-key";
+import { type PaletteTreatment, TREATMENT_KEY_CLASS } from "./palette-treatment";
 import { BackAction, ForwardAction, RoundDots } from "./session-nav";
 
-export function VariantDock() {
+export function VariantBottom({ treatment }: { treatment: PaletteTreatment }) {
 	const [round, setRound] = useState(0);
 	const [finishing, setFinishing] = useState(false);
 	const { drafts, append, removeLast, removeAt } = useSessionDraft();
@@ -45,8 +47,8 @@ export function VariantDock() {
 	const current = PROTOTYPE_SESSION[round];
 
 	return (
-		<div className="flex flex-1 flex-col pb-44">
-			<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 px-4 py-10">
+		<div className="flex flex-1 flex-col pb-52">
+			<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-7 px-4 py-12">
 				<RoundDots drafts={drafts} onJump={setRound} round={round} />
 
 				<div className="flex flex-col items-center gap-0.5">
@@ -71,31 +73,23 @@ export function VariantDock() {
 				</div>
 			</div>
 
-			{/* Keyboard chrome — no card, no labels */}
-			<div className="fixed inset-x-0 bottom-0 border-t bg-background-soft px-3 pt-2 pb-16">
+			{/* Pinned chrome. Same container for both treatments so only the keys
+			    differ between bottom-ghost and bottom-keys. */}
+			<div className="fixed inset-x-0 bottom-0 z-30 border-t bg-background-soft px-3 pt-2.5 pb-16">
 				<div className="mx-auto flex max-w-2xl flex-col gap-1.5">
-					<div className="flex flex-wrap justify-center gap-1">
-						{CONSONANT_KEYS.map((key) => (
-							<PaletteKey
-								className="size-9 rounded-md border bg-background text-lg hover:border-primary"
-								id={key.id}
-								key={key.id}
-								onInsert={composer.commit}
-								query={composer.query}
-							/>
-						))}
-					</div>
-					<div className="flex flex-wrap justify-center gap-1">
-						{VOWEL_KEYS.map((key) => (
-							<PaletteKey
-								className="size-9 rounded-md border bg-background-strong text-lg hover:border-primary"
-								id={key.id}
-								key={key.id}
-								onInsert={composer.commit}
-								query={composer.query}
-							/>
-						))}
-					</div>
+					{[CONSONANT_KEYS, VOWEL_KEYS].map((group) => (
+						<div className="flex flex-wrap justify-center gap-1" key={group[0].id}>
+							{group.map((key) => (
+								<PaletteKey
+									className={TREATMENT_KEY_CLASS[treatment]}
+									id={key.id}
+									key={key.id}
+									onInsert={composer.commit}
+									query={composer.query}
+								/>
+							))}
+						</div>
+					))}
 				</div>
 			</div>
 		</div>
