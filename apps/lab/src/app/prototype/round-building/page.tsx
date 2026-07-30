@@ -1,9 +1,13 @@
 /**
  * PROTOTYPE ONLY — throwaway route for wayfinder ticket #131.
  *
- * Three variants of the Lab round-building experience — how a learner builds and
+ * Variants of the Lab round-building experience — how a learner builds and
  * revises five IPA sound sequences — switchable via `?variant=` on
  * `/prototype/round-building`.
+ *
+ * Round 2: C won the first pass, so C and C2 are now two nav models over the
+ * same refined base (always-visible IPA panel, pre-submit check, no
+ * "review all answers" button). A and B are kept for reference only.
  *
  * Deliberately NOT built: session generation, CMU lookup, answer checking,
  * scoring, results, lessons, replay. The words and their syllable counts are
@@ -15,6 +19,7 @@ import { PrototypeSwitcher } from "../_components/prototype-switcher";
 import { VariantA } from "./_components/variant-a";
 import { VariantB } from "./_components/variant-b";
 import { VariantC } from "./_components/variant-c";
+import { VariantC2 } from "./_components/variant-c2";
 
 export const metadata: Metadata = {
 	title: "PROTOTYPE — Round building",
@@ -22,9 +27,10 @@ export const metadata: Metadata = {
 };
 
 const VARIANTS = [
-	{ key: "A", name: "Focus — one round, docked keyboard" },
-	{ key: "B", name: "Worksheet — all five rounds, chart drawer" },
-	{ key: "C", name: "Compose — type-to-build, review step" },
+	{ key: "C", name: "Stepper — Back / Next word / Finish" },
+	{ key: "C2", name: "Word rail — pick a word, finish any time" },
+	{ key: "A", name: "Focus — docked keyboard (superseded)" },
+	{ key: "B", name: "Worksheet — chart drawer (superseded)" },
 ];
 
 export default async function RoundBuildingPrototypePage({
@@ -33,14 +39,15 @@ export default async function RoundBuildingPrototypePage({
 	searchParams: Promise<{ variant?: string }>;
 }) {
 	const { variant } = await searchParams;
-	const current = VARIANTS.some((entry) => entry.key === variant) ? variant : "A";
+	const current = VARIANTS.some((entry) => entry.key === variant) ? (variant as string) : "C";
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">
+			{current === "C" && <VariantC />}
+			{current === "C2" && <VariantC2 />}
 			{current === "A" && <VariantA />}
 			{current === "B" && <VariantB />}
-			{current === "C" && <VariantC />}
-			<PrototypeSwitcher current={current as string} variants={VARIANTS} />
+			<PrototypeSwitcher current={current} variants={VARIANTS} />
 		</div>
 	);
 }
