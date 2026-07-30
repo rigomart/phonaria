@@ -1,10 +1,13 @@
 /**
  * PROTOTYPE ONLY — throwaway route for wayfinder ticket #130.
  *
- * Three variants of the post-submit reveal, switchable via `?variant=`:
- * how a submitted session shows the word score, phoneme-level corrections,
- * audio, mistake-relevant schwa teaching, and retry — without overwhelming
- * an IPA beginner.
+ * Round 2. Settled: the scoreboard shape — headline word score, stats, five
+ * word rows on one page, lessons collapsed behind a disclosure, retry footer.
+ * The walkthrough and lesson-led structures are decided against (history has
+ * them at b02aaee).
+ *
+ * The only thing still varying is word-row density: how compact can the five
+ * rows get while keeping every correction visible without clicks?
  *
  * Deliberately NOT built: real scoring (data is hardcoded per #133's
  * contract), real word audio (speech synthesis stands in), replay rules
@@ -13,9 +16,10 @@
 
 import type { Metadata } from "next";
 import { PrototypeSwitcher } from "../_components/prototype-switcher";
-import { VariantLessonLed } from "./_components/variant-lesson-led";
+import { VariantDense } from "./_components/variant-dense";
+import { VariantMixed } from "./_components/variant-mixed";
+import { VariantOpen } from "./_components/variant-open";
 import { VariantScoreboard } from "./_components/variant-scoreboard";
-import { VariantWalkthrough } from "./_components/variant-walkthrough";
 
 export const metadata: Metadata = {
 	title: "PROTOTYPE — Results & review",
@@ -23,9 +27,10 @@ export const metadata: Metadata = {
 };
 
 const VARIANTS = [
-	{ key: "scoreboard", name: "Scoreboard — drill down" },
-	{ key: "walkthrough", name: "Walkthrough — word by word" },
-	{ key: "lesson", name: "Lesson-led — debrief" },
+	{ key: "mixed", name: "Detail only on mistakes" },
+	{ key: "open", name: "All rows expanded" },
+	{ key: "dense", name: "One line per word" },
+	{ key: "scoreboard", name: "Round 1 reference — dropdowns" },
 ];
 
 export default async function ResultsReviewPrototypePage({
@@ -34,13 +39,14 @@ export default async function ResultsReviewPrototypePage({
 	searchParams: Promise<{ variant?: string }>;
 }) {
 	const { variant } = await searchParams;
-	const current = VARIANTS.find((entry) => entry.key === variant)?.key ?? "scoreboard";
+	const current = VARIANTS.find((entry) => entry.key === variant)?.key ?? "mixed";
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">
+			{current === "mixed" && <VariantMixed />}
+			{current === "open" && <VariantOpen />}
+			{current === "dense" && <VariantDense />}
 			{current === "scoreboard" && <VariantScoreboard />}
-			{current === "walkthrough" && <VariantWalkthrough />}
-			{current === "lesson" && <VariantLessonLed />}
 			<PrototypeSwitcher current={current} variants={VARIANTS} />
 		</div>
 	);

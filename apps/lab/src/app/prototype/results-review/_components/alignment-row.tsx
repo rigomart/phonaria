@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { getPaletteKey } from "../../round-building/_lib/palette";
 import type { AlignmentOp } from "../_lib/results";
 
-function Glyph({
+export function Glyph({
 	id,
 	className,
 	strike,
@@ -31,7 +31,7 @@ function Glyph({
 					<button
 						aria-label={`Details for ${key.ipa}`}
 						className={cn(
-							"flex size-8 cursor-pointer items-center justify-center rounded-md border font-display text-base leading-none data-popup-open:border-primary",
+							"flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md border font-display text-base leading-none data-popup-open:border-primary",
 							strike && "line-through decoration-2",
 							className,
 						)}
@@ -56,6 +56,51 @@ function EmptySlot({ label }: { label: string }) {
 		>
 			–
 		</span>
+	);
+}
+
+/**
+ * One line per word: matches are plain accepted glyphs; a substitution stacks
+ * the struck learner glyph over the correct one inside the line; an omission is
+ * the missed sound in green over a dashed empty slot. The row only grows where
+ * a mistake is.
+ */
+export function DenseAlignmentRow({ ops }: { ops: AlignmentOp[] }) {
+	return (
+		<div className="flex max-w-full items-end gap-1 overflow-x-auto">
+			{ops.map((op, index) => {
+				const key = `${index}-${op.kind}`;
+				if (op.kind === "match") return <Glyph className="bg-background" id={op.sound} key={key} />;
+				if (op.kind === "substitution")
+					return (
+						<span className="flex flex-col gap-0.5" key={key}>
+							<Glyph
+								className="size-6 border-destructive text-destructive text-xs"
+								id={op.learner}
+								strike
+							/>
+							<Glyph className="border-success bg-background-strong text-success" id={op.target} />
+						</span>
+					);
+				if (op.kind === "insertion")
+					return (
+						<Glyph
+							className="border-destructive bg-background text-destructive"
+							id={op.learner}
+							key={key}
+							strike
+						/>
+					);
+				return (
+					<span className="flex flex-col gap-0.5" key={key}>
+						<span className="flex size-6 items-center justify-center rounded-md border border-dashed text-muted-foreground text-xs">
+							–
+						</span>
+						<Glyph className="border-success bg-background-strong text-success" id={op.target} />
+					</span>
+				);
+			})}
+		</div>
 	);
 }
 
