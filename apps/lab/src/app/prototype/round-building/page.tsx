@@ -23,9 +23,10 @@ export const metadata: Metadata = {
 	robots: { index: false, follow: false },
 };
 
+/** `rule` is the chosen separation; the rest are kept as the record of what lost. */
 const VARIANTS: { key: Separation; name: string }[] = [
+	{ key: "rule", name: "Hairline rule — CHOSEN" },
 	{ key: "labels", name: "Group headings" },
-	{ key: "rule", name: "Hairline rule" },
 	{ key: "tint", name: "Vowels tinted" },
 	{ key: "tint-labels", name: "Vowels tinted + headings" },
 ];
@@ -37,7 +38,7 @@ export default async function RoundBuildingPrototypePage({
 }) {
 	const { variant } = await searchParams;
 	const match = VARIANTS.find((entry) => entry.key === variant);
-	const current = match?.key ?? "labels";
+	const current = match?.key ?? "rule";
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">
