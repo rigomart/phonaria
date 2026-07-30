@@ -1,13 +1,11 @@
 /**
  * PROTOTYPE ONLY — throwaway route for wayfinder ticket #131.
  *
- * Variants of the Lab round-building experience — how a learner builds and
- * revises five IPA sound sequences — switchable via `?variant=` on
- * `/prototype/round-building`.
- *
- * Round 2: C won the first pass, so C and C2 are now two nav models over the
- * same refined base (always-visible IPA panel, pre-submit check, no
- * "review all answers" button). A and B are kept for reference only.
+ * Round 3. The first pass picked C — search-first, calm, centred — so all four
+ * variants here ARE C. They keep its page (clickable dots, big word, type-to-
+ * build field, pre-submit check) and its navigation, and disagree about exactly
+ * one thing: where the always-visible IPA palette lives and how much visual
+ * weight it is allowed to carry.
  *
  * Deliberately NOT built: session generation, CMU lookup, answer checking,
  * scoring, results, lessons, replay. The words and their syllable counts are
@@ -16,10 +14,10 @@
 
 import type { Metadata } from "next";
 import { PrototypeSwitcher } from "../_components/prototype-switcher";
-import { VariantA } from "./_components/variant-a";
-import { VariantB } from "./_components/variant-b";
-import { VariantC } from "./_components/variant-c";
-import { VariantC2 } from "./_components/variant-c2";
+import { VariantDock } from "./_components/variant-dock";
+import { VariantGhost } from "./_components/variant-ghost";
+import { VariantSplit } from "./_components/variant-split";
+import { VariantStrip } from "./_components/variant-strip";
 
 export const metadata: Metadata = {
 	title: "PROTOTYPE — Round building",
@@ -27,10 +25,10 @@ export const metadata: Metadata = {
 };
 
 const VARIANTS = [
-	{ key: "C", name: "Stepper — Back / Next word / Finish" },
-	{ key: "C2", name: "Word rail — pick a word, finish any time" },
-	{ key: "A", name: "Focus — docked keyboard (superseded)" },
-	{ key: "B", name: "Worksheet — chart drawer (superseded)" },
+	{ key: "ghost", name: "Palette recessed, no card" },
+	{ key: "strip", name: "Palette as one scrolling line" },
+	{ key: "dock", name: "Palette as keyboard chrome" },
+	{ key: "split", name: "Palette as a side rail" },
 ];
 
 export default async function RoundBuildingPrototypePage({
@@ -39,14 +37,14 @@ export default async function RoundBuildingPrototypePage({
 	searchParams: Promise<{ variant?: string }>;
 }) {
 	const { variant } = await searchParams;
-	const current = VARIANTS.some((entry) => entry.key === variant) ? (variant as string) : "C";
+	const current = VARIANTS.some((entry) => entry.key === variant) ? (variant as string) : "ghost";
 
 	return (
 		<div className="flex flex-1 flex-col bg-background">
-			{current === "C" && <VariantC />}
-			{current === "C2" && <VariantC2 />}
-			{current === "A" && <VariantA />}
-			{current === "B" && <VariantB />}
+			{current === "ghost" && <VariantGhost />}
+			{current === "strip" && <VariantStrip />}
+			{current === "dock" && <VariantDock />}
+			{current === "split" && <VariantSplit />}
 			<PrototypeSwitcher current={current} variants={VARIANTS} />
 		</div>
 	);
