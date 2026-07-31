@@ -1,13 +1,13 @@
 {
-  "worktree": {
-    "symlinkDirectories": [
-      "node_modules",
-      "apps/lab/node_modules",
-      "apps/web/node_modules",
-      "packages/audio-gen/node_modules",
-      "packages/helper-scripts/node_modules",
-      "packages/phonetics-data/node_modules",
-      "packages/ui/node_modules"
-    ]
-  }
+	"worktree": {
+		"symlinkDirectories": [
+			"node_modules",
+			"apps/lab/node_modules",
+			"apps/web/node_modules",
+			"packages/audio-gen/node_modules",
+			"packages/helper-scripts/node_modules",
+			"packages/phonetics-data/node_modules",
+			"packages/ui/node_modules"
+		]
+	}
 }
