@@ -28,6 +28,10 @@ playwright/.cache/
 
 .codex
 
+# Claude Code
+.claude/worktrees/
+.claude/settings.local.json
+
 # Generated data files
 *.csv
 *.db
