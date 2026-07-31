@@ -1,0 +1,868 @@
+[
+  {
+    "category": "ui",
+    "description": "Lab header has a top-level Practice link placed after Transcription and before IPA Chart",
+    "steps": [
+      "Open any Lab page",
+      "Inspect the header navigation",
+      "Verify a plain link labeled 'Practice' (no dropdown) appears after Transcription and before IPA Chart",
+      "Click it and verify it navigates to the Practice area"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "/practice redirects to /practice/schwa while only one topic exists",
+    "steps": [
+      "Navigate to /practice",
+      "Verify the browser lands on /practice/schwa"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Topic route slug comes from the topic registry using the /practice/[topic] pattern",
+    "steps": [
+      "Inspect the practice route directory",
+      "Verify the schwa page resolves its slug from the topic registry entry rather than a hardcoded string",
+      "Verify an unknown slug does not render a topic page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Start screen shows kicker 'Practice', heading 'Schwa', the framing copy from #138, and one Start button",
+    "steps": [
+      "Navigate to /practice/schwa",
+      "Verify the kicker reads 'Practice' and the heading reads 'Schwa'",
+      "Verify the body copy matches #138's start-screen copy verbatim",
+      "Verify a single 'Start session' button is the only action"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Session generates only when Start is clicked, never on page load",
+    "steps": [
+      "Navigate to /practice/schwa",
+      "Verify no session words are chosen or displayed before clicking Start",
+      "Click Start and verify a five-word session begins"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Top-10k pool import is prefetched when the start screen mounts",
+    "steps": [
+      "Load /practice/schwa with the network panel open",
+      "Verify the top-10k module import begins on mount, before Start is clicked"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Start button is the sole loading gate: disabled/spinner if clicked before the pool import resolves",
+    "steps": [
+      "Throttle the network and load /practice/schwa",
+      "Click Start before the import resolves",
+      "Verify the button shows a pending state and the session begins once the import completes",
+      "Verify no skeletons, loading.tsx, or in-session loading states exist"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Start screen, live session, and scoreboard all run in place on /practice/schwa as client state",
+    "steps": [
+      "Play from start screen through submit",
+      "Verify the URL never changes from /practice/schwa across start, session, and scoreboard"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Browser Back mid-session abandons the session with no resume",
+    "steps": [
+      "Start a session and answer two words",
+      "Press browser Back, then return to /practice/schwa",
+      "Verify the start screen shows and the previous session state is gone"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Reload mid-session loses the session (no persistence of any kind)",
+    "steps": [
+      "Start a session and answer a word",
+      "Reload the page",
+      "Verify the start screen shows and no session state, history, or storage keys survive",
+      "Inspect localStorage/sessionStorage and verify the practice feature wrote nothing"
+    ],
+    "passes": false
+  },
+  {
+    "category": "data",
+    "description": "Word pool loads the top-10k via the existing phoneme-lookup tier-2 facade, not a new import path",
+    "steps": [
+      "Inspect apps/lab/src/lib/practice/word-pool",
+      "Verify it obtains the top-10k through the phoneme-lookup shared tier-2 facade",
+      "Verify no duplicate top-10k import or generated word-list asset exists"
+    ],
+    "passes": false
+  },
+  {
+    "category": "data",
+    "description": "Shared word-suitability filter: alphabetic characters only",
+    "steps": [
+      "Unit test the shared suitability filter",
+      "Verify words with apostrophes or non-alphabetic characters (doesn't, women's) are excluded"
+    ],
+    "passes": false
+  },
+  {
+    "category": "data",
+    "description": "Shared word-suitability filter: at least 3 letters",
+    "steps": [
+      "Unit test the shared suitability filter",
+      "Verify 1- and 2-letter words are excluded and 3-letter words pass"
+    ],
+    "passes": false
+  },
+  {
+    "category": "data",
+    "description": "Shared word-suitability filter: editorial blocklist seeded with initialisms (etc, bmw, aaa, le, feb, aug, w)",
+    "steps": [
+      "Inspect the blocklist",
+      "Verify the seed entries are present",
+      "Unit test that a blocklisted word is excluded from the pool"
+    ],
+    "passes": false
+  },
+  {
+    "category": "data",
+    "description": "Shared suitability filter lives in the practice layer and is topic-agnostic, inherited by every topic",
+    "steps": [
+      "Inspect the module layout",
+      "Verify the suitability filter is owned by the engine (not the schwa folder) and applied before topic predicates"
+    ],
+    "passes": false
+  },
+  {
+    "category": "data",
+    "description": "Schwa eligibility predicate: every CMU variant of the word contains AX",
+    "steps": [
+      "Unit test the schwa predicate",
+      "Verify a word with AX in all variants qualifies",
+      "Verify a word with AX in only some variants is excluded"
+    ],
+    "passes": false
+  },
+  {
+    "category": "data",
+    "description": "Eligibility and facets are derived at runtime; no word list or transcription is stored for the topic",
+    "steps": [
+      "Search the repo for any generated schwa word-list asset",
+      "Verify none exists and the pool is computed by filtering the loaded top-10k in the browser"
+    ],
+    "passes": false
+  },
+  {
+    "category": "data",
+    "description": "Facets computed at runtime: syllable count, schwa count, schwa position, frequency tier",
+    "steps": [
+      "Unit test facet computation for known words",
+      "Verify syllable count derives from vowel count in the stored phoneme-ID pronunciation",
+      "Verify schwa count/position and 1k-vs-10k frequency tier are computed per word"
+    ],
+    "passes": false
+  },
+  {
+    "category": "data",
+    "description": "Eligible schwa pool over the shipped top-10k is approximately 3,373 words",
+    "steps": [
+      "Run the pool derivation against the shipped top-10k JSON",
+      "Verify the eligible count is in the expected range (3,369–3,373)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "testing",
+    "description": "CI band-depth test: each syllable band stays comfortably above slot demand using real shipped data",
+    "steps": [
+      "Locate the unit test importing the real eligibility predicates and shipped top-10k JSON",
+      "Verify it computes the five syllable bands and asserts each is well above slot demand",
+      "Break a predicate locally and verify the test fails"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Session generator fills five ordered slots banded by syllable count: 2, 2–3, 3, 3–4, 4+",
+    "steps": [
+      "Unit test the generator with a fixed RNG",
+      "Verify slot 1 draws a 2-syllable word, slot 2 a 2–3, slot 3 a 3, slot 4 a 3–4, slot 5 a 4+ word"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Slot fill is a random draw from the stratum; schwa position/count act only as soft variety tie-breakers, never quotas",
+    "steps": [
+      "Inspect the generator",
+      "Verify no hard one-of-each position or count rule exists",
+      "Generate many sessions and verify draws vary within bands"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Within-session dedupe: a session never contains the same word twice (redraw on collision)",
+    "steps": [
+      "Unit test with an RNG forced to collide across overlapping bands",
+      "Verify the generator redraws and returns five distinct words"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Session generator is a pure function of (pool, slot spec, rng) with injectable RNG",
+    "steps": [
+      "Inspect the generator signature",
+      "Verify RNG is injected and the function has no side effects",
+      "Verify the same RNG seed yields the same session in a test"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Generation is memoryless across sessions: no recently-shown-words record or exclusion window",
+    "steps": [
+      "Inspect the practice layer for any cross-session word tracking",
+      "Verify none exists; each New session draws fresh from the full bands"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Session shows one word at a time, centred, with the written word as the largest element and its syllable count beneath",
+    "steps": [
+      "Start a session",
+      "Verify one word is shown, centred, visually dominant",
+      "Verify its syllable count is displayed under the word"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "A strip of five dots shows current/answered/empty state and doubles as a jump target",
+    "steps": [
+      "Start a session and answer word 1",
+      "Verify the dots distinguish current, answered, and empty",
+      "Click dot 4 and verify navigation jumps to word 4"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Nothing is pinned to the viewport: word, answer, palette, and navigation are one column in the page flow",
+    "steps": [
+      "Inspect the session screen at 1440x900 and 390x844",
+      "Verify no fixed/sticky positioning on practice surfaces and no conflict with Lab's footer"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Search field ranks plain-language input over IPA, phoneme ID, ARPABET, articulatory labels, and learner aliases",
+    "steps": [
+      "Type 'schwa' and verify /ə/ ranks first",
+      "Type 'sh' and verify /ʃ/ ranks highly",
+      "Type 'AX', 'ə', and an articulatory label; verify each finds its phoneme",
+      "Type an example word like 'cat' and verify relevant sounds are returned"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Search dropdown rows carry the articulatory label and example words",
+    "steps": [
+      "Type 'schwa'",
+      "Verify the dropdown row shows the label and example words (e.g. about, sofa)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Composer keyboard behavior: Enter commits highlighted match, arrows move highlight, Escape clears, Backspace on empty field deletes last chip",
+    "steps": [
+      "Type a query, press ArrowDown then Enter; verify the highlighted match commits as a chip",
+      "Press Escape mid-query and verify the field clears",
+      "With an empty field and chips present, press Backspace and verify the last chip is removed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Full 40-key palette is always visible beneath the composer as a central panel of bordered keys in the page flow",
+    "steps": [
+      "Start a session",
+      "Verify all 40 sounds are visible with no disclosure, drawer, or scroll needed",
+      "Verify keys render as bordered, pressable buttons"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Consonants and vowels are divided by a hairline rule and wider gap — no group headings, no tinting",
+    "steps": [
+      "Inspect the palette",
+      "Verify a hairline rule and wider gap separate the groups",
+      "Verify there are no CONSONANTS/VOWELS headings and no per-group key tint"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Searching dims the palette to the same matches the dropdown ranks",
+    "steps": [
+      "Type 'schwa'",
+      "Verify non-matching palette keys dim and matching keys stay prominent",
+      "Verify dimmed and ranked sets agree",
+      "Clear the search and verify the palette returns to full contrast"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Clicking a palette key commits that sound as a chip",
+    "steps": [
+      "Click a palette key",
+      "Verify the sound is appended to the answer as a chip"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Placed chips are a split control: tap the symbol opens the shared phoneme popover, tap × removes that chip",
+    "steps": [
+      "Place a chip",
+      "Tap its symbol and verify Lab's shared PhonemePopoverContent opens for that sound",
+      "Tap its × and verify only that chip is removed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "The palette has no explain mode: assistance is chips-plus-dropdown only",
+    "steps": [
+      "Inspect the palette",
+      "Verify there is no Explain toggle or mode switch",
+      "Verify palette taps always insert, never open a popover"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Navigation is Back and Next word, with Next word becoming Finish session on the fifth word",
+    "steps": [
+      "Start a session",
+      "Verify Back/Next word controls on words 1–4",
+      "Navigate to word 5 and verify the primary reads Finish session"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Correctness is never revealed during building: answers stay hidden until the whole session is submitted",
+    "steps": [
+      "Answer a word incorrectly and navigate away",
+      "Verify no per-word correctness feedback appears anywhere before submit"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Pre-submit check lists all five words with their sequences before grading",
+    "steps": [
+      "Click Finish session",
+      "Verify a check screen lists all five words with the chips entered",
+      "Verify no scores or correctness are shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Pre-submit check outlines blank words with a warning treatment and a 'No answer' marker",
+    "steps": [
+      "Leave a word blank and reach the pre-submit check",
+      "Verify the blank row is outlined in the warning style and marked 'No answer'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Pre-submit rows offer a per-row jump reading 'Answer it' on blanks and 'Change' on answered words",
+    "steps": [
+      "Reach the pre-submit check with one blank",
+      "Verify the blank row's action reads 'Answer it' and answered rows read 'Change'",
+      "Click one and verify it jumps to that word in the builder"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Pre-submit check offers 'Keep editing' as the way back",
+    "steps": [
+      "Reach the pre-submit check",
+      "Click 'Keep editing'",
+      "Verify return to the builder with all answers intact"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Pre-submit primary is honest: 'Submit session' when complete, 'Submit with N blanks' when not",
+    "steps": [
+      "Reach the check with all five answered; verify the primary reads 'Submit session'",
+      "Reach it with two blanks; verify it reads 'Submit with 2 blanks'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Submission is irreversible: after submit the session cannot be edited",
+    "steps": [
+      "Submit a session",
+      "Verify no path back to editing those answers exists from the scoreboard"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Comparison runs entirely in phoneme-ID space with the stress digit stripped from stored pronunciations",
+    "steps": [
+      "Unit test the normalizer",
+      "Verify 'F IX0 N AE1 N SH AX0 L' normalizes to stress-free IDs",
+      "Verify learner chips need no normalization"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "AX stays distinct from AH in comparison",
+    "steps": [
+      "Unit test: learner answers AH where the reference has AX",
+      "Verify it scores as a substitution, not a match"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Accepted variants are deduped after stress stripping",
+    "steps": [
+      "Unit test with a word whose variants collapse once stress is stripped",
+      "Verify the accepted set contains no duplicate sequences"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A word is correct only on strict equality against one of its deduped accepted pronunciations; every CMU variant is accepted",
+    "steps": [
+      "Unit test: an exact match against a non-first variant scores correct",
+      "Unit test: a near-miss (one substitution) scores incorrect",
+      "Verify no equivalence classes exist (AX ≠ IX)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A wrong answer is judged against the closest accepted pronunciation by uniform edit distance, ties broken by CMU order",
+    "steps": [
+      "Unit test a wrong answer equidistant from two variants",
+      "Verify the earlier CMU listing is chosen deterministically",
+      "Verify a closer non-first variant beats a farther first listing"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Alignment uses uniform costs (substitution/insertion/omission each 1) with fixed backtrace preference: substitution, then omission, then insertion",
+    "steps": [
+      "Unit test alignments with multiple optimal paths",
+      "Verify the same input always yields the identical operation list"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Sound accuracy is matched ÷ max(learner length, reference length), pooled across the session",
+    "steps": [
+      "Unit test: a correct answer plus one inserted sound scores below 100%",
+      "Verify the session figure pools counts across all five words rather than averaging five percentages"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A blank word scores 0 matched over the reference's full length with no special case",
+    "steps": [
+      "Unit test a blank answer",
+      "Verify matched = 0 and the denominator is the reference length",
+      "Verify blanks count in full in the pooled session accuracy"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Scorer returns raw counts only: chosen reference, has-alternates flag, full operation list, and per-target-sound tallies — never formatted percentages",
+    "steps": [
+      "Inspect the scorer's return type",
+      "Verify it exposes the matched-or-closest pronunciation, whether others exist, the op list with sounds, and tallies grouped by target sound",
+      "Verify no percentage formatting lives in the scorer"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "The scorer is topic-blind; the topic derives its schwa figure by filtering tallies to its own target sounds",
+    "steps": [
+      "Search the scoring module for any schwa/AX reference",
+      "Verify none exists",
+      "Verify the 'N of M schwas placed' figure is computed in topic code from the scorer's tallies"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Scoreboard headline is the word score — 'N of 5 words correct' — as the largest element",
+    "steps": [
+      "Submit a session",
+      "Verify the word score is the visually dominant headline"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Two quiet stat tiles: pooled sound accuracy percentage and the topic figure (schwas placed)",
+    "steps": [
+      "Submit a session with mistakes",
+      "Verify a sound-accuracy tile shows the pooled percentage",
+      "Verify a tile shows 'N of M schwas placed' derived from tallies"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Five word rows all render fully expanded with no dropdowns; each row has a correct/wrong mark, the word, and an audio button",
+    "steps": [
+      "Submit a session",
+      "Verify all five rows are expanded with nothing behind a click",
+      "Verify each row carries mark, word, and audio control"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Wrong words carry a two-line You/Accepted diff; correct and blank words a one-line accepted sequence",
+    "steps": [
+      "Submit a session containing a wrong, a correct, and a blank word",
+      "Verify the wrong word shows the two-line diff",
+      "Verify correct and blank words show the single-line accepted sequence"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Diff grammar: substitutions show the struck learner glyph over the correct sound, omissions a dashed empty slot over the missed sound, insertions a struck extra glyph",
+    "steps": [
+      "Submit answers containing a substitution, an omission, and an insertion",
+      "Verify each renders with its prescribed treatment"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Every glyph on the scoreboard — in diffs and sequences — opens Lab's shared phoneme popover",
+    "steps": [
+      "Click glyphs in a diff row and in an accepted sequence",
+      "Verify each opens PhonemePopoverContent for that sound"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "A blank word shows CMU's first listing labelled as 'an accepted pronunciation — you left this word blank'",
+    "steps": [
+      "Submit with one blank word",
+      "Verify its row shows the first listing (not the shortest variant) with the blank label"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Words with genuine alternates note 'several accepted pronunciations — yours is one of them'; single-pronunciation words say nothing",
+    "steps": [
+      "Match a non-first variant of a multi-variant word and verify the note appears without ranking",
+      "Verify a single-pronunciation word shows no such note"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Teaching lives in one collapsed disclosure at the bottom: 'About those schwas · N notes'",
+    "steps": [
+      "Submit a session with schwa mistakes",
+      "Verify one disclosure appears, collapsed by default, with the correct note count",
+      "Open it and verify the notes render pooled, never inline per word"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "The lessons disclosure does not render at all when no pattern triggers",
+    "steps": [
+      "Submit a fully correct session",
+      "Verify no disclosure appears on the scoreboard"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Scoreboard footer is a single New session primary action; there is no Retry these words",
+    "steps": [
+      "Submit a session",
+      "Verify the footer has exactly one action, 'New session'",
+      "Click it and verify a fresh session starts with newly drawn words"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Scoreboard word audio uses the Web Speech API; the button does not render where synthesis is unavailable",
+    "steps": [
+      "Click a word's audio button and verify speechSynthesis speaks the word",
+      "Stub speechSynthesis as unavailable and verify the button is absent",
+      "Verify no generated word-audio bucket assets are referenced"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Phoneme audio in the popover stays on the existing bucket pipeline",
+    "steps": [
+      "Open a phoneme popover from the practice surfaces",
+      "Verify its audio plays from the existing bucket assets, not speech synthesis"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Six lesson patterns keyed deterministically off alignment ops: omitted schwa, schwa→/ʌ/, schwa→/ɪ/, spelling-trap fallback, schwa in the wrong seat, blank word",
+    "steps": [
+      "Unit test the mistake-keyed selection with ops covering each pattern",
+      "Verify each op keys to exactly one pattern by its source/target sounds",
+      "Verify any non-AH/IH substitution onto AX falls to the spelling-trap note",
+      "Verify substitution from AX and insertion of AX both key to 'schwa in the wrong seat'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Lesson notes render in fixed catalog order, all triggered notes show (no cap), blank words are excluded from the other patterns",
+    "steps": [
+      "Submit a session triggering multiple patterns plus a blank",
+      "Verify notes appear in catalog order with none dropped",
+      "Verify the blank word triggers only the blank-word note"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Each lesson note lists the session words it was seen in, and copy matches #138 verbatim for all six patterns",
+    "steps": [
+      "Trigger each pattern and open the disclosure",
+      "Verify each note names its session words",
+      "Diff each note's copy against #138's final copy"
+    ],
+    "passes": false
+  },
+  {
+    "category": "integration",
+    "description": "Schwa topic is one self-contained folder exporting a single TopicDefinition: predicates, slot spec, target sounds, lesson catalog with selection rules, display copy",
+    "steps": [
+      "Inspect apps/lab/src/lib/practice/topics/schwa/",
+      "Verify it exports one TopicDefinition covering all five concerns",
+      "Verify it contains no UI components"
+    ],
+    "passes": false
+  },
+  {
+    "category": "integration",
+    "description": "The topic registry at src/lib/practice/topics/index.ts is the only wiring point; engine and UI never reference schwa directly",
+    "steps": [
+      "Search the engine and review UI for direct schwa imports",
+      "Verify all topic access flows through the registry",
+      "Verify adding a second topic would require only a folder and a registry entry"
+    ],
+    "passes": false
+  },
+  {
+    "category": "integration",
+    "description": "Engine is composed of pure Lab-local modules under apps/lab/src/lib/practice/: word-pool, session-generator, scoring, session store, review UI wiring",
+    "steps": [
+      "Inspect the module layout under src/lib/practice/",
+      "Verify the named modules exist, are Lab-local (no shared package), and pure modules carry sibling node-env *.test.ts files"
+    ],
+    "passes": false
+  },
+  {
+    "category": "integration",
+    "description": "Session state is one Zustand store driving the in-memory loop: build → pre-submit check → submit → review",
+    "steps": [
+      "Inspect the session store",
+      "Verify it is a single Zustand store per Lab convention",
+      "Verify it holds the full round loop in memory with no persistence middleware"
+    ],
+    "passes": false
+  },
+  {
+    "category": "integration",
+    "description": "The game is fully client-side: no server actions and no tier-3 CMUDict lookup",
+    "steps": [
+      "Search the practice feature for server actions or tier-3 lookup calls",
+      "Verify none exist; all data comes from lookup tiers 1/2"
+    ],
+    "passes": false
+  },
+  {
+    "category": "accessibility",
+    "description": "A full session is completable keyboard-only via the typing path, through to reading the scoreboard",
+    "steps": [
+      "Unplug the mouse: play a full session using only type-to-search, Enter, Backspace, and Tab",
+      "Verify dots, Back/Next, Finish, pre-submit actions, and scoreboard popovers are all reachable and operable",
+      "Verify visible focus rings throughout"
+    ],
+    "passes": false
+  },
+  {
+    "category": "accessibility",
+    "description": "Palette keys are ordinary focusable buttons in DOM order — no roving-tabindex grid",
+    "steps": [
+      "Tab through the palette",
+      "Verify each key is an ordinary button reached in DOM order with no arrow-key grid behavior"
+    ],
+    "passes": false
+  },
+  {
+    "category": "accessibility",
+    "description": "Palette keys, chips, and scoreboard glyphs carry the phoneme's plain name as accessible label — never a bare IPA glyph",
+    "steps": [
+      "Inspect accessible names on palette keys, chips, and scoreboard glyphs",
+      "Verify each reads like 'schwa, /ə/' rather than the glyph alone"
+    ],
+    "passes": false
+  },
+  {
+    "category": "accessibility",
+    "description": "One polite live region announces chip commits/removals, word changes, and the score reveal",
+    "steps": [
+      "Inspect the DOM for a single aria-live=polite region",
+      "Commit and remove a chip, change words, and submit; verify each event is announced through it"
+    ],
+    "passes": false
+  },
+  {
+    "category": "accessibility",
+    "description": "Each scoreboard diff row has a text alternative spelling out incorrect and missing sounds",
+    "steps": [
+      "Inspect a wrong word's diff row",
+      "Verify an accessible text alternative describes the substitutions/omissions in plain language"
+    ],
+    "passes": false
+  },
+  {
+    "category": "accessibility",
+    "description": "Pre-submit blank warnings are announced to assistive technology",
+    "steps": [
+      "Reach the pre-submit check with blanks using a screen reader",
+      "Verify the blank warnings are announced"
+    ],
+    "passes": false
+  },
+  {
+    "category": "accessibility",
+    "description": "All new animation honors prefers-reduced-motion by removal; the scoreboard reads fully with zero motion",
+    "steps": [
+      "Enable prefers-reduced-motion",
+      "Play through a session and reveal",
+      "Verify practice animations render instantly with no staged reveal"
+    ],
+    "passes": false
+  },
+  {
+    "category": "accessibility",
+    "description": "One VoiceOver sanity pass over the full session flow",
+    "steps": [
+      "Drive start → session → pre-submit → scoreboard with VoiceOver",
+      "Verify the flow is completable and comprehensible; record findings"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "Desktop and tablet layouts are polished; phones reflow to a single column with no horizontal scroll",
+    "steps": [
+      "Drive the full flow at 1440x900 and a tablet size",
+      "Drive it at 390x844 and verify one-column reflow, no horizontal page scroll, and no bespoke mobile layout"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui",
+    "description": "On phones, tapping palette keys alone is a complete way to play, with comfortable tap targets",
+    "steps": [
+      "At 390x844, complete a session using only palette taps and on-screen navigation",
+      "Verify tap targets remain comfortable and the search field is optional"
+    ],
+    "passes": false
+  },
+  {
+    "category": "error-handling",
+    "description": "Pool import failure at Start shows an inline error with a Retry that re-attempts the import",
+    "steps": [
+      "Simulate a failed top-10k import",
+      "Click Start and verify an inline error (not a toast) appears",
+      "Click Retry with the failure removed and verify the session starts"
+    ],
+    "passes": false
+  },
+  {
+    "category": "error-handling",
+    "description": "Audio failure in practice surfaces is never blocking and always produces visible feedback (toast), closing the silent bucket-404 gap",
+    "steps": [
+      "Simulate a phoneme-audio 404 and a speechSynthesis error",
+      "Verify each shows a toast and nothing blocks play or reading the scoreboard"
+    ],
+    "passes": false
+  },
+  {
+    "category": "error-handling",
+    "description": "An error.tsx boundary on the practice route shows a plain apology with New session recovery — never a white screen",
+    "steps": [
+      "Force a runtime error inside the practice route",
+      "Verify the boundary renders an apology and a New session action",
+      "Click it and verify a fresh session can start"
+    ],
+    "passes": false
+  },
+  {
+    "category": "error-handling",
+    "description": "No learner-facing empty states exist anywhere in the practice flow",
+    "steps": [
+      "Review every practice screen",
+      "Verify no empty-state UI is reachable by a learner; band depth is guaranteed by the CI test instead"
+    ],
+    "passes": false
+  }
+]
