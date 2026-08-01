@@ -1,6 +1,6 @@
 /**
  * Session generation: a pure function of (pool, slot spec, rng). Each slot
- * draws randomly from its syllable band; target-sound position/count act as
+ * draws randomly from its syllable band; topic-sound position/count act as
  * soft variety tie-breakers, never quotas; a session never repeats a word;
  * memoryless across sessions (#140).
  */
@@ -17,10 +17,10 @@ export type SessionRng = () => number;
 const VARIETY_REDRAWS = 4;
 
 function varietyKey(word: PoolWord): string {
-	return `${word.targetSoundCount}:${word.targetSoundPositions.join("+")}`;
+	return `${word.topicSoundCount}:${word.topicSoundPositions.join("+")}`;
 }
 
-function isInBand(word: PoolWord, band: SyllableBand): boolean {
+export function isInSyllableBand(word: PoolWord, band: SyllableBand): boolean {
 	return word.syllableCount >= band.min && (band.max === null || word.syllableCount <= band.max);
 }
 
@@ -29,13 +29,13 @@ function drawSlot(
 	seenVariety: ReadonlySet<string>,
 	rng: SessionRng,
 ): PoolWord {
-	let firstDraw: PoolWord | null = null;
-	for (let attempt = 0; attempt <= VARIETY_REDRAWS; attempt++) {
+	const firstDraw = candidates[Math.floor(rng() * candidates.length)];
+	if (!seenVariety.has(varietyKey(firstDraw))) return firstDraw;
+	for (let attempt = 0; attempt < VARIETY_REDRAWS; attempt++) {
 		const candidate = candidates[Math.floor(rng() * candidates.length)];
-		firstDraw ??= candidate;
 		if (!seenVariety.has(varietyKey(candidate))) return candidate;
 	}
-	return firstDraw as PoolWord;
+	return firstDraw;
 }
 
 /**
@@ -52,7 +52,9 @@ export function generateSession(
 	const seenVariety = new Set<string>();
 
 	for (const band of slots) {
-		const candidates = pool.filter((word) => isInBand(word, band) && !usedWords.has(word.word));
+		const candidates = pool.filter(
+			(word) => isInSyllableBand(word, band) && !usedWords.has(word.word),
+		);
 		if (candidates.length === 0) {
 			throw new Error(`No eligible words for slot band ${band.min}–${band.max ?? "∞"} syllables`);
 		}

@@ -3,7 +3,7 @@ import type { TopicDefinition } from "../types";
 
 /**
  * A word qualifies only when every CMU variant contains schwa — if only some
- * variants had it, a learner could dodge the target sound entirely.
+ * variants had it, a learner could dodge the topic sound entirely.
  */
 export function everyVariantContainsSchwa(variants: readonly string[]): boolean {
 	return (
@@ -16,7 +16,7 @@ export function everyVariantContainsSchwa(variants: readonly string[]): boolean 
 
 export const SchwaTopic: TopicDefinition = {
 	id: "schwa",
-	targetSounds: ["AX"],
+	topicSounds: ["AX"],
 	isEligibleWord: everyVariantContainsSchwa,
 	slotSpec: [
 		{ min: 2, max: 2 },

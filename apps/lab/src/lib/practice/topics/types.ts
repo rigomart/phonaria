@@ -23,7 +23,7 @@ export interface TopicDefinition {
 	/** Registry key, also the route slug under /practice/[topic]. */
 	id: string;
 	/** Sounds the topic teaches; word-pool facets are computed against these. */
-	targetSounds: readonly PhonemeSymbolId[];
+	topicSounds: readonly PhonemeSymbolId[];
 	/**
 	 * Topic-specific eligibility over a word's CMU variants. Composed with the
 	 * engine-owned word-suitability filter — it never re-implements it.

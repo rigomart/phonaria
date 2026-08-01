@@ -21,7 +21,7 @@ function makeData(words: Record<string, string[]>): CuratedWordData {
 function makeTopic(): TopicDefinition {
 	return {
 		id: "test-topic",
-		targetSounds: ["AX"],
+		topicSounds: ["AX"],
 		isEligibleWord: (variants) =>
 			variants.every((v) => v.split(" ").some((t) => t.replace(/[012]$/, "") === "AX")),
 		slotSpec: [],
@@ -71,7 +71,7 @@ describe("deriveWordPool", () => {
 		expect(pool.map((w) => w.word)).toEqual(["about"]);
 	});
 
-	it("computes syllable count, target-sound count, and positions from the first variant", () => {
+	it("computes syllable count, topic-sound count, and positions from the first variant", () => {
 		const data = makeData({
 			about: ["AX0 B AU1 T"],
 			banana: ["B AX0 N AE1 N AX0"],
@@ -82,17 +82,17 @@ describe("deriveWordPool", () => {
 
 		const about = byWord.get("about");
 		expect(about?.syllableCount).toBe(2);
-		expect(about?.targetSoundCount).toBe(1);
-		expect(about?.targetSoundPositions).toEqual(["initial"]);
+		expect(about?.topicSoundCount).toBe(1);
+		expect(about?.topicSoundPositions).toEqual(["initial"]);
 
 		const banana = byWord.get("banana");
 		expect(banana?.syllableCount).toBe(3);
-		expect(banana?.targetSoundCount).toBe(2);
-		expect(banana?.targetSoundPositions).toEqual(["initial", "final"]);
+		expect(banana?.topicSoundCount).toBe(2);
+		expect(banana?.topicSoundPositions).toEqual(["initial", "final"]);
 
 		const believer = byWord.get("believer");
 		expect(believer?.syllableCount).toBe(3);
-		expect(believer?.targetSoundPositions).toEqual(["medial"]);
+		expect(believer?.topicSoundPositions).toEqual(["medial"]);
 	});
 
 	it("records frequency rank and tier from data order", () => {

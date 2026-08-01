@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { generateSession } from "./session-generator";
 import type { SyllableBand } from "./topics/types";
-import type { PoolWord, TargetSoundPosition } from "./word-pool";
+import type { PoolWord, TopicSoundPosition } from "./word-pool";
 
 function makeWord(
 	word: string,
 	syllableCount: number,
-	targetSoundPositions: TargetSoundPosition[] = ["initial"],
+	topicSoundPositions: TopicSoundPosition[] = ["initial"],
 ): PoolWord {
 	return {
 		word,
@@ -14,8 +14,8 @@ function makeWord(
 		rank: 0,
 		frequencyTier: "top-1k",
 		syllableCount,
-		targetSoundCount: targetSoundPositions.length,
-		targetSoundPositions,
+		topicSoundCount: topicSoundPositions.length,
+		topicSoundPositions,
 	};
 }
 
@@ -44,7 +44,7 @@ const FIVE_SLOTS: SyllableBand[] = [
 
 function makeBroadPool(): PoolWord[] {
 	const pool: PoolWord[] = [];
-	const positions: TargetSoundPosition[][] = [["initial"], ["medial"], ["final"]];
+	const positions: TopicSoundPosition[][] = [["initial"], ["medial"], ["final"]];
 	for (let syllables = 2; syllables <= 5; syllables++) {
 		for (let i = 0; i < 15; i++) {
 			pool.push(makeWord(`w${syllables}s${i}`, syllables, positions[i % positions.length]));
@@ -91,7 +91,7 @@ describe("generateSession", () => {
 		}
 	});
 
-	it("prefers target-sound variety unseen in the session", () => {
+	it("prefers topic-sound variety unseen in the session", () => {
 		const pool = [
 			makeWord("aaa-initial", 2, ["initial"]),
 			makeWord("bbb-final", 2, ["final"]),

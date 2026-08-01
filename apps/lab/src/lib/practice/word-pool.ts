@@ -42,8 +42,8 @@ export function frequencyTierForRank(rank: number): FrequencyTier {
 	return "top-10k";
 }
 
-/** Syllable-band position of one target-sound occurrence within a word. */
-export type TargetSoundPosition = "initial" | "medial" | "final";
+/** Position of one topic-sound occurrence among a word's syllables. */
+export type TopicSoundPosition = "initial" | "medial" | "final";
 
 export interface PoolWord {
 	word: string;
@@ -54,18 +54,23 @@ export interface PoolWord {
 	frequencyTier: FrequencyTier;
 	/** Facets below are computed from the first CMU variant. */
 	syllableCount: number;
-	targetSoundCount: number;
-	/** One entry per target-sound occurrence, in order of appearance. */
-	targetSoundPositions: readonly TargetSoundPosition[];
+	topicSoundCount: number;
+	/** One entry per topic-sound occurrence, in order of appearance. */
+	topicSoundPositions: readonly TopicSoundPosition[];
 }
 
 /**
  * Derives the topic's word pool from tier-2 data: shared suitability filter,
- * then the topic's own predicate, then runtime facets against its target
+ * then the topic's own predicate, then runtime facets against its topic
  * sounds. Pure and synchronous; callers load the data via the tier-2 façade.
+ *
+ * Facets come from the first CMU variant (consistent with the reveal's
+ * "CMU's first listing"), and topic-sound occurrences are counted among
+ * vowel nuclei only — a topic teaching a consonant sound will need this
+ * extended before its facets mean anything.
  */
 export function deriveWordPool(data: CuratedWordData, topic: TopicDefinition): PoolWord[] {
-	const targetSounds = new Set<PhonemeSymbolId>(topic.targetSounds);
+	const topicSounds = new Set<PhonemeSymbolId>(topic.topicSounds);
 	const pool: PoolWord[] = [];
 
 	let rank = -1;
@@ -80,12 +85,12 @@ export function deriveWordPool(data: CuratedWordData, topic: TopicDefinition): P
 			if (baseId && getPhonemeCategory(baseId) === "vowel") nuclei.push(baseId);
 		}
 
-		const targetSoundPositions: TargetSoundPosition[] = [];
+		const topicSoundPositions: TopicSoundPosition[] = [];
 		nuclei.forEach((nucleus, index) => {
-			if (!targetSounds.has(nucleus)) return;
-			if (index === 0) targetSoundPositions.push("initial");
-			else if (index === nuclei.length - 1) targetSoundPositions.push("final");
-			else targetSoundPositions.push("medial");
+			if (!topicSounds.has(nucleus)) return;
+			if (index === 0) topicSoundPositions.push("initial");
+			else if (index === nuclei.length - 1) topicSoundPositions.push("final");
+			else topicSoundPositions.push("medial");
 		});
 
 		pool.push({
@@ -94,8 +99,8 @@ export function deriveWordPool(data: CuratedWordData, topic: TopicDefinition): P
 			rank,
 			frequencyTier: frequencyTierForRank(rank),
 			syllableCount: nuclei.length,
-			targetSoundCount: targetSoundPositions.length,
-			targetSoundPositions,
+			topicSoundCount: topicSoundPositions.length,
+			topicSoundPositions,
 		});
 	}
 
