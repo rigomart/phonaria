@@ -14,9 +14,8 @@ interface StartScreenProps {
 }
 
 /**
- * Entry to a practice topic. Start is the sole loading gate — no skeletons —
- * and a failed word-pool import blocks the experience with an inline retry
- * rather than a dismissable toast (#140, #144).
+ * Start is the sole loading gate — no skeletons — and a failed pool import
+ * blocks with an inline retry rather than a dismissable toast (#140).
  */
 export function StartScreen({ topic, poolStatus, onStart, onRetry }: StartScreenProps) {
 	const isLoading = poolStatus === "idle" || poolStatus === "loading";

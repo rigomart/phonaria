@@ -1,10 +1,9 @@
 "use client";
 
 /**
- * Temporary scaffolding so the session loop is drivable end-to-end while the
- * designed UI lands: the round builder (palette, search, chips) is #145 and
- * the scoreboard reveal is #146. Everything here reads and drives the session
- * store only — replacing it should require no store changes.
+ * Temporary scaffolding so the session loop is drivable while the designed UI
+ * lands — round builder is #145, scoreboard reveal is #146. Drives the store
+ * only, so replacing it should need no store changes.
  */
 import { PhonemeIpaMap, type PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
@@ -18,10 +17,7 @@ import {
 	usePracticeSessionStore,
 } from "../_store/practice-session-store";
 
-/**
- * Sequences travel as plain phoneme-ID strings through the scorer, so display
- * falls back to the raw ID rather than trusting the cast.
- */
+/** Sequences are plain strings through the scorer, so don't trust the cast. */
 function toIpa(sound: string): string {
 	return PhonemeIpaMap[sound as PhonemeSymbolId] ?? sound;
 }

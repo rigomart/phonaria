@@ -1,8 +1,7 @@
 /**
- * Memoizes an async load so concurrent callers share one request, while
- * leaving failures retryable: a rejection clears the cache instead of being
- * remembered forever. Caching a rejected promise would make any "Retry"
- * affordance a no-op for the rest of the tab's life (#144).
+ * Memoizes an async load so concurrent callers share one request, but clears
+ * the cache on rejection — remembering a failure would make any Retry a no-op
+ * for the rest of the tab's life.
  */
 export function createRetryableLoader<T>(load: () => Promise<T>): () => Promise<T> {
 	let pending: Promise<T> | null = null;

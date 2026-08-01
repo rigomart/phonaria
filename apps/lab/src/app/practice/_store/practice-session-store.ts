@@ -1,11 +1,9 @@
 /**
  * The in-memory practice session loop: build → pre-submit check → submit →
- * review. Everything lives in this store for the lifetime of the page —
- * reload or Back abandons the session, by design (#140, #144).
+ * review. Reload or Back abandons the session, by design (#140).
  *
- * Dependencies (pool loader, rng) are injected as optional trailing arguments
- * so the whole loop is testable without mocks, mirroring the engine's
- * `generateSession(pool, slots, rng)` seam.
+ * The pool loader and rng are optional trailing arguments so the loop is
+ * testable without mocks, mirroring `generateSession(pool, slots, rng)`.
  */
 import { create } from "zustand";
 import { scoreWord, type WordScore } from "@/lib/practice/scoring";
@@ -13,30 +11,29 @@ import { generateSession, type SessionRng } from "@/lib/practice/session-generat
 import type { TopicDefinition } from "@/lib/practice/topics/types";
 import { loadWordPoolForTopic, type PoolWord } from "@/lib/practice/word-pool";
 
-/** Where the learner is in the session loop. */
 export type PracticePhase = "idle" | "building" | "checking" | "review";
 
-/** Loading state of the topic's word pool, which gates Start. */
 export type PoolStatus = "idle" | "loading" | "ready" | "error";
 
 export interface PracticeRound {
 	word: PoolWord;
-	/** The learner's sound sequence in phoneme-ID space; empty means blank. */
+	/** Phoneme IDs; empty means the learner left the word blank. */
 	sequence: string[];
 }
 
 export type PoolLoader = (topic: TopicDefinition) => Promise<PoolWord[]>;
 
-interface PracticeSessionStore {
+interface PracticeSessionState {
 	topicId: string | null;
 	phase: PracticePhase;
 	poolStatus: PoolStatus;
 	pool: PoolWord[] | null;
 	rounds: PracticeRound[];
 	currentIndex: number;
-	/** Set once on submit; null until the session is revealed. */
 	scores: WordScore[] | null;
+}
 
+interface PracticeSessionActions {
 	prefetchPool: (topic: TopicDefinition, loadPool?: PoolLoader) => Promise<void>;
 	startSession: (topic: TopicDefinition, rng?: SessionRng) => void;
 
@@ -53,43 +50,27 @@ interface PracticeSessionStore {
 	editRound: (index: number) => void;
 	submit: () => void;
 
-	/** Drops the session but keeps the loaded pool, so returning is instant. */
+	/** Drops the session but keeps the pool; `reset` also drops the pool. */
 	abandon: () => void;
-	/** Full teardown, including the pool. */
 	reset: () => void;
 }
+
+type PracticeSessionStore = PracticeSessionState & PracticeSessionActions;
 
 const initialSessionState = {
 	phase: "idle",
 	rounds: [],
 	currentIndex: 0,
 	scores: null,
-} satisfies Pick<PracticeSessionStore, "phase" | "rounds" | "currentIndex" | "scores">;
+} satisfies Partial<PracticeSessionState>;
 
 const initialState = {
 	...initialSessionState,
 	topicId: null,
 	poolStatus: "idle",
 	pool: null,
-} satisfies Omit<
-	PracticeSessionStore,
-	| "prefetchPool"
-	| "startSession"
-	| "appendSound"
-	| "removeSoundAt"
-	| "clearSequence"
-	| "goToRound"
-	| "nextRound"
-	| "prevRound"
-	| "openCheck"
-	| "keepEditing"
-	| "editRound"
-	| "submit"
-	| "abandon"
-	| "reset"
->;
+} satisfies PracticeSessionState;
 
-/** Replaces the current round's sequence, if the session is editable. */
 function withCurrentSequence(
 	state: PracticeSessionStore,
 	next: (sequence: string[]) => string[],
@@ -109,15 +90,14 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 	prefetchPool: async (topic, loadPool = loadWordPoolForTopic) => {
 		const { topicId, poolStatus } = get();
 		const isCurrentTopic = topicId === topic.id;
-		// Already loaded or in flight for this topic — nothing to do. An error
-		// status deliberately falls through, so Retry is just another prefetch.
+		// An error status falls through, so Retry is just another prefetch.
 		if (isCurrentTopic && (poolStatus === "loading" || poolStatus === "ready")) return;
 
 		set({ topicId: topic.id, poolStatus: "loading", pool: null });
 
 		try {
 			const pool = await loadPool(topic);
-			// A newer topic took over while this was in flight — drop the result.
+			// A newer topic took over mid-flight — drop the stale result.
 			if (get().topicId !== topic.id) return;
 			set({ pool, poolStatus: "ready" });
 		} catch {
@@ -196,8 +176,7 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 
 	submit: () => {
 		const { phase, rounds } = get();
-		// Submit is irreversible: it is reachable only from the pre-submit check,
-		// and review has no way back into building.
+		// Irreversible: reachable only from the check, and review has no way back.
 		if (phase !== "checking") return;
 
 		const scores = rounds.map((round) => scoreWord(round.sequence, [...round.word.variants]));
@@ -209,12 +188,10 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 	reset: () => set({ ...initialState }),
 }));
 
-/** Rounds the learner left empty — surfaced by the pre-submit check. */
 export function selectBlankCount(rounds: readonly PracticeRound[]): number {
 	return rounds.filter((round) => round.sequence.length === 0).length;
 }
 
-/** The primary score: whole words matched exactly against an accepted variant. */
 export function selectWordsCorrect(scores: readonly Pick<WordScore, "correct">[]): number {
 	return scores.filter((score) => score.correct).length;
 }
@@ -222,9 +199,8 @@ export function selectWordsCorrect(scores: readonly Pick<WordScore, "correct">[]
 type SoundAccuracyInput = Pick<WordScore, "matched" | "learnerLength" | "referenceLength">;
 
 /**
- * Secondary score, pooled across the whole session rather than averaged per
- * word — so a long word carries more weight than a short one, and skipping
- * never beats attempting. Null when there is nothing to score.
+ * Pooled across the session, never averaged per word — so skipping never
+ * beats attempting. Null when there is nothing to score.
  */
 export function selectSoundAccuracy(scores: readonly SoundAccuracyInput[]): number | null {
 	const denominator = scores.reduce(
@@ -237,10 +213,7 @@ export function selectSoundAccuracy(scores: readonly SoundAccuracyInput[]): numb
 	return matched / denominator;
 }
 
-/**
- * The topic figure ("4 of 7 schwas placed"). The scorer stays topic-blind and
- * reports every sound; the topic decides which ones it teaches.
- */
+/** Filters the topic-blind scorer's per-sound counts down to what it teaches. */
 export function selectTopicSoundTally(
 	scores: readonly Pick<WordScore, "tallies">[],
 	topicSounds: readonly string[],

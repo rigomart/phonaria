@@ -27,7 +27,6 @@ export default async function PracticeTopicPage({ params }: PracticeTopicPagePro
 	const { topic: slug } = await params;
 	if (!getTopic(slug)) notFound();
 
-	// A TopicDefinition carries predicate functions, so it cannot cross the
-	// server/client boundary — the client re-resolves it from the registry.
+	// A TopicDefinition carries predicates, so it cannot cross to the client.
 	return <PracticeExperience topicId={slug} />;
 }

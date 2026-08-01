@@ -8,10 +8,7 @@ import { createRetryableLoader } from "../retryable-loader";
 
 export { tokenizeText } from "../g2p/text-processing";
 
-/**
- * Tier 2 is a lazy chunk: fetched at most once, shared by concurrent callers,
- * and retryable after a failed load so callers can offer a working Retry.
- */
+/** Lazy chunk: fetched at most once, and retryable after a failed load. */
 export const loadTier2: () => Promise<CuratedWordData> = createRetryableLoader(() =>
 	import("@phonaria/phonetics-data/data/en/curated-10k").then(
 		(module) => module.EnglishCuratedTop10k,
