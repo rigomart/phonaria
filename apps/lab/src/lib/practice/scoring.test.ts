@@ -1,32 +1,21 @@
 import { describe, expect, it } from "vitest";
-import {
-	alignSequences,
-	normalizeAcceptedVariants,
-	normalizeVariant,
-	scoreWord,
-	stripStress,
-} from "./scoring";
+import { alignSequences, normalizeAcceptedVariants, normalizeVariant, scoreWord } from "./scoring";
 
-describe("stripStress", () => {
-	it("removes the stress digit from vowel tokens", () => {
-		expect(stripStress("AX0")).toBe("AX");
-		expect(stripStress("AU1")).toBe("AU");
-		expect(stripStress("OU2")).toBe("OU");
+describe("normalizeVariant", () => {
+	it("strips stress digits, yielding palette-space phoneme IDs", () => {
+		expect(normalizeVariant("T AX0 M EI1 T OU2")).toEqual(["T", "AX", "M", "EI", "T", "OU"]);
 	});
 
 	it("leaves consonant tokens unchanged", () => {
-		expect(stripStress("T")).toBe("T");
-		expect(stripStress("DH")).toBe("DH");
-	});
-});
-
-describe("normalizeVariant", () => {
-	it("splits a stored pronunciation into palette-space phoneme IDs", () => {
-		expect(normalizeVariant("T AX0 M EI1 T OU2")).toEqual(["T", "AX", "M", "EI", "T", "OU"]);
+		expect(normalizeVariant("DH AX0")).toEqual(["DH", "AX"]);
 	});
 
 	it("ignores extra whitespace", () => {
 		expect(normalizeVariant(" DH  AX0 ")).toEqual(["DH", "AX"]);
+	});
+
+	it("throws on tokens that are not known phoneme IDs", () => {
+		expect(() => normalizeVariant("DH QQ0")).toThrow();
 	});
 });
 

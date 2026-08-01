@@ -8,6 +8,8 @@
  * (e.g. what schwa is); topics filter the per-sound tallies downstream.
  */
 
+import { extractBasePhonemeId } from "@phonaria/phonetics-data";
+
 /** One step in the alignment between a learner sequence and a reference. */
 export type AlignmentOp =
 	| { kind: "match"; sound: string }
@@ -39,17 +41,15 @@ export interface WordScore {
 	tallies: Record<string, SoundTally>;
 }
 
-/** Strips the trailing stress digit from a stored phoneme token. */
-export function stripStress(token: string): string {
-	return token.replace(/[0-2]$/, "");
-}
-
-/** Converts one stored CMU pronunciation into a palette-space sequence. */
+/**
+ * Converts one stored CMU pronunciation into a palette-space sequence.
+ * Throws on tokens that aren't known phoneme IDs.
+ */
 export function normalizeVariant(cmuVariant: string): string[] {
 	return cmuVariant
 		.split(" ")
 		.filter((token) => token.length > 0)
-		.map(stripStress);
+		.map((token) => extractBasePhonemeId(token));
 }
 
 /**
@@ -118,22 +118,6 @@ export function alignSequences(learner: string[], reference: string[]): Alignmen
 	return reversed.reverse();
 }
 
-function editDistance(learner: string[], reference: string[]): number {
-	const m = learner.length;
-	const n = reference.length;
-	let previous = Array.from({ length: n + 1 }, (_, j) => j);
-	for (let i = 1; i <= m; i++) {
-		const current = new Array<number>(n + 1);
-		current[0] = i;
-		for (let j = 1; j <= n; j++) {
-			const subCost = learner[i - 1] === reference[j - 1] ? 0 : 1;
-			current[j] = Math.min(previous[j - 1] + subCost, current[j - 1] + 1, previous[j] + 1);
-		}
-		previous = current;
-	}
-	return previous[n];
-}
-
 /**
  * Scores a learner's palette sequence against a word's stored CMU
  * pronunciations. A blank answer (empty learner sequence) flows through the
@@ -147,17 +131,20 @@ export function scoreWord(learner: string[], cmuVariants: string[]): WordScore {
 	}
 
 	let referenceIndex = 0;
+	let bestOps: AlignmentOp[] = [];
 	let bestDistance = Number.POSITIVE_INFINITY;
 	for (let index = 0; index < accepted.length; index++) {
-		const distance = editDistance(learner, accepted[index]);
+		const ops = alignSequences(learner, accepted[index]);
+		const distance = ops.filter((op) => op.kind !== "match").length;
 		if (distance < bestDistance) {
 			bestDistance = distance;
+			bestOps = ops;
 			referenceIndex = index;
 		}
 	}
 
 	const reference = accepted[referenceIndex];
-	const ops = alignSequences(learner, reference);
+	const ops = bestOps;
 
 	const tallies: Record<string, SoundTally> = {};
 	for (const sound of reference) {
