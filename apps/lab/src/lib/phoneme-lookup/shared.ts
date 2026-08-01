@@ -4,19 +4,19 @@ import {
 } from "@phonaria/phonetics-data/data/en/curated-1k";
 import type { G2PSyllable } from "../g2p/model";
 import { syllabify } from "../g2p/syllabifier";
+import { createRetryableLoader } from "../retryable-loader";
 
 export { tokenizeText } from "../g2p/text-processing";
 
-let tier2Promise: Promise<CuratedWordData> | null = null;
-
-export function loadTier2(): Promise<CuratedWordData> {
-	if (!tier2Promise) {
-		tier2Promise = import("@phonaria/phonetics-data/data/en/curated-10k").then(
-			(module) => module.EnglishCuratedTop10k,
-		);
-	}
-	return tier2Promise;
-}
+/**
+ * Tier 2 is a lazy chunk: fetched at most once, shared by concurrent callers,
+ * and retryable after a failed load so callers can offer a working Retry.
+ */
+export const loadTier2: () => Promise<CuratedWordData> = createRetryableLoader(() =>
+	import("@phonaria/phonetics-data/data/en/curated-10k").then(
+		(module) => module.EnglishCuratedTop10k,
+	),
+);
 
 export function cmuToSyllables(cmuVariant: string): G2PSyllable[] {
 	const tokens = cmuVariant.split(" ").filter((t) => t.length > 0);
