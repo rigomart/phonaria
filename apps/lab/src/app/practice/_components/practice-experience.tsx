@@ -13,6 +13,7 @@ import { StartScreen } from "./start-screen";
 export function PracticeExperience({ topicId }: { topicId: string }) {
 	const phase = usePracticeSessionStore((state) => state.phase);
 	const poolStatus = usePracticeSessionStore((state) => state.poolStatus);
+	const sessionError = usePracticeSessionStore((state) => state.sessionError);
 	const prefetchPool = usePracticeSessionStore((state) => state.prefetchPool);
 	const startSession = usePracticeSessionStore((state) => state.startSession);
 	const abandon = usePracticeSessionStore((state) => state.abandon);
@@ -34,8 +35,9 @@ export function PracticeExperience({ topicId }: { topicId: string }) {
 			<StartScreen
 				topic={topic}
 				poolStatus={poolStatus}
+				sessionError={sessionError}
 				onStart={() => startSession(topic)}
-				onRetry={() => void prefetchPool(topic)}
+				onRetryPool={() => void prefetchPool(topic)}
 			/>
 		);
 	}

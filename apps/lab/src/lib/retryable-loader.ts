@@ -8,7 +8,10 @@ export function createRetryableLoader<T>(load: () => Promise<T>): () => Promise<
 
 	return () => {
 		if (!pending) {
-			pending = load().catch((error: unknown) => {
+			// The wrapper calls `load` synchronously, so concurrent callers still
+			// share one in-flight request, but a synchronous throw surfaces as a
+			// rejection instead of escaping past the memo.
+			pending = (async () => load())().catch((error: unknown) => {
 				pending = null;
 				throw error;
 			});

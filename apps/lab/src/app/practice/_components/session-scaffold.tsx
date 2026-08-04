@@ -11,6 +11,7 @@ import type { TopicDefinition } from "@/lib/practice/topics/types";
 import {
 	type PracticeRound,
 	selectBlankCount,
+	selectReviewRows,
 	selectSoundAccuracy,
 	selectTopicSoundTally,
 	selectWordsCorrect,
@@ -66,6 +67,7 @@ function RoundBuilder({ topic }: { topic: TopicDefinition }) {
 
 function PreSubmitCheck() {
 	const rounds = usePracticeSessionStore((state) => state.rounds);
+	const sessionError = usePracticeSessionStore((state) => state.sessionError);
 	const keepEditing = usePracticeSessionStore((state) => state.keepEditing);
 	const editRound = usePracticeSessionStore((state) => state.editRound);
 	const submit = usePracticeSessionStore((state) => state.submit);
@@ -75,6 +77,11 @@ function PreSubmitCheck() {
 	return (
 		<div className="w-full max-w-md flex flex-col gap-4">
 			<h1 className="text-xl font-bold tracking-tight font-display">Before you submit</h1>
+			{sessionError ? (
+				<p role="alert" className="rounded-lg border border-border bg-muted p-3 text-sm">
+					{sessionError}
+				</p>
+			) : null}
 			<ul className="flex flex-col gap-2">
 				{rounds.map((round: PracticeRound, index: number) => (
 					<li
@@ -111,6 +118,7 @@ function Scoreboard({ topic, onNewSession }: { topic: TopicDefinition; onNewSess
 	const accuracy = selectSoundAccuracy(scores);
 	const topicTally = selectTopicSoundTally(scores, topic.topicSounds);
 	const topicIpa = topic.topicSounds.map(toIpa).join(", ");
+	const rows = selectReviewRows(rounds, scores);
 
 	return (
 		<div className="w-full max-w-md flex flex-col items-center gap-4 text-center">
@@ -124,12 +132,12 @@ function Scoreboard({ topic, onNewSession }: { topic: TopicDefinition; onNewSess
 				</span>
 			</div>
 			<ul className="w-full flex flex-col gap-2 text-left">
-				{scores.map((score, index) => (
+				{rows.map(({ round, score }) => (
 					<li
-						key={rounds[index].word.word}
+						key={round.word.word}
 						className="flex items-center justify-between gap-3 rounded-lg border border-border p-3"
 					>
-						<span className="text-sm font-medium">{rounds[index].word.word}</span>
+						<span className="text-sm font-medium">{round.word.word}</span>
 						<span className="text-sm text-muted-foreground">
 							{score.reference.map(toIpa).join(" ")}
 						</span>
@@ -144,13 +152,11 @@ function Scoreboard({ topic, onNewSession }: { topic: TopicDefinition; onNewSess
 
 export function SessionScaffold({ topic }: { topic: TopicDefinition }) {
 	const phase = usePracticeSessionStore((state) => state.phase);
-	const abandon = usePracticeSessionStore((state) => state.abandon);
 	const startSession = usePracticeSessionStore((state) => state.startSession);
 
-	const onNewSession = () => {
-		abandon();
-		startSession(topic);
-	};
+	// `startSession` already resets the session slice, so there is nothing to
+	// abandon first — and on failure it leaves the start screen showing why.
+	const onNewSession = () => startSession(topic);
 
 	return (
 		<div className="flex flex-1 flex-col items-center justify-center bg-background p-4 sm:p-6 animate-in fade-in duration-500">

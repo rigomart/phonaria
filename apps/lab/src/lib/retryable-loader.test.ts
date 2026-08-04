@@ -54,6 +54,19 @@ describe("createRetryableLoader", () => {
 		expect(calls).toBe(2);
 	});
 
+	it("turns a synchronous throw into a rejection and stays retryable", async () => {
+		let calls = 0;
+		const load = createRetryableLoader<string>(() => {
+			calls += 1;
+			if (calls === 1) throw new Error("sync boom");
+			return Promise.resolve("data");
+		});
+
+		await expect(load()).rejects.toThrow(/sync boom/);
+		expect(await load()).toBe("data");
+		expect(calls).toBe(2);
+	});
+
 	it("retries again after a repeated failure", async () => {
 		let calls = 0;
 		const load = createRetryableLoader(async () => {

@@ -1,9 +1,11 @@
-import { afterEach, describe, expect, it } from "vitest";
-import type { WordScore } from "@/lib/practice/scoring";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { normalizeVariant, type WordScore } from "@/lib/practice/scoring";
 import type { TopicDefinition } from "@/lib/practice/topics/types";
 import type { PoolWord } from "@/lib/practice/word-pool";
 import {
+	type PracticeRound,
 	selectBlankCount,
+	selectReviewRows,
 	selectSoundAccuracy,
 	selectTopicSoundTally,
 	selectWordsCorrect,
@@ -148,6 +150,51 @@ describe("practice session store — pool loading", () => {
 		expect(calls).toBe(1);
 		expect(usePracticeSessionStore.getState().poolStatus).toBe("ready");
 	});
+
+	it("drops a stale pool load that resolves after the topic changed", async () => {
+		let release: (words: PoolWord[]) => void = () => {};
+		const slowLoad = () =>
+			new Promise<PoolWord[]>((resolve) => {
+				release = resolve;
+			});
+
+		const pending = usePracticeSessionStore.getState().prefetchPool(testTopic, slowLoad);
+		await usePracticeSessionStore
+			.getState()
+			.prefetchPool({ ...testTopic, id: "other-topic" }, loadOk);
+		release(testPool);
+		await pending;
+
+		const state = usePracticeSessionStore.getState();
+		expect(state.topicId).toBe("other-topic");
+		expect(state.poolStatus).toBe("ready");
+	});
+
+	/**
+	 * The stale guard keys on the load, not the topic: on A → B → A the first
+	 * load is stale even though `topicId` is back to A, so its late failure must
+	 * not clobber the pool the second load already delivered.
+	 */
+	it("drops a stale rejection that lands after the same topic reloaded", async () => {
+		let rejectFirst: (error: Error) => void = () => {};
+		const hangsThenFails = () =>
+			new Promise<PoolWord[]>((_, reject) => {
+				rejectFirst = reject;
+			});
+
+		const store = usePracticeSessionStore.getState();
+		const pending = store.prefetchPool(testTopic, hangsThenFails);
+		await store.prefetchPool({ ...testTopic, id: "other-topic" }, loadOk);
+		await store.prefetchPool(testTopic, loadOk);
+		expect(usePracticeSessionStore.getState().poolStatus).toBe("ready");
+
+		rejectFirst(new Error("late chunk failure"));
+		await pending;
+
+		const state = usePracticeSessionStore.getState();
+		expect(state.poolStatus).toBe("ready");
+		expect(state.pool).toEqual(testPool);
+	});
 });
 
 describe("practice session store — starting a session", () => {
@@ -182,6 +229,38 @@ describe("practice session store — starting a session", () => {
 
 		expect(second).toEqual(first);
 	});
+
+	it("surfaces a draw failure instead of throwing into the click handler", async () => {
+		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+		await usePracticeSessionStore.getState().prefetchPool(testTopic, loadOk);
+		// No pool word has 9 syllables, so the band runs dry and the generator throws.
+		usePracticeSessionStore
+			.getState()
+			.startSession({ ...testTopic, slotSpec: [{ min: 9, max: 9 }] }, seededRng(5));
+
+		const state = usePracticeSessionStore.getState();
+		expect(state.phase).toBe("idle");
+		expect(state.rounds).toEqual([]);
+		expect(state.sessionError).not.toBeNull();
+		expect(consoleError).toHaveBeenCalled();
+		consoleError.mockRestore();
+	});
+
+	it("clears a previous draw failure once a session starts", async () => {
+		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+		await usePracticeSessionStore.getState().prefetchPool(testTopic, loadOk);
+		usePracticeSessionStore
+			.getState()
+			.startSession({ ...testTopic, slotSpec: [{ min: 9, max: 9 }] }, seededRng(5));
+		expect(usePracticeSessionStore.getState().sessionError).not.toBeNull();
+
+		usePracticeSessionStore.getState().startSession(testTopic, seededRng(7));
+
+		const state = usePracticeSessionStore.getState();
+		expect(state.phase).toBe("building");
+		expect(state.sessionError).toBeNull();
+		consoleError.mockRestore();
+	});
 });
 
 describe("practice session store — building rounds", () => {
@@ -212,6 +291,25 @@ describe("practice session store — building rounds", () => {
 		usePracticeSessionStore.getState().appendSound("S");
 		usePracticeSessionStore.getState().removeSoundAt(5);
 		expect(usePracticeSessionStore.getState().rounds[0].sequence).toEqual(["S"]);
+	});
+
+	it("publishes nothing for a no-op edit, so subscribers keep their rounds", async () => {
+		await startTestSession();
+		usePracticeSessionStore.getState().appendSound("S");
+		const withSound = usePracticeSessionStore.getState().rounds;
+
+		// Out of range: nothing changes, so nothing is published.
+		usePracticeSessionStore.getState().removeSoundAt(5);
+		expect(usePracticeSessionStore.getState().rounds).toBe(withSound);
+
+		// A real clear does publish.
+		usePracticeSessionStore.getState().clearSequence();
+		const cleared = usePracticeSessionStore.getState().rounds;
+		expect(cleared).not.toBe(withSound);
+
+		// Clearing an already-empty sequence does not.
+		usePracticeSessionStore.getState().clearSequence();
+		expect(usePracticeSessionStore.getState().rounds).toBe(cleared);
 	});
 
 	it("clears the current sequence", async () => {
@@ -335,6 +433,43 @@ describe("practice session store — submit and review", () => {
 		expect(scores[0].correct).toBe(true);
 	});
 
+	it("keeps the answers in the check when scoring fails", async () => {
+		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+		// "QQ"/"ZZ" are not phoneme IDs, so `scoreWord` throws normalizing them.
+		const unscorable = makeWord("gibberish", ["QQ1 ZZ0"], 2, ["final"]);
+		await usePracticeSessionStore.getState().prefetchPool(testTopic, async () => [unscorable]);
+		usePracticeSessionStore
+			.getState()
+			.startSession({ ...testTopic, slotSpec: [{ min: 2, max: 2 }] }, seededRng(3));
+
+		usePracticeSessionStore.getState().appendSound("S");
+		usePracticeSessionStore.getState().openCheck();
+		usePracticeSessionStore.getState().submit();
+
+		const state = usePracticeSessionStore.getState();
+		expect(state.phase).toBe("checking");
+		expect(state.scores).toBeNull();
+		expect(state.sessionError).not.toBeNull();
+		expect(state.rounds[0].sequence).toEqual(["S"]);
+		expect(consoleError).toHaveBeenCalled();
+		consoleError.mockRestore();
+	});
+
+	it("clears a scoring failure when the learner goes back to editing", async () => {
+		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+		const unscorable = makeWord("gibberish", ["QQ1 ZZ0"], 2, ["final"]);
+		await usePracticeSessionStore.getState().prefetchPool(testTopic, async () => [unscorable]);
+		usePracticeSessionStore
+			.getState()
+			.startSession({ ...testTopic, slotSpec: [{ min: 2, max: 2 }] }, seededRng(3));
+		usePracticeSessionStore.getState().openCheck();
+		usePracticeSessionStore.getState().submit();
+
+		usePracticeSessionStore.getState().keepEditing();
+		expect(usePracticeSessionStore.getState().sessionError).toBeNull();
+		consoleError.mockRestore();
+	});
+
 	it("makes submit irreversible — a second submit is a no-op", async () => {
 		await startTestSession();
 		usePracticeSessionStore.getState().openCheck();
@@ -408,25 +543,6 @@ describe("practice session store — abandoning", () => {
 		expect(state.phase).toBe("building");
 		expect(state.rounds.every((round) => round.sequence.length === 0)).toBe(true);
 	});
-
-	it("drops a stale pool load that resolves after the topic changed", async () => {
-		let release: (words: PoolWord[]) => void = () => {};
-		const slowLoad = () =>
-			new Promise<PoolWord[]>((resolve) => {
-				release = resolve;
-			});
-
-		const pending = usePracticeSessionStore.getState().prefetchPool(testTopic, slowLoad);
-		await usePracticeSessionStore
-			.getState()
-			.prefetchPool({ ...testTopic, id: "other-topic" }, loadOk);
-		release(testPool);
-		await pending;
-
-		const state = usePracticeSessionStore.getState();
-		expect(state.topicId).toBe("other-topic");
-		expect(state.poolStatus).toBe("ready");
-	});
 });
 
 describe("practice review selectors", () => {
@@ -439,11 +555,43 @@ describe("practice review selectors", () => {
 
 	it("counts words correct as the primary score", async () => {
 		await startTestSession();
+		// Answer only the first round correctly; the rest stay blank. Reading the
+		// answer off the drawn word keeps this independent of the seed.
+		const round = usePracticeSessionStore.getState().rounds[0];
+		for (const sound of normalizeVariant(round.word.variants[0])) {
+			usePracticeSessionStore.getState().appendSound(sound);
+		}
 		usePracticeSessionStore.getState().openCheck();
 		usePracticeSessionStore.getState().submit();
 
 		const scores = usePracticeSessionStore.getState().scores ?? [];
-		expect(selectWordsCorrect(scores)).toBe(0);
+		expect(scores[0].correct).toBe(true);
+		expect(selectWordsCorrect(scores)).toBe(1);
+	});
+
+	it("pairs each round with its score for review", async () => {
+		await startTestSession();
+		usePracticeSessionStore.getState().openCheck();
+		usePracticeSessionStore.getState().submit();
+
+		const { rounds, scores } = usePracticeSessionStore.getState();
+		const rows = selectReviewRows(rounds, scores);
+		expect(rows).toHaveLength(rounds.length);
+		expect(rows.map((row) => row.round.word.word)).toEqual(rounds.map((r) => r.word.word));
+		expect(rows[0].score).toBe(scores?.[0]);
+	});
+
+	it("returns no review rows before a submit", () => {
+		expect(selectReviewRows([], null)).toEqual([]);
+	});
+
+	it("drops rounds with no matching score rather than indexing past the end", () => {
+		const rounds = [
+			{ word: testPool[0], sequence: [] },
+			{ word: testPool[1], sequence: [] },
+		] satisfies PracticeRound[];
+		const scores = [{ correct: true } as WordScore];
+		expect(selectReviewRows(rounds, scores)).toHaveLength(1);
 	});
 
 	it("pools sound accuracy across the session rather than averaging per word", () => {

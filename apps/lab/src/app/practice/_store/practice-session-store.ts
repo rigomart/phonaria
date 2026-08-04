@@ -31,6 +31,12 @@ interface PracticeSessionState {
 	rounds: PracticeRound[];
 	currentIndex: number;
 	scores: WordScore[] | null;
+	/**
+	 * Learner-facing message for a session that failed to draw or score. Both
+	 * come from data shape, not the network, so they are separate from
+	 * `poolStatus: "error"` and retry a different thing.
+	 */
+	sessionError: string | null;
 }
 
 interface PracticeSessionActions {
@@ -62,7 +68,12 @@ const initialSessionState = {
 	rounds: [],
 	currentIndex: 0,
 	scores: null,
+	sessionError: null,
 } satisfies Partial<PracticeSessionState>;
+
+const SESSION_DRAW_FAILED = "We couldn't put a session together for this topic. Please try again.";
+const SESSION_SCORE_FAILED =
+	"We couldn't score this session. Your answers are still here — try submitting again.";
 
 const initialState = {
 	...initialSessionState,
@@ -79,10 +90,22 @@ function withCurrentSequence(
 	const round = state.rounds[state.currentIndex];
 	if (!round) return null;
 
+	// A no-op edit returns the same array, so nothing is published and every
+	// `rounds` subscriber keeps its referential equality.
+	const sequence = next(round.sequence);
+	if (sequence === round.sequence) return null;
+
 	const rounds = state.rounds.slice();
-	rounds[state.currentIndex] = { ...round, sequence: next(round.sequence) };
+	rounds[state.currentIndex] = { ...round, sequence };
 	return { rounds };
 }
+
+/**
+ * Monotonic id for the in-flight pool load. `topicId` alone cannot tell a
+ * stale load from the live one when the same topic is requested again
+ * (A → B → A), so a late failure could otherwise clobber a ready pool.
+ */
+let activeLoad = 0;
 
 export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) => ({
 	...initialState,
@@ -93,15 +116,16 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 		// An error status falls through, so Retry is just another prefetch.
 		if (isCurrentTopic && (poolStatus === "loading" || poolStatus === "ready")) return;
 
+		const token = ++activeLoad;
 		set({ topicId: topic.id, poolStatus: "loading", pool: null });
 
 		try {
 			const pool = await loadPool(topic);
-			// A newer topic took over mid-flight — drop the stale result.
-			if (get().topicId !== topic.id) return;
+			// A newer load took over mid-flight — drop the stale result.
+			if (activeLoad !== token) return;
 			set({ pool, poolStatus: "ready" });
 		} catch {
-			if (get().topicId !== topic.id) return;
+			if (activeLoad !== token) return;
 			set({ pool: null, poolStatus: "error" });
 		}
 	},
@@ -111,7 +135,18 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 		// Start is the sole loading gate: no pool, no session.
 		if (poolStatus !== "ready" || !pool) return;
 
-		const words = generateSession(pool, topic.slotSpec, rng);
+		// `generateSession` throws when a band runs dry. That is a data-shape
+		// failure (the band-depth test guards it in CI), but it must not escape
+		// into a click handler — there is no route error boundary to catch it.
+		let words: PoolWord[];
+		try {
+			words = generateSession(pool, topic.slotSpec, rng);
+		} catch (error) {
+			console.error("practice: session generation failed", error);
+			set({ ...initialSessionState, sessionError: SESSION_DRAW_FAILED });
+			return;
+		}
+
 		set({
 			...initialSessionState,
 			phase: "building",
@@ -134,7 +169,7 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 	},
 
 	clearSequence: () => {
-		const patch = withCurrentSequence(get(), () => []);
+		const patch = withCurrentSequence(get(), (sequence) => (sequence.length === 0 ? sequence : []));
 		if (patch) set(patch);
 	},
 
@@ -164,14 +199,14 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 
 	keepEditing: () => {
 		if (get().phase !== "checking") return;
-		set({ phase: "building" });
+		set({ phase: "building", sessionError: null });
 	},
 
 	editRound: (index) => {
 		const { phase, rounds } = get();
 		if (phase !== "checking") return;
 		if (index < 0 || index >= rounds.length) return;
-		set({ phase: "building", currentIndex: index });
+		set({ phase: "building", currentIndex: index, sessionError: null });
 	},
 
 	submit: () => {
@@ -179,13 +214,27 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 		// Irreversible: reachable only from the check, and review has no way back.
 		if (phase !== "checking") return;
 
-		const scores = rounds.map((round) => scoreWord(round.sequence, [...round.word.variants]));
-		set({ phase: "review", scores });
+		// `scoreWord` throws on a pronunciation it cannot normalize. Staying in
+		// the check keeps the learner's answers rather than losing the session.
+		let scores: WordScore[];
+		try {
+			scores = rounds.map((round) => scoreWord(round.sequence, [...round.word.variants]));
+		} catch (error) {
+			console.error("practice: scoring failed", error);
+			set({ sessionError: SESSION_SCORE_FAILED });
+			return;
+		}
+
+		set({ phase: "review", scores, sessionError: null });
 	},
 
 	abandon: () => set({ ...initialSessionState }),
 
-	reset: () => set({ ...initialState }),
+	reset: () => {
+		// Any in-flight load belongs to the session being torn down.
+		activeLoad += 1;
+		set({ ...initialState });
+	},
 }));
 
 export function selectBlankCount(rounds: readonly PracticeRound[]): number {
@@ -194,6 +243,27 @@ export function selectBlankCount(rounds: readonly PracticeRound[]): number {
 
 export function selectWordsCorrect(scores: readonly Pick<WordScore, "correct">[]): number {
 	return scores.filter((score) => score.correct).length;
+}
+
+export interface ReviewRow {
+	round: PracticeRound;
+	score: WordScore;
+}
+
+/**
+ * Pairs each round with its score. `submit` builds the two arrays together, so
+ * this zip is total in practice — it exists so the review UI never indexes one
+ * array by the other's position.
+ */
+export function selectReviewRows(
+	rounds: readonly PracticeRound[],
+	scores: readonly WordScore[] | null,
+): ReviewRow[] {
+	if (!scores) return [];
+	return rounds.flatMap((round, index) => {
+		const score = scores[index];
+		return score ? [{ round, score }] : [];
+	});
 }
 
 type SoundAccuracyInput = Pick<WordScore, "matched" | "learnerLength" | "referenceLength">;
