@@ -160,8 +160,11 @@ export function SoundComposer({ sequence, onAppend, onRemoveAt }: SoundComposerP
 
 /**
  * Consonants and vowels are split by a wider gap and a hairline rule — no
- * headings, no tinting, no explain mode (#140). Keys stay clickable while
- * dimmed: the search is a hint, not a filter.
+ * headings, no tinting, no explain mode (#140). That rules out a hover tooltip
+ * too: assistance is chips-plus-dropdown only, so a key's articulatory label
+ * reaches the mouse through the dropdown, and screen readers through its
+ * accessible name. Keys stay clickable while dimmed — search is a hint, not a
+ * filter.
  */
 function PaletteRow({
 	keys,
@@ -183,7 +186,6 @@ function PaletteRow({
 					)}
 					key={key.id}
 					onClick={() => onInsert(key)}
-					title={key.label}
 					type="button"
 				>
 					{key.ipa}

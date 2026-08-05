@@ -32,8 +32,10 @@ export function RoundDots({ rounds, currentIndex, onJump }: RoundDotsProps) {
 					>
 						<span
 							className={cn(
-								"h-1 w-7 rounded-full transition-colors motion-reduce:transition-none",
-								isCurrent ? "bg-primary" : isAnswered ? "bg-success" : "bg-border",
+								// Size carries the current word as well as colour does.
+								"rounded-full transition-colors motion-reduce:transition-none",
+								isCurrent ? "size-3 bg-primary" : "size-2.5",
+								!isCurrent && (isAnswered ? "bg-success" : "bg-border"),
 							)}
 						/>
 					</button>

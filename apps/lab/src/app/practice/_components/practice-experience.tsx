@@ -42,7 +42,7 @@ export function PracticeExperience({ topicId }: { topicId: string }) {
 			// to abandon first — and on failure it leaves the start screen showing
 			// why.
 			return <ScoreboardScaffold onNewSession={() => startSession(topic)} topic={topic} />;
-		default:
+		case "idle":
 			return (
 				<StartScreen
 					onRetryPool={() => void prefetchPool(topic)}

@@ -22,7 +22,7 @@ export function PreSubmitCheck() {
 	const answered = rounds.length - blanks;
 
 	return (
-		<div className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 py-8">
+		<div className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 py-8 animate-in fade-in duration-500 motion-reduce:animate-none">
 			<div className="flex flex-col gap-1">
 				<h1 className="font-bold font-display text-2xl tracking-tight">Ready to submit?</h1>
 				<p className="text-muted-foreground text-sm">

@@ -28,7 +28,7 @@ export function RoundBuilder() {
 	const syllables = round.word.syllableCount;
 
 	return (
-		<div className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center gap-7 px-4 py-12">
+		<div className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center gap-7 px-4 py-12 animate-in fade-in duration-500 motion-reduce:animate-none">
 			<RoundDots currentIndex={currentIndex} onJump={goToRound} rounds={rounds} />
 
 			<div className="flex flex-col items-center gap-0.5">

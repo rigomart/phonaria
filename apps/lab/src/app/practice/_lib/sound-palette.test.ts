@@ -3,11 +3,18 @@ import { describe, expect, it } from "vitest";
 import {
 	CONSONANT_KEYS,
 	describeSound,
-	getSound,
+	findSound,
 	PALETTE_KEYS,
 	searchSounds,
 	VOWEL_KEYS,
 } from "./sound-palette";
+
+/** Every id here comes from the palette, so a miss is a test bug. */
+function sound(id: string) {
+	const key = findSound(id);
+	if (!key) throw new Error(`No palette key for ${id}`);
+	return key;
+}
 
 describe("palette coverage", () => {
 	it("covers the English inventory exactly once each", () => {
@@ -23,19 +30,30 @@ describe("palette coverage", () => {
 	});
 
 	it("carries the IPA symbol, ARPABET label, and articulatory label", () => {
-		expect(getSound("AX")).toMatchObject({ ipa: "ə", arpabet: "AX" });
-		expect(getSound("AX").label).toMatch(/central/i);
-		expect(getSound("H").arpabet).toBe("HH");
+		expect(sound("AX")).toMatchObject({ ipa: "ə", arpabet: "AX" });
+		expect(sound("AX").label).toMatch(/central/i);
+		expect(sound("H").arpabet).toBe("HH");
+	});
+
+	it("gives every key at least one example word from the phonetics data", () => {
+		// describeSound and the dropdown both assume this; without it a key would
+		// announce "as in undefined".
+		const bare = PALETTE_KEYS.filter((key) => key.examples.length === 0);
+		expect(bare.map((key) => key.id)).toEqual([]);
+	});
+
+	it("does not re-author example words that the data package owns", () => {
+		expect(sound("K").examples).toEqual(["cat", "kid", "back"]);
 	});
 });
 
 describe("describeSound", () => {
 	it("leads with the learner's nickname when there is one", () => {
-		expect(describeSound(getSound("AX"))).toBe("schwa, /ə/");
+		expect(describeSound(sound("AX"))).toBe("schwa, /ə/");
 	});
 
-	it("falls back to the articulatory label", () => {
-		expect(describeSound(getSound("P"))).toBe("voiceless bilabial plosive, /p/");
+	it("names the sound by an example word rather than articulatory jargon", () => {
+		expect(describeSound(sound("P"))).toBe("as in pat, /p/");
 	});
 });
 
@@ -67,8 +85,14 @@ describe("searchSounds", () => {
 	});
 
 	it("ranks an example word first", () => {
-		expect(searchSounds("cat")[0]?.id).toBe("AE");
 		expect(searchSounds("boy")[0]?.id).toBe("OI");
+		expect(searchSounds("ladder")[0]?.id).toBe("D");
+	});
+
+	it("sends an ambiguous example word to the sound a learner means by it", () => {
+		// "cat" is an example word for /k/ too, but it is /æ/'s nickname.
+		expect(searchSounds("cat")[0]?.id).toBe("AE");
+		expect(searchSounds("cat").map((match) => match.id)).toContain("K");
 	});
 
 	it("matches articulatory labels in plain language", () => {

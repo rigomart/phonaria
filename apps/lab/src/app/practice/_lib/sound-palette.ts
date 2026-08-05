@@ -6,6 +6,10 @@
  * Keys are ordered for reading — plosives, fricatives, affricates, nasals,
  * approximants, then vowels by height — not in inventory order. A test asserts
  * the two stay the same set.
+ *
+ * English-only, like the rest of Practice: the topic registry is the seam a
+ * second accent would arrive through (#140), and this module would take a
+ * `TargetAccent` at that point rather than reading the English inventory.
  */
 import {
 	ConsonantIpaMap,
@@ -13,6 +17,7 @@ import {
 	type EnglishConsonantSymbolId,
 	type EnglishDiphthongSymbolId,
 	type EnglishMonophthongSymbolId,
+	EnglishPhonemeSpellingPatterns,
 	type EnglishPhonemeSymbolId,
 	MonophthongIpaMap,
 	PhonemeArpabetLabel,
@@ -31,58 +36,42 @@ export interface SoundKey {
 	examples: readonly string[];
 }
 
-interface SoundHints {
-	nicknames?: readonly string[];
-	examples: readonly string[];
-}
+/** Enough to identify the sound without turning the dropdown row into prose. */
+const MAX_EXAMPLES = 3;
 
 /**
- * Learner-facing vocabulary. Beginners search "schwa" or "cat", not "AX" — the
- * typing path is only the primary road if these are present.
+ * Names a learner reaches for that no notation carries: the Greek letter names,
+ * the lexical sets, and "schwa" itself. Example *words* are not here — those are
+ * `EnglishPhonemeSpellingPatterns`' job, and duplicating them would let the two
+ * drift.
+ *
+ * A nickname also outranks an example word, which is how the ambiguous ones land
+ * where a learner means them: "cat" contains both /k/ and /æ/, and someone
+ * typing it wants the vowel.
  */
-const HINTS: Record<EnglishPhonemeSymbolId, SoundHints> = {
-	P: { examples: ["pen", "happy"] },
-	B: { examples: ["bed", "rabbit"] },
-	T: { examples: ["top", "letter"] },
-	D: { examples: ["dog", "ladder"] },
-	K: { examples: ["key", "back"] },
-	G: { examples: ["go", "bigger"] },
-	F: { examples: ["fun", "off"] },
-	V: { examples: ["very", "love"] },
-	TH: { nicknames: ["theta"], examples: ["think", "bath"] },
-	DH: { nicknames: ["eth"], examples: ["this", "mother"] },
-	S: { examples: ["sun", "kiss"] },
-	Z: { examples: ["zoo", "buzz"] },
-	SH: { nicknames: ["esh"], examples: ["ship", "wash"] },
-	ZH: { examples: ["measure", "vision"] },
-	H: { examples: ["hat", "ahead"] },
-	CH: { examples: ["chin", "church"] },
-	J: { examples: ["judge", "gym"] },
-	M: { examples: ["man", "swim"] },
-	N: { examples: ["nine", "ten"] },
-	NG: { nicknames: ["eng"], examples: ["ring", "sing"] },
-	L: { examples: ["let", "ball"] },
-	R: { examples: ["red", "carry"] },
-	Y: { examples: ["yes", "yellow"] },
-	W: { examples: ["we", "away"] },
+const NICKNAMES: Partial<Record<EnglishPhonemeSymbolId, readonly string[]>> = {
+	TH: ["theta"],
+	DH: ["eth"],
+	SH: ["esh"],
+	NG: ["eng"],
 
-	I: { nicknames: ["fleece"], examples: ["see", "beat"] },
-	IX: { nicknames: ["kit"], examples: ["bit", "sit"] },
-	UX: { nicknames: ["foot"], examples: ["put", "book"] },
-	U: { nicknames: ["goose"], examples: ["boot", "two"] },
-	E: { nicknames: ["dress"], examples: ["bed", "said"] },
-	AX: { nicknames: ["schwa", "uh"], examples: ["about", "sofa"] },
-	AH: { nicknames: ["strut"], examples: ["cup", "cut"] },
-	O: { nicknames: ["thought"], examples: ["law", "caught"] },
-	AE: { nicknames: ["ash", "trap"], examples: ["cat", "hand"] },
-	A: { nicknames: ["lot"], examples: ["father", "hot"] },
-	ER: { nicknames: ["nurse", "r-colored"], examples: ["bird", "her"] },
+	I: ["fleece"],
+	IX: ["kit"],
+	UX: ["foot"],
+	U: ["goose"],
+	E: ["dress"],
+	AX: ["schwa", "uh", "about"],
+	AH: ["strut"],
+	O: ["thought"],
+	AE: ["ash", "trap", "cat"],
+	A: ["lot"],
+	ER: ["nurse", "r-colored"],
 
-	EI: { nicknames: ["face"], examples: ["day", "say"] },
-	OU: { nicknames: ["goat"], examples: ["go", "no"] },
-	AI: { nicknames: ["price"], examples: ["my", "buy"] },
-	AU: { nicknames: ["mouth"], examples: ["now", "out"] },
-	OI: { nicknames: ["choice"], examples: ["boy", "coin"] },
+	EI: ["face"],
+	OU: ["goat"],
+	AI: ["price"],
+	AU: ["mouth"],
+	OI: ["choice"],
 };
 
 const CONSONANT_ORDER = [
@@ -135,14 +124,15 @@ const DIPHTHONG_ORDER = [
 ] as const satisfies readonly EnglishDiphthongSymbolId[];
 
 function toKey<T extends EnglishPhonemeSymbolId>(id: T, ipaMap: Record<T, string>): SoundKey {
-	const hints = HINTS[id];
+	// Every English phoneme carries examples; a test guards the assumption.
+	const spelling = EnglishPhonemeSpellingPatterns[id];
 	return {
 		id,
 		ipa: ipaMap[id],
 		arpabet: PhonemeArpabetLabel[id],
 		label: phonemeLabels[id],
-		nicknames: hints.nicknames ?? [],
-		examples: hints.examples,
+		nicknames: NICKNAMES[id] ?? [],
+		examples: (spelling?.examples ?? []).slice(0, MAX_EXAMPLES).map((example) => example.word),
 	};
 }
 
@@ -159,12 +149,6 @@ export const PALETTE_KEYS: readonly SoundKey[] = [...CONSONANT_KEYS, ...VOWEL_KE
 
 const KEY_BY_ID = new Map(PALETTE_KEYS.map((key) => [key.id, key]));
 
-export function getSound(id: EnglishPhonemeSymbolId): SoundKey {
-	const key = KEY_BY_ID.get(id);
-	if (!key) throw new Error(`No palette key for phoneme ${id}`);
-	return key;
-}
-
 /** Palette keys are plain strings once they reach the store and the scorer. */
 export function findSound(id: string): SoundKey | undefined {
 	return KEY_BY_ID.get(id as EnglishPhonemeSymbolId);
@@ -172,11 +156,13 @@ export function findSound(id: string): SoundKey | undefined {
 
 /**
  * Accessible name for a bare glyph: "schwa, /ə/". A screen reader cannot be
- * trusted to pronounce an IPA character, so the words come first (#140).
+ * trusted to pronounce an IPA character, so words come first (#140) — and they
+ * are plain words, not "voiceless bilabial plosive". The articulatory label
+ * stays where it can be read at leisure: the dropdown row.
  */
 export function describeSound(sound: SoundKey): string {
-	const name = sound.nicknames[0] ?? sound.label;
-	return `${name.toLowerCase()}, /${sound.ipa}/`;
+	const name = sound.nicknames[0] ?? `as in ${sound.examples[0]}`;
+	return `${name}, /${sound.ipa}/`;
 }
 
 /**
@@ -195,7 +181,7 @@ const SCORE = {
 	example: 75,
 	nicknamePrefix: 60,
 	examplePrefix: 55,
-	idPrefix: 50,
+	notationPrefix: 50,
 	labelWordPrefix: 40,
 	substring: 10,
 } as const;
@@ -256,7 +242,7 @@ function scoreSound(entry: IndexedSound, query: string): number {
 		else if (example.startsWith(query)) consider(SCORE.examplePrefix);
 	}
 
-	if (entry.id.startsWith(query) || entry.arpabet.startsWith(query)) consider(SCORE.idPrefix);
+	if (entry.id.startsWith(query) || entry.arpabet.startsWith(query)) consider(SCORE.notationPrefix);
 	if (entry.labelWords.some((word) => word.startsWith(query))) consider(SCORE.labelWordPrefix);
 	if (entry.haystack.includes(query)) consider(SCORE.substring);
 
