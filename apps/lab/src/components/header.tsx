@@ -33,6 +33,9 @@ export function Header() {
 				<Link href="/" className={navLinkClass}>
 					Transcription
 				</Link>
+				<Link href="/practice" className={navLinkClass}>
+					Practice
+				</Link>
 				<NavigationMenu>
 					<NavigationMenuList>
 						<NavigationMenuItem>
