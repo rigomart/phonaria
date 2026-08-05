@@ -1,9 +1,8 @@
 "use client";
 
 /**
- * One placed sound. A split control (#140): the symbol opens Lab's shared
- * phoneme popover, the `×` removes it. Read-only where there is nothing to
- * remove — the pre-submit check.
+ * One placed sound, as a split control (#140): the symbol opens the shared
+ * phoneme popover, the `×` removes it. Read-only without `onRemove`.
  */
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { X } from "lucide-react";

@@ -1,7 +1,6 @@
 /**
- * Keyboard grammar of the composer field, kept apart from React so the typing
- * path — the keyboard-only way through a session (#140) — is testable without
- * a DOM.
+ * Keyboard grammar of the composer field, kept out of React so the typing path
+ * — the keyboard-only way through a session (#140) — is testable without a DOM.
  */
 
 export interface ComposerKeyState {

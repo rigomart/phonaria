@@ -5,7 +5,7 @@
  * notation, plus the full 40-key palette always visible beneath it — never
  * behind a disclosure (#140).
  */
-import { type KeyboardEvent, useId, useState } from "react";
+import { type KeyboardEvent, useEffect, useId, useState } from "react";
 import { cn } from "@/lib/utils";
 import { resolveComposerKey } from "../_lib/composer-keys";
 import {
@@ -32,8 +32,17 @@ export function SoundComposer({ sequence, onAppend, onRemoveAt }: SoundComposerP
 	const matches = searchSounds(query);
 	// A narrowing query can strand the highlight past the end of the list.
 	const activeIndex = Math.min(highlight, Math.max(matches.length - 1, 0));
+	const activeOptionId = matches.length > 0 ? `${optionId}-${activeIndex}` : null;
 	const matchedIds = new Set(matches.map((match) => match.id));
 	const isSearching = query.trim().length > 0;
+
+	// `aria-activedescendant` moves the accessible cursor, not the scroll
+	// container, and options never take focus — so the highlight has to be
+	// scrolled in by hand or it leaves the viewport on a broad query.
+	useEffect(() => {
+		if (!activeOptionId) return;
+		document.getElementById(activeOptionId)?.scrollIntoView({ block: "nearest" });
+	}, [activeOptionId]);
 
 	function commit(sound: SoundKey) {
 		onAppend(sound.id);
@@ -106,6 +115,9 @@ export function SoundComposer({ sequence, onAppend, onRemoveAt }: SoundComposerP
 					<div
 						className="absolute inset-x-0 top-full z-40 mt-1 max-h-72 overflow-y-auto rounded-xl border bg-background shadow-lg"
 						id={listboxId}
+						// A new query gets a new element, so its scroll starts at the top
+						// rather than wherever the last list was left.
+						key={query}
 						role="listbox"
 					>
 						{matches.map((match, index) => (
@@ -119,7 +131,12 @@ export function SoundComposer({ sequence, onAppend, onRemoveAt }: SoundComposerP
 								id={`${optionId}-${index}`}
 								key={match.id}
 								onClick={() => commit(match)}
-								onMouseEnter={() => setHighlight(index)}
+								// Movement, not enter: the list opens under a resting cursor,
+								// and mouseenter would fire there and steal the highlight from
+								// the top match that Enter is about to commit.
+								onMouseMove={() => {
+									if (activeIndex !== index) setHighlight(index);
+								}}
 								role="option"
 								tabIndex={-1}
 								type="button"

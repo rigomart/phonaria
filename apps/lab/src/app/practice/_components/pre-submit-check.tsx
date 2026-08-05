@@ -1,9 +1,8 @@
 "use client";
 
 /**
- * The last screen before an irreversible submit: every word with its sequence,
- * blanks called out honestly, a jump back into any of them. Blanks are allowed
- * — the primary button says how many rather than blocking (#140).
+ * The last screen before an irreversible submit. Blanks are allowed — the
+ * primary button says how many rather than blocking (#140).
  */
 import { Button } from "@phonaria/ui/components/button";
 import { ArrowLeft, TriangleAlert } from "lucide-react";

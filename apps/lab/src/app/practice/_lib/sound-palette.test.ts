@@ -45,6 +45,14 @@ describe("palette coverage", () => {
 	it("does not re-author example words that the data package owns", () => {
 		expect(sound("K").examples).toEqual(["cat", "kid", "back"]);
 	});
+
+	it("keeps searchable vocabulary lowercase, whatever case the source uses", () => {
+		// A capitalised one would match only via the substring fallback.
+		const mixedCase = PALETTE_KEYS.flatMap((key) =>
+			[...key.nicknames, ...key.examples].filter((word) => word !== word.toLowerCase()),
+		);
+		expect(mixedCase).toEqual([]);
+	});
 });
 
 describe("describeSound", () => {

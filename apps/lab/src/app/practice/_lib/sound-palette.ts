@@ -1,12 +1,8 @@
 /**
- * The 40-key English sound palette and the search index behind the composer's
- * typing path. `searchSounds` returns one ranked list that drives both the
- * dropdown and the palette's dimming, so the two can never disagree about what
- * a query matched (#140).
- *
- * Keys are ordered for reading — plosives, fricatives, affricates, nasals,
- * approximants, then vowels by height — not in inventory order; a test asserts
- * the two stay the same set. English-only, like the rest of Practice.
+ * The 40-key English sound palette. `searchSounds` returns one ranked list that
+ * drives both the dropdown and the palette's dimming, so the two can never
+ * disagree about what a query matched (#140). Keys are ordered for reading, not
+ * by inventory; a test asserts they stay the same set.
  */
 import {
 	ConsonantIpaMap,
@@ -37,9 +33,8 @@ export interface SoundKey {
 const MAX_EXAMPLES = 3;
 
 /**
- * Names a learner reaches for that no notation carries: the Greek letter names,
- * the lexical sets, and "schwa" itself. Example *words* are not here — those are
- * `EnglishPhonemeSpellingPatterns`' job, and a second copy would drift.
+ * Names no notation carries: letter names, lexical sets, "schwa". Example
+ * *words* belong to `EnglishPhonemeSpellingPatterns` — a second copy would drift.
  */
 const NICKNAMES: Partial<Record<EnglishPhonemeSymbolId, readonly string[]>> = {
 	TH: ["theta"],
@@ -123,9 +118,17 @@ function toKey<T extends EnglishPhonemeSymbolId>(id: T, ipaMap: Record<T, string
 		ipa: ipaMap[id],
 		arpabet: PhonemeArpabetLabel[id],
 		label: phonemeLabels[id],
-		nicknames: NICKNAMES[id] ?? [],
-		examples: (spelling?.examples ?? []).slice(0, MAX_EXAMPLES).map((example) => example.word),
+		// Search lowercases the query, and these words come from a package whose
+		// type promises nothing about case.
+		nicknames: NICKNAMES[id]?.map(toSearchable) ?? [],
+		examples: (spelling?.examples ?? [])
+			.slice(0, MAX_EXAMPLES)
+			.map((example) => toSearchable(example.word)),
 	};
+}
+
+function toSearchable(word: string): string {
+	return word.toLowerCase();
 }
 
 export const CONSONANT_KEYS: readonly SoundKey[] = CONSONANT_ORDER.map((id) =>
@@ -148,8 +151,8 @@ export function findSound(id: string): SoundKey | undefined {
 
 /**
  * Accessible name for a bare glyph: "schwa, /ə/". A screen reader cannot be
- * trusted to pronounce an IPA character, so plain words come first — not
- * "voiceless bilabial plosive", which stays in the dropdown row (#140).
+ * trusted to pronounce IPA, so plain words come first — not the articulatory
+ * label, which stays in the dropdown row (#140).
  */
 export function describeSound(sound: SoundKey): string {
 	const name = sound.nicknames[0] ?? `as in ${sound.examples[0]}`;
@@ -157,12 +160,9 @@ export function describeSound(sound: SoundKey): string {
 }
 
 /**
- * Higher wins. Exact hits beat prefixes, prefixes beat a bare substring, so
- * "sh" lands on /ʃ/ rather than on everything spelled with an s and an h.
- *
- * A nickname outranks ARPABET because the typing path is aimed at beginners:
- * "uh" is what a learner calls schwa, and only incidentally the ARPABET label
- * for /ʊ/. That is the one collision between the two notations.
+ * Higher wins: exact beats prefix beats substring, so "sh" lands on /ʃ/ rather
+ * than everything spelled with an s and an h. Nickname outranks ARPABET for the
+ * one case they collide — "uh" is schwa to a learner, /ʊ/ to ARPABET.
  */
 const SCORE = {
 	ipa: 100,
@@ -208,9 +208,8 @@ const SEARCH_INDEX: readonly IndexedSound[] = PALETTE_KEYS.map((sound, order) =>
 });
 
 /**
- * The strongest way this sound matches, not the sum of every way: summing lets
- * a pile of weak hits outrank one exact one — "a" found /w/ before /ɑ/, whose
- * ID is literally the query.
+ * The strongest way this sound matches, not the sum: summing let a pile of weak
+ * hits outrank one exact one — "a" found /w/ before /ɑ/.
  */
 function scoreSound(entry: IndexedSound, query: string): number {
 	const { sound } = entry;
@@ -241,9 +240,8 @@ function scoreSound(entry: IndexedSound, query: string): number {
 }
 
 /**
- * Ranks the palette against one query across every notation a learner might
- * reach for: IPA, phoneme ID, ARPABET, articulatory label, nickname, example
- * word. An empty query matches nothing — the palette shows undimmed instead.
+ * Ranks the palette across every notation a learner might reach for. An empty
+ * query matches nothing — the palette shows undimmed instead.
  */
 export function searchSounds(query: string): SoundKey[] {
 	const normalized = query.trim().toLowerCase();
