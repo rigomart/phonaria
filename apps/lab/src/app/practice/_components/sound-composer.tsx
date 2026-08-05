@@ -1,12 +1,9 @@
 "use client";
 
 /**
- * How a learner builds one word's sound sequence: a search field that takes
- * IPA, phoneme IDs, ARPABET, articulatory labels and learner aliases, plus the
- * full 40-key palette always visible beneath it — never behind a disclosure.
- *
- * `searchSounds` produces one ranked list, so the dropdown and the palette's
- * dimming can never disagree about what the query matched (#140).
+ * How a learner builds one word's sound sequence: a search field over every
+ * notation, plus the full 40-key palette always visible beneath it — never
+ * behind a disclosure (#140).
  */
 import { type KeyboardEvent, useId, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -159,12 +156,9 @@ export function SoundComposer({ sequence, onAppend, onRemoveAt }: SoundComposerP
 }
 
 /**
- * Consonants and vowels are split by a wider gap and a hairline rule — no
- * headings, no tinting, no explain mode (#140). That rules out a hover tooltip
- * too: assistance is chips-plus-dropdown only, so a key's articulatory label
- * reaches the mouse through the dropdown, and screen readers through its
- * accessible name. Keys stay clickable while dimmed — search is a hint, not a
- * filter.
+ * Consonants and vowels split by a wider gap and a hairline rule — no headings,
+ * no tinting, and no explain mode, which rules out a hover tooltip too (#140).
+ * Keys stay clickable while dimmed: search is a hint, not a filter.
  */
 function PaletteRow({
 	keys,

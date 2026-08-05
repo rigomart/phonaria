@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * One word at a time on a calm centred page: the written word is the largest
- * thing on screen, the dots are both progress and jump target, and everything
- * sits in one column in page flow — nothing pinned to the viewport (#140).
+ * One word at a time on a calm centred page. Everything sits in one column in
+ * page flow — nothing pinned to the viewport, no side rail, no word rail (#140
+ * rejected all three).
  */
 import { Button } from "@phonaria/ui/components/button";
 import { ArrowLeft, ArrowRight, Flag } from "lucide-react";

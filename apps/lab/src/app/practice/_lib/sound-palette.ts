@@ -1,15 +1,12 @@
 /**
  * The 40-key English sound palette and the search index behind the composer's
- * typing path. One ranked match list serves both the dropdown and the palette's
- * dimming, so the two can never disagree about what a query matched (#140).
+ * typing path. `searchSounds` returns one ranked list that drives both the
+ * dropdown and the palette's dimming, so the two can never disagree about what
+ * a query matched (#140).
  *
  * Keys are ordered for reading — plosives, fricatives, affricates, nasals,
- * approximants, then vowels by height — not in inventory order. A test asserts
- * the two stay the same set.
- *
- * English-only, like the rest of Practice: the topic registry is the seam a
- * second accent would arrive through (#140), and this module would take a
- * `TargetAccent` at that point rather than reading the English inventory.
+ * approximants, then vowels by height — not in inventory order; a test asserts
+ * the two stay the same set. English-only, like the rest of Practice.
  */
 import {
 	ConsonantIpaMap,
@@ -42,12 +39,7 @@ const MAX_EXAMPLES = 3;
 /**
  * Names a learner reaches for that no notation carries: the Greek letter names,
  * the lexical sets, and "schwa" itself. Example *words* are not here — those are
- * `EnglishPhonemeSpellingPatterns`' job, and duplicating them would let the two
- * drift.
- *
- * A nickname also outranks an example word, which is how the ambiguous ones land
- * where a learner means them: "cat" contains both /k/ and /æ/, and someone
- * typing it wants the vowel.
+ * `EnglishPhonemeSpellingPatterns`' job, and a second copy would drift.
  */
 const NICKNAMES: Partial<Record<EnglishPhonemeSymbolId, readonly string[]>> = {
 	TH: ["theta"],
@@ -156,9 +148,8 @@ export function findSound(id: string): SoundKey | undefined {
 
 /**
  * Accessible name for a bare glyph: "schwa, /ə/". A screen reader cannot be
- * trusted to pronounce an IPA character, so words come first (#140) — and they
- * are plain words, not "voiceless bilabial plosive". The articulatory label
- * stays where it can be read at leisure: the dropdown row.
+ * trusted to pronounce an IPA character, so plain words come first — not
+ * "voiceless bilabial plosive", which stays in the dropdown row (#140).
  */
 export function describeSound(sound: SoundKey): string {
 	const name = sound.nicknames[0] ?? `as in ${sound.examples[0]}`;
@@ -217,9 +208,9 @@ const SEARCH_INDEX: readonly IndexedSound[] = PALETTE_KEYS.map((sound, order) =>
 });
 
 /**
- * The strongest way this sound matches, not the sum of every way. Summing lets
- * a pile of weak hits outrank one exact one — "a" would find /w/ (in "away",
- * an "approximant") before /ɑ/, whose ID is literally the query.
+ * The strongest way this sound matches, not the sum of every way: summing lets
+ * a pile of weak hits outrank one exact one — "a" found /w/ before /ɑ/, whose
+ * ID is literally the query.
  */
 function scoreSound(entry: IndexedSound, query: string): number {
 	const { sound } = entry;
