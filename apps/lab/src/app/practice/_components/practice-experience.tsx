@@ -3,7 +3,9 @@
 import { useEffect } from "react";
 import { getTopic } from "@/lib/practice/topics";
 import { usePracticeSessionStore } from "../_store/practice-session-store";
-import { SessionScaffold } from "./session-scaffold";
+import { PreSubmitCheck } from "./pre-submit-check";
+import { RoundBuilder } from "./round-builder";
+import { ScoreboardScaffold } from "./scoreboard-scaffold";
 import { StartScreen } from "./start-screen";
 
 /**
@@ -30,17 +32,25 @@ export function PracticeExperience({ topicId }: { topicId: string }) {
 
 	if (!topic) return null;
 
-	if (phase === "idle") {
-		return (
-			<StartScreen
-				topic={topic}
-				poolStatus={poolStatus}
-				sessionError={sessionError}
-				onStart={() => startSession(topic)}
-				onRetryPool={() => void prefetchPool(topic)}
-			/>
-		);
+	switch (phase) {
+		case "building":
+			return <RoundBuilder />;
+		case "checking":
+			return <PreSubmitCheck />;
+		case "review":
+			// `startSession` already resets the session slice, so there is nothing
+			// to abandon first — and on failure it leaves the start screen showing
+			// why.
+			return <ScoreboardScaffold onNewSession={() => startSession(topic)} topic={topic} />;
+		case "idle":
+			return (
+				<StartScreen
+					onRetryPool={() => void prefetchPool(topic)}
+					onStart={() => startSession(topic)}
+					poolStatus={poolStatus}
+					sessionError={sessionError}
+					topic={topic}
+				/>
+			);
 	}
-
-	return <SessionScaffold topic={topic} />;
 }
