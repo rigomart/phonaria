@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans, Sora } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { flags } from "@/lib/flags";
 import Providers from "./providers";
 import "@phonaria/ui/globals.css";
 
@@ -50,7 +51,7 @@ export default function RootLayout({
 			<body className="antialiased">
 				<Providers>
 					<div className="min-h-screen flex flex-col">
-						<Header />
+						<Header flags={flags.snapshot()} />
 						<main className="flex-1 flex min-h-0 flex-col">{children}</main>
 						<Footer />
 					</div>
