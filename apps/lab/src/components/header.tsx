@@ -11,12 +11,13 @@ import {
 	NavigationMenuTrigger,
 } from "@phonaria/ui/components/navigation-menu";
 import Link from "next/link";
+import type { LabFlags } from "@/lib/flags";
 import { Logo } from "./logo";
 
 const navLinkClass =
 	"rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
-export function Header({ practiceEnabled }: { practiceEnabled: boolean }) {
+export function Header({ flags }: { flags: LabFlags }) {
 	return (
 		<header className="relative flex items-center justify-center px-4 py-3 animate-in fade-in duration-500">
 			<Link
@@ -33,7 +34,7 @@ export function Header({ practiceEnabled }: { practiceEnabled: boolean }) {
 				<Link href="/" className={navLinkClass}>
 					Transcription
 				</Link>
-				{practiceEnabled && (
+				{flags.practice && (
 					<Link href="/practice" className={navLinkClass}>
 						Practice
 					</Link>

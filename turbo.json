@@ -5,6 +5,7 @@
 			"dependsOn": ["^build"],
 			"outputs": [".next/**", "!.next/cache/**", "dist/**"],
 			"env": [
+				"FLAG_*",
 				"UPSTASH_REDIS_REST_URL",
 				"UPSTASH_REDIS_REST_TOKEN",
 				"CMUDICT_SRC_URL",
