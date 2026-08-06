@@ -16,7 +16,7 @@ import { Logo } from "./logo";
 const navLinkClass =
 	"rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
-export function Header() {
+export function Header({ practiceEnabled }: { practiceEnabled: boolean }) {
 	return (
 		<header className="relative flex items-center justify-center px-4 py-3 animate-in fade-in duration-500">
 			<Link
@@ -33,9 +33,11 @@ export function Header() {
 				<Link href="/" className={navLinkClass}>
 					Transcription
 				</Link>
-				<Link href="/practice" className={navLinkClass}>
-					Practice
-				</Link>
+				{practiceEnabled && (
+					<Link href="/practice" className={navLinkClass}>
+						Practice
+					</Link>
+				)}
 				<NavigationMenu>
 					<NavigationMenuList>
 						<NavigationMenuItem>
