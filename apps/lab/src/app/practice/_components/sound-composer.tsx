@@ -11,10 +11,12 @@ import { resolveComposerKey } from "../_lib/composer-keys";
 import {
 	CONSONANT_KEYS,
 	describeSound,
+	findSound,
 	type SoundKey,
 	searchSounds,
 	VOWEL_KEYS,
 } from "../_lib/sound-palette";
+import { announce } from "./live-region";
 import { SoundChip } from "./sound-chip";
 
 interface SoundComposerProps {
@@ -46,8 +48,17 @@ export function SoundComposer({ sequence, onAppend, onRemoveAt }: SoundComposerP
 
 	function commit(sound: SoundKey) {
 		onAppend(sound.id);
+		announce(`Added ${describeSound(sound)}`);
 		setQuery("");
 		setHighlight(0);
+	}
+
+	function removeAt(index: number) {
+		const sound = sequence[index];
+		if (sound === undefined) return;
+		onRemoveAt(index);
+		const key = findSound(sound);
+		announce(`Removed ${key ? describeSound(key) : sound}`);
 	}
 
 	function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -73,7 +84,7 @@ export function SoundComposer({ sequence, onAppend, onRemoveAt }: SoundComposerP
 				// Let Backspace fall through when there is nothing to delete.
 				if (sequence.length === 0) return;
 				event.preventDefault();
-				onRemoveAt(sequence.length - 1);
+				removeAt(sequence.length - 1);
 				return;
 			case "clear-query":
 				event.preventDefault();
@@ -87,9 +98,9 @@ export function SoundComposer({ sequence, onAppend, onRemoveAt }: SoundComposerP
 	return (
 		<div className="flex w-full flex-col items-center gap-6">
 			<div className="relative w-full">
-				<div className="flex min-h-16 flex-wrap items-center gap-1.5 rounded-xl border bg-background px-2 py-1.5 focus-within:border-primary">
+				<div className="flex min-h-16 flex-wrap items-center gap-1.5 rounded-xl border bg-background px-2 py-1.5 focus-within:border-primary focus-within:ring-2 focus-within:ring-ring">
 					{sequence.map((sound, index) => (
-						<SoundChip key={`${sound}-${index}`} onRemove={() => onRemoveAt(index)} sound={sound} />
+						<SoundChip key={`${sound}-${index}`} onRemove={() => removeAt(index)} sound={sound} />
 					))}
 					<input
 						aria-activedescendant={matches.length > 0 ? `${optionId}-${activeIndex}` : undefined}
@@ -192,7 +203,13 @@ function PaletteRow({
 				<button
 					aria-label={describeSound(key)}
 					className={cn(
-						"size-9 cursor-pointer rounded-md border bg-background font-display text-lg leading-none outline-none transition-opacity hover:border-primary hover:bg-background-strong focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
+						// The centered `after` overlay widens the touch target on coarse
+						// pointers without growing the visible 36px key (same pattern as
+						// the shared Button). Keys sit on a 40px pitch (36px + gap-1) in
+						// both axes once the row wraps, so the overlay clamps at 40px —
+						// full 44px minimums would overlap neighbours and let the
+						// DOM-later key steal taps.
+						"relative size-9 cursor-pointer rounded-md border bg-background font-display text-lg leading-none outline-none transition-opacity pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-10 pointer-coarse:after:min-w-10 hover:border-primary hover:bg-background-strong focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
 						dimmedUnless && !dimmedUnless.has(key.id) && "opacity-30",
 					)}
 					key={key.id}

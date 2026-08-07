@@ -15,18 +15,18 @@ import type { LabFlags } from "@/lib/flags";
 import { Logo } from "./logo";
 
 const navLinkClass =
-	"rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+	"rounded-sm text-muted-foreground transition-colors motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
 export function Header({ flags }: { flags: LabFlags }) {
 	return (
-		<header className="relative flex items-center justify-center px-4 py-3 animate-in fade-in duration-500">
+		<header className="relative flex items-center justify-center px-4 py-3 animate-in fade-in duration-500 motion-reduce:animate-none">
 			<Link
 				href="/"
-				className="group absolute left-4 flex items-center gap-1.5 text-foreground hover:text-primary transition-colors"
+				className="group absolute left-4 flex items-center gap-1.5 text-foreground hover:text-primary transition-colors motion-reduce:transition-none"
 				aria-label="Phonaria Lab"
 			>
 				<Logo className="size-6" />
-				<span className="font-display text-sm font-medium opacity-0 blur-[4px] transition-[opacity,filter] duration-200 group-hover:opacity-100 group-hover:blur-[0px]">
+				<span className="font-display text-sm font-medium opacity-0 blur-[4px] transition-[opacity,filter] duration-200 group-hover:opacity-100 group-hover:blur-[0px] motion-reduce:transition-none">
 					Phonaria
 				</span>
 			</Link>
