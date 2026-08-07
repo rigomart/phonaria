@@ -5,7 +5,7 @@ import { getTopic } from "@/lib/practice/topics";
 import { usePracticeSessionStore } from "../_store/practice-session-store";
 import { PreSubmitCheck } from "./pre-submit-check";
 import { RoundBuilder } from "./round-builder";
-import { ScoreboardScaffold } from "./scoreboard-scaffold";
+import { Scoreboard } from "./scoreboard";
 import { StartScreen } from "./start-screen";
 
 /**
@@ -41,7 +41,7 @@ export function PracticeExperience({ topicId }: { topicId: string }) {
 			// `startSession` already resets the session slice, so there is nothing
 			// to abandon first — and on failure it leaves the start screen showing
 			// why.
-			return <ScoreboardScaffold onNewSession={() => startSession(topic)} topic={topic} />;
+			return <Scoreboard onNewSession={() => startSession(topic)} topic={topic} />;
 		case "idle":
 			return (
 				<StartScreen

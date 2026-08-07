@@ -70,8 +70,10 @@ const testTopic: TopicDefinition = {
 		heading: "Test",
 		description: "Test topic.",
 		startLabel: "Start session",
+		topicStatLabel: "sounds placed",
+		lessonsHeading: "About those sounds",
 	},
-	lessonCatalog: [],
+	selectLessons: () => [],
 };
 
 const loadOk = async () => testPool;

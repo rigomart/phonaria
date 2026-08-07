@@ -25,8 +25,15 @@ function makeTopic(): TopicDefinition {
 		isEligibleWord: (variants) =>
 			variants.every((v) => v.split(" ").some((t) => t.replace(/[012]$/, "") === "AX")),
 		slotSpec: [],
-		display: { kicker: "", heading: "", description: "", startLabel: "" },
-		lessonCatalog: [],
+		display: {
+			kicker: "",
+			heading: "",
+			description: "",
+			startLabel: "",
+			topicStatLabel: "",
+			lessonsHeading: "",
+		},
+		selectLessons: () => [],
 	};
 }
 
