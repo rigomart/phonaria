@@ -17,6 +17,12 @@ export function AudioManagerProvider({ children }: { children: React.ReactNode }
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const currentSrcRef = useRef<string | null>(null);
 	const playRequestIdRef = useRef(0);
+	/**
+	 * The media `error` event and the `play()` rejection can both fire for one
+	 * failed source (e.g. a missing bucket file) — remembers which play request
+	 * already toasted so a single failure never toasts twice.
+	 */
+	const toastedRequestIdRef = useRef(0);
 	const [statusMap, setStatusMap] = useState<Map<string, PlaybackStatus>>(new Map());
 	const [currentSrc, setCurrentSrc] = useState<string | null>(null);
 
@@ -61,6 +67,12 @@ export function AudioManagerProvider({ children }: { children: React.ReactNode }
 		};
 
 		const handleError = () => {
+			// `src` is only ever set by `play()`, so this event always follows an
+			// explicit playback request — safe to surface to the user. A stale event
+			// from a load that a newer `play()` replaced carries no `error` on the
+			// element (assigning `src` clears it), so it must not toast — it would
+			// consume the newer request's dedupe slot and swallow its real failure.
+			if (!audio.error) return;
 			const src = currentSrcRef.current;
 			if (src) {
 				setStatusMap((prev) => {
@@ -68,6 +80,14 @@ export function AudioManagerProvider({ children }: { children: React.ReactNode }
 					next.set(src, "error");
 					return next;
 				});
+				if (toastedRequestIdRef.current !== playRequestIdRef.current) {
+					toastedRequestIdRef.current = playRequestIdRef.current;
+					toastManager.add({
+						title: "Playback error",
+						description: "Could not play the audio. Please try again.",
+						type: "error",
+					});
+				}
 			}
 		};
 
@@ -121,6 +141,8 @@ export function AudioManagerProvider({ children }: { children: React.ReactNode }
 				next.set(src, "error");
 				return next;
 			});
+			if (toastedRequestIdRef.current === requestId) return;
+			toastedRequestIdRef.current = requestId;
 			toastManager.add({
 				title: "Playback error",
 				description: "Could not play the audio. Please try again.",

@@ -53,20 +53,24 @@ export function Scoreboard({
 				<span className="text-muted-foreground text-sm">words correct</span>
 			</div>
 
-			<div className="flex justify-center gap-6 text-center text-sm">
+			{/* dt/dd pairs associate label and value for screen readers; `order-last`
+			    keeps the value-above-label visual while the label reads first. */}
+			<dl className="flex justify-center gap-6 text-center text-sm">
 				<div className="flex flex-col">
-					<span className="font-semibold text-lg">
+					<dt className="order-last text-muted-foreground text-xs">sound accuracy</dt>
+					<dd className="font-semibold text-lg">
 						{accuracy === null ? "—" : `${Math.round(accuracy * 100)}%`}
-					</span>
-					<span className="text-muted-foreground text-xs">sound accuracy</span>
+					</dd>
 				</div>
 				<div className="flex flex-col">
-					<span className="font-semibold text-lg">
+					<dt className="order-last text-muted-foreground text-xs">
+						{topic.display.topicStatLabel}
+					</dt>
+					<dd className="font-semibold text-lg">
 						{tally.matched} of {tally.total}
-					</span>
-					<span className="text-muted-foreground text-xs">{topic.display.topicStatLabel}</span>
+					</dd>
 				</div>
-			</div>
+			</dl>
 
 			<ul className="flex flex-col gap-2">
 				{rows.map(({ round, score }) => {

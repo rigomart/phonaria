@@ -202,7 +202,7 @@ function DiphthongGlide({
 
 			<div
 				className={cn(
-					"grid transition-[grid-template-rows] duration-200 ease-out",
+					"grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none",
 					expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
 				)}
 			>
@@ -249,7 +249,7 @@ function GlidePositionButton({
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"group flex-1 flex items-center gap-1.5 rounded-lg border px-2.5 py-2 text-left transition-all duration-150 cursor-pointer",
+				"group flex-1 flex items-center gap-1.5 rounded-lg border px-2.5 py-2 text-left transition-all duration-150 cursor-pointer motion-reduce:transition-none",
 				active
 					? "border-primary bg-primary/10 text-foreground shadow-sm"
 					: "border-border hover:border-primary/50 hover:bg-muted/50",
@@ -259,7 +259,7 @@ function GlidePositionButton({
 			<span className="text-[10px] text-muted-foreground leading-tight">{roundness}</span>
 			<ChevronDown
 				className={cn(
-					"size-3 shrink-0 ml-auto text-muted-foreground transition-transform duration-150",
+					"size-3 shrink-0 ml-auto text-muted-foreground transition-transform duration-150 motion-reduce:transition-none",
 					active && "rotate-180 text-primary",
 				)}
 			/>

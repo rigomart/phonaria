@@ -5,7 +5,7 @@
  * absent entirely when the topic triggered no notes.
  */
 import { ChevronDown, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { LessonNote } from "@/lib/practice/topics/types";
 import { cn } from "@/lib/utils";
 
@@ -29,14 +29,16 @@ export function LessonsDisclosure({
 	notes: readonly LessonNote[];
 }) {
 	const [open, setOpen] = useState(false);
+	const panelId = useId();
 
 	if (notes.length === 0) return null;
 
 	return (
 		<section className="rounded-xl border bg-background">
 			<button
+				aria-controls={panelId}
 				aria-expanded={open}
-				className="flex w-full cursor-pointer items-center gap-2 p-4 text-left"
+				className="flex w-full cursor-pointer items-center gap-2 rounded-xl p-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
 				onClick={() => setOpen((value) => !value)}
 				type="button"
 			>
@@ -48,22 +50,23 @@ export function LessonsDisclosure({
 					</span>
 				</span>
 				<ChevronDown
-					className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")}
+					className={cn(
+						"size-4 text-muted-foreground transition-transform motion-reduce:transition-none",
+						open && "rotate-180",
+					)}
 				/>
 			</button>
-			{open && (
-				<div className="flex flex-col gap-3 border-t p-4">
-					{notes.map((note) => (
-						<div className="flex flex-col gap-1" key={note.id}>
-							<span className="font-medium text-sm">{note.title}</span>
-							<p className="text-muted-foreground text-sm">{renderEmphasis(note.body)}</p>
-							<span className="text-muted-foreground text-xs">
-								Seen in: {note.words.join(", ")}
-							</span>
-						</div>
-					))}
-				</div>
-			)}
+			{/* Stays mounted so `aria-controls` always resolves while collapsed; the
+			    class toggle (not the `hidden` attribute) wins over `flex`'s display. */}
+			<div className={cn("flex-col gap-3 border-t p-4", open ? "flex" : "hidden")} id={panelId}>
+				{notes.map((note) => (
+					<div className="flex flex-col gap-1" key={note.id}>
+						<span className="font-medium text-sm">{note.title}</span>
+						<p className="text-muted-foreground text-sm">{renderEmphasis(note.body)}</p>
+						<span className="text-muted-foreground text-xs">Seen in: {note.words.join(", ")}</span>
+					</div>
+				))}
+			</div>
 		</section>
 	);
 }

@@ -37,7 +37,7 @@ export function StartScreen({
 	else if (sessionError) failure = { message: sessionError, onRetry: onStart };
 
 	return (
-		<div className="flex flex-1 flex-col items-center justify-center bg-background p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+		<div className="flex flex-1 flex-col items-center justify-center bg-background p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500 motion-reduce:animate-none">
 			<div className="w-full max-w-md flex flex-col items-center gap-4 text-center">
 				<p className="text-sm text-muted-foreground font-display">{topic.display.kicker}</p>
 				<h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-display">

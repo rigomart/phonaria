@@ -7,7 +7,9 @@
  */
 import { Button } from "@phonaria/ui/components/button";
 import { ArrowLeft, ArrowRight, Flag } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { usePracticeSessionStore } from "../_store/practice-session-store";
+import { announce } from "./live-region";
 import { RoundDots } from "./round-dots";
 import { SoundComposer } from "./sound-composer";
 
@@ -22,6 +24,19 @@ export function RoundBuilder() {
 	const removeSoundAt = usePracticeSessionStore((state) => state.removeSoundAt);
 
 	const round = rounds[currentIndex];
+	const word = round?.word.word;
+	const total = rounds.length;
+
+	// Announce navigation between rounds, but not the initial word: on mount the
+	// composer's autofocus already puts the reader on the field under the word.
+	const previousIndexRef = useRef<number | null>(null);
+	useEffect(() => {
+		const previous = previousIndexRef.current;
+		previousIndexRef.current = currentIndex;
+		if (previous === null || previous === currentIndex || word === undefined) return;
+		announce(`Word ${currentIndex + 1} of ${total}: ${word}`);
+	}, [currentIndex, word, total]);
+
 	if (!round) return null;
 
 	const isLastRound = currentIndex === rounds.length - 1;

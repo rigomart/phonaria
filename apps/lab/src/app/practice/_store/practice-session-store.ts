@@ -137,7 +137,8 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 
 		// `generateSession` throws when a band runs dry. That is a data-shape
 		// failure (the band-depth test guards it in CI), but it must not escape
-		// into a click handler — there is no route error boundary to catch it.
+		// into a click handler — the route error boundary would replace the whole
+		// screen, where the start screen's inline retry serves better.
 		let words: PoolWord[];
 		try {
 			words = generateSession(pool, topic.slotSpec, rng);
