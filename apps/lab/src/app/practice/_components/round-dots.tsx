@@ -25,9 +25,12 @@ export function RoundDots({ rounds, currentIndex, onJump }: RoundDotsProps) {
 					<button
 						aria-current={isCurrent ? "step" : undefined}
 						aria-label={`Word ${index + 1} of ${rounds.length}, ${round.word.word} — ${state}`}
-						// The `after` overlay widens the touch target to 44px on coarse
-						// pointers (same pattern as the shared Button).
-						className="relative flex h-8 w-9 cursor-pointer items-center justify-center rounded-md outline-none pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 focus-visible:ring-2 focus-visible:ring-ring"
+						// The centered `after` overlay widens the touch target on coarse
+						// pointers (same pattern as the shared Button): 44px tall — the
+						// row is vertically clear — but clamped to the 40px horizontal
+						// pitch (w-9 + gap-1) so adjacent dots' overlays don't overlap
+						// and steal each other's taps.
+						className="relative flex h-8 w-9 cursor-pointer items-center justify-center rounded-md outline-none pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-10 focus-visible:ring-2 focus-visible:ring-ring"
 						key={round.word.word}
 						onClick={() => onJump(index)}
 						type="button"

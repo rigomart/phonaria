@@ -23,7 +23,7 @@ export function PracticeExperience({ topicId }: { topicId: string }) {
 	const startSession = usePracticeSessionStore((state) => state.startSession);
 	const abandon = usePracticeSessionStore((state) => state.abandon);
 
-	const reviewRef = useRef<HTMLDivElement>(null);
+	const reviewRef = useRef<HTMLHeadingElement>(null);
 
 	// The server route already rejected unknown slugs with notFound().
 	const topic = getTopic(topicId);
@@ -37,7 +37,7 @@ export function PracticeExperience({ topicId }: { topicId: string }) {
 
 	// Reveal: announce the headline and land keyboard/AT focus on the results.
 	// `scores` is set exactly once per submit, so this fires per reveal, not per
-	// render. The scoreboard owns its own markup, hence the focusable wrapper.
+	// render. The ref points at the scoreboard's results heading.
 	useEffect(() => {
 		if (phase !== "review" || !scores) return;
 		announce(`Session results: ${selectWordsCorrect(scores)} of ${roundCount} words correct`);
@@ -59,9 +59,7 @@ export function PracticeExperience({ topicId }: { topicId: string }) {
 			// to abandon first — and on failure it leaves the start screen showing
 			// why.
 			view = (
-				<div className="flex flex-1 flex-col outline-none" ref={reviewRef} tabIndex={-1}>
-					<Scoreboard onNewSession={() => startSession(topic)} topic={topic} />
-				</div>
+				<Scoreboard headingRef={reviewRef} onNewSession={() => startSession(topic)} topic={topic} />
 			);
 			break;
 		case "idle":

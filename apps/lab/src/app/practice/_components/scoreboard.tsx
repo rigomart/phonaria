@@ -8,6 +8,7 @@
  */
 import { Button } from "@phonaria/ui/components/button";
 import { Check, X } from "lucide-react";
+import type { Ref } from "react";
 import { normalizeAcceptedVariants } from "@/lib/practice/scoring";
 import type { LessonWordResult, TopicDefinition } from "@/lib/practice/topics/types";
 import {
@@ -24,9 +25,12 @@ import { WordAudio } from "./word-audio";
 export function Scoreboard({
 	topic,
 	onNewSession,
+	headingRef,
 }: {
 	topic: TopicDefinition;
 	onNewSession: () => void;
+	/** Lets the reveal effect land keyboard/AT focus on the results headline. */
+	headingRef?: Ref<HTMLHeadingElement>;
 }) {
 	const rounds = usePracticeSessionStore((state) => state.rounds);
 	const scores = usePracticeSessionStore((state) => state.scores);
@@ -47,7 +51,11 @@ export function Scoreboard({
 		<div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 animate-in fade-in duration-500 motion-reduce:animate-none">
 			<div className="flex flex-col items-center gap-1 text-center">
 				<span className="text-muted-foreground text-sm">Session complete</span>
-				<h1 className="font-bold font-display text-5xl tracking-tight">
+				<h1
+					className="font-bold font-display text-5xl tracking-tight outline-none"
+					ref={headingRef}
+					tabIndex={-1}
+				>
 					{selectWordsCorrect(scores)} of {scores.length}
 				</h1>
 				<span className="text-muted-foreground text-sm">words correct</span>

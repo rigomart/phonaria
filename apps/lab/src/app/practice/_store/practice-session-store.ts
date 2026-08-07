@@ -136,9 +136,9 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 		if (poolStatus !== "ready" || !pool) return;
 
 		// `generateSession` throws when a band runs dry. That is a data-shape
-		// failure (the band-depth test guards it in CI), but it must not escape
-		// into a click handler — the route error boundary would replace the whole
-		// screen, where the start screen's inline retry serves better.
+		// failure (the band-depth test guards it in CI), but the callers are event
+		// handlers — where route error boundaries never catch — so catching here
+		// keeps the start screen up to show its inline retry state.
 		let words: PoolWord[];
 		try {
 			words = generateSession(pool, topic.slotSpec, rng);

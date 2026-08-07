@@ -11,14 +11,11 @@ import { cn } from "@/lib/utils";
 
 /** Note bodies carry the PRD's `*word*` emphasis verbatim; render it as <em>. */
 function renderEmphasis(text: string) {
-	return text.split(/(\*[^*]+\*)/).map((part, index) =>
-		part.startsWith("*") && part.endsWith("*") ? (
-			// biome-ignore lint/suspicious/noArrayIndexKey: segments are static copy
-			<em key={index}>{part.slice(1, -1)}</em>
-		) : (
-			part
-		),
-	);
+	return text
+		.split(/(\*[^*]+\*)/)
+		.map((part, index) =>
+			part.startsWith("*") && part.endsWith("*") ? <em key={index}>{part.slice(1, -1)}</em> : part,
+		);
 }
 
 export function LessonsDisclosure({

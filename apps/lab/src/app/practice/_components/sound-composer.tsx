@@ -203,10 +203,13 @@ function PaletteRow({
 				<button
 					aria-label={describeSound(key)}
 					className={cn(
-						// The `after` overlay widens the touch target to 44px on coarse
+						// The centered `after` overlay widens the touch target on coarse
 						// pointers without growing the visible 36px key (same pattern as
-						// the shared Button).
-						"relative size-9 cursor-pointer rounded-md border bg-background font-display text-lg leading-none outline-none transition-opacity pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 hover:border-primary hover:bg-background-strong focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
+						// the shared Button). Keys sit on a 40px pitch (36px + gap-1) in
+						// both axes once the row wraps, so the overlay clamps at 40px —
+						// full 44px minimums would overlap neighbours and let the
+						// DOM-later key steal taps.
+						"relative size-9 cursor-pointer rounded-md border bg-background font-display text-lg leading-none outline-none transition-opacity pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-10 pointer-coarse:after:min-w-10 hover:border-primary hover:bg-background-strong focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
 						dimmedUnless && !dimmedUnless.has(key.id) && "opacity-30",
 					)}
 					key={key.id}

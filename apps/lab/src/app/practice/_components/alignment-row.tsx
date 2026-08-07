@@ -58,7 +58,12 @@ export function Glyph({
 						className={glyphClass(
 							strike,
 							cn(
-								"relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring data-popup-open:border-primary pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
+								// Centered coarse-pointer hit-area overlay. Glyphs sit on a
+								// 36px pitch (size-8 + gap-1) horizontally, and AlignmentDiff
+								// stacks its You/Accepted rows at the same pitch vertically,
+								// so the overlay clamps at 36px on both axes — 44px minimums
+								// would overlap neighbours and steal their taps.
+								"relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring data-popup-open:border-primary pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-9 pointer-coarse:after:min-w-9",
 								className,
 							),
 						)}

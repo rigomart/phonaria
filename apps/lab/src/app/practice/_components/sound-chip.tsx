@@ -50,7 +50,10 @@ export function SoundChip({ sound, onRemove, className }: SoundChipProps) {
 						<button
 							aria-label={name}
 							className={cn(
-								"relative flex h-full cursor-pointer items-center px-2.5 font-display text-xl leading-none outline-none pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 focus-visible:ring-2 focus-visible:ring-ring data-popup-open:bg-background-strong",
+								// Centered coarse-pointer overlay: 44px tall, but no width
+								// minimum — the chip's two halves sit flush, so a widened
+								// overlay on either would cover the other and hijack its taps.
+								"relative flex h-full cursor-pointer items-center px-2.5 font-display text-xl leading-none outline-none pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-11 focus-visible:ring-2 focus-visible:ring-ring data-popup-open:bg-background-strong",
 								onRemove ? "rounded-l-lg" : "rounded-lg",
 							)}
 							type="button"
@@ -67,7 +70,9 @@ export function SoundChip({ sound, onRemove, className }: SoundChipProps) {
 			{onRemove ? (
 				<button
 					aria-label={`Remove ${name}`}
-					className="relative flex h-full cursor-pointer items-center rounded-r-lg border-border border-l px-2 text-muted-foreground outline-none pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-2 focus-visible:ring-ring"
+					// Centered coarse-pointer overlay: 44px tall, no width minimum —
+					// see the trigger half above.
+					className="relative flex h-full cursor-pointer items-center rounded-r-lg border-border border-l px-2 text-muted-foreground outline-none pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-11 hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-2 focus-visible:ring-ring"
 					onClick={onRemove}
 					type="button"
 				>
