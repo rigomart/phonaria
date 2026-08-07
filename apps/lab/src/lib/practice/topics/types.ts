@@ -1,4 +1,5 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
+import type { AlignmentOp } from "../scoring";
 
 /**
  * Inclusive syllable-count band for one session slot.
@@ -9,9 +10,22 @@ export interface SyllableBand {
 	max: number | null;
 }
 
-/** Placeholder until the lesson catalog lands (#140, implementation step 9). */
-export interface LessonPattern {
+/** One scored word, reduced to what lesson selection needs. */
+export interface LessonWordResult {
+	word: string;
+	/** The learner left the word blank; excluded from op-keyed patterns. */
+	blank: boolean;
+	/** Alignment against the reference the word was judged on, in word order. */
+	ops: readonly AlignmentOp[];
+}
+
+/** One triggered teaching note, ready to render in the reveal's disclosure. */
+export interface LessonNote {
 	id: string;
+	title: string;
+	body: string;
+	/** Session words that triggered the pattern, in session order. */
+	words: readonly string[];
 }
 
 /**
@@ -36,6 +50,15 @@ export interface TopicDefinition {
 		heading: string;
 		description: string;
 		startLabel: string;
+		/** Reveal stat-tile label after "N of M", e.g. "schwas placed". */
+		topicStatLabel: string;
+		/** Reveal disclosure heading, e.g. "About those schwas". */
+		lessonsHeading: string;
 	};
-	lessonCatalog: readonly LessonPattern[];
+	/**
+	 * Mistake-keyed lesson selection over the session's scored words: fixed
+	 * catalog order, all triggered notes, each op keyed to exactly one pattern,
+	 * blank words excluded from the op-keyed patterns.
+	 */
+	selectLessons: (results: readonly LessonWordResult[]) => LessonNote[];
 }
