@@ -57,11 +57,11 @@ describe("palette coverage", () => {
 
 describe("describeSound", () => {
 	it("leads with the learner's nickname when there is one", () => {
-		expect(describeSound(sound("AX"))).toBe("schwa, /ə/");
+		expect(describeSound(sound("AX"))).toBe("schwa, ə");
 	});
 
 	it("names the sound by an example word rather than articulatory jargon", () => {
-		expect(describeSound(sound("P"))).toBe("as in pat, /p/");
+		expect(describeSound(sound("P"))).toBe("as in pat, p");
 	});
 });
 
