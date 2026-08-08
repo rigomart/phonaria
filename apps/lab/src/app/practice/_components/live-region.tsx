@@ -25,8 +25,15 @@ const listeners = new Set<() => void>();
  */
 export const ANNOUNCE_DELAY_MS = 150;
 
+let pendingAnnounce: ReturnType<typeof setTimeout> | null = null;
+
 export function announce(message: string): void {
-	setTimeout(() => {
+	// A newer announcement supersedes an undelivered one: flushing both within
+	// one delay window would re-batch them, and the newer message is the one
+	// describing the current state anyway.
+	if (pendingAnnounce !== null) clearTimeout(pendingAnnounce);
+	pendingAnnounce = setTimeout(() => {
+		pendingAnnounce = null;
 		snapshot = { version: snapshot.version + 1, message };
 		for (const listener of listeners) listener();
 	}, ANNOUNCE_DELAY_MS);

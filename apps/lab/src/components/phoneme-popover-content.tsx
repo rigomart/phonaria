@@ -51,9 +51,13 @@ export function PhonemePopoverContent({ phonemeId }: PhonemePopoverProps) {
 		<div className="flex flex-col gap-2 w-72">
 			<div className="flex items-center justify-between gap-2">
 				<div className="flex items-baseline gap-0.5 text-2xl font-medium">
-					<span className="text-muted-foreground/50">/</span>
+					<span aria-hidden="true" className="text-muted-foreground/50">
+						/
+					</span>
 					<span>{ipa}</span>
-					<span className="text-muted-foreground/50">/</span>
+					<span aria-hidden="true" className="text-muted-foreground/50">
+						/
+					</span>
 				</div>
 				{showAudio && <AudioControls path={`/audio/phonemes/${phonemeId}.ogg`} label={ipa} />}
 			</div>

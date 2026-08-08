@@ -48,12 +48,27 @@ describe("live region announcer", () => {
 		expect(second.version).toBe(first.version + 1);
 	});
 
-	it("delivers rapid announcements in order", () => {
+	it("coalesces announcements inside one delay window to the latest message", () => {
+		const before = getAnnouncementSnapshot().version;
 		announce("Added schwa, ə");
 		announce("Added as in let, l");
 		vi.advanceTimersByTime(ANNOUNCE_DELAY_MS);
 
 		expect(getAnnouncementSnapshot().message).toBe("Added as in let, l");
+		expect(getAnnouncementSnapshot().version).toBe(before + 1);
+	});
+
+	it("restarts the delay when a newer announcement supersedes a pending one", () => {
+		announce("Word 3 of 5: typical");
+		vi.advanceTimersByTime(ANNOUNCE_DELAY_MS - 1);
+		announce("2 words have no answer");
+		vi.advanceTimersByTime(ANNOUNCE_DELAY_MS - 1);
+
+		expect(getAnnouncementSnapshot().message).not.toBe("2 words have no answer");
+
+		vi.advanceTimersByTime(1);
+
+		expect(getAnnouncementSnapshot().message).toBe("2 words have no answer");
 	});
 
 	it("stops notifying after unsubscribe", () => {
