@@ -36,9 +36,8 @@ const lookupFails: LookupWordsFn = async () => {
 };
 
 /**
- * A tier hit whose syllable carries no `phonemes` array — the shape
- * `transformToTranscriptionResult` walks — so the sync merge/transform step
- * throws on real data rather than on a mocked module.
+ * A tier hit whose syllable carries no `phonemes` array, so the sync
+ * merge/transform step throws on real data rather than on a mocked module.
  */
 const lookupMalformed: LookupWordsFn = async (words) => ({
 	found: new Map(
@@ -71,7 +70,7 @@ const serverFails: TranscribeWordsFn = async () => {
 	throw new Error("server action unavailable");
 };
 
-/** Puts a real result on screen without reaching for the deleted setters. */
+/** Seeds a real result through a successful `transcribe`. */
 async function seedResult(text = "hello world"): Promise<void> {
 	await useG2PStore.getState().transcribe(text, countingServer(), lookupAllFound);
 }
@@ -143,11 +142,6 @@ describe("g2p-store — transcribe", () => {
 		expect(state.lookupError).toBeNull();
 	});
 
-	/**
-	 * `mergeWords` reads the server map by normalized token. The real action
-	 * echoes lowercase words, but `transcribeWords` is injectable, so the store
-	 * must not depend on that contract.
-	 */
 	it("merges a server word even when the service echoes its original casing", async () => {
 		const echoingServer: TranscribeWordsFn = async ({ words }) =>
 			words.map((word) => ({
@@ -181,11 +175,7 @@ describe("g2p-store — transcribe", () => {
 		expect(server.calls).toEqual([]);
 	});
 
-	/**
-	 * Input that survives the form's trim gate but tokenizes to nothing must not
-	 * dismiss an error nobody resolved — no lookup was attempted, so the previous
-	 * failure is still true.
-	 */
+	// "???" survives the form's trim gate but tokenizes to nothing.
 	it("keeps an unresolved error when the next input tokenizes to nothing", async () => {
 		vi.spyOn(console, "error").mockImplementation(() => {});
 		const server = countingServer();
@@ -229,8 +219,7 @@ describe("g2p-store — transcribe", () => {
 		expect(server.calls).toEqual([]);
 	});
 
-	/** The backstop: a server response that is not iterable throws outside every
-	 * inner catch, and must still reach the learner rather than the void. */
+	// A non-iterable server response throws outside every inner catch.
 	it("catches a failure no inner handler owns", async () => {
 		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 		const serverReturnsNothing: TranscribeWordsFn = async () => null as never;

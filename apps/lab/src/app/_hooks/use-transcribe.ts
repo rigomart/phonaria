@@ -5,9 +5,8 @@ import { transcribeWordsAction } from "../_actions/transcribe";
 import { useG2PStore } from "../_store/g2p-store";
 
 /**
- * Thin wrapper over the store's `transcribe`: the orchestration and its
- * staleness token live in the store so every caller (form, example chips,
- * Retry) shares one result and one error, while each keeps its own `isPending`.
+ * Thin wrapper over the store's `transcribe`, which owns the shared result and
+ * error state; each caller keeps its own `isPending`.
  */
 export function useTranscribe() {
 	const [isPending, startTransition] = useTransition();
@@ -24,8 +23,7 @@ export function useTranscribe() {
 	);
 
 	const retry = useCallback(() => {
-		// Retry only ever renders alongside an error, which implies a submitted
-		// text. Logging keeps a broken invariant from becoming a dead button.
+		// `lastText` is always set while an error is showing; log if that breaks.
 		if (lastText) mutate({ text: lastText });
 		else console.error("transcription: retry with no text to replay");
 	}, [lastText, mutate]);

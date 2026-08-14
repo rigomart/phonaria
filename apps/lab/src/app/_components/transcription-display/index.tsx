@@ -94,15 +94,11 @@ function TranscriptionResults({
 }
 
 /**
- * A failed lookup shows an inline alert with Retry above whatever result was
- * already on screen (#163). The empty state is suppressed while erroring so the
- * learner's attention stays on the recovery action instead of on example chips.
- *
- * Retry sits outside the `role="alert"` region: that region is assertive, and
- * swapping the button's icon and disabled state inside it makes some screen
- * readers re-announce the whole error on every click. The region is keyed by
- * the settled-failure nonce so a retry that fails with the same kind still
- * re-mounts the alert and gets announced.
+ * A failed lookup shows an alert with Retry above whatever result was already
+ * on screen; the empty state is suppressed while erroring (#163). Retry sits
+ * outside the `role="alert"` region so its busy-state swaps don't re-announce
+ * the error, and the region is keyed by the failure nonce so a repeated
+ * failure still announces.
  */
 export function TranscriptionDisplay() {
 	const { data: result } = useCurrentTranscription();

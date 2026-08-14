@@ -13,7 +13,6 @@ import type { TranscriptionResult } from "@/lib/types/g2p";
 /**
  * Which stage of the lookup failed. Server-action errors are digest-opaque in
  * production, so the kind comes from the catch scope, never from the message.
- * The learner-facing copy lives with the component that renders it.
  */
 export type LookupErrorKind = "wordlist" | "service" | "unknown";
 
@@ -21,7 +20,6 @@ export type LookupErrorKind = "wordlist" | "service" | "unknown";
  * The server action is injected instead of imported: `../_actions/transcribe`
  * pulls in `@/db/drizzle`, which throws at import time when `TURSO_DATABASE_URL`
  * is unset — importing it here would break this store's test at module load.
- * The client-side lookup has no such problem, so it defaults to `batchLookup`.
  */
 export type TranscribeWordsFn = (input: { words: string[] }) => Promise<G2PWord[]>;
 export type LookupWordsFn = (words: string[]) => Promise<BatchLookupResult>;
@@ -31,17 +29,13 @@ interface G2PStore {
 	selectedVariants: number[];
 	/** Set when a lookup failed; cleared when one settles successfully. */
 	lookupError: LookupErrorKind | null;
-	/**
-	 * Bumped on every settled failure. The alert keys on it so a retry that
-	 * fails with the same kind still re-mounts — and re-announces — the alert.
-	 */
+	/** Bumped on each settled failure so the alert re-mounts and re-announces. */
 	lookupErrorNonce: number;
 	/** The text Retry replays. Never set for input that tokenized to nothing. */
 	lastText: string | null;
 	/**
-	 * True while a lookup is in flight. `useTransition`'s `isPending` is
-	 * per-hook-instance, so a lookup fired from the form would otherwise leave
-	 * Retry (a different instance) looking idle.
+	 * True while a lookup is in flight. Shared here because `isPending` is
+	 * per-hook-instance and Retry lives in a different instance than the form.
 	 */
 	isTranscribing: boolean;
 
@@ -99,10 +93,8 @@ function failed(kind: LookupErrorKind) {
 }
 
 /**
- * Monotonic id for the in-flight transcription. It is module-level, not
- * per-hook: the form, the example chips and Retry each instantiate their own
- * `useTranscribe`, so a per-instance ref could not tell one instance's stale
- * result from another instance's live one.
+ * Monotonic id for the in-flight transcription. Module-level, not per-hook:
+ * the form, the example chips and Retry each own a `useTranscribe` instance.
  */
 let activeLookup = 0;
 
@@ -138,9 +130,8 @@ export const useG2PStore = create<G2PStore>((set) => ({
 	transcribe: async (text, transcribeWords, lookupWords = batchLookup) => {
 		const token = ++activeLookup;
 
-		// Outer backstop: `transcribe` runs inside `startTransition`, where a throw
-		// would be an unhandled rejection and the learner would see nothing. Total
-		// by construction rather than by audit — the inner catches still classify.
+		// Backstop: a throw escaping here becomes an unhandled rejection inside
+		// `startTransition`, which the learner never sees.
 		try {
 			const tokens = tokenizeText(text);
 			if (tokens.length === 0) {
@@ -161,8 +152,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 				set(failed("wordlist"));
 				return;
 			}
-			// A newer transcription took over mid-flight — drop this one. It owns
-			// `isTranscribing` now, so a stale return never touches the flag.
+			// A newer transcription owns the state now — return without touching it.
 			if (activeLookup !== token) return;
 
 			const serverWordMap = new Map<string, G2PWord>();
@@ -179,9 +169,8 @@ export const useG2PStore = create<G2PStore>((set) => ({
 				if (activeLookup !== token) return;
 
 				for (const word of serverWords) {
-					// `mergeWords` looks the map up by normalized token. The real action
-					// echoes lowercase words, but `transcribeWords` is injectable, so the
-					// key is normalized here rather than trusting that contract.
+					// Key by normalized token (what `mergeWords` reads) — `transcribeWords`
+					// is injectable, so don't rely on the server echoing lowercase.
 					serverWordMap.set(word.word.toLowerCase().trim(), word);
 				}
 			}
@@ -199,8 +188,8 @@ export const useG2PStore = create<G2PStore>((set) => ({
 				return;
 			}
 
-			// The error clears on settle, not on start, so the alert — and its Retry
-			// button — stays mounted while the retry is in flight.
+			// Errors clear on settle, not on start, so the alert stays mounted
+			// while a retry is in flight.
 			set({
 				currentResult: transformed,
 				selectedVariants: Array(transformed.words.length).fill(0),
