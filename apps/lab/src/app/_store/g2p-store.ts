@@ -31,6 +31,11 @@ interface G2PStore {
 	selectedVariants: number[];
 	/** Set when a lookup failed; cleared when one settles successfully. */
 	lookupError: LookupErrorKind | null;
+	/**
+	 * Bumped on every settled failure. The alert keys on it so a retry that
+	 * fails with the same kind still re-mounts — and re-announces — the alert.
+	 */
+	lookupErrorNonce: number;
 	/** The text Retry replays. Never set for input that tokenized to nothing. */
 	lastText: string | null;
 	/**
@@ -84,6 +89,15 @@ function mergeWords(
 	});
 }
 
+/** The terminal write shared by every failure path. */
+function failed(kind: LookupErrorKind) {
+	return (state: { lookupErrorNonce: number }) => ({
+		lookupError: kind,
+		lookupErrorNonce: state.lookupErrorNonce + 1,
+		isTranscribing: false,
+	});
+}
+
 /**
  * Monotonic id for the in-flight transcription. It is module-level, not
  * per-hook: the form, the example chips and Retry each instantiate their own
@@ -96,6 +110,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 	currentResult: null,
 	selectedVariants: [],
 	lookupError: null,
+	lookupErrorNonce: 0,
 	lastText: null,
 	isTranscribing: false,
 
@@ -106,6 +121,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 			currentResult: null,
 			selectedVariants: [],
 			lookupError: null,
+			lookupErrorNonce: 0,
 			lastText: null,
 			isTranscribing: false,
 		});
@@ -142,7 +158,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 			} catch (error) {
 				if (activeLookup !== token) return;
 				console.error("transcription: word list lookup failed", error);
-				set({ lookupError: "wordlist", isTranscribing: false });
+				set(failed("wordlist"));
 				return;
 			}
 			// A newer transcription took over mid-flight — drop this one. It owns
@@ -157,13 +173,16 @@ export const useG2PStore = create<G2PStore>((set) => ({
 				} catch (error) {
 					if (activeLookup !== token) return;
 					console.error("transcription: lookup service failed", error);
-					set({ lookupError: "service", isTranscribing: false });
+					set(failed("service"));
 					return;
 				}
 				if (activeLookup !== token) return;
 
 				for (const word of serverWords) {
-					serverWordMap.set(word.word, word);
+					// `mergeWords` looks the map up by normalized token. The real action
+					// echoes lowercase words, but `transcribeWords` is injectable, so the
+					// key is normalized here rather than trusting that contract.
+					serverWordMap.set(word.word.toLowerCase().trim(), word);
 				}
 			}
 
@@ -176,7 +195,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 			} catch (error) {
 				// Nothing is awaited since the last guard, so this lookup is still live.
 				console.error("transcription: building the result failed", error);
-				set({ lookupError: "unknown", isTranscribing: false });
+				set(failed("unknown"));
 				return;
 			}
 
@@ -191,7 +210,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 		} catch (error) {
 			if (activeLookup !== token) return;
 			console.error("transcription: unexpected failure", error);
-			set({ lookupError: "unknown", isTranscribing: false });
+			set(failed("unknown"));
 		}
 	},
 }));

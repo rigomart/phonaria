@@ -143,6 +143,26 @@ describe("g2p-store — transcribe", () => {
 		expect(state.lookupError).toBeNull();
 	});
 
+	/**
+	 * `mergeWords` reads the server map by normalized token. The real action
+	 * echoes lowercase words, but `transcribeWords` is injectable, so the store
+	 * must not depend on that contract.
+	 */
+	it("merges a server word even when the service echoes its original casing", async () => {
+		const echoingServer: TranscribeWordsFn = async ({ words }) =>
+			words.map((word) => ({
+				word,
+				variants: [[syllable("HH", "AH")]],
+				source: "cmudict" as const,
+			}));
+
+		await useG2PStore.getState().transcribe("Hello", echoingServer, lookupAllMissing);
+
+		const state = useG2PStore.getState();
+		expect(state.currentResult?.words[0]?.source).toBe("cmudict");
+		expect(state.lookupError).toBeNull();
+	});
+
 	it("does nothing for text that tokenizes to nothing", async () => {
 		const server = countingServer();
 		let lookupCalls = 0;
@@ -221,6 +241,17 @@ describe("g2p-store — transcribe", () => {
 		expect(state.lookupError).toBe("unknown");
 		expect(state.isTranscribing).toBe(false);
 		expect(consoleError).toHaveBeenCalled();
+	});
+
+	it("bumps the error nonce on every settled failure so repeats re-announce", async () => {
+		vi.spyOn(console, "error").mockImplementation(() => {});
+		await useG2PStore.getState().transcribe("hello", countingServer(), lookupFails);
+		const first = useG2PStore.getState().lookupErrorNonce;
+
+		await useG2PStore.getState().transcribe("hello", countingServer(), lookupFails);
+
+		expect(useG2PStore.getState().lookupError).toBe("wordlist");
+		expect(useG2PStore.getState().lookupErrorNonce).toBe(first + 1);
 	});
 
 	it("keeps the previous result on screen when a lookup fails", async () => {
@@ -336,6 +367,7 @@ describe("g2p-store — transcribe", () => {
 
 		const state = useG2PStore.getState();
 		expect(state.lookupError).toBeNull();
+		expect(state.lookupErrorNonce).toBe(0);
 		expect(state.lastText).toBeNull();
 		expect(state.currentResult).toBeNull();
 	});

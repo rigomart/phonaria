@@ -23,8 +23,8 @@ interface WordColumnProps {
 }
 
 function WordColumn({ word, index }: WordColumnProps) {
-	const { selectedVariants, setVariant } = useG2PStore();
-	const selected = selectedVariants[word.wordIndex] ?? 0;
+	const selected = useG2PStore((s) => s.selectedVariants[word.wordIndex] ?? 0);
+	const setVariant = useG2PStore((s) => s.setVariant);
 	const currentVariant = useMemo(() => word.variants[selected] ?? [], [word.variants, selected]);
 	const isUnknown = word.source === "fallback";
 
@@ -100,11 +100,14 @@ function TranscriptionResults({
  *
  * Retry sits outside the `role="alert"` region: that region is assertive, and
  * swapping the button's icon and disabled state inside it makes some screen
- * readers re-announce the whole error on every click.
+ * readers re-announce the whole error on every click. The region is keyed by
+ * the settled-failure nonce so a retry that fails with the same kind still
+ * re-mounts the alert and gets announced.
  */
 export function TranscriptionDisplay() {
 	const { data: result } = useCurrentTranscription();
 	const lookupError = useG2PStore((s) => s.lookupError);
+	const lookupErrorNonce = useG2PStore((s) => s.lookupErrorNonce);
 	const isTranscribing = useG2PStore((s) => s.isTranscribing);
 	const { retry, isPending } = useTranscribe();
 	const isBusy = isPending || isTranscribing;
@@ -119,6 +122,7 @@ export function TranscriptionDisplay() {
 				<div className="flex flex-col items-center px-4 py-4">
 					<div className="w-full max-w-md flex flex-col items-center gap-3">
 						<div
+							key={`${lookupError}-${lookupErrorNonce}`}
 							role="alert"
 							className="w-full flex flex-col items-center gap-3 rounded-lg border border-border bg-muted p-4 text-center"
 						>
