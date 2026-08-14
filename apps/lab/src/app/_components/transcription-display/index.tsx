@@ -1,12 +1,21 @@
 "use client";
 
-import { useMemo } from "react";
-import type { TranscribedWord } from "@/lib/types/g2p";
-import { useCurrentTranscription } from "../../_hooks/use-transcribe";
-import { useG2PStore } from "../../_store/g2p-store";
+import { Button } from "@phonaria/ui/components/button";
+import { Spinner } from "@phonaria/ui/components/spinner";
+import { RotateCcw } from "lucide-react";
+import { type ReactNode, useMemo } from "react";
+import type { TranscribedWord, TranscriptionResult } from "@/lib/types/g2p";
+import { useCurrentTranscription, useTranscribe } from "../../_hooks/use-transcribe";
+import { type LookupErrorKind, useG2PStore } from "../../_store/g2p-store";
 import { EmptyState } from "./empty-state";
 import { IpaSequence } from "./ipa-sequence";
 import { VariantSelector } from "./variant-selector";
+
+const LOOKUP_ERROR_COPY: Record<LookupErrorKind, string> = {
+	wordlist: "We couldn't load the word list. Check your connection and try again.",
+	service: "We couldn't reach the lookup service. Please try again.",
+	unknown: "We couldn't finish transcribing that. Please try again.",
+};
 
 interface WordColumnProps {
 	word: TranscribedWord;
@@ -14,8 +23,8 @@ interface WordColumnProps {
 }
 
 function WordColumn({ word, index }: WordColumnProps) {
-	const { selectedVariants, setVariant } = useG2PStore();
-	const selected = selectedVariants[word.wordIndex] ?? 0;
+	const selected = useG2PStore((s) => s.selectedVariants[word.wordIndex] ?? 0);
+	const setVariant = useG2PStore((s) => s.setVariant);
 	const currentVariant = useMemo(() => word.variants[selected] ?? [], [word.variants, selected]);
 	const isUnknown = word.source === "fallback";
 
@@ -51,13 +60,23 @@ function WordColumn({ word, index }: WordColumnProps) {
 	);
 }
 
-export function TranscriptionDisplay() {
-	const { data: result } = useCurrentTranscription();
-
-	if (!result) return <EmptyState />;
-
+function TranscriptionResults({
+	result,
+	isStale,
+}: {
+	result: TranscriptionResult;
+	isStale: boolean;
+}) {
 	return (
 		<div className="flex flex-col items-center overflow-x-auto px-4 py-4">
+			{isStale ? (
+				<div className="mb-4">
+					<p className="text-xs text-muted-foreground">
+						Showing your last transcription for "{result.originalText}".
+					</p>
+				</div>
+			) : null}
+
 			<div className="flex flex-wrap justify-center gap-x-6 gap-y-4 md:gap-x-8 md:gap-y-6">
 				{result.words.map((word, wordIndex) => (
 					<WordColumn key={`${word.word}-${wordIndex}`} word={word} index={wordIndex} />
@@ -71,5 +90,48 @@ export function TranscriptionDisplay() {
 				<p className="text-xs text-muted-foreground">Click any phoneme for details</p>
 			</div>
 		</div>
+	);
+}
+
+/**
+ * A failed lookup shows an alert with Retry above whatever result was already
+ * on screen; the empty state is suppressed while erroring (#163). Retry sits
+ * outside the `role="alert"` region so its busy-state swaps don't re-announce
+ * the error, and the region is keyed by the failure nonce so a repeated
+ * failure still announces.
+ */
+export function TranscriptionDisplay() {
+	const { data: result } = useCurrentTranscription();
+	const lookupError = useG2PStore((s) => s.lookupError);
+	const lookupErrorNonce = useG2PStore((s) => s.lookupErrorNonce);
+	const isTranscribing = useG2PStore((s) => s.isTranscribing);
+	const { retry, isPending } = useTranscribe();
+	const isBusy = isPending || isTranscribing;
+
+	let body: ReactNode = null;
+	if (result) body = <TranscriptionResults result={result} isStale={lookupError !== null} />;
+	else if (!lookupError) body = <EmptyState />;
+
+	return (
+		<>
+			{lookupError ? (
+				<div className="flex flex-col items-center px-4 py-4">
+					<div className="w-full max-w-md flex flex-col items-center gap-3">
+						<div
+							key={`${lookupError}-${lookupErrorNonce}`}
+							role="alert"
+							className="w-full flex flex-col items-center gap-3 rounded-lg border border-border bg-muted p-4 text-center"
+						>
+							<p className="text-sm text-foreground">{LOOKUP_ERROR_COPY[lookupError]}</p>
+						</div>
+						<Button variant="outline" onClick={retry} disabled={isBusy} aria-busy={isBusy}>
+							{isBusy ? <Spinner /> : <RotateCcw />}
+							Retry
+						</Button>
+					</div>
+				</div>
+			) : null}
+			{body}
+		</>
 	);
 }
