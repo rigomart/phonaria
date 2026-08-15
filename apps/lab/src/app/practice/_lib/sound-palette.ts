@@ -150,13 +150,15 @@ export function findSound(id: string): SoundKey | undefined {
 }
 
 /**
- * Accessible name for a bare glyph: "schwa, /ə/". A screen reader cannot be
+ * Accessible name for a bare glyph: "schwa, ə". A screen reader cannot be
  * trusted to pronounce IPA, so plain words come first — not the articulatory
- * label, which stays in the dropdown row (#140).
+ * label, which stays in the dropdown row (#140). No /slashes/ around the IPA:
+ * VoiceOver reads them as "slash" on every key (#158). The bare symbol stays
+ * to disambiguate shared example words ("as in sun" is both s and n).
  */
 export function describeSound(sound: SoundKey): string {
 	const name = sound.nicknames[0] ?? `as in ${sound.examples[0]}`;
-	return `${name}, /${sound.ipa}/`;
+	return `${name}, ${sound.ipa}`;
 }
 
 /**
