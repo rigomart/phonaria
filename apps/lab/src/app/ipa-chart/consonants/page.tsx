@@ -6,7 +6,6 @@ import { ConsonantChart } from "../_components/consonant-chart";
 export const metadata: Metadata = {
 	title: "Consonants — IPA Chart",
 	description: "Interactive IPA chart for American English consonants.",
-	robots: { index: false, follow: true },
 };
 
 const phonemeCounts = getLanguagePhonemeCount("en-us");
