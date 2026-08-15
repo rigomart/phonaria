@@ -3,9 +3,8 @@ import { ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Credits & Sources - Phonaria Lab",
+	title: "Credits & Sources",
 	description: "Credits and sources for Phonaria resources, data, and media.",
-	robots: { index: false, follow: true },
 };
 
 type CreditCardProps = {

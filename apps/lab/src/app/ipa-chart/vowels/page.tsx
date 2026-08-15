@@ -7,7 +7,6 @@ import { getMonophthongEntries } from "../_lib/vowel-chart-data";
 export const metadata: Metadata = {
 	title: "Vowels — IPA Chart",
 	description: "Interactive IPA chart for American English vowels.",
-	robots: { index: false, follow: true },
 };
 
 const phonemeCounts = getLanguagePhonemeCount("en-us");

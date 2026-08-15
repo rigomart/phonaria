@@ -3,6 +3,13 @@ import { Noto_Sans, Sora } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { flags } from "@/lib/flags";
+import {
+	getGoogleSiteVerification,
+	getSiteUrl,
+	isIndexingEnabled,
+	SITE_DESCRIPTION,
+	SITE_NAME,
+} from "@/lib/site";
 import Providers from "./providers";
 import "@phonaria/ui/globals.css";
 
@@ -19,26 +26,31 @@ const notoSans = Noto_Sans({
 	preload: true,
 });
 
-const SITE_NAME = "Phonaria Lab";
-const DESCRIPTION = "Experimental workspace for phonetic transcription tools";
+const googleSiteVerification = getGoogleSiteVerification();
 
 export const metadata: Metadata = {
+	// Makes every relative metadata URL absolute, and canonical "./" resolve to
+	// the current route. Indexability is governed here for the whole app.
+	metadataBase: new URL(getSiteUrl()),
 	title: {
 		default: SITE_NAME,
 		template: `%s - ${SITE_NAME}`,
 	},
-	description: DESCRIPTION,
+	description: SITE_DESCRIPTION,
+	alternates: { canonical: "./" },
 	openGraph: {
 		title: SITE_NAME,
-		description: DESCRIPTION,
+		description: SITE_DESCRIPTION,
 		siteName: SITE_NAME,
+		url: "./",
 	},
 	twitter: {
 		card: "summary",
 		title: SITE_NAME,
-		description: DESCRIPTION,
+		description: SITE_DESCRIPTION,
 	},
-	robots: { index: false, follow: true },
+	robots: { index: isIndexingEnabled(), follow: true },
+	verification: googleSiteVerification ? { google: googleSiteVerification } : undefined,
 };
 
 export default function RootLayout({
