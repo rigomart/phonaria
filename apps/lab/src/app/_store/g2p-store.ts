@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import type { G2PWord } from "@/lib/g2p/model";
-import { fallbackG2P } from "@/lib/g2p/phoneme-generator";
 import { transformToTranscriptionResult } from "@/lib/g2p-client";
 import {
 	type BatchLookupResult,
@@ -56,31 +55,38 @@ function lookupResultToG2PWord(result: WordLookupResult): G2PWord {
 	};
 }
 
-/** Precedence per token: client tier hit → server word → client fallback. */
+/**
+ * Precedence per token: client tier hit → server word. The service answers every
+ * requested word (falling back server-side when CMUdict misses), so a token with
+ * neither is a contract violation: log it and drop it rather than invent a
+ * transcription the learner would read as authoritative.
+ */
 function mergeWords(
 	tokens: string[],
 	tierResult: BatchLookupResult,
 	serverWords: Map<string, G2PWord>,
 ): G2PWord[] {
-	return tokens.map((token) => {
+	const merged: G2PWord[] = [];
+
+	for (const token of tokens) {
 		const normalized = token.toLowerCase().trim();
 
 		const tierWord = tierResult.found.get(normalized);
 		if (tierWord) {
-			return lookupResultToG2PWord(tierWord);
+			merged.push(lookupResultToG2PWord(tierWord));
+			continue;
 		}
 
 		const serverWord = serverWords.get(normalized);
 		if (serverWord) {
-			return serverWord;
+			merged.push(serverWord);
+			continue;
 		}
 
-		return {
-			word: normalized,
-			variants: [fallbackG2P.generatePronunciation(normalized)],
-			source: "fallback" as const,
-		};
-	});
+		console.warn("transcription: no transcription returned for word, skipping", normalized);
+	}
+
+	return merged;
 }
 
 /** The terminal write shared by every failure path. */
@@ -175,12 +181,18 @@ export const useG2PStore = create<G2PStore>((set) => ({
 				}
 			}
 
+			const merged = mergeWords(tokens, tierResult, serverWordMap);
+			if (merged.length === 0) {
+				// Every token was dropped: committing an empty result would render a
+				// blank word grid that reads as success. Surface the broken contract.
+				console.error("transcription: lookup service returned no usable words");
+				set(failed("service"));
+				return;
+			}
+
 			let transformed: TranscriptionResult;
 			try {
-				transformed = transformToTranscriptionResult(
-					{ words: mergeWords(tokens, tierResult, serverWordMap) },
-					text,
-				);
+				transformed = transformToTranscriptionResult({ words: merged }, text);
 			} catch (error) {
 				// Nothing is awaited since the last guard, so this lookup is still live.
 				console.error("transcription: building the result failed", error);

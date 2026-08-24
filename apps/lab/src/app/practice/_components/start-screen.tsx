@@ -19,8 +19,10 @@ interface StartScreenProps {
 }
 
 /**
- * Start is the sole loading gate — no skeletons — and a failure blocks with an
- * inline retry rather than a dismissable toast (#140). A failed pool retries
+ * Start is the sole loading gate for the pool — no in-flow skeletons — and a
+ * failure blocks with an inline retry rather than a dismissable toast (#140).
+ * The route-level skeleton in `[topic]/loading.tsx` covers navigation only
+ * (#185). A failed pool retries
  * the load; a failed draw retries the draw.
  */
 export function StartScreen({
