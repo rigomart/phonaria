@@ -11,7 +11,7 @@ const cspHeader = `
     form-action 'self';
     frame-ancestors 'none';
     upgrade-insecure-requests;
-    media-src 'self' https://api.dictionaryapi.dev https://assets.rigos.dev;
+    media-src 'self' https://assets.rigos.dev;
 `;
 
 const nextConfig: NextConfig = {

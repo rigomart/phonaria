@@ -157,6 +157,42 @@ describe("g2p-store — transcribe", () => {
 		expect(state.lookupError).toBeNull();
 	});
 
+	// The service answers every requested word, so an omission is a broken
+	// contract: the word is dropped, never filled in with a client-side guess.
+	it("skips and warns about a word the server omitted", async () => {
+		const consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
+		const dropsOneWord: TranscribeWordsFn = async ({ words }) =>
+			words
+				.filter((word) => word.toLowerCase() !== "xyzzyplugh")
+				.map((word) => ({
+					word: word.toLowerCase(),
+					variants: [[syllable("W", "ER", "L", "D")]],
+					source: "cmudict" as const,
+				}));
+
+		await useG2PStore.getState().transcribe("xyzzyplugh world", dropsOneWord, lookupAllMissing);
+
+		const state = useG2PStore.getState();
+		expect(state.currentResult?.words.map((word) => word.word)).toEqual(["world"]);
+		expect(state.currentResult?.words.map((word) => word.source)).toEqual(["cmudict"]);
+		expect(state.selectedVariants).toEqual([0]);
+		expect(state.lookupError).toBeNull();
+		expect(consoleWarn).toHaveBeenCalled();
+	});
+
+	it("fails instead of committing an empty result when every word is omitted", async () => {
+		vi.spyOn(console, "warn").mockImplementation(() => {});
+		vi.spyOn(console, "error").mockImplementation(() => {});
+		const dropsEverything: TranscribeWordsFn = async () => [];
+
+		await useG2PStore.getState().transcribe("xyzzyplugh", dropsEverything, lookupAllMissing);
+
+		const state = useG2PStore.getState();
+		expect(state.currentResult).toBeNull();
+		expect(state.lookupError).toBe("service");
+		expect(state.isTranscribing).toBe(false);
+	});
+
 	it("does nothing for text that tokenizes to nothing", async () => {
 		const server = countingServer();
 		let lookupCalls = 0;
