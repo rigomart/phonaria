@@ -1,16 +1,19 @@
-import { getLanguagePhonemeCount } from "@phonaria/phonetics-data";
-import { ScrollArea } from "@phonaria/ui/components/scroll-area";
+import { getLanguagePhonemeCount, type TargetAccent } from "@phonaria/phonetics-data";
 import type { Metadata } from "next";
-import { MonophthongVowelChart, VowelChartLegend } from "../_components/vowel-chart";
-import { getMonophthongEntries } from "../_lib/vowel-chart-data";
+import { VowelChart } from "../_components/vowel-chart";
+import { getDiphthongEntries, getMonophthongEntries } from "../_lib/vowel-chart-data";
 
 export const metadata: Metadata = {
 	title: "Vowels — IPA Chart",
 	description: "Interactive IPA chart for American English vowels.",
 };
 
-const phonemeCounts = getLanguagePhonemeCount("en-us");
-const vowelEntries = getMonophthongEntries();
+const targetAccent = "en-us" satisfies TargetAccent;
+const phonemeCounts = getLanguagePhonemeCount(targetAccent);
+const monophthongEntries = getMonophthongEntries(targetAccent);
+const diphthongEntries = phonemeCounts.diphthongs > 0 ? getDiphthongEntries(targetAccent) : [];
+const vowelEntries = [...monophthongEntries, ...diphthongEntries];
+const vowelCount = phonemeCounts.monophthongs + phonemeCounts.diphthongs;
 
 export default function VowelsPage() {
 	return (
@@ -19,20 +22,14 @@ export default function VowelsPage() {
 				<div className="flex flex-col gap-1">
 					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Vowels</h1>
 					<p className="text-sm text-muted-foreground">
-						{phonemeCounts.monophthongs} American English monophthong vowel sounds. Click any sound
-						for details and audio.
+						{phonemeCounts.diphthongs > 0
+							? `${vowelCount} American English vowel sounds: ${phonemeCounts.monophthongs} monophthongs and ${phonemeCounts.diphthongs} diphthongs.`
+							: `${phonemeCounts.monophthongs} American English monophthong vowel sounds.`}{" "}
+						Click any sound for details and available audio.
 					</p>
 				</div>
 
-				<VowelChartLegend />
-
-				<ScrollArea className="w-full">
-					<div className="flex justify-center">
-						<div className="w-full max-w-2xl min-w-96 shrink-0">
-							<MonophthongVowelChart entries={vowelEntries} />
-						</div>
-					</div>
-				</ScrollArea>
+				<VowelChart entries={vowelEntries} />
 			</div>
 		</div>
 	);
