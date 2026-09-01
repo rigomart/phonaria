@@ -1,4 +1,4 @@
-import { getLanguagePhonemeCount } from "@phonaria/phonetics-data";
+import { getLanguagePhonemeCount, type TargetAccent } from "@phonaria/phonetics-data";
 import { ScrollArea, ScrollBar } from "@phonaria/ui/components/scroll-area";
 import type { Metadata } from "next";
 import { ConsonantChart } from "../_components/consonant-chart";
@@ -8,7 +8,8 @@ export const metadata: Metadata = {
 	description: "Interactive IPA chart for American English consonants.",
 };
 
-const phonemeCounts = getLanguagePhonemeCount("en-us");
+const targetAccent = "en-us" satisfies TargetAccent;
+const phonemeCounts = getLanguagePhonemeCount(targetAccent);
 
 export default function ConsonantsPage() {
 	return (
@@ -27,7 +28,7 @@ export default function ConsonantsPage() {
 
 			<ScrollArea className="w-full">
 				<div className="flex justify-center">
-					<ConsonantChart />
+					<ConsonantChart targetAccent={targetAccent} />
 				</div>
 				<ScrollBar orientation="horizontal" />
 			</ScrollArea>

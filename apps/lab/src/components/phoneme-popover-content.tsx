@@ -2,11 +2,13 @@
 
 import {
 	type DiphthongVowelArticulation,
+	formatPhonemeLabel,
 	getIpaForPhonemeId,
 	getPhonemeArticulationRegistryForLanguage,
 	getPhonemeType,
+	type LanguagePhonemeId,
 	type PhonemeArticulation,
-	type PhonemeSymbolId,
+	type TargetAccent,
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
 import {
@@ -18,7 +20,6 @@ import { ChevronDown, MoveRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { AudioControls } from "@/components/audio-controls";
-import { phonemeLabels } from "@/lib/phoneme-labels";
 import { cn } from "@/lib/utils";
 import {
 	type ChartPoint,
@@ -31,21 +32,25 @@ import {
 } from "@/lib/vowel-chart-geometry";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
-const TARGET_ACCENT = "en-us" as const;
-
-const articulationRegistry = getPhonemeArticulationRegistryForLanguage(TARGET_ACCENT);
-
-interface PhonemePopoverProps {
-	phonemeId: PhonemeSymbolId;
+interface PhonemePopoverProps<TLanguage extends TargetAccent> {
+	targetAccent: TLanguage;
+	phonemeId: LanguagePhonemeId<TLanguage>;
 }
 
-export function PhonemePopoverContent({ phonemeId }: PhonemePopoverProps) {
+export function PhonemePopoverContent<TLanguage extends TargetAccent>({
+	targetAccent,
+	phonemeId,
+}: PhonemePopoverProps<TLanguage>) {
+	const articulationRegistry = getPhonemeArticulationRegistryForLanguage(targetAccent) as Record<
+		LanguagePhonemeId<TLanguage>,
+		PhonemeArticulation
+	>;
 	const ipa = getIpaForPhonemeId(phonemeId);
-	const label = phonemeLabels[phonemeId];
+	const label = formatPhonemeLabel(targetAccent, phonemeId);
 	const phonemeType = getPhonemeType(phonemeId);
 	const isDiphthong = phonemeType === "diphthong";
 	const showAudio = phonemeType === "consonant" || phonemeType === "monophthong";
-	const articulation = (articulationRegistry as Record<string, PhonemeArticulation>)[phonemeId];
+	const articulation = articulationRegistry[phonemeId];
 
 	return (
 		<div className="flex flex-col gap-2 w-72">
@@ -64,30 +69,45 @@ export function PhonemePopoverContent({ phonemeId }: PhonemePopoverProps) {
 
 			{!isDiphthong && <p className="text-xs text-muted-foreground leading-snug">{label}</p>}
 
-			{articulation && <ArticulationDiagram phonemeId={phonemeId} articulation={articulation} />}
+			<ArticulationDiagram
+				targetAccent={targetAccent}
+				phonemeId={phonemeId}
+				label={label}
+				articulation={articulation}
+			/>
 		</div>
 	);
 }
 
 function ArticulationDiagram({
 	phonemeId,
+	targetAccent,
+	label,
 	articulation,
 }: {
-	phonemeId: PhonemeSymbolId;
+	targetAccent: TargetAccent;
+	phonemeId: LanguagePhonemeId<TargetAccent>;
+	label: string;
 	articulation: PhonemeArticulation;
 }) {
 	const phonemeIpa = getIpaForPhonemeId(phonemeId);
 
 	if (articulation.category === "consonant") {
 		if (articulation.features.manner === "affricate") {
-			return <AffricateConsonantDiagram phonemeId={phonemeId} />;
+			return (
+				<AffricateConsonantDiagram
+					targetAccent={targetAccent}
+					phonemeId={phonemeId}
+					label={label}
+				/>
+			);
 		}
 
 		return (
 			<div className="relative aspect-square w-full rounded-md bg-neutral-900/60 overflow-hidden">
 				<Image
-					src={`${BUCKET_URL}/diagrams/${TARGET_ACCENT}/${phonemeId}.svg`}
-					alt={`${phonemeLabels[phonemeId]} articulation`}
+					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}.svg`}
+					alt={`${label} articulation`}
 					fill
 					unoptimized
 					className="object-cover"
@@ -111,9 +131,16 @@ function ArticulationDiagram({
 
 type AffricatePhase = "stop" | "fricative";
 
-function AffricateConsonantDiagram({ phonemeId }: { phonemeId: PhonemeSymbolId }) {
+function AffricateConsonantDiagram({
+	targetAccent,
+	phonemeId,
+	label,
+}: {
+	targetAccent: TargetAccent;
+	phonemeId: LanguagePhonemeId<TargetAccent>;
+	label: string;
+}) {
 	const [phase, setPhase] = useState<AffricatePhase>("stop");
-	const label = phonemeLabels[phonemeId];
 	const stopLabel = "Stop";
 	const fricativeLabel = "Fricative";
 
@@ -121,7 +148,7 @@ function AffricateConsonantDiagram({ phonemeId }: { phonemeId: PhonemeSymbolId }
 		<div className="flex flex-col gap-2">
 			<div className="relative aspect-square w-full rounded-md bg-neutral-900/60 overflow-hidden">
 				<Image
-					src={`${BUCKET_URL}/diagrams/${TARGET_ACCENT}/${phonemeId}_stop.svg`}
+					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}_stop.svg`}
 					alt={`${label} (${stopLabel})`}
 					fill
 					unoptimized
@@ -132,7 +159,7 @@ function AffricateConsonantDiagram({ phonemeId }: { phonemeId: PhonemeSymbolId }
 					aria-hidden={phase !== "stop"}
 				/>
 				<Image
-					src={`${BUCKET_URL}/diagrams/${TARGET_ACCENT}/${phonemeId}_fricative.svg`}
+					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}_fricative.svg`}
 					alt={`${label} (${fricativeLabel})`}
 					fill
 					unoptimized
@@ -176,7 +203,7 @@ function DiphthongGlide({
 	phonemeId,
 	articulation,
 }: {
-	phonemeId: PhonemeSymbolId;
+	phonemeId: LanguagePhonemeId<TargetAccent>;
 	articulation: DiphthongVowelArticulation;
 }) {
 	const [expanded, setExpanded] = useState<GlidePosition | null>(null);

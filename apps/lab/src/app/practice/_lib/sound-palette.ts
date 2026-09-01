@@ -12,10 +12,10 @@ import {
 	type EnglishMonophthongSymbolId,
 	EnglishPhonemeSpellingPatterns,
 	type EnglishPhonemeSymbolId,
+	formatPhonemeLabel,
 	MonophthongIpaMap,
 	PhonemeArpabetLabel,
 } from "@phonaria/phonetics-data";
-import { phonemeLabels } from "@/lib/phoneme-labels";
 
 export interface SoundKey {
 	id: EnglishPhonemeSymbolId;
@@ -117,7 +117,7 @@ function toKey<T extends EnglishPhonemeSymbolId>(id: T, ipaMap: Record<T, string
 		id,
 		ipa: ipaMap[id],
 		arpabet: PhonemeArpabetLabel[id],
-		label: phonemeLabels[id],
+		label: formatPhonemeLabel("en-us", id),
 		// Search lowercases the query, and these words come from a package whose
 		// type promises nothing about case.
 		nicknames: NICKNAMES[id]?.map(toSearchable) ?? [],

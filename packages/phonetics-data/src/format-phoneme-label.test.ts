@@ -1,6 +1,8 @@
-import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
+import { describe, expect, it } from "vitest";
+import type { PhonemeSymbolId } from "./core/ipa-map";
+import { formatPhonemeLabel, isPhonemeInLanguage } from "./index";
 
-export const phonemeLabels: Record<PhonemeSymbolId, string> = {
+const GOLDEN_LABELS = {
 	P: "Voiceless bilabial plosive",
 	B: "Voiced bilabial plosive",
 	T: "Voiceless alveolar plosive",
@@ -49,4 +51,27 @@ export const phonemeLabels: Record<PhonemeSymbolId, string> = {
 	AU: "Open front unrounded to near-close near-back rounded diphthong",
 	OI: "Open-mid back rounded to near-close near-front unrounded diphthong",
 	ER: "Open-mid central r-colored vowel",
-};
+} as const satisfies Record<PhonemeSymbolId, string>;
+
+describe("formatPhonemeLabel", () => {
+	it("derives every current Lab label from structured articulation data", () => {
+		for (const [phonemeId, expectedLabel] of Object.entries(GOLDEN_LABELS)) {
+			const id = phonemeId as PhonemeSymbolId;
+			let actualLabel: string;
+			if (isPhonemeInLanguage("en-us", id)) {
+				actualLabel = formatPhonemeLabel("en-us", id);
+			} else if (isPhonemeInLanguage("es-419", id)) {
+				actualLabel = formatPhonemeLabel("es-419", id);
+			} else {
+				throw new Error(`No articulation registry contains ${id}`);
+			}
+
+			expect(actualLabel).toBe(expectedLabel);
+		}
+	});
+
+	it("uses the target accent when a shared ID has different articulation", () => {
+		expect(formatPhonemeLabel("en-us", "T")).toBe("Voiceless alveolar plosive");
+		expect(formatPhonemeLabel("es-419", "T")).toBe("Voiceless dental plosive");
+	});
+});

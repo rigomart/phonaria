@@ -1,15 +1,21 @@
 "use client";
 
+import {
+	isPhonemeInLanguage,
+	type LanguagePhonemeId,
+	type TargetAccent,
+} from "@phonaria/phonetics-data";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
 import type { TranscribedPhoneme } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
 
 interface ClickablePhonemeProps {
+	targetAccent: TargetAccent;
 	phoneme: TranscribedPhoneme;
 }
 
-export function ClickablePhoneme({ phoneme }: ClickablePhonemeProps) {
+export function ClickablePhoneme({ targetAccent, phoneme }: ClickablePhonemeProps) {
 	const isKnown = Boolean(phoneme.phonemeId);
 
 	if (!isKnown) {
@@ -25,6 +31,7 @@ export function ClickablePhoneme({ phoneme }: ClickablePhonemeProps) {
 
 	const phonemeId = phoneme.phonemeId;
 	if (!phonemeId) return null;
+	if (!isPhonemeInLanguage(targetAccent, phonemeId)) return null;
 
 	return (
 		<Popover>
@@ -45,7 +52,10 @@ export function ClickablePhoneme({ phoneme }: ClickablePhonemeProps) {
 				{phoneme.symbol}
 			</PopoverTrigger>
 			<PopoverContent sideOffset={8}>
-				<PhonemePopoverContent phonemeId={phonemeId} />
+				<PhonemePopoverContent
+					targetAccent={targetAccent}
+					phonemeId={phonemeId as LanguagePhonemeId<typeof targetAccent>}
+				/>
 			</PopoverContent>
 		</Popover>
 	);
