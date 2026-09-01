@@ -1,12 +1,14 @@
+import type { TargetAccent } from "@phonaria/phonetics-data";
 import type { TranscribedSyllable } from "@/lib/types/g2p";
 import { ClickablePhoneme } from "./clickable-phoneme";
 
 interface IpaSequenceProps {
+	targetAccent: TargetAccent;
 	syllables: TranscribedSyllable[];
 	wordIndex: number;
 }
 
-export function IpaSequence({ syllables, wordIndex }: IpaSequenceProps) {
+export function IpaSequence({ targetAccent, syllables, wordIndex }: IpaSequenceProps) {
 	return (
 		<div className="leading-normal whitespace-nowrap flex items-center">
 			{syllables.map((syllable, syllableIndex) => {
@@ -22,6 +24,7 @@ export function IpaSequence({ syllables, wordIndex }: IpaSequenceProps) {
 						{syllable.phonemes.map((phoneme, phonemeIndex) => (
 							<ClickablePhoneme
 								key={`${phoneme.symbol}-${wordIndex}-${syllableIndex}-${phonemeIndex}`}
+								targetAccent={targetAccent}
 								phoneme={phoneme}
 							/>
 						))}

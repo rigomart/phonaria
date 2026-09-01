@@ -1,10 +1,12 @@
 "use client";
 
-import type { ConsonantSymbolId } from "@phonaria/phonetics-data";
 import {
+	type ConsonantArticulation,
+	type ConsonantSymbolId,
 	getConsonantArticulationRegistryForLanguage,
 	getIpaForPhonemeId,
 	getLanguagePhonemeIds,
+	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { Fragment, useMemo } from "react";
 import { cn } from "@/lib/utils";
@@ -19,13 +21,15 @@ import {
 } from "../_lib/consonant-grid";
 import { ConsonantPairCard, type ConsonantPhoneme } from "./consonant-pair-card";
 
-function getConsonantPhonemes(): ConsonantPhoneme[] {
-	const consonantArticulations = getConsonantArticulationRegistryForLanguage("en-us");
-	const consonantIds = getLanguagePhonemeIds("en-us", "consonants");
+function getConsonantPhonemes(targetAccent: TargetAccent): ConsonantPhoneme[] {
+	const consonantArticulations: Partial<Record<ConsonantSymbolId, ConsonantArticulation>> =
+		getConsonantArticulationRegistryForLanguage(targetAccent);
+	const consonantIds = getLanguagePhonemeIds(targetAccent, "consonants");
 	const phonemes: ConsonantPhoneme[] = [];
 
 	for (const phonemeId of consonantIds) {
 		const articulation = consonantArticulations[phonemeId];
+		if (!articulation) throw new Error(`Missing consonant articulation for ${phonemeId}`);
 		const ipa = getIpaForPhonemeId(phonemeId);
 
 		phonemes.push({
@@ -40,8 +44,8 @@ function getConsonantPhonemes(): ConsonantPhoneme[] {
 	return phonemes;
 }
 
-export function ConsonantChart() {
-	const consonants = useMemo(() => getConsonantPhonemes(), []);
+export function ConsonantChart({ targetAccent }: { targetAccent: TargetAccent }) {
+	const consonants = useMemo(() => getConsonantPhonemes(targetAccent), [targetAccent]);
 
 	const { cells, mannerOrder, placeOrder } = useMemo(() => {
 		const map = new Map<string, { voiceless?: ConsonantPhoneme; voiced?: ConsonantPhoneme }>();
@@ -104,7 +108,11 @@ export function ConsonantChart() {
 								)}
 							>
 								{hasPhonemes ? (
-									<ConsonantPairCard voiceless={cell.voiceless} voiced={cell.voiced} />
+									<ConsonantPairCard
+										targetAccent={targetAccent}
+										voiceless={cell.voiceless}
+										voiced={cell.voiced}
+									/>
 								) : (
 									<div className="text-muted-foreground/10 text-xl font-bold select-none">-</div>
 								)}

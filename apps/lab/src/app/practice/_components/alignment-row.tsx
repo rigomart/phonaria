@@ -74,7 +74,7 @@ export function Glyph({
 				{key.ipa}
 			</PopoverTrigger>
 			<PopoverContent sideOffset={8}>
-				<PhonemePopoverContent phonemeId={key.id} />
+				<PhonemePopoverContent targetAccent="en-us" phonemeId={key.id} />
 			</PopoverContent>
 		</Popover>
 	);

@@ -1,6 +1,7 @@
 import {
 	type DiphthongVowelArticulation,
 	type DiphthongVowelArticulatoryFeatures,
+	formatPhonemeLabel,
 	getDiphthongVowelArticulationRegistryForLanguage,
 	getIpaForPhonemeId,
 	getLanguagePhonemeIds,
@@ -10,7 +11,6 @@ import {
 	type TargetAccent,
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
-import { phonemeLabels } from "@/lib/phoneme-labels";
 
 export type StaticVowelFeatures = {
 	height: VowelArticulatoryFeatures["height"];
@@ -52,7 +52,7 @@ export function getMonophthongEntries(
 		return {
 			id,
 			ipa: getIpaForPhonemeId(id),
-			label: phonemeLabels[id],
+			label: formatPhonemeLabel(targetAccent, id),
 			vowelType: "monophthong",
 			features: {
 				height: articulation.features.height,
@@ -75,7 +75,7 @@ export function getDiphthongEntries(targetAccent: TargetAccent): StaticDiphthong
 		return {
 			id,
 			ipa: getIpaForPhonemeId(id),
-			label: phonemeLabels[id],
+			label: formatPhonemeLabel(targetAccent, id),
 			vowelType: "diphthong",
 			features: articulation.features,
 		};

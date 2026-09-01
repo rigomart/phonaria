@@ -1,5 +1,6 @@
 "use client";
 
+import type { TargetAccent } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
@@ -18,11 +19,12 @@ const LOOKUP_ERROR_COPY: Record<LookupErrorKind, string> = {
 };
 
 interface WordColumnProps {
+	targetAccent: TargetAccent;
 	word: TranscribedWord;
 	index: number;
 }
 
-function WordColumn({ word, index }: WordColumnProps) {
+function WordColumn({ targetAccent, word, index }: WordColumnProps) {
 	const selected = useG2PStore((s) => s.selectedVariants[word.wordIndex] ?? 0);
 	const setVariant = useG2PStore((s) => s.setVariant);
 	const currentVariant = useMemo(() => word.variants[selected] ?? [], [word.variants, selected]);
@@ -47,7 +49,11 @@ function WordColumn({ word, index }: WordColumnProps) {
 					</div>
 				) : (
 					<>
-						<IpaSequence syllables={currentVariant} wordIndex={word.wordIndex} />
+						<IpaSequence
+							targetAccent={targetAccent}
+							syllables={currentVariant}
+							wordIndex={word.wordIndex}
+						/>
 						<VariantSelector
 							variants={word.variants}
 							wordIndex={word.wordIndex}
@@ -61,9 +67,11 @@ function WordColumn({ word, index }: WordColumnProps) {
 }
 
 function TranscriptionResults({
+	targetAccent,
 	result,
 	isStale,
 }: {
+	targetAccent: TargetAccent;
 	result: TranscriptionResult;
 	isStale: boolean;
 }) {
@@ -79,7 +87,12 @@ function TranscriptionResults({
 
 			<div className="flex flex-wrap justify-center gap-x-6 gap-y-4 md:gap-x-8 md:gap-y-6">
 				{result.words.map((word, wordIndex) => (
-					<WordColumn key={`${word.word}-${wordIndex}`} word={word} index={wordIndex} />
+					<WordColumn
+						key={`${word.word}-${wordIndex}`}
+						targetAccent={targetAccent}
+						word={word}
+						index={wordIndex}
+					/>
 				))}
 			</div>
 
@@ -100,7 +113,7 @@ function TranscriptionResults({
  * the error, and the region is keyed by the failure nonce so a repeated
  * failure still announces.
  */
-export function TranscriptionDisplay() {
+export function TranscriptionDisplay({ targetAccent }: { targetAccent: TargetAccent }) {
 	const { data: result } = useCurrentTranscription();
 	const lookupError = useG2PStore((s) => s.lookupError);
 	const lookupErrorNonce = useG2PStore((s) => s.lookupErrorNonce);
@@ -109,8 +122,15 @@ export function TranscriptionDisplay() {
 	const isBusy = isPending || isTranscribing;
 
 	let body: ReactNode = null;
-	if (result) body = <TranscriptionResults result={result} isStale={lookupError !== null} />;
-	else if (!lookupError) body = <EmptyState />;
+	if (result) {
+		body = (
+			<TranscriptionResults
+				targetAccent={targetAccent}
+				result={result}
+				isStale={lookupError !== null}
+			/>
+		);
+	} else if (!lookupError) body = <EmptyState />;
 
 	return (
 		<>

@@ -10,7 +10,7 @@ export default function HomePage() {
 				</div>
 
 				<div className="w-full min-h-0">
-					<TranscriptionDisplay />
+					<TranscriptionDisplay targetAccent="en-us" />
 				</div>
 			</div>
 		</div>

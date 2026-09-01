@@ -125,6 +125,9 @@
     "packages/phonetics-data": {
       "name": "@phonaria/phonetics-data",
       "version": "0.5.0",
+      "devDependencies": {
+        "vitest": "^3.2.4",
+      },
     },
     "packages/ui": {
       "name": "@phonaria/ui",

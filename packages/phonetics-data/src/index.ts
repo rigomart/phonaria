@@ -46,6 +46,7 @@ export type {
 export { type PhonemeCategory, TARGET_ACCENTS, type TargetAccent } from "./core/types";
 export type { CuratedWordData } from "./data/en/curated-1k";
 export type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dict/types";
+export { formatPhonemeLabel } from "./formatters/phoneme-label";
 export { EnglishPhonemeAllophones } from "./languages/en/allophones";
 export {
 	CmuArpaMap,

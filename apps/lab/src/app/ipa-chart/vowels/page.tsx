@@ -29,7 +29,7 @@ export default function VowelsPage() {
 					</p>
 				</div>
 
-				<VowelChart entries={vowelEntries} />
+				<VowelChart targetAccent={targetAccent} entries={vowelEntries} />
 			</div>
 		</div>
 	);

@@ -1,6 +1,6 @@
 "use client";
 
-import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
+import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
 import { Label } from "@phonaria/ui/components/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { ScrollArea } from "@phonaria/ui/components/scroll-area";
@@ -23,6 +23,7 @@ import {
 } from "./vowel-chart-surface";
 
 type VowelChartProps = {
+	targetAccent: TargetAccent;
 	entries: StaticVowelChartEntry[];
 };
 
@@ -80,7 +81,7 @@ const DIPHTHONG_BOWS = {
 	OI: 22,
 } as const satisfies Partial<Record<PhonemeSymbolId, number>>;
 
-export function VowelChart({ entries }: VowelChartProps) {
+export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 	const [showDiphthongs, setShowDiphthongs] = useState(false);
 	const reactId = useId();
 	const arrowMarkerId = `vowel-diphthong-arrow-${reactId.replaceAll(":", "")}`;
@@ -125,11 +126,19 @@ export function VowelChart({ entries }: VowelChartProps) {
 							overlay={
 								<>
 									{monophthongMarkers.map((marker) => (
-										<VowelMarker key={marker.entry.id} marker={marker} />
+										<VowelMarker
+											key={marker.entry.id}
+											targetAccent={targetAccent}
+											marker={marker}
+										/>
 									))}
 									{showDiphthongs &&
 										diphthongGlides.map((glide) => (
-											<DiphthongLabel key={glide.entry.id} glide={glide} />
+											<DiphthongLabel
+												key={glide.entry.id}
+												targetAccent={targetAccent}
+												glide={glide}
+											/>
 										))}
 								</>
 							}
@@ -229,7 +238,13 @@ function getRenderedMarkerPoint(marker: VowelMarkerData) {
 	return addPoints(marker.start, marker.offset);
 }
 
-function VowelMarker({ marker }: { marker: MonophthongMarkerData }) {
+function VowelMarker({
+	targetAccent,
+	marker,
+}: {
+	targetAccent: TargetAccent;
+	marker: MonophthongMarkerData;
+}) {
 	const markerPoint = addPoints(marker.start, marker.offset);
 	const { leftPercent, topPercent } = getMarkerPercentPosition(markerPoint, vowelChartLayout);
 	const buttonStyles = {
@@ -281,13 +296,19 @@ function VowelMarker({ marker }: { marker: MonophthongMarkerData }) {
 				</TooltipContent>
 			</Tooltip>
 			<PopoverContent sideOffset={8}>
-				<PhonemePopoverContent phonemeId={marker.entry.id} />
+				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={marker.entry.id} />
 			</PopoverContent>
 		</Popover>
 	);
 }
 
-function DiphthongLabel({ glide }: { glide: DiphthongGlideData }) {
+function DiphthongLabel({
+	targetAccent,
+	glide,
+}: {
+	targetAccent: TargetAccent;
+	glide: DiphthongGlideData;
+}) {
 	const { leftPercent, topPercent } = getMarkerPercentPosition(glide.label, vowelChartLayout);
 	const buttonStyles = {
 		"--marker-left": `${leftPercent}%`,
@@ -324,7 +345,7 @@ function DiphthongLabel({ glide }: { glide: DiphthongGlideData }) {
 				</TooltipContent>
 			</Tooltip>
 			<PopoverContent sideOffset={8}>
-				<PhonemePopoverContent phonemeId={glide.entry.id} />
+				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={glide.entry.id} />
 			</PopoverContent>
 		</Popover>
 	);

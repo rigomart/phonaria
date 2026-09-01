@@ -1,10 +1,13 @@
 "use client";
 
-import type { ConsonantSymbolId } from "@phonaria/phonetics-data";
+import {
+	type ConsonantSymbolId,
+	formatPhonemeLabel,
+	type TargetAccent,
+} from "@phonaria/phonetics-data";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
-import { phonemeLabels } from "@/lib/phoneme-labels";
 import { cn } from "@/lib/utils";
 import type { MannerOfArticulation, PlaceOfArticulation, Voicing } from "../_lib/consonant-grid";
 
@@ -17,11 +20,12 @@ export interface ConsonantPhoneme {
 }
 
 interface ConsonantPairCardProps {
+	targetAccent: TargetAccent;
 	voiceless?: ConsonantPhoneme;
 	voiced?: ConsonantPhoneme;
 }
 
-export function ConsonantPairCard({ voiceless, voiced }: ConsonantPairCardProps) {
+export function ConsonantPairCard({ targetAccent, voiceless, voiced }: ConsonantPairCardProps) {
 	if (!voiceless && !voiced) return null;
 
 	if (!voiceless || !voiced) {
@@ -29,22 +33,28 @@ export function ConsonantPairCard({ voiceless, voiced }: ConsonantPairCardProps)
 		if (!phoneme) return null;
 		return (
 			<div className="flex items-center justify-center">
-				<ConsonantButton phoneme={phoneme} />
+				<ConsonantButton targetAccent={targetAccent} phoneme={phoneme} />
 			</div>
 		);
 	}
 
 	return (
 		<div className="flex items-center justify-center gap-1">
-			<ConsonantButton phoneme={voiceless} />
-			<ConsonantButton phoneme={voiced} />
+			<ConsonantButton targetAccent={targetAccent} phoneme={voiceless} />
+			<ConsonantButton targetAccent={targetAccent} phoneme={voiced} />
 		</div>
 	);
 }
 
-function ConsonantButton({ phoneme }: { phoneme: ConsonantPhoneme }) {
+function ConsonantButton({
+	targetAccent,
+	phoneme,
+}: {
+	targetAccent: TargetAccent;
+	phoneme: ConsonantPhoneme;
+}) {
 	const isVoiceless = phoneme.voicing === "voiceless";
-	const label = phonemeLabels[phoneme.id];
+	const label = formatPhonemeLabel(targetAccent, phoneme.id);
 	const ariaLabel = `${label} (${phoneme.symbol})`;
 
 	return (
@@ -85,7 +95,7 @@ function ConsonantButton({ phoneme }: { phoneme: ConsonantPhoneme }) {
 				</TooltipContent>
 			</Tooltip>
 			<PopoverContent sideOffset={8}>
-				<PhonemePopoverContent phonemeId={phoneme.id} />
+				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={phoneme.id} />
 			</PopoverContent>
 		</Popover>
 	);
