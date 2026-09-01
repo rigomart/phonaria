@@ -39,6 +39,10 @@ interface of another language entirely.
 **Phoneme inventory**:
 The set of phoneme IDs a given language uses, bridging language-agnostic IDs to a language scope.
 
+**Symbol-faithful articulation**:
+An articulation description whose features follow the canonical IPA position of the symbol it
+represents rather than a narrower, accent-specific phonetic realization.
+
 ### Practice activities
 
 **Practice**:

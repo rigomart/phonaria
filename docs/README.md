@@ -7,6 +7,8 @@ This directory centralizes long-form product context, technical deep-dives, and 
 - [`project-overview.md`](./project-overview.md) – A guided tour of the learner experience, architecture, and data sources (including dictionary lookup and audio strategy).
 - [`enhancements/g2p-plan.md`](./enhancements/g2p-plan.md) – Three-phase roadmap for evolving the grapheme-to-phoneme pipeline with homograph disambiguation and performance wins.
 - [`features/minimal-pairs.md`](./features/minimal-pairs.md) – Product notes and UX considerations for future minimal pair drills inside the IPA chart experience.
+- [`adr/`](./adr/) – Accepted architecture and data-model decisions whose reasoning should be
+  preserved for future contributors.
 
 Add new documents in logical subfolders (`enhancements/`, `features/`, etc.) to keep related work clustered and easily discoverable.
 
@@ -17,6 +19,7 @@ Add new documents in logical subfolders (`enhancements/`, `features/`, etc.) to 
 | New to the project | [`project-overview.md`](./project-overview.md) for context on goals, personas, and technical architecture. |
 | Working on the G2P service | [`enhancements/g2p-plan.md`](./enhancements/g2p-plan.md) to understand the current baseline and proposed improvements. |
 | Exploring future feature work | [`features/minimal-pairs.md`](./features/minimal-pairs.md) for the next UX milestone. |
+| Changing articulation data | [`adr/0001-symbol-faithful-articulations.md`](./adr/0001-symbol-faithful-articulations.md) for the data-model principle. |
 
 ## Contributing documentation
 
