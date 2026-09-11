@@ -1,6 +1,5 @@
 import { tryExtractBasePhonemeId } from "@phonaria/phonetics-data";
 import type { TopicDefinition } from "../types";
-import { selectSchwaLessons } from "./lessons";
 
 /**
  * A word qualifies only when every CMU variant contains schwa — if only some
@@ -30,10 +29,8 @@ export const SchwaTopic: TopicDefinition = {
 		kicker: "Practice",
 		heading: "Schwa",
 		description:
-			"/ə/ is the most common vowel sound in English — and spelling never tells you where it hides. You'll get five words. Build each one's full sound sequence from its sounds, then see how you did at the end.",
+			"Build the sound sequence for five words, then compare each answer with the dictionary pronunciation.",
 		startLabel: "Start session",
-		topicStatLabel: "schwas placed",
-		lessonsHeading: "About those schwas",
+		topicStatLabel: "schwas matched",
 	},
-	selectLessons: selectSchwaLessons,
 };

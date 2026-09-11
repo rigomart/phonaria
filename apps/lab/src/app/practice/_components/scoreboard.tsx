@@ -2,7 +2,7 @@
 
 /**
  * The post-submit reveal (#146): word score as the headline, every row fully
- * expanded, one collapsed lessons disclosure, one way out. Blank rows show
+ * expanded and one way out. Blank rows show
  * CMU's first listing — never the scorer's closest variant, which a blank
  * answer would bias toward the shortest.
  */
@@ -10,7 +10,7 @@ import { Button } from "@phonaria/ui/components/button";
 import { Check, X } from "lucide-react";
 import type { Ref } from "react";
 import { normalizeAcceptedVariants } from "@/lib/practice/scoring";
-import type { LessonWordResult, TopicDefinition } from "@/lib/practice/topics/types";
+import type { TopicDefinition } from "@/lib/practice/topics/types";
 import {
 	selectReviewRows,
 	selectSoundAccuracy,
@@ -19,7 +19,6 @@ import {
 	usePracticeSessionStore,
 } from "../_store/practice-session-store";
 import { AlignmentDiff, GlyphSequence } from "./alignment-row";
-import { LessonsDisclosure } from "./lessons-disclosure";
 import { WordAudio } from "./word-audio";
 
 export function Scoreboard({
@@ -39,14 +38,6 @@ export function Scoreboard({
 	const rows = selectReviewRows(rounds, scores);
 	const accuracy = selectSoundAccuracy(scores);
 	const tally = selectTopicSoundTally(scores, topic.topicSounds);
-
-	const results: LessonWordResult[] = rows.map(({ round, score }) => ({
-		word: round.word.word,
-		blank: round.sequence.length === 0,
-		ops: score.ops,
-	}));
-	const notes = topic.selectLessons(results);
-
 	return (
 		<div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 animate-in fade-in duration-500 motion-reduce:animate-none">
 			<div className="flex flex-col items-center gap-1 text-center">
@@ -58,11 +49,9 @@ export function Scoreboard({
 				>
 					{selectWordsCorrect(scores)} of {scores.length}
 				</h1>
-				<span className="text-muted-foreground text-sm">words correct</span>
+				<span className="text-muted-foreground text-sm">dictionary matches</span>
 			</div>
 
-			{/* dt/dd pairs associate label and value for screen readers; `order-last`
-			    keeps the value-above-label visual while the label reads first. */}
 			<dl className="flex justify-center gap-6 text-center text-sm">
 				<div className="flex flex-col">
 					<dt className="order-last text-muted-foreground text-xs">sound accuracy</dt>
@@ -94,10 +83,14 @@ export function Scoreboard({
 						>
 							<div className="flex items-center gap-2">
 								{score.correct ? (
-									<Check aria-label="Correct" className="size-5 shrink-0 text-success" role="img" />
+									<Check
+										aria-label="Matches dictionary"
+										className="size-5 shrink-0 text-success"
+										role="img"
+									/>
 								) : (
 									<X
-										aria-label="Incorrect"
+										aria-label={blank ? "No answer" : "Differs from dictionary"}
 										className="size-5 shrink-0 text-destructive"
 										role="img"
 									/>
@@ -109,28 +102,19 @@ export function Scoreboard({
 								)}
 							</div>
 
-							{score.correct || blank ? (
-								<GlyphSequence sounds={accepted} />
+							{blank ? (
+								<GlyphSequence label="Dictionary" sounds={accepted} />
 							) : (
 								<AlignmentDiff ops={score.ops} />
 							)}
 
 							{blank && (
-								<p className="text-muted-foreground text-xs">
-									<em>an</em> accepted pronunciation — you left this word blank
-								</p>
-							)}
-							{score.correct && score.hasAlternates && score.referenceIndex > 0 && (
-								<p className="text-muted-foreground text-xs">
-									several accepted pronunciations — yours is one of them
-								</p>
+								<p className="text-muted-foreground text-xs">Dictionary reference for this word.</p>
 							)}
 						</li>
 					);
 				})}
 			</ul>
-
-			<LessonsDisclosure heading={topic.display.lessonsHeading} notes={notes} />
 
 			<div className="flex justify-center">
 				<Button onClick={onNewSession} size="lg">

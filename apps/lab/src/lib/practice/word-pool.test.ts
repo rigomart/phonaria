@@ -31,9 +31,7 @@ function makeTopic(): TopicDefinition {
 			description: "",
 			startLabel: "",
 			topicStatLabel: "",
-			lessonsHeading: "",
 		},
-		selectLessons: () => [],
 	};
 }
 
