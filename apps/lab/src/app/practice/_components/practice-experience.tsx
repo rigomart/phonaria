@@ -40,7 +40,7 @@ export function PracticeExperience({ topicId }: { topicId: string }) {
 	// render. The ref points at the scoreboard's results heading.
 	useEffect(() => {
 		if (phase !== "review" || !scores) return;
-		announce(`Session results: ${selectWordsCorrect(scores)} of ${roundCount} words correct`);
+		announce(`Session results: ${selectWordsCorrect(scores)} of ${roundCount} dictionary matches`);
 		reviewRef.current?.focus();
 	}, [phase, scores, roundCount]);
 

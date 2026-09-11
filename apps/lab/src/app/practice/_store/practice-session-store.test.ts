@@ -71,9 +71,7 @@ const testTopic: TopicDefinition = {
 		description: "Test topic.",
 		startLabel: "Start session",
 		topicStatLabel: "sounds placed",
-		lessonsHeading: "About those sounds",
 	},
-	selectLessons: () => [],
 };
 
 const loadOk = async () => testPool;

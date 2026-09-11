@@ -3,9 +3,8 @@
 /**
  * Renders scored sounds on the reveal (#146). `Glyph` is the one atom: every
  * known sound opens the shared phoneme popover; unknown strings fall back to a
- * plain bordered box. `AlignmentDiff` draws the two-line You/Accepted diff for
- * wrong answers; `GlyphSequence` the one-line accepted reading for correct and
- * blank words.
+ * plain bordered box. `AlignmentDiff` compares each answer with the dictionary;
+ * `GlyphSequence` shows the dictionary reference for blank words.
  */
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
@@ -60,7 +59,7 @@ export function Glyph({
 							cn(
 								// Centered coarse-pointer hit-area overlay. Glyphs sit on a
 								// 36px pitch (size-8 + gap-1) horizontally, and AlignmentDiff
-								// stacks its You/Accepted rows at the same pitch vertically,
+								// stacks its answer/dictionary rows at the same pitch vertically,
 								// so the overlay clamps at 36px on both axes — 44px minimums
 								// would overlap neighbours and steal their taps.
 								"relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring data-popup-open:border-primary pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-9 pointer-coarse:after:min-w-9",
@@ -93,10 +92,11 @@ function EmptySlot({ label }: { label: string }) {
 	);
 }
 
-/** One line of plain glyphs — the accepted reading of a correct or blank word. */
-export function GlyphSequence({ sounds }: { sounds: readonly string[] }) {
+/** One line of plain glyphs for a dictionary reference. */
+export function GlyphSequence({ sounds, label }: { sounds: readonly string[]; label?: string }) {
 	return (
 		<div className="flex max-w-full items-center gap-1 overflow-x-auto">
+			{label ? <span className={rowLabelClass}>{label}</span> : null}
 			{sounds.map((sound, index) => (
 				<Glyph className="bg-background" key={`${index}-${sound}`} sound={sound} />
 			))}
@@ -106,7 +106,7 @@ export function GlyphSequence({ sounds }: { sounds: readonly string[] }) {
 
 /** Row labels stay pinned while the glyphs scroll under them on narrow screens. */
 const rowLabelClass =
-	"sticky left-0 z-10 flex w-16 shrink-0 items-center self-stretch bg-background text-muted-foreground text-xs";
+	"sticky left-0 z-10 flex w-24 shrink-0 items-center self-stretch bg-background text-muted-foreground text-xs";
 
 export function AlignmentDiff({ ops }: { ops: readonly AlignmentOp[] }) {
 	return (
@@ -115,17 +115,17 @@ export function AlignmentDiff({ ops }: { ops: readonly AlignmentOp[] }) {
 			    without it the sticky label's containing block stays scrollport-sized
 			    and the label scrolls away with the glyphs. */}
 			<div className="flex min-w-max items-center gap-1">
-				<span className={rowLabelClass}>You</span>
+				<span className={rowLabelClass}>Your answer</span>
 				{ops.map((op, index) => {
 					const key = `you-${index}`;
 					if (op.kind === "match")
 						return <Glyph className="bg-background" key={key} sound={op.sound} />;
 					if (op.kind === "omission")
-						return <EmptySlot key={key} label={`You skipped ${soundName(op.target)}`} />;
+						return <EmptySlot key={key} label="No sound in your answer" />;
 					if (op.kind === "insertion")
 						return (
 							<Glyph
-								ariaLabel={`You added ${soundName(op.source)} — extra sound`}
+								ariaLabel={`Your answer: ${soundName(op.source)}`}
 								className="border-destructive bg-background text-destructive"
 								key={key}
 								sound={op.source}
@@ -134,7 +134,7 @@ export function AlignmentDiff({ ops }: { ops: readonly AlignmentOp[] }) {
 						);
 					return (
 						<Glyph
-							ariaLabel={`You said ${soundName(op.source)} — correct sound is ${soundName(op.target)}`}
+							ariaLabel={`Your answer: ${soundName(op.source)}`}
 							className="border-destructive bg-background text-destructive"
 							key={key}
 							sound={op.source}
@@ -144,15 +144,15 @@ export function AlignmentDiff({ ops }: { ops: readonly AlignmentOp[] }) {
 				})}
 			</div>
 			<div className="flex min-w-max items-center gap-1">
-				<span className={rowLabelClass}>Accepted</span>
+				<span className={rowLabelClass}>Dictionary</span>
 				{ops.map((op, index) => {
 					const key = `ref-${index}`;
 					if (op.kind === "match")
 						return <Glyph className="bg-background-strong" key={key} sound={op.sound} />;
-					if (op.kind === "insertion") return <EmptySlot key={key} label="Extra sound" />;
+					if (op.kind === "insertion") return <EmptySlot key={key} label="No dictionary sound" />;
 					return (
 						<Glyph
-							ariaLabel={`Correct sound: ${soundName(op.target)}`}
+							ariaLabel={`Dictionary: ${soundName(op.target)}`}
 							className="border-success bg-background-strong text-success"
 							key={key}
 							sound={op.target}
