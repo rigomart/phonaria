@@ -3,6 +3,7 @@
 import { Button } from "@phonaria/ui/components/button";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
+import { PracticeActivity } from "@/lib/practice/activity";
 import type { TopicDefinition } from "@/lib/practice/topics/types";
 import type { PoolStatus } from "../_store/practice-session-store";
 
@@ -41,11 +42,12 @@ export function StartScreen({
 	return (
 		<div className="flex flex-1 flex-col items-center justify-center bg-background p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500 motion-reduce:animate-none">
 			<div className="w-full max-w-md flex flex-col items-center gap-4 text-center">
-				<p className="text-sm text-muted-foreground font-display">{topic.display.kicker}</p>
+				<p className="text-sm text-muted-foreground font-display">{PracticeActivity.name}</p>
 				<h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-display">
-					{topic.display.heading}
+					{topic.display.name}
 				</h1>
-				<p className="text-sm text-muted-foreground text-pretty">{topic.display.description}</p>
+				<p className="text-sm text-muted-foreground text-pretty">{topic.display.blurb}</p>
+				<p className="text-sm text-muted-foreground text-pretty">{PracticeActivity.description}</p>
 
 				{failure ? (
 					<div
@@ -67,7 +69,7 @@ export function StartScreen({
 						onClick={onStart}
 					>
 						{isLoading ? <Spinner /> : null}
-						{isLoading ? "Loading words…" : topic.display.startLabel}
+						{isLoading ? "Loading words…" : PracticeActivity.startLabel}
 					</Button>
 				)}
 			</div>

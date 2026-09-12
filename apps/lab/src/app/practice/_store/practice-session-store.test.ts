@@ -66,10 +66,8 @@ const testTopic: TopicDefinition = {
 		{ min: 4, max: null },
 	],
 	display: {
-		kicker: "Practice",
-		heading: "Test",
-		description: "Test topic.",
-		startLabel: "Start session",
+		name: "Test",
+		blurb: "Test topic.",
 		topicStatLabel: "sounds placed",
 	},
 };
@@ -200,6 +198,16 @@ describe("practice session store — pool loading", () => {
 describe("practice session store — starting a session", () => {
 	it("does not start while the pool is still unloaded", () => {
 		usePracticeSessionStore.getState().startSession(testTopic, seededRng(1));
+		expect(usePracticeSessionStore.getState().phase).toBe("idle");
+		expect(usePracticeSessionStore.getState().rounds).toEqual([]);
+	});
+
+	it("does not draw a session from a pool loaded for another topic", async () => {
+		await usePracticeSessionStore.getState().prefetchPool(testTopic, loadOk);
+		usePracticeSessionStore
+			.getState()
+			.startSession({ ...testTopic, id: "other-topic" }, seededRng(1));
+
 		expect(usePracticeSessionStore.getState().phase).toBe("idle");
 		expect(usePracticeSessionStore.getState().rounds).toEqual([]);
 	});

@@ -26,10 +26,8 @@ function makeTopic(): TopicDefinition {
 			variants.every((v) => v.split(" ").some((t) => t.replace(/[012]$/, "") === "AX")),
 		slotSpec: [],
 		display: {
-			kicker: "",
-			heading: "",
-			description: "",
-			startLabel: "",
+			name: "",
+			blurb: "",
 			topicStatLabel: "",
 		},
 	};
