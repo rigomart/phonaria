@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: PracticeTopicPageProps): Prom
 	if (!topic) return { title: "Practice", robots: { index: false, follow: true } };
 
 	return {
-		title: `${topic.display.heading} — Practice`,
-		description: topic.display.description,
+		title: `${topic.display.name} — Practice`,
+		description: topic.display.blurb,
 		robots: { index: false, follow: true },
 	};
 }

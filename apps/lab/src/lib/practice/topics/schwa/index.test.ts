@@ -1,6 +1,5 @@
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import { describe, expect, it } from "vitest";
-import { isInSyllableBand } from "../../session-generator";
 import { deriveWordPool, loadWordPoolForTopic } from "../../word-pool";
 import { everyVariantContainsSchwa, SchwaTopic } from "./index";
 
@@ -28,6 +27,7 @@ describe("SchwaTopic", () => {
 	});
 });
 
+/** Band depth is guaranteed for every topic in `topics/pool-depth.test.ts`. */
 describe("schwa word pool over shipped top-10k data", () => {
 	const pool = deriveWordPool(EnglishCuratedTop10k, SchwaTopic);
 
@@ -35,15 +35,6 @@ describe("schwa word pool over shipped top-10k data", () => {
 		// Pins the shipped top-10k data. If the data is regenerated, update this
 		// deliberately after confirming band depths still hold.
 		expect(pool).toHaveLength(3_373);
-	});
-
-	it("keeps every syllable band comfortably above slot demand", () => {
-		// A session draws at most 2 words per band; require a wide margin so
-		// data regeneration cannot silently starve a slot.
-		for (const band of SchwaTopic.slotSpec) {
-			const depth = pool.filter((w) => isInSyllableBand(w, band)).length;
-			expect(depth, `band ${band.min}–${band.max ?? "∞"}`).toBeGreaterThan(200);
-		}
 	});
 
 	it("loads the same pool through the tier-2 façade", async () => {

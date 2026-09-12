@@ -131,9 +131,9 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 	},
 
 	startSession: (topic, rng = Math.random) => {
-		const { pool, poolStatus } = get();
+		const { pool, poolStatus, topicId } = get();
 		// Start is the sole loading gate: no pool, no session.
-		if (poolStatus !== "ready" || !pool) return;
+		if (poolStatus !== "ready" || !pool || topicId !== topic.id) return;
 
 		// `generateSession` throws when a band runs dry. That is a data-shape
 		// failure (the band-depth test guards it in CI), but the callers are event

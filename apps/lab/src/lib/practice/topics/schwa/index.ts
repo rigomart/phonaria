@@ -26,11 +26,8 @@ export const SchwaTopic: TopicDefinition = {
 		{ min: 4, max: null },
 	],
 	display: {
-		kicker: "Practice",
-		heading: "Schwa",
-		description:
-			"Build the sound sequence for five words, then compare each answer with the dictionary pronunciation.",
-		startLabel: "Start session",
+		name: "Schwa",
+		blurb: "The quiet “uh” that unstressed syllables fall back to — English’s most common vowel.",
 		topicStatLabel: "schwas matched",
 	},
 };

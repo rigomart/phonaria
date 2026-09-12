@@ -26,11 +26,14 @@ export interface TopicDefinition {
 	isEligibleWord: (variants: readonly string[]) => boolean;
 	/** Ordered per-slot syllable bands for a session. */
 	slotSpec: readonly SyllableBand[];
+	/**
+	 * The only prose a topic owns: activity copy lives in `PracticeActivity`,
+	 * and the sound detail a card shows is derived from `topicSounds`.
+	 */
 	display: {
-		kicker: string;
-		heading: string;
-		description: string;
-		startLabel: string;
+		name: string;
+		/** One line on what this topic teaches, in a learner's words. */
+		blurb: string;
 		/** Reveal stat-tile label after "N of M", e.g. "schwas matched". */
 		topicStatLabel: string;
 	};
