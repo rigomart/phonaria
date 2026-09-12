@@ -31,7 +31,6 @@ export interface TopicDefinition {
 	 * and the sound detail a card shows is derived from `topicSounds`.
 	 */
 	display: {
-		/** Topic name: the card title and the start screen's heading. */
 		name: string;
 		/** One line on what this topic teaches, in a learner's words. */
 		blurb: string;

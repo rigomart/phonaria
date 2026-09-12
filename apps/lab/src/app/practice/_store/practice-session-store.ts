@@ -132,8 +132,7 @@ export const usePracticeSessionStore = create<PracticeSessionStore>((set, get) =
 
 	startSession: (topic, rng = Math.random) => {
 		const { pool, poolStatus, topicId } = get();
-		// Start is the sole loading gate: no pool, no session. The topic check
-		// keeps another topic's pool from drawing this one's session.
+		// Start is the sole loading gate: no pool, no session.
 		if (poolStatus !== "ready" || !pool || topicId !== topic.id) return;
 
 		// `generateSession` throws when a band runs dry. That is a data-shape

@@ -1,8 +1,4 @@
-/**
- * Copy about the activity itself, identical whatever sound a topic teaches.
- * It lives here rather than on `TopicDefinition` so the picker does not put
- * the same sentence on every card.
- */
+/** Copy about the activity itself, identical whatever sound a topic teaches. */
 export const PracticeActivity = {
 	name: "Practice",
 	description:

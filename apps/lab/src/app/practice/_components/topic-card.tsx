@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { TopicDefinition } from "@/lib/practice/topics/types";
 import { summarizeTopicSounds } from "../_lib/topic-sounds";
 
-/** One topic on the picker: two written strings, the rest derived. */
 export function TopicCard({ topic }: { topic: TopicDefinition }) {
 	const { ipa, examples } = summarizeTopicSounds(topic.topicSounds);
 

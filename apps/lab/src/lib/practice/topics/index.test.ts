@@ -3,8 +3,7 @@ import { getTopic, listTopics } from "./index";
 
 /**
  * Contracts, not an inventory: these loop over the registry so a new topic
- * inherits them instead of editing this file. Guarantees that need the
- * shipped word data live in `pool-depth.test.ts` and each topic's own test.
+ * inherits them instead of editing this file.
  */
 describe("topic registry", () => {
 	const topics = listTopics();

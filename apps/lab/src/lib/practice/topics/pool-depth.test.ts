@@ -5,10 +5,8 @@ import { deriveWordPool } from "../word-pool";
 import { listTopics } from "./index";
 
 /**
- * The band-depth guarantee, held for every registered topic. A band that runs
- * dry throws mid-session, so a slot spec too narrow for the shipped data must
- * fail here instead. A session draws at most 2 words per band; the margin is
- * wide so a data regeneration cannot silently starve a slot.
+ * A band that runs dry throws mid-session. A session draws at most 2 words per
+ * band, so the margin is wide: a data regeneration cannot silently starve one.
  */
 const MIN_BAND_DEPTH = 200;
 

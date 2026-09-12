@@ -8,10 +8,7 @@ export const metadata: Metadata = {
 	description: PracticeActivity.description,
 };
 
-/**
- * The topic picker. Registry order is deliberate teaching order, so adding a
- * topic needs no change here.
- */
+/** Registry order is deliberate teaching order, not an alphabetical listing. */
 export default function PracticePage() {
 	const topics = listTopics();
 
