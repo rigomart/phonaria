@@ -6,15 +6,15 @@ automated tags and GitHub Releases.
 ## How It Works
 
 ```text
-Conventional Commits → main → CI passes → Semantic Release → Tag + GitHub Release
+Conventional Commits → main → CI passes → manual Release workflow → Tag + GitHub Release
 ```
 
 1. **Development**: Work on feature branches using conventional commits.
 2. **Preview**: PRs get Vercel preview deployments.
 3. **Merge**: Merge PRs into `main`.
 4. **CI**: The `CI` workflow must pass for that `main` push.
-5. **Release**: A separate release workflow runs after CI success and creates the Git tag and
-   GitHub Release.
+5. **Release**: Run the `Release` workflow from the Actions tab (manual `workflow_dispatch`).
+   Auto-release after CI is paused for the Lab migration and can be restored after cutover.
 6. **Deploy**: Vercel production deploy comes from the `main` merge (single deploy path).
 
 ## Conventional Commits
@@ -44,12 +44,12 @@ git commit -m "ci: fix workflow"
 1. Write conventional commits in your PRs.
 2. Merge PRs to `main`.
 3. Wait for CI to pass.
-4. Release workflow runs automatically and publishes the new tag and GitHub Release.
+4. In GitHub Actions, run the `Release` workflow on `main` to publish the tag and GitHub Release.
 
 ## Files
 
 - `.releaserc.json` - Semantic Release configuration
-- `.github/workflows/release-semantic.yml` - Release workflow triggered after CI success
+- `.github/workflows/release-semantic.yml` - Release workflow (manual `workflow_dispatch`)
 
 ## Notes
 
