@@ -1,9 +1,9 @@
 name: Release
 
+# Auto-release after CI is paused for the TanStack Start / Cloudflare Lab
+# migration. Restore workflow_run (post-CI on main) after cutover.
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,16 +12,14 @@ permissions:
 
 jobs:
   release:
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     concurrency:
-      group: release-${{ github.event.workflow_run.head_sha }}
+      group: release-${{ github.sha }}
       cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
       - name: Setup Node.js
         uses: actions/setup-node@v4
