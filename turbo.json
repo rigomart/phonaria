@@ -36,6 +36,18 @@
 			"dependsOn": ["build"],
 			"cache": false,
 			"env": ["SKIP_RATE_LIMIT", "DATABASE_URL"]
+		},
+		"e2e:lab": {
+			"cache": false,
+			"env": [
+				"LAB_CONTRACT_TARGET",
+				"LAB_CONTRACT_BASE_URL",
+				"LAB_CONTRACT_CANONICAL_ORIGIN",
+				"LAB_CONTRACT_START_LOCAL",
+				"LAB_CONTRACT_WRITE_BASELINE",
+				"CF_ACCESS_CLIENT_ID",
+				"CF_ACCESS_CLIENT_SECRET"
+			]
 		}
 	}
 }

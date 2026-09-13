@@ -1,0 +1,48 @@
+name: Lab contract
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Contract target profile
+        required: true
+        default: vercel-production
+        type: choice
+        options:
+          - vercel-production
+          - cloudflare-staging
+          - cloudflare-production
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun ci
+      - name: Install Playwright Chromium
+        run: bun --cwd packages/lab-contract e2e:install
+      - name: Run Lab contract
+        env:
+          CI: true
+          LAB_CONTRACT_TARGET: ${{ inputs.target }}
+          LAB_CONTRACT_BASE_URL: ${{ secrets.LAB_CONTRACT_BASE_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: bun e2e:lab
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-contract-report
+          path: |
+            packages/lab-contract/playwright-report
+            packages/lab-contract/test-results
+          if-no-files-found: ignore

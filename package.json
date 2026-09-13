@@ -29,6 +29,9 @@
 		"check-types": "turbo run check-types",
 		"test": "turbo run test",
 		"e2e": "turbo run e2e",
+		"e2e:lab": "bun --cwd packages/lab-contract e2e:lab",
+		"e2e:lab:vercel": "LAB_CONTRACT_TARGET=vercel-production bun --cwd packages/lab-contract e2e:lab",
+		"e2e:lab:baseline": "LAB_CONTRACT_TARGET=vercel-production bun --cwd packages/lab-contract e2e:lab:baseline",
 		"release": "semantic-release",
 		"release:dry": "semantic-release --dry-run"
 	},

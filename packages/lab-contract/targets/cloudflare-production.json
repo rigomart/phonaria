@@ -1,0 +1,19 @@
+{
+	"name": "cloudflare-production",
+	"baseUrl": "https://phonaria-lab.rigos.dev",
+	"expectedCanonicalOrigin": "https://phonaria-lab.rigos.dev",
+	"practiceEnabled": false,
+	"indexingEnabled": false,
+	"bucketAssetsAvailable": true,
+	"authentication": { "type": "none" },
+	"capabilities": {
+		"controlledServiceFailure": false,
+		"controlledWordlistFailure": false,
+		"practiceSession": false
+	},
+	"skipReasons": {
+		"controlledServiceFailure": "Public Cloudflare Lab has no test-only failure hook. The contract must not assume a specific server-function transport.",
+		"controlledWordlistFailure": "Public Cloudflare Lab has no test-only failure hook, and the client word-list URL is a hashed framework chunk rather than a stable resource the contract can fail.",
+		"practiceSession": "Practice stays disabled in production Lab, so a complete session cannot run against this target."
+	}
+}

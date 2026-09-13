@@ -1,0 +1,23 @@
+{
+	"name": "cloudflare-staging",
+	"baseUrl": "",
+	"requiresBaseUrlOverride": true,
+	"expectedCanonicalOrigin": "",
+	"practiceEnabled": true,
+	"indexingEnabled": false,
+	"bucketAssetsAvailable": true,
+	"authentication": {
+		"type": "cloudflare-access",
+		"clientIdEnv": "CF_ACCESS_CLIENT_ID",
+		"clientSecretEnv": "CF_ACCESS_CLIENT_SECRET"
+	},
+	"capabilities": {
+		"controlledServiceFailure": false,
+		"controlledWordlistFailure": false,
+		"practiceSession": true
+	},
+	"skipReasons": {
+		"controlledServiceFailure": "Cloudflare staging has no test-only failure hook yet. Add a stable, framework-neutral seam before enabling this capability.",
+		"controlledWordlistFailure": "Cloudflare staging has no test-only word-list failure hook yet. Add a stable, framework-neutral seam before enabling this capability."
+	}
+}
