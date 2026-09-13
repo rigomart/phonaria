@@ -3,6 +3,9 @@
  *
  * Framework-neutral transcription service for Phonaria.
  * Provides grapheme-to-phoneme (G2P) conversion with database lookups and fallback generation.
+ *
+ * This is the main entry point and exports client-safe types and the core service function.
+ * For server-side database functionality, use @phonaria/transcription-service/server
  */
 
 export {
@@ -27,12 +30,3 @@ export {
 	type TranscriptionSyllable,
 	type TranscriptionPhoneme,
 } from "./contract";
-
-export {
-	createDbClient,
-	createDbClientFromEnv,
-	getDefaultDbClient,
-	resetDefaultDbClient,
-	type DbClient,
-	type DbConfig,
-} from "./db/client";
