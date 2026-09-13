@@ -1,14 +1,11 @@
 /**
  * Next.js adapter for in-app navigation.
- * Temporary migration boundary — TanStack Start will implement the same
- * `AppLinkProps` with its own Link.
  */
-import NextLink from "next/link";
-import { type ComponentProps, forwardRef } from "react";
+"use client";
 
-export type AppLinkProps = Omit<ComponentProps<typeof NextLink>, "href"> & {
-	href: string;
-};
+import NextLink from "next/link";
+import { forwardRef } from "react";
+import type { AppLinkProps } from "../link";
 
 export const Link = forwardRef<HTMLAnchorElement, AppLinkProps>(function Link(
 	{ href, ...props },

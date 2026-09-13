@@ -1,0 +1,201 @@
+name: Lab Start
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: lab-start-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SITE_URL: ${{ vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
+      SITE_INDEXING_ENABLED: "0"
+      FLAG_PRACTICE: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun ci
+      - name: Generate Cloudflare Worker types
+        run: bun --cwd apps/lab cf-typegen
+      - name: Production build (Lab Start)
+        run: bun --cwd apps/lab build:start
+      - name: Type check Start
+        working-directory: apps/lab
+        run: bunx tsc --noEmit -p tsconfig.start.json
+      - name: Wrangler dry-run
+        working-directory: apps/lab
+        run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
+      - name: Record Worker metrics
+        working-directory: apps/lab
+        env:
+          WRANGLER_DEPLOY_LOG: wrangler-dry-run.log
+          WORKER_BUNDLE_DIR: .wrangler/dry-run
+          WORKER_METRICS_OUT: worker-metrics.json
+        run: bun ./scripts/record-worker-metrics.ts
+      - name: Upload Worker metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-start-worker-metrics
+          path: |
+            apps/lab/worker-metrics.json
+            apps/lab/wrangler-dry-run.log
+          if-no-files-found: ignore
+
+  deploy-preview:
+    if: github.event_name == 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      deployments: write
+    env:
+      SITE_INDEXING_ENABLED: "0"
+      FLAG_PRACTICE: "1"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun ci
+      - name: Resolve preview origin
+        id: origin
+        env:
+          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+        run: |
+          name="phonaria-lab-pr-${{ github.event.pull_request.number }}"
+          if [ -n "$SUBDOMAIN" ]; then
+            url="https://${name}.${SUBDOMAIN}.workers.dev"
+          else
+            url="https://${name}.workers.dev"
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Production build (Lab Start)
+        env:
+          SITE_URL: ${{ steps.origin.outputs.url }}
+        run: bun --cwd apps/lab build:start
+      - name: Deploy preview Worker
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/lab
+          command: deploy --env preview --name ${{ steps.origin.outputs.name }} --var SITE_URL:${{ steps.origin.outputs.url }}
+      - name: Comment preview URL
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = `${{ steps.origin.outputs.url }}`;
+            const body = [
+              '## Lab Start preview',
+              '',
+              `Protected Cloudflare preview: ${url}`,
+              '',
+              'This Worker is the TanStack Start slice (Credits + Lab shell). The public Vercel Lab is unchanged.',
+              'Cloudflare Access must remain required. Do not share an unprotected URL.',
+            ].join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((comment) => comment.body?.includes('Lab Start preview'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+      - name: Skip deploy when Cloudflare secrets are missing
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: |
+          echo "CLOUDFLARE_API_TOKEN is not configured. Repository-side Start validation ran; add the Cloudflare deploy secrets listed in docs/research/issue-201-tanstack-start-slice.md."
+
+  deploy-staging:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      SITE_URL: ${{ vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
+      SITE_INDEXING_ENABLED: "0"
+      FLAG_PRACTICE: "1"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun ci
+      - name: Production build (Lab Start)
+        run: bun --cwd apps/lab build:start
+      - name: Deploy staging Worker
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/lab
+          command: deploy --env staging --var SITE_URL:${{ env.SITE_URL }}
+      - name: Record deployed Worker metrics
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: apps/lab
+        env:
+          WORKER_BUNDLE_DIR: dist
+          WORKER_METRICS_OUT: worker-metrics.json
+        run: bun ./scripts/record-worker-metrics.ts
+      - name: Run Credits-relevant Lab contract
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CF_ACCESS_CLIENT_ID != ''
+        env:
+          CI: true
+          LAB_CONTRACT_TARGET: cloudflare-staging
+          LAB_CONTRACT_BASE_URL: ${{ env.SITE_URL }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          bun --cwd packages/lab-contract e2e:install
+          bun --cwd packages/lab-contract exec playwright test \
+            e2e/routes.spec.ts e2e/metadata.spec.ts e2e/security.spec.ts e2e/accessibility.spec.ts \
+            --grep "serves Credits|returns a real not-found page|metadata for /credits|robots.txt crawlable|sends a CSP|axe violations on Credits|axe violations on the not-found"
+      - name: Skip deploy when Cloudflare secrets are missing
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: |
+          echo "CLOUDFLARE_API_TOKEN is not configured. Staging deploy is waiting on the secrets listed in docs/research/issue-201-tanstack-start-slice.md."

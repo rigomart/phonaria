@@ -21,6 +21,7 @@ adapter.
 | --- | --- |
 | `bun e2e:lab` | Contract against `LAB_CONTRACT_TARGET`, defaulting to Vercel production |
 | `bun e2e:lab:vercel` | Contract against the public Vercel Lab |
+| `bun e2e:lab:cloudflare` | Contract against Cloudflare staging (`LAB_CONTRACT_BASE_URL` + Access token) |
 | `bun e2e:lab:baseline` | Tagged page-load and transcription timing collection |
 | `LAB_CONTRACT_WRITE_BASELINE=1 bun e2e:lab:baseline` | Also write `baselines/<target>.json` |
 

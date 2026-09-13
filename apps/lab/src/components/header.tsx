@@ -11,7 +11,7 @@ import {
 	NavigationMenuTrigger,
 } from "@phonaria/ui/components/navigation-menu";
 import type { LabFlags } from "@/lib/flags";
-import { Link } from "@/platform";
+import { Link } from "@/platform/link";
 import { Logo } from "./logo";
 
 const navLinkClass =

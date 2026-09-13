@@ -1,4 +1,4 @@
-import { Link } from "@/platform";
+import { Link } from "@/platform/link";
 import { ThemeSwitcher } from "./theme-switcher";
 
 export function Footer() {

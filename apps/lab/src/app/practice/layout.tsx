@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { requireFlag } from "@/platform";
+import { requireFlag } from "@/platform/next";
 
 // Practice stays out of search indexes even when the feature flag is on.
 export const metadata: Metadata = {

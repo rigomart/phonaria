@@ -1,0 +1,48 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "phonaria-lab",
+	"compatibility_date": "2026-09-12",
+	"compatibility_flags": ["nodejs_compat"],
+	"main": "@tanstack/react-start/server-entry",
+	"assets": {
+		"html_handling": "drop-trailing-slash",
+		"run_worker_first": ["/", "/credits", "/credits/", "/robots.txt", "/sitemap.xml"]
+	},
+	"observability": {
+		"enabled": true,
+		"logs": {
+			"enabled": true,
+			"invocation_logs": true
+		}
+	},
+	"vars": {
+		"SITE_INDEXING_ENABLED": "0",
+		"SITE_URL": "http://localhost:3001"
+	},
+	"env": {
+		"staging": {
+			"name": "phonaria-lab-staging",
+			"vars": {
+				"SITE_URL": "https://phonaria-lab-staging.workers.dev",
+				"SITE_INDEXING_ENABLED": "0",
+				"FLAG_PRACTICE": "1"
+			}
+		},
+		"preview": {
+			"name": "phonaria-lab-preview",
+			"vars": {
+				"SITE_URL": "https://phonaria-lab-preview.workers.dev",
+				"SITE_INDEXING_ENABLED": "0",
+				"FLAG_PRACTICE": "1"
+			}
+		},
+		"production": {
+			"name": "phonaria-lab",
+			"vars": {
+				"SITE_URL": "https://phonaria-lab.rigos.dev",
+				"SITE_INDEXING_ENABLED": "0",
+				"FLAG_PRACTICE": "0"
+			}
+		}
+	}
+}
