@@ -1,16 +1,10 @@
 /**
- * Self-hosted Lab font contract. CSS variables are applied by `fonts.css`.
- * The preload href is for the body face (Noto Sans), matching the previous
- * next/font/google `preload: true` setting.
+ * Lab font contract. Import this module to load Fontsource variable faces and
+ * apply `--font-display-serif` / `--font-noto-sans`.
+ *
+ * `wght.css` is the latin-weight entry (Vite / TanStack Start friendly, also
+ * works on the current Next.js Lab). Do not add Noto Serif.
  */
-
-export const NOTO_SANS_PRELOAD_HREF = "/fonts/noto-sans-latin-wght-normal.woff2";
-
-export const FONT_PRELOADS = [
-	{
-		href: NOTO_SANS_PRELOAD_HREF,
-		as: "font" as const,
-		type: "font/woff2",
-		crossOrigin: "anonymous" as const,
-	},
-];
+import "@fontsource-variable/sora/wght.css";
+import "@fontsource-variable/noto-sans/wght.css";
+import "./fonts.css";

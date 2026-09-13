@@ -7,7 +7,7 @@ only the files under `next/`.
 | Module | Role |
 | --- | --- |
 | `image.tsx` | Portable image renderer (native `img`) |
-| `fonts.css` / `fonts.ts` | Self-hosted Sora and Noto Sans |
+| `fonts.ts` / `fonts.css` | Fontsource variable Sora and Noto Sans (`wght.css`) plus CSS variables |
 | `runtime-config.ts` | Re-export of env-backed site and asset configuration |
 | `next/link.tsx` | Next.js `Link` adapter |
 | `next/navigation.ts` | Next.js `notFound` / `redirect` adapter |

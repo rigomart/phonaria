@@ -15,6 +15,8 @@
 		"db:migrate": "drizzle-kit migrate"
 	},
 	"dependencies": {
+		"@fontsource-variable/noto-sans": "^5.3.0",
+		"@fontsource-variable/sora": "^5.3.0",
 		"@libsql/client": "^0.15.0",
 		"@phonaria/flags": "workspace:*",
 		"@phonaria/phonetics-data": "workspace:*",

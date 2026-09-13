@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { flags } from "@/lib/flags";
-import { FONT_PRELOADS, getDocumentMetadata } from "@/platform";
+import { getDocumentMetadata } from "@/platform";
 import Providers from "./providers";
 import "@phonaria/ui/globals.css";
-import "@/platform/fonts.css";
+import "@/platform/fonts";
 
 const documentMetadata = getDocumentMetadata();
 
@@ -43,18 +43,6 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<head>
-				{FONT_PRELOADS.map((font) => (
-					<link
-						key={font.href}
-						rel="preload"
-						href={font.href}
-						as={font.as}
-						type={font.type}
-						crossOrigin={font.crossOrigin}
-					/>
-				))}
-			</head>
 			<body className="antialiased">
 				<Providers>
 					<div className="min-h-screen flex flex-col">

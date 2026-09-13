@@ -1,35 +1,35 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { FONT_PRELOADS, NOTO_SANS_PRELOAD_HREF } from "./fonts";
 
-const fontsCss = readFileSync(resolve(import.meta.dirname, "fonts.css"), "utf8");
-const layoutSource = readFileSync(resolve(import.meta.dirname, "../app/layout.tsx"), "utf8");
+const platformDir = import.meta.dirname;
+const fontsTs = readFileSync(resolve(platformDir, "fonts.ts"), "utf8");
+const fontsCss = readFileSync(resolve(platformDir, "fonts.css"), "utf8");
+const layoutSource = readFileSync(resolve(platformDir, "../app/layout.tsx"), "utf8");
+const packageJson = readFileSync(resolve(platformDir, "../../package.json"), "utf8");
+const publicFontsDir = resolve(platformDir, "../../public/fonts");
 
-describe("self-hosted fonts", () => {
-	it("declares local Sora and Noto Sans faces without remote font services", () => {
-		expect(fontsCss).toContain('font-family: "Sora"');
-		expect(fontsCss).toContain('font-family: "Noto Sans"');
-		expect(fontsCss).toContain('url("/fonts/sora-latin-wght-normal.woff2")');
-		expect(fontsCss).toContain('url("/fonts/noto-sans-latin-wght-normal.woff2")');
-		expect(fontsCss).not.toMatch(/fonts\.googleapis\.com|fonts\.gstatic\.com/i);
-		expect(fontsCss).not.toContain("@import");
+describe("Fontsource fonts", () => {
+	it("loads latin-weight CSS for Sora and Noto Sans", () => {
+		expect(packageJson).toContain('"@fontsource-variable/sora"');
+		expect(packageJson).toContain('"@fontsource-variable/noto-sans"');
+		expect(packageJson).not.toContain("noto-serif");
+		expect(fontsTs).toContain('import "@fontsource-variable/sora/wght.css"');
+		expect(fontsTs).toContain('import "@fontsource-variable/noto-sans/wght.css"');
+		expect(fontsTs).not.toMatch(/noto-serif|Noto Serif/i);
+		expect(fontsCss).toContain("--font-display-serif");
+		expect(fontsCss).toContain("--font-noto-sans");
+		expect(fontsCss).toContain('"Sora Variable"');
+		expect(fontsCss).toContain('"Noto Sans Variable"');
+		expect(fontsCss).not.toContain("@font-face");
+		expect(fontsCss).not.toContain("/fonts/");
+		expect(`${fontsTs}\n${fontsCss}`).not.toMatch(/fonts\.googleapis\.com|fonts\.gstatic.com/i);
 	});
 
-	it("exposes the Noto Sans preload used by the Next.js layout adapter", () => {
-		expect(NOTO_SANS_PRELOAD_HREF).toBe("/fonts/noto-sans-latin-wght-normal.woff2");
-		expect(FONT_PRELOADS).toEqual([
-			{
-				href: NOTO_SANS_PRELOAD_HREF,
-				as: "font",
-				type: "font/woff2",
-				crossOrigin: "anonymous",
-			},
-		]);
-	});
-
-	it("keeps the root layout free of next/font/google", () => {
+	it("does not vendor public font files or use next/font/google", () => {
+		expect(existsSync(publicFontsDir)).toBe(false);
 		expect(layoutSource).not.toContain("next/font/google");
-		expect(layoutSource).toContain("@/platform/fonts.css");
+		expect(layoutSource).not.toContain("FONT_PRELOADS");
+		expect(layoutSource).toContain('import "@/platform/fonts"');
 	});
 });
