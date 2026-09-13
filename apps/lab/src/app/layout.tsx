@@ -1,56 +1,39 @@
 import type { Metadata } from "next";
-import { Noto_Sans, Sora } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { flags } from "@/lib/flags";
-import {
-	getGoogleSiteVerification,
-	getSiteUrl,
-	isIndexingEnabled,
-	SITE_DESCRIPTION,
-	SITE_NAME,
-} from "@/lib/site";
+import { getDocumentMetadata } from "@/platform";
 import Providers from "./providers";
 import "@phonaria/ui/globals.css";
+import "@/platform/fonts";
 
-const sora = Sora({
-	variable: "--font-display-serif",
-	subsets: ["latin"],
-	fallback: ["system-ui", "sans-serif"],
-});
-
-const notoSans = Noto_Sans({
-	variable: "--font-noto-sans",
-	subsets: ["latin"],
-	fallback: ["system-ui", "sans-serif"],
-	preload: true,
-});
-
-const googleSiteVerification = getGoogleSiteVerification();
+const documentMetadata = getDocumentMetadata();
 
 export const metadata: Metadata = {
 	// Makes every relative metadata URL absolute, and canonical "./" resolve to
 	// the current route. Indexability is governed here for the whole app.
-	metadataBase: new URL(getSiteUrl()),
+	metadataBase: new URL(documentMetadata.siteUrl),
 	title: {
-		default: SITE_NAME,
-		template: `%s - ${SITE_NAME}`,
+		default: documentMetadata.defaultTitle,
+		template: documentMetadata.titleTemplate,
 	},
-	description: SITE_DESCRIPTION,
-	alternates: { canonical: "./" },
+	description: documentMetadata.description,
+	alternates: { canonical: documentMetadata.canonical },
 	openGraph: {
-		title: SITE_NAME,
-		description: SITE_DESCRIPTION,
-		siteName: SITE_NAME,
-		url: "./",
+		title: documentMetadata.siteName,
+		description: documentMetadata.description,
+		siteName: documentMetadata.siteName,
+		url: documentMetadata.canonical,
 	},
 	twitter: {
 		card: "summary",
-		title: SITE_NAME,
-		description: SITE_DESCRIPTION,
+		title: documentMetadata.siteName,
+		description: documentMetadata.description,
 	},
-	robots: { index: isIndexingEnabled(), follow: true },
-	verification: googleSiteVerification ? { google: googleSiteVerification } : undefined,
+	robots: { index: documentMetadata.indexingEnabled, follow: true },
+	verification: documentMetadata.googleSiteVerification
+		? { google: documentMetadata.googleSiteVerification }
+		: undefined,
 };
 
 export default function RootLayout({
@@ -59,7 +42,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" suppressHydrationWarning className={`${sora.variable} ${notoSans.variable}`}>
+		<html lang="en" suppressHydrationWarning>
 			<body className="antialiased">
 				<Providers>
 					<div className="min-h-screen flex flex-col">

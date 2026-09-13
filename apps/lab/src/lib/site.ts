@@ -1,8 +1,9 @@
 /**
- * Site identity: the only module that reads the deployment's URL, indexing,
- * and search-verification env vars. Metadata, robots, and the sitemap all
- * source their values here so the app serves correct SEO surfaces on whatever
- * domain hosts it.
+ * Site identity and public asset configuration. Framework-neutral: reads
+ * process.env so Next.js and TanStack Start can both supply values.
+ *
+ * Metadata, robots, and the sitemap all source their values here so the app
+ * serves correct SEO surfaces on whatever domain hosts it.
  *
  * Reads happen inside the getters, but consumers (layout metadata, robots,
  * sitemap) evaluate at build time — changing these vars requires a redeploy,
@@ -13,6 +14,17 @@ export const SITE_NAME = "Phonaria Lab";
 export const SITE_DESCRIPTION = "Experimental workspace for phonetic transcription tools";
 
 const DEV_SITE_URL = "http://localhost:3000";
+
+export type DocumentMetadata = {
+	siteName: string;
+	defaultTitle: string;
+	titleTemplate: string;
+	description: string;
+	siteUrl: string;
+	canonical: "./";
+	indexingEnabled: boolean;
+	googleSiteVerification: string | undefined;
+};
 
 /**
  * Absolute origin the site is served from, without a trailing slash. Throws in
@@ -47,4 +59,31 @@ export function isIndexingEnabled(): boolean {
 
 export function getGoogleSiteVerification(): string | undefined {
 	return process.env.GOOGLE_SITE_VERIFICATION?.trim() || undefined;
+}
+
+/**
+ * Origin for remote diagrams and phoneme audio. `PUBLIC_BUCKET_URL` is the
+ * portable name; `NEXT_PUBLIC_BUCKET_URL` is the Next.js public-env alias.
+ */
+export function getPublicAssetBaseUrl(): string | undefined {
+	const raw = (
+		process.env.PUBLIC_BUCKET_URL?.trim() ||
+		process.env.NEXT_PUBLIC_BUCKET_URL?.trim() || // pragma: allowlist secret
+		""
+	).replace(/\/+$/, "");
+	return raw || undefined;
+}
+
+/** Portable document metadata consumed by the current Next.js layout adapter. */
+export function getDocumentMetadata(): DocumentMetadata {
+	return {
+		siteName: SITE_NAME,
+		defaultTitle: SITE_NAME,
+		titleTemplate: `%s - ${SITE_NAME}`,
+		description: SITE_DESCRIPTION,
+		siteUrl: getSiteUrl(),
+		canonical: "./",
+		indexingEnabled: isIndexingEnabled(),
+		googleSiteVerification: getGoogleSiteVerification(),
+	};
 }

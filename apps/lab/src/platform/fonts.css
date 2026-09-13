@@ -1,0 +1,9 @@
+/*
+ * CSS variables consumed by @phonaria/ui. Family names match Fontsource
+ * variable packages (`Sora Variable`, `Noto Sans Variable`).
+ */
+
+:root {
+	--font-display-serif: "Sora Variable", system-ui, sans-serif;
+	--font-noto-sans: "Noto Sans Variable", system-ui, sans-serif;
+}

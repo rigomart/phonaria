@@ -10,8 +10,8 @@ import {
 	NavigationMenuPositioner,
 	NavigationMenuTrigger,
 } from "@phonaria/ui/components/navigation-menu";
-import Link from "next/link";
 import type { LabFlags } from "@/lib/flags";
+import { Link } from "@/platform";
 import { Logo } from "./logo";
 
 const navLinkClass =

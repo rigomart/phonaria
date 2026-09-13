@@ -5,13 +5,14 @@ import { ButtonGroup } from "@phonaria/ui/components/group";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { PlayIcon, Turtle } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
+import { getPublicAssetBaseUrl } from "@/platform";
 
 type Props = {
 	path: string;
 	label: string;
 };
 
-const baseUrl = process.env.NEXT_PUBLIC_BUCKET_URL?.replace(/\/+$/, "");
+const baseUrl = getPublicAssetBaseUrl();
 
 function buildAudioSrc(path: string) {
 	if (!baseUrl) return null;

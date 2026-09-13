@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/platform";
 import { ThemeSwitcher } from "./theme-switcher";
 
 export function Footer() {

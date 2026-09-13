@@ -1,16 +1,14 @@
 "use client";
 
 import { ThemeSwitcher as UiThemeSwitcher } from "@phonaria/ui/components/theme-switcher";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/platform/next/theme";
 
 export function ThemeSwitcher() {
 	const { theme, setTheme } = useTheme();
 
-	const value = theme === "light" || theme === "dark" || theme === "system" ? theme : "system";
-
 	return (
 		<UiThemeSwitcher
-			value={value}
+			value={theme}
 			onValueChange={(nextTheme) => setTheme(nextTheme)}
 			labels={{
 				toggleAriaLabel: "Toggle theme",

@@ -17,7 +17,6 @@ import {
 	ToggleGroupSeparator,
 } from "@phonaria/ui/components/toggle-group";
 import { ChevronDown, MoveRight } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { AudioControls } from "@/components/audio-controls";
 import { cn } from "@/lib/utils";
@@ -30,8 +29,9 @@ import {
 	SMALL_VOWEL_CHART_LAYOUT,
 	VOWEL_HEIGHT_ORDER,
 } from "@/lib/vowel-chart-geometry";
+import { getPublicAssetBaseUrl, Image } from "@/platform";
 
-const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
+const BUCKET_URL = getPublicAssetBaseUrl();
 interface PhonemePopoverProps<TLanguage extends TargetAccent> {
 	targetAccent: TLanguage;
 	phonemeId: LanguagePhonemeId<TLanguage>;
