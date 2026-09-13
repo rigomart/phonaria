@@ -1,5 +1,7 @@
+import "server-only";
+
 import { inArray } from "drizzle-orm";
-import { db } from "@/db/drizzle";
+import { getDb, type LabDatabase } from "@/db/drizzle";
 import { words } from "@/db/schema";
 import type { G2PSyllable } from "./model";
 import { syllabify } from "./syllabifier";
@@ -37,6 +39,7 @@ function mapVariants(pronunciationsJson: string): CmudictVariant[] {
 
 export async function lookupManyCmudict(
 	rawWords: string[],
+	db: LabDatabase = getDb(),
 ): Promise<Map<string, CmudictVariant[] | undefined>> {
 	const normalized = rawWords.map((w) => normalizeCmuWord(w)).filter((w) => w.length > 0);
 	const unique = Array.from(new Set(normalized));

@@ -16,9 +16,9 @@ import type { TranscriptionResult } from "@/lib/types/g2p";
 export type LookupErrorKind = "wordlist" | "service" | "unknown";
 
 /**
- * The server action is injected instead of imported: `../_actions/transcribe`
- * pulls in `@/db/drizzle`, which throws at import time when `TURSO_DATABASE_URL`
- * is unset — importing it here would break this store's test at module load.
+ * The server action is injected instead of imported: the store is the
+ * client-facing transcription seam and must stay independent of the Next.js
+ * adapter and server-only database client.
  */
 export type TranscribeWordsFn = (input: { words: string[] }) => Promise<G2PWord[]>;
 export type LookupWordsFn = (words: string[]) => Promise<BatchLookupResult>;
