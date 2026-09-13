@@ -25,8 +25,6 @@ export function getContentSecurityPolicy(): string {
 }
 
 /** Cloudflare Static Assets `_headers` file so prerendered HTML keeps CSP. */
-export function formatCloudflareHeadersFile(
-	policy: string = getContentSecurityPolicy(),
-): string {
+export function formatCloudflareHeadersFile(policy: string = getContentSecurityPolicy()): string {
 	return `/*\n  Content-Security-Policy: ${policy}\n`;
 }
