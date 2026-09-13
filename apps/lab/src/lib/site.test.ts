@@ -14,7 +14,7 @@ afterEach(() => {
 	delete process.env.SITE_INDEXING_ENABLED;
 	delete process.env.GOOGLE_SITE_VERIFICATION;
 	delete process.env.PUBLIC_BUCKET_URL;
-	delete process.env.NEXT_PUBLIC_BUCKET_URL;
+	delete process.env.NEXT_PUBLIC_BUCKET_URL; // pragma: allowlist secret
 	// NODE_ENV is typed read-only, so production is simulated with stubEnv.
 	vi.unstubAllEnvs();
 });
