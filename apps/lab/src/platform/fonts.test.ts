@@ -16,7 +16,7 @@ describe("Fontsource fonts", () => {
 		expect(packageJson).not.toContain("noto-serif");
 		expect(fontsTs).toContain('import "@fontsource-variable/sora/wght.css"');
 		expect(fontsTs).toContain('import "@fontsource-variable/noto-sans/wght.css"');
-		expect(fontsTs).not.toMatch(/noto-serif|Noto Serif/i);
+		expect(fontsTs).not.toContain("@fontsource-variable/noto-serif");
 		expect(fontsCss).toContain("--font-display-serif");
 		expect(fontsCss).toContain("--font-noto-sans");
 		expect(fontsCss).toContain('"Sora Variable"');

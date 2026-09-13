@@ -3,7 +3,7 @@
  * apply `--font-display-serif` / `--font-noto-sans`.
  *
  * `wght.css` is the latin-weight entry (Vite / TanStack Start friendly, also
- * works on the current Next.js Lab). Do not add Noto Serif.
+ * works on the current Next.js Lab).
  */
 import "@fontsource-variable/sora/wght.css";
 import "@fontsource-variable/noto-sans/wght.css";
