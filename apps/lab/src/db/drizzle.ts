@@ -1,14 +1,95 @@
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
+import "server-only";
+
+import { type Client, createClient, type InStatement } from "@libsql/client";
+import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
+import { type DatabaseConfig, resolveDatabaseConfig } from "./config";
 import * as schema from "./schema";
 
-if (!process.env.TURSO_DATABASE_URL) {
-	throw new Error("TURSO_DATABASE_URL environment variable is not set");
+export type LabDatabase = LibSQLDatabase<typeof schema>;
+
+function statementSql(stmt: InStatement): string {
+	return typeof stmt === "string" ? stmt : stmt.sql;
 }
 
-const client = createClient({
-	url: process.env.TURSO_DATABASE_URL,
-	authToken: process.env.TURSO_AUTH_TOKEN,
-});
+function isReadOnlySql(sql: string): boolean {
+	const normalized = sql
+		.trim()
+		.replace(/^\(\s*/, "")
+		.toLowerCase();
+	return (
+		normalized.startsWith("select") ||
+		normalized.startsWith("pragma") ||
+		normalized.startsWith("with") ||
+		normalized.startsWith("explain")
+	);
+}
 
-export const db = drizzle(client, { schema });
+function rejectWrite(): Promise<never> {
+	return Promise.reject(new Error("Write rejected: this database client is read-only"));
+}
+
+function wrapReadOnly(client: Client): void {
+	const execute = client.execute.bind(client);
+	const batch = client.batch.bind(client);
+
+	client.execute = ((stmt: InStatement) => {
+		if (!isReadOnlySql(statementSql(stmt))) {
+			return rejectWrite();
+		}
+		return execute(stmt);
+	}) as Client["execute"];
+
+	client.batch = ((stmts: InStatement[], mode?: Parameters<Client["batch"]>[1]) => {
+		for (const stmt of stmts) {
+			if (!isReadOnlySql(statementSql(stmt))) {
+				return rejectWrite();
+			}
+		}
+		return batch(stmts, mode);
+	}) as Client["batch"];
+
+	client.migrate = (() => rejectWrite()) as Client["migrate"];
+	client.transaction = (() => rejectWrite()) as Client["transaction"];
+}
+
+export function createDatabase(
+	config: DatabaseConfig,
+	options: { readOnly?: boolean } = {},
+): LabDatabase {
+	const client = createClient({
+		url: config.url,
+		authToken: config.authToken,
+	});
+
+	if (options.readOnly) {
+		wrapReadOnly(client);
+	}
+
+	return drizzle(client, { schema });
+}
+
+let cached: { key: string; db: LabDatabase } | undefined;
+
+function cacheKey(config: DatabaseConfig): string {
+	return `${config.url}\0${config.authToken ?? ""}`;
+}
+
+/**
+ * Lazily construct the default runtime database. Importing this module does
+ * not read credentials or open a connection.
+ */
+export function getDb(explicit?: DatabaseConfig): LabDatabase {
+	const config = explicit ?? resolveDatabaseConfig();
+	const key = cacheKey(config);
+	if (cached?.key === key) {
+		return cached.db;
+	}
+
+	const db = createDatabase(config);
+	cached = { key, db };
+	return db;
+}
+
+export function resetDatabaseCache(): void {
+	cached = undefined;
+}

@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/db/drizzle", () => ({
-	db: {
-		select: vi.fn(),
-	},
+	getDb: vi.fn(),
 }));
 
 vi.mock("@/db/schema", () => ({
@@ -11,7 +9,7 @@ vi.mock("@/db/schema", () => ({
 }));
 
 // Must import after mocks are set up
-const { db } = await import("@/db/drizzle");
+const { getDb } = await import("@/db/drizzle");
 const { processWords } = await import("./service");
 const { __resetCmudictCache } = await import("./cmudict");
 
@@ -20,7 +18,9 @@ function mockDbResults(rows: { word: string; pronunciations: string }[]) {
 		from: vi.fn().mockReturnThis(),
 		where: vi.fn().mockResolvedValue(rows),
 	};
-	(db.select as ReturnType<typeof vi.fn>).mockReturnValue(chain);
+	vi.mocked(getDb).mockReturnValue({
+		select: vi.fn().mockReturnValue(chain),
+	} as never);
 }
 
 describe("processWords (tier 3 — DB lookup)", () => {
@@ -91,5 +91,6 @@ describe("processWords (tier 3 — DB lookup)", () => {
 	it("returns empty array for empty input", async () => {
 		const result = await processWords([]);
 		expect(result).toEqual([]);
+		expect(getDb).not.toHaveBeenCalled();
 	});
 });

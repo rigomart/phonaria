@@ -1,12 +1,24 @@
+import "server-only";
+
+import type { LabDatabase } from "@/db/drizzle";
 import { lookupManyCmudict } from "./cmudict";
 import type { G2PWord } from "./model";
 import { fallbackG2P } from "./phoneme-generator";
 import { normalizeCmuWord } from "./text-processing";
 
-export async function processWords(inputWords: string[]): Promise<G2PWord[]> {
+export type ProcessWordsOptions = {
+	db?: LabDatabase;
+};
+
+export async function processWords(
+	inputWords: string[],
+	options: ProcessWordsOptions = {},
+): Promise<G2PWord[]> {
 	if (inputWords.length === 0) return [];
 
-	const lookups = await lookupManyCmudict(inputWords);
+	const lookups = options.db
+		? await lookupManyCmudict(inputWords, options.db)
+		: await lookupManyCmudict(inputWords);
 	const results: G2PWord[] = [];
 
 	for (const word of inputWords) {
