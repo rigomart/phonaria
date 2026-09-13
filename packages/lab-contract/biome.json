@@ -1,0 +1,17 @@
+{
+	"$schema": "node_modules/@biomejs/biome/configuration_schema.json",
+	"extends": "//",
+	"root": false,
+	"files": {
+		"includes": [
+			"**",
+			"!node_modules",
+			"!dist",
+			"!build",
+			"!test-results",
+			"!playwright-report",
+			"!playwright/.cache",
+			"!baselines/*.json"
+		]
+	}
+}

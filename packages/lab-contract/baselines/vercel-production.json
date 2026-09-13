@@ -1,0 +1,50 @@
+{
+	"target": "vercel-production",
+	"baseUrl": "https://phonaria-lab.rigos.dev",
+	"collectedAt": "2026-09-13T17:16:38.039Z",
+	"regressionThresholdPercent": 20,
+	"conditions": {
+		"browser": "chromium",
+		"viewport": "1280x720",
+		"runs": 5,
+		"pageLoad": "One cold navigation of `/`, then five warm navigations, measured as wall-clock time around page.goto({ waitUntil: 'load' }).",
+		"transcriptionClient": "Five warm submissions of \"hello\" after one uncounted warmup transcription of the same word (loads the lazy curated-10k chunk into the HTTP cache so cold chunk download is not mixed into every sample). hello is a client-tier hit: present in curated-10k, absent from curated-1k, so lookup finishes without the Turso/CMUdict server action. Reloaded landing page; wall-clock from submit click until the word label is visible.",
+		"transcriptionServer": "Five warm submissions of \"aardvark\" after one uncounted warmup transcription of the same word (primes the Turso/CMUdict lookup so a cold database hit is not mixed into the counted samples). aardvark is absent from curated-1k and curated-10k and present in packages/phonetics-data/data/en/dict/cmudict.json (key AARDVARK), the same dictionary loaded into Turso. This is a successful server lookup (IPA details visible), not the functional not-found fixture \"zxqvwoplmj\". Reloaded landing page; wall-clock from submit click until the word label is visible."
+	},
+	"coldPageLoadMs": 114,
+	"pageLoad": {
+		"samplesMs": [
+			46,
+			40,
+			32,
+			32,
+			37
+		],
+		"medianMs": 37,
+		"p95Ms": 46
+	},
+	"transcription": {
+		"client": {
+			"samplesMs": [
+				1031,
+				1029,
+				1033,
+				1033,
+				1027
+			],
+			"medianMs": 1031,
+			"p95Ms": 1033
+		},
+		"server": {
+			"samplesMs": [
+				1033,
+				1278,
+				1028,
+				1018,
+				1024
+			],
+			"medianMs": 1028,
+			"p95Ms": 1278
+		}
+	}
+}
