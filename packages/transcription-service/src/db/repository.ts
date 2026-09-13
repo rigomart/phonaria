@@ -38,9 +38,6 @@ export async function lookupWords(
 
 		return result;
 	} catch (error) {
-		throw new TranscriptionDatabaseError(
-			"Failed to query dictionary words from database",
-			error,
-		);
+		throw new TranscriptionDatabaseError("Failed to query dictionary words from database", error);
 	}
 }

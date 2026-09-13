@@ -20,9 +20,7 @@ export type DbClient = LibSQLDatabase<typeof schema>;
  */
 export function createDbClient(config: DbConfig): DbClient {
 	if (!config.url) {
-		throw new TranscriptionConfigError(
-			"Database URL is required but was not provided",
-		);
+		throw new TranscriptionConfigError("Database URL is required but was not provided");
 	}
 
 	const client = createLibsqlClient({
@@ -44,9 +42,7 @@ export function createDbClientFromEnv(): DbClient {
 	const authToken = process.env.TURSO_AUTH_TOKEN;
 
 	if (!url) {
-		throw new TranscriptionConfigError(
-			"TURSO_DATABASE_URL environment variable is not set",
-		);
+		throw new TranscriptionConfigError("TURSO_DATABASE_URL environment variable is not set");
 	}
 
 	return createDbClient({ url, authToken });

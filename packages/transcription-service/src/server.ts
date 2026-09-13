@@ -10,10 +10,10 @@
 export {
 	createDbClient,
 	createDbClientFromEnv,
-	getDefaultDbClient,
-	resetDefaultDbClient,
 	type DbClient,
 	type DbConfig,
+	getDefaultDbClient,
+	resetDefaultDbClient,
 } from "./db/client";
 
 export { lookupWords, type WordLookupResult } from "./db/repository";
@@ -24,7 +24,7 @@ export { words } from "./db/schema";
  * Mark this module as server-only for bundlers that support it.
  * This will cause a build error if imported from client code.
  */
-if (typeof window !== "undefined") {
+if (typeof globalThis !== "undefined" && "window" in globalThis) {
 	throw new Error(
 		"@phonaria/transcription-service/server cannot be imported in browser code. " +
 			"Use @phonaria/transcription-service instead for client-safe exports.",

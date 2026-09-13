@@ -21,11 +21,13 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
+		"@phonaria/phonetics-data": "workspace:*",
 		"zod": "^3.24.1",
 		"@libsql/client": "^0.17.0",
 		"drizzle-orm": "^0.39.2"
 	},
 	"devDependencies": {
+		"@types/node": "^26.5.1",
 		"vitest": "^3.2.4"
 	}
 }

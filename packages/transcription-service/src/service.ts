@@ -1,11 +1,11 @@
 import {
 	TranscriptionDatabaseError,
-	TranscriptionValidationError,
-	transcriptionInputSchema,
 	type TranscriptionInput,
 	type TranscriptionOutput,
 	type TranscriptionSyllable,
+	TranscriptionValidationError,
 	type TranscriptionWord,
+	transcriptionInputSchema,
 } from "./contract";
 import type { DbClient } from "./db/client";
 import { getDefaultDbClient } from "./db/client";
@@ -74,9 +74,7 @@ async function lookupManyCmudict(
 	rawWords: string[],
 	dbClient: DbClient,
 ): Promise<Map<string, TranscriptionSyllable[][] | undefined>> {
-	const normalized = rawWords
-		.map((w) => normalizeCmuWord(w))
-		.filter((w) => w.length > 0);
+	const normalized = rawWords.map((w) => normalizeCmuWord(w)).filter((w) => w.length > 0);
 	const unique = Array.from(new Set(normalized));
 	const missing = unique.filter((w) => !cache.has(w));
 
@@ -124,10 +122,7 @@ export async function transcribeWords(
 	// Validate input
 	const parseResult = transcriptionInputSchema.safeParse(input);
 	if (!parseResult.success) {
-		throw new TranscriptionValidationError(
-			"Invalid transcription input",
-			parseResult.error,
-		);
+		throw new TranscriptionValidationError("Invalid transcription input", parseResult.error);
 	}
 
 	const { words: inputWords } = parseResult.data;
@@ -147,10 +142,7 @@ export async function transcribeWords(
 		if (error instanceof TranscriptionDatabaseError) {
 			throw error;
 		}
-		throw new TranscriptionDatabaseError(
-			"Unexpected error during word lookup",
-			error,
-		);
+		throw new TranscriptionDatabaseError("Unexpected error during word lookup", error);
 	}
 
 	// Process each word

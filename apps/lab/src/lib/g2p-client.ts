@@ -1,8 +1,5 @@
 import { PhonemeIpaMap, type PhonemeSymbolId } from "@phonaria/phonetics-data";
-import type {
-	TranscriptionOutput,
-	TranscriptionPhoneme,
-} from "@phonaria/transcription-service";
+import type { TranscriptionOutput, TranscriptionPhoneme } from "@phonaria/transcription-service";
 import type {
 	TranscribedPhoneme,
 	TranscribedSyllable,
@@ -72,9 +69,7 @@ function mapPhonemeToTranscribed(
 	};
 }
 
-function isKnownPhoneme(
-	phoneme: TranscriptionPhoneme,
-): phoneme is TranscriptionPhoneme & {
+function isKnownPhoneme(phoneme: TranscriptionPhoneme): phoneme is TranscriptionPhoneme & {
 	phonemeId: PhonemeSymbolId;
 	ipa: string;
 } {

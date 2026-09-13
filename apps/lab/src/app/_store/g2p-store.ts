@@ -1,5 +1,5 @@
-import { create } from "zustand";
 import type { TranscriptionWord } from "@phonaria/transcription-service";
+import { create } from "zustand";
 import { transformToTranscriptionResult } from "@/lib/g2p-client";
 import {
 	type BatchLookupResult,
@@ -20,9 +20,7 @@ export type LookupErrorKind = "wordlist" | "service" | "unknown";
  * which uses lazy database initialization. This means tests can import the
  * store without needing production database credentials.
  */
-export type TranscribeWordsFn = (input: {
-	words: string[];
-}) => Promise<TranscriptionWord[]>;
+export type TranscribeWordsFn = (input: { words: string[] }) => Promise<TranscriptionWord[]>;
 export type LookupWordsFn = (words: string[]) => Promise<BatchLookupResult>;
 
 interface G2PStore {
@@ -49,9 +47,7 @@ interface G2PStore {
 	) => Promise<void>;
 }
 
-function lookupResultToTranscriptionWord(
-	result: WordLookupResult,
-): TranscriptionWord {
+function lookupResultToTranscriptionWord(result: WordLookupResult): TranscriptionWord {
 	return {
 		word: result.word,
 		variants: result.variants,
@@ -87,10 +83,7 @@ function mergeWords(
 			continue;
 		}
 
-		console.warn(
-			"transcription: no transcription returned for word, skipping",
-			normalized,
-		);
+		console.warn("transcription: no transcription returned for word, skipping", normalized);
 	}
 
 	return merged;

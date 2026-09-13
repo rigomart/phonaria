@@ -1,9 +1,6 @@
 "use server";
 
-import {
-	transcribeWords,
-	type TranscriptionWord,
-} from "@phonaria/transcription-service";
+import { type TranscriptionWord, transcribeWords } from "@phonaria/transcription-service";
 
 /**
  * Next.js server action adapter for transcription.

@@ -44,9 +44,7 @@ export function syllabify(cmuTokens: string[]): TranscriptionSyllable[] {
 
 	if (phonemes.length === 0) return [];
 
-	const nucleiIndices = phonemes
-		.map((p, i) => (p.isVowel ? i : -1))
-		.filter((i) => i !== -1);
+	const nucleiIndices = phonemes.map((p, i) => (p.isVowel ? i : -1)).filter((i) => i !== -1);
 
 	if (nucleiIndices.length === 0) {
 		return [
@@ -72,10 +70,7 @@ export function syllabify(cmuTokens: string[]): TranscriptionSyllable[] {
 			const nextNucleusIdx = nucleiIndices[i + 1];
 			const intervocalicStart = nucleusIndex + 1;
 			const intervocalicEnd = nextNucleusIdx;
-			const intervocalicConsonants = phonemes.slice(
-				intervocalicStart,
-				intervocalicEnd,
-			);
+			const intervocalicConsonants = phonemes.slice(intervocalicStart, intervocalicEnd);
 
 			const bestSplitIndex = findMaximalOnsetSplit(intervocalicConsonants);
 			syllableEndIndex = intervocalicStart + bestSplitIndex;
@@ -106,9 +101,7 @@ function findMaximalOnsetSplit(consonants: InternalPhoneme[]): number {
 	return consonants.length;
 }
 
-function mapToTranscriptionPhonemes(
-	internalPhonemes: InternalPhoneme[],
-): TranscriptionPhoneme[] {
+function mapToTranscriptionPhonemes(internalPhonemes: InternalPhoneme[]): TranscriptionPhoneme[] {
 	return internalPhonemes.map((p) => {
 		const symbolId = extractBasePhonemeId(p.cmuToken);
 		const ipa = getIpaForPhonemeId(symbolId);

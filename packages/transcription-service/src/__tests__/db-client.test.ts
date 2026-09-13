@@ -1,8 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-	TranscriptionConfigError,
-	type TranscriptionDatabaseError,
-} from "../contract";
+import { TranscriptionConfigError } from "../contract";
 import {
 	createDbClient,
 	createDbClientFromEnv,
@@ -100,9 +97,7 @@ describe("lazy database configuration", () => {
 			expect.fail("Should have thrown");
 		} catch (error) {
 			expect(error).toBeInstanceOf(TranscriptionConfigError);
-			expect((error as TranscriptionConfigError).message).toContain(
-				"TURSO_DATABASE_URL",
-			);
+			expect((error as TranscriptionConfigError).message).toContain("TURSO_DATABASE_URL");
 		}
 	});
 });

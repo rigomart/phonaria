@@ -3,7 +3,7 @@ import {
 	EnglishCuratedTop1k,
 } from "@phonaria/phonetics-data/data/en/curated-1k";
 import type { TranscriptionSyllable } from "@phonaria/transcription-service";
-import { syllabify } from "@phonaria/transcription-service/src/syllabifier";
+import { syllabify } from "../g2p/syllabifier";
 import { createRetryableLoader } from "../retryable-loader";
 
 export { tokenizeText } from "../g2p/text-processing";

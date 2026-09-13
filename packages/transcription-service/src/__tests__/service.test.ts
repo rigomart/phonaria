@@ -5,9 +5,7 @@ import { resetCache, transcribeWords } from "../service";
 /**
  * Create a mock database client for testing.
  */
-function createMockDbClient(
-	mockData: Array<{ word: string; pronunciations: string }>,
-): DbClient {
+function createMockDbClient(mockData: Array<{ word: string; pronunciations: string }>): DbClient {
 	const mockSelect = vi.fn().mockReturnValue({
 		from: vi.fn().mockReturnValue({
 			where: vi.fn().mockResolvedValue(mockData),
@@ -41,10 +39,7 @@ describe("transcribeWords", () => {
 			},
 		]);
 
-		const result = await transcribeWords(
-			{ words: ["hello"] },
-			{ dbClient: mockDb },
-		);
+		const result = await transcribeWords({ words: ["hello"] }, { dbClient: mockDb });
 
 		expect(result.words).toHaveLength(1);
 		expect(result.words[0].word).toBe("hello");
@@ -55,10 +50,7 @@ describe("transcribeWords", () => {
 	it("uses fallback for words not in dictionary", async () => {
 		const mockDb = createMockDbClient([]);
 
-		const result = await transcribeWords(
-			{ words: ["xyzqwk"] },
-			{ dbClient: mockDb },
-		);
+		const result = await transcribeWords({ words: ["xyzqwk"] }, { dbClient: mockDb });
 
 		expect(result.words).toHaveLength(1);
 		expect(result.words[0].word).toBe("xyzqwk");
@@ -73,10 +65,7 @@ describe("transcribeWords", () => {
 			},
 		]);
 
-		const result = await transcribeWords(
-			{ words: ["hello", "xyzqwk"] },
-			{ dbClient: mockDb },
-		);
+		const result = await transcribeWords({ words: ["hello", "xyzqwk"] }, { dbClient: mockDb });
 
 		expect(result.words).toHaveLength(2);
 		expect(result.words[0].source).toBe("cmudict");
@@ -96,10 +85,7 @@ describe("transcribeWords", () => {
 
 		// Second call - should use cache
 		const mockDb2 = createMockDbClient([]);
-		const result2 = await transcribeWords(
-			{ words: ["hello"] },
-			{ dbClient: mockDb2 },
-		);
+		const result2 = await transcribeWords({ words: ["hello"] }, { dbClient: mockDb2 });
 
 		expect(result2.words[0].source).toBe("cmudict");
 		expect(mockDb2.select).not.toHaveBeenCalled();
@@ -132,10 +118,7 @@ describe("transcribeWords", () => {
 			},
 		]);
 
-		const result = await transcribeWords(
-			{ words: ["aardvark"] },
-			{ dbClient: mockDb },
-		);
+		const result = await transcribeWords({ words: ["aardvark"] }, { dbClient: mockDb });
 
 		const firstVariant = result.words[0].variants[0];
 		expect(firstVariant.length).toBeGreaterThan(0);
@@ -156,9 +139,7 @@ describe("transcribeWords", () => {
 		const mockDb = createMockDbClient([]);
 		const tooManyWords = Array(201).fill("word");
 
-		await expect(
-			transcribeWords({ words: tooManyWords }, { dbClient: mockDb }),
-		).rejects.toThrow();
+		await expect(transcribeWords({ words: tooManyWords }, { dbClient: mockDb })).rejects.toThrow();
 	});
 
 	it("filters out empty strings from input", async () => {
