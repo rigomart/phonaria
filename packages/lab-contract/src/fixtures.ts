@@ -3,8 +3,11 @@ import type { LabContractTarget } from "./constants";
 import { getTarget } from "./target";
 
 export const test = base.extend<{ target: LabContractTarget }>({
-	// Playwright fixture callbacks always receive the fixture object as the first argument.
-	target: async (_fixtures, use) => {
+	target: async (
+		// biome-ignore lint/correctness/noEmptyPattern: Playwright requires object destructuring here.
+		{},
+		use,
+	) => {
 		await use(getTarget());
 	},
 });

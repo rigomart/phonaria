@@ -61,6 +61,12 @@ disabled vs enabled is two explicit describes, not an empty `if`. Controlled
 failure tests skip on Vercel production because that environment has no
 test-only failure hook.
 
+Axe scans exclude known current-Lab findings so the contract measures
+migration parity rather than blocking on the existing design system:
+`color-contrast` on muted nav/counter tokens, `aria-allowed-attr` on the
+header NavigationMenu list, and `aria-toggle-field-name` on the diphthong
+switch. Keyboard labels, focus, and other WCAG A/AA rules still fail the suite.
+
 ## Performance baselines
 
 See `baselines/README.md`. Timing tests are tagged `@baseline` and are excluded

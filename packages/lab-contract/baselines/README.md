@@ -10,7 +10,7 @@ Recorded by `bun e2e:lab:baseline` with:
 
 - Browser: Chromium Desktop Chrome
 - Viewport: 1280x720
-- Runs: 5 page loads of `/` after one discarded cold navigation, using `PerformanceNavigationTiming.loadEventEnd`
+- Runs: 1 cold plus 5 warm navigations of `/`, measured as wall-clock time around `page.goto({ waitUntil: "load" })`
 - Transcription: 5 submissions of `hello` on a reloaded landing page, measured from the submit click until the word label is visible
 - Network: the machine running Playwright, over the public internet unless otherwise noted
 

@@ -19,7 +19,7 @@ test.describe("Performance baselines", () => {
 	}, testInfo) => {
 		test.setTimeout(180_000);
 
-		await measurePageLoadMs(page, "/");
+		const coldPageLoadMs = await measurePageLoadMs(page, "/");
 
 		const pageLoadSamples: number[] = [];
 		for (let run = 0; run < BASELINE_RUNS; run++) {
@@ -39,7 +39,13 @@ test.describe("Performance baselines", () => {
 			await page.reload();
 		}
 
-		const record = createBaselineRecord(target, pageLoadSamples, transcriptionSamples);
+		const record = createBaselineRecord(
+			target,
+			coldPageLoadMs,
+			pageLoadSamples,
+			transcriptionSamples,
+		);
+		expect(record.coldPageLoadMs).toBeGreaterThan(0);
 		expect(record.pageLoad.samplesMs).toHaveLength(BASELINE_RUNS);
 		expect(record.transcription.samplesMs).toHaveLength(BASELINE_RUNS);
 		expect(record.pageLoad.medianMs).toBeGreaterThan(0);

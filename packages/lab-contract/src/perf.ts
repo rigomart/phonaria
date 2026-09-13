@@ -26,6 +26,7 @@ export interface BaselineRecord {
 		pageLoad: string;
 		transcription: string;
 	};
+	coldPageLoadMs: number;
 	pageLoad: TimingSummary;
 	transcription: TimingSummary;
 }
@@ -36,10 +37,14 @@ export function summarize(samplesMs: number[]): TimingSummary {
 	}
 	const sorted = [...samplesMs].sort((a, b) => a - b);
 	return {
-		samplesMs: [...samplesMs],
-		medianMs: percentile(sorted, 50),
-		p95Ms: percentile(sorted, 95),
+		samplesMs: samplesMs.map(roundMs),
+		medianMs: roundMs(percentile(sorted, 50)),
+		p95Ms: roundMs(percentile(sorted, 95)),
 	};
+}
+
+function roundMs(value: number): number {
+	return Math.round(value * 10) / 10;
 }
 
 export function committedBaselinePath(targetName: string): string {
@@ -68,19 +73,16 @@ export function comparisonNotes(
 	}
 
 	return [
-		deltaNote("page load", current.pageLoad.medianMs, previous.pageLoad.medianMs),
+		deltaNote("cold page load", current.coldPageLoadMs, previous.coldPageLoadMs),
+		deltaNote("warm page load", current.pageLoad.medianMs, previous.pageLoad.medianMs),
 		deltaNote("transcription", current.transcription.medianMs, previous.transcription.medianMs),
 	];
 }
 
 export async function measurePageLoadMs(page: Page, path: string): Promise<number> {
+	const started = Date.now();
 	await page.goto(path, { waitUntil: "load" });
-	return page.evaluate(() => {
-		const entry = performance.getEntriesByType("navigation")[0];
-		if (!entry || !("loadEventEnd" in entry)) return 0;
-		const navigation = entry as PerformanceNavigationTiming;
-		return navigation.loadEventEnd;
-	});
+	return Date.now() - started;
 }
 
 export async function measureTranscriptionMs(
@@ -96,6 +98,7 @@ export async function measureTranscriptionMs(
 
 export function createBaselineRecord(
 	target: LabContractTarget,
+	coldPageLoadMs: number,
 	pageLoadSamples: number[],
 	transcriptionSamples: number[],
 ): BaselineRecord {
@@ -109,10 +112,11 @@ export function createBaselineRecord(
 			viewport: "1280x720",
 			runs: BASELINE_RUNS,
 			pageLoad:
-				"Five warm navigations of `/` after one discarded cold load, using PerformanceNavigationTiming.loadEventEnd.",
+				"One cold navigation of `/`, then five warm navigations, measured as wall-clock time around page.goto({ waitUntil: 'load' }).",
 			transcription:
-				'Five submissions of "hello" on a reused page, measured from submit click until the word label is visible.',
+				'Five submissions of "hello" on a reloaded landing page, measured from submit click until the word label is visible.',
 		},
+		coldPageLoadMs: roundMs(coldPageLoadMs),
 		pageLoad: summarize(pageLoadSamples),
 		transcription: summarize(transcriptionSamples),
 	};
