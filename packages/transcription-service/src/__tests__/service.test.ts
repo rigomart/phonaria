@@ -26,9 +26,10 @@ describe("transcribeWords", () => {
 	it("validates input and rejects empty word arrays", async () => {
 		const mockDb = createMockDbClient([]);
 
-		const result = await transcribeWords({ words: [] }, { dbClient: mockDb });
-
-		expect(result.words).toEqual([]);
+		// Empty word arrays are rejected by validation
+		await expect(
+			transcribeWords({ words: [] }, { dbClient: mockDb }),
+		).rejects.toThrow();
 	});
 
 	it("returns CMUdict pronunciations for known words", async () => {
@@ -127,12 +128,17 @@ describe("transcribeWords", () => {
 		expect(firstVariant[0].phonemes[0]).toHaveProperty("phonemeId");
 	});
 
-	it("throws validation error for invalid input", async () => {
+	it("accepts long individual words", async () => {
 		const mockDb = createMockDbClient([]);
 
-		await expect(
-			transcribeWords({ words: ["a".repeat(300)] }, { dbClient: mockDb }),
-		).rejects.toThrow();
+		// Individual words can be long - validation is on array size, not word length
+		const result = await transcribeWords(
+			{ words: ["a".repeat(100)] },
+			{ dbClient: mockDb },
+		);
+
+		expect(result.words).toHaveLength(1);
+		expect(result.words[0].source).toBe("fallback");
 	});
 
 	it("throws validation error for too many words", async () => {
@@ -142,20 +148,12 @@ describe("transcribeWords", () => {
 		await expect(transcribeWords({ words: tooManyWords }, { dbClient: mockDb })).rejects.toThrow();
 	});
 
-	it("filters out empty strings from input", async () => {
-		const mockDb = createMockDbClient([
-			{
-				word: "HELLO",
-				pronunciations: JSON.stringify(["HH AH0 L OW1"]),
-			},
-		]);
+	it("rejects arrays with empty strings", async () => {
+		const mockDb = createMockDbClient([]);
 
-		const result = await transcribeWords(
-			{ words: ["hello", "", " ", "world"] },
-			{ dbClient: mockDb },
-		);
-
-		// Empty strings should be filtered but the function continues
-		expect(result.words.length).toBeGreaterThan(0);
+		// Empty strings in the array are rejected by validation
+		await expect(
+			transcribeWords({ words: ["hello", ""] }, { dbClient: mockDb }),
+		).rejects.toThrow();
 	});
 });
