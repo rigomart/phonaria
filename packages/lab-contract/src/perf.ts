@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Page } from "@playwright/test";
+import { clientHitFixtureIntent, serverHitFixtureIntent } from "./baseline-fixtures";
 import type { LabContractTarget } from "./constants";
 import { BASELINE_RUNS, REGRESSION_THRESHOLD_PERCENT } from "./constants";
 
@@ -14,6 +15,11 @@ export interface TimingSummary {
 	p95Ms: number;
 }
 
+export interface TranscriptionLaneTimings {
+	client: TimingSummary;
+	server: TimingSummary;
+}
+
 export interface BaselineRecord {
 	target: string;
 	baseUrl: string;
@@ -24,11 +30,12 @@ export interface BaselineRecord {
 		viewport: string;
 		runs: number;
 		pageLoad: string;
-		transcription: string;
+		transcriptionClient: string;
+		transcriptionServer: string;
 	};
 	coldPageLoadMs: number;
 	pageLoad: TimingSummary;
-	transcription: TimingSummary;
+	transcription: TranscriptionLaneTimings;
 }
 
 export function summarize(samplesMs: number[]): TimingSummary {
@@ -64,6 +71,16 @@ export function writeBaselineRecord(path: string, record: BaselineRecord): void 
 	writeFileSync(path, `${JSON.stringify(record, null, "\t")}\n`);
 }
 
+export function hasTranscriptionLanes(
+	transcription: unknown,
+): transcription is TranscriptionLaneTimings {
+	if (typeof transcription !== "object" || transcription === null) return false;
+	if (!("client" in transcription) || !("server" in transcription)) return false;
+	const client = (transcription as TranscriptionLaneTimings).client;
+	const server = (transcription as TranscriptionLaneTimings).server;
+	return typeof client?.medianMs === "number" && typeof server?.medianMs === "number";
+}
+
 export function comparisonNotes(
 	current: BaselineRecord,
 	previous: BaselineRecord | null,
@@ -72,11 +89,34 @@ export function comparisonNotes(
 		return ["No committed baseline exists yet; this run is the first recorded sample set."];
 	}
 
-	return [
+	const notes = [
 		deltaNote("cold page load", current.coldPageLoadMs, previous.coldPageLoadMs),
 		deltaNote("warm page load", current.pageLoad.medianMs, previous.pageLoad.medianMs),
-		deltaNote("transcription", current.transcription.medianMs, previous.transcription.medianMs),
 	];
+
+	if (
+		!hasTranscriptionLanes(previous.transcription) ||
+		!hasTranscriptionLanes(current.transcription)
+	) {
+		notes.push(
+			"Committed transcription baseline is not split into client and server lanes; lane comparison skipped.",
+		);
+		return notes;
+	}
+
+	notes.push(
+		deltaNote(
+			"transcription client",
+			current.transcription.client.medianMs,
+			previous.transcription.client.medianMs,
+		),
+		deltaNote(
+			"transcription server",
+			current.transcription.server.medianMs,
+			previous.transcription.server.medianMs,
+		),
+	);
+	return notes;
 }
 
 export async function measurePageLoadMs(page: Page, path: string): Promise<number> {
@@ -100,7 +140,8 @@ export function createBaselineRecord(
 	target: LabContractTarget,
 	coldPageLoadMs: number,
 	pageLoadSamples: number[],
-	transcriptionSamples: number[],
+	clientTranscriptionSamples: number[],
+	serverTranscriptionSamples: number[],
 ): BaselineRecord {
 	return {
 		target: target.name,
@@ -113,12 +154,15 @@ export function createBaselineRecord(
 			runs: BASELINE_RUNS,
 			pageLoad:
 				"One cold navigation of `/`, then five warm navigations, measured as wall-clock time around page.goto({ waitUntil: 'load' }).",
-			transcription:
-				'Five submissions of "hello" on a reloaded landing page, measured from submit click until the word label is visible.',
+			transcriptionClient: clientHitFixtureIntent(),
+			transcriptionServer: serverHitFixtureIntent(),
 		},
 		coldPageLoadMs: roundMs(coldPageLoadMs),
 		pageLoad: summarize(pageLoadSamples),
-		transcription: summarize(transcriptionSamples),
+		transcription: {
+			client: summarize(clientTranscriptionSamples),
+			server: summarize(serverTranscriptionSamples),
+		},
 	};
 }
 

@@ -23,3 +23,15 @@ export function lookupAlert(page: Page) {
 export function notFoundHeading(page: Page) {
 	return page.getByRole("heading", { name: "This page doesn't exist" });
 }
+
+export function transcribedWordLabel(page: Page, word: string) {
+	return page.getByText(word, { exact: true }).first();
+}
+
+export function dictionaryMissBadge(page: Page) {
+	return page.getByText("Not found", { exact: true });
+}
+
+export function phonemeDetailsButton(page: Page) {
+	return page.getByRole("button", { name: /^Details for \// });
+}

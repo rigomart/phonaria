@@ -1,23 +1,31 @@
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { BASELINE_RUNS, KNOWN_WORD } from "../src/constants";
+import type { Page } from "@playwright/test";
+import { BASELINE_RUNS, CLIENT_HIT_WORD, SERVER_HIT_WORD } from "../src/constants";
 import { expect, test } from "../src/fixtures";
-import { textToTranscribe, transcribeSubmit } from "../src/locators";
+import {
+	dictionaryMissBadge,
+	phonemeDetailsButton,
+	textToTranscribe,
+	transcribedWordLabel,
+	transcribeSubmit,
+} from "../src/locators";
 import {
 	committedBaselinePath,
 	comparisonNotes,
 	createBaselineRecord,
 	measurePageLoadMs,
+	measureTranscriptionMs,
 	readCommittedBaseline,
 	writeBaselineRecord,
 } from "../src/perf";
 
 test.describe("Performance baselines", () => {
-	test("records repeatable page-load and transcription timings @baseline", async ({
+	test("records page-load and split transcription lane timings @baseline", async ({
 		page,
 		target,
 	}, testInfo) => {
-		test.setTimeout(180_000);
+		test.setTimeout(240_000);
 
 		const coldPageLoadMs = await measurePageLoadMs(page, "/");
 
@@ -27,29 +35,25 @@ test.describe("Performance baselines", () => {
 		}
 
 		await page.goto("/");
-		const transcriptionSamples: number[] = [];
-		for (let run = 0; run < BASELINE_RUNS; run++) {
-			await textToTranscribe(page).fill(KNOWN_WORD);
-			const started = Date.now();
-			await transcribeSubmit(page).click();
-			await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
-				timeout: 20_000,
-			});
-			transcriptionSamples.push(Date.now() - started);
-			await page.reload();
-		}
+		await warmClientWordList(page);
+
+		const clientTranscriptionSamples = await collectLaneSamples(page, CLIENT_HIT_WORD);
+		const serverTranscriptionSamples = await collectLaneSamples(page, SERVER_HIT_WORD);
 
 		const record = createBaselineRecord(
 			target,
 			coldPageLoadMs,
 			pageLoadSamples,
-			transcriptionSamples,
+			clientTranscriptionSamples,
+			serverTranscriptionSamples,
 		);
 		expect(record.coldPageLoadMs).toBeGreaterThan(0);
 		expect(record.pageLoad.samplesMs).toHaveLength(BASELINE_RUNS);
-		expect(record.transcription.samplesMs).toHaveLength(BASELINE_RUNS);
+		expect(record.transcription.client.samplesMs).toHaveLength(BASELINE_RUNS);
+		expect(record.transcription.server.samplesMs).toHaveLength(BASELINE_RUNS);
 		expect(record.pageLoad.medianMs).toBeGreaterThan(0);
-		expect(record.transcription.medianMs).toBeGreaterThan(0);
+		expect(record.transcription.client.medianMs).toBeGreaterThan(0);
+		expect(record.transcription.server.medianMs).toBeGreaterThan(0);
 
 		const outputPath = testInfo.outputPath("baseline.json");
 		writeBaselineRecord(outputPath, record);
@@ -78,3 +82,38 @@ test.describe("Performance baselines", () => {
 		expect(notes.length).toBeGreaterThan(0);
 	});
 });
+
+async function warmClientWordList(page: Page): Promise<void> {
+	await textToTranscribe(page).fill(CLIENT_HIT_WORD);
+	await transcribeSubmit(page).click();
+	await expectSuccessfulTranscription(page, CLIENT_HIT_WORD);
+	await page.reload();
+}
+
+async function collectLaneSamples(page: Page, word: string): Promise<number[]> {
+	const samples: number[] = [];
+	for (let run = 0; run < BASELINE_RUNS; run++) {
+		const elapsed = await measureTranscriptionMs(
+			page,
+			async (nextPage) => {
+				await textToTranscribe(nextPage).fill(word);
+			},
+			async (nextPage) => {
+				await transcribeSubmit(nextPage).click();
+				await expect(transcribedWordLabel(nextPage, word)).toBeVisible({
+					timeout: 20_000,
+				});
+			},
+		);
+		await expectSuccessfulTranscription(page, word);
+		samples.push(elapsed);
+		await page.reload();
+	}
+	return samples;
+}
+
+async function expectSuccessfulTranscription(page: Page, word: string): Promise<void> {
+	await expect(transcribedWordLabel(page, word)).toBeVisible();
+	await expect(dictionaryMissBadge(page)).toHaveCount(0);
+	await expect(phonemeDetailsButton(page).first()).toBeVisible();
+}

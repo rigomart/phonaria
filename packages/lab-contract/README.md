@@ -73,6 +73,13 @@ See `baselines/README.md`. Timing tests are tagged `@baseline` and are excluded
 from the functional contract. They record samples and compare them to the
 committed baseline without failing on ordinary network variance.
 
+Transcription is two lanes in `baselines/<target>.json`:
+
+- `transcription.client` — `hello`, a curated-10k client hit
+- `transcription.server` — `aardvark`, a CMUdict/Turso hit absent from both curated lists
+
+Do not combine those samples into one median.
+
 ## Adding a target
 
 1. Copy an existing `targets/*.json` file.
