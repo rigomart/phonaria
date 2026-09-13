@@ -17,7 +17,7 @@ export function retryButton(page: Page) {
 }
 
 export function lookupAlert(page: Page) {
-	return page.getByRole("alert");
+	return page.getByRole("alert").filter({ hasText: "We couldn't" });
 }
 
 export function notFoundHeading(page: Page) {
