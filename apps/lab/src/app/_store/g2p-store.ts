@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { G2PWord } from "@/lib/g2p/model";
+import type { TranscriptionWord } from "@phonaria/transcription-service";
 import { transformToTranscriptionResult } from "@/lib/g2p-client";
 import {
 	type BatchLookupResult,
@@ -16,11 +16,13 @@ import type { TranscriptionResult } from "@/lib/types/g2p";
 export type LookupErrorKind = "wordlist" | "service" | "unknown";
 
 /**
- * The server action is injected instead of imported: `../_actions/transcribe`
- * pulls in `@/db/drizzle`, which throws at import time when `TURSO_DATABASE_URL`
- * is unset — importing it here would break this store's test at module load.
+ * The server action is now a thin adapter over the framework-neutral service,
+ * which uses lazy database initialization. This means tests can import the
+ * store without needing production database credentials.
  */
-export type TranscribeWordsFn = (input: { words: string[] }) => Promise<G2PWord[]>;
+export type TranscribeWordsFn = (input: {
+	words: string[];
+}) => Promise<TranscriptionWord[]>;
 export type LookupWordsFn = (words: string[]) => Promise<BatchLookupResult>;
 
 interface G2PStore {
@@ -47,7 +49,9 @@ interface G2PStore {
 	) => Promise<void>;
 }
 
-function lookupResultToG2PWord(result: WordLookupResult): G2PWord {
+function lookupResultToTranscriptionWord(
+	result: WordLookupResult,
+): TranscriptionWord {
 	return {
 		word: result.word,
 		variants: result.variants,
@@ -64,16 +68,16 @@ function lookupResultToG2PWord(result: WordLookupResult): G2PWord {
 function mergeWords(
 	tokens: string[],
 	tierResult: BatchLookupResult,
-	serverWords: Map<string, G2PWord>,
-): G2PWord[] {
-	const merged: G2PWord[] = [];
+	serverWords: Map<string, TranscriptionWord>,
+): TranscriptionWord[] {
+	const merged: TranscriptionWord[] = [];
 
 	for (const token of tokens) {
 		const normalized = token.toLowerCase().trim();
 
 		const tierWord = tierResult.found.get(normalized);
 		if (tierWord) {
-			merged.push(lookupResultToG2PWord(tierWord));
+			merged.push(lookupResultToTranscriptionWord(tierWord));
 			continue;
 		}
 
@@ -83,7 +87,10 @@ function mergeWords(
 			continue;
 		}
 
-		console.warn("transcription: no transcription returned for word, skipping", normalized);
+		console.warn(
+			"transcription: no transcription returned for word, skipping",
+			normalized,
+		);
 	}
 
 	return merged;
@@ -161,9 +168,9 @@ export const useG2PStore = create<G2PStore>((set) => ({
 			// A newer transcription owns the state now — return without touching it.
 			if (activeLookup !== token) return;
 
-			const serverWordMap = new Map<string, G2PWord>();
+			const serverWordMap = new Map<string, TranscriptionWord>();
 			if (tierResult.missing.length > 0) {
-				let serverWords: G2PWord[];
+				let serverWords: TranscriptionWord[];
 				try {
 					serverWords = await transcribeWords({ words: tierResult.missing });
 				} catch (error) {

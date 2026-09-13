@@ -2,8 +2,8 @@ import {
 	type CuratedWordData,
 	EnglishCuratedTop1k,
 } from "@phonaria/phonetics-data/data/en/curated-1k";
-import type { G2PSyllable } from "../g2p/model";
-import { syllabify } from "../g2p/syllabifier";
+import type { TranscriptionSyllable } from "@phonaria/transcription-service";
+import { syllabify } from "@phonaria/transcription-service/src/syllabifier";
 import { createRetryableLoader } from "../retryable-loader";
 
 export { tokenizeText } from "../g2p/text-processing";
@@ -15,7 +15,7 @@ export const loadTier2: () => Promise<CuratedWordData> = createRetryableLoader((
 	),
 );
 
-export function cmuToSyllables(cmuVariant: string): G2PSyllable[] {
+export function cmuToSyllables(cmuVariant: string): TranscriptionSyllable[] {
 	const tokens = cmuVariant.split(" ").filter((t) => t.length > 0);
 	return syllabify(tokens);
 }

@@ -1,5 +1,8 @@
 import { PhonemeIpaMap, type PhonemeSymbolId } from "@phonaria/phonetics-data";
-import type { G2PResponse } from "./g2p/model";
+import type {
+	TranscriptionOutput,
+	TranscriptionPhoneme,
+} from "@phonaria/transcription-service";
 import type {
 	TranscribedPhoneme,
 	TranscribedSyllable,
@@ -7,11 +10,8 @@ import type {
 	TranscriptionResult,
 } from "./types/g2p";
 
-type G2PWord = G2PResponse["words"][number];
-type G2PPhoneme = G2PWord["variants"][number][number]["phonemes"][number];
-
 export function transformToTranscriptionResult(
-	data: G2PResponse,
+	data: TranscriptionOutput,
 	originalText: string,
 ): TranscriptionResult {
 	const words: TranscribedWord[] = data.words.map((word, wordIndex) => {
@@ -48,7 +48,7 @@ export function transformToTranscriptionResult(
 }
 
 function mapPhonemeToTranscribed(
-	phoneme: G2PPhoneme,
+	phoneme: TranscriptionPhoneme,
 	wordIndex: number,
 	phonemeIndex: number,
 ): TranscribedPhoneme {
@@ -73,8 +73,11 @@ function mapPhonemeToTranscribed(
 }
 
 function isKnownPhoneme(
-	phoneme: G2PPhoneme,
-): phoneme is G2PPhoneme & { phonemeId: PhonemeSymbolId; ipa: string } {
+	phoneme: TranscriptionPhoneme,
+): phoneme is TranscriptionPhoneme & {
+	phonemeId: PhonemeSymbolId;
+	ipa: string;
+} {
 	if (typeof phoneme.phonemeId !== "string") {
 		return false;
 	}

@@ -18,6 +18,7 @@
 		"@libsql/client": "^0.15.0",
 		"@phonaria/flags": "workspace:*",
 		"@phonaria/phonetics-data": "workspace:*",
+		"@phonaria/transcription-service": "workspace:*",
 		"@phonaria/ui": "workspace:*",
 		"clsx": "^2.1.1",
 		"drizzle-orm": "^0.45.1",
