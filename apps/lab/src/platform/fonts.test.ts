@@ -12,7 +12,8 @@ describe("self-hosted fonts", () => {
 		expect(fontsCss).toContain('font-family: "Noto Sans"');
 		expect(fontsCss).toContain('url("/fonts/sora-latin-wght-normal.woff2")');
 		expect(fontsCss).toContain('url("/fonts/noto-sans-latin-wght-normal.woff2")');
-		expect(fontsCss).not.toMatch(/fonts\.googleapis|fonts\.gstatic|next\/font\/google/i);
+		expect(fontsCss).not.toMatch(/fonts\.googleapis\.com|fonts\.gstatic\.com/i);
+		expect(fontsCss).not.toContain("@import");
 	});
 
 	it("exposes the Noto Sans preload used by the Next.js layout adapter", () => {

@@ -2,7 +2,7 @@
  * Self-hosted Lab fonts. Production builds must not download these from Google
  * or any other remote font service. Files live in apps/lab/public/fonts/.
  *
- * Latin subset only — matches the previous next/font/google configuration so
+ * Latin subset only — matches the previous Google-hosted font configuration so
  * IPA glyphs continue to fall back to system-ui / sans-serif.
  */
 
