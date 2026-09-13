@@ -18,7 +18,7 @@ Recorded by `bun e2e:lab:baseline` with:
 - Runs: 5 warm samples per metric
 - Page load: 1 cold navigation of `/`, then 5 warm navigations, measured as wall-clock time around `page.goto({ waitUntil: "load" })`
 - Transcription client: one uncounted warmup of `hello` to pull the lazy curated-10k chunk into the HTTP cache, then 5 submissions of `hello` on a reloaded landing page, from submit click until the word label is visible
-- Transcription server: 5 submissions of `aardvark` on a reloaded landing page, from submit click until the word label is visible
+- Transcription server: one uncounted warmup of `aardvark` to prime Turso, then 5 submissions of `aardvark` on a reloaded landing page, from submit click until the word label is visible
 - Network: the machine running Playwright, over the public internet unless otherwise noted
 
 A repeatable slowdown greater than roughly 20% versus the committed median is

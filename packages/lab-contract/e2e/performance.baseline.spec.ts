@@ -36,8 +36,9 @@ test.describe("Performance baselines", () => {
 
 		await page.goto("/");
 		await warmClientWordList(page);
-
 		const clientTranscriptionSamples = await collectLaneSamples(page, CLIENT_HIT_WORD);
+
+		await warmSuccessfulLookup(page, SERVER_HIT_WORD);
 		const serverTranscriptionSamples = await collectLaneSamples(page, SERVER_HIT_WORD);
 
 		const record = createBaselineRecord(
@@ -84,9 +85,13 @@ test.describe("Performance baselines", () => {
 });
 
 async function warmClientWordList(page: Page): Promise<void> {
-	await textToTranscribe(page).fill(CLIENT_HIT_WORD);
+	await warmSuccessfulLookup(page, CLIENT_HIT_WORD);
+}
+
+async function warmSuccessfulLookup(page: Page, word: string): Promise<void> {
+	await textToTranscribe(page).fill(word);
 	await transcribeSubmit(page).click();
-	await expectSuccessfulTranscription(page, CLIENT_HIT_WORD);
+	await expectSuccessfulTranscription(page, word);
 	await page.reload();
 }
 

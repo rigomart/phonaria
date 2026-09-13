@@ -51,5 +51,5 @@ export function clientHitFixtureIntent(word: string = CLIENT_HIT_WORD): string {
 }
 
 export function serverHitFixtureIntent(word: string = SERVER_HIT_WORD): string {
-	return `Five warm submissions of "${word}" on a reloaded landing page. ${word} is absent from curated-1k and curated-10k and present in packages/phonetics-data/data/en/dict/cmudict.json (key ${word.toUpperCase()}), the same dictionary loaded into Turso. This is a successful server lookup (IPA details visible), not the functional not-found fixture "${MISSING_WORD}". Wall-clock from submit click until the word label is visible.`;
+	return `Five warm submissions of "${word}" after one uncounted warmup transcription of the same word (primes the Turso/CMUdict lookup so a cold database hit is not mixed into the counted samples). ${word} is absent from curated-1k and curated-10k and present in packages/phonetics-data/data/en/dict/cmudict.json (key ${word.toUpperCase()}), the same dictionary loaded into Turso. This is a successful server lookup (IPA details visible), not the functional not-found fixture "${MISSING_WORD}". Reloaded landing page; wall-clock from submit click until the word label is visible.`;
 }

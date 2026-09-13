@@ -64,6 +64,7 @@ describe("createBaselineRecord", () => {
 		expect(created.conditions.transcriptionClient).toContain('"hello"');
 		expect(created.conditions.transcriptionClient).toContain("client-tier hit");
 		expect(created.conditions.transcriptionServer).toContain('"aardvark"');
+		expect(created.conditions.transcriptionServer).toContain("primes the Turso/CMUdict lookup");
 		expect(created.conditions.transcriptionServer).toContain("successful server lookup");
 		expect(created.conditions.transcriptionServer).toContain(
 			'not the functional not-found fixture "zxqvwoplmj"',
