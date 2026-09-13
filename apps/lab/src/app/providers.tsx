@@ -1,13 +1,13 @@
 "use client";
 
 import { AnchoredToastProvider, ToastProvider } from "@phonaria/ui/components/toast";
-import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 import { AudioManagerProvider } from "@/hooks/use-audio-manager";
+import { ThemeProvider } from "@/platform/next/theme";
 
 export default function Providers({ children }: { children: ReactNode }) {
 	return (
-		<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+		<ThemeProvider>
 			<ToastProvider position="top-center">
 				<AnchoredToastProvider>
 					<AudioManagerProvider>{children}</AudioManagerProvider>

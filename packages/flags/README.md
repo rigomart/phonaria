@@ -20,6 +20,7 @@ export const flags = createFlags({
 
 - `flags.isEnabled(name)` — evaluate one flag.
 - `flags.snapshot()` — plain `Record<name, boolean>` of every flag, safe to pass from a server component to client components (e.g. so navigation can hide links).
+- `createFlags(definitions, env?)` — optional second argument is a live env map (`process.env` by default). TanStack Start or tests can pass a different source without changing flag semantics.
 
 Gating a new module is one new entry in the registry plus whatever gate the app applies (a route layout that calls `notFound()`, a hidden nav link, etc.).
 

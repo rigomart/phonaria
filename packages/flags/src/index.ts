@@ -20,12 +20,18 @@ export interface FlagRegistry<TName extends string> {
 	snapshot(): Record<TName, boolean>;
 }
 
+/** Live env map. Defaults to `process.env` so Next.js and Vite can both supply FLAG_*. */
+export type FlagEnvSource = {
+	readonly [key: string]: string | undefined;
+};
+
 export function createFlags<TName extends string>(
 	definitions: Record<TName, FlagDefinition>,
+	env: FlagEnvSource = process.env,
 ): FlagRegistry<TName> {
 	function isEnabled(name: TName): boolean {
 		const { envVar, enabledByDefault } = definitions[name];
-		const raw = process.env[envVar];
+		const raw = env[envVar];
 		if (raw === undefined || raw === "") return enabledByDefault;
 		return raw === "1" || raw.toLowerCase() === "true";
 	}

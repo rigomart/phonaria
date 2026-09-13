@@ -1,6 +1,6 @@
 import { Button } from "@phonaria/ui/components/button";
 import { Home } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/platform";
 
 /**
  * Serves both unknown URLs and the flag gate's notFound(), so the copy stays

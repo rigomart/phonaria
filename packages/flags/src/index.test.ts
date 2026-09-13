@@ -37,4 +37,14 @@ describe("createFlags", () => {
 		process.env.FLAG_DEMO = "true";
 		expect(flags.snapshot()).toEqual({ demo: true, fallback: true });
 	});
+
+	it("reads from an injected env source without consulting process.env", () => {
+		process.env.FLAG_INJECTED = "false";
+		const injected = createFlags(
+			{ injected: { envVar: "FLAG_INJECTED", enabledByDefault: false } },
+			{ FLAG_INJECTED: "true" },
+		);
+		expect(injected.isEnabled("injected")).toBe(true);
+		expect(injected.snapshot()).toEqual({ injected: true });
+	});
 });

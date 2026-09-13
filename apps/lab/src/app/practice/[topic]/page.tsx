@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { getTopic, listTopics } from "@/lib/practice/topics";
+import { notFound } from "@/platform";
 import { PracticeExperience } from "../_components/practice-experience";
 
 interface PracticeTopicPageProps {

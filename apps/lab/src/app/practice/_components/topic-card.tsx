@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { TopicDefinition } from "@/lib/practice/topics/types";
+import { Link } from "@/platform";
 import { summarizeTopicSounds } from "../_lib/topic-sounds";
 
 export function TopicCard({ topic }: { topic: TopicDefinition }) {
