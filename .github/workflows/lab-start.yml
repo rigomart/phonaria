@@ -47,6 +47,9 @@ jobs:
       - name: Assert staging Worker name
         working-directory: apps/lab
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab-staging
+      - name: Assert Practice word data stays out of the Worker
+        working-directory: apps/lab
+        run: bun ./scripts/assert-worker-excludes-curated-10k.ts
       - name: Type check Start
         working-directory: apps/lab
         run: bunx tsc --noEmit -p tsconfig.start.json
@@ -125,7 +128,7 @@ jobs:
               '',
               `Protected Cloudflare preview: ${url}`,
               '',
-              'This Worker is the TanStack Start slice (Credits, IPA charts, and Lab shell). The public Vercel Lab is unchanged.',
+              'This Worker is the TanStack Start slice (Credits, IPA charts, Lab shell, and Practice when FLAG_PRACTICE is on). The public Vercel Lab is unchanged.',
               'Cloudflare Access must remain required. Do not share an unprotected URL.',
             ].join('\n');
             const { data: comments } = await github.rest.issues.listComments({

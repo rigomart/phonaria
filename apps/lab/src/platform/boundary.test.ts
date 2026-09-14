@@ -48,6 +48,7 @@ describe("Lab platform boundary", () => {
 		expect(src("../components/theme-switcher.tsx")).not.toContain("next-themes");
 		expect(src("../lib/flags.ts")).not.toContain("next/navigation");
 		expect(src("../app/practice/layout.tsx")).toContain('from "@/platform/next"');
+		expect(src("../routes/practice.tsx")).toContain("requireFlag");
 	});
 
 	it("isolates remaining Next.js imports under platform/next", () => {
@@ -65,6 +66,9 @@ describe("Lab platform boundary", () => {
 		expect(src("../routes/ipa-chart/vowels.tsx")).toContain('from "@/platform/tanstack"');
 		expect(src("../routes/ipa-chart/index.tsx")).toContain('from "@/platform/tanstack"');
 		expect(src("../routes/ipa-chart/$.tsx")).toContain('from "@/platform/tanstack"');
+		expect(src("../routes/practice.tsx")).toContain('from "@/platform/tanstack"');
+		expect(src("../routes/practice.index.tsx")).toContain('from "@/platform/tanstack"');
+		expect(src("../routes/practice.$topic.tsx")).toContain('from "@/platform/tanstack"');
 		expect(src("./tanstack/document-title.tsx")).not.toContain("@/lib/start-document-head");
 	});
 

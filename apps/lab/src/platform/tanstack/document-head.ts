@@ -7,6 +7,7 @@ import {
 	VOWELS_PAGE_DESCRIPTION,
 	VOWELS_PAGE_TITLE,
 } from "@/lib/ipa-chart-metadata";
+import { PracticeActivity } from "@/lib/practice/activity";
 import {
 	type DocumentMetadata,
 	getDocumentMetadata,
@@ -52,6 +53,15 @@ export function consonantsDocumentTitle(): string {
 export function vowelsDocumentTitle(): string {
 	return formatDocumentTitle(VOWELS_PAGE_TITLE);
 }
+
+export function practiceDocumentTitle(pageTitle: string = PracticeActivity.name): string {
+	return formatDocumentTitle(pageTitle);
+}
+
+type PracticeTopicHeadSource = {
+	id: string;
+	display: { name: string; blurb: string };
+};
 
 function isClient(): boolean {
 	return typeof window !== "undefined";
@@ -109,9 +119,10 @@ type PageHeadInput = {
 	path: string;
 	title: string;
 	description: string;
+	robots?: string;
 };
 
-export function buildPageHead({ path, title, description }: PageHeadInput): StartHead {
+export function buildPageHead({ path, title, description, robots }: PageHeadInput): StartHead {
 	const metadata = tryGetDocumentMetadata();
 	const canonical = metadata
 		? path === "/"
@@ -122,7 +133,7 @@ export function buildPageHead({ path, title, description }: PageHeadInput): Star
 		meta: [
 			{ title: formatDocumentTitle(title) },
 			{ name: "description", content: description },
-			...seoMetaTags(metadata, canonical),
+			...seoMetaTags(metadata, canonical, robots),
 		],
 		links: canonical ? [{ rel: "canonical", href: canonical }] : undefined,
 	};
@@ -152,15 +163,40 @@ export function buildVowelsHead(): StartHead {
 	});
 }
 
+/** Practice stays out of search indexes even when the feature flag is on. */
+const PRACTICE_ROBOTS = "noindex, follow";
+
+export function buildPracticeIndexHead(): StartHead {
+	return buildPageHead({
+		path: "/practice",
+		title: PracticeActivity.name,
+		description: PracticeActivity.description,
+		robots: PRACTICE_ROBOTS,
+	});
+}
+
+export function buildPracticeTopicHead(topic: PracticeTopicHeadSource | undefined): StartHead {
+	if (!topic) {
+		return buildPracticeIndexHead();
+	}
+	return buildPageHead({
+		path: `/practice/${topic.id}`,
+		title: `${topic.display.name} — Practice`,
+		description: topic.display.blurb,
+		robots: PRACTICE_ROBOTS,
+	});
+}
+
 function seoMetaTags(
 	metadata: DocumentMetadata | undefined,
 	canonical: string | undefined,
+	robots?: string,
 ): StartMetaTag[] {
 	if (!metadata || !canonical) return [];
 	return [
 		{
 			name: "robots",
-			content: metadata.indexingEnabled ? "index, follow" : "noindex, follow",
+			content: robots ?? (metadata.indexingEnabled ? "index, follow" : "noindex, follow"),
 		},
 		{ property: "og:title", content: metadata.siteName },
 		{ property: "og:description", content: metadata.description },
