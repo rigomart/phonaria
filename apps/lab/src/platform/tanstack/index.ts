@@ -1,3 +1,4 @@
+export { EnsureDocumentTitle } from "./document-title";
 export { Link } from "./link";
 export { notFound, redirect } from "./navigation";
 export { TanStackPlatformProvider } from "./provider";
