@@ -104,6 +104,60 @@ front. That cannot be taken until the production environment is configured
 (AC 6), so **this item stays open and must be resolved before the go/no-go
 record is written**.
 
+## Production environment — AC 6
+
+`.github/workflows/lab-production.yml` deploys the production Worker without
+touching DNS. It is dispatch-only: production must never deploy as a side
+effect of a merge while Vercel is still serving learners.
+
+Attaching a custom domain is what writes the DNS record, so the pre-cutover
+production Worker declares no routes and answers only on its workers.dev
+origin. `phonaria-lab.rigos.dev` keeps pointing at Vercel until #206.
+`scripts/assert-no-custom-domain.ts` fails the deploy if any route appears in
+the flattened config, so the cutover cannot happen by accident.
+
+A local `CLOUDFLARE_ENV=production` build confirms the environment flattens
+correctly:
+
+| Setting | Value |
+| --- | --- |
+| Worker name | `phonaria-lab` |
+| `routes` | none |
+| `SITE_URL` | `https://phonaria-lab.rigos.dev` |
+| `SITE_INDEXING_ENABLED` | `0` |
+| `FLAG_PRACTICE` | `0` |
+| `observability.logs.invocation_logs` | `true` |
+
+Prerendering emitted exactly 4 pages — `/`, `/credits`,
+`/ipa-chart/consonants`, `/ipa-chart/vowels` — with no Practice route, matching
+the production indexing rules.
+
+### Turso credentials — approved departure from #196
+
+#196 specifies distinct read-only tokens per environment. The maintainer has
+decided every environment shares one connection (`LAB_TURSO_DATABASE_URL`,
+`LAB_TURSO_AUTH_TOKEN`): the database is identical everywhere, holds no user
+data, and the token cannot write.
+
+#196 requires an explicit specification update for any relaxation, so record
+this on #196 before the go/no-go, or AC 6's "least-privilege secrets" is
+checked against a criterion that was knowingly changed.
+
+Pre-cutover the Worker is publicly reachable on workers.dev, noindex, as
+approved.
+
+## Sanitized failure logging — AC 8
+
+`src/server/transcription.ts:58` logs a structured `transcription_failed` event
+on every catchable failure, carrying only `kind` and `retryable` — no learner
+input, no credentials, no database URL. `logWorkerEvent` additionally redacts
+keys matching `token|secret|password|authorization|cookie|database|turso|url`
+and omits strings over 120 characters, as defence in depth.
+
+The browser half is covered by the contract test that passes on staging. What
+remains is confirming these events are visible and correctly shaped in
+Cloudflare Workers Logs, which needs a deployed target to exercise.
+
 ## Status
 
 | AC | Item | Status |
@@ -113,10 +167,10 @@ record is written**.
 | 3 | Security headers and CSP verified on the Worker | Met, via `security.spec.ts` |
 | 4 | Page-load and transcription measurements | Collected; warm page-load median flagged for investigation |
 | 5 | Worker size, module count, startup, CPU, latency | Partial — `record-worker-metrics.ts` runs in CI; CPU and request latency not yet gathered from Workers Logs |
-| 6 | Production environment configured for the custom domain | Not started |
+| 6 | Production environment configured for the custom domain | Deploy path built and config verified by local build; not yet deployed |
 | 7 | Workers Logs enabled and usable, with `exceededCpu` filters | Partial — `observability.logs` is on in `wrangler.jsonc`; not yet exercised |
-| 8 | Sanitized failure logs and a stable retryable error state | Browser half met; log sanitization not yet verified |
-| 9 | Free vs Paid recorded with maintainer acceptance | Not started |
+| 8 | Sanitized failure logs and a stable retryable error state | Code verified both halves; not yet confirmed in Workers Logs |
+| 9 | Free vs Paid recorded with maintainer acceptance | Maintainer decision |
 | 10 | Post-deploy smoke command or workflow | Met — `lab-qualify.yml` serves this role |
-| 11 | Rollback rehearsed against a healthy Vercel deployment | Not started |
-| 12 | Maintainer go/no-go decision | Not started |
+| 11 | Rollback rehearsed against a healthy Vercel deployment | Runbook written and target verified healthy; end-to-end rehearsal belongs to #206 — see `issue-205-rollback-runbook.md` |
+| 12 | Maintainer go/no-go decision | Maintainer decision |
