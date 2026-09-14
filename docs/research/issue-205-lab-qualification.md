@@ -53,11 +53,7 @@ workstation. Baselines from the `Lab Qualify` workflow are collected from a
 GitHub Actions runner. Those vantage points are not comparable, so every figure
 below was re-collected from GitHub runners, two pairs, minutes apart.
 
-One confound remains and is **not** yet controlled: Cloudflare staging sits
-behind Cloudflare Access, which validates a service token on every request.
-Production Lab will not have Access in front of it.
-
-### Results
+### Results before the fix
 
 | Metric | Vercel | CF staging | Delta |
 | --- | --- | --- | --- |
@@ -88,21 +84,57 @@ outliers. This is the metric learners actually wait on.
 **Cold page load is noise at this sample size.** It moved +7.2% then −58.1%,
 driven by a single 453 ms Vercel outlier.
 
-**Warm page-load median is a repeatable regression over the 20% threshold.** It
-reproduced at +59.3% and +29.7%, pooling to +43.3%. Per #196 this triggers
-investigation, not automatic failure. In absolute terms it is +27.5 ms on a
-median of 63.5 ms.
+**Warm page-load median was a repeatable regression over the 20% threshold.**
+It reproduced at +59.3% and +29.7%, pooling to +43.3% — +27.5 ms on a median of
+63.5 ms. Per #196 that triggered investigation rather than automatic failure.
+It is now resolved; see below.
 
-Leading hypothesis is the Cloudflare Access hop on every staging request.
-Supporting evidence: the gap is roughly constant in absolute terms rather than
-proportional, and warm p95 — where a fixed per-request cost is diluted by
-larger values — shows only +3.2% and +23.1%. This is a hypothesis, not a
-finding; it is untested.
+### Resolved: hashed assets were revalidating on every warm load
 
-The decisive measurement is the production Worker, which has no Access in
-front. That cannot be taken until the production environment is configured
-(AC 6), so **this item stays open and must be resolved before the go/no-go
-record is written**.
+Two hypotheses were raised and both are disproven:
+
+- **Cloudflare Access.** Staging sits behind Access and production does not.
+  They measure the same — staging warm median 94 ms and 83 ms, production
+  93 ms. Access accounts for none of the gap.
+- **`run_worker_first`.** Timing `/` and `/credits` (Worker-served) against
+  `/ipa-chart/consonants` (static asset) showed no difference: 213 ms, 198 ms
+  and 210 ms medians, all dominated by network latency.
+
+The cause was asset caching. Vite content-hashes the 29 files under
+`/assets/`, but the generated `_headers` file set only CSP, so Workers Static
+Assets applied its documented default of `public, max-age=0, must-revalidate`.
+Every warm load paid a revalidation round trip per asset. Vercel serves the
+same class of file as `public,max-age=31536000,immutable`.
+
+This explains every observation: a constant absolute gap rather than a
+proportional one, no effect on cold loads (where Cloudflare was already
+faster), no effect on transcription (which fetches no subresources), and no
+sensitivity to Access.
+
+`formatCloudflareHeadersFile` now emits
+`/assets/* → Cache-Control: public, max-age=31536000, immutable`, matching
+Cloudflare's
+[documented guidance](https://developers.cloudflare.com/workers/static-assets/headers/)
+for fingerprinted assets.
+
+### Results after the fix
+
+Production Worker versus Vercel, both collected from GitHub runners:
+
+| Metric | Vercel | CF production | Delta |
+| --- | --- | --- | --- |
+| Cold page load | 277 ms | 154 ms | −44.4% |
+| Warm page load, median | 66 ms | 61 ms | −7.6% |
+| Warm page load, p95 | 94 ms | 75 ms | −20.2% |
+| Transcription client, median | 1026 ms | 958 ms | −6.6% |
+| Transcription server, median | 1031 ms | 1030 ms | −0.1% |
+
+Warm page-load median went from +43.1% (93 ms against 65 ms) to −7.6% (61 ms
+against 66 ms). Cloudflare now matches or beats Vercel on every measured
+metric, and no metric is outside the 20% threshold in Cloudflare's disfavour.
+
+The committed `cloudflare-staging.json` baseline predates the fix and should be
+re-collected before it is used as a regression reference.
 
 ## Production environment — AC 6
 
@@ -162,12 +194,12 @@ Cloudflare Workers Logs, which needs a deployed target to exercise.
 
 | AC | Item | Status |
 | --- | --- | --- |
-| 1 | Complete contract on staging, compared to Vercel | Met |
+| 1 | Complete contract on staging, compared to Vercel | Met; also passes on production at 33/6/0, identical to Vercel |
 | 2 | Routes, metadata, robots, sitemap, assets, theme, flags, a11y | Met, via the contract run above |
 | 3 | Security headers and CSP verified on the Worker | Met, via `security.spec.ts` |
-| 4 | Page-load and transcription measurements | Collected; warm page-load median flagged for investigation |
+| 4 | Page-load and transcription measurements | Met; the flagged regression was root-caused and fixed, Cloudflare now matches or beats Vercel on every metric |
 | 5 | Worker size, module count, startup, CPU, latency | Partial — `record-worker-metrics.ts` runs in CI; CPU and request latency not yet gathered from Workers Logs |
-| 6 | Production environment configured for the custom domain | Deploy path built and config verified by local build; not yet deployed |
+| 6 | Production environment configured for the custom domain | Met; deployed on workers.dev with no routes, DNS unchanged |
 | 7 | Workers Logs enabled and usable, with `exceededCpu` filters | Partial — `observability.logs` is on in `wrangler.jsonc`; not yet exercised |
 | 8 | Sanitized failure logs and a stable retryable error state | Code verified both halves; not yet confirmed in Workers Logs |
 | 9 | Free vs Paid recorded with maintainer acceptance | Maintainer decision |
