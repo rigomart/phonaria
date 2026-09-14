@@ -50,6 +50,11 @@ jobs:
       - name: Assert Practice word data stays out of the Worker
         working-directory: apps/lab
         run: bun ./scripts/assert-worker-excludes-curated-10k.ts
+      - name: Assert server bundle keeps curated-10k client-only
+        working-directory: apps/lab
+        env:
+          WORKER_BUNDLE_DIR: dist/server
+        run: bun ./scripts/assert-server-bundle-boundary.ts
       - name: Type check Start
         working-directory: apps/lab
         run: bunx tsc --noEmit -p tsconfig.start.json
@@ -86,6 +91,8 @@ jobs:
       FLAG_PRACTICE: "1"
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      LAB_TURSO_DATABASE_URL: ${{ secrets.LAB_TURSO_DATABASE_URL }}
+      LAB_TURSO_AUTH_TOKEN: ${{ secrets.LAB_TURSO_AUTH_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -117,6 +124,17 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/lab
           command: deploy --name ${{ steps.origin.outputs.name }} --var SITE_URL:${{ steps.origin.outputs.url }}
+      - name: Put Turso secrets on preview Worker
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.LAB_TURSO_DATABASE_URL != '' && env.LAB_TURSO_AUTH_TOKEN != ''
+        working-directory: apps/lab
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          LAB_TURSO_DATABASE_URL: ${{ secrets.LAB_TURSO_DATABASE_URL }}
+          LAB_TURSO_AUTH_TOKEN: ${{ secrets.LAB_TURSO_AUTH_TOKEN }}
+        run: |
+          printf '%s' "$LAB_TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name "${{ steps.origin.outputs.name }}"
+          printf '%s' "$LAB_TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name "${{ steps.origin.outputs.name }}"
       - name: Comment preview URL
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: actions/github-script@v7
@@ -128,7 +146,7 @@ jobs:
               '',
               `Protected Cloudflare preview: ${url}`,
               '',
-              'This Worker is the TanStack Start slice (Credits, IPA charts, Lab shell, and Practice when FLAG_PRACTICE is on). The public Vercel Lab is unchanged.',
+              'This Worker is the TanStack Start slice (transcription, Credits, IPA charts, Lab shell, and Practice when FLAG_PRACTICE is on). The public Vercel Lab is unchanged.',
               'Cloudflare Access must remain required. Do not share an unprotected URL.',
             ].join('\n');
             const { data: comments } = await github.rest.issues.listComments({
@@ -171,6 +189,8 @@ jobs:
       FLAG_PRACTICE: "1"
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      LAB_TURSO_DATABASE_URL: ${{ secrets.LAB_TURSO_DATABASE_URL }}
+      LAB_TURSO_AUTH_TOKEN: ${{ secrets.LAB_TURSO_AUTH_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -202,6 +222,15 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/lab
           command: deploy --var SITE_URL:${{ steps.staging.outputs.url }}
+      - name: Put Turso secrets on staging Worker
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.LAB_TURSO_DATABASE_URL != '' && env.LAB_TURSO_AUTH_TOKEN != ''
+        working-directory: apps/lab
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          printf '%s' "$LAB_TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria-lab-staging
+          printf '%s' "$LAB_TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria-lab-staging
       - name: Record deployed Worker metrics
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/lab

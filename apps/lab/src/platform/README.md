@@ -20,7 +20,9 @@ from `@/platform/theme`. Next route files import `notFound` / `redirect` /
 helpers from `@/platform/tanstack`.
 
 Worker bindings, sanitized logs, and other request-time Cloudflare adapters
-live under `src/server/cloudflare`. `wrangler.jsonc` remains the source of
+live under `src/server/cloudflare`. Transcription on Start uses a server
+function in `src/server/transcribe.ts` with `@libsql/client/web` and
+request-time Turso secrets. `wrangler.jsonc` remains the source of
 truth for Worker configuration.
 
 Route files stay thin adapters: Next.js owns `src/app` until #207; TanStack

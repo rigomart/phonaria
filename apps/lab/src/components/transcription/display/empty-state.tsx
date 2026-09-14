@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRightIcon } from "lucide-react";
-import { useTranscribe } from "../../_hooks/use-transcribe";
+import { useTranscribe } from "@/hooks/use-transcribe";
 
 const EXAMPLES = ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"];
 

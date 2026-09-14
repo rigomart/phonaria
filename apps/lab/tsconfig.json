@@ -37,7 +37,7 @@
 		"src/start.ts",
 		"src/routeTree.gen.ts",
 		"src/platform/tanstack",
-		"src/server/cloudflare",
+		"src/server",
 		"scripts",
 		"vite.config.ts",
 		"vite.config.mts",

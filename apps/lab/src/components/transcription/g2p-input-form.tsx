@@ -5,10 +5,10 @@ import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group
 import { Input } from "@phonaria/ui/components/input";
 import { Loader2, SendHorizontal } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useCurrentTranscription, useTranscribe } from "@/hooks/use-transcribe";
 import { cn } from "@/lib/utils";
-import { useCurrentTranscription, useTranscribe } from "../_hooks/use-transcribe";
-import { CopyButton } from "./transcription-display/copy-button";
-import { TranscriptionInfoButton } from "./transcription-display/info-button";
+import { CopyButton } from "./display/copy-button";
+import { TranscriptionInfoButton } from "./display/info-button";
 
 interface G2PInputFormProps {
 	maxLength?: number;

@@ -4,8 +4,8 @@ import { Button } from "@phonaria/ui/components/button";
 import { Check, Copy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { extractIpaText } from "@/lib/ipa-copy";
+import { useG2PStore } from "@/lib/transcription/g2p-store";
 import type { TranscriptionResult } from "@/lib/types/g2p";
-import { useG2PStore } from "../../_store/g2p-store";
 
 interface CopyButtonProps {
 	result: TranscriptionResult;

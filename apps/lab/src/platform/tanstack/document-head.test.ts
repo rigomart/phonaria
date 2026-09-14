@@ -14,6 +14,7 @@ import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import {
 	buildConsonantsHead,
 	buildCreditsHead,
+	buildHomeHead,
 	buildPracticeIndexHead,
 	buildPracticeTopicHead,
 	buildRootHead,
@@ -110,6 +111,28 @@ describe("buildRootHead", () => {
 			property: "og:url",
 			content: "https://phonaria-lab-staging.example.test",
 		});
+	});
+});
+
+describe("buildHomeHead", () => {
+	it("keeps the site title on the client when production SITE_URL is missing", () => {
+		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
+		const head = buildHomeHead();
+		expect(head.meta).toContainEqual({ title: SITE_NAME });
+		expect(head.meta).toContainEqual({
+			name: "description",
+			content: SITE_DESCRIPTION,
+		});
+		expect(head.links).toBeUndefined();
+	});
+
+	it("adds the home canonical when SITE_URL is set", () => {
+		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		const head = buildHomeHead();
+		expect(head.links).toEqual([
+			{ rel: "canonical", href: "https://phonaria-lab-staging.example.test" },
+		]);
 	});
 });
 
