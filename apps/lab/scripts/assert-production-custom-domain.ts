@@ -1,11 +1,9 @@
 #!/usr/bin/env bun
-/**
- * Attaching a custom domain creates the DNS record, so a `routes` entry in the
- * flattened Wrangler config is the cutover. Refuse it until #206.
- */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { GENERATED_WRANGLER_JSON } from "./assert-generated-worker-name";
+
+export const PRODUCTION_CUSTOM_DOMAIN = "phonaria-lab.rigos.dev";
 
 export type WranglerRoute = string | { pattern?: string; custom_domain?: boolean };
 
@@ -21,15 +19,24 @@ export function readGeneratedRoutes(wranglerJsonPath: string): WranglerRoute[] {
 	return parsed.routes as WranglerRoute[];
 }
 
-export function describeRoute(route: WranglerRoute): string {
+function describeRoute(route: WranglerRoute): string {
 	if (typeof route === "string") return route;
 	return route.pattern ?? JSON.stringify(route);
 }
 
-export function assertNoCustomDomain(routes: WranglerRoute[]): void {
-	if (routes.length === 0) return;
+export function assertProductionCustomDomain(routes: WranglerRoute[]): void {
+	const expected = routes.length === 1 && routes[0];
+	if (
+		typeof expected === "object" &&
+		expected.pattern === PRODUCTION_CUSTOM_DOMAIN &&
+		expected.custom_domain === true
+	) {
+		return;
+	}
+
+	const actual = routes.length === 0 ? "none" : routes.map(describeRoute).join(", ");
 	throw new Error(
-		`Generated Wrangler config declares routes: ${routes.map(describeRoute).join(", ")}. Deploying this would create DNS records and cut phonaria-lab.rigos.dev over to the Worker. Move route configuration to the #206 cutover.`,
+		`Production must declare exactly ${PRODUCTION_CUSTOM_DOMAIN} as a custom domain; found: ${actual}.`,
 	);
 }
 
@@ -38,8 +45,8 @@ function runCli(): void {
 	const wranglerJsonPath = resolve(
 		configPath ?? resolve(import.meta.dirname, "..", GENERATED_WRANGLER_JSON),
 	);
-	assertNoCustomDomain(readGeneratedRoutes(wranglerJsonPath));
-	console.log(`No routes in ${wranglerJsonPath}; production deploy will not change DNS.`);
+	assertProductionCustomDomain(readGeneratedRoutes(wranglerJsonPath));
+	console.log(`Production custom domain verified in ${wranglerJsonPath}.`);
 }
 
 if (import.meta.main) runCli();
