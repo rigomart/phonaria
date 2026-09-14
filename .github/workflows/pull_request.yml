@@ -34,7 +34,7 @@ jobs:
         run: bun run check-types
       - name: Test
         run: bun run test
-      - name: Production build (Lab)
+      - name: Production build (Lab Next)
         run: bun --cwd apps/lab build
         env:
           SITE_URL: https://phonaria-lab.rigos.dev

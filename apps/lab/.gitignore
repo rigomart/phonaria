@@ -19,6 +19,14 @@
 
 # production
 /build
+/dist
+/.output
+/.wrangler
+/worker-metrics.json
+.dev.vars
+/public/_headers
+wrangler-dry-run.log
+worker-configuration.d.ts
 
 # misc
 .DS_Store

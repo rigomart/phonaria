@@ -8,6 +8,33 @@
 		}
 	},
 	"files": {
-		"includes": ["**", "!node_modules", "!dist", "!build", "!public"]
-	}
+		"includes": [
+			"**",
+			"!node_modules",
+			"!dist",
+			"!build",
+			"!public",
+			"!.wrangler",
+			"!.output",
+			"!src/routeTree.gen.ts",
+			"!worker-configuration.d.ts"
+		]
+	},
+	"overrides": [
+		{
+			"includes": [
+				"src/routes/**",
+				"src/router.tsx",
+				"src/start.ts",
+				"src/routeTree.gen.ts",
+				"src/platform/tanstack/**",
+				"vite.config.mts"
+			],
+			"linter": {
+				"domains": {
+					"next": "none"
+				}
+			}
+		}
+	]
 }

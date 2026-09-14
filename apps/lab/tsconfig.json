@@ -30,5 +30,17 @@
 		".next/types/**/*.ts",
 		".next/dev/types/**/*.ts"
 	],
-	"exclude": ["node_modules"]
+	"exclude": [
+		"node_modules",
+		"src/routes",
+		"src/router.tsx",
+		"src/start.ts",
+		"src/routeTree.gen.ts",
+		"src/platform/tanstack",
+		"src/server/cloudflare",
+		"scripts",
+		"vite.config.ts",
+		"vite.config.mts",
+		"worker-configuration.d.ts"
+	]
 }

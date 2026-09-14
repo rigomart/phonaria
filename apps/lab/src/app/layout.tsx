@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
+import { LabShell } from "@/components/lab-shell";
 import { flags } from "@/lib/flags";
 import { getDocumentMetadata } from "@/platform";
 import Providers from "./providers";
@@ -45,11 +44,7 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning>
 			<body className="antialiased">
 				<Providers>
-					<div className="min-h-screen flex flex-col">
-						<Header flags={flags.snapshot()} />
-						<main className="flex-1 flex min-h-0 flex-col">{children}</main>
-						<Footer />
-					</div>
+					<LabShell flags={flags.snapshot()}>{children}</LabShell>
 				</Providers>
 			</body>
 		</html>

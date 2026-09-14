@@ -1,11 +1,10 @@
 /**
- * Stable Lab platform API. Next.js adapters live in `./next` and are the
- * temporary migration boundary for TanStack Start.
+ * Framework-neutral Lab platform API.
+ *
+ * Next.js adapters live in `./next`. TanStack Start adapters live in
+ * `./tanstack`. This barrel must not import `next/*` or `next-themes`.
  */
 export { type AppImageProps, Image, imageClassName } from "./image";
-export { type AppLinkProps, Link } from "./next/link";
-export { notFound, redirect } from "./next/navigation";
-export { requireFlag } from "./next/require-flag";
 export {
 	getDocumentMetadata,
 	getGoogleSiteVerification,
