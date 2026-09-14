@@ -166,5 +166,5 @@ Cloudflare Workers Logs, which needs a deployed target to exercise.
 | 8 | Sanitized failure logs and a stable retryable error state | Code verified both halves; not yet confirmed in Workers Logs |
 | 9 | Free vs Paid recorded with maintainer acceptance | Maintainer decision |
 | 10 | Post-deploy smoke command or workflow | Met — `lab-qualify.yml` serves this role |
-| 11 | Rollback rehearsed against a healthy Vercel deployment | Not started |
+| 11 | Rollback rehearsed against a healthy Vercel deployment | Runbook written and target verified healthy; end-to-end rehearsal belongs to #206 — see `issue-205-rollback-runbook.md` |
 | 12 | Maintainer go/no-go decision | Maintainer decision |
