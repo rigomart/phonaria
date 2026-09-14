@@ -5,6 +5,14 @@ name: Lab Production
 on:
   workflow_dispatch:
     inputs:
+      deployment_target:
+        description: Deploy only to workers.dev for pre-cutover qualification, or attach the public domain
+        type: choice
+        required: true
+        default: public-domain
+        options:
+          - worker-origin
+          - public-domain
       run_contract:
         description: Run the complete Lab contract after deploying
         type: boolean
@@ -46,14 +54,20 @@ jobs:
       - name: Install dependencies
         run: bun ci
 
-      - name: Resolve production workers.dev origin
+      - name: Resolve production deployment origin
         id: origin
         env:
+          DEPLOYMENT_TARGET: ${{ inputs.deployment_target }}
           SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
         run: |
-          url="$(bun apps/lab/scripts/resolve-preview-origin.ts phonaria-lab "$SUBDOMAIN")"
+          if [ "$DEPLOYMENT_TARGET" = "worker-origin" ]; then
+            url="$(bun apps/lab/scripts/resolve-preview-origin.ts phonaria-lab "$SUBDOMAIN")"
+          else
+            url="https://phonaria-lab.rigos.dev"
+          fi
           echo "url=$url" >> "$GITHUB_OUTPUT"
-          echo "Production Worker origin (pre-cutover): $url"
+          echo "Production deployment target: $DEPLOYMENT_TARGET"
+          echo "Production contract origin: $url"
 
       - name: Generate Cloudflare Worker types
         run: bun --cwd apps/lab cf-typegen
@@ -61,11 +75,16 @@ jobs:
       - name: Production build (Lab Start)
         run: bun --cwd apps/lab build:start
 
+      - name: Prepare production deployment target
+        working-directory: apps/lab
+        run: bun ./scripts/prepare-production-deployment.ts "${{ inputs.deployment_target }}"
+
       - name: Assert production Worker name
         working-directory: apps/lab
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab
 
       - name: Assert the production custom domain
+        if: inputs.deployment_target == 'public-domain'
         working-directory: apps/lab
         run: bun ./scripts/assert-production-custom-domain.ts
 
