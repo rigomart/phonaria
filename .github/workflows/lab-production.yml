@@ -1,0 +1,165 @@
+name: Lab Production
+
+# Deploy the production Lab Worker WITHOUT touching DNS (#205 AC 6).
+#
+# The Worker deploys under its production name and production vars, and becomes
+# reachable on its workers.dev origin only. `phonaria-lab.rigos.dev` keeps
+# pointing at Vercel until #206 attaches the custom domain, because attaching a
+# custom domain is what writes the DNS record.
+#
+# Two guards enforce that: the build must flatten to the `phonaria-lab` Worker
+# name, and the generated Wrangler config must declare no routes.
+#
+# Dispatch-only on purpose. Production must never deploy as a side effect of a
+# merge while the Vercel deployment is still serving learners.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_contract:
+        description: Run the complete Lab contract after deploying
+        type: boolean
+        required: false
+        default: true
+      baseline:
+        description: Also record page-load and transcription baselines
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: lab-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: lab-production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_ENV: production
+      SITE_URL: https://phonaria-lab.rigos.dev
+      SITE_INDEXING_ENABLED: "0"
+      FLAG_PRACTICE: "0"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      LAB_TURSO_DATABASE_URL_PRODUCTION: ${{ secrets.LAB_TURSO_DATABASE_URL_PRODUCTION }}
+      LAB_TURSO_AUTH_TOKEN_PRODUCTION: ${{ secrets.LAB_TURSO_AUTH_TOKEN_PRODUCTION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun ci
+
+      - name: Resolve production workers.dev origin
+        id: origin
+        env:
+          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+        run: |
+          url="$(bun apps/lab/scripts/resolve-preview-origin.ts phonaria-lab "$SUBDOMAIN")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Production Worker origin (pre-cutover): $url"
+
+      - name: Generate Cloudflare Worker types
+        run: bun --cwd apps/lab cf-typegen
+
+      - name: Production build (Lab Start)
+        run: bun --cwd apps/lab build:start
+
+      - name: Assert production Worker name
+        working-directory: apps/lab
+        run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab
+
+      # The cutover guard. Fails the deploy if a route would change DNS.
+      - name: Assert the deploy will not change DNS
+        working-directory: apps/lab
+        run: bun ./scripts/assert-no-custom-domain.ts
+
+      - name: Assert Practice word data stays out of the Worker
+        working-directory: apps/lab
+        run: bun ./scripts/assert-worker-excludes-curated-10k.ts
+
+      - name: Assert server bundle keeps curated-10k client-only
+        working-directory: apps/lab
+        env:
+          WORKER_BUNDLE_DIR: dist/server
+        run: bun ./scripts/assert-server-bundle-boundary.ts
+
+      - name: Deploy production Worker
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/lab
+          command: deploy
+
+      # Production keeps its own database-scoped read-only token, separate from
+      # the one staging and previews share (#196, "Data and environment configuration").
+      - name: Put production Turso secrets on the Worker
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.LAB_TURSO_DATABASE_URL_PRODUCTION != '' && env.LAB_TURSO_AUTH_TOKEN_PRODUCTION != ''
+        working-directory: apps/lab
+        run: |
+          printf '%s' "$LAB_TURSO_DATABASE_URL_PRODUCTION" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria-lab
+          printf '%s' "$LAB_TURSO_AUTH_TOKEN_PRODUCTION" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria-lab
+
+      - name: Warn when production Turso secrets are missing
+        if: env.CLOUDFLARE_API_TOKEN != '' && (env.LAB_TURSO_DATABASE_URL_PRODUCTION == '' || env.LAB_TURSO_AUTH_TOKEN_PRODUCTION == '')
+        run: |
+          echo "::warning::Production Turso secrets are not configured. Server-tier transcription will fail on the production Worker until LAB_TURSO_DATABASE_URL_PRODUCTION and LAB_TURSO_AUTH_TOKEN_PRODUCTION are set."
+
+      - name: Record deployed Worker metrics
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: apps/lab
+        env:
+          WORKER_BUNDLE_DIR: dist
+          WORKER_METRICS_OUT: worker-metrics.json
+        run: bun ./scripts/record-worker-metrics.ts
+
+      - name: Install Chromium
+        if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
+        run: bun --cwd packages/lab-contract e2e:install
+
+      # Canonical stays on the real hostname while the Worker answers on
+      # workers.dev, so the contract needs the canonical override.
+      - name: Run the complete Lab contract
+        if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
+        env:
+          CI: true
+          LAB_CONTRACT_TARGET: cloudflare-production
+          LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+          LAB_CONTRACT_CANONICAL_ORIGIN: https://phonaria-lab.rigos.dev
+        run: bun --cwd packages/lab-contract e2e:lab
+
+      - name: Record performance baselines
+        if: ${{ inputs.baseline && env.CLOUDFLARE_API_TOKEN != '' }}
+        env:
+          CI: true
+          LAB_CONTRACT_TARGET: cloudflare-production
+          LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+          LAB_CONTRACT_CANONICAL_ORIGIN: https://phonaria-lab.rigos.dev
+        run: bun --cwd packages/lab-contract e2e:lab:baseline
+
+      - name: Upload production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-production-evidence
+          path: |
+            apps/lab/worker-metrics.json
+            packages/lab-contract/playwright-report/
+            packages/lab-contract/test-results/
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Skip deploy when Cloudflare secrets are missing
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: |
+          echo "CLOUDFLARE_API_TOKEN is not configured; nothing was deployed."
