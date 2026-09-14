@@ -12,6 +12,8 @@
 			"/credits/",
 			"/ipa-chart",
 			"/ipa-chart/",
+			"/practice",
+			"/practice/*",
 			"/robots.txt",
 			"/sitemap.xml"
 		]

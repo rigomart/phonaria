@@ -1,11 +1,12 @@
 import { createFlags } from "@phonaria/flags";
 
 /**
- * Lab feature flags. Framework-neutral registry — the Next.js route gate lives
- * in `src/platform/next/require-flag.ts`. See packages/flags/README.md.
+ * Lab feature flags. Framework-neutral registry — route gates live in
+ * `src/platform/next/require-flag.ts` and `src/platform/tanstack/require-flag.ts`.
+ * See packages/flags/README.md.
  *
- * Values are baked in at build time for statically generated routes, so
- * flipping a flag on Vercel requires a redeploy.
+ * Values are baked in at build time from `process.env` (Wrangler `vars`
+ * flattened via `CLOUDFLARE_ENV`), so flipping a flag requires a redeploy.
  */
 export const flags = createFlags({
 	practice: {

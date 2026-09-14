@@ -35,5 +35,7 @@ from `LAB_START_STAGING_URL` or `LAB_WORKERS_DEV_SUBDOMAIN`, sets
 Worker name to `phonaria-lab-staging` before deploying the generated config.
 Do not deploy the Cloudflare production Worker from this app.
 
-The Start slice currently serves Credits, IPA charts, and the reusable Lab shell. Other
-Lab routes remain on Next.js until later migration tickets.
+The Start slice currently serves Credits, IPA charts, the reusable Lab shell,
+and Practice when `FLAG_PRACTICE` is enabled (staging and preview). Cloudflare
+production keeps Practice off. Other Lab routes remain on Next.js until later
+migration tickets. Do not enable Practice on the public Vercel Lab.

@@ -11,12 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreditsRouteImport } from './routes/credits'
+import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as IpaChartIndexRouteImport } from './routes/ipa-chart/index'
 import { Route as IpaChartSplatRouteImport } from './routes/ipa-chart/$'
 import { Route as IpaChartConsonantsRouteImport } from './routes/ipa-chart/consonants'
 import { Route as IpaChartVowelsRouteImport } from './routes/ipa-chart/vowels'
+import { Route as PracticeIndexRouteImport } from './routes/practice.index'
+import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -26,6 +29,11 @@ const IndexRoute = IndexRouteImport.update({
 const CreditsRoute = CreditsRouteImport.update({
   id: '/credits',
   path: '/credits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticeRoute = PracticeRouteImport.update({
+  id: '/practice',
+  path: '/practice',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -58,16 +66,29 @@ const IpaChartVowelsRoute = IpaChartVowelsRouteImport.update({
   path: '/ipa-chart/vowels',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PracticeIndexRoute = PracticeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PracticeRoute,
+} as any)
+const PracticeTopicRoute = PracticeTopicRouteImport.update({
+  id: '/$topic',
+  path: '/$topic',
+  getParentRoute: () => PracticeRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
+  '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
+  '/practice/$topic': typeof PracticeTopicRoute
+  '/practice/': typeof PracticeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,29 +99,37 @@ export interface FileRoutesByTo {
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
   '/ipa-chart': typeof IpaChartIndexRoute
+  '/practice/$topic': typeof PracticeTopicRoute
+  '/practice': typeof PracticeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
+  '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
+  '/practice/$topic': typeof PracticeTopicRoute
+  '/practice/': typeof PracticeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/credits'
+    | '/practice'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
     | '/ipa-chart/vowels'
     | '/ipa-chart/'
+    | '/practice/$topic'
+    | '/practice/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,21 +140,27 @@ export interface FileRouteTypes {
     | '/ipa-chart/consonants'
     | '/ipa-chart/vowels'
     | '/ipa-chart'
+    | '/practice/$topic'
+    | '/practice'
   id:
     | '__root__'
     | '/'
     | '/credits'
+    | '/practice'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
     | '/ipa-chart/vowels'
     | '/ipa-chart/'
+    | '/practice/$topic'
+    | '/practice/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreditsRoute: typeof CreditsRoute
+  PracticeRoute: typeof PracticeRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   IpaChartSplatRoute: typeof IpaChartSplatRoute
@@ -148,6 +183,13 @@ declare module '@tanstack/react-router' {
       path: '/credits'
       fullPath: '/credits'
       preLoaderRoute: typeof CreditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practice': {
+      id: '/practice'
+      path: '/practice'
+      fullPath: '/practice'
+      preLoaderRoute: typeof PracticeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -192,12 +234,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IpaChartVowelsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/practice/': {
+      id: '/practice/'
+      path: '/'
+      fullPath: '/practice/'
+      preLoaderRoute: typeof PracticeIndexRouteImport
+      parentRoute: typeof PracticeRoute
+    }
+    '/practice/$topic': {
+      id: '/practice/$topic'
+      path: '/$topic'
+      fullPath: '/practice/$topic'
+      preLoaderRoute: typeof PracticeTopicRouteImport
+      parentRoute: typeof PracticeRoute
+    }
   }
 }
+
+interface PracticeRouteChildren {
+  PracticeTopicRoute: typeof PracticeTopicRoute
+  PracticeIndexRoute: typeof PracticeIndexRoute
+}
+
+const PracticeRouteChildren: PracticeRouteChildren = {
+  PracticeTopicRoute: PracticeTopicRoute,
+  PracticeIndexRoute: PracticeIndexRoute,
+}
+
+const PracticeRouteWithChildren = PracticeRoute._addFileChildren(
+  PracticeRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreditsRoute: CreditsRoute,
+  PracticeRoute: PracticeRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   IpaChartSplatRoute: IpaChartSplatRoute,

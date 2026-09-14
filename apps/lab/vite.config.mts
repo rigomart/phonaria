@@ -6,7 +6,29 @@
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
+
+const curated10kStub = new URL("./src/lib/phoneme-lookup/curated-10k.ssr-stub.ts", import.meta.url)
+	.pathname;
+
+/** Keep the 10k pronunciation table out of the Worker graph. */
+function stubCurated10kOnSsr(): Plugin {
+	return {
+		name: "stub-curated-10k-on-ssr",
+		enforce: "pre",
+		resolveId(id) {
+			if (this.environment?.name !== "ssr") return undefined;
+			if (
+				id === "@phonaria/phonetics-data/data/en/curated-10k" ||
+				id.endsWith("/data/en/curated-10k") ||
+				id.endsWith("/data/en/curated-10k.ts")
+			) {
+				return curated10kStub;
+			}
+			return undefined;
+		},
+	};
+}
 
 /** Same host as `ASSET_BUCKET_HOST` in `src/lib/security-headers.ts`. */
 const PUBLIC_ASSET_HOST = "assets.rigos.dev";
@@ -38,6 +60,7 @@ export default defineConfig({
 		"process.env.PUBLIC_BUCKET_URL": JSON.stringify(publicBucketUrl()),
 	},
 	plugins: [
+		stubCurated10kOnSsr(),
 		cloudflare({ viteEnvironment: { name: "ssr" } }),
 		tanstackStart({
 			srcDirectory: "src",

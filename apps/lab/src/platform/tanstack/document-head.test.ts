@@ -8,16 +8,21 @@ import {
 	VOWELS_PAGE_DESCRIPTION,
 	VOWELS_PAGE_TITLE,
 } from "@/lib/ipa-chart-metadata";
+import { PracticeActivity } from "@/lib/practice/activity";
+import { getTopic } from "@/lib/practice/topics";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import {
 	buildConsonantsHead,
 	buildCreditsHead,
+	buildPracticeIndexHead,
+	buildPracticeTopicHead,
 	buildRootHead,
 	buildVowelsHead,
 	consonantsDocumentTitle,
 	creditsDocumentTitle,
 	extractDocumentTitle,
 	formatDocumentTitle,
+	practiceDocumentTitle,
 	tryGetDocumentMetadata,
 	vowelsDocumentTitle,
 } from "./document-head";
@@ -39,6 +44,7 @@ describe("formatDocumentTitle", () => {
 		expect(creditsDocumentTitle()).toBe(`${CREDITS_PAGE_TITLE} - ${SITE_NAME}`);
 		expect(consonantsDocumentTitle()).toBe(`${CONSONANTS_PAGE_TITLE} - ${SITE_NAME}`);
 		expect(vowelsDocumentTitle()).toBe(`${VOWELS_PAGE_TITLE} - ${SITE_NAME}`);
+		expect(practiceDocumentTitle()).toBe(`${PracticeActivity.name} - ${SITE_NAME}`);
 	});
 });
 
@@ -175,6 +181,50 @@ describe("buildVowelsHead", () => {
 				rel: "canonical",
 				href: `https://phonaria-lab-staging.example.test${IPA_CHART_VOWELS_PATH}`,
 			},
+		]);
+	});
+});
+
+describe("buildPracticeIndexHead", () => {
+	it("keeps the Practice title on the client when production SITE_URL is missing", () => {
+		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
+		const head = buildPracticeIndexHead();
+		expect(head.meta).toContainEqual({ title: practiceDocumentTitle() });
+		expect(head.meta).toContainEqual({
+			name: "description",
+			content: PracticeActivity.description,
+		});
+		expect(head.links).toBeUndefined();
+	});
+
+	it("always noindexes Practice even when site indexing is on", () => {
+		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		process.env.SITE_INDEXING_ENABLED = "1";
+		const head = buildPracticeIndexHead();
+		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
+		expect(head.links).toEqual([
+			{ rel: "canonical", href: "https://phonaria-lab-staging.example.test/practice" },
+		]);
+	});
+});
+
+describe("buildPracticeTopicHead", () => {
+	it("uses the topic display name and blurb", () => {
+		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		const topic = getTopic("schwa");
+		expect(topic).toBeDefined();
+		const head = buildPracticeTopicHead(topic);
+		expect(head.meta).toContainEqual({
+			title: practiceDocumentTitle(`${topic?.display.name} — Practice`),
+		});
+		expect(head.meta).toContainEqual({
+			name: "description",
+			content: topic?.display.blurb,
+		});
+		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
+		expect(head.links).toEqual([
+			{ rel: "canonical", href: "https://phonaria-lab-staging.example.test/practice/schwa" },
 		]);
 	});
 });
