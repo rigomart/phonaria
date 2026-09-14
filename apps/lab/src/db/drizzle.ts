@@ -7,6 +7,8 @@ import * as schema from "./schema";
 
 export type LabDatabase = LibSQLDatabase<typeof schema>;
 
+export type LibsqlClientFactory = (config: { url: string; authToken?: string }) => Client;
+
 function statementSql(stmt: InStatement): string {
 	return typeof stmt === "string" ? stmt : stmt.sql;
 }
@@ -54,9 +56,10 @@ function wrapReadOnly(client: Client): void {
 
 export function createDatabase(
 	config: DatabaseConfig,
-	options: { readOnly?: boolean } = {},
+	options: { readOnly?: boolean; createClient?: LibsqlClientFactory } = {},
 ): LabDatabase {
-	const client = createClient({
+	const openClient = options.createClient ?? createClient;
+	const client = openClient({
 		url: config.url,
 		authToken: config.authToken,
 	});

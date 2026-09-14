@@ -31,7 +31,7 @@ describe("Lab platform boundary", () => {
 			"../components/ipa-chart/vowel-chart.tsx",
 			"../app/not-found.tsx",
 			"../app/practice/_components/topic-card.tsx",
-			"../app/_components/transcription-display/info-button.tsx",
+			"../components/transcription/display/info-button.tsx",
 		];
 
 		for (const file of shellFiles) {
@@ -62,6 +62,9 @@ describe("Lab platform boundary", () => {
 		expect(src("../routes/__root.tsx")).not.toContain("@/lib/start-document-head");
 		expect(src("../routes/credits.tsx")).toContain('from "@/platform/tanstack"');
 		expect(src("../routes/credits.tsx")).not.toContain("@/lib/start-document-head");
+		expect(src("../routes/index.tsx")).toContain('from "@/platform/tanstack"');
+		expect(src("../routes/index.tsx")).not.toContain("@/lib/start-document-head");
+		expect(src("../routes/index.tsx")).not.toContain("transcribeWordsAction");
 		expect(src("../routes/ipa-chart/consonants.tsx")).toContain('from "@/platform/tanstack"');
 		expect(src("../routes/ipa-chart/vowels.tsx")).toContain('from "@/platform/tanstack"');
 		expect(src("../routes/ipa-chart/index.tsx")).toContain('from "@/platform/tanstack"');

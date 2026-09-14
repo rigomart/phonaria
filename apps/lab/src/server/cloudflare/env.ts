@@ -19,7 +19,16 @@ export function getWorkerEnv(): LabWorkerEnv {
 	return env;
 }
 
+export function readWorkerString(
+	bindings: LabWorkerEnv,
+	name: keyof LabWorkerEnv,
+): string | undefined {
+	const value = bindings[name];
+	if (typeof value !== "string") return undefined;
+	const trimmed = value.trim();
+	return trimmed ? trimmed : undefined;
+}
+
 export function getWorkerString(name: keyof LabWorkerEnv): string | undefined {
-	const value = getWorkerEnv()[name];
-	return typeof value === "string" && value.length > 0 ? value : undefined;
+	return readWorkerString(getWorkerEnv(), name);
 }

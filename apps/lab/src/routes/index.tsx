@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { notFound } from "@/platform/tanstack";
+import { TranscriptionJourney } from "@/components/transcription/transcription-journey";
+import { buildHomeHead } from "@/platform/tanstack";
+import { transcribeWordsFromStart } from "@/server/transcribe";
 
-/**
- * Transcription is still served by the public Next.js Lab. This Start slice
- * ships Credits and flag-gated Practice; the index returns a real 404 until
- * transcription migrates.
- */
 export const Route = createFileRoute("/")({
-	beforeLoad: () => {
-		notFound();
-	},
+	head: () => buildHomeHead(),
+	component: HomeRoute,
 });
+
+function HomeRoute() {
+	return <TranscriptionJourney transcribeWords={transcribeWordsFromStart} />;
+}

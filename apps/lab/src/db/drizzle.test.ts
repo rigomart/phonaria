@@ -39,6 +39,46 @@ describe("drizzle module load", () => {
 		expect(typeof adapter.transcribeWordsAction).toBe("function");
 	});
 
+	it("imports the Worker transcription handler without database credentials", async () => {
+		vi.stubEnv("TURSO_DATABASE_URL", "");
+		vi.stubEnv("TURSO_AUTH_TOKEN", "");
+
+		const handler = await import("@/server/transcription");
+		expect(typeof handler.transcribeWordsOnWorker).toBe("function");
+	});
+
+	it("uses an injected libsql client factory", async () => {
+		const { createDatabase } = await import("./drizzle");
+		const execute = vi.fn(async () => ({
+			columns: [],
+			columnTypes: [],
+			rows: [],
+			rowsAffected: 0,
+			lastInsertRowid: BigInt(0),
+			toJSON() {
+				return {};
+			},
+		}));
+		const createClient = vi.fn(() => ({
+			execute,
+			batch: vi.fn(),
+			migrate: vi.fn(),
+			transaction: vi.fn(),
+			close: vi.fn(),
+			sync: vi.fn(),
+		}));
+
+		createDatabase(
+			{ url: "libsql://lab.example", authToken: "token" },
+			{ createClient: createClient as never },
+		);
+
+		expect(createClient).toHaveBeenCalledWith({
+			url: "libsql://lab.example",
+			authToken: "token",
+		});
+	});
+
 	it("rejects writes on a read-only client before they reach storage", async () => {
 		const { createDatabase } = await import("./drizzle");
 		const db = createDatabase({ url: "file::memory:" }, { readOnly: true });

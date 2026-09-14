@@ -1,6 +1,7 @@
 export {
 	buildConsonantsHead,
 	buildCreditsHead,
+	buildHomeHead,
 	buildPageHead,
 	buildPracticeIndexHead,
 	buildPracticeTopicHead,

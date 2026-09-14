@@ -3,11 +3,14 @@
  * Named `.mts` so Vite 8 can load the ESM-only Start plugin from a
  * CommonJS package. Plugin order is Cloudflare, tanstackStart(), React.
  */
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
 
+const labRoot = path.dirname(fileURLToPath(import.meta.url));
 const curated10kStub = new URL("./src/lib/phoneme-lookup/curated-10k.ssr-stub.ts", import.meta.url)
 	.pathname;
 
@@ -69,7 +72,8 @@ export default defineConfig({
 	resolve: {
 		tsconfigPaths: true,
 		alias: {
-			"@": new URL("./src", import.meta.url).pathname,
+			"@": path.join(labRoot, "src"),
+			"server-only": path.join(labRoot, "src/platform/server-only-shim.ts"),
 		},
 	},
 	define: {
@@ -87,6 +91,7 @@ export default defineConfig({
 				enabled: true,
 				crawlLinks: true,
 				filter: ({ path }) =>
+					path === "/" ||
 					path === "/credits" ||
 					path === "/ipa-chart" ||
 					path === "/ipa-chart/" ||

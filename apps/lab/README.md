@@ -35,7 +35,13 @@ from `LAB_START_STAGING_URL` or `LAB_WORKERS_DEV_SUBDOMAIN`, sets
 Worker name to `phonaria-lab-staging` before deploying the generated config.
 Do not deploy the Cloudflare production Worker from this app.
 
-The Start slice currently serves Credits, IPA charts, the reusable Lab shell,
-and Practice when `FLAG_PRACTICE` is enabled (staging and preview). Cloudflare
-production keeps Practice off. Other Lab routes remain on Next.js until later
-migration tickets. Do not enable Practice on the public Vercel Lab.
+The Start slice currently serves the transcription landing page, Credits, IPA
+charts, the reusable Lab shell, and Practice when `FLAG_PRACTICE` is enabled
+(staging and preview). Cloudflare production keeps Practice off. Do not enable
+Practice on the public Vercel Lab. Transcription uses a TanStack server
+function with `@libsql/client/web` and request-time Worker bindings for
+`TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. Put those secrets on each
+Cloudflare environment (`wrangler secret put`) and, for local Start, in
+`.dev.vars` by hand. `write-start-dev-vars` never copies Turso values from
+the process environment; it only preserves existing `.dev.vars` secret
+lines.

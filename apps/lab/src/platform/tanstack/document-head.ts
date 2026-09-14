@@ -139,6 +139,19 @@ export function buildPageHead({ path, title, description, robots }: PageHeadInpu
 	};
 }
 
+export function buildHomeHead(): StartHead {
+	const metadata = tryGetDocumentMetadata();
+	const canonical = metadata?.siteUrl;
+	return {
+		meta: [
+			{ title: SITE_NAME },
+			{ name: "description", content: SITE_DESCRIPTION },
+			...seoMetaTags(metadata, canonical),
+		],
+		links: canonical ? [{ rel: "canonical", href: canonical }] : undefined,
+	};
+}
+
 export function buildCreditsHead(): StartHead {
 	return buildPageHead({
 		path: "/credits",
