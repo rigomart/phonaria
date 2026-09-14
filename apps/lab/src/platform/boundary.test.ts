@@ -54,6 +54,14 @@ describe("Lab platform boundary", () => {
 		expect(src("./next/theme.tsx")).toContain("next-themes");
 	});
 
+	it("keeps Start route head helpers on the tanstack barrel", () => {
+		expect(src("../routes/__root.tsx")).toContain('from "@/platform/tanstack"');
+		expect(src("../routes/__root.tsx")).not.toContain("@/lib/start-document-head");
+		expect(src("../routes/credits.tsx")).toContain('from "@/platform/tanstack"');
+		expect(src("../routes/credits.tsx")).not.toContain("@/lib/start-document-head");
+		expect(src("./tanstack/document-title.tsx")).not.toContain("@/lib/start-document-head");
+	});
+
 	it("keeps the Start graph off next/* and next-themes", () => {
 		const startRoots = [
 			resolve(import.meta.dirname, "./tanstack"),
