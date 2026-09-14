@@ -86,8 +86,8 @@ export interface FileRoutesByFullPath {
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
-  '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/$topic': typeof PracticeTopicRoute
+  '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/': typeof PracticeIndexRoute
 }
 export interface FileRoutesByTo {
@@ -98,8 +98,8 @@ export interface FileRoutesByTo {
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
-  '/ipa-chart': typeof IpaChartIndexRoute
   '/practice/$topic': typeof PracticeTopicRoute
+  '/ipa-chart': typeof IpaChartIndexRoute
   '/practice': typeof PracticeIndexRoute
 }
 export interface FileRoutesById {
@@ -112,8 +112,8 @@ export interface FileRoutesById {
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
-  '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/$topic': typeof PracticeTopicRoute
+  '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/': typeof PracticeIndexRoute
 }
 export interface FileRouteTypes {
@@ -127,8 +127,8 @@ export interface FileRouteTypes {
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
     | '/ipa-chart/vowels'
-    | '/ipa-chart/'
     | '/practice/$topic'
+    | '/ipa-chart/'
     | '/practice/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -139,8 +139,8 @@ export interface FileRouteTypes {
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
     | '/ipa-chart/vowels'
-    | '/ipa-chart'
     | '/practice/$topic'
+    | '/ipa-chart'
     | '/practice'
   id:
     | '__root__'
@@ -152,8 +152,8 @@ export interface FileRouteTypes {
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
     | '/ipa-chart/vowels'
-    | '/ipa-chart/'
     | '/practice/$topic'
+    | '/ipa-chart/'
     | '/practice/'
   fileRoutesById: FileRoutesById
 }
