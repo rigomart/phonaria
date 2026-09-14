@@ -198,7 +198,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/lab
-          command: deploy --name phonaria-lab-staging --var SITE_URL:${{ steps.staging.outputs.url }}
+          command: deploy --var SITE_URL:${{ steps.staging.outputs.url }}
       - name: Record deployed Worker metrics
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/lab
@@ -206,7 +206,7 @@ jobs:
           WORKER_BUNDLE_DIR: dist
           WORKER_METRICS_OUT: worker-metrics.json
         run: bun ./scripts/record-worker-metrics.ts
-      - name: Run Credits-relevant Lab contract
+      - name: Run Start-slice Lab contract
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CF_ACCESS_CLIENT_ID != ''
         env:
           CI: true
@@ -215,7 +215,7 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           bun --cwd packages/lab-contract e2e:install
-          bun --cwd packages/lab-contract e2e:credits
+          bun --cwd packages/lab-contract e2e:start-slice
       - name: Skip deploy when Cloudflare secrets are missing
         if: env.CLOUDFLARE_API_TOKEN == ''
         run: |

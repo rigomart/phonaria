@@ -8,6 +8,13 @@ describe("resolveStagingOrigin", () => {
 		).toBe("https://phonaria-lab-staging.mirdor-dev.workers.dev");
 	});
 
+	it.each([
+		"phonaria-lab-staging.mirdor-dev.workers.dev",
+		"http://staging.example.com",
+	])("rejects an invalid explicit staging URL: %s", (override) => {
+		expect(() => resolveStagingOrigin(override, "mirdor-dev")).toThrow(/absolute HTTPS URL/);
+	});
+
 	it("rewrites the wrangler placeholder with the account subdomain", () => {
 		expect(resolveStagingOrigin(PLACEHOLDER_STAGING_ORIGIN, "mirdor-dev")).toBe(
 			"https://phonaria-lab-staging.mirdor-dev.workers.dev",
@@ -17,8 +24,8 @@ describe("resolveStagingOrigin", () => {
 		);
 	});
 
-	it("falls back to workers.dev when no override or subdomain is set", () => {
-		expect(resolveStagingOrigin()).toBe(PLACEHOLDER_STAGING_ORIGIN);
-		expect(resolveStagingOrigin("  ")).toBe(PLACEHOLDER_STAGING_ORIGIN);
+	it("rejects a deployment origin that lacks the account subdomain", () => {
+		expect(() => resolveStagingOrigin()).toThrow(/LAB_START_STAGING_URL/);
+		expect(() => resolveStagingOrigin("  ")).toThrow(/LAB_WORKERS_DEV_SUBDOMAIN/);
 	});
 });

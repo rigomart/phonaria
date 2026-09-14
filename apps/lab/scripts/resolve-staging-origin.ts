@@ -14,9 +14,24 @@ export const PLACEHOLDER_STAGING_ORIGIN = "https://phonaria-lab-staging.workers.
 export function resolveStagingOrigin(override?: string, subdomain?: string): string {
 	const trimmed = (override ?? "").trim().replace(/\/+$/, "");
 	if (trimmed && trimmed !== PLACEHOLDER_STAGING_ORIGIN) {
-		return trimmed;
+		let parsed: URL;
+		try {
+			parsed = new URL(trimmed);
+		} catch {
+			throw new Error("LAB_START_STAGING_URL must be an absolute HTTPS URL.");
+		}
+		if (parsed.protocol !== "https:" || parsed.origin !== trimmed) {
+			throw new Error("LAB_START_STAGING_URL must be an absolute HTTPS URL origin.");
+		}
+		return parsed.origin;
 	}
-	return resolvePreviewOrigin(STAGING_WORKER_NAME, subdomain);
+	const resolved = resolvePreviewOrigin(STAGING_WORKER_NAME, subdomain);
+	if (resolved === PLACEHOLDER_STAGING_ORIGIN) {
+		throw new Error(
+			"Set LAB_START_STAGING_URL to the account-scoped staging origin or set LAB_WORKERS_DEV_SUBDOMAIN to the Cloudflare account subdomain.",
+		);
+	}
+	return resolved;
 }
 
 function runCli(): void {
