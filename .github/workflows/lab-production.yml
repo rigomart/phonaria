@@ -1,6 +1,6 @@
 name: Lab Production
 
-# Deploys production without touching DNS. #206 attaches the custom domain.
+# Deploys production to the public custom domain after the #206 cutover.
 
 on:
   workflow_dispatch:
@@ -65,9 +65,9 @@ jobs:
         working-directory: apps/lab
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab
 
-      - name: Assert the deploy will not change DNS
+      - name: Assert the production custom domain
         working-directory: apps/lab
-        run: bun ./scripts/assert-no-custom-domain.ts
+        run: bun ./scripts/assert-production-custom-domain.ts
 
       - name: Assert Practice word data stays out of the Worker
         working-directory: apps/lab

@@ -25,4 +25,13 @@ describe("Cloudflare Practice flag", () => {
 		expect(wrangler).toContain('"/practice"');
 		expect(wrangler).toContain('"/practice/*"');
 	});
+
+	it("attaches only the production environment to the public Lab domain", () => {
+		const productionStart = wrangler.indexOf('"production": {');
+		expect(productionStart).toBeGreaterThan(-1);
+		expect(wrangler.slice(productionStart)).toContain(
+			'"routes": [{ "pattern": "phonaria-lab.rigos.dev", "custom_domain": true }]',
+		);
+		expect(wrangler.slice(0, productionStart)).not.toContain('"custom_domain": true');
+	});
 });
