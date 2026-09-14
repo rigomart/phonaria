@@ -85,11 +85,7 @@ jobs:
           SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
         run: |
           name="phonaria-lab-pr-${{ github.event.pull_request.number }}"
-          if [ -n "$SUBDOMAIN" ]; then
-            url="https://${name}.${SUBDOMAIN}.workers.dev"
-          else
-            url="https://${name}.workers.dev"
-          fi
+          url="$(bun apps/lab/scripts/resolve-preview-origin.ts "$name" "$SUBDOMAIN")"
           echo "name=$name" >> "$GITHUB_OUTPUT"
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Production build (Lab Start)

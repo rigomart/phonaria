@@ -49,7 +49,7 @@ Add these GitHub Actions secrets (never commit them):
 Add these GitHub Actions variables once the first Worker URL is known:
 
 - `LAB_START_STAGING_URL` — stable staging origin, no trailing slash
-- `LAB_WORKERS_DEV_SUBDOMAIN` — account `workers.dev` subdomain used to build `https://phonaria-lab-pr-<n>.<subdomain>.workers.dev`
+- `LAB_WORKERS_DEV_SUBDOMAIN` — account slug (`mirdor-dev`) or `mirdor-dev.workers.dev`. Both become `https://phonaria-lab-pr-<n>.mirdor-dev.workers.dev`
 
 Cloudflare account configuration:
 
