@@ -31,4 +31,9 @@ describe("Practice word data loading", () => {
 		expect(store).not.toContain("curated-10k");
 		expect(src("src/lib/practice/word-pool.ts")).toContain("loadTier2()");
 	});
+
+	it("inlines FLAG_PRACTICE for the Start client bundle", () => {
+		expect(src("vite.config.mts")).toContain("process.env.FLAG_PRACTICE");
+		expect(src("vite.config.mts")).toContain("define-public-lab-flags");
+	});
 });

@@ -41,6 +41,24 @@ function publicBucketUrl(): string {
 	);
 }
 
+/**
+ * Worker `vars` are request-time on the server. The Lab shell also reads
+ * `FLAG_PRACTICE` while hydrating, so the client bundle must see the same
+ * bake-at-build value as Credits site config.
+ */
+function definePublicLabFlags(): Plugin {
+	return {
+		name: "define-public-lab-flags",
+		config() {
+			return {
+				define: {
+					"process.env.FLAG_PRACTICE": JSON.stringify(process.env.FLAG_PRACTICE ?? ""),
+				},
+			};
+		},
+	};
+}
+
 export default defineConfig({
 	server: {
 		port: 3001,
@@ -62,6 +80,7 @@ export default defineConfig({
 	plugins: [
 		stubCurated10kOnSsr(),
 		cloudflare({ viteEnvironment: { name: "ssr" } }),
+		definePublicLabFlags(),
 		tanstackStart({
 			srcDirectory: "src",
 			prerender: {
