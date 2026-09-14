@@ -7,7 +7,7 @@ import { extractDocumentTitle } from "./document-head";
 /**
  * HeadContent can drop the SSR `<title>` during hydration when route `head()`
  * cannot read Worker env. Re-apply the resolved title after paint so axe still
- * sees a non-empty document title on Credits and not-found.
+ * sees a non-empty document title on Credits, IPA charts, and not-found.
  */
 export function EnsureDocumentTitle() {
 	const title = useRouterState({

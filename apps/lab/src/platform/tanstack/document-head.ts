@@ -1,5 +1,13 @@
 import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
 import {
+	CONSONANTS_PAGE_DESCRIPTION,
+	CONSONANTS_PAGE_TITLE,
+	IPA_CHART_CONSONANTS_PATH,
+	IPA_CHART_VOWELS_PATH,
+	VOWELS_PAGE_DESCRIPTION,
+	VOWELS_PAGE_TITLE,
+} from "@/lib/ipa-chart-metadata";
+import {
 	type DocumentMetadata,
 	getDocumentMetadata,
 	SITE_DESCRIPTION,
@@ -35,6 +43,14 @@ export function formatDocumentTitle(pageTitle?: string): string {
 
 export function creditsDocumentTitle(): string {
 	return formatDocumentTitle(CREDITS_PAGE_TITLE);
+}
+
+export function consonantsDocumentTitle(): string {
+	return formatDocumentTitle(CONSONANTS_PAGE_TITLE);
+}
+
+export function vowelsDocumentTitle(): string {
+	return formatDocumentTitle(VOWELS_PAGE_TITLE);
 }
 
 function isClient(): boolean {
@@ -89,17 +105,51 @@ export function buildRootHead(): StartHead {
 	};
 }
 
-export function buildCreditsHead(): StartHead {
+type PageHeadInput = {
+	path: string;
+	title: string;
+	description: string;
+};
+
+export function buildPageHead({ path, title, description }: PageHeadInput): StartHead {
 	const metadata = tryGetDocumentMetadata();
-	const canonical = metadata ? `${metadata.siteUrl}/credits` : undefined;
+	const canonical = metadata
+		? path === "/"
+			? metadata.siteUrl
+			: `${metadata.siteUrl}${path}`
+		: undefined;
 	return {
 		meta: [
-			{ title: creditsDocumentTitle() },
-			{ name: "description", content: CREDITS_PAGE_DESCRIPTION },
+			{ title: formatDocumentTitle(title) },
+			{ name: "description", content: description },
 			...seoMetaTags(metadata, canonical),
 		],
 		links: canonical ? [{ rel: "canonical", href: canonical }] : undefined,
 	};
+}
+
+export function buildCreditsHead(): StartHead {
+	return buildPageHead({
+		path: "/credits",
+		title: CREDITS_PAGE_TITLE,
+		description: CREDITS_PAGE_DESCRIPTION,
+	});
+}
+
+export function buildConsonantsHead(): StartHead {
+	return buildPageHead({
+		path: IPA_CHART_CONSONANTS_PATH,
+		title: CONSONANTS_PAGE_TITLE,
+		description: CONSONANTS_PAGE_DESCRIPTION,
+	});
+}
+
+export function buildVowelsHead(): StartHead {
+	return buildPageHead({
+		path: IPA_CHART_VOWELS_PATH,
+		title: VOWELS_PAGE_TITLE,
+		description: VOWELS_PAGE_DESCRIPTION,
+	});
 }
 
 function seoMetaTags(

@@ -6,6 +6,7 @@ import {
 	VOWEL_COUNT_COPY,
 } from "../src/constants";
 import { expect, test } from "../src/fixtures";
+import { notFoundHeading } from "../src/locators";
 
 test.describe("IPA charts", () => {
 	test("renders consonant chart content and opens a phoneme popover", async ({ page }) => {
@@ -39,5 +40,13 @@ test.describe("IPA charts", () => {
 		await page.getByRole("button", { name: CONSONANT_BUTTON_NAME }).click();
 		await expect(page.getByLabel("Play p")).toBeEnabled();
 		await expect.poll(() => diagramUrls.length).toBeGreaterThan(0);
+	});
+
+	test("returns not-found for unknown chart and articulation routes", async ({ page }) => {
+		for (const path of ["/ipa-chart/not-a-chart", "/ipa-chart/articulation/missing"]) {
+			const response = await page.goto(path);
+			expect(response?.status()).toBe(404);
+			await expect(notFoundHeading(page)).toBeVisible();
+		}
 	});
 });

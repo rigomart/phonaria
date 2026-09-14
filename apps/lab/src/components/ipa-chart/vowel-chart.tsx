@@ -8,13 +8,13 @@ import { Switch } from "@phonaria/ui/components/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { type CSSProperties, useId, useState } from "react";
 import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
-import { cn } from "@/lib/utils";
-import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
 import type {
 	StaticDiphthongVowelChartEntry,
 	StaticMonophthongVowelChartEntry,
 	StaticVowelChartEntry,
-} from "../_lib/vowel-chart-data";
+} from "@/lib/ipa-chart/vowel-chart-data";
+import { cn } from "@/lib/utils";
+import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
 import {
 	getMarkerPercentPosition,
 	VowelChartSurface,

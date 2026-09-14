@@ -9,7 +9,6 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { Fragment, useMemo } from "react";
-import { cn } from "@/lib/utils";
 import {
 	getCellKey,
 	MANNER_LABELS,
@@ -18,7 +17,8 @@ import {
 	PLACE_LABELS,
 	PLACE_ORDER,
 	type PlaceOfArticulation,
-} from "../_lib/consonant-grid";
+} from "@/lib/ipa-chart/consonant-grid";
+import { cn } from "@/lib/utils";
 import { ConsonantPairCard, type ConsonantPhoneme } from "./consonant-pair-card";
 
 function getConsonantPhonemes(targetAccent: TargetAccent): ConsonantPhoneme[] {

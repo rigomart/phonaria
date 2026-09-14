@@ -1,12 +1,17 @@
 export {
+	buildConsonantsHead,
 	buildCreditsHead,
+	buildPageHead,
 	buildRootHead,
+	buildVowelsHead,
+	consonantsDocumentTitle,
 	creditsDocumentTitle,
 	extractDocumentTitle,
 	formatDocumentTitle,
 	type StartHead,
 	type StartMetaTag,
 	tryGetDocumentMetadata,
+	vowelsDocumentTitle,
 } from "./document-head";
 export { EnsureDocumentTitle } from "./document-title";
 export { Link } from "./link";

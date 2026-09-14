@@ -35,5 +35,5 @@ from `LAB_START_STAGING_URL` or `LAB_WORKERS_DEV_SUBDOMAIN`, sets
 Worker name to `phonaria-lab-staging` before deploying the generated config.
 Do not deploy the Cloudflare production Worker from this app.
 
-The first Start slice is the Credits page plus the reusable Lab shell. Other
+The Start slice currently serves Credits, IPA charts, and the reusable Lab shell. Other
 Lab routes remain on Next.js until later migration tickets.
