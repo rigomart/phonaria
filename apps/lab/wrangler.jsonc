@@ -50,6 +50,7 @@
 		},
 		"production": {
 			"name": "phonaria-lab",
+			"workers_dev": true,
 			"routes": [{ "pattern": "phonaria-lab.rigos.dev", "custom_domain": true }],
 			"vars": {
 				"SITE_URL": "https://phonaria-lab.rigos.dev",
