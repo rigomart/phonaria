@@ -4,6 +4,7 @@ import {
 	ASSET_BUCKET_ORIGIN,
 	formatCloudflareHeadersFile,
 	getContentSecurityPolicy,
+	HASHED_ASSET_CACHE_CONTROL,
 } from "./security-headers";
 
 describe("getContentSecurityPolicy", () => {
@@ -22,5 +23,11 @@ describe("getContentSecurityPolicy", () => {
 		const file = formatCloudflareHeadersFile();
 		expect(file.startsWith("/*\n")).toBe(true);
 		expect(file).toContain(`Content-Security-Policy: ${getContentSecurityPolicy()}`);
+	});
+
+	it("caches hashed assets immutably so warm loads do not revalidate them", () => {
+		const file = formatCloudflareHeadersFile();
+		expect(file).toContain(`/assets/*\n  Cache-Control: ${HASHED_ASSET_CACHE_CONTROL}`);
+		expect(HASHED_ASSET_CACHE_CONTROL).toContain("immutable");
 	});
 });

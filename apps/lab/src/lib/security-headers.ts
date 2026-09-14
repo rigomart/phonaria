@@ -24,7 +24,13 @@ export function getContentSecurityPolicy(): string {
 	].join("; ");
 }
 
-/** Cloudflare Static Assets `_headers` file so prerendered HTML keeps CSP. */
+/** Vite content-hashes everything under this path, so it is safe to cache forever. */
+export const HASHED_ASSET_CACHE_CONTROL = "public, max-age=31536000, immutable";
+
+/**
+ * Cloudflare Static Assets `_headers` file so prerendered HTML keeps CSP and
+ * hashed assets are not revalidated on every warm load.
+ */
 export function formatCloudflareHeadersFile(policy: string = getContentSecurityPolicy()): string {
-	return `/*\n  Content-Security-Policy: ${policy}\n`;
+	return `/*\n  Content-Security-Policy: ${policy}\n\n/assets/*\n  Cache-Control: ${HASHED_ASSET_CACHE_CONTROL}\n`;
 }
