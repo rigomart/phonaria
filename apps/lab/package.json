@@ -13,7 +13,7 @@
 		"start": "bun --bun next start",
 		"preview:start": "vite preview",
 		"deploy:start": "bun ./scripts/write-start-dev-vars.ts && vite build && wrangler deploy",
-		"deploy:start:staging": "bun ./scripts/write-start-dev-vars.ts && vite build && wrangler deploy --env staging",
+		"deploy:start:staging": "bun ./scripts/write-start-dev-vars.ts && CLOUDFLARE_ENV=staging vite build && wrangler deploy --name phonaria-lab-staging",
 		"cf-typegen": "wrangler types",
 		"worker-metrics": "bun ./scripts/record-worker-metrics.ts",
 		"lint": "biome check --write",

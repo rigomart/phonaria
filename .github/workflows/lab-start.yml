@@ -18,6 +18,7 @@ jobs:
     permissions:
       contents: read
     env:
+      CLOUDFLARE_ENV: staging
       SITE_URL: ${{ vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
@@ -30,10 +31,22 @@ jobs:
         uses: oven-sh/setup-bun@v2
       - name: Install dependencies
         run: bun ci
+      - name: Resolve staging origin
+        id: staging
+        env:
+          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+        run: |
+          url="$(bun apps/lab/scripts/resolve-staging-origin.ts "${{ vars.LAB_START_STAGING_URL }}" "$SUBDOMAIN")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "SITE_URL=$url" >> "$GITHUB_ENV"
+          echo "Staging origin: $url"
       - name: Generate Cloudflare Worker types
         run: bun --cwd apps/lab cf-typegen
       - name: Production build (Lab Start)
         run: bun --cwd apps/lab build:start
+      - name: Assert staging Worker name
+        working-directory: apps/lab
+        run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab-staging
       - name: Type check Start
         working-directory: apps/lab
         run: bunx tsc --noEmit -p tsconfig.start.json
@@ -90,6 +103,7 @@ jobs:
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Production build (Lab Start)
         env:
+          CLOUDFLARE_ENV: preview
           SITE_URL: ${{ steps.origin.outputs.url }}
         run: bun --cwd apps/lab build:start
       - name: Deploy preview Worker
@@ -99,7 +113,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/lab
-          command: deploy --env preview --name ${{ steps.origin.outputs.name }} --var SITE_URL:${{ steps.origin.outputs.url }}
+          command: deploy --name ${{ steps.origin.outputs.name }} --var SITE_URL:${{ steps.origin.outputs.url }}
       - name: Comment preview URL
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: actions/github-script@v7
@@ -148,6 +162,7 @@ jobs:
       contents: read
       deployments: write
     env:
+      CLOUDFLARE_ENV: staging
       SITE_URL: ${{ vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
@@ -162,8 +177,20 @@ jobs:
         uses: oven-sh/setup-bun@v2
       - name: Install dependencies
         run: bun ci
+      - name: Resolve staging origin
+        id: staging
+        env:
+          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+        run: |
+          url="$(bun apps/lab/scripts/resolve-staging-origin.ts "${{ vars.LAB_START_STAGING_URL }}" "$SUBDOMAIN")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "SITE_URL=$url" >> "$GITHUB_ENV"
+          echo "Staging origin: $url"
       - name: Production build (Lab Start)
         run: bun --cwd apps/lab build:start
+      - name: Assert staging Worker name
+        working-directory: apps/lab
+        run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab-staging
       - name: Deploy staging Worker
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
@@ -171,7 +198,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/lab
-          command: deploy --env staging --var SITE_URL:${{ env.SITE_URL }}
+          command: deploy --name phonaria-lab-staging --var SITE_URL:${{ steps.staging.outputs.url }}
       - name: Record deployed Worker metrics
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/lab
@@ -184,13 +211,11 @@ jobs:
         env:
           CI: true
           LAB_CONTRACT_TARGET: cloudflare-staging
-          LAB_CONTRACT_BASE_URL: ${{ env.SITE_URL }}
+          LAB_CONTRACT_BASE_URL: ${{ steps.staging.outputs.url }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           bun --cwd packages/lab-contract e2e:install
-          bun --cwd packages/lab-contract exec playwright test \
-            e2e/routes.spec.ts e2e/metadata.spec.ts e2e/security.spec.ts e2e/accessibility.spec.ts \
-            --grep "serves Credits|returns a real not-found page|metadata for /credits|robots.txt crawlable|sends a CSP|axe violations on Credits|axe violations on the not-found"
+          bun --cwd packages/lab-contract e2e:credits
       - name: Skip deploy when Cloudflare secrets are missing
         if: env.CLOUDFLARE_API_TOKEN == ''
         run: |
