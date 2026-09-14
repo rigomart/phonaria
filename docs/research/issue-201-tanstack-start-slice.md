@@ -63,10 +63,10 @@ The public Next.js/Vercel Lab must stay unchanged.
 
 ## Credits-relevant Lab contract
 
-Until later tickets migrate `/`, charts, and Practice, staging runs the
-existing `packages/lab-contract` suite filtered to Credits, robots, 404, and
-CSP. Do not add a second browser suite. The full contract stays the Vercel
-acceptance bar.
+Until later tickets migrate `/` and Practice, staging runs the
+existing `packages/lab-contract` suite filtered to Credits, IPA charts,
+robots, 404, and CSP. Do not add a second browser suite. The full
+contract stays the Vercel acceptance bar until those remaining routes land.
 
 ## Remaining human actions
 

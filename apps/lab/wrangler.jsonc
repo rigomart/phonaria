@@ -6,7 +6,15 @@
 	"main": "@tanstack/react-start/server-entry",
 	"assets": {
 		"html_handling": "drop-trailing-slash",
-		"run_worker_first": ["/", "/credits", "/credits/", "/robots.txt", "/sitemap.xml"]
+		"run_worker_first": [
+			"/",
+			"/credits",
+			"/credits/",
+			"/ipa-chart",
+			"/ipa-chart/",
+			"/robots.txt",
+			"/sitemap.xml"
+		]
 	},
 	"observability": {
 		"enabled": true,

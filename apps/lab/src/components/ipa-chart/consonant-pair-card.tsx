@@ -8,8 +8,12 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
+import type {
+	MannerOfArticulation,
+	PlaceOfArticulation,
+	Voicing,
+} from "@/lib/ipa-chart/consonant-grid";
 import { cn } from "@/lib/utils";
-import type { MannerOfArticulation, PlaceOfArticulation, Voicing } from "../_lib/consonant-grid";
 
 export interface ConsonantPhoneme {
 	id: ConsonantSymbolId;

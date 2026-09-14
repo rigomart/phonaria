@@ -1,13 +1,25 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
+import {
+	CONSONANTS_PAGE_DESCRIPTION,
+	CONSONANTS_PAGE_TITLE,
+	IPA_CHART_CONSONANTS_PATH,
+	IPA_CHART_VOWELS_PATH,
+	VOWELS_PAGE_DESCRIPTION,
+	VOWELS_PAGE_TITLE,
+} from "@/lib/ipa-chart-metadata";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import {
+	buildConsonantsHead,
 	buildCreditsHead,
 	buildRootHead,
+	buildVowelsHead,
+	consonantsDocumentTitle,
 	creditsDocumentTitle,
 	extractDocumentTitle,
 	formatDocumentTitle,
 	tryGetDocumentMetadata,
+	vowelsDocumentTitle,
 } from "./document-head";
 
 afterEach(() => {
@@ -25,6 +37,8 @@ describe("formatDocumentTitle", () => {
 
 	it("applies the site title template", () => {
 		expect(creditsDocumentTitle()).toBe(`${CREDITS_PAGE_TITLE} - ${SITE_NAME}`);
+		expect(consonantsDocumentTitle()).toBe(`${CONSONANTS_PAGE_TITLE} - ${SITE_NAME}`);
+		expect(vowelsDocumentTitle()).toBe(`${VOWELS_PAGE_TITLE} - ${SITE_NAME}`);
 	});
 });
 
@@ -111,6 +125,56 @@ describe("buildCreditsHead", () => {
 		const head = buildCreditsHead();
 		expect(head.links).toEqual([
 			{ rel: "canonical", href: "https://phonaria-lab-staging.example.test/credits" },
+		]);
+	});
+});
+
+describe("buildConsonantsHead", () => {
+	it("keeps the consonant chart title on the client when production SITE_URL is missing", () => {
+		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
+		const head = buildConsonantsHead();
+		expect(head.meta).toContainEqual({ title: consonantsDocumentTitle() });
+		expect(head.meta).toContainEqual({
+			name: "description",
+			content: CONSONANTS_PAGE_DESCRIPTION,
+		});
+		expect(head.links).toBeUndefined();
+	});
+
+	it("adds the consonant chart canonical when SITE_URL is set", () => {
+		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		const head = buildConsonantsHead();
+		expect(head.links).toEqual([
+			{
+				rel: "canonical",
+				href: `https://phonaria-lab-staging.example.test${IPA_CHART_CONSONANTS_PATH}`,
+			},
+		]);
+	});
+});
+
+describe("buildVowelsHead", () => {
+	it("keeps the vowel chart title on the client when production SITE_URL is missing", () => {
+		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
+		const head = buildVowelsHead();
+		expect(head.meta).toContainEqual({ title: vowelsDocumentTitle() });
+		expect(head.meta).toContainEqual({
+			name: "description",
+			content: VOWELS_PAGE_DESCRIPTION,
+		});
+		expect(head.links).toBeUndefined();
+	});
+
+	it("adds the vowel chart canonical when SITE_URL is set", () => {
+		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		const head = buildVowelsHead();
+		expect(head.links).toEqual([
+			{
+				rel: "canonical",
+				href: `https://phonaria-lab-staging.example.test${IPA_CHART_VOWELS_PATH}`,
+			},
 		]);
 	});
 });

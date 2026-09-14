@@ -9,7 +9,7 @@
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { formatCloudflareHeadersFile } from "../src/lib/security-headers";
+import { ASSET_BUCKET_ORIGIN, formatCloudflareHeadersFile } from "../src/lib/security-headers";
 
 const PUBLIC_KEYS = [
 	"SITE_URL",
@@ -20,8 +20,12 @@ const PUBLIC_KEYS = [
 	"GOOGLE_SITE_VERIFICATION",
 ] as const;
 
+const DEFAULTS: Partial<Record<(typeof PUBLIC_KEYS)[number], string>> = {
+	PUBLIC_BUCKET_URL: ASSET_BUCKET_ORIGIN,
+};
+
 const lines = PUBLIC_KEYS.flatMap((key) => {
-	const value = process.env[key];
+	const value = process.env[key] ?? DEFAULTS[key];
 	return value ? [`${key}=${value}`] : [];
 });
 

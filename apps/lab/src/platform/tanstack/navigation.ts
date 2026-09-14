@@ -7,6 +7,6 @@ export function notFound(): never {
 	throw tanstackNotFound();
 }
 
-export function redirect(to: string): never {
-	throw tanstackRedirect({ href: to });
+export function redirect(to: string, statusCode = 307): never {
+	throw tanstackRedirect({ href: to, statusCode });
 }
