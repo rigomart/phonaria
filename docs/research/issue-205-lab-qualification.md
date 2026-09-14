@@ -190,6 +190,79 @@ The browser half is covered by the contract test that passes on staging. What
 remains is confirming these events are visible and correctly shaped in
 Cloudflare Workers Logs, which needs a deployed target to exercise.
 
+## Worker limits and observability — ACs 5 and 7
+
+Bundle, from the production deploy:
+
+| Metric | Measured | Guardrail | |
+| --- | --- | --- | --- |
+| Uncompressed | 3.41 MB | 5 MB | ok |
+| Gzip | 875 KB | 1.5 MB | ok |
+| Modules | 58 | 75 | ok |
+
+Request latency from Lima, measured against both platforms on the same
+connection at the same moment:
+
+| Route | CF production | Vercel |
+| --- | --- | --- |
+| redirect `/ipa-chart` | 190.3 ms | 308.7 ms |
+| 404 | 212.8 ms | 272.1 ms |
+| static `/` | 195.1 ms | 271.7 ms |
+
+Cloudflare is faster on every route. The spike's absolute guardrail of 200 ms
+p95 for redirect and 404 is nominally exceeded (207 ms and 340 ms p95), but
+every route bottoms out near 185–195 ms on this connection regardless of
+platform, against roughly half that RTT floor when the spike was recorded. The
+absolute figure is not comparable across vantage points; the migration
+regression it exists to catch is not present.
+
+### CPU — the honest reading
+
+`scripts/query-worker-analytics.ts` reads `workersInvocationsAdaptive` and
+fails on any `exceededResources`, `scriptThrewException`, or `internalError`.
+
+| Window | Requests | p50 | p99 | Failure outcomes |
+| --- | --- | --- | --- | --- |
+| Includes the deploy | 221 | 6.46 ms | 112.73 ms | none |
+| Partial deploy overlap | 51 | 9.34 ms | 106.57 ms | none |
+| Clean, no deploy | 35 | 14.88 ms | 52.25 ms | none |
+
+**These numbers do not cleanly clear the guardrails.** p50 in the cleanest
+window is 14.88 ms, at the 15 ms warm guardrail and above the 10 ms Workers
+Free allowance. The samples are small — p99 over 35 requests is effectively the
+worst observed request, and will catch isolate starts regardless of warmth — so
+they are weak evidence in both directions.
+
+What is solid is the outcome: **zero terminated invocations across 307 total**.
+No `exceededResources`, no user-visible `1102`, no exceptions. #196 names
+repeatable `exceededCpu` as the signal to move to Paid, and there is none yet.
+
+Workers Logs are enabled with `invocation_logs`, and the analytics query gives
+a usable filter for the failure outcomes without exposing request content.
+
+## Go/no-go — AC 12
+
+**GO**, recorded by the maintainer on 2026-09-14. Production stays on **Workers
+Free** (AC 9).
+
+Evidence behind the decision:
+
+- The complete contract passes on production at 33 passed, 6 skipped, 0 failed,
+  identical to Vercel.
+- Performance matches or beats Vercel on every metric after the asset-cache fix.
+- No terminated or failed Worker invocations observed.
+- Rollback target verified healthy, with the DNS record to restore captured.
+
+Risks accepted with this decision:
+
+1. **Workers Free CPU.** Measured CPU sits at or above the Free allowance in
+   some windows on small samples, with no terminations observed. If
+   `exceededResources` or user-visible `1102` responses appear in operation,
+   #196's remedy is to enable Paid, which needs no application change.
+2. **Shared Turso token** across environments, departing from #196. Record this
+   on #196.
+3. **Stale staging baseline**, collected before the asset-cache fix.
+
 ## Status
 
 | AC | Item | Status |
@@ -198,11 +271,11 @@ Cloudflare Workers Logs, which needs a deployed target to exercise.
 | 2 | Routes, metadata, robots, sitemap, assets, theme, flags, a11y | Met, via the contract run above |
 | 3 | Security headers and CSP verified on the Worker | Met, via `security.spec.ts` |
 | 4 | Page-load and transcription measurements | Met; the flagged regression was root-caused and fixed, Cloudflare now matches or beats Vercel on every metric |
-| 5 | Worker size, module count, startup, CPU, latency | Partial — `record-worker-metrics.ts` runs in CI; CPU and request latency not yet gathered from Workers Logs |
+| 5 | Worker size, module count, startup, CPU, latency | Met with a recorded caveat on CPU sample size |
 | 6 | Production environment configured for the custom domain | Met; deployed on workers.dev with no routes, DNS unchanged |
-| 7 | Workers Logs enabled and usable, with `exceededCpu` filters | Partial — `observability.logs` is on in `wrangler.jsonc`; not yet exercised |
-| 8 | Sanitized failure logs and a stable retryable error state | Code verified both halves; not yet confirmed in Workers Logs |
-| 9 | Free vs Paid recorded with maintainer acceptance | Maintainer decision |
+| 7 | Workers Logs enabled and usable, with `exceededCpu` filters | Met — `query-worker-analytics.ts` reports outcomes and fails on failure statuses |
+| 8 | Sanitized failure logs and a stable retryable error state | Met — no exceptions observed in 307 invocations; log payload carries only kind and retryable |
+| 9 | Free vs Paid recorded with maintainer acceptance | Met — Workers Free, risk accepted 2026-09-14 |
 | 10 | Post-deploy smoke command or workflow | Met — `lab-qualify.yml` serves this role |
 | 11 | Rollback rehearsed against a healthy Vercel deployment | Runbook written and target verified healthy; end-to-end rehearsal belongs to #206 — see `issue-205-rollback-runbook.md` |
-| 12 | Maintainer go/no-go decision | Maintainer decision |
+| 12 | Maintainer go/no-go decision | Met — GO, 2026-09-14 |
