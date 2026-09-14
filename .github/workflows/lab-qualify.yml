@@ -1,0 +1,102 @@
+name: Lab Qualify
+
+# On-demand qualification run for the Lab browser contract (#205).
+#
+# Unlike the post-deploy gate in `lab-start.yml`, this runs the COMPLETE contract
+# (`e2e:lab`) rather than the migration-era `e2e:start-slice` subset, and it deploys
+# nothing. Point it at an already-deployed target to collect qualification or
+# post-cutover smoke evidence.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Lab contract target profile
+        type: choice
+        required: true
+        default: cloudflare-staging
+        options:
+          - cloudflare-staging
+          - cloudflare-production
+          - vercel-production
+      base_url:
+        description: Origin override (defaults to the target's own origin)
+        type: string
+        required: false
+      baseline:
+        description: Also record page-load and transcription baselines
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: lab-qualify-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CI: true
+      LAB_CONTRACT_TARGET: ${{ inputs.target }}
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun ci
+
+      # `cloudflare-staging` sets requiresBaseUrlOverride, so it has no default origin.
+      - name: Resolve target origin
+        id: origin
+        env:
+          TARGET: ${{ inputs.target }}
+          BASE_URL_INPUT: ${{ inputs.base_url }}
+          STAGING_URL: ${{ vars.LAB_START_STAGING_URL }}
+          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+        run: |
+          if [ -n "$BASE_URL_INPUT" ]; then
+            url="$BASE_URL_INPUT"
+          elif [ "$TARGET" = "cloudflare-staging" ]; then
+            url="$(bun apps/lab/scripts/resolve-staging-origin.ts "$STAGING_URL" "$SUBDOMAIN")"
+          else
+            url=""
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Contract target: $TARGET"
+          echo "Contract origin: ${url:-<target default>}"
+
+      - name: Install Chromium
+        run: bun --cwd packages/lab-contract e2e:install
+
+      - name: Run the complete Lab contract
+        env:
+          LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+        run: bun --cwd packages/lab-contract e2e:lab
+
+      - name: Record performance baselines
+        if: ${{ inputs.baseline }}
+        env:
+          LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+        run: bun --cwd packages/lab-contract e2e:lab:baseline
+
+      - name: Upload contract report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-qualify-${{ inputs.target }}
+          path: |
+            packages/lab-contract/playwright-report/
+            packages/lab-contract/test-results/
+            packages/lab-contract/baselines/${{ inputs.target }}.json
+          if-no-files-found: ignore
+          retention-days: 30
