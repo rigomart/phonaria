@@ -102,15 +102,18 @@ A green run means the rollback is behaviourally complete, not merely resolving.
 
 ## Rehearsal status
 
-**Not yet rehearsed end to end.** A true rehearsal requires a cutover to undo,
-which has not happened — #206 owns that.
+**Rehearsed end to end on 2026-09-14 during #206.** The Worker custom domain was
+detached, the recorded DNS-only Vercel CNAME was restored, and the public
+hostname returned Vercel and Next.js response headers. The complete
+`vercel-production` contract then passed with 33 passed, 6 skipped, and 0
+failed in [Lab Qualify
+34848503978](https://github.com/rigomart/phonaria/actions/runs/34848503978).
 
-What is verified today is everything the rehearsal depends on: the rollback
-target is healthy and passes the full contract, the exact record to restore is
-captured above, the zone is under our control on Cloudflare, and the repository
-guard that prevents accidental re-cutover exists and is tested.
+The rehearsal CNAME was removed and the same qualified commit was reattached
+to the Worker. The final public-domain contract also passed. The detailed
+timeline and evidence are in `issue-206-lab-cutover.md`.
 
-The remaining step belongs to the cutover ticket: immediately after attaching
-the custom domain in #206, detach it and restore the record once, confirm
-Vercel serves again, then re-attach. That exercises the full path while the
-change is fresh and the window is small.
+One Cloudflare behaviour matters during a real rollback: deploying a Wrangler
+configuration without `routes` does not remove an already-attached custom
+domain. Step 2 must be performed explicitly before the Vercel CNAME can be
+created.
