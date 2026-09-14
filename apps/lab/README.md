@@ -29,7 +29,11 @@ Start owns `src/routes`, `src/router.tsx`, `src/routeTree.gen.ts`, and the
 Vite config. The approved `vite.config.ts` role is `vite.config.mts` because
 Vite 8 loads `@tanstack/react-start/plugin/vite` as ESM and this package is
 not `"type": "module"`. Cloudflare delivery is configured only in
-`wrangler.jsonc`.
+`wrangler.jsonc`. `deploy:start:staging` resolves the account-scoped origin
+from `LAB_START_STAGING_URL` or `LAB_WORKERS_DEV_SUBDOMAIN`, sets
+`CLOUDFLARE_ENV=staging` at build time, and verifies that Vite flattened the
+Worker name to `phonaria-lab-staging` before deploying the generated config.
+Do not deploy the Cloudflare production Worker from this app.
 
 The first Start slice is the Credits page plus the reusable Lab shell. Other
 Lab routes remain on Next.js until later migration tickets.

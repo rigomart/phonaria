@@ -11,6 +11,7 @@
 		"test": "vitest run",
 		"e2e:lab": "playwright test --grep-invert @baseline",
 		"e2e:lab:baseline": "playwright test --grep @baseline",
+		"e2e:start-slice": "playwright test e2e/routes.spec.ts e2e/metadata.spec.ts e2e/security.spec.ts e2e/accessibility.spec.ts --grep \"serves Credits|returns a real not-found page|metadata for /credits|robots.txt crawlable|sends a CSP|axe violations on Credits|axe violations on the not-found\"",
 		"e2e:install": "playwright install chromium --with-deps"
 	},
 	"devDependencies": {
