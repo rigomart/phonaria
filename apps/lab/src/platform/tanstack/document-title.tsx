@@ -2,7 +2,7 @@
 
 import { useRouterState } from "@tanstack/react-router";
 import { useLayoutEffect } from "react";
-import { extractDocumentTitle } from "@/lib/start-document-head";
+import { extractDocumentTitle } from "./document-head";
 
 /**
  * HeadContent can drop the SSR `<title>` during hydration when route `head()`

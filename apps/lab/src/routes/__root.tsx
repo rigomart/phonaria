@@ -4,8 +4,8 @@ import { AppProviders } from "@/components/app-providers";
 import { LabShell } from "@/components/lab-shell";
 import { NotFoundContent } from "@/components/not-found-content";
 import { flags } from "@/lib/flags";
-import { buildRootHead } from "@/lib/start-document-head";
 import {
+	buildRootHead,
 	EnsureDocumentTitle,
 	TanStackPlatformProvider,
 	themeInitScript,

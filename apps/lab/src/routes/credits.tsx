@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CreditsContent } from "@/components/credits-content";
-import { buildCreditsHead } from "@/lib/start-document-head";
+import { buildCreditsHead } from "@/platform/tanstack";
 
 export const Route = createFileRoute("/credits")({
 	head: () => buildCreditsHead(),

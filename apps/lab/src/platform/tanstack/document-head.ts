@@ -37,16 +37,28 @@ export function creditsDocumentTitle(): string {
 	return formatDocumentTitle(CREDITS_PAGE_TITLE);
 }
 
+function isClient(): boolean {
+	return typeof window !== "undefined";
+}
+
+function isMissingSiteUrlError(error: unknown): boolean {
+	return error instanceof Error && error.message.startsWith("SITE_URL is not set");
+}
+
 /**
- * `getDocumentMetadata()` throws in production when SITE_URL is unset. Worker
- * bindings are not available in the Start client bundle, so route `head()`
- * must keep a title even when that lookup fails.
+ * Worker bindings are not available in the Start client bundle. Production
+ * `head()` still needs a title when SITE_URL is unset there. Any other
+ * `getDocumentMetadata()` failure — including a malformed SITE_URL on the
+ * server — is rethrown.
  */
 export function tryGetDocumentMetadata(): DocumentMetadata | undefined {
 	try {
 		return getDocumentMetadata();
-	} catch {
-		return undefined;
+	} catch (error) {
+		if (isClient() && isMissingSiteUrlError(error)) {
+			return undefined;
+		}
+		throw error;
 	}
 }
 

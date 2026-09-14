@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "./credits-metadata";
-import { SITE_DESCRIPTION, SITE_NAME } from "./site";
+import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
+import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import {
 	buildCreditsHead,
 	buildRootHead,
@@ -8,13 +8,14 @@ import {
 	extractDocumentTitle,
 	formatDocumentTitle,
 	tryGetDocumentMetadata,
-} from "./start-document-head";
+} from "./document-head";
 
 afterEach(() => {
 	delete process.env.SITE_URL;
 	delete process.env.SITE_INDEXING_ENABLED;
 	delete process.env.GOOGLE_SITE_VERIFICATION;
 	vi.unstubAllEnvs();
+	vi.unstubAllGlobals();
 });
 
 describe("formatDocumentTitle", () => {
@@ -33,9 +34,26 @@ describe("tryGetDocumentMetadata", () => {
 		expect(tryGetDocumentMetadata()?.siteUrl).toBe("https://phonaria-lab-staging.example.test");
 	});
 
-	it("returns undefined in production when SITE_URL is missing", () => {
+	it("returns undefined on the client when production SITE_URL is missing", () => {
 		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
 		expect(tryGetDocumentMetadata()).toBeUndefined();
+	});
+
+	it("rethrows on the server when production SITE_URL is missing", () => {
+		vi.stubEnv("NODE_ENV", "production");
+		expect(() => tryGetDocumentMetadata()).toThrow(/SITE_URL is not set/);
+	});
+
+	it("rethrows a malformed SITE_URL", () => {
+		process.env.SITE_URL = "phonaria.rigos.dev";
+		expect(() => tryGetDocumentMetadata()).toThrow(/not an absolute URL/);
+	});
+
+	it("rethrows a malformed SITE_URL on the client", () => {
+		vi.stubGlobal("window", {} as Window);
+		process.env.SITE_URL = "phonaria.rigos.dev";
+		expect(() => tryGetDocumentMetadata()).toThrow(/not an absolute URL/);
 	});
 });
 
@@ -56,8 +74,9 @@ describe("extractDocumentTitle", () => {
 });
 
 describe("buildRootHead", () => {
-	it("keeps a title when production SITE_URL is missing", () => {
+	it("keeps a title on the client when production SITE_URL is missing", () => {
 		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
 		expect(buildRootHead().meta).toContainEqual({ title: SITE_NAME });
 		expect(buildRootHead().meta).toContainEqual({
 			name: "description",
@@ -75,8 +94,9 @@ describe("buildRootHead", () => {
 });
 
 describe("buildCreditsHead", () => {
-	it("keeps the Credits title when production SITE_URL is missing", () => {
+	it("keeps the Credits title on the client when production SITE_URL is missing", () => {
 		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
 		const head = buildCreditsHead();
 		expect(head.meta).toContainEqual({ title: creditsDocumentTitle() });
 		expect(head.meta).toContainEqual({
