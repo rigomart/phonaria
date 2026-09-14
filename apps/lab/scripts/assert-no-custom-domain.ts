@@ -1,12 +1,7 @@
 #!/usr/bin/env bun
 /**
- * Guard the pre-cutover production deploy.
- *
- * Attaching a custom domain to a Worker is what creates the DNS record, so a
- * `routes` entry in the flattened Wrangler config *is* the cutover. #205
- * qualifies production without changing DNS; #206 performs the cutover. This
- * refuses any generated config that would move `phonaria-lab.rigos.dev` away
- * from the Vercel deployment that is still serving learners.
+ * Attaching a custom domain creates the DNS record, so a `routes` entry in the
+ * flattened Wrangler config is the cutover. Refuse it until #206.
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -34,11 +29,7 @@ export function describeRoute(route: WranglerRoute): string {
 export function assertNoCustomDomain(routes: WranglerRoute[]): void {
 	if (routes.length === 0) return;
 	throw new Error(
-		`Generated Wrangler config declares ${routes.length} route(s): ${routes
-			.map(describeRoute)
-			.join(
-				", ",
-			)}. Deploying this would create DNS records and cut phonaria-lab.rigos.dev over to the Worker. #205 qualifies production without changing DNS; move route configuration to the #206 cutover.`,
+		`Generated Wrangler config declares routes: ${routes.map(describeRoute).join(", ")}. Deploying this would create DNS records and cut phonaria-lab.rigos.dev over to the Worker. Move route configuration to the #206 cutover.`,
 	);
 }
 

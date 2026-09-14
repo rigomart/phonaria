@@ -132,13 +132,19 @@ Prerendering emitted exactly 4 pages — `/`, `/credits`,
 `/ipa-chart/consonants`, `/ipa-chart/vowels` — with no Practice route, matching
 the production indexing rules.
 
-Production takes its own database-scoped read-only Turso token
-(`LAB_TURSO_DATABASE_URL_PRODUCTION`, `LAB_TURSO_AUTH_TOKEN_PRODUCTION`),
-separate from the pair staging and previews share, per #196.
+### Turso credentials — approved departure from #196
 
-**Not yet run.** Deploying makes the Worker publicly reachable on workers.dev
-before cutover, which is a maintainer decision, and the production Turso token
-does not exist yet.
+#196 specifies distinct read-only tokens per environment. The maintainer has
+decided every environment shares one connection (`LAB_TURSO_DATABASE_URL`,
+`LAB_TURSO_AUTH_TOKEN`): the database is identical everywhere, holds no user
+data, and the token cannot write.
+
+#196 requires an explicit specification update for any relaxation, so record
+this on #196 before the go/no-go, or AC 6's "least-privilege secrets" is
+checked against a criterion that was knowingly changed.
+
+Pre-cutover the Worker is publicly reachable on workers.dev, noindex, as
+approved.
 
 ## Sanitized failure logging — AC 8
 

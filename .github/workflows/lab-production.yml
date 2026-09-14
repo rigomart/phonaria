@@ -1,17 +1,6 @@
 name: Lab Production
 
-# Deploy the production Lab Worker WITHOUT touching DNS (#205 AC 6).
-#
-# The Worker deploys under its production name and production vars, and becomes
-# reachable on its workers.dev origin only. `phonaria-lab.rigos.dev` keeps
-# pointing at Vercel until #206 attaches the custom domain, because attaching a
-# custom domain is what writes the DNS record.
-#
-# Two guards enforce that: the build must flatten to the `phonaria-lab` Worker
-# name, and the generated Wrangler config must declare no routes.
-#
-# Dispatch-only on purpose. Production must never deploy as a side effect of a
-# merge while the Vercel deployment is still serving learners.
+# Deploys production without touching DNS. #206 attaches the custom domain.
 
 on:
   workflow_dispatch:
@@ -34,7 +23,6 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: lab-production
     permissions:
       contents: read
     env:
@@ -44,8 +32,8 @@ jobs:
       FLAG_PRACTICE: "0"
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      LAB_TURSO_DATABASE_URL_PRODUCTION: ${{ secrets.LAB_TURSO_DATABASE_URL_PRODUCTION }}
-      LAB_TURSO_AUTH_TOKEN_PRODUCTION: ${{ secrets.LAB_TURSO_AUTH_TOKEN_PRODUCTION }}
+      LAB_TURSO_DATABASE_URL: ${{ secrets.LAB_TURSO_DATABASE_URL }}
+      LAB_TURSO_AUTH_TOKEN: ${{ secrets.LAB_TURSO_AUTH_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -77,7 +65,6 @@ jobs:
         working-directory: apps/lab
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab
 
-      # The cutover guard. Fails the deploy if a route would change DNS.
       - name: Assert the deploy will not change DNS
         working-directory: apps/lab
         run: bun ./scripts/assert-no-custom-domain.ts
@@ -101,19 +88,17 @@ jobs:
           workingDirectory: apps/lab
           command: deploy
 
-      # Production keeps its own database-scoped read-only token, separate from
-      # the one staging and previews share (#196, "Data and environment configuration").
-      - name: Put production Turso secrets on the Worker
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.LAB_TURSO_DATABASE_URL_PRODUCTION != '' && env.LAB_TURSO_AUTH_TOKEN_PRODUCTION != ''
+      - name: Put Turso secrets on the Worker
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.LAB_TURSO_DATABASE_URL != '' && env.LAB_TURSO_AUTH_TOKEN != ''
         working-directory: apps/lab
         run: |
-          printf '%s' "$LAB_TURSO_DATABASE_URL_PRODUCTION" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria-lab
-          printf '%s' "$LAB_TURSO_AUTH_TOKEN_PRODUCTION" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria-lab
+          printf '%s' "$LAB_TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria-lab
+          printf '%s' "$LAB_TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria-lab
 
-      - name: Warn when production Turso secrets are missing
-        if: env.CLOUDFLARE_API_TOKEN != '' && (env.LAB_TURSO_DATABASE_URL_PRODUCTION == '' || env.LAB_TURSO_AUTH_TOKEN_PRODUCTION == '')
+      - name: Warn when Turso secrets are missing
+        if: env.CLOUDFLARE_API_TOKEN != '' && (env.LAB_TURSO_DATABASE_URL == '' || env.LAB_TURSO_AUTH_TOKEN == '')
         run: |
-          echo "::warning::Production Turso secrets are not configured. Server-tier transcription will fail on the production Worker until LAB_TURSO_DATABASE_URL_PRODUCTION and LAB_TURSO_AUTH_TOKEN_PRODUCTION are set."
+          echo "::warning::Turso secrets are not configured. Server-tier transcription will fail on the production Worker until LAB_TURSO_DATABASE_URL and LAB_TURSO_AUTH_TOKEN are set."
 
       - name: Record deployed Worker metrics
         if: env.CLOUDFLARE_API_TOKEN != ''
@@ -127,8 +112,6 @@ jobs:
         if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
         run: bun --cwd packages/lab-contract e2e:install
 
-      # Canonical stays on the real hostname while the Worker answers on
-      # workers.dev, so the contract needs the canonical override.
       - name: Run the complete Lab contract
         if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
         env:
