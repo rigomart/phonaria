@@ -79,6 +79,11 @@ jobs:
           WORKER_BUNDLE_DIR: dist/server
         run: bun ./scripts/assert-server-bundle-boundary.ts
 
+      - name: Capture Worker startup time
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: apps/lab
+        run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
+
       - name: Deploy production Worker
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
@@ -106,6 +111,7 @@ jobs:
         env:
           WORKER_BUNDLE_DIR: dist
           WORKER_METRICS_OUT: worker-metrics.json
+          WRANGLER_DEPLOY_LOG: wrangler-dry-run.log
         run: bun ./scripts/record-worker-metrics.ts
 
       - name: Install Chromium
@@ -130,6 +136,11 @@ jobs:
           LAB_CONTRACT_CANONICAL_ORIGIN: https://phonaria-lab.rigos.dev
         run: bun --cwd packages/lab-contract e2e:lab:baseline
 
+      - name: Report Worker CPU and invocation outcomes
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: apps/lab
+        run: bun ./scripts/query-worker-analytics.ts phonaria-lab 30 | tee worker-analytics.log
+
       - name: Upload production evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -137,6 +148,7 @@ jobs:
           name: lab-production-evidence
           path: |
             apps/lab/worker-metrics.json
+            apps/lab/worker-analytics.log
             packages/lab-contract/playwright-report/
             packages/lab-contract/test-results/
           if-no-files-found: ignore
