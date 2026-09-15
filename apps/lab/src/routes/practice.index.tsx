@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PracticeIndexContent } from "@/practice/_components/practice-index-content";
 import { buildPracticeIndexHead } from "@/platform/tanstack";
+import { PracticeIndexContent } from "@/practice/_components/practice-index-content";
 
 export const Route = createFileRoute("/practice/")({
 	head: () => buildPracticeIndexHead(),

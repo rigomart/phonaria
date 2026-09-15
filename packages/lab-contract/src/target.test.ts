@@ -27,7 +27,7 @@ describe("loadTargetFromEnv", () => {
 		expect(target.practiceEnabled).toBe(false);
 		expect(target.indexingEnabled).toBe(false);
 		expect(target.capabilities.practiceSession).toBe(false);
-		expect(target.skipReasons.practiceSession).toMatch(/Practice is disabled/);
+		expect(target.skipReasons.practiceSession).toMatch(/Practice stays disabled/);
 	});
 
 	it("rejects unknown target names", () => {
@@ -56,11 +56,7 @@ describe("loadTargetFromEnv", () => {
 	});
 
 	it("lists the shipped target profiles", () => {
-		expect(listTargetNames()).toEqual([
-			"cloudflare-production",
-			"cloudflare-staging",
-			"local",
-		]);
+		expect(listTargetNames()).toEqual(["cloudflare-production", "cloudflare-staging", "local"]);
 	});
 
 	it("fails when a disabled capability has no skip reason", () => {
