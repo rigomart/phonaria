@@ -57,7 +57,7 @@ jobs:
         run: bun ./scripts/assert-server-bundle-boundary.ts
       - name: Type check Start
         working-directory: apps/lab
-        run: bun run check-types
+        run: bunx tsc --noEmit -p tsconfig.start.json
       - name: Wrangler dry-run
         working-directory: apps/lab
         run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
