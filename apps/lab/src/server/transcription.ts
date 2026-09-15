@@ -1,5 +1,3 @@
-import "server-only";
-
 import { type DatabaseConfig, type DatabaseEnv, resolveDatabaseConfig } from "@/db/config";
 import { createDatabase, type LabDatabase, type LibsqlClientFactory } from "@/db/drizzle";
 import { processWords as defaultProcessWords } from "@/lib/g2p/service";

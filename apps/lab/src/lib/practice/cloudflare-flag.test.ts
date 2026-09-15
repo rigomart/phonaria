@@ -30,7 +30,9 @@ describe("Cloudflare Practice flag", () => {
 		const productionStart = wrangler.indexOf('"production": {');
 		expect(productionStart).toBeGreaterThan(-1);
 		const productionConfig = wrangler.slice(productionStart);
-		expect(productionConfig).toContain('"workers_dev": true');
+		// The custom domain is production's only origin; the workers.dev origin
+		// existed for the cutover window and is no longer published.
+		expect(productionConfig).not.toContain('"workers_dev"');
 		expect(productionConfig).toContain(
 			'"routes": [{ "pattern": "phonaria-lab.rigos.dev", "custom_domain": true }]',
 		);

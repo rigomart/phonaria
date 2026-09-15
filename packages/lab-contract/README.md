@@ -21,7 +21,6 @@ adapter.
 | --- | --- |
 | `bun e2e:lab` | Contract against `LAB_CONTRACT_TARGET`, defaulting to Cloudflare production |
 | `bun e2e:lab:cloudflare` | Contract against Cloudflare staging (`LAB_CONTRACT_BASE_URL` + Access token) |
-| `bun --cwd packages/lab-contract e2e:start-slice` | Transcription, Credits, IPA charts, Practice (when the target enables it), metadata, 404, CSP, and accessibility checks for the Cloudflare Start slice |
 | `bun e2e:lab:baseline` | Tagged page-load and transcription timing collection |
 | `LAB_CONTRACT_WRITE_BASELINE=1 bun e2e:lab:baseline` | Also write `baselines/<target>.json` |
 

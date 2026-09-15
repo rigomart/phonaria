@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { requireFlag } from "@/platform/tanstack";
+import { requireFlag } from "@/lib/require-flag";
 
 /**
  * Layout for every /practice route. The flag gate lives here so unknown

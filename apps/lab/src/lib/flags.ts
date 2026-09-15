@@ -2,7 +2,7 @@ import { createFlags } from "@phonaria/flags";
 
 /**
  * Lab feature flags. Route gates live in
- * `src/platform/tanstack/require-flag.ts`.
+ * `src/lib/require-flag.ts`.
  * See packages/flags/README.md.
  *
  * Values are baked in at build time from `process.env` (Wrangler `vars`

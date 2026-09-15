@@ -19,6 +19,8 @@ import {
 import { ChevronDown, MoveRight } from "lucide-react";
 import { useState } from "react";
 import { AudioControls } from "@/components/audio-controls";
+import { Image } from "@/components/image";
+import { getPublicAssetBaseUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
 	type ChartPoint,
@@ -29,7 +31,6 @@ import {
 	SMALL_VOWEL_CHART_LAYOUT,
 	VOWEL_HEIGHT_ORDER,
 } from "@/lib/vowel-chart-geometry";
-import { getPublicAssetBaseUrl, Image } from "@/platform";
 
 const BUCKET_URL = getPublicAssetBaseUrl();
 interface PhonemePopoverProps<TLanguage extends TargetAccent> {

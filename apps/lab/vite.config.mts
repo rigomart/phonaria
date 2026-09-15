@@ -69,7 +69,6 @@ export default defineConfig({
 		tsconfigPaths: true,
 		alias: {
 			"@": path.join(labRoot, "src"),
-			"server-only": path.join(labRoot, "src/platform/server-only-shim.ts"),
 		},
 	},
 	define: {

@@ -1,17 +1,14 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { AppProviders } from "@/components/app-providers";
+import { EnsureDocumentTitle } from "@/components/ensure-document-title";
 import { LabShell } from "@/components/lab-shell";
 import { NotFoundContent } from "@/components/not-found-content";
+import { themeInitScript } from "@/components/theme";
+import { buildRootHead } from "@/lib/document-head";
 import { flags } from "@/lib/flags";
-import {
-	buildRootHead,
-	EnsureDocumentTitle,
-	TanStackPlatformProvider,
-	themeInitScript,
-} from "@/platform/tanstack";
 import "@phonaria/ui/globals.css";
-import "@/platform/fonts";
+import "@/lib/fonts";
 
 export const Route = createRootRoute({
 	head: () => {
@@ -28,13 +25,11 @@ export const Route = createRootRoute({
 
 function RootComponent() {
 	return (
-		<TanStackPlatformProvider>
-			<AppProviders>
-				<LabShell flags={flags.snapshot()}>
-					<Outlet />
-				</LabShell>
-			</AppProviders>
-		</TanStackPlatformProvider>
+		<AppProviders>
+			<LabShell flags={flags.snapshot()}>
+				<Outlet />
+			</LabShell>
+		</AppProviders>
 	);
 }
 

@@ -1,5 +1,3 @@
-import "server-only";
-
 export type DatabaseConfig = {
 	url: string;
 	authToken?: string;

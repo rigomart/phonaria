@@ -1,5 +1,3 @@
-import "server-only";
-
 import { processWords as defaultProcessWords } from "@/lib/g2p/service";
 import {
 	TranscriptionError,

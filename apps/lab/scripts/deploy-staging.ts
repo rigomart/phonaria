@@ -26,7 +26,7 @@ function runCommand({ command, args, env }: DeploymentCommand): void {
 	}
 }
 
-export function deployStartStaging(
+export function deployStaging(
 	{ baseEnv = process.env, override, subdomain, wranglerArgs = [] }: DeployStartStagingOptions = {},
 	run: CommandRunner = runCommand,
 ): void {
@@ -41,7 +41,7 @@ export function deployStartStaging(
 		SITE_URL: siteUrl,
 	};
 
-	run({ command: "bun", args: ["./scripts/write-start-dev-vars.ts"], env });
+	run({ command: "bun", args: ["./scripts/write-dev-vars.ts"], env });
 	run({ command: "vite", args: ["build"], env });
 	run({
 		command: "bun",
@@ -56,7 +56,7 @@ export function deployStartStaging(
 }
 
 if (import.meta.main) {
-	deployStartStaging({
+	deployStaging({
 		override: process.env.LAB_START_STAGING_URL,
 		subdomain: process.env.LAB_WORKERS_DEV_SUBDOMAIN,
 		wranglerArgs: process.argv.slice(2),

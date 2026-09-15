@@ -1,5 +1,3 @@
-import "server-only";
-
 import { inArray } from "drizzle-orm";
 import { getDb, type LabDatabase } from "@/db/drizzle";
 import { words } from "@/db/schema";

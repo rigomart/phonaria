@@ -29,6 +29,6 @@ describe("Fontsource fonts", () => {
 	it("does not vendor public font files", () => {
 		expect(existsSync(publicFontsDir)).toBe(false);
 		expect(rootRouteSource).not.toContain("FONT_PRELOADS");
-		expect(rootRouteSource).toContain('import "@/platform/fonts"');
+		expect(rootRouteSource).toContain('import "@/lib/fonts"');
 	});
 });

@@ -1,18 +1,10 @@
 name: Lab Production
 
-# Deploys production to the public custom domain after the #206 cutover.
+# Deploys production to the public custom domain.
 
 on:
   workflow_dispatch:
     inputs:
-      deployment_target:
-        description: Deploy only to workers.dev for pre-cutover qualification, or attach the public domain
-        type: choice
-        required: true
-        default: public-domain
-        options:
-          - worker-origin
-          - public-domain
       run_contract:
         description: Run the complete Lab contract after deploying
         type: boolean
@@ -56,35 +48,22 @@ jobs:
 
       - name: Resolve production deployment origin
         id: origin
-        env:
-          DEPLOYMENT_TARGET: ${{ inputs.deployment_target }}
-          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
         run: |
-          if [ "$DEPLOYMENT_TARGET" = "worker-origin" ]; then
-            url="$(bun apps/lab/scripts/resolve-preview-origin.ts phonaria-lab "$SUBDOMAIN")"
-          else
-            url="https://phonaria-lab.rigos.dev"
-          fi
+          url="https://phonaria-lab.rigos.dev"
           echo "url=$url" >> "$GITHUB_OUTPUT"
-          echo "Production deployment target: $DEPLOYMENT_TARGET"
           echo "Production contract origin: $url"
 
       - name: Generate Cloudflare Worker types
         run: bun --cwd apps/lab cf-typegen
 
       - name: Production build (Lab Start)
-        run: bun --cwd apps/lab build:start
-
-      - name: Prepare production deployment target
-        working-directory: apps/lab
-        run: bun ./scripts/prepare-production-deployment.ts "${{ inputs.deployment_target }}"
+        run: bun --cwd apps/lab build
 
       - name: Assert production Worker name
         working-directory: apps/lab
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab
 
       - name: Assert the production custom domain
-        if: inputs.deployment_target == 'public-domain'
         working-directory: apps/lab
         run: bun ./scripts/assert-production-custom-domain.ts
 

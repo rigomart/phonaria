@@ -2,7 +2,10 @@
 
 ## Project Structure & Module Organization
 - Agents can read the README for any relevant package or app to get a fast overview before making changes.
-- `apps/web`: Next.js 15 App Router project with internationalization via `[locale]` dynamic routes. Feature-specific code uses route groups (e.g. `(overview)`) and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`) to co-locate related code. UI primitives live in `src/components`, shared utilities in `src/lib`, and feature data wiring in `src/data`.
+- `apps/lab`: The active surface. TanStack Start on Vite, deployed to Cloudflare Workers. Routes live in `src/routes`, shared chrome in `src/components`, domain logic in `src/lib`, Practice in `src/practice`, and request-time Cloudflare adapters in `src/server/cloudflare`. Worker delivery is configured only in `wrangler.jsonc`. See `apps/lab/README.md`.
+- `packages/flags`: Env-backed feature flags (`FLAG_*`) so modules can ship dark and be enabled per environment. Lab supplies them as Worker `vars`.
+- `packages/lab-contract`: Browser-level contract run with Playwright against a deployed Lab, selected by target profile.
+- `apps/web`: Legacy surface, maintained but not receiving new features. Next.js 15 App Router project with internationalization via `[locale]` dynamic routes. Feature-specific code uses route groups (e.g. `(overview)`) and prefixed directories (`_components`, `_hooks`, `_lib`, `_store`, `_types`, `_schemas`, `_sections`) to co-locate related code. UI primitives live in `src/components`, shared utilities in `src/lib`, and feature data wiring in `src/data`.
 - `packages/phonetics-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. See the package README for architecture details. Key API surface:
   - `PhonemeIpaMap` / `getIpaForPhonemeId()`: Core ID-to-IPA symbol map (language-agnostic)
   - Language-aware getters: `getConsonantArticulationRegistryForLanguage()`, `getLanguagePhonemeIds()`, `getLanguagePhonemeCount()`, etc.

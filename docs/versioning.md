@@ -10,12 +10,13 @@ Conventional Commits → main → CI passes → manual Release workflow → Tag 
 ```
 
 1. **Development**: Work on feature branches using conventional commits.
-2. **Preview**: PRs get Vercel preview deployments.
+2. **Preview**: PRs get a protected Cloudflare preview Worker from `lab-start.yml`.
 3. **Merge**: Merge PRs into `main`.
 4. **CI**: The `CI` workflow must pass for that `main` push.
 5. **Release**: Run the `Release` workflow from the Actions tab (manual `workflow_dispatch`).
-   Auto-release after CI is paused for the Lab migration and can be restored after cutover.
-6. **Deploy**: Vercel production deploy comes from the `main` merge (single deploy path).
+   Auto-release after CI remains paused; it can be restored whenever the team wants it.
+6. **Deploy**: Lab staging deploys on every `main` merge. Lab production is a manual
+   `Lab Production` workflow run against `phonaria-lab.rigos.dev`.
 
 ## Conventional Commits
 
