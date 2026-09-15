@@ -57,7 +57,7 @@ jobs:
         run: bun ./scripts/assert-server-bundle-boundary.ts
       - name: Type check Start
         working-directory: apps/lab
-        run: bunx tsc --noEmit -p tsconfig.start.json
+        run: bun run check-types
       - name: Wrangler dry-run
         working-directory: apps/lab
         run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
@@ -173,7 +173,7 @@ jobs:
       - name: Skip deploy when Cloudflare secrets are missing
         if: env.CLOUDFLARE_API_TOKEN == ''
         run: |
-          echo "CLOUDFLARE_API_TOKEN is not configured. Repository-side Start validation ran; add the Cloudflare deploy secrets listed in docs/research/issue-201-tanstack-start-slice.md."
+          echo "CLOUDFLARE_API_TOKEN is not configured. Repository-side Start validation ran; add the Cloudflare deploy secrets documented in apps/lab/README.md."
 
   deploy-staging:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
