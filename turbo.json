@@ -3,7 +3,7 @@
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": [".next/**", "!.next/cache/**", "dist/**"],
+			"outputs": [".next/**", "!.next/cache/**", "dist/**", ".output/**"],
 			"env": [
 				"FLAG_*",
 				"UPSTASH_REDIS_REST_URL",
@@ -12,6 +12,7 @@
 				"DATABASE_URL",
 				"GOOGLE_SITE_VERIFICATION",
 				"NEXT_PUBLIC_BUCKET_URL",
+				"PUBLIC_BUCKET_URL",
 				"SITE_URL",
 				"SITE_INDEXING_ENABLED",
 				"TURSO_DATABASE_URL",
@@ -36,20 +37,6 @@
 			"dependsOn": ["build"],
 			"cache": false,
 			"env": ["SKIP_RATE_LIMIT", "DATABASE_URL"]
-		},
-		"build:start": {
-			"dependsOn": ["^build"],
-			"outputs": ["dist/**", ".output/**"],
-			"env": [
-				"FLAG_*",
-				"GOOGLE_SITE_VERIFICATION",
-				"PUBLIC_BUCKET_URL",
-				"SITE_URL",
-				"SITE_INDEXING_ENABLED",
-				"TURSO_DATABASE_URL",
-				"TURSO_AUTH_TOKEN"
-			],
-			"inputs": ["$TURBO_DEFAULT$", ".env*"]
 		},
 		"e2e:lab": {
 			"cache": false,

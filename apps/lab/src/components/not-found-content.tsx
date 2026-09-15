@@ -1,6 +1,6 @@
 import { Button } from "@phonaria/ui/components/button";
 import { Home } from "lucide-react";
-import { Link } from "@/platform/link";
+import { Link } from "@/components/link";
 
 /**
  * Shared 404 body. Serves both unknown URLs and the flag gate's not-found

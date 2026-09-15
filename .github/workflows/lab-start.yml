@@ -43,7 +43,7 @@ jobs:
       - name: Generate Cloudflare Worker types
         run: bun --cwd apps/lab cf-typegen
       - name: Production build (Lab Start)
-        run: bun --cwd apps/lab build:start
+        run: bun --cwd apps/lab build
       - name: Assert staging Worker name
         working-directory: apps/lab
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab-staging
@@ -55,9 +55,6 @@ jobs:
         env:
           WORKER_BUNDLE_DIR: dist/server
         run: bun ./scripts/assert-server-bundle-boundary.ts
-      - name: Type check Start
-        working-directory: apps/lab
-        run: bunx tsc --noEmit -p tsconfig.start.json
       - name: Wrangler dry-run
         working-directory: apps/lab
         run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
@@ -115,7 +112,7 @@ jobs:
         env:
           CLOUDFLARE_ENV: preview
           SITE_URL: ${{ steps.origin.outputs.url }}
-        run: bun --cwd apps/lab build:start
+        run: bun --cwd apps/lab build
       - name: Deploy preview Worker
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
@@ -210,7 +207,7 @@ jobs:
           echo "SITE_URL=$url" >> "$GITHUB_ENV"
           echo "Staging origin: $url"
       - name: Production build (Lab Start)
-        run: bun --cwd apps/lab build:start
+        run: bun --cwd apps/lab build
       - name: Assert staging Worker name
         working-directory: apps/lab
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab-staging
@@ -238,7 +235,7 @@ jobs:
           WORKER_BUNDLE_DIR: dist
           WORKER_METRICS_OUT: worker-metrics.json
         run: bun ./scripts/record-worker-metrics.ts
-      - name: Run Start-slice Lab contract
+      - name: Run the Lab contract
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CF_ACCESS_CLIENT_ID != ''
         env:
           CI: true
@@ -247,8 +244,8 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           bun --cwd packages/lab-contract e2e:install
-          bun --cwd packages/lab-contract e2e:start-slice
+          bun --cwd packages/lab-contract e2e:lab
       - name: Skip deploy when Cloudflare secrets are missing
         if: env.CLOUDFLARE_API_TOKEN == ''
         run: |
-          echo "CLOUDFLARE_API_TOKEN is not configured. Staging deploy is waiting on the secrets listed in docs/research/issue-201-tanstack-start-slice.md."
+          echo "CLOUDFLARE_API_TOKEN is not configured. Staging deploy is waiting on the Cloudflare secrets documented in apps/lab/README.md."

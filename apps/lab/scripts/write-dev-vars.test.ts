@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { ASSET_BUCKET_ORIGIN } from "../src/lib/security-headers";
-import { buildDevVarsContents, parseDevVars } from "./write-start-dev-vars";
+import { buildDevVarsContents, parseDevVars } from "./write-dev-vars";
 
-describe("write-start-dev-vars", () => {
+describe("write-dev-vars", () => {
 	it("writes public keys from the environment", () => {
 		const contents = buildDevVarsContents({
 			SITE_URL: "https://phonaria-lab-staging.example.test",

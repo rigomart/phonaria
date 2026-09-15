@@ -1,5 +1,3 @@
-import "server-only";
-
 import type { LabDatabase } from "@/db/drizzle";
 import { lookupManyCmudict } from "./cmudict";
 import type { G2PWord } from "./model";

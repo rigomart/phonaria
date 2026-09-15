@@ -1,7 +1,7 @@
 "use client";
 
 import { ThemeSwitcher as UiThemeSwitcher } from "@phonaria/ui/components/theme-switcher";
-import { useTheme } from "@/platform/theme";
+import { useTheme } from "@/components/theme";
 
 export function ThemeSwitcher() {
 	const { theme, setTheme } = useTheme();

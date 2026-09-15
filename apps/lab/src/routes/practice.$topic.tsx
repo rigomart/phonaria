@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { buildPracticeTopicHead } from "@/lib/document-head";
+import { notFound } from "@/lib/navigation";
 import { getTopic } from "@/lib/practice/topics";
-import { buildPracticeTopicHead, notFound } from "@/platform/tanstack";
 import { PracticeExperience } from "@/practice/_components/practice-experience";
 import { PracticeTopicLoading } from "@/practice/_components/practice-topic-loading";
 

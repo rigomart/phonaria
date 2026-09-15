@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { type DeploymentCommand, deployStartStaging } from "./deploy-start-staging";
+import { type DeploymentCommand, deployStaging } from "./deploy-staging";
 
-describe("deployStartStaging", () => {
+describe("deployStaging", () => {
 	it("builds and deploys the staging config with the account-scoped origin", () => {
 		const commands: DeploymentCommand[] = [];
 
-		deployStartStaging(
+		deployStaging(
 			{
 				baseEnv: { SITE_INDEXING_ENABLED: "0" },
 				subdomain: "mirdor-dev",
@@ -18,7 +18,7 @@ describe("deployStartStaging", () => {
 		expect(commands).toEqual([
 			{
 				command: "bun",
-				args: ["./scripts/write-start-dev-vars.ts"],
+				args: ["./scripts/write-dev-vars.ts"],
 				env: {
 					SITE_INDEXING_ENABLED: "0",
 					CLOUDFLARE_ENV: "staging",
@@ -63,9 +63,7 @@ describe("deployStartStaging", () => {
 		const commands: DeploymentCommand[] = [];
 
 		expect(() =>
-			deployStartStaging({ subdomain: "mirdor-dev", wranglerArgs }, (command) =>
-				commands.push(command),
-			),
+			deployStaging({ subdomain: "mirdor-dev", wranglerArgs }, (command) => commands.push(command)),
 		).toThrow(/Worker name comes from wrangler.jsonc/);
 		expect(commands).toEqual([]);
 	});

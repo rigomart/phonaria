@@ -1,13 +1,25 @@
-/**
- * Class-based theme adapter for TanStack Start. Implements the portable
- * theme contract without importing next-themes.
- */
 "use client";
 
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { ThemeApiProvider, type ThemeMode } from "../theme";
+import {
+	createContext,
+	type ReactNode,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
+
+export type ThemeMode = "light" | "dark" | "system";
+
+export type ThemeApi = {
+	theme: ThemeMode;
+	setTheme: (theme: ThemeMode) => void;
+};
 
 const STORAGE_KEY = "theme";
+
+const ThemeContext = createContext<ThemeApi | null>(null);
 
 function resolveTheme(theme: ThemeMode): "light" | "dark" {
 	if (theme === "light" || theme === "dark") return theme;
@@ -22,6 +34,7 @@ function applyTheme(theme: ThemeMode) {
 	root.style.colorScheme = resolved;
 }
 
+/** Runs before paint so the first frame already carries the stored theme. */
 export function themeInitScript(): string {
 	return `(function(){try{var t=localStorage.getItem('${STORAGE_KEY}')||'system';var r=t==='light'||t==='dark'?t:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.classList.add(r);document.documentElement.style.colorScheme=r;}catch(e){}})();`;
 }
@@ -45,8 +58,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 	const value = useMemo(() => ({ theme, setTheme }), [theme, setTheme]);
 
-	return <ThemeApiProvider value={value}>{children}</ThemeApiProvider>;
+	return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
-export { useTheme } from "../theme";
-export type { ThemeMode };
+export function useTheme(): ThemeApi {
+	const value = useContext(ThemeContext);
+	if (!value) {
+		throw new Error("useTheme must be used within a ThemeProvider");
+	}
+	return value;
+}

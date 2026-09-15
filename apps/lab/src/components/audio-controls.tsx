@@ -5,7 +5,7 @@ import { ButtonGroup } from "@phonaria/ui/components/group";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { PlayIcon, Turtle } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
-import { getPublicAssetBaseUrl } from "@/platform";
+import { getPublicAssetBaseUrl } from "@/lib/site";
 
 type Props = {
 	path: string;

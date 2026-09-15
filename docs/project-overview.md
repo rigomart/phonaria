@@ -58,7 +58,7 @@ Phonaria is a learner-first pronunciation toolkit for people studying English as
 - **Type safety** – Strict TypeScript adoption keeps the toolchain reliable.
 - **Composable UI** – Reusable components power multiple surfaces without duplication.
 - **Data-driven layouts** – Feature sections render from structured phoneme and contrast metadata.
-- **Modern tooling** – Next.js, React, Tailwind CSS, and shadcn/ui form the foundation.
+- **Modern tooling** – TanStack Start on Cloudflare Workers, React, Tailwind CSS, and shadcn/ui form the foundation.
 
 # Upcoming Features
 

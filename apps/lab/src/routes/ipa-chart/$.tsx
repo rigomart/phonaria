@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { notFound } from "@/platform/tanstack";
+import { notFound } from "@/lib/navigation";
 
 /**
  * Unknown chart and articulation paths must render the Lab not-found page

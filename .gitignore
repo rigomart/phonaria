@@ -1,6 +1,6 @@
-# Dependencies
-/node_modules/
-**/node_modules/
+# Dependencies (trailing-slash patterns miss the symlinks bun creates in worktrees)
+/node_modules
+**/node_modules
 **.DS_Store
 .pnp
 .pnp.js

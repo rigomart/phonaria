@@ -112,7 +112,10 @@ export function buildRootHead(): StartHead {
 			{ name: "description", content: metadata?.description ?? SITE_DESCRIPTION },
 			...seoMetaTags(metadata, metadata?.siteUrl),
 		],
-		links: [{ rel: "icon", href: "/favicon.svg" }],
+		links: [
+			{ rel: "icon", href: "/favicon.svg" },
+			{ rel: "apple-touch-icon", href: APPLE_TOUCH_ICON_PATH },
+		],
 	};
 }
 
@@ -201,6 +204,10 @@ export function buildPracticeTopicHead(topic: PracticeTopicHeadSource | undefine
 	});
 }
 
+/** Served from `public/`. Social cards need an absolute URL, built from SITE_URL. */
+const OPENGRAPH_IMAGE_PATH = "/opengraph-image.jpg";
+const APPLE_TOUCH_ICON_PATH = "/apple-touch-icon.png";
+
 function seoMetaTags(
 	metadata: DocumentMetadata | undefined,
 	canonical: string | undefined,
@@ -216,9 +223,13 @@ function seoMetaTags(
 		{ property: "og:description", content: metadata.description },
 		{ property: "og:site_name", content: metadata.siteName },
 		{ property: "og:url", content: canonical },
-		{ name: "twitter:card", content: "summary" },
+		{ property: "og:image", content: `${metadata.siteUrl}${OPENGRAPH_IMAGE_PATH}` },
+		{ property: "og:image:width", content: "1200" },
+		{ property: "og:image:height", content: "630" },
+		{ name: "twitter:card", content: "summary_large_image" },
 		{ name: "twitter:title", content: metadata.siteName },
 		{ name: "twitter:description", content: metadata.description },
+		{ name: "twitter:image", content: `${metadata.siteUrl}${OPENGRAPH_IMAGE_PATH}` },
 		...(metadata.googleSiteVerification
 			? [{ name: "google-site-verification", content: metadata.googleSiteVerification }]
 			: []),
