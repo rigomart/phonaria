@@ -95,6 +95,13 @@ describe("extractDocumentTitle", () => {
 });
 
 describe("buildRootHead", () => {
+	it("links the browser tab icon from the Vite public root", () => {
+		expect(buildRootHead().links).toContainEqual({
+			rel: "icon",
+			href: "/favicon.svg",
+		});
+	});
+
 	it("keeps a title on the client when production SITE_URL is missing", () => {
 		vi.stubEnv("NODE_ENV", "production");
 		vi.stubGlobal("window", {} as Window);

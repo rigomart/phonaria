@@ -112,6 +112,7 @@ export function buildRootHead(): StartHead {
 			{ name: "description", content: metadata?.description ?? SITE_DESCRIPTION },
 			...seoMetaTags(metadata, metadata?.siteUrl),
 		],
+		links: [{ rel: "icon", href: "/favicon.svg" }],
 	};
 }
 
