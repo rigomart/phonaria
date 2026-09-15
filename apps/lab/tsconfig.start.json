@@ -28,6 +28,8 @@
 		"src/platform/**/*.tsx",
 		"src/components/**/*.ts",
 		"src/components/**/*.tsx",
+		"src/practice/**/*.ts",
+		"src/practice/**/*.tsx",
 		"src/hooks/**/*.ts",
 		"src/hooks/**/*.tsx",
 		"src/lib/**/*.ts",
@@ -37,5 +39,5 @@
 		"src/server/**/*.d.ts",
 		"vite.config.mts"
 	],
-	"exclude": ["src/platform/next/**", "src/app/**", "node_modules", "**/*.test.ts"]
+	"exclude": ["node_modules", "**/*.test.ts"]
 }

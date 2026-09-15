@@ -1,5 +1,5 @@
 /**
- * Shared security-header policy for Next.js and TanStack Start.
+ * Shared security-header policy for TanStack Start and Cloudflare assets.
  * Keep this the source of truth so the two runtimes cannot drift.
  *
  * Host matches `next.config.ts` `images.remotePatterns`.

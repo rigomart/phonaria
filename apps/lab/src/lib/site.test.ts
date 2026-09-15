@@ -14,7 +14,6 @@ afterEach(() => {
 	delete process.env.SITE_INDEXING_ENABLED;
 	delete process.env.GOOGLE_SITE_VERIFICATION;
 	delete process.env.PUBLIC_BUCKET_URL;
-	delete process.env.NEXT_PUBLIC_BUCKET_URL; // pragma: allowlist secret
 	// NODE_ENV is typed read-only, so production is simulated with stubEnv.
 	vi.unstubAllEnvs();
 });
@@ -31,9 +30,9 @@ describe("getSiteUrl", () => {
 	});
 
 	it("falls back to localhost outside production", () => {
-		expect(getSiteUrl()).toBe("http://localhost:3000");
+		expect(getSiteUrl()).toBe("http://localhost:3001");
 		process.env.SITE_URL = "";
-		expect(getSiteUrl()).toBe("http://localhost:3000");
+		expect(getSiteUrl()).toBe("http://localhost:3001");
 	});
 
 	it("throws in production when unset", () => {
@@ -76,20 +75,14 @@ describe("isIndexingEnabled", () => {
 });
 
 describe("getPublicAssetBaseUrl", () => {
-	it("prefers the portable PUBLIC_BUCKET_URL name", () => {
+	it("uses the PUBLIC_BUCKET_URL name", () => {
 		process.env.PUBLIC_BUCKET_URL = "https://assets.example.test/";
-		process.env.NEXT_PUBLIC_BUCKET_URL = "https://next-only.example.test"; // pragma: allowlist secret
 		expect(getPublicAssetBaseUrl()).toBe("https://assets.example.test");
-	});
-
-	it("falls back to the Next.js public-env alias", () => {
-		process.env.NEXT_PUBLIC_BUCKET_URL = "https://next-alias.example.test/"; // pragma: allowlist secret
-		expect(getPublicAssetBaseUrl()).toBe("https://next-alias.example.test");
 	});
 
 	it("is undefined when unset or empty", () => {
 		expect(getPublicAssetBaseUrl()).toBeUndefined();
-		process.env.NEXT_PUBLIC_BUCKET_URL = ""; // pragma: allowlist secret
+		process.env.PUBLIC_BUCKET_URL = "";
 		expect(getPublicAssetBaseUrl()).toBeUndefined();
 	});
 });

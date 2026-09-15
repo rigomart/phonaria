@@ -6,12 +6,11 @@ on:
       target:
         description: Contract target profile
         required: true
-        default: vercel-production
+        default: cloudflare-production
         type: choice
         options:
-          - vercel-production
-          - cloudflare-staging
           - cloudflare-production
+          - cloudflare-staging
 
 jobs:
   contract:

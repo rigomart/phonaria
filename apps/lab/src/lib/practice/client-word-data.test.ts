@@ -26,7 +26,7 @@ describe("Practice word data loading", () => {
 	});
 
 	it("loads the topic pool from the client session store", () => {
-		const store = src("src/app/practice/_store/practice-session-store.ts");
+		const store = src("src/practice/_store/practice-session-store.ts");
 		expect(store).toContain("loadWordPoolForTopic");
 		expect(store).not.toContain("curated-10k");
 		expect(src("src/lib/practice/word-pool.ts")).toContain("loadTier2()");

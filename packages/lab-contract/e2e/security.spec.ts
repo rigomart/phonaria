@@ -3,7 +3,7 @@ import { parseCsp, REQUIRED_CSP_DIRECTIVES, REQUIRED_CSP_TOKENS } from "../src/s
 
 test.describe("Security headers", () => {
 	test("sends a CSP that preserves the current policy intent", async ({ request }) => {
-		// Credits exists on both the public Next.js Lab and the Start slice.
+		// Credits is a stable public route with the production CSP.
 		const response = await request.get("/credits");
 		expect(response.status()).toBe(200);
 

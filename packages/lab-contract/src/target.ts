@@ -28,7 +28,7 @@ export function loadTargetFromEnv(
 	env: NodeJS.Dict<string> = process.env,
 	targetsDir = TARGETS_DIR,
 ): LabContractTarget {
-	const name = env.LAB_CONTRACT_TARGET?.trim() || "vercel-production";
+	const name = env.LAB_CONTRACT_TARGET?.trim() || "cloudflare-production";
 	const available = listTargetNames(targetsDir);
 	if (!available.includes(name)) {
 		throw new TargetConfigError(

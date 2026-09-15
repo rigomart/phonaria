@@ -1,5 +1,9 @@
 # Issue #205 — Cloudflare Lab qualification record
 
+> Historical qualification evidence. The Lab now runs only on Cloudflare;
+> Vercel comparisons below record the migration decision and are not active
+> deployment instructions.
+
 Running record of qualification evidence for
 [#205](https://github.com/rigomart/phonaria/issues/205), "Qualify the complete
 Cloudflare Lab for production". Parent spec: #196.
@@ -277,5 +281,5 @@ Risks accepted with this decision:
 | 8 | Sanitized failure logs and a stable retryable error state | Met — no exceptions observed in 307 invocations; log payload carries only kind and retryable |
 | 9 | Free vs Paid recorded with maintainer acceptance | Met — Workers Free, risk accepted 2026-09-14 |
 | 10 | Post-deploy smoke command or workflow | Met — `lab-qualify.yml` serves this role |
-| 11 | Rollback rehearsed against a healthy Vercel deployment | Runbook written and target verified healthy; end-to-end rehearsal belongs to #206 — see `issue-205-rollback-runbook.md` |
+| 11 | Rollback rehearsed against a healthy Vercel deployment | Target verified healthy; the historical end-to-end rehearsal is recorded in the #206 cutover record |
 | 12 | Maintainer go/no-go decision | Met — GO, 2026-09-14 |

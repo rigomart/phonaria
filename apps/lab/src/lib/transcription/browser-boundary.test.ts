@@ -41,13 +41,11 @@ describe("browser transcription boundary", () => {
 	it("keeps the injectable client transcription seam", () => {
 		const store = readFileSync(resolve(labRoot, "src/lib/transcription/g2p-store.ts"), "utf8");
 		const hook = readFileSync(resolve(labRoot, "src/hooks/use-transcribe.tsx"), "utf8");
-		const nextPage = readFileSync(resolve(labRoot, "src/app/page.tsx"), "utf8");
 		const startRoute = readFileSync(resolve(labRoot, "src/routes/index.tsx"), "utf8");
 
 		expect(store).toMatch(/export type TranscribeWordsFn/);
 		expect(store).not.toMatch(/transcribeWordsAction/);
 		expect(hook).not.toMatch(/transcribeWordsAction/);
-		expect(nextPage).toMatch(/transcribeWordsAction/);
 		expect(startRoute).toMatch(/transcribeWordsFromStart/);
 		expect(startRoute).not.toMatch(/transcribeWordsAction/);
 	});

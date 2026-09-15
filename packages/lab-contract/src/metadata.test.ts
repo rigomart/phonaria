@@ -3,7 +3,7 @@ import type { LabContractTarget } from "./constants";
 import { expectedCanonical, expectedRobots, expectedSitemapUrls } from "./metadata";
 
 const target = {
-	name: "vercel-production",
+	name: "cloudflare-production",
 	baseUrl: "https://phonaria-lab.rigos.dev",
 	expectedCanonicalOrigin: "https://phonaria-lab.rigos.dev",
 	practiceEnabled: false,

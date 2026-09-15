@@ -2,8 +2,7 @@ import type { ImgHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Portable image renderer. Replaces unoptimized `next/image` usage so the same
- * component works in Next.js and TanStack Start.
+ * Portable image renderer for TanStack Start.
  *
  * `fill` preserves the previous layout: the parent must be `relative`, and the
  * image covers that box. `unoptimized` is accepted and ignored — rendering is
@@ -36,8 +35,7 @@ export function Image({
 	...rest
 }: AppImageProps) {
 	return (
-		// Portable renderer: next/image is the Next.js-only alternative this
-		// module replaces. Articulation SVGs are already served unoptimized.
+		// Articulation SVGs are already served unoptimized.
 		// biome-ignore lint/performance/noImgElement: framework-neutral <img> is the Lab image contract
 		<img
 			src={src}

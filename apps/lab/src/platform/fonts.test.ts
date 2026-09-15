@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 const platformDir = import.meta.dirname;
 const fontsTs = readFileSync(resolve(platformDir, "fonts.ts"), "utf8");
 const fontsCss = readFileSync(resolve(platformDir, "fonts.css"), "utf8");
-const layoutSource = readFileSync(resolve(platformDir, "../app/layout.tsx"), "utf8");
+const rootRouteSource = readFileSync(resolve(platformDir, "../routes/__root.tsx"), "utf8");
 const packageJson = readFileSync(resolve(platformDir, "../../package.json"), "utf8");
 const publicFontsDir = resolve(platformDir, "../../public/fonts");
 
@@ -26,10 +26,9 @@ describe("Fontsource fonts", () => {
 		expect(`${fontsTs}\n${fontsCss}`).not.toMatch(/fonts\.googleapis\.com|fonts\.gstatic.com/i);
 	});
 
-	it("does not vendor public font files or use next/font/google", () => {
+	it("does not vendor public font files", () => {
 		expect(existsSync(publicFontsDir)).toBe(false);
-		expect(layoutSource).not.toContain("next/font/google");
-		expect(layoutSource).not.toContain("FONT_PRELOADS");
-		expect(layoutSource).toContain('import "@/platform/fonts"');
+		expect(rootRouteSource).not.toContain("FONT_PRELOADS");
+		expect(rootRouteSource).toContain('import "@/platform/fonts"');
 	});
 });

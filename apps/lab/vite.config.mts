@@ -37,11 +37,7 @@ function stubCurated10kOnSsr(): Plugin {
 const PUBLIC_ASSET_HOST = "assets.rigos.dev";
 
 function publicBucketUrl(): string {
-	return (
-		process.env.PUBLIC_BUCKET_URL?.trim() ||
-		process.env.NEXT_PUBLIC_BUCKET_URL?.trim() || // pragma: allowlist secret
-		`https://${PUBLIC_ASSET_HOST}`
-	);
+	return process.env.PUBLIC_BUCKET_URL?.trim() || `https://${PUBLIC_ASSET_HOST}`;
 }
 
 /**

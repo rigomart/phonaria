@@ -1,2 +1,2 @@
-/** Vite shim. Next.js provides the real `server-only` package. */
+/** Vite shim for modules that use the `server-only` marker. */
 export {};

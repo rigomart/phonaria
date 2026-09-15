@@ -146,7 +146,7 @@ jobs:
               '',
               `Protected Cloudflare preview: ${url}`,
               '',
-              'This Worker is the TanStack Start slice (transcription, Credits, IPA charts, Lab shell, and Practice when FLAG_PRACTICE is on). The public Vercel Lab is unchanged.',
+              'This preview runs the complete TanStack Start Lab, with Practice enabled when FLAG_PRACTICE is on.',
               'Cloudflare Access must remain required. Do not share an unprotected URL.',
             ].join('\n');
             const { data: comments } = await github.rest.issues.listComments({
@@ -173,7 +173,7 @@ jobs:
       - name: Skip deploy when Cloudflare secrets are missing
         if: env.CLOUDFLARE_API_TOKEN == ''
         run: |
-          echo "CLOUDFLARE_API_TOKEN is not configured. Repository-side Start validation ran; add the Cloudflare deploy secrets listed in docs/research/issue-201-tanstack-start-slice.md."
+          echo "CLOUDFLARE_API_TOKEN is not configured. Repository-side Start validation ran; add the Cloudflare deploy secrets documented in apps/lab/README.md."
 
   deploy-staging:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

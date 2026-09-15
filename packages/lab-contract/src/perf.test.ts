@@ -9,7 +9,7 @@ import {
 } from "./perf";
 
 const target = {
-	name: "vercel-production",
+	name: "cloudflare-production",
 	baseUrl: "https://phonaria-lab.rigos.dev",
 	expectedCanonicalOrigin: "https://phonaria-lab.rigos.dev",
 	practiceEnabled: false,

@@ -48,7 +48,7 @@ must not be reused here.
 ## Updating a committed baseline
 
 ```bash
-LAB_CONTRACT_TARGET=vercel-production LAB_CONTRACT_WRITE_BASELINE=1 bun e2e:lab:baseline
+LAB_CONTRACT_TARGET=cloudflare-production LAB_CONTRACT_WRITE_BASELINE=1 bun e2e:lab:baseline
 ```
 
 Commit the updated `baselines/<target>.json` only when collection conditions

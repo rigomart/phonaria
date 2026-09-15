@@ -1,8 +1,6 @@
 /**
- * Framework-neutral Lab platform API.
- *
- * Next.js adapters live in `./next`. TanStack Start adapters live in
- * `./tanstack`. This barrel must not import `next/*` or `next-themes`.
+ * Framework-neutral Lab platform API. TanStack Start adapters live in
+ * `./tanstack`; this barrel must not import framework implementations.
  */
 export { type AppImageProps, Image, imageClassName } from "./image";
 export {

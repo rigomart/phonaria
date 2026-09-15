@@ -10,17 +10,16 @@ the Legacy web E2E suite in `apps/web/e2e`.
 
 ```bash
 bun --cwd packages/lab-contract e2e:install
-bun e2e:lab:vercel
+bun e2e:lab
 ```
 
-Default target is `vercel-production` (`https://phonaria-lab.rigos.dev`). The
-suite does not start an application server unless you opt into the local
+Default target is `cloudflare-production` (`https://phonaria-lab.rigos.dev`).
+The suite does not start an application server unless you opt into the local
 adapter.
 
 | Command | What it does |
 | --- | --- |
-| `bun e2e:lab` | Contract against `LAB_CONTRACT_TARGET`, defaulting to Vercel production |
-| `bun e2e:lab:vercel` | Contract against the public Vercel Lab |
+| `bun e2e:lab` | Contract against `LAB_CONTRACT_TARGET`, defaulting to Cloudflare production |
 | `bun e2e:lab:cloudflare` | Contract against Cloudflare staging (`LAB_CONTRACT_BASE_URL` + Access token) |
 | `bun --cwd packages/lab-contract e2e:start-slice` | Transcription, Credits, IPA charts, Practice (when the target enables it), metadata, 404, CSP, and accessibility checks for the Cloudflare Start slice |
 | `bun e2e:lab:baseline` | Tagged page-load and transcription timing collection |
@@ -32,10 +31,9 @@ Profiles live in `targets/*.json` and are selected with `LAB_CONTRACT_TARGET`.
 
 | Profile | Use |
 | --- | --- |
-| `vercel-production` | Current public Lab. Practice disabled. |
 | `cloudflare-staging` | Private staging. Requires `LAB_CONTRACT_BASE_URL` and Cloudflare Access service-token env vars. Practice enabled. |
-| `cloudflare-production` | Public Cloudflare Lab after cutover. Practice disabled. |
-| `local` | `http://localhost:3000`. Set `LAB_CONTRACT_START_LOCAL=1` to have Playwright start `apps/lab`. |
+| `cloudflare-production` | Public Cloudflare Lab. Practice disabled. |
+| `local` | `http://localhost:3001`. Set `LAB_CONTRACT_START_LOCAL=1` to have Playwright start `apps/lab`. |
 
 Required fields:
 
@@ -60,8 +58,8 @@ justification. Missing reasons fail at config load so a gap cannot pass silently
 
 Target-specific gaps use Playwright `test.skip(condition, reason)`. Practice
 disabled vs enabled is two explicit describes, not an empty `if`. Controlled
-failure tests skip on Vercel production because that environment has no
-test-only failure hook.
+failure tests skip on production because that environment has no test-only
+failure hook.
 
 Axe scans exclude known current-Lab findings so the contract measures
 migration parity rather than blocking on the existing design system:
