@@ -1,0 +1,49 @@
+name: Cleanup Lab preview
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+concurrency:
+  group: lab-start-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WORKER_NAME: phonaria-lab-pr-${{ github.event.pull_request.number }}
+    steps:
+      - name: Delete preview Worker
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        shell: bash
+        run: |
+          response="$RUNNER_TEMP/cloudflare-delete.json"
+          status="$(curl --silent --show-error \
+            --output "$response" \
+            --write-out '%{http_code}' \
+            --request DELETE \
+            --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$WORKER_NAME?force=true")"
+
+          case "$status" in
+            200|204)
+              echo "Deleted $WORKER_NAME."
+              ;;
+            404)
+              echo "$WORKER_NAME was already absent."
+              ;;
+            *)
+              cat "$response"
+              exit 1
+              ;;
+          esac
+
+      - name: Report missing Cloudflare credentials
+        if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
+        run: echo "::warning::Cloudflare credentials are not configured; preview cleanup was skipped."
