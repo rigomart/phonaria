@@ -1,7 +1,7 @@
 {
 	"name": "local",
-	"baseUrl": "http://localhost:3000",
-	"expectedCanonicalOrigin": "http://localhost:3000",
+	"baseUrl": "http://localhost:3001",
+	"expectedCanonicalOrigin": "http://localhost:3001",
 	"practiceEnabled": true,
 	"indexingEnabled": false,
 	"bucketAssetsAvailable": true,

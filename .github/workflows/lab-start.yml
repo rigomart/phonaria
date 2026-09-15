@@ -146,7 +146,7 @@ jobs:
               '',
               `Protected Cloudflare preview: ${url}`,
               '',
-              'This Worker is the TanStack Start slice (transcription, Credits, IPA charts, Lab shell, and Practice when FLAG_PRACTICE is on). The public Vercel Lab is unchanged.',
+              'This preview runs the complete TanStack Start Lab, with Practice enabled when FLAG_PRACTICE is on.',
               'Cloudflare Access must remain required. Do not share an unprotected URL.',
             ].join('\n');
             const { data: comments } = await github.rest.issues.listComments({

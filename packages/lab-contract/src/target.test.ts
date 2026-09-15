@@ -20,9 +20,9 @@ afterEach(() => {
 });
 
 describe("loadTargetFromEnv", () => {
-	it("defaults to the public Vercel Lab profile", () => {
+	it("defaults to the public Cloudflare production profile", () => {
 		const target = loadTargetFromEnv({});
-		expect(target.name).toBe("vercel-production");
+		expect(target.name).toBe("cloudflare-production");
 		expect(target.baseUrl).toBe("https://phonaria-lab.rigos.dev");
 		expect(target.practiceEnabled).toBe(false);
 		expect(target.indexingEnabled).toBe(false);
@@ -60,7 +60,6 @@ describe("loadTargetFromEnv", () => {
 			"cloudflare-production",
 			"cloudflare-staging",
 			"local",
-			"vercel-production",
 		]);
 	});
 

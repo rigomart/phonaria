@@ -13,7 +13,6 @@ on:
         options:
           - cloudflare-staging
           - cloudflare-production
-          - vercel-production
       base_url:
         description: Origin override (defaults to the target's own origin)
         type: string

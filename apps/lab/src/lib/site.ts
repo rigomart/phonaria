@@ -1,6 +1,6 @@
 /**
- * Site identity and public asset configuration. Framework-neutral: reads
- * process.env so Next.js and TanStack Start can both supply values.
+ * Site identity and public asset configuration. Reads process.env so TanStack
+ * Start and the Cloudflare Worker can supply values.
  *
  * Metadata, robots, and the sitemap all source their values here so the app
  * serves correct SEO surfaces on whatever domain hosts it.
@@ -13,7 +13,7 @@
 export const SITE_NAME = "Phonaria Lab";
 export const SITE_DESCRIPTION = "Experimental workspace for phonetic transcription tools";
 
-const DEV_SITE_URL = "http://localhost:3000";
+const DEV_SITE_URL = "http://localhost:3001";
 
 export type DocumentMetadata = {
 	siteName: string;
@@ -61,20 +61,13 @@ export function getGoogleSiteVerification(): string | undefined {
 	return process.env.GOOGLE_SITE_VERIFICATION?.trim() || undefined;
 }
 
-/**
- * Origin for remote diagrams and phoneme audio. `PUBLIC_BUCKET_URL` is the
- * portable name; `NEXT_PUBLIC_BUCKET_URL` is the Next.js public-env alias.
- */
+/** Origin for remote diagrams and phoneme audio. */
 export function getPublicAssetBaseUrl(): string | undefined {
-	const raw = (
-		process.env.PUBLIC_BUCKET_URL?.trim() ||
-		process.env.NEXT_PUBLIC_BUCKET_URL?.trim() || // pragma: allowlist secret
-		""
-	).replace(/\/+$/, "");
+	const raw = (process.env.PUBLIC_BUCKET_URL?.trim() || "").replace(/\/+$/, "");
 	return raw || undefined;
 }
 
-/** Portable document metadata consumed by the current Next.js layout adapter. */
+/** Portable document metadata consumed by the TanStack route head helpers. */
 export function getDocumentMetadata(): DocumentMetadata {
 	return {
 		siteName: SITE_NAME,

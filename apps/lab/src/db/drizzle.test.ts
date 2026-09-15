@@ -31,14 +31,6 @@ describe("drizzle module load", () => {
 		}
 	});
 
-	it("imports the Next.js adapter without database credentials", async () => {
-		vi.stubEnv("TURSO_DATABASE_URL", "");
-		vi.stubEnv("TURSO_AUTH_TOKEN", "");
-
-		const adapter = await import("@/app/_actions/transcribe");
-		expect(typeof adapter.transcribeWordsAction).toBe("function");
-	});
-
 	it("imports the Worker transcription handler without database credentials", async () => {
 		vi.stubEnv("TURSO_DATABASE_URL", "");
 		vi.stubEnv("TURSO_AUTH_TOKEN", "");

@@ -5,8 +5,8 @@ import type { ReactNode } from "react";
 import { AudioManagerProvider } from "@/hooks/use-audio-manager";
 
 /**
- * Framework-neutral client providers. Theme and Link adapters wrap this at
- * each route root so Next.js and TanStack Start can inject their own.
+ * Client providers shared by the TanStack Start route tree. Theme and Link
+ * adapters wrap this at the route root.
  */
 export function AppProviders({ children }: { children: ReactNode }) {
 	return (

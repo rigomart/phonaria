@@ -3,9 +3,9 @@
 import { type ComponentProps, createContext, forwardRef, type ReactNode, useContext } from "react";
 
 /**
- * Portable in-app link contract. Route roots provide a Next.js or TanStack
- * implementation; shell components consume this module instead of either
- * framework's Link.
+ * Portable in-app link contract. The route root provides the TanStack
+ * implementation; shell components consume this module instead of the
+ * router's Link directly.
  */
 export type AppLinkProps = Omit<ComponentProps<"a">, "href"> & {
 	href: string;

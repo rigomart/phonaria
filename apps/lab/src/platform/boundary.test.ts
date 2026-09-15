@@ -13,15 +13,14 @@ function listFiles(directory: string): string[] {
 }
 
 describe("Lab platform boundary", () => {
-	it("keeps the neutral barrel free of Next.js and next-themes", () => {
+	it("keeps the neutral barrel free of framework adapters", () => {
 		const barrel = src("./index.ts");
 		expect(barrel).not.toContain('from "next/');
 		expect(barrel).not.toContain('from "next-themes"');
-		expect(barrel).not.toContain('from "./next/');
 		expect(barrel).not.toContain('from "./tanstack/');
 	});
 
-	it("keeps shell navigation and images off next/link and next/image", () => {
+	it("keeps shared navigation and images framework-neutral", () => {
 		const shellFiles = [
 			"../components/header.tsx",
 			"../components/footer.tsx",
@@ -29,8 +28,7 @@ describe("Lab platform boundary", () => {
 			"../components/not-found-content.tsx",
 			"../components/ipa-chart/consonant-chart.tsx",
 			"../components/ipa-chart/vowel-chart.tsx",
-			"../app/not-found.tsx",
-			"../app/practice/_components/topic-card.tsx",
+			"../practice/_components/topic-card.tsx",
 			"../components/transcription/display/info-button.tsx",
 		];
 
@@ -41,20 +39,12 @@ describe("Lab platform boundary", () => {
 		}
 	});
 
-	it("keeps theme setup and flag gates on explicit target adapters", () => {
-		expect(src("../app/providers.tsx")).toContain('from "@/platform/next"');
-		expect(src("../app/providers.tsx")).not.toContain("next-themes");
+	it("keeps theme setup and flag gates on the TanStack adapter", () => {
 		expect(src("../components/theme-switcher.tsx")).toContain('from "@/platform/theme"');
 		expect(src("../components/theme-switcher.tsx")).not.toContain("next-themes");
 		expect(src("../lib/flags.ts")).not.toContain("next/navigation");
-		expect(src("../app/practice/layout.tsx")).toContain('from "@/platform/next"');
 		expect(src("../routes/practice.tsx")).toContain("requireFlag");
-	});
-
-	it("isolates remaining Next.js imports under platform/next", () => {
-		expect(src("./next/link.tsx")).toContain('from "next/link"');
-		expect(src("./next/navigation.ts")).toContain('from "next/navigation"');
-		expect(src("./next/theme.tsx")).toContain("next-themes");
+		expect(src("../routes/practice.tsx")).toContain('from "@/platform/tanstack"');
 	});
 
 	it("keeps Start route head helpers on the tanstack barrel", () => {

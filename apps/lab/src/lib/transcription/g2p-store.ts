@@ -17,8 +17,8 @@ export type LookupErrorKind = "wordlist" | "service" | "unknown";
 
 /**
  * The server adapter is injected instead of imported: the store is the
- * client-facing transcription seam and must stay independent of the Next.js
- * server action, the TanStack server function, and the server-only database client.
+ * client-facing transcription seam and must stay independent of the TanStack
+ * server function and the server-only database client.
  */
 export type TranscribeWordsFn = (input: { words: string[] }) => Promise<G2PWord[]>;
 export type LookupWordsFn = (words: string[]) => Promise<BatchLookupResult>;

@@ -1,9 +1,11 @@
 # Lab production cutover record
 
+> Historical cutover evidence. The `phonaria-lab` Vercel fallback was retired
+> under #207; rollback is now a forward fix or a rebuilt deployment.
+
 Issue #206 moved `phonaria-lab.rigos.dev` from the retained Vercel deployment
 to the qualified Cloudflare Worker. The final cutover completed on 2026-09-14
-at 13:23 UTC. The Vercel project remains available for the seven-day stability
-window owned by #207.
+at 13:23 UTC.
 
 ## Production identity
 
@@ -110,8 +112,8 @@ in this small burst; the p50 is below both the 15 ms project guardrail and the
 
 ## Rollback rehearsal
 
-The rollback procedure in `issue-205-rollback-runbook.md` was exercised end to
-end immediately after the first cutover:
+The rollback procedure prepared for #205 was exercised end to end immediately
+after the first cutover:
 
 1. Kept the Worker available at its `workers.dev` origin.
 2. Removed `phonaria-lab.rigos.dev` from the Worker's custom domains.
@@ -128,15 +130,11 @@ without `routes` keeps the Worker origin available but does not remove an
 already-attached custom domain. Rollback must explicitly remove the domain in
 Cloudflare before restoring the Vercel CNAME.
 
-## Stability window and retirement handoff
+## Retirement handoff
 
-Keep the Vercel project and recorded CNAME target intact through 2026-09-21.
-During that window, use the rollback criteria and procedure in
-`issue-205-rollback-runbook.md`. Do not delete the Vercel project as part of
-#206. Issue #207 owns the final retirement decision after seven stable days.
-
-Watch for Worker resource-limit outcomes, migration-specific errors,
-transcription/database failures, and sustained latency outside the committed
-Cloudflare and Vercel baselines. A high CPU percentile by itself is not a
-rollback signal when requests still succeed; the runbook requires repeatable
-resource-limit or user-visible failures.
+Issue #207 retired the Vercel fallback with maintainer approval before the
+original seven-day observation window completed. The maintainer explicitly
+waived both the elapsed-window criterion and telemetry coverage for that full
+window. Continue watching for Worker resource-limit outcomes,
+migration-specific errors, transcription/database failures, and sustained
+latency outside the recorded Cloudflare baseline.

@@ -19,13 +19,13 @@
 
 ## Build, Test, and Development Commands
 - `bun install`: Install workspace dependencies once per environment.
-- `bun dev`: Launch Turborepo dev servers with Next.js Turbopack at `http://localhost:3000`; use `bun --cwd apps/web dev` for a focused UI loop.
-- `bun build`: Execute workspace builds with Turbopack before production deployment.
+- `bun dev`: Launch the TanStack Start Lab at `http://localhost:3001`; use `bun --cwd apps/web dev` for the Legacy Next.js app at `http://localhost:3000`.
+- `bun build`: Execute workspace production builds for the Cloudflare Lab and Legacy Next.js app.
 - `bun lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
 - `bun check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
 - `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter @phonaria/app test` for targeted runs.
 - `bun e2e`: Run Playwright E2E tests against the Legacy web app (requires `SKIP_RATE_LIMIT=true` and `DATABASE_URL`).
-- `bun e2e:lab` / `bun e2e:lab:vercel`: Run the shared Lab browser contract against a deployed base URL (default: public Vercel Lab). See `packages/lab-contract/README.md`.
+- `bun e2e:lab`: Run the shared Lab browser contract against a deployed base URL (default: public Cloudflare production). See `packages/lab-contract/README.md`.
 - `bun e2e:lab:baseline`: Collect Lab page-load and transcription latency baselines.
 - `bun --cwd apps/web e2e:ui`: Open Playwright UI for interactive test debugging.
 - `bun --cwd apps/web e2e:install`: Install Playwright browsers (Chromium).

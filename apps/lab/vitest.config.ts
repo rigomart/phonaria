@@ -7,7 +7,7 @@ export default defineConfig({
 		globals: true,
 		include: ["src/**/*.{test,spec}.{js,ts,jsx,tsx}", "scripts/**/*.{test,spec}.ts"],
 		passWithNoTests: true,
-		exclude: ["**/node_modules/**", "**/.next/**", "**/dist/**"],
+		exclude: ["**/node_modules/**", "**/dist/**"],
 		setupFiles: ["./vitest.setup.ts"],
 		testTimeout: 10000,
 		pool: "forks",
