@@ -5,8 +5,6 @@ import {
 	getPublicAssetBaseUrl,
 	getSiteUrl,
 	isIndexingEnabled,
-	SITE_DESCRIPTION,
-	SITE_NAME,
 } from "./site";
 
 afterEach(() => {
@@ -88,17 +86,17 @@ describe("getPublicAssetBaseUrl", () => {
 });
 
 describe("getDocumentMetadata", () => {
-	it("maps site identity and indexing into a framework-neutral document contract", () => {
-		process.env.SITE_URL = "https://phonaria-lab.rigos.dev";
+	it("uses the final public identity on the indexed main hostname", () => {
+		process.env.SITE_URL = "https://phonaria.rigos.dev";
 		process.env.SITE_INDEXING_ENABLED = "true";
 		process.env.GOOGLE_SITE_VERIFICATION = "token-123";
 
 		expect(getDocumentMetadata()).toEqual({
-			siteName: SITE_NAME,
-			defaultTitle: SITE_NAME,
-			titleTemplate: `%s - ${SITE_NAME}`,
-			description: SITE_DESCRIPTION,
-			siteUrl: "https://phonaria-lab.rigos.dev",
+			siteName: "Phonaria",
+			defaultTitle: "Phonaria",
+			titleTemplate: "%s - Phonaria",
+			description: "Pronunciation tools for exploring speech sounds and IPA.",
+			siteUrl: "https://phonaria.rigos.dev",
 			canonical: "./",
 			indexingEnabled: true,
 			googleSiteVerification: "token-123",

@@ -18,17 +18,17 @@ const PUBLIC_ROUTES = [
 	},
 	{
 		path: "/credits",
-		title: "Credits & Sources - Phonaria Lab",
+		title: "Credits & Sources - Phonaria",
 		description: "Credits and sources for Phonaria resources, data, and media.",
 	},
 	{
 		path: "/ipa-chart/consonants",
-		title: "Consonants — IPA Chart - Phonaria Lab",
+		title: "Consonants — IPA Chart - Phonaria",
 		description: "Interactive IPA chart for American English consonants.",
 	},
 	{
 		path: "/ipa-chart/vowels",
-		title: "Vowels — IPA Chart - Phonaria Lab",
+		title: "Vowels — IPA Chart - Phonaria",
 		description: "Interactive IPA chart for American English vowels.",
 	},
 ] as const;

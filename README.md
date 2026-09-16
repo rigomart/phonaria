@@ -2,8 +2,8 @@
 
 Pronunciation toolkit for ESL learners -- interactive IPA charts, instant grapheme-to-phoneme transcription, dictionary lookups, and contrast practice in one responsive workspace.
 
-**Lab:** [phonaria-lab.rigos.dev](https://phonaria-lab.rigos.dev) — the active surface, and where new work lands.
-**Legacy web app:** [phonaria.rigos.dev](https://phonaria.rigos.dev) — the earlier surface Lab is superseding.
+**Phonaria:** [phonaria.rigos.dev](https://phonaria.rigos.dev) — the active Cloudflare-hosted surface where new work lands.
+**Legacy web app:** retained temporarily in `apps/web` while its remaining infrastructure is retired.
 
 ## Tech Stack
 

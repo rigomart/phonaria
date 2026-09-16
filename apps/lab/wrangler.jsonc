@@ -11,11 +11,15 @@
 			"/credits",
 			"/credits/",
 			"/ipa-chart",
-			"/ipa-chart/",
+			"/ipa-chart/*",
 			"/practice",
 			"/practice/*",
 			"/robots.txt",
-			"/sitemap.xml"
+			"/sitemap.xml",
+			"/en",
+			"/en/*",
+			"/es",
+			"/es/*"
 		]
 	},
 	"observability": {
@@ -71,7 +75,10 @@
 		},
 		"production": {
 			"name": "phonaria-lab",
-			"routes": [{ "pattern": "phonaria-lab.rigos.dev", "custom_domain": true }],
+			"routes": [
+				{ "pattern": "phonaria.rigos.dev", "custom_domain": true },
+				{ "pattern": "phonaria-lab.rigos.dev", "custom_domain": true }
+			],
 			"ratelimits": [
 				{
 					"name": "TRANSCRIPTION_RATE_LIMIT",
@@ -80,8 +87,8 @@
 				}
 			],
 			"vars": {
-				"SITE_URL": "https://phonaria-lab.rigos.dev",
-				"SITE_INDEXING_ENABLED": "0",
+				"SITE_URL": "https://phonaria.rigos.dev",
+				"SITE_INDEXING_ENABLED": "1",
 				"FLAG_PRACTICE": "0"
 			}
 		}

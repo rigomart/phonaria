@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { GENERATED_WRANGLER_JSON } from "./assert-generated-worker-name";
 
-export const PRODUCTION_CUSTOM_DOMAIN = "phonaria-lab.rigos.dev";
+export const PRODUCTION_CUSTOM_DOMAINS = ["phonaria.rigos.dev", "phonaria-lab.rigos.dev"] as const;
 
 export type WranglerRoute = string | { pattern?: string; custom_domain?: boolean };
 
@@ -25,18 +25,23 @@ function describeRoute(route: WranglerRoute): string {
 }
 
 export function assertProductionCustomDomain(routes: WranglerRoute[]): void {
-	const expected = routes.length === 1 && routes[0];
-	if (
-		typeof expected === "object" &&
-		expected.pattern === PRODUCTION_CUSTOM_DOMAIN &&
-		expected.custom_domain === true
-	) {
+	const remainingDomains = new Set<string>(PRODUCTION_CUSTOM_DOMAINS);
+	const validRoutes =
+		routes.length === PRODUCTION_CUSTOM_DOMAINS.length &&
+		routes.every(
+			(route) =>
+				typeof route === "object" &&
+				route.custom_domain === true &&
+				typeof route.pattern === "string" &&
+				remainingDomains.delete(route.pattern),
+		);
+	if (validRoutes && remainingDomains.size === 0) {
 		return;
 	}
 
 	const actual = routes.length === 0 ? "none" : routes.map(describeRoute).join(", ");
 	throw new Error(
-		`Production must declare exactly ${PRODUCTION_CUSTOM_DOMAIN} as a custom domain; found: ${actual}.`,
+		`Production must declare exactly ${PRODUCTION_CUSTOM_DOMAINS.join(", ")} as custom domains; found: ${actual}.`,
 	);
 }
 

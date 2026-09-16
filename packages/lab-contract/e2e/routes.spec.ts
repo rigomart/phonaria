@@ -34,6 +34,47 @@ test.describe("Lab routes", () => {
 		expect(response.headers().location).toBe("/ipa-chart/consonants");
 	});
 
+	for (const [legacyPath, targetPath] of [
+		["/en", "/"],
+		["/es/transcription", "/"],
+		["/en/credits", "/credits"],
+		["/es/ipa-chart", "/ipa-chart/consonants"],
+		["/en/ipa-chart?tab=vowels", "/ipa-chart/vowels"],
+	] as const) {
+		test(`permanently redirects legacy route ${legacyPath} without a chain`, async ({
+			request,
+		}) => {
+			const response = await request.get(legacyPath, { maxRedirects: 0 });
+			expect(response.status()).toBe(308);
+			expect(new URL(response.headers().location).pathname).toBe(targetPath);
+		});
+	}
+
+	for (const [oldUrl, mainUrl] of [
+		["https://phonaria-lab.rigos.dev/en/credits", "https://phonaria.rigos.dev/credits"],
+		[
+			"https://phonaria-lab.rigos.dev/ipa-chart/consonants",
+			"https://phonaria.rigos.dev/ipa-chart/consonants",
+		],
+		[
+			"https://phonaria-lab.rigos.dev/ipa-chart/vowels",
+			"https://phonaria.rigos.dev/ipa-chart/vowels",
+		],
+	] as const) {
+		test(`redirects former-host URL ${oldUrl} directly to the main hostname`, async ({
+			request,
+			target,
+		}) => {
+			test.skip(
+				target.name !== "cloudflare-production",
+				"The former public hostname only exists in production.",
+			);
+			const response = await request.get(oldUrl, { maxRedirects: 0 });
+			expect(response.status()).toBe(308);
+			expect(response.headers().location).toBe(mainUrl);
+		});
+	}
+
 	test("returns a real not-found page for unknown routes", async ({ page }) => {
 		const response = await page.goto("/does-not-exist");
 		expect(response?.status()).toBe(404);

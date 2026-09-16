@@ -10,10 +10,10 @@ import {
 
 const target = {
 	name: "cloudflare-production",
-	baseUrl: "https://phonaria-lab.rigos.dev",
-	expectedCanonicalOrigin: "https://phonaria-lab.rigos.dev",
+	baseUrl: "https://phonaria.rigos.dev",
+	expectedCanonicalOrigin: "https://phonaria.rigos.dev",
 	practiceEnabled: false,
-	indexingEnabled: false,
+	indexingEnabled: true,
 	bucketAssetsAvailable: true,
 	authentication: { type: "none" },
 	capabilities: {

@@ -18,7 +18,7 @@ test.describe("Navigation and theme", () => {
 		await expect(page).toHaveURL(/\/credits$/);
 		await expect(page.getByRole("heading", { name: "Credits & Sources" })).toBeVisible();
 
-		await page.getByRole("link", { name: "Phonaria Lab" }).click();
+		await page.getByRole("link", { name: "Phonaria", exact: true }).click();
 		await expect(page).toHaveURL(/\/$/);
 		await expect(page.getByLabel("Text to transcribe")).toBeVisible();
 	});

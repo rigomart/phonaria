@@ -1,7 +1,8 @@
-# Phonaria Lab
+# Phonaria
 
-TanStack Start application deployed to Cloudflare Workers. The separate Legacy
-application remains in `apps/web` on Next.js and Vercel.
+TanStack Start application deployed to Cloudflare Workers. Production serves
+`phonaria.rigos.dev`; `phonaria-lab.rigos.dev` redirects to the main hostname.
+The separate legacy application remains in `apps/web` until its retirement work.
 
 ```bash
 bun --cwd apps/lab dev                # http://localhost:3001
@@ -20,7 +21,7 @@ not `"type": "module"`. Cloudflare delivery is configured only in
 from `LAB_START_STAGING_URL` or `LAB_WORKERS_DEV_SUBDOMAIN`, sets
 `CLOUDFLARE_ENV=staging` at build time, and verifies that Vite flattened the
 Worker name to `phonaria-lab-staging` before deploying the generated config.
-Do not deploy the Cloudflare production Worker from this app.
+Deploy the Cloudflare production Worker through the `Lab Production` workflow.
 
 The application serves transcription, Credits, IPA charts, and Practice when
 `FLAG_PRACTICE` is enabled (staging and preview). Production keeps Practice

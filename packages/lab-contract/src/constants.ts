@@ -35,8 +35,8 @@ export const INDEXABLE_PATHS = [
 	"/credits",
 ] as const;
 
-export const SITE_NAME = "Phonaria Lab";
-export const SITE_DESCRIPTION = "Experimental workspace for phonetic transcription tools";
+export const SITE_NAME = "Phonaria";
+export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";
 
 export const LOOKUP_ERROR_COPY = {
 	wordlist: "We couldn't load the word list. Check your connection and try again.",

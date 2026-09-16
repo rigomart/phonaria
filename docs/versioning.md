@@ -16,7 +16,8 @@ Conventional Commits → main → CI passes → manual Release workflow → Tag 
 5. **Release**: Run the `Release` workflow from the Actions tab (manual `workflow_dispatch`).
    Auto-release after CI remains paused; it can be restored whenever the team wants it.
 6. **Deploy**: Lab staging deploys on every `main` merge. Lab production is a manual
-   `Lab Production` workflow run against `phonaria-lab.rigos.dev`.
+	`Lab Production` workflow run against `phonaria.rigos.dev`; the former Lab hostname
+	redirects to it.
 
 ## Conventional Commits
 
