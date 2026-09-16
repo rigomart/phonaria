@@ -1,10 +1,10 @@
 # Phonaria
 
-Pronunciation toolkit for ESL learners -- interactive IPA charts, instant grapheme-to-phoneme transcription, and contrast practice in one responsive workspace.
+Pronunciation toolkit for ESL learners. Interactive IPA charts, instant grapheme-to-phoneme transcription, and contrast practice in one responsive workspace.
 
 **Live app:** [phonaria.rigos.dev](https://phonaria.rigos.dev)
 
-Phonaria is a single application: `apps/lab`, a TanStack Start app served from Cloudflare Workers. The earlier Next.js application on Vercel was retired; see [`docs/adr/0002-single-application-on-cloudflare-workers.md`](docs/adr/0002-single-application-on-cloudflare-workers.md) for what that dropped and why.
+Phonaria is a TanStack Start app served from Cloudflare Workers.
 
 ## Tech Stack
 
