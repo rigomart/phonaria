@@ -6,5 +6,8 @@ declare module "cloudflare:workers" {
 		PUBLIC_BUCKET_URL?: string;
 		TURSO_DATABASE_URL?: string;
 		TURSO_AUTH_TOKEN?: string;
+		TRANSCRIPTION_RATE_LIMIT: {
+			limit(options: { key: string }): Promise<{ success: boolean }>;
+		};
 	};
 }

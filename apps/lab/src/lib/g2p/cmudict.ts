@@ -6,8 +6,20 @@ import { syllabify } from "./syllabifier";
 import { normalizeCmuWord } from "./text-processing";
 
 type CmudictVariant = G2PSyllable[];
+type CmudictCacheValue = CmudictVariant[] | null;
 
-const cache = new Map<string, CmudictVariant[] | null>();
+const MAX_CMUDICT_CACHE_ENTRIES = 5_000;
+const cache = new Map<string, CmudictCacheValue>();
+
+function cacheValue(word: string, value: CmudictCacheValue): void {
+	cache.delete(word);
+	cache.set(word, value);
+
+	if (cache.size > MAX_CMUDICT_CACHE_ENTRIES) {
+		const oldestWord = cache.keys().next().value;
+		if (oldestWord !== undefined) cache.delete(oldestWord);
+	}
+}
 
 function mapVariants(pronunciationsJson: string): CmudictVariant[] {
 	let parsed: unknown;
@@ -41,7 +53,18 @@ export async function lookupManyCmudict(
 ): Promise<Map<string, CmudictVariant[] | undefined>> {
 	const normalized = rawWords.map((w) => normalizeCmuWord(w)).filter((w) => w.length > 0);
 	const unique = Array.from(new Set(normalized));
-	const missing = unique.filter((w) => !cache.has(w));
+	const resolved = new Map<string, CmudictCacheValue>();
+	const missing: string[] = [];
+
+	for (const word of unique) {
+		if (cache.has(word)) {
+			const value = cache.get(word) ?? null;
+			cacheValue(word, value);
+			resolved.set(word, value);
+		} else {
+			missing.push(word);
+		}
+	}
 
 	if (missing.length > 0) {
 		const rows = await db
@@ -51,19 +74,22 @@ export async function lookupManyCmudict(
 
 		for (const row of rows) {
 			const mapped = mapVariants(row.pronunciations);
-			cache.set(row.word, mapped.length > 0 ? mapped : null);
+			const value = mapped.length > 0 ? mapped : null;
+			resolved.set(row.word, value);
+			cacheValue(row.word, value);
 		}
 
 		for (const w of missing) {
-			if (!cache.has(w)) {
-				cache.set(w, null);
+			if (!resolved.has(w)) {
+				resolved.set(w, null);
+				cacheValue(w, null);
 			}
 		}
 	}
 
 	const output = new Map<string, CmudictVariant[] | undefined>();
 	for (const w of unique) {
-		output.set(w, cache.get(w) ?? undefined);
+		output.set(w, resolved.get(w) ?? undefined);
 	}
 
 	return output;

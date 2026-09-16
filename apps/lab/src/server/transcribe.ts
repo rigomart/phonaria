@@ -9,21 +9,32 @@ import { invokeTranscribeServerFunction } from "@/lib/transcription/server-funct
 export const transcribeWordsFn = createServerFn({ method: "POST" })
 	.validator((data: unknown) => data)
 	.handler(async ({ data }) => {
-		const [{ createClient }, { getWorkerEnv }, { transcribeWordsOnWorker }] = await Promise.all([
+		const [
+			{ createClient },
+			{ getRequestHeader, setResponseStatus },
+			{ TranscriptionError },
+			{ getWorkerEnv },
+			{ transcribeWordsOnWorker },
+		] = await Promise.all([
 			import("@libsql/client/web"),
+			import("@tanstack/react-start/server"),
+			import("@/lib/transcription/contract"),
 			import("@/server/cloudflare/env"),
 			import("@/server/transcription"),
 		]);
 		const workerEnv = getWorkerEnv();
 
-		return transcribeWordsOnWorker(
-			data,
-			{
-				TURSO_DATABASE_URL: workerEnv.TURSO_DATABASE_URL,
-				TURSO_AUTH_TOKEN: workerEnv.TURSO_AUTH_TOKEN,
-			},
-			{ createClient },
-		);
+		try {
+			return await transcribeWordsOnWorker(data, workerEnv, {
+				createClient,
+				rateLimitKey: getRequestHeader("cf-connecting-ip") ?? "anonymous",
+			});
+		} catch (error) {
+			if (error instanceof TranscriptionError && error.status !== undefined) {
+				setResponseStatus(error.status);
+			}
+			throw error;
+		}
 	});
 
 export async function transcribeWordsFromStart(input: { words: string[] }): Promise<G2PWord[]> {

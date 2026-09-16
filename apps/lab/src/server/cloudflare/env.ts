@@ -6,6 +6,10 @@
  */
 import { env } from "cloudflare:workers";
 
+export type WorkerRateLimit = {
+	limit(options: { key: string }): Promise<{ success: boolean }>;
+};
+
 export type LabWorkerEnv = {
 	SITE_URL?: string;
 	SITE_INDEXING_ENABLED?: string;
@@ -13,6 +17,7 @@ export type LabWorkerEnv = {
 	PUBLIC_BUCKET_URL?: string;
 	TURSO_DATABASE_URL?: string;
 	TURSO_AUTH_TOKEN?: string;
+	TRANSCRIPTION_RATE_LIMIT: WorkerRateLimit;
 };
 
 export function getWorkerEnv(): LabWorkerEnv {
