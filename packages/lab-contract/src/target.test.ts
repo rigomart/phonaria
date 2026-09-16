@@ -23,9 +23,9 @@ describe("loadTargetFromEnv", () => {
 	it("defaults to the public Cloudflare production profile", () => {
 		const target = loadTargetFromEnv({});
 		expect(target.name).toBe("cloudflare-production");
-		expect(target.baseUrl).toBe("https://phonaria-lab.rigos.dev");
+		expect(target.baseUrl).toBe("https://phonaria.rigos.dev");
 		expect(target.practiceEnabled).toBe(false);
-		expect(target.indexingEnabled).toBe(false);
+		expect(target.indexingEnabled).toBe(true);
 		expect(target.capabilities.practiceSession).toBe(false);
 		expect(target.skipReasons.practiceSession).toMatch(/Practice stays disabled/);
 	});

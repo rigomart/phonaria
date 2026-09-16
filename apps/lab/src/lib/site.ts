@@ -10,8 +10,8 @@
  * same as the FLAG_* convention.
  */
 
-export const SITE_NAME = "Phonaria Lab";
-export const SITE_DESCRIPTION = "Experimental workspace for phonetic transcription tools";
+export const SITE_NAME = "Phonaria";
+export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";
 
 const DEV_SITE_URL = "http://localhost:3001";
 

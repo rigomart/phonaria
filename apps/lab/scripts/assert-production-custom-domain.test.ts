@@ -21,9 +21,13 @@ describe("readGeneratedRoutes", () => {
 	it("reads custom-domain route objects", () => {
 		const configPath = writeConfig({
 			name: "phonaria-lab",
-			routes: [{ pattern: "phonaria-lab.rigos.dev", custom_domain: true }],
+			routes: [
+				{ pattern: "phonaria.rigos.dev", custom_domain: true },
+				{ pattern: "phonaria-lab.rigos.dev", custom_domain: true },
+			],
 		});
 		expect(readGeneratedRoutes(configPath)).toEqual([
+			{ pattern: "phonaria.rigos.dev", custom_domain: true },
 			{ pattern: "phonaria-lab.rigos.dev", custom_domain: true },
 		]);
 	});
@@ -36,9 +40,12 @@ describe("readGeneratedRoutes", () => {
 });
 
 describe("assertProductionCustomDomain", () => {
-	it("accepts only the production Lab custom domain", () => {
+	it("accepts the main domain and legacy redirect domain", () => {
 		expect(() =>
-			assertProductionCustomDomain([{ pattern: "phonaria-lab.rigos.dev", custom_domain: true }]),
+			assertProductionCustomDomain([
+				{ pattern: "phonaria.rigos.dev", custom_domain: true },
+				{ pattern: "phonaria-lab.rigos.dev", custom_domain: true },
+			]),
 		).not.toThrow();
 	});
 
@@ -55,9 +62,13 @@ describe("assertProductionCustomDomain", () => {
 		).toThrow(/must declare exactly/);
 	});
 
-	it("rejects extra routes", () => {
+	it("rejects missing and extra routes", () => {
+		expect(() =>
+			assertProductionCustomDomain([{ pattern: "phonaria.rigos.dev", custom_domain: true }]),
+		).toThrow(/phonaria-lab\.rigos\.dev/);
 		expect(() =>
 			assertProductionCustomDomain([
+				{ pattern: "phonaria.rigos.dev", custom_domain: true },
 				{ pattern: "phonaria-lab.rigos.dev", custom_domain: true },
 				{ pattern: "other.rigos.dev", custom_domain: true },
 			]),

@@ -4,10 +4,10 @@ import { expectedCanonical, expectedRobots, expectedSitemapUrls } from "./metada
 
 const target = {
 	name: "cloudflare-production",
-	baseUrl: "https://phonaria-lab.rigos.dev",
-	expectedCanonicalOrigin: "https://phonaria-lab.rigos.dev",
+	baseUrl: "https://phonaria.rigos.dev",
+	expectedCanonicalOrigin: "https://phonaria.rigos.dev",
 	practiceEnabled: false,
-	indexingEnabled: false,
+	indexingEnabled: true,
 	bucketAssetsAvailable: true,
 	authentication: { type: "none" },
 	capabilities: {
@@ -20,17 +20,17 @@ const target = {
 
 describe("metadata helpers", () => {
 	it("builds canonical URLs without a trailing slash on the origin", () => {
-		expect(expectedCanonical(target, "/")).toBe("https://phonaria-lab.rigos.dev");
-		expect(expectedCanonical(target, "/credits")).toBe("https://phonaria-lab.rigos.dev/credits");
+		expect(expectedCanonical(target, "/")).toBe("https://phonaria.rigos.dev");
+		expect(expectedCanonical(target, "/credits")).toBe("https://phonaria.rigos.dev/credits");
 	});
 
-	it("keeps production Lab non-indexed and omits Practice from the sitemap set", () => {
-		expect(expectedRobots(target)).toBe("noindex, follow");
+	it("keeps production indexed and omits Practice from the sitemap set", () => {
+		expect(expectedRobots(target)).toBe("index, follow");
 		expect(expectedSitemapUrls(target)).toEqual([
-			"https://phonaria-lab.rigos.dev",
-			"https://phonaria-lab.rigos.dev/ipa-chart/consonants",
-			"https://phonaria-lab.rigos.dev/ipa-chart/vowels",
-			"https://phonaria-lab.rigos.dev/credits",
+			"https://phonaria.rigos.dev",
+			"https://phonaria.rigos.dev/ipa-chart/consonants",
+			"https://phonaria.rigos.dev/ipa-chart/vowels",
+			"https://phonaria.rigos.dev/credits",
 		]);
 		expect(expectedSitemapUrls(target).join(" ")).not.toContain("practice");
 	});

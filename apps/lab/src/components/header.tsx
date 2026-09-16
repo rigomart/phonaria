@@ -23,7 +23,7 @@ export function Header({ flags }: { flags: LabFlags }) {
 			<Link
 				href="/"
 				className="group absolute left-4 flex items-center gap-1.5 text-foreground hover:text-primary transition-colors motion-reduce:transition-none"
-				aria-label="Phonaria Lab"
+				aria-label="Phonaria"
 			>
 				<Logo className="size-6" />
 				<span className="font-display text-sm font-medium opacity-0 blur-[4px] transition-[opacity,filter] duration-200 group-hover:opacity-100 group-hover:blur-[0px] motion-reduce:transition-none">

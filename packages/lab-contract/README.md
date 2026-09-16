@@ -1,6 +1,6 @@
 # Lab browser contract
 
-Shared Playwright suite for Phonaria Lab. The same specs run against a deployed
+Shared Playwright suite for Phonaria. The same specs run against a deployed
 base URL through target-specific configuration, not duplicated tests.
 
 This package is the primary acceptance seam for the Lab migration. It is not
@@ -13,7 +13,7 @@ bun --cwd packages/lab-contract e2e:install
 bun e2e:lab
 ```
 
-Default target is `cloudflare-production` (`https://phonaria-lab.rigos.dev`).
+Default target is `cloudflare-production` (`https://phonaria.rigos.dev`).
 The suite does not start an application server unless you opt into the local
 adapter.
 
@@ -31,7 +31,7 @@ Profiles live in `targets/*.json` and are selected with `LAB_CONTRACT_TARGET`.
 | Profile | Use |
 | --- | --- |
 | `cloudflare-staging` | Private staging. Requires `LAB_CONTRACT_BASE_URL` and Cloudflare Access service-token env vars. Practice enabled. |
-| `cloudflare-production` | Public Cloudflare Lab. Practice disabled. |
+| `cloudflare-production` | Public Cloudflare production site. Practice disabled. |
 | `local` | `http://localhost:3001`. Set `LAB_CONTRACT_START_LOCAL=1` to have Playwright start `apps/lab`. |
 
 Required fields:
