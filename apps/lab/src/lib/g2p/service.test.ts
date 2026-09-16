@@ -11,16 +11,16 @@ vi.mock("@/db/schema", () => ({
 // Must import after mocks are set up
 const { getDb } = await import("@/db/drizzle");
 const { processWords } = await import("./service");
-const { __resetCmudictCache } = await import("./cmudict");
+const { __resetCmudictCache, lookupManyCmudict } = await import("./cmudict");
 
 function mockDbResults(rows: { word: string; pronunciations: string }[]) {
 	const chain = {
 		from: vi.fn().mockReturnThis(),
 		where: vi.fn().mockResolvedValue(rows),
 	};
-	vi.mocked(getDb).mockReturnValue({
-		select: vi.fn().mockReturnValue(chain),
-	} as never);
+	const select = vi.fn().mockReturnValue(chain);
+	vi.mocked(getDb).mockReturnValue({ select } as never);
+	return { select };
 }
 
 describe("processWords (tier 3 — DB lookup)", () => {
@@ -92,5 +92,26 @@ describe("processWords (tier 3 — DB lookup)", () => {
 		const result = await processWords([]);
 		expect(result).toEqual([]);
 		expect(getDb).not.toHaveBeenCalled();
+	});
+
+	it("evicts the least-recently-used negative lookup after 5,000 entries", async () => {
+		const { select } = mockDbResults([]);
+
+		for (let batch = 0; batch < 25; batch += 1) {
+			const words = Array.from({ length: 200 }, (_, index) => `missing-${batch * 200 + index}`);
+			await lookupManyCmudict(words);
+		}
+
+		await lookupManyCmudict(["missing-0"]);
+		expect(select).toHaveBeenCalledTimes(25);
+
+		await lookupManyCmudict(["overflow"]);
+		expect(select).toHaveBeenCalledTimes(26);
+
+		await lookupManyCmudict(["missing-1"]);
+		expect(select).toHaveBeenCalledTimes(27);
+
+		await lookupManyCmudict(["missing-0"]);
+		expect(select).toHaveBeenCalledTimes(27);
 	});
 });

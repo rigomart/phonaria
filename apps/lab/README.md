@@ -31,3 +31,18 @@ Cloudflare environment (`wrangler secret put`) and, for local Start, in
 `.dev.vars` by hand. `write-dev-vars` never copies Turso values from
 the process environment; it only preserves existing `.dev.vars` secret
 lines.
+
+## Transcription guardrails
+
+The public transcription server function accepts at most 200 words and 64
+characters per word. Its process-level CMUDict cache keeps at most 5,000
+entries using least-recently-used eviction; failed lookups count toward that
+bound.
+
+Cloudflare's `TRANSCRIPTION_RATE_LIMIT` binding applies a best-effort limit of
+60 server lookups per minute for each connecting IP and Cloudflare location.
+Local, staging, preview, and production use separate namespace IDs in
+`wrangler.jsonc`, because rate-limit bindings and counters are not inherited by
+named Worker environments. A rejected request returns a retryable transcription
+error with HTTP status 429 before Turso is queried. A missing binding also fails
+closed before Turso is queried.

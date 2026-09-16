@@ -30,6 +30,16 @@ describe("transcriptionWordsInputSchema", () => {
 		expect(transcriptionWordsInputSchema.safeParse({ words: ["hello", ""] }).success).toBe(false);
 	});
 
+	it("accepts a word at the 64-character limit", () => {
+		expect(transcriptionWordsInputSchema.safeParse({ words: ["a".repeat(64)] }).success).toBe(true);
+	});
+
+	it("rejects a word longer than 64 characters", () => {
+		expect(transcriptionWordsInputSchema.safeParse({ words: ["a".repeat(65)] }).success).toBe(
+			false,
+		);
+	});
+
 	it("rejects a missing words field", () => {
 		expect(transcriptionWordsInputSchema.safeParse({}).success).toBe(false);
 	});
@@ -75,5 +85,12 @@ describe("TranscriptionError", () => {
 	it("marks database and retryable failures as retryable", () => {
 		expect(new TranscriptionError("database", "query failed").retryable).toBe(true);
 		expect(new TranscriptionError("retryable", "timeout").retryable).toBe(true);
+	});
+
+	it("marks rate-limit failures as retryable HTTP 429 errors", () => {
+		const error = new TranscriptionError("rate_limit", "Too many transcription requests");
+
+		expect(error.retryable).toBe(true);
+		expect(error.status).toBe(429);
 	});
 });

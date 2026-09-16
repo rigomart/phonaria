@@ -1,15 +1,23 @@
-import { type DatabaseConfig, type DatabaseEnv, resolveDatabaseConfig } from "@/db/config";
+import { type DatabaseConfig, resolveDatabaseConfig } from "@/db/config";
 import { createDatabase, type LabDatabase, type LibsqlClientFactory } from "@/db/drizzle";
 import { processWords as defaultProcessWords } from "@/lib/g2p/service";
 import type { TranscriptionWordsOutput } from "@/lib/transcription/contract";
 import { TranscriptionError, transcribeWords } from "@/lib/transcription/service";
+import type { WorkerRateLimit } from "@/server/cloudflare/env";
 import { logWorkerEvent } from "@/server/cloudflare/log";
 
 export type TranscribeOnWorkerDependencies = {
 	createClient?: LibsqlClientFactory;
 	openDatabase?: (config: DatabaseConfig) => LabDatabase;
 	processWords?: typeof defaultProcessWords;
+	rateLimitKey?: string;
 	log?: typeof logWorkerEvent;
+};
+
+export type TranscriptionWorkerEnv = {
+	TURSO_DATABASE_URL?: string;
+	TURSO_AUTH_TOKEN?: string;
+	TRANSCRIPTION_RATE_LIMIT: WorkerRateLimit;
 };
 
 function openWorkerDatabase(
@@ -33,16 +41,19 @@ function openWorkerDatabase(
  */
 export async function transcribeWordsOnWorker(
 	input: unknown,
-	env: DatabaseEnv,
+	env: TranscriptionWorkerEnv,
 	dependencies: TranscribeOnWorkerDependencies = {},
 ): Promise<TranscriptionWordsOutput> {
 	const log = dependencies.log ?? logWorkerEvent;
-	const process =
+	const processWords =
 		dependencies.processWords ??
 		(async (words: string[]) => {
 			let config: DatabaseConfig;
 			try {
-				config = resolveDatabaseConfig(env);
+				config = resolveDatabaseConfig({
+					TURSO_DATABASE_URL: env.TURSO_DATABASE_URL,
+					TURSO_AUTH_TOKEN: env.TURSO_AUTH_TOKEN,
+				});
 			} catch {
 				throw new TranscriptionError("database", "Database is unavailable");
 			}
@@ -50,11 +61,31 @@ export async function transcribeWordsOnWorker(
 			const db = openWorkerDatabase(config, dependencies);
 			return defaultProcessWords(words, { db });
 		});
+	const process = async (words: string[]) => {
+		if (!env.TRANSCRIPTION_RATE_LIMIT) {
+			throw new TranscriptionError(
+				"retryable",
+				"Transcription service is temporarily unavailable.",
+			);
+		}
+
+		const result = await env.TRANSCRIPTION_RATE_LIMIT.limit({
+			key: dependencies.rateLimitKey?.trim() || "anonymous",
+		});
+		if (!result.success) {
+			throw new TranscriptionError(
+				"rate_limit",
+				"Too many transcription requests. Please try again shortly.",
+			);
+		}
+		return processWords(words);
+	};
 
 	const result = await transcribeWords(input, { processWords: process });
 	if (!result.ok) {
 		log({
-			level: result.error.kind === "validation" ? "warn" : "error",
+			level:
+				result.error.kind === "validation" || result.error.kind === "rate_limit" ? "warn" : "error",
 			message: "transcription_failed",
 			details: {
 				kind: result.error.kind,
