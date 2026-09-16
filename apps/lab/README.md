@@ -1,8 +1,12 @@
 # Phonaria
 
-TanStack Start application deployed to Cloudflare Workers. Production serves
-`phonaria.rigos.dev`; `phonaria-lab.rigos.dev` redirects to the main hostname.
-The separate legacy application remains in `apps/web` until its retirement work.
+The Phonaria application: TanStack Start deployed to Cloudflare Workers.
+Production serves `phonaria.rigos.dev`; `phonaria-lab.rigos.dev` redirects to
+the main hostname. This is the only Phonaria application — the earlier Next.js
+app on Vercel was retired, as recorded in
+`docs/adr/0002-single-application-on-cloudflare-workers.md`. The `lab` directory
+name and the `phonaria-lab` Worker name are kept so deployment history and
+Cloudflare bindings stay continuous.
 
 ```bash
 bun --cwd apps/lab dev                # http://localhost:3001

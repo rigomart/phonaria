@@ -3,15 +3,10 @@
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": [".next/**", "!.next/cache/**", "dist/**", ".output/**"],
+			"outputs": ["dist/**", ".output/**"],
 			"env": [
 				"FLAG_*",
-				"UPSTASH_REDIS_REST_URL",
-				"UPSTASH_REDIS_REST_TOKEN",
-				"CMUDICT_SRC_URL",
-				"DATABASE_URL",
 				"GOOGLE_SITE_VERIFICATION",
-				"NEXT_PUBLIC_BUCKET_URL",
 				"PUBLIC_BUCKET_URL",
 				"SITE_URL",
 				"SITE_INDEXING_ENABLED",
@@ -32,11 +27,6 @@
 		},
 		"test": {
 			"dependsOn": ["^test"]
-		},
-		"e2e": {
-			"dependsOn": ["build"],
-			"cache": false,
-			"env": ["SKIP_RATE_LIMIT", "DATABASE_URL"]
 		},
 		"e2e:lab": {
 			"cache": false,

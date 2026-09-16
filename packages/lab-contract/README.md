@@ -3,8 +3,8 @@
 Shared Playwright suite for Phonaria. The same specs run against a deployed
 base URL through target-specific configuration, not duplicated tests.
 
-This package is the primary acceptance seam for the Lab migration. It is not
-the Legacy web E2E suite in `apps/web/e2e`.
+This package is the acceptance seam for deployed Phonaria environments. It is
+the only browser suite in the repository.
 
 ## Run
 
