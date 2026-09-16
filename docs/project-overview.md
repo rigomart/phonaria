@@ -21,23 +21,18 @@ Phonaria is a learner-first pronunciation toolkit for people studying English as
 
 ## Grapheme-to-Phoneme Studio
 - **Instant transcription** – Paste any sentence or passage to see an IPA rendering with stress markers.
-- **Clickable insights** – Select individual phonemes for articulation detail, example words, and comparison notes.
-- **Dictionary bridge** – Jump straight from a word in the transcription to concise definitions and usage notes.
+- **Tiered lookup** – The two most common word tiers resolve in the browser; anything else falls through to a rate-limited server lookup against the full dictionary.
+- **Clickable insights** – Select individual phonemes for articulation detail and audio.
 
 ## IPA Reference Hub
 - **Interactive chart** – Browse General American consonants, vowels, and diphthongs through a responsive grid.
-- **Articulation guidance** – Review step-by-step production notes, visual diagrams, and learner-friendly descriptions.
-- **Example library** – Access curated word lists with audio so learners can hear each sound in context.
+- **Articulation guidance** – Review production diagrams and learner-friendly descriptions.
+- **Sound audio** – Hear each consonant and monophthong in isolation.
 
-## Sound Contrast Explorer
-- **Minimal pair collections** – Study curated sets that highlight frequently confused sounds.
-- **Listening-first drills** – Play word-level audio, compare IPA transcriptions, and note takeaways for future review.
-- **Articulation cross-reference** – Surface cues from both sounds to reinforce what makes each distinct.
-
-## Dictionary Lookup
-- **In-context definitions** – Request meanings for any word without leaving the workspace.
-- **Pronunciation confirmation** – Cross-check the dictionary’s audio with the transcription result for added confidence.
-- **Clear states** – Designed for fast retries, helpful errors, and obvious “no results” messaging.
+## Practice
+- **Sound-sequence construction** – Recall and order the phonemes of a written word for the target accent.
+- **Session review** – Assemble a group of rounds and submit them together for delayed feedback.
+- **Behind a flag** – Practice ships dark and is enabled per environment through `FLAG_PRACTICE`; production keeps it off.
 
 # Learning Experience Principles
 
@@ -54,7 +49,8 @@ Phonaria is a learner-first pronunciation toolkit for people studying English as
 - **Responsive surfaces** – Every tool adapts gracefully from phones to large displays.
 
 ## Development Standards
-- **Monorepo architecture** – Shared data, helper scripts, and the web app live together for tight iteration.
+- **Monorepo architecture** – Shared data, helper scripts, and the application live together for tight iteration.
+- **One application** – Phonaria is a single TanStack Start app on Cloudflare Workers; there is no second surface to keep in sync.
 - **Type safety** – Strict TypeScript adoption keeps the toolchain reliable.
 - **Composable UI** – Reusable components power multiple surfaces without duplication.
 - **Data-driven layouts** – Feature sections render from structured phoneme and contrast metadata.

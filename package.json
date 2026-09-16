@@ -28,7 +28,6 @@
 		"dev": "turbo run dev --filter=@phonaria/lab",
 		"check-types": "turbo run check-types",
 		"test": "turbo run test",
-		"e2e": "turbo run e2e",
 		"e2e:lab": "bun --cwd packages/lab-contract e2e:lab",
 		"e2e:lab:cloudflare": "LAB_CONTRACT_TARGET=cloudflare-staging bun --cwd packages/lab-contract e2e:lab",
 		"e2e:lab:baseline": "LAB_CONTRACT_TARGET=cloudflare-production bun --cwd packages/lab-contract e2e:lab:baseline",

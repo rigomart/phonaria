@@ -10,14 +10,16 @@ absent rather than guessed at.
 
 ### Product surfaces
 
-**Lab**:
-The newer Phonaria product surface and the home for new pronunciation-learning activities.
-_Avoid_: Legacy web application, experimental side project
+**The application**:
+Phonaria is one application — TanStack Start on Cloudflare Workers, serving `phonaria.rigos.dev`.
+There is no second surface, so no qualifier is needed to say which one is meant.
+_Avoid_: Lab, the Lab app, the new surface, the legacy web application
 
-**Legacy web application**:
-The earlier Phonaria product surface that Lab is intended to supersede. It is not the target for
-new practice activities.
-_Avoid_: Lab
+**Lab**:
+A retired product term. It survives only as the `apps/lab` directory and the `phonaria-lab`
+Worker name, which are deployment identifiers. Do not use it to name a product surface, an
+audience, or a class of feature.
+_Avoid_: Using "Lab" for anything a learner would see
 
 ### Sounds and accents
 
