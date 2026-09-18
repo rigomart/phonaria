@@ -6,11 +6,13 @@ import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
 import { type ReactNode, useMemo } from "react";
 import { useCurrentTranscription, useTranscribe } from "@/hooks/use-transcribe";
+import { extractWordIpa } from "@/lib/ipa-copy";
 import { type LookupErrorKind, useG2PStore } from "@/lib/transcription/g2p-store";
 import type { TranscribedWord, TranscriptionResult } from "@/lib/types/g2p";
 import { EmptyState } from "./empty-state";
 import { IpaSequence } from "./ipa-sequence";
 import { VariantSelector } from "./variant-selector";
+import { WordDefinitionPopover } from "./word-definition-popover";
 
 const LOOKUP_ERROR_COPY: Record<LookupErrorKind, string> = {
 	wordlist: "We couldn't load the word list. Check your connection and try again.",
@@ -29,15 +31,14 @@ function WordColumn({ targetAccent, word, index }: WordColumnProps) {
 	const setVariant = useG2PStore((s) => s.setVariant);
 	const currentVariant = useMemo(() => word.variants[selected] ?? [], [word.variants, selected]);
 	const isUnknown = word.source === "fallback";
+	const ipa = extractWordIpa(word, selected);
 
 	return (
 		<div
 			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
 			style={{ animationDelay: `${index * 50}ms`, animationDuration: "300ms" }}
 		>
-			<span className="text-base md:text-lg  whitespace-nowrap px-3 py-1 text-muted-foreground">
-				{word.word}
-			</span>
+			<WordDefinitionPopover word={word.word} ipa={ipa} />
 
 			<div className="flex items-center gap-2">
 				{isUnknown ? (
@@ -100,7 +101,9 @@ function TranscriptionResults({
 				className="mt-6 flex justify-center animate-in fade-in duration-500 fill-mode-both"
 				style={{ animationDelay: `${result.words.length * 50 + 400}ms` }}
 			>
-				<p className="text-xs text-muted-foreground">Click any phoneme for details</p>
+				<p className="text-xs text-muted-foreground">
+					Click a word for its meaning · click a sound for how to say it
+				</p>
 			</div>
 		</div>
 	);

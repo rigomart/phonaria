@@ -1,14 +1,8 @@
-import type { TranscriptionResult } from "./types/g2p";
+import type { TranscribedSyllable, TranscribedWord, TranscriptionResult } from "./types/g2p";
 
-export function extractIpaText(result: TranscriptionResult, selectedVariants: number[]): string {
-	const ipaWords = result.words.map((word) => {
-		const isUnknown = word.source === "fallback";
-		if (isUnknown) return "";
-
-		const selectedVariantIndex = selectedVariants[word.wordIndex] ?? 0;
-		const currentVariant = word.variants[selectedVariantIndex] ?? [];
-
-		const syllableStrings = currentVariant.map((syllable) => {
+function formatVariantIpa(syllables: TranscribedSyllable[]): string {
+	return syllables
+		.map((syllable) => {
 			let syllableText = "";
 			if (syllable.stress === "primary") {
 				syllableText += "ˈ";
@@ -17,10 +11,23 @@ export function extractIpaText(result: TranscriptionResult, selectedVariants: nu
 			}
 			syllableText += syllable.phonemes.map((p) => p.symbol).join("");
 			return syllableText;
-		});
+		})
+		.join(".");
+}
 
-		return syllableStrings.join(".");
-	});
+export function extractWordIpa(
+	word: Pick<TranscribedWord, "source" | "variants">,
+	selectedVariantIndex: number,
+): string {
+	if (word.source === "fallback") return "";
+	const currentVariant = word.variants[selectedVariantIndex] ?? [];
+	return formatVariantIpa(currentVariant);
+}
+
+export function extractIpaText(result: TranscriptionResult, selectedVariants: number[]): string {
+	const ipaWords = result.words.map((word) =>
+		extractWordIpa(word, selectedVariants[word.wordIndex] ?? 0),
+	);
 
 	return ipaWords.filter((w) => w.length > 0).join(" ");
 }

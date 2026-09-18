@@ -34,6 +34,11 @@
 			"name": "TRANSCRIPTION_RATE_LIMIT",
 			"namespace_id": "175001",
 			"simple": { "limit": 60, "period": 60 }
+		},
+		{
+			"name": "DEFINITION_RATE_LIMIT",
+			"namespace_id": "175101",
+			"simple": { "limit": 60, "period": 60 }
 		}
 	],
 	"vars": {
@@ -50,6 +55,11 @@
 					"name": "TRANSCRIPTION_RATE_LIMIT",
 					"namespace_id": "175002",
 					"simple": { "limit": 60, "period": 60 }
+				},
+				{
+					"name": "DEFINITION_RATE_LIMIT",
+					"namespace_id": "175102",
+					"simple": { "limit": 60, "period": 60 }
 				}
 			],
 			"vars": {
@@ -64,6 +74,11 @@
 				{
 					"name": "TRANSCRIPTION_RATE_LIMIT",
 					"namespace_id": "175003",
+					"simple": { "limit": 60, "period": 60 }
+				},
+				{
+					"name": "DEFINITION_RATE_LIMIT",
+					"namespace_id": "175103",
 					"simple": { "limit": 60, "period": 60 }
 				}
 			],
@@ -83,6 +98,11 @@
 				{
 					"name": "TRANSCRIPTION_RATE_LIMIT",
 					"namespace_id": "175004",
+					"simple": { "limit": 60, "period": 60 }
+				},
+				{
+					"name": "DEFINITION_RATE_LIMIT",
+					"namespace_id": "175104",
 					"simple": { "limit": 60, "period": 60 }
 				}
 			],

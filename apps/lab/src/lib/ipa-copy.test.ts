@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { extractIpaText } from "./ipa-copy";
+import { extractIpaText, extractWordIpa } from "./ipa-copy";
 import type { TranscriptionResult } from "./types/g2p";
 
 function makeResult(words: TranscriptionResult["words"]): TranscriptionResult {
@@ -176,5 +176,59 @@ describe("extractIpaText", () => {
 		]);
 
 		expect(extractIpaText(result, [1])).toBe("ˈðʌ");
+	});
+});
+
+describe("extractWordIpa", () => {
+	it("returns IPA for the selected CMU variant", () => {
+		expect(
+			extractWordIpa(
+				{
+					source: "cmudict",
+					variants: [
+						[
+							{
+								phonemes: [
+									{ symbol: "ð", cmuToken: "DH", phonemeId: "DH", wordIndex: 0, phonemeIndex: 0 },
+									{ symbol: "ə", cmuToken: "AX0", phonemeId: "AX", wordIndex: 0, phonemeIndex: 1 },
+								],
+								stress: "none",
+							},
+						],
+						[
+							{
+								phonemes: [
+									{ symbol: "ð", cmuToken: "DH", phonemeId: "DH", wordIndex: 0, phonemeIndex: 0 },
+									{ symbol: "ʌ", cmuToken: "AH1", phonemeId: "AH", wordIndex: 0, phonemeIndex: 1 },
+								],
+								stress: "primary",
+							},
+						],
+					],
+				},
+				1,
+			),
+		).toBe("ˈðʌ");
+	});
+
+	it("returns empty string for fallback words", () => {
+		expect(
+			extractWordIpa(
+				{
+					source: "fallback",
+					variants: [
+						[
+							{
+								phonemes: [
+									{ symbol: "x", cmuToken: "x", phonemeId: null, wordIndex: 1, phonemeIndex: 0 },
+								],
+								stress: "none",
+							},
+						],
+					],
+				},
+				0,
+			),
+		).toBe("");
 	});
 });

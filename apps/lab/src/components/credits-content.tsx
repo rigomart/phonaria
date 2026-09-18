@@ -60,6 +60,17 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 		},
 	},
 	{
+		key: "free-dictionary-api",
+		title: "Free Dictionary API",
+		content:
+			"Word definitions on the transcription surface come from the Free Dictionary API, which serves English definitions sourced from Wiktionary.",
+		link: { text: "View Free Dictionary API", url: "https://dictionaryapi.dev/" },
+		license: {
+			text: "CC BY-SA 3.0",
+			url: "https://creativecommons.org/licenses/by-sa/3.0/",
+		},
+	},
+	{
 		key: "phoneme-audio",
 		title: "Phoneme Audio Samples",
 		content:

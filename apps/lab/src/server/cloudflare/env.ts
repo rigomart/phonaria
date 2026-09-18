@@ -18,6 +18,7 @@ export type LabWorkerEnv = {
 	TURSO_DATABASE_URL?: string;
 	TURSO_AUTH_TOKEN?: string;
 	TRANSCRIPTION_RATE_LIMIT: WorkerRateLimit;
+	DEFINITION_RATE_LIMIT: WorkerRateLimit;
 };
 
 export function getWorkerEnv(): LabWorkerEnv {
