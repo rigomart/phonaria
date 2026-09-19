@@ -10,6 +10,7 @@
 		"check-types": "tsc --noEmit",
 		"test": "vitest run",
 		"e2e:lab": "playwright test --grep-invert @baseline",
+		"e2e:lab:definitions": "playwright test e2e/transcription.spec.ts --grep \"opens Wiktionary definitions\"",
 		"e2e:lab:baseline": "playwright test --grep @baseline",
 		"e2e:install": "playwright install chromium --with-deps"
 	},

@@ -146,7 +146,7 @@ jobs:
             exit 1
           fi
           bun --cwd packages/lab-contract e2e:install
-          bun --cwd packages/lab-contract x playwright test e2e/transcription.spec.ts --grep "opens Wiktionary definitions"
+          bun --cwd packages/lab-contract e2e:lab:definitions
       - name: Comment preview URL
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: actions/github-script@v7
