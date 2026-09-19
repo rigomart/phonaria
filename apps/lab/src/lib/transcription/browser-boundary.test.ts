@@ -106,4 +106,21 @@ describe("browser transcription boundary", () => {
 			expect(source, file).not.toMatch(/lookupDefinition/);
 		}
 	});
+
+	it("scrolls tall definition popovers without changing phoneme popovers", () => {
+		const definition = readFileSync(
+			resolve(labRoot, "src/components/transcription/display/word-definition-popover.tsx"),
+			"utf8",
+		);
+		const phoneme = readFileSync(
+			resolve(labRoot, "src/components/transcription/display/clickable-phoneme.tsx"),
+			"utf8",
+		);
+
+		expect(definition).toMatch(/max-h-\[min\(24rem,70vh\)\]/);
+		expect(definition).toMatch(/overflow-hidden/);
+		expect(definition).toMatch(/overflow-y-auto/);
+		expect(phoneme).not.toMatch(/max-h-\[min\(24rem,70vh\)\]/);
+		expect(phoneme).not.toMatch(/overflow-y-auto/);
+	});
 });

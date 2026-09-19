@@ -46,57 +46,61 @@ function DefinitionBody({
 	onRetry: () => void;
 }) {
 	return (
-		<div className="flex flex-col gap-3 w-80">
-			<div className="flex items-baseline justify-between gap-2">
+		<div className="flex w-80 max-h-[min(24rem,70vh)] flex-col overflow-hidden">
+			<div className="flex shrink-0 items-baseline justify-between gap-2 pb-3">
 				<p className="text-base font-semibold font-display leading-none">{word}</p>
 				{ipa ? <p className="text-sm text-muted-foreground whitespace-nowrap">/{ipa}/</p> : null}
 			</div>
 
-			{status === "loading" || status === "idle" ? (
-				<div className="flex items-center gap-2 text-sm text-muted-foreground">
-					<Spinner className="size-4" />
-					Looking up definition
-				</div>
-			) : null}
+			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain">
+				{status === "loading" || status === "idle" ? (
+					<div className="flex items-center gap-2 text-sm text-muted-foreground">
+						<Spinner className="size-4" />
+						Looking up definition
+					</div>
+				) : null}
 
-			{status === "not_found" ? (
-				<p className="text-sm text-muted-foreground">No definition found</p>
-			) : null}
+				{status === "not_found" ? (
+					<p className="text-sm text-muted-foreground">No definition found</p>
+				) : null}
 
-			{status === "error" ? (
-				<div className="flex flex-col items-start gap-2">
-					<p className="text-sm text-foreground">{errorMessage}</p>
-					<Button variant="outline" size="sm" onClick={onRetry}>
-						<RotateCcw />
-						Retry
-					</Button>
-				</div>
-			) : null}
+				{status === "error" ? (
+					<div className="flex flex-col items-start gap-2">
+						<p className="text-sm text-foreground">{errorMessage}</p>
+						<Button variant="outline" size="sm" onClick={onRetry}>
+							<RotateCcw />
+							Retry
+						</Button>
+					</div>
+				) : null}
 
-			{status === "found"
-				? groups.map((group) => (
-						<div key={group.partOfSpeech} className="flex flex-col gap-1.5">
-							<p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-								{group.partOfSpeech}
-							</p>
-							<ol className="list-decimal space-y-2 pl-4">
-								{group.senses.map((sense, index) => (
-									<li
-										key={`${group.partOfSpeech}-${index}`}
-										className="text-sm leading-relaxed text-foreground"
-									>
-										{sense.definition}
-										{sense.example ? (
-											<p className="mt-0.5 text-xs italic text-muted-foreground">{sense.example}</p>
-										) : null}
-									</li>
-								))}
-							</ol>
-						</div>
-					))
-				: null}
+				{status === "found"
+					? groups.map((group) => (
+							<div key={group.partOfSpeech} className="flex flex-col gap-1.5">
+								<p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+									{group.partOfSpeech}
+								</p>
+								<ol className="list-decimal space-y-2 pl-4">
+									{group.senses.map((sense, index) => (
+										<li
+											key={`${group.partOfSpeech}-${index}`}
+											className="text-sm leading-relaxed text-foreground"
+										>
+											{sense.definition}
+											{sense.example ? (
+												<p className="mt-0.5 text-xs italic text-muted-foreground">
+													{sense.example}
+												</p>
+											) : null}
+										</li>
+									))}
+								</ol>
+							</div>
+						))
+					: null}
 
-			<Attribution />
+				<Attribution />
+			</div>
 		</div>
 	);
 }
