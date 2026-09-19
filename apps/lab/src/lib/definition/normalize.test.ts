@@ -1,12 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MAX_SENSES_PER_POS, MAX_SENSES_TOTAL } from "./contract";
-import {
-	capDefinitionSenses,
-	isLookupableDefinitionWord,
-	normalizeDefinitionWord,
-	parseWiktionaryPayload,
-	stripDefinitionHtml,
-} from "./normalize";
+import { capDefinitionSenses, parseWiktionaryPayload, stripDefinitionHtml } from "./normalize";
+import { isLookupableDefinitionWord, normalizeDefinitionWord } from "./word";
 
 describe("normalizeDefinitionWord", () => {
 	it("lowercases and trims", () => {
@@ -63,6 +58,7 @@ describe("parseWiktionaryPayload", () => {
 			parseWiktionaryPayload({
 				en: [
 					{
+						language: "English",
 						partOfSpeech: "Noun",
 						definitions: [
 							{ definition: 'A <a href="/wiki/greeting">greeting</a>.' },
@@ -80,6 +76,295 @@ describe("parseWiktionaryPayload", () => {
 		]);
 	});
 
+	it("filters entries by their own language inside the English response bucket", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "Translingual",
+						partOfSpeech: "Symbol",
+						definitions: [{ definition: "ISO 639-3 language code for Sentani." }],
+					},
+					{
+						language: "English",
+						partOfSpeech: "Verb",
+						definitions: [{ definition: "To put something down." }],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Verb",
+				definitions: [{ definition: "To put something down." }],
+			},
+		]);
+	});
+
+	it("keeps a definition's own text without nested senses or stylesheet content", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Article",
+						definitions: [
+							{
+								definition:
+									"<span>Used before a noun phrase.</span><ol><li><span>The definite grammatical article.</span><ol><li><span>Because it was already mentioned.</span></li></ol></li></ol>",
+							},
+							{
+								definition:
+									"<span>The definite grammatical article.</span><style>.mw-parser-output .defdate{font-size:smaller}</style>",
+							},
+							{ definition: "Because it was already mentioned." },
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Article",
+				definitions: [
+					{ definition: "Used before a noun phrase." },
+					{ definition: "The definite grammatical article." },
+					{ definition: "Because it was already mentioned." },
+				],
+			},
+		]);
+	});
+
+	it("removes references, media, and layout subtrees from definitions and examples", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Noun",
+						definitions: [
+							{
+								definition:
+									'<span>Either end of a line.</span><sup class="reference">[1]</sup><div class="mw-references-wrap"><ol class="references"><li>A bibliography entry.</li></ol></div><figure><img src="point.png"><figcaption>A marked point.</figcaption></figure><table><tr><td>layout text</td></tr></table>',
+								parsedExamples: [
+									{
+										example:
+											"Look <b>here</b>.<figure><figcaption>Diagram caption</figcaption></figure>",
+									},
+								],
+							},
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Noun",
+				definitions: [{ definition: "Either end of a line.", example: "Look here." }],
+			},
+		]);
+	});
+
+	it("removes interactive controls and embedded-object fallback text", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Noun",
+						definitions: [
+							{
+								definition:
+									"A useful definition.<button>Play audio</button><select><option>Choose a dialect</option></select><textarea>Editor placeholder</textarea><object>Media fallback</object>",
+							},
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Noun",
+				definitions: [{ definition: "A useful definition." }],
+			},
+		]);
+	});
+
+	it("removes styles and scripts from example text", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Verb",
+						definitions: [
+							{
+								definition: "To test something.<script>alert('definition')</script>",
+								parsedExamples: [
+									{
+										example:
+											"They tested it.<style>.example { display: none; }</style><script>alert('example')</script>",
+									},
+								],
+							},
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Verb",
+				definitions: [{ definition: "To test something.", example: "They tested it." }],
+			},
+		]);
+	});
+
+	it("handles malformed entities, empty placeholders, and deeply nested markup", () => {
+		const deeplyNested = `${"<span>".repeat(300)}Still readable${"</span>".repeat(300)}`;
+
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Adjective",
+						definitions: [
+							{ definition: "<span></span><!-- empty --><b> </b>" },
+							{ definition: "An incomplete &notanentity; reference &amp" },
+							{ definition: deeplyNested },
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Adjective",
+				definitions: [
+					{ definition: "An incomplete ¬anentity; reference &" },
+					{ definition: "Still readable" },
+				],
+			},
+		]);
+	});
+
+	it("preserves text boundaries and readable inline math", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Noun",
+						definitions: [
+							{
+								definition:
+									"<div>A mathematical quantity.</div><div>For example, <math><mi>e</mi><msup><mi>i</mi><mi>π</mi></msup><mo>+</mo><mn>1</mn><mo>=</mo><mn>0</mn>.</math></div>",
+							},
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Noun",
+				definitions: [{ definition: "A mathematical quantity. For example, eiπ+1=0." }],
+			},
+		]);
+	});
+
+	it("bounds source fragments and normalized output without losing later candidates", () => {
+		const meanings = parseWiktionaryPayload({
+			en: [
+				{
+					language: "English",
+					partOfSpeech: "Noun",
+					definitions: [
+						{ definition: "x".repeat(20_001) },
+						{
+							definition: `<span>${"d".repeat(1_200)}</span>`,
+							parsedExamples: [
+								{ example: "x".repeat(20_001) },
+								{ example: `<i>${"e".repeat(700)}</i>` },
+							],
+						},
+					],
+				},
+			],
+		});
+
+		expect(meanings).toEqual([
+			{
+				partOfSpeech: "Noun",
+				definitions: [
+					{
+						definition: "d".repeat(1_000),
+						example: "e".repeat(500),
+					},
+				],
+			},
+		]);
+	});
+
+	it("skips malformed entries while retaining legitimate English part-of-speech labels", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					null,
+					"not an entry",
+					{ language: "English", partOfSpeech: "Letter", definitions: "not an array" },
+					{
+						language: "English",
+						partOfSpeech: " Letter ",
+						definitions: [{ definition: "A letter." }, null],
+					},
+					{
+						language: "English",
+						partOfSpeech: "Symbol",
+						definitions: [{ definition: "A symbol." }],
+					},
+					{
+						language: "English",
+						partOfSpeech: "Numeral",
+						definitions: [{ definition: "A numeral." }],
+					},
+				],
+			}),
+		).toEqual([
+			{ partOfSpeech: "Letter", definitions: [{ definition: "A letter." }] },
+			{ partOfSpeech: "Symbol", definitions: [{ definition: "A symbol." }] },
+			{ partOfSpeech: "Numeral", definitions: [{ definition: "A numeral." }] },
+		]);
+	});
+
+	it("skips comment-only examples and ignores unrelated example metadata", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Noun",
+						definitions: [
+							{
+								definition: "A definition.",
+								parsedExamples: [
+									{ example: "<!-- hidden -->" },
+									{
+										example: "The <b>useful</b> example.",
+										translation: "ignored",
+										footer: "ignored",
+										qualifier: "ignored",
+									},
+								],
+								examples: ["ignored fallback"],
+							},
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Noun",
+				definitions: [{ definition: "A definition.", example: "The useful example." }],
+			},
+		]);
+	});
+
 	it("returns empty when English is missing", () => {
 		expect(parseWiktionaryPayload({ fr: [] })).toEqual([]);
 		expect(parseWiktionaryPayload([])).toEqual([]);
@@ -90,6 +375,7 @@ describe("parseWiktionaryPayload", () => {
 			parseWiktionaryPayload({
 				en: [
 					{
+						language: "English",
 						partOfSpeech: "Interjection",
 						definitions: [
 							{
@@ -123,6 +409,7 @@ describe("parseWiktionaryPayload", () => {
 			parseWiktionaryPayload({
 				en: [
 					{
+						language: "English",
 						partOfSpeech: "Noun",
 						definitions: [
 							{

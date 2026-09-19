@@ -14,7 +14,7 @@ const clientFiles = [
 	"src/lib/g2p/model.ts",
 	"src/lib/transcription/contract.ts",
 	"src/lib/definition/contract.ts",
-	"src/lib/definition/normalize.ts",
+	"src/lib/definition/word.ts",
 	"src/lib/definition/inflight.ts",
 	"src/components/transcription/transcription-journey.tsx",
 	"src/components/transcription/display/index.tsx",
@@ -92,6 +92,13 @@ describe("browser transcription boundary", () => {
 		expect(hook).not.toMatch(/\/api\/rest_v1\/page\/definition/);
 		expect(adapter).toMatch(/lookupDefinitionOnWorker/);
 		expect(adapter).not.toMatch(/\/api\/rest_v1\/page\/definition/);
+	});
+
+	it("keeps definition HTML parsing out of the browser dependency graph", () => {
+		const inflight = readFileSync(resolve(labRoot, "src/lib/definition/inflight.ts"), "utf8");
+
+		expect(inflight).toMatch(/from "\.\/word"/);
+		expect(inflight).not.toMatch(/from "\.\/normalize"/);
 	});
 
 	it("keeps phoneme popovers free of dictionary definitions", () => {

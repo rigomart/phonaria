@@ -1,5 +1,5 @@
 import type { DefinitionLookupOutput } from "./contract";
-import { normalizeDefinitionWord } from "./normalize";
+import { normalizeDefinitionWord } from "./word";
 
 const inflightByWord = new Map<string, Promise<DefinitionLookupOutput>>();
 

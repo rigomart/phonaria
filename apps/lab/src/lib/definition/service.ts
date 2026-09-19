@@ -4,12 +4,8 @@ import {
 	type DefinitionServiceResult,
 	definitionLookupInputSchema,
 } from "./contract";
-import {
-	capDefinitionSenses,
-	isLookupableDefinitionWord,
-	normalizeDefinitionWord,
-	parseWiktionaryPayload,
-} from "./normalize";
+import { capDefinitionSenses, parseWiktionaryPayload } from "./normalize";
+import { isLookupableDefinitionWord, normalizeDefinitionWord } from "./word";
 
 export type DefinitionFetch = (
 	input: string,
