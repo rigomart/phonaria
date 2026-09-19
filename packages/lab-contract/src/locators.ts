@@ -35,3 +35,7 @@ export function dictionaryMissBadge(page: Page) {
 export function phonemeDetailsButton(page: Page) {
 	return page.getByRole("button", { name: /^Details for \// });
 }
+
+export function wordDefinitionTrigger(page: Page, word: string) {
+	return page.getByRole("button", { name: `Definition of ${word}` });
+}

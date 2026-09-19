@@ -13,6 +13,7 @@ import {
 	retryButton,
 	textToTranscribe,
 	transcribeSubmit,
+	wordDefinitionTrigger,
 } from "../src/locators";
 
 test.describe("Transcription", () => {
@@ -59,6 +60,24 @@ test.describe("Transcription", () => {
 		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
 			timeout: 20_000,
 		});
+	});
+
+	test("opens Wiktionary definitions for a spelled known word", async ({ page }) => {
+		await page.goto("/");
+		const input = textToTranscribe(page);
+		await input.click();
+		await input.pressSequentially(KNOWN_WORD);
+		await expect(transcribeSubmit(page)).toBeEnabled();
+		await transcribeSubmit(page).click();
+
+		const trigger = wordDefinitionTrigger(page, KNOWN_WORD);
+		await expect(trigger).toBeVisible({ timeout: 20_000 });
+		await trigger.click();
+
+		await expect(page.getByText(/greeting/i).first()).toBeVisible({ timeout: 15_000 });
+		await expect(page.getByText("Definitions from Wiktionary")).toBeVisible();
+		await expect(page.getByText("We couldn't load that definition")).toHaveCount(0);
+		await expect(page.getByRole("button", { name: "Retry" })).toHaveCount(0);
 	});
 });
 

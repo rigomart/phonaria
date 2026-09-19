@@ -14,6 +14,7 @@ test.describe("Lab routes", () => {
 		const response = await page.goto("/credits");
 		expect(response?.status()).toBe(200);
 		await expect(page.getByRole("heading", { name: "Credits & Sources" })).toBeVisible();
+		await expect(page.getByRole("heading", { name: "Wiktionary" })).toBeVisible();
 	});
 
 	test("serves the consonant chart", async ({ page }) => {
