@@ -1,28 +1,69 @@
+import { type DefaultTreeAdapterMap, defaultTreeAdapter, parseFragment } from "parse5";
 import {
 	type DefinitionSense,
 	type DefinitionSenseGroup,
-	MAX_DEFINITION_WORD_LENGTH,
 	MAX_SENSES_PER_POS,
 	MAX_SENSES_TOTAL,
 } from "./contract";
 
-const SURROUNDING_PUNCTUATION = /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu;
-const ALLOWED_LOOKUP_WORD = /^[\p{L}\p{N}'-]+$/u;
-
-export function normalizeDefinitionWord(input: string): string {
-	return input
-		.trim()
-		.toLowerCase()
-		.replace(/[\u2018\u2019]/g, "'")
-		.replace(/[\u2010-\u2015]/g, "-")
-		.replace(SURROUNDING_PUNCTUATION, "");
-}
-
-export function isLookupableDefinitionWord(word: string): boolean {
-	return (
-		word.length > 0 && word.length <= MAX_DEFINITION_WORD_LENGTH && ALLOWED_LOOKUP_WORD.test(word)
-	);
-}
+const MAX_WIKTIONARY_ENTRIES = 64;
+const MAX_DEFINITIONS_PER_ENTRY = 256;
+const MAX_EXAMPLE_CANDIDATES = 16;
+const MAX_HTML_FRAGMENT_LENGTH = 20_000;
+const MAX_DEFINITION_TEXT_LENGTH = 1_000;
+const MAX_EXAMPLE_TEXT_LENGTH = 500;
+const MAX_PART_OF_SPEECH_LENGTH = 64;
+const NON_CONTENT_ELEMENTS = new Set([
+	"audio",
+	"canvas",
+	"figure",
+	"iframe",
+	"img",
+	"link",
+	"meta",
+	"noscript",
+	"picture",
+	"script",
+	"style",
+	"svg",
+	"table",
+	"template",
+	"video",
+]);
+const NON_CONTENT_CLASSES = new Set([
+	"mw-cite-backlink",
+	"mw-references-wrap",
+	"reference",
+	"references",
+	"reflist",
+]);
+const TEXT_BOUNDARY_ELEMENTS = new Set([
+	"address",
+	"article",
+	"aside",
+	"blockquote",
+	"dd",
+	"div",
+	"dl",
+	"dt",
+	"fieldset",
+	"footer",
+	"h1",
+	"h2",
+	"h3",
+	"h4",
+	"h5",
+	"h6",
+	"header",
+	"hr",
+	"li",
+	"main",
+	"nav",
+	"p",
+	"pre",
+	"section",
+]);
+const NESTED_SENSE_LISTS = new Set(["ol", "ul"]);
 
 export type WiktionarySense = {
 	definition: string;
@@ -40,35 +81,76 @@ function asTrimmedString(value: unknown): string | null {
 	return trimmed.length > 0 ? trimmed : null;
 }
 
+type HtmlNode = DefaultTreeAdapterMap["childNode"];
+
+function hasNonContentClass(node: DefaultTreeAdapterMap["element"]): boolean {
+	const className = node.attrs.find((attribute) => attribute.name === "class")?.value;
+	return className?.split(/\s+/u).some((token) => NON_CONTENT_CLASSES.has(token)) ?? false;
+}
+
+function appendText(node: HtmlNode, parts: string[], omitNestedSenseLists: boolean): void {
+	if (defaultTreeAdapter.isTextNode(node)) {
+		parts.push(node.value);
+		return;
+	}
+	if (!defaultTreeAdapter.isElementNode(node)) return;
+	if (
+		NON_CONTENT_ELEMENTS.has(node.tagName) ||
+		hasNonContentClass(node) ||
+		(omitNestedSenseLists && NESTED_SENSE_LISTS.has(node.tagName))
+	) {
+		return;
+	}
+
+	const hasTextBoundary = node.tagName === "br" || TEXT_BOUNDARY_ELEMENTS.has(node.tagName);
+	if (hasTextBoundary) parts.push(" ");
+	for (const child of node.childNodes) appendText(child, parts, omitNestedSenseLists);
+	if (hasTextBoundary) parts.push(" ");
+}
+
+function truncateText(value: string, maxLength: number): string {
+	if (value.length <= maxLength) return value;
+	let truncated = value.slice(0, maxLength);
+	const lastCodeUnit = truncated.charCodeAt(truncated.length - 1);
+	if (lastCodeUnit >= 0xd800 && lastCodeUnit <= 0xdbff) truncated = truncated.slice(0, -1);
+	return truncated.trimEnd();
+}
+
+function htmlFragmentText(
+	html: string,
+	omitNestedSenseLists: boolean,
+	maxTextLength: number,
+): string {
+	if (html.length > MAX_HTML_FRAGMENT_LENGTH) return "";
+
+	let fragment: DefaultTreeAdapterMap["documentFragment"];
+	try {
+		fragment = parseFragment(html);
+	} catch {
+		return "";
+	}
+	const parts: string[] = [];
+	for (const child of fragment.childNodes) appendText(child, parts, omitNestedSenseLists);
+	const normalized = parts
+		.join("")
+		.replace(/\u00a0/g, " ")
+		.replace(/\s+/gu, " ")
+		.trim();
+	return truncateText(normalized, maxTextLength);
+}
+
 export function stripDefinitionHtml(html: string): string {
-	const withoutTags = html
-		.replace(/<br\s*\/?>/gi, " ")
-		.replace(/<\/(?:p|div|li|dd|dt)>/gi, " ")
-		.replace(/<[^>]+>/g, "");
-	return decodeBasicEntities(withoutTags).replace(/\s+/g, " ").trim();
+	return htmlFragmentText(html, false, MAX_DEFINITION_TEXT_LENGTH);
 }
 
-function decodeBasicEntities(value: string): string {
-	return value
-		.replace(/&nbsp;/gi, " ")
-		.replace(/&amp;/gi, "&")
-		.replace(/&quot;/gi, '"')
-		.replace(/&#39;|&apos;/gi, "'")
-		.replace(/&lt;/gi, "<")
-		.replace(/&gt;/gi, ">")
-		.replace(/&#x([0-9a-f]+);/gi, (_, hex: string) => codePointToChar(Number.parseInt(hex, 16)))
-		.replace(/&#(\d+);/g, (_, n: string) => codePointToChar(Number(n)));
-}
-
-function codePointToChar(codePoint: number): string {
-	if (!Number.isInteger(codePoint) || codePoint < 0 || codePoint > 0x10ffff) return "";
-	return String.fromCodePoint(codePoint);
-}
-
-function plainDefinitionText(value: unknown): string | null {
+function plainDefinitionText(
+	value: unknown,
+	omitNestedSenseLists = false,
+	maxTextLength = MAX_DEFINITION_TEXT_LENGTH,
+): string | null {
 	const raw = asTrimmedString(value);
 	if (!raw) return null;
-	const plain = stripDefinitionHtml(raw);
+	const plain = htmlFragmentText(raw, omitNestedSenseLists, maxTextLength);
 	return plain.length > 0 ? plain : null;
 }
 
@@ -78,15 +160,19 @@ function plainDefinitionText(value: unknown): string | null {
  */
 function firstDefinitionExample(entry: Record<string, unknown>): string | undefined {
 	if (Array.isArray(entry.parsedExamples)) {
-		for (const item of entry.parsedExamples) {
+		for (const item of entry.parsedExamples.slice(0, MAX_EXAMPLE_CANDIDATES)) {
 			if (!item || typeof item !== "object") continue;
-			const example = plainDefinitionText((item as Record<string, unknown>).example);
+			const example = plainDefinitionText(
+				(item as Record<string, unknown>).example,
+				false,
+				MAX_EXAMPLE_TEXT_LENGTH,
+			);
 			if (example) return example;
 		}
 	}
 	if (Array.isArray(entry.examples)) {
-		for (const item of entry.examples) {
-			const example = plainDefinitionText(item);
+		for (const item of entry.examples.slice(0, MAX_EXAMPLE_CANDIDATES)) {
+			const example = plainDefinitionText(item, false, MAX_EXAMPLE_TEXT_LENGTH);
 			if (example) return example;
 		}
 	}
@@ -107,16 +193,20 @@ export function parseWiktionaryPayload(payload: unknown): WiktionaryMeaning[] {
 	if (!Array.isArray(english)) return [];
 
 	const meanings: WiktionaryMeaning[] = [];
-	for (const item of english) {
+	for (const item of english.slice(0, MAX_WIKTIONARY_ENTRIES)) {
 		if (!item || typeof item !== "object") continue;
 		const record = item as Record<string, unknown>;
-		const partOfSpeech = asTrimmedString(record.partOfSpeech) ?? "unknown";
+		if (record.language !== "English") continue;
+		const rawPartOfSpeech = asTrimmedString(record.partOfSpeech);
+		const partOfSpeech = rawPartOfSpeech
+			? truncateText(rawPartOfSpeech.replace(/\s+/gu, " "), MAX_PART_OF_SPEECH_LENGTH)
+			: "unknown";
 		const definitions: WiktionarySense[] = [];
 		if (Array.isArray(record.definitions)) {
-			for (const entry of record.definitions) {
+			for (const entry of record.definitions.slice(0, MAX_DEFINITIONS_PER_ENTRY)) {
 				if (!entry || typeof entry !== "object") continue;
 				const recordEntry = entry as Record<string, unknown>;
-				const definition = plainDefinitionText(recordEntry.definition);
+				const definition = plainDefinitionText(recordEntry.definition, true);
 				if (!definition) continue;
 				definitions.push(toSense(definition, firstDefinitionExample(recordEntry)));
 			}
@@ -135,21 +225,25 @@ export function parseWiktionaryPayload(payload: unknown): WiktionaryMeaning[] {
  */
 export function capDefinitionSenses(meanings: WiktionaryMeaning[]): DefinitionSenseGroup[] {
 	const byPos = new Map<string, DefinitionSense[]>();
+	const seenByPos = new Map<string, Set<string>>();
 	const order: string[] = [];
 
 	for (const meaning of meanings) {
 		const partOfSpeech = meaning.partOfSpeech.trim() || "unknown";
 		if (!byPos.has(partOfSpeech)) {
 			byPos.set(partOfSpeech, []);
+			seenByPos.set(partOfSpeech, new Set());
 			order.push(partOfSpeech);
 		}
 		const bucket = byPos.get(partOfSpeech);
-		if (!bucket || bucket.length >= MAX_SENSES_PER_POS) continue;
+		const seen = seenByPos.get(partOfSpeech);
+		if (!bucket || !seen || bucket.length >= MAX_SENSES_PER_POS) continue;
 		for (const item of meaning.definitions) {
 			if (bucket.length >= MAX_SENSES_PER_POS) break;
 			const definition = item.definition.trim();
-			if (!definition) continue;
+			if (!definition || seen.has(definition)) continue;
 			const example = item.example?.trim();
+			seen.add(definition);
 			bucket.push(toSense(definition, example));
 		}
 	}

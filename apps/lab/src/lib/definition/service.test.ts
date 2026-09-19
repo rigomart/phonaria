@@ -11,6 +11,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 const helloPayload = {
 	en: [
 		{
+			language: "English",
 			partOfSpeech: "Interjection",
 			definitions: [
 				{
@@ -22,6 +23,7 @@ const helloPayload = {
 			],
 		},
 		{
+			language: "English",
 			partOfSpeech: "Noun",
 			definitions: [{ definition: "The act of saying hello." }],
 		},
@@ -58,6 +60,40 @@ describe("lookupDefinition", () => {
 				headers: wiktionaryLookupHeaders(),
 			}),
 		);
+	});
+
+	it("deduplicates normalized senses before applying display caps", async () => {
+		const fetchFn = vi.fn(async () =>
+			jsonResponse({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Noun",
+						definitions: [
+							{ definition: "A <b>first</b> sense." },
+							{ definition: "A first sense." },
+							{ definition: "A second sense." },
+						],
+					},
+				],
+			}),
+		);
+
+		const result = await lookupDefinition({ word: "example" }, { fetch: fetchFn });
+
+		expect(result).toEqual({
+			ok: true,
+			result: {
+				found: true,
+				word: "example",
+				groups: [
+					{
+						partOfSpeech: "Noun",
+						senses: [{ definition: "A first sense." }, { definition: "A second sense." }],
+					},
+				],
+			},
+		});
 	});
 
 	it("normalizes punctuation before calling the API", async () => {
