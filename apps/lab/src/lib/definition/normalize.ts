@@ -1,4 +1,5 @@
 import {
+	type DefinitionSense,
 	type DefinitionSenseGroup,
 	MAX_DEFINITION_WORD_LENGTH,
 	MAX_SENSES_PER_POS,
@@ -23,9 +24,14 @@ export function isLookupableDefinitionWord(word: string): boolean {
 	);
 }
 
+export type WiktionarySense = {
+	definition: string;
+	example?: string;
+};
+
 export type WiktionaryMeaning = {
 	partOfSpeech: string;
-	definitions: string[];
+	definitions: WiktionarySense[];
 };
 
 function asTrimmedString(value: unknown): string | null {
@@ -59,6 +65,38 @@ function codePointToChar(codePoint: number): string {
 	return String.fromCodePoint(codePoint);
 }
 
+function plainDefinitionText(value: unknown): string | null {
+	const raw = asTrimmedString(value);
+	if (!raw) return null;
+	const plain = stripDefinitionHtml(raw);
+	return plain.length > 0 ? plain : null;
+}
+
+/**
+ * Prefer the first usable `parsedExamples[].example`, then `examples[]`.
+ * At most one example is kept per sense.
+ */
+function firstDefinitionExample(entry: Record<string, unknown>): string | undefined {
+	if (Array.isArray(entry.parsedExamples)) {
+		for (const item of entry.parsedExamples) {
+			if (!item || typeof item !== "object") continue;
+			const example = plainDefinitionText((item as Record<string, unknown>).example);
+			if (example) return example;
+		}
+	}
+	if (Array.isArray(entry.examples)) {
+		for (const item of entry.examples) {
+			const example = plainDefinitionText(item);
+			if (example) return example;
+		}
+	}
+	return undefined;
+}
+
+function toSense(definition: string, example?: string): DefinitionSense {
+	return example ? { definition, example } : { definition };
+}
+
 /**
  * Wiktionary REST definitions are language-keyed. v1 uses English (`en`) only.
  * Glosses often wrap links and labels in HTML — strip to plain text first.
@@ -73,14 +111,14 @@ export function parseWiktionaryPayload(payload: unknown): WiktionaryMeaning[] {
 		if (!item || typeof item !== "object") continue;
 		const record = item as Record<string, unknown>;
 		const partOfSpeech = asTrimmedString(record.partOfSpeech) ?? "unknown";
-		const definitions: string[] = [];
+		const definitions: WiktionarySense[] = [];
 		if (Array.isArray(record.definitions)) {
 			for (const entry of record.definitions) {
 				if (!entry || typeof entry !== "object") continue;
-				const raw = asTrimmedString((entry as Record<string, unknown>).definition);
-				if (!raw) continue;
-				const plain = stripDefinitionHtml(raw);
-				if (plain) definitions.push(plain);
+				const recordEntry = entry as Record<string, unknown>;
+				const definition = plainDefinitionText(recordEntry.definition);
+				if (!definition) continue;
+				definitions.push(toSense(definition, firstDefinitionExample(recordEntry)));
 			}
 		}
 		if (definitions.length > 0) {
@@ -93,9 +131,10 @@ export function parseWiktionaryPayload(payload: unknown): WiktionaryMeaning[] {
 /**
  * Group senses by part of speech, keep the first two per POS, and stop at six
  * senses total. Later POS groups are dropped once the cap is reached.
+ * Examples ride along with kept senses and do not count toward the cap.
  */
 export function capDefinitionSenses(meanings: WiktionaryMeaning[]): DefinitionSenseGroup[] {
-	const byPos = new Map<string, string[]>();
+	const byPos = new Map<string, DefinitionSense[]>();
 	const order: string[] = [];
 
 	for (const meaning of meanings) {
@@ -106,10 +145,12 @@ export function capDefinitionSenses(meanings: WiktionaryMeaning[]): DefinitionSe
 		}
 		const bucket = byPos.get(partOfSpeech);
 		if (!bucket || bucket.length >= MAX_SENSES_PER_POS) continue;
-		for (const definition of meaning.definitions) {
+		for (const item of meaning.definitions) {
 			if (bucket.length >= MAX_SENSES_PER_POS) break;
-			const sense = definition.trim();
-			if (sense) bucket.push(sense);
+			const definition = item.definition.trim();
+			if (!definition) continue;
+			const example = item.example?.trim();
+			bucket.push(toSense(definition, example));
 		}
 	}
 

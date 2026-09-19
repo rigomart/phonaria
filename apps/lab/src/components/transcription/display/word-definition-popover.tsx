@@ -79,13 +79,16 @@ function DefinitionBody({
 							<p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
 								{group.partOfSpeech}
 							</p>
-							<ol className="list-decimal list-inside space-y-1">
+							<ol className="list-decimal space-y-2 pl-4">
 								{group.senses.map((sense, index) => (
 									<li
 										key={`${group.partOfSpeech}-${index}`}
 										className="text-sm leading-relaxed text-foreground"
 									>
-										{sense}
+										{sense.definition}
+										{sense.example ? (
+											<p className="mt-0.5 text-xs italic text-muted-foreground">{sense.example}</p>
+										) : null}
 									</li>
 								))}
 							</ol>

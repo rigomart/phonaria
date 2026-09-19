@@ -88,7 +88,7 @@ describe("lookupDefinitionOnWorker", () => {
 			result: {
 				found: true as const,
 				word: "hello",
-				groups: [{ partOfSpeech: "noun", senses: ["a greeting"] }],
+				groups: [{ partOfSpeech: "noun", senses: [{ definition: "a greeting" }] }],
 			},
 		}));
 
@@ -97,7 +97,7 @@ describe("lookupDefinitionOnWorker", () => {
 		).resolves.toEqual({
 			found: true,
 			word: "hello",
-			groups: [{ partOfSpeech: "noun", senses: ["a greeting"] }],
+			groups: [{ partOfSpeech: "noun", senses: [{ definition: "a greeting" }] }],
 		});
 	});
 

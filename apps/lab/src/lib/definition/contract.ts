@@ -12,9 +12,14 @@ export const definitionLookupInputSchema = z.object({
 
 export type DefinitionLookupInput = z.input<typeof definitionLookupInputSchema>;
 
+export type DefinitionSense = {
+	definition: string;
+	example?: string;
+};
+
 export type DefinitionSenseGroup = {
 	partOfSpeech: string;
-	senses: string[];
+	senses: DefinitionSense[];
 };
 
 export type DefinitionLookupOutput =

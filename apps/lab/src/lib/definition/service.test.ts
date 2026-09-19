@@ -13,7 +13,11 @@ const helloPayload = {
 		{
 			partOfSpeech: "Interjection",
 			definitions: [
-				{ definition: 'A <a href="/wiki/greeting">greeting</a>.' },
+				{
+					definition: 'A <a href="/wiki/greeting">greeting</a>.',
+					parsedExamples: [{ example: "<b>Hello</b>, everyone." }],
+					examples: ["Hello, everyone."],
+				},
 				{ definition: "A greeting used when answering the telephone." },
 			],
 		},
@@ -38,9 +42,12 @@ describe("lookupDefinition", () => {
 				groups: [
 					{
 						partOfSpeech: "Interjection",
-						senses: ["A greeting.", "A greeting used when answering the telephone."],
+						senses: [
+							{ definition: "A greeting.", example: "Hello, everyone." },
+							{ definition: "A greeting used when answering the telephone." },
+						],
 					},
-					{ partOfSpeech: "Noun", senses: ["The act of saying hello."] },
+					{ partOfSpeech: "Noun", senses: [{ definition: "The act of saying hello." }] },
 				],
 			},
 		});

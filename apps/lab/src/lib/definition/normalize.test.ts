@@ -72,12 +72,76 @@ describe("parseWiktionaryPayload", () => {
 				],
 				fr: [{ partOfSpeech: "Nom", definitions: [{ definition: "bonjour" }] }],
 			}),
-		).toEqual([{ partOfSpeech: "Noun", definitions: ["A greeting.", "An act of greeting."] }]);
+		).toEqual([
+			{
+				partOfSpeech: "Noun",
+				definitions: [{ definition: "A greeting." }, { definition: "An act of greeting." }],
+			},
+		]);
 	});
 
 	it("returns empty when English is missing", () => {
 		expect(parseWiktionaryPayload({ fr: [] })).toEqual([]);
 		expect(parseWiktionaryPayload([])).toEqual([]);
+	});
+
+	it("keeps the first stripped example per sense from parsedExamples", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						partOfSpeech: "Interjection",
+						definitions: [
+							{
+								definition: "A greeting.",
+								parsedExamples: [
+									{ example: "<b>Hello</b>, everyone." },
+									{ example: "Hello? Is anyone there?" },
+								],
+								examples: ["ignored fallback"],
+							},
+							{
+								definition: "A greeting used when answering the telephone.",
+							},
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Interjection",
+				definitions: [
+					{ definition: "A greeting.", example: "Hello, everyone." },
+					{ definition: "A greeting used when answering the telephone." },
+				],
+			},
+		]);
+	});
+
+	it("falls back to examples when parsedExamples has no usable text", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						partOfSpeech: "Noun",
+						definitions: [
+							{
+								definition: "A greeting.",
+								parsedExamples: [{ example: "<b>  </b>" }],
+								examples: ["They gave each other a quick <b>hello</b>."],
+							},
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Noun",
+				definitions: [
+					{ definition: "A greeting.", example: "They gave each other a quick hello." },
+				],
+			},
+		]);
 	});
 });
 
@@ -86,38 +150,71 @@ describe("capDefinitionSenses", () => {
 		const groups = capDefinitionSenses([
 			{
 				partOfSpeech: "noun",
-				definitions: ["a collection", "a group of tennis games", "a stage setting"],
+				definitions: [
+					{ definition: "a collection" },
+					{ definition: "a group of tennis games" },
+					{ definition: "a stage setting" },
+				],
 			},
 		]);
 
 		expect(groups).toEqual([
-			{ partOfSpeech: "noun", senses: ["a collection", "a group of tennis games"] },
+			{
+				partOfSpeech: "noun",
+				senses: [{ definition: "a collection" }, { definition: "a group of tennis games" }],
+			},
 		]);
 		expect(groups[0]?.senses).toHaveLength(MAX_SENSES_PER_POS);
 	});
 
 	it("stops at six senses total across parts of speech", () => {
 		const groups = capDefinitionSenses([
-			{ partOfSpeech: "noun", definitions: ["n1", "n2"] },
-			{ partOfSpeech: "verb", definitions: ["v1", "v2"] },
-			{ partOfSpeech: "adjective", definitions: ["a1", "a2"] },
-			{ partOfSpeech: "adverb", definitions: ["adv1", "adv2"] },
+			{ partOfSpeech: "noun", definitions: [{ definition: "n1" }, { definition: "n2" }] },
+			{ partOfSpeech: "verb", definitions: [{ definition: "v1" }, { definition: "v2" }] },
+			{ partOfSpeech: "adjective", definitions: [{ definition: "a1" }, { definition: "a2" }] },
+			{ partOfSpeech: "adverb", definitions: [{ definition: "adv1" }, { definition: "adv2" }] },
 		]);
 
 		expect(groups).toEqual([
-			{ partOfSpeech: "noun", senses: ["n1", "n2"] },
-			{ partOfSpeech: "verb", senses: ["v1", "v2"] },
-			{ partOfSpeech: "adjective", senses: ["a1", "a2"] },
+			{ partOfSpeech: "noun", senses: [{ definition: "n1" }, { definition: "n2" }] },
+			{ partOfSpeech: "verb", senses: [{ definition: "v1" }, { definition: "v2" }] },
+			{ partOfSpeech: "adjective", senses: [{ definition: "a1" }, { definition: "a2" }] },
 		]);
 		expect(groups.flatMap((group) => group.senses)).toHaveLength(MAX_SENSES_TOTAL);
 	});
 
 	it("merges later entries into an existing part of speech until the per-POS cap", () => {
 		const groups = capDefinitionSenses([
-			{ partOfSpeech: "noun", definitions: ["first"] },
-			{ partOfSpeech: "noun", definitions: ["second", "third"] },
+			{ partOfSpeech: "noun", definitions: [{ definition: "first" }] },
+			{ partOfSpeech: "noun", definitions: [{ definition: "second" }, { definition: "third" }] },
 		]);
 
-		expect(groups).toEqual([{ partOfSpeech: "noun", senses: ["first", "second"] }]);
+		expect(groups).toEqual([
+			{ partOfSpeech: "noun", senses: [{ definition: "first" }, { definition: "second" }] },
+		]);
+	});
+
+	it("preserves the first example on kept senses without counting it toward the cap", () => {
+		const groups = capDefinitionSenses([
+			{
+				partOfSpeech: "noun",
+				definitions: [
+					{ definition: "first", example: "ex1" },
+					{ definition: "second", example: "ex2" },
+					{ definition: "third", example: "ex3" },
+				],
+			},
+		]);
+
+		expect(groups).toEqual([
+			{
+				partOfSpeech: "noun",
+				senses: [
+					{ definition: "first", example: "ex1" },
+					{ definition: "second", example: "ex2" },
+				],
+			},
+		]);
+		expect(groups[0]?.senses).toHaveLength(MAX_SENSES_PER_POS);
 	});
 });

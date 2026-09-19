@@ -19,6 +19,12 @@ describe("Wiktionary live definition lookup", () => {
 		const senses = result.result.groups.flatMap((group) => group.senses);
 		expect(senses.length).toBeGreaterThan(0);
 		expect(result.result.word).toBe("hello");
-		expect(senses.some((sense) => /greet/i.test(sense))).toBe(true);
+		expect(senses.some((sense) => /greet/i.test(sense.definition))).toBe(true);
+		const examples = senses.map((sense) => sense.example).filter((example) => Boolean(example));
+		if (examples.length === 0) {
+			throw new Error(
+				"Live Wiktionary hello payload had senses but no examples; expected at least one parsed/plain example",
+			);
+		}
 	}, 15_000);
 });
