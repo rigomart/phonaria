@@ -90,6 +90,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       LAB_TURSO_DATABASE_URL: ${{ secrets.LAB_TURSO_DATABASE_URL }}
       LAB_TURSO_AUTH_TOKEN: ${{ secrets.LAB_TURSO_AUTH_TOKEN }}
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -132,6 +133,20 @@ jobs:
         run: |
           printf '%s' "$LAB_TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name "${{ steps.origin.outputs.name }}"
           printf '%s' "$LAB_TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name "${{ steps.origin.outputs.name }}"
+      - name: Smoke Wiktionary definitions on preview
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        env:
+          CI: true
+          LAB_CONTRACT_TARGET: cloudflare-staging
+          LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          if [ -z "${CF_ACCESS_CLIENT_ID}" ] || [ -z "${CF_ACCESS_CLIENT_SECRET}" ]; then
+            echo "CF_ACCESS credentials are required to smoke preview definitions through Cloudflare Access."
+            exit 1
+          fi
+          bun --cwd packages/lab-contract e2e:install
+          bun --cwd packages/lab-contract e2e:lab:definitions
       - name: Comment preview URL
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: actions/github-script@v7

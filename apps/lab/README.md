@@ -46,8 +46,10 @@ bound.
 
 Cloudflare's `TRANSCRIPTION_RATE_LIMIT` binding applies a best-effort limit of
 60 server lookups per minute for each connecting IP and Cloudflare location.
-Local, staging, preview, and production use separate namespace IDs in
+`DEFINITION_RATE_LIMIT` applies the same 60/minute IP cap to dictionary
+lookups. Local, staging, preview, and production use separate namespace IDs in
 `wrangler.jsonc`, because rate-limit bindings and counters are not inherited by
-named Worker environments. A rejected request returns a retryable transcription
+named Worker environments. A rejected transcription request returns a retryable
 error with HTTP status 429 before Turso is queried. A missing binding also fails
-closed before Turso is queried.
+closed before Turso is queried. Dictionary lookups proxy Wiktionary REST
+definitions from the Worker and never call Wiktionary from the browser.

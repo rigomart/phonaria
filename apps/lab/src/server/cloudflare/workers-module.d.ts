@@ -9,5 +9,8 @@ declare module "cloudflare:workers" {
 		TRANSCRIPTION_RATE_LIMIT: {
 			limit(options: { key: string }): Promise<{ success: boolean }>;
 		};
+		DEFINITION_RATE_LIMIT: {
+			limit(options: { key: string }): Promise<{ success: boolean }>;
+		};
 	};
 }

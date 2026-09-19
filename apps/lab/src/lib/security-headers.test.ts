@@ -17,6 +17,8 @@ describe("getContentSecurityPolicy", () => {
 		expect(policy).toContain("frame-ancestors 'none'");
 		expect(policy).toContain(`img-src 'self' blob: data: ${ASSET_BUCKET_ORIGIN}`);
 		expect(policy).toContain(`media-src 'self' ${ASSET_BUCKET_ORIGIN}`);
+		expect(policy).not.toContain("dictionaryapi.dev");
+		expect(policy).not.toContain("wiktionary.org");
 	});
 
 	it("emits a Cloudflare Static Assets _headers file", () => {
