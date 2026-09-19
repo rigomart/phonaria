@@ -15,19 +15,25 @@ const MAX_EXAMPLE_TEXT_LENGTH = 500;
 const MAX_PART_OF_SPEECH_LENGTH = 64;
 const NON_CONTENT_ELEMENTS = new Set([
 	"audio",
+	"button",
 	"canvas",
+	"datalist",
+	"embed",
 	"figure",
 	"iframe",
 	"img",
 	"link",
 	"meta",
 	"noscript",
+	"object",
 	"picture",
 	"script",
+	"select",
 	"style",
 	"svg",
 	"table",
 	"template",
+	"textarea",
 	"video",
 ]);
 const NON_CONTENT_CLASSES = new Set([

@@ -163,6 +163,87 @@ describe("parseWiktionaryPayload", () => {
 		]);
 	});
 
+	it("removes interactive controls and embedded-object fallback text", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Noun",
+						definitions: [
+							{
+								definition:
+									"A useful definition.<button>Play audio</button><select><option>Choose a dialect</option></select><textarea>Editor placeholder</textarea><object>Media fallback</object>",
+							},
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Noun",
+				definitions: [{ definition: "A useful definition." }],
+			},
+		]);
+	});
+
+	it("removes styles and scripts from example text", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Verb",
+						definitions: [
+							{
+								definition: "To test something.<script>alert('definition')</script>",
+								parsedExamples: [
+									{
+										example:
+											"They tested it.<style>.example { display: none; }</style><script>alert('example')</script>",
+									},
+								],
+							},
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Verb",
+				definitions: [{ definition: "To test something.", example: "They tested it." }],
+			},
+		]);
+	});
+
+	it("handles malformed entities, empty placeholders, and deeply nested markup", () => {
+		const deeplyNested = `${"<span>".repeat(300)}Still readable${"</span>".repeat(300)}`;
+
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						language: "English",
+						partOfSpeech: "Adjective",
+						definitions: [
+							{ definition: "<span></span><!-- empty --><b> </b>" },
+							{ definition: "An incomplete &notanentity; reference &amp" },
+							{ definition: deeplyNested },
+						],
+					},
+				],
+			}),
+		).toEqual([
+			{
+				partOfSpeech: "Adjective",
+				definitions: [
+					{ definition: "An incomplete ¬anentity; reference &" },
+					{ definition: "Still readable" },
+				],
+			},
+		]);
+	});
+
 	it("preserves text boundaries and readable inline math", () => {
 		expect(
 			parseWiktionaryPayload({
