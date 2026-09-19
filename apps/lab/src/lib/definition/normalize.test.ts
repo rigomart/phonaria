@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import { MAX_SENSES_PER_POS, MAX_SENSES_TOTAL } from "./contract";
 import {
 	capDefinitionSenses,
-	firstDefinedWord,
 	isLookupableDefinitionWord,
 	normalizeDefinitionWord,
+	parseWiktionaryPayload,
+	stripDefinitionHtml,
 } from "./normalize";
 
 describe("normalizeDefinitionWord", () => {
@@ -41,21 +42,51 @@ describe("isLookupableDefinitionWord", () => {
 	});
 });
 
+describe("stripDefinitionHtml", () => {
+	it("strips Wiktionary gloss markup to plain text", () => {
+		expect(
+			stripDefinitionHtml(
+				'<span class="use-with-mention">A <a href="/wiki/greeting#English">greeting</a> (salutation).</span>',
+			),
+		).toBe("A greeting (salutation).");
+	});
+
+	it("decodes basic HTML entities", () => {
+		expect(stripDefinitionHtml("fish &amp; chips")).toBe("fish & chips");
+		expect(stripDefinitionHtml("it&#39;s")).toBe("it's");
+	});
+});
+
+describe("parseWiktionaryPayload", () => {
+	it("reads English senses and ignores other languages", () => {
+		expect(
+			parseWiktionaryPayload({
+				en: [
+					{
+						partOfSpeech: "Noun",
+						definitions: [
+							{ definition: 'A <a href="/wiki/greeting">greeting</a>.' },
+							{ definition: "An act of greeting." },
+						],
+					},
+				],
+				fr: [{ partOfSpeech: "Nom", definitions: [{ definition: "bonjour" }] }],
+			}),
+		).toEqual([{ partOfSpeech: "Noun", definitions: ["A greeting.", "An act of greeting."] }]);
+	});
+
+	it("returns empty when English is missing", () => {
+		expect(parseWiktionaryPayload({ fr: [] })).toEqual([]);
+		expect(parseWiktionaryPayload([])).toEqual([]);
+	});
+});
+
 describe("capDefinitionSenses", () => {
 	it("keeps the first two senses per part of speech", () => {
 		const groups = capDefinitionSenses([
 			{
-				word: "set",
-				meanings: [
-					{
-						partOfSpeech: "noun",
-						definitions: [
-							{ definition: "a collection" },
-							{ definition: "a group of tennis games" },
-							{ definition: "a stage setting" },
-						],
-					},
-				],
+				partOfSpeech: "noun",
+				definitions: ["a collection", "a group of tennis games", "a stage setting"],
 			},
 		]);
 
@@ -67,26 +98,10 @@ describe("capDefinitionSenses", () => {
 
 	it("stops at six senses total across parts of speech", () => {
 		const groups = capDefinitionSenses([
-			{
-				meanings: [
-					{
-						partOfSpeech: "noun",
-						definitions: [{ definition: "n1" }, { definition: "n2" }],
-					},
-					{
-						partOfSpeech: "verb",
-						definitions: [{ definition: "v1" }, { definition: "v2" }],
-					},
-					{
-						partOfSpeech: "adjective",
-						definitions: [{ definition: "a1" }, { definition: "a2" }],
-					},
-					{
-						partOfSpeech: "adverb",
-						definitions: [{ definition: "adv1" }, { definition: "adv2" }],
-					},
-				],
-			},
+			{ partOfSpeech: "noun", definitions: ["n1", "n2"] },
+			{ partOfSpeech: "verb", definitions: ["v1", "v2"] },
+			{ partOfSpeech: "adjective", definitions: ["a1", "a2"] },
+			{ partOfSpeech: "adverb", definitions: ["adv1", "adv2"] },
 		]);
 
 		expect(groups).toEqual([
@@ -99,29 +114,10 @@ describe("capDefinitionSenses", () => {
 
 	it("merges later entries into an existing part of speech until the per-POS cap", () => {
 		const groups = capDefinitionSenses([
-			{
-				meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "first" }] }],
-			},
-			{
-				meanings: [
-					{
-						partOfSpeech: "noun",
-						definitions: [{ definition: "second" }, { definition: "third" }],
-					},
-				],
-			},
+			{ partOfSpeech: "noun", definitions: ["first"] },
+			{ partOfSpeech: "noun", definitions: ["second", "third"] },
 		]);
 
 		expect(groups).toEqual([{ partOfSpeech: "noun", senses: ["first", "second"] }]);
-	});
-});
-
-describe("firstDefinedWord", () => {
-	it("uses the first entry word when present", () => {
-		expect(firstDefinedWord([{ word: "Hello" }], "hello")).toBe("Hello");
-	});
-
-	it("falls back when entries omit the word", () => {
-		expect(firstDefinedWord([{}], "hello")).toBe("hello");
 	});
 });

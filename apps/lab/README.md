@@ -51,5 +51,5 @@ lookups. Local, staging, preview, and production use separate namespace IDs in
 `wrangler.jsonc`, because rate-limit bindings and counters are not inherited by
 named Worker environments. A rejected transcription request returns a retryable
 error with HTTP status 429 before Turso is queried. A missing binding also fails
-closed before Turso is queried. Dictionary lookups proxy the Free Dictionary API
-from the Worker and never call it from the browser.
+closed before Turso is queried. Dictionary lookups proxy Wiktionary REST
+definitions from the Worker and never call Wiktionary from the browser.

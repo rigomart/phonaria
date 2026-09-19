@@ -103,7 +103,7 @@ describe("lookupDefinitionOnWorker", () => {
 
 	it("throws a sanitized retryable failure and does not include the word", async () => {
 		const lookupDefinition = vi.fn(async () => {
-			throw new Error("fetch failed: dictionaryapi.dev timeout");
+			throw new Error("fetch failed: en.wiktionary.org timeout");
 		});
 		const log = vi.fn();
 
@@ -121,7 +121,7 @@ describe("lookupDefinitionOnWorker", () => {
 		});
 		const payload = JSON.stringify(log.mock.calls[0]?.[0]);
 		expect(payload).not.toMatch(/aardvark/);
-		expect(payload).not.toMatch(/dictionaryapi/);
+		expect(payload).not.toMatch(/wiktionary/);
 	});
 
 	it("throws service errors after the rate limiter allows the request", async () => {

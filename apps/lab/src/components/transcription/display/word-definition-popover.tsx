@@ -6,7 +6,7 @@ import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { useDefinition } from "@/hooks/use-definition";
-import { FREE_DICTIONARY_SITE_URL } from "@/lib/definition/contract";
+import { WIKTIONARY_SITE_URL } from "@/lib/definition/contract";
 import { cn } from "@/lib/utils";
 
 type WordDefinitionPopoverProps = {
@@ -19,12 +19,12 @@ function Attribution() {
 		<p className="text-xs text-muted-foreground">
 			Definitions from{" "}
 			<a
-				href={FREE_DICTIONARY_SITE_URL}
+				href={WIKTIONARY_SITE_URL}
 				target="_blank"
 				rel="noopener noreferrer"
 				className="underline underline-offset-2 hover:text-foreground"
 			>
-				the Free Dictionary API
+				Wiktionary
 			</a>
 		</p>
 	);

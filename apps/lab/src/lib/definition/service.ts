@@ -6,10 +6,9 @@ import {
 } from "./contract";
 import {
 	capDefinitionSenses,
-	type DictionaryApiEntry,
-	firstDefinedWord,
 	isLookupableDefinitionWord,
 	normalizeDefinitionWord,
+	parseWiktionaryPayload,
 } from "./normalize";
 
 export type DefinitionFetch = (
@@ -21,8 +20,9 @@ export type LookupDefinitionDependencies = {
 	fetch?: DefinitionFetch;
 };
 
-const FREE_DICTIONARY_API_ORIGIN = "https://api.dictionaryapi.dev";
-const LOOKUP_TIMEOUT_MS = 8_000;
+const WIKTIONARY_DEFINITION_ORIGIN = "https://en.wiktionary.org";
+const WIKTIONARY_USER_AGENT = "Phonaria/1.0 (https://phonaria.rigos.dev; mirdor.dev@gmail.com)";
+const LOOKUP_TIMEOUT_MS = 10_000;
 const UNAVAILABLE_MESSAGE = "We couldn't load that definition. Please try again.";
 
 function validationError(message: string): DefinitionServiceResult {
@@ -42,19 +42,20 @@ function found(word: string, groups: DefinitionSenseGroup[]): DefinitionServiceR
 }
 
 export function buildDictionaryLookupUrl(word: string): string {
-	return `${FREE_DICTIONARY_API_ORIGIN}/api/v2/entries/en/${encodeURIComponent(word)}`;
+	return `${WIKTIONARY_DEFINITION_ORIGIN}/api/rest_v1/page/definition/${encodeURIComponent(word)}`;
 }
 
-function parseEntries(payload: unknown): DictionaryApiEntry[] | null {
-	if (!Array.isArray(payload)) return null;
-	return payload.filter(
-		(entry): entry is DictionaryApiEntry => Boolean(entry) && typeof entry === "object",
-	);
+export function wiktionaryLookupHeaders(): Record<string, string> {
+	return {
+		Accept: "application/json",
+		"User-Agent": WIKTIONARY_USER_AGENT,
+		"Api-User-Agent": WIKTIONARY_USER_AGENT,
+	};
 }
 
 /**
  * Framework-neutral definition lookup. Validates and normalizes the word,
- * fetches Free Dictionary API over the injected fetch, and caps senses.
+ * fetches Wiktionary REST definitions over the injected fetch, and caps senses.
  */
 export async function lookupDefinition(
 	input: unknown,
@@ -78,7 +79,7 @@ export async function lookupDefinition(
 	try {
 		response = await fetchFn(url, {
 			method: "GET",
-			headers: { Accept: "application/json" },
+			headers: wiktionaryLookupHeaders(),
 			signal: AbortSignal.timeout(LOOKUP_TIMEOUT_MS),
 		});
 	} catch {
@@ -95,11 +96,8 @@ export async function lookupDefinition(
 		return retryableError();
 	}
 
-	const entries = parseEntries(payload);
-	if (!entries || entries.length === 0) return miss();
-
-	const groups = capDefinitionSenses(entries);
+	const groups = capDefinitionSenses(parseWiktionaryPayload(payload));
 	if (groups.length === 0) return miss();
 
-	return found(firstDefinedWord(entries, normalized), groups);
+	return found(normalized, groups);
 }

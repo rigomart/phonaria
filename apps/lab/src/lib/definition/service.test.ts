@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { buildDictionaryLookupUrl, lookupDefinition } from "./service";
+import { buildDictionaryLookupUrl, lookupDefinition, wiktionaryLookupHeaders } from "./service";
 
 function jsonResponse(body: unknown, status = 200): Response {
 	return new Response(JSON.stringify(body), {
@@ -8,25 +8,25 @@ function jsonResponse(body: unknown, status = 200): Response {
 	});
 }
 
+const helloPayload = {
+	en: [
+		{
+			partOfSpeech: "Interjection",
+			definitions: [
+				{ definition: 'A <a href="/wiki/greeting">greeting</a>.' },
+				{ definition: "A greeting used when answering the telephone." },
+			],
+		},
+		{
+			partOfSpeech: "Noun",
+			definitions: [{ definition: "The act of saying hello." }],
+		},
+	],
+};
+
 describe("lookupDefinition", () => {
-	it("returns capped senses from the Free Dictionary API payload", async () => {
-		const fetchFn = vi.fn(async () =>
-			jsonResponse([
-				{
-					word: "hello",
-					meanings: [
-						{
-							partOfSpeech: "noun",
-							definitions: [{ definition: "a greeting" }, { definition: "an act of greeting" }],
-						},
-						{
-							partOfSpeech: "verb",
-							definitions: [{ definition: "to greet" }],
-						},
-					],
-				},
-			]),
-		);
+	it("returns capped senses from the Wiktionary REST payload", async () => {
+		const fetchFn = vi.fn(async () => jsonResponse(helloPayload));
 
 		const result = await lookupDefinition({ word: "Hello" }, { fetch: fetchFn });
 
@@ -36,19 +36,25 @@ describe("lookupDefinition", () => {
 				found: true,
 				word: "hello",
 				groups: [
-					{ partOfSpeech: "noun", senses: ["a greeting", "an act of greeting"] },
-					{ partOfSpeech: "verb", senses: ["to greet"] },
+					{
+						partOfSpeech: "Interjection",
+						senses: ["A greeting.", "A greeting used when answering the telephone."],
+					},
+					{ partOfSpeech: "Noun", senses: ["The act of saying hello."] },
 				],
 			},
 		});
 		expect(fetchFn).toHaveBeenCalledWith(
 			buildDictionaryLookupUrl("hello"),
-			expect.objectContaining({ method: "GET" }),
+			expect.objectContaining({
+				method: "GET",
+				headers: wiktionaryLookupHeaders(),
+			}),
 		);
 	});
 
 	it("normalizes punctuation before calling the API", async () => {
-		const fetchFn = vi.fn(async () => jsonResponse({ title: "No Definitions Found" }, 404));
+		const fetchFn = vi.fn(async () => jsonResponse({ status: 404 }, 404));
 
 		await lookupDefinition({ word: '"Hello,"' }, { fetch: fetchFn });
 
@@ -56,15 +62,23 @@ describe("lookupDefinition", () => {
 	});
 
 	it("returns not found for a 404 without treating it as a failure", async () => {
-		const fetchFn = vi.fn(async () => jsonResponse({ title: "No Definitions Found" }, 404));
+		const fetchFn = vi.fn(async () => jsonResponse({ status: 404, type: "Internal error" }, 404));
 
 		const result = await lookupDefinition({ word: "zxqvwoplmj" }, { fetch: fetchFn });
 
 		expect(result).toEqual({ ok: true, result: { found: false } });
 	});
 
+	it("returns not found when English senses are missing", async () => {
+		const fetchFn = vi.fn(async () => jsonResponse({ fr: [] }));
+
+		const result = await lookupDefinition({ word: "bonjour" }, { fetch: fetchFn });
+
+		expect(result).toEqual({ ok: true, result: { found: false } });
+	});
+
 	it("returns not found for punctuation-only input without calling the API", async () => {
-		const fetchFn = vi.fn(async () => jsonResponse([]));
+		const fetchFn = vi.fn(async () => jsonResponse({}));
 
 		const result = await lookupDefinition({ word: "..." }, { fetch: fetchFn });
 
@@ -98,7 +112,7 @@ describe("lookupDefinition", () => {
 	});
 
 	it("rejects invalid input without calling the API", async () => {
-		const fetchFn = vi.fn(async () => jsonResponse([]));
+		const fetchFn = vi.fn(async () => jsonResponse({}));
 
 		const result = await lookupDefinition({ word: "" }, { fetch: fetchFn });
 
@@ -114,10 +128,10 @@ describe("lookupDefinition", () => {
 describe("buildDictionaryLookupUrl", () => {
 	it("encodes the path segment", () => {
 		expect(buildDictionaryLookupUrl("don't")).toBe(
-			`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent("don't")}`,
+			`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent("don't")}`,
 		);
 		expect(buildDictionaryLookupUrl("well-known")).toBe(
-			"https://api.dictionaryapi.dev/api/v2/entries/en/well-known",
+			"https://en.wiktionary.org/api/rest_v1/page/definition/well-known",
 		);
 	});
 });

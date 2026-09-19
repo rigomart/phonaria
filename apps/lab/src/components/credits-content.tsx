@@ -60,14 +60,14 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 		},
 	},
 	{
-		key: "free-dictionary-api",
-		title: "Free Dictionary API",
+		key: "wiktionary",
+		title: "Wiktionary",
 		content:
-			"Word definitions on the transcription surface come from the Free Dictionary API, which serves English definitions sourced from Wiktionary.",
-		link: { text: "View Free Dictionary API", url: "https://dictionaryapi.dev/" },
+			"Word definitions on the transcription surface come from Wiktionary, the free multilingual dictionary hosted by the Wikimedia Foundation.",
+		link: { text: "View Wiktionary", url: "https://en.wiktionary.org/" },
 		license: {
-			text: "CC BY-SA 3.0",
-			url: "https://creativecommons.org/licenses/by-sa/3.0/",
+			text: "CC BY-SA 4.0",
+			url: "https://creativecommons.org/licenses/by-sa/4.0/",
 		},
 	},
 	{

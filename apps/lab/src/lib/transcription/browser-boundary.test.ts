@@ -34,6 +34,7 @@ const forbidden = [
 	/@\/lib\/definition\/service/,
 	/@\/server\/definition/,
 	/api\.dictionaryapi\.dev/,
+	/\/api\/rest_v1\/page\/definition/,
 	/@libsql\/client/,
 	/drizzle-orm/,
 	/cloudflare:workers/,
@@ -81,16 +82,16 @@ describe("browser transcription boundary", () => {
 		}
 	});
 
-	it("keeps Free Dictionary API fetches on the server", () => {
+	it("keeps Wiktionary definition fetches on the server", () => {
 		const service = readFileSync(resolve(labRoot, "src/lib/definition/service.ts"), "utf8");
 		const hook = readFileSync(resolve(labRoot, "src/hooks/use-definition.ts"), "utf8");
 		const adapter = readFileSync(resolve(labRoot, "src/server/lookup-definition.ts"), "utf8");
 
-		expect(service).toMatch(/api\.dictionaryapi\.dev/);
+		expect(service).toMatch(/\/api\/rest_v1\/page\/definition/);
 		expect(hook).toMatch(/lookupDefinitionFromStart/);
-		expect(hook).not.toMatch(/api\.dictionaryapi\.dev/);
+		expect(hook).not.toMatch(/\/api\/rest_v1\/page\/definition/);
 		expect(adapter).toMatch(/lookupDefinitionOnWorker/);
-		expect(adapter).not.toMatch(/api\.dictionaryapi\.dev/);
+		expect(adapter).not.toMatch(/\/api\/rest_v1\/page\/definition/);
 	});
 
 	it("keeps phoneme popovers free of dictionary definitions", () => {

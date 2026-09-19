@@ -4,7 +4,7 @@ export const MAX_DEFINITION_WORD_LENGTH = 64;
 export const MAX_SENSES_PER_POS = 2;
 export const MAX_SENSES_TOTAL = 6;
 
-export const FREE_DICTIONARY_SITE_URL = "https://dictionaryapi.dev/";
+export const WIKTIONARY_SITE_URL = "https://en.wiktionary.org/";
 
 export const definitionLookupInputSchema = z.object({
 	word: z.string().min(1).max(MAX_DEFINITION_WORD_LENGTH),
