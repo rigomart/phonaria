@@ -21,7 +21,6 @@ export interface SpellingSuggestionSegment {
 
 export interface SpellingSuggestion {
 	suggestedText: string;
-	splicedText: string;
 	underlinedTokenIndexes: number[];
 	segments: SpellingSuggestionSegment[];
 }
@@ -137,7 +136,6 @@ export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion
 
 	return {
 		suggestedText: rewrite.suggestedText,
-		splicedText: rewrite.suggestedText,
 		underlinedTokenIndexes: [...replacements.keys()].sort((left, right) => left - right),
 		segments: rewrite.segments,
 	};

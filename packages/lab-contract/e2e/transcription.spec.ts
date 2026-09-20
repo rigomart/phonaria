@@ -49,7 +49,9 @@ test.describe("Transcription", () => {
 		await expect(spellingSuggestion(page)).toHaveCount(0);
 	});
 
-	test("offers Did you mean for a known one-slip typo and accepts it", async ({ page }) => {
+	test("offers a spelling suggestion for a known one-slip typo and accepts it", async ({
+		page,
+	}) => {
 		await page.goto("/");
 		await textToTranscribe(page).fill(SPELLING_TYPO);
 		await transcribeSubmit(page).click();

@@ -5,7 +5,7 @@ import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group
 import { Input } from "@phonaria/ui/components/input";
 import { Loader2, SendHorizontal } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { DidYouMean } from "@/components/transcription/did-you-mean";
+import { SpellingSuggestionLine } from "@/components/transcription/spelling-suggestion-line";
 import { useCurrentTranscription, useTranscribe } from "@/hooks/use-transcribe";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
 import { cn } from "@/lib/utils";
@@ -97,7 +97,7 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 				</Button>
 			</div>
 
-			<DidYouMean />
+			<SpellingSuggestionLine />
 
 			{transcriptionResult ? (
 				<div

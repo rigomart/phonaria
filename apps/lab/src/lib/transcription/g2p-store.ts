@@ -244,9 +244,9 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 	acceptSpellingSuggestion: async (transcribeWords, lookupWords, spellingDictionary) => {
 		const suggestion = get().currentResult?.spellingSuggestion;
 		if (!suggestion) return;
-		set({ draftText: suggestion.splicedText });
+		set({ draftText: suggestion.suggestedText });
 		await get().transcribe(
-			suggestion.splicedText,
+			suggestion.suggestedText,
 			transcribeWords,
 			lookupWords,
 			spellingDictionary,

@@ -135,6 +135,12 @@ Optional information that helps a learner interpret the available IPA symbols wi
 the target word's pronunciation, such as a sound cue or example word.
 _Avoid_: Answer, correction
 
+**Spelling suggestion**:
+A pronunciation-dictionary word offered for a missed Transcription token when one one-slip
+neighbour is obvious. The learner-facing line uses the copy **Did you mean**; that copy is not
+the name of the feature.
+_Avoid_: Assistance, Did you mean (as the concept), autocorrect
+
 **Difficulty layer**:
 An added demand placed on an established activity, such as assessing lexical stress or removing
 assistance from the sound palette.

@@ -15,7 +15,6 @@ function offerOf(result: SpellingSuggestion | null) {
 	if (result === null) return null;
 	return {
 		suggestedText: result.suggestedText,
-		splicedText: result.splicedText,
 		underlinedTokenIndexes: result.underlinedTokenIndexes,
 	};
 }
@@ -31,7 +30,6 @@ describe("suggestSpelling", () => {
 
 		expect(offerOf(result)).toEqual({
 			suggestedText: "receive",
-			splicedText: "receive",
 			underlinedTokenIndexes: [0],
 		});
 	});
@@ -46,7 +44,6 @@ describe("suggestSpelling", () => {
 
 		expect(offerOf(result)).toEqual({
 			suggestedText: "the",
-			splicedText: "the",
 			underlinedTokenIndexes: [0],
 		});
 	});
@@ -105,7 +102,6 @@ describe("suggestSpelling", () => {
 
 		expect(offerOf(result)).toEqual({
 			suggestedText: "hello receive",
-			splicedText: "hello receive",
 			underlinedTokenIndexes: [1],
 		});
 		expect(result?.segments).toEqual([
@@ -124,7 +120,6 @@ describe("suggestSpelling", () => {
 
 		expect(offerOf(result)).toEqual({
 			suggestedText: "Hello, receive!",
-			splicedText: "Hello, receive!",
 			underlinedTokenIndexes: [1],
 		});
 	});
@@ -137,7 +132,7 @@ describe("suggestSpelling", () => {
 			dictionary: dictionary({ receive: 1484 }),
 		});
 
-		expect(result?.splicedText).toBe("Receive");
+		expect(result?.suggestedText).toBe("Receive");
 	});
 
 	it("keeps all-caps on an offered token", () => {
@@ -148,7 +143,7 @@ describe("suggestSpelling", () => {
 			dictionary: dictionary({ receive: 1484 }),
 		});
 
-		expect(result?.splicedText).toBe("RECEIVE");
+		expect(result?.suggestedText).toBe("RECEIVE");
 	});
 
 	it("applies every obvious substitution in one rewrite", () => {
@@ -161,7 +156,6 @@ describe("suggestSpelling", () => {
 
 		expect(offerOf(result)).toEqual({
 			suggestedText: "the receive",
-			splicedText: "the receive",
 			underlinedTokenIndexes: [0, 1],
 		});
 	});
@@ -187,7 +181,6 @@ describe("suggestSpelling", () => {
 
 		expect(offerOf(result)).toEqual({
 			suggestedText: "zxqvwoplmj receive",
-			splicedText: "zxqvwoplmj receive",
 			underlinedTokenIndexes: [1],
 		});
 	});
@@ -200,7 +193,7 @@ describe("suggestSpelling", () => {
 			dictionary: dictionary({ receive: 1484 }),
 		});
 
-		expect(result?.splicedText).toBe("receive");
+		expect(result?.suggestedText).toBe("receive");
 	});
 
 	it("offers receive for a missing-letter slip", () => {
@@ -211,7 +204,7 @@ describe("suggestSpelling", () => {
 			dictionary: dictionary({ receive: 1484 }),
 		});
 
-		expect(result?.splicedText).toBe("receive");
+		expect(result?.suggestedText).toBe("receive");
 	});
 
 	it("offers receive for recieve even when relieve is a distant 10k neighbour", () => {
@@ -222,7 +215,7 @@ describe("suggestSpelling", () => {
 			dictionary: dictionary({ receive: 1484, relieve: 9944 }),
 		});
 
-		expect(result?.splicedText).toBe("receive");
+		expect(result?.suggestedText).toBe("receive");
 	});
 
 	it("offers don't for dont against done", () => {
@@ -233,7 +226,7 @@ describe("suggestSpelling", () => {
 			dictionary: dictionary({ "don't": 67, done: 229, don: 2461 }),
 		});
 
-		expect(result?.splicedText).toBe("don't");
+		expect(result?.suggestedText).toBe("don't");
 	});
 
 	it("offers a unique neighbour that is only in the full dictionary", () => {
@@ -244,7 +237,7 @@ describe("suggestSpelling", () => {
 			dictionary: dictionary({ aardvark: 10_000 }),
 		});
 
-		expect(result?.splicedText).toBe("aardvark");
+		expect(result?.suggestedText).toBe("aardvark");
 	});
 
 	it("returns no offer for empty text", () => {
@@ -262,7 +255,6 @@ describe("suggestSpelling", () => {
 describe("getVisibleSpellingSuggestion", () => {
 	const suggestion: SpellingSuggestion = {
 		suggestedText: "receive",
-		splicedText: "receive",
 		underlinedTokenIndexes: [0],
 		segments: [{ text: "receive", underlined: true }],
 	};

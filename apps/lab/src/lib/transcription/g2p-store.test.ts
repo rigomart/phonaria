@@ -418,14 +418,13 @@ describe("g2p-store — spelling suggestions", () => {
 		expect(state.currentResult?.words[0]?.source).toBe("fallback");
 		expect(state.currentResult?.spellingSuggestion).toMatchObject({
 			suggestedText: "receive",
-			splicedText: "receive",
 			underlinedTokenIndexes: [0],
 		});
 	});
 
 	it("accepting a rewrite writes the box and re-transcribes", async () => {
 		await useG2PStore.getState().transcribe("recieve", fallbackServer(), lookupAllMissing);
-		expect(useG2PStore.getState().currentResult?.spellingSuggestion?.splicedText).toBe("receive");
+		expect(useG2PStore.getState().currentResult?.spellingSuggestion?.suggestedText).toBe("receive");
 
 		const server = countingServer();
 		await useG2PStore.getState().acceptSpellingSuggestion(server, lookupAllFound);
@@ -467,7 +466,6 @@ describe("g2p-store — spelling suggestions", () => {
 
 		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toMatchObject({
 			suggestedText: "aardvark",
-			splicedText: "aardvark",
 		});
 	});
 });

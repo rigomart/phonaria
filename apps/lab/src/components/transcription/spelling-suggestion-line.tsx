@@ -7,7 +7,7 @@ import {
 	type SpellingSuggestion,
 } from "@/lib/transcription/spelling-suggestion";
 
-export function DidYouMeanControl({
+export function SpellingSuggestionLineControl({
 	suggestion,
 	onAccept,
 	disabled = false,
@@ -36,7 +36,7 @@ export function DidYouMeanControl({
 	);
 }
 
-export function DidYouMean() {
+export function SpellingSuggestionLine() {
 	const suggestion = useG2PStore((state) => state.currentResult?.spellingSuggestion);
 	const lookupError = useG2PStore((state) => state.lookupError);
 	const isTranscribing = useG2PStore((state) => state.isTranscribing);
@@ -47,7 +47,7 @@ export function DidYouMean() {
 
 	return (
 		<div className="self-start">
-			<DidYouMeanControl
+			<SpellingSuggestionLineControl
 				suggestion={visible}
 				onAccept={acceptSpellingSuggestion}
 				disabled={isBusy}
