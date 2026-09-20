@@ -88,6 +88,28 @@ describe("processWords (tier 3 — DB lookup)", () => {
 		expect(result[1].source).toBe("fallback");
 	});
 
+	it("attaches one-slip dictionary neighbours on a fallback word", async () => {
+		const chain = {
+			from: vi.fn().mockReturnThis(),
+			where: vi
+				.fn()
+				.mockResolvedValueOnce([])
+				.mockResolvedValue([
+					{
+						word: "RECEIVE",
+						pronunciations: JSON.stringify(["R IH0 S IY1 V"]),
+					},
+				]),
+		};
+		const select = vi.fn().mockReturnValue(chain);
+		vi.mocked(getDb).mockReturnValue({ select } as never);
+
+		const result = await processWords(["recieve"]);
+
+		expect(result[0]?.source).toBe("fallback");
+		expect(result[0]?.spellingNeighbours).toContain("receive");
+	});
+
 	it("returns empty array for empty input", async () => {
 		const result = await processWords([]);
 		expect(result).toEqual([]);

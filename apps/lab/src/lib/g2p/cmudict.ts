@@ -47,10 +47,17 @@ function mapVariants(pronunciationsJson: string): CmudictVariant[] {
 	return mapped;
 }
 
+export type CmudictLookupOptions = {
+	/** When false, misses are not written to the LRU cache. Hits still are. */
+	cacheNegatives?: boolean;
+};
+
 export async function lookupManyCmudict(
 	rawWords: string[],
 	db: LabDatabase = getDb(),
+	options: CmudictLookupOptions = {},
 ): Promise<Map<string, CmudictVariant[] | undefined>> {
+	const cacheNegatives = options.cacheNegatives !== false;
 	const normalized = rawWords.map((w) => normalizeCmuWord(w)).filter((w) => w.length > 0);
 	const unique = Array.from(new Set(normalized));
 	const resolved = new Map<string, CmudictCacheValue>();
@@ -82,7 +89,7 @@ export async function lookupManyCmudict(
 		for (const w of missing) {
 			if (!resolved.has(w)) {
 				resolved.set(w, null);
-				cacheValue(w, null);
+				if (cacheNegatives) cacheValue(w, null);
 			}
 		}
 	}
@@ -93,6 +100,29 @@ export async function lookupManyCmudict(
 	}
 
 	return output;
+}
+
+const MEMBERSHIP_CHUNK = 400;
+
+export async function findExistingCmudictWords(
+	rawWords: string[],
+	db: LabDatabase = getDb(),
+): Promise<string[]> {
+	const unique = Array.from(
+		new Set(rawWords.map((word) => word.toLowerCase().trim()).filter((word) => word.length > 0)),
+	);
+	const hits: string[] = [];
+
+	for (let start = 0; start < unique.length; start += MEMBERSHIP_CHUNK) {
+		const chunk = unique.slice(start, start + MEMBERSHIP_CHUNK);
+		const found = await lookupManyCmudict(chunk, db, { cacheNegatives: false });
+		for (const word of chunk) {
+			const variants = found.get(normalizeCmuWord(word));
+			if (variants && variants.length > 0) hits.push(word);
+		}
+	}
+
+	return hits;
 }
 
 export function __resetCmudictCache(): void {

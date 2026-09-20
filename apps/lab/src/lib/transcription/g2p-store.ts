@@ -8,6 +8,8 @@ import {
 	type WordLookupResult,
 } from "@/lib/phoneme-lookup";
 import type { TranscriptionResult } from "@/lib/types/g2p";
+import { loadSpellingDictionary } from "./spelling-dictionary";
+import { type SpellingDictionary, suggestSpelling, withExtraHits } from "./spelling-suggestion";
 
 /**
  * Which stage of the lookup failed. Server-action errors are digest-opaque in
@@ -37,13 +39,22 @@ interface G2PStore {
 	 * per-hook-instance and Retry lives in a different instance than the form.
 	 */
 	isTranscribing: boolean;
+	/** Current contents of the transcription box. Independent of last submitted text. */
+	draftText: string;
 
 	clearResult: () => void;
+	setDraftText: (text: string) => void;
 	setVariant: (wordIndex: number, variantIndex: number) => void;
 	transcribe: (
 		text: string,
 		transcribeWords: TranscribeWordsFn,
 		lookupWords?: LookupWordsFn,
+		spellingDictionary?: SpellingDictionary,
+	) => Promise<void>;
+	acceptSpellingSuggestion: (
+		transcribeWords: TranscribeWordsFn,
+		lookupWords?: LookupWordsFn,
+		spellingDictionary?: SpellingDictionary,
 	) => Promise<void>;
 }
 
@@ -104,13 +115,14 @@ function failed(kind: LookupErrorKind) {
  */
 let activeLookup = 0;
 
-export const useG2PStore = create<G2PStore>((set) => ({
+export const useG2PStore = create<G2PStore>((set, get) => ({
 	currentResult: null,
 	selectedVariants: [],
 	lookupError: null,
 	lookupErrorNonce: 0,
 	lastText: null,
 	isTranscribing: false,
+	draftText: "",
 
 	clearResult: () => {
 		// Any in-flight lookup belongs to the result being cleared.
@@ -122,7 +134,12 @@ export const useG2PStore = create<G2PStore>((set) => ({
 			lookupErrorNonce: 0,
 			lastText: null,
 			isTranscribing: false,
+			draftText: "",
 		});
+	},
+
+	setDraftText: (draftText) => {
+		set({ draftText });
 	},
 
 	setVariant: (wordIndex: number, variantIndex: number) => {
@@ -133,7 +150,7 @@ export const useG2PStore = create<G2PStore>((set) => ({
 		});
 	},
 
-	transcribe: async (text, transcribeWords, lookupWords = batchLookup) => {
+	transcribe: async (text, transcribeWords, lookupWords = batchLookup, spellingDictionary) => {
 		const token = ++activeLookup;
 
 		// Backstop: a throw escaping here becomes an unhandled rejection inside
@@ -200,6 +217,15 @@ export const useG2PStore = create<G2PStore>((set) => ({
 				return;
 			}
 
+			transformed.spellingSuggestion = await spellingSuggestionFor(
+				text,
+				tokens,
+				merged,
+				token,
+				spellingDictionary,
+			);
+			if (activeLookup !== token) return;
+
 			// Errors clear on settle, not on start, so the alert stays mounted
 			// while a retry is in flight.
 			set({
@@ -214,4 +240,46 @@ export const useG2PStore = create<G2PStore>((set) => ({
 			set(failed("unknown"));
 		}
 	},
+
+	acceptSpellingSuggestion: async (transcribeWords, lookupWords, spellingDictionary) => {
+		const suggestion = get().currentResult?.spellingSuggestion;
+		if (!suggestion) return;
+		set({ draftText: suggestion.splicedText });
+		await get().transcribe(
+			suggestion.splicedText,
+			transcribeWords,
+			lookupWords,
+			spellingDictionary,
+		);
+	},
 }));
+
+async function spellingSuggestionFor(
+	originalText: string,
+	tokens: string[],
+	merged: G2PWord[],
+	lookupToken: number,
+	spellingDictionary?: SpellingDictionary,
+) {
+	const missedTokenIndexes: number[] = [];
+	const extraHits: string[] = [];
+	for (const [index, word] of merged.entries()) {
+		if (word.source === "fallback") missedTokenIndexes.push(index);
+		if (word.spellingNeighbours) extraHits.push(...word.spellingNeighbours);
+	}
+	if (missedTokenIndexes.length === 0) return null;
+
+	try {
+		const baseDictionary = spellingDictionary ?? (await loadSpellingDictionary());
+		if (activeLookup !== lookupToken) return null;
+		return suggestSpelling({
+			originalText,
+			tokens,
+			missedTokenIndexes,
+			dictionary: withExtraHits(baseDictionary, extraHits),
+		});
+	} catch (error) {
+		console.error("transcription: spelling suggestion failed", error);
+		return null;
+	}
+}

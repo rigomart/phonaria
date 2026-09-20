@@ -36,6 +36,7 @@ export function useTranscribe() {
 	const [isPending, startTransition] = useTransition();
 	const transcribe = useG2PStore((s) => s.transcribe);
 	const lastText = useG2PStore((s) => s.lastText);
+	const acceptSpellingSuggestionOnStore = useG2PStore((s) => s.acceptSpellingSuggestion);
 	const transcribeWords = useTranscribeWordsFn();
 
 	const mutate = useCallback(
@@ -52,7 +53,13 @@ export function useTranscribe() {
 		else console.error("transcription: retry with no text to replay");
 	}, [lastText, mutate]);
 
-	return { mutate, retry, isPending };
+	const acceptSpellingSuggestion = useCallback(() => {
+		startTransition(async () => {
+			await acceptSpellingSuggestionOnStore(transcribeWords);
+		});
+	}, [acceptSpellingSuggestionOnStore, transcribeWords]);
+
+	return { mutate, retry, acceptSpellingSuggestion, isPending };
 }
 
 export function useCurrentTranscription() {

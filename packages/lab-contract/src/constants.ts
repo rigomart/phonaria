@@ -47,6 +47,8 @@ export const LOOKUP_ERROR_COPY = {
 export const KNOWN_WORD = "hello";
 export const KNOWN_PHRASE = "hello world";
 export const MISSING_WORD = "zxqvwoplmj";
+export const SPELLING_TYPO = "recieve";
+export const SPELLING_CORRECTION = "receive";
 /**
  * Client-tier transcription baseline probe. Same string as `KNOWN_WORD`.
  * Verified in `src/baseline-fixtures.test.ts`: present in curated-10k, absent
