@@ -4,8 +4,10 @@ import { Button } from "@phonaria/ui/components/button";
 import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group";
 import { Input } from "@phonaria/ui/components/input";
 import { Loader2, SendHorizontal } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { SpellingSuggestionLine } from "@/components/transcription/spelling-suggestion-line";
 import { useCurrentTranscription, useTranscribe } from "@/hooks/use-transcribe";
+import { useG2PStore } from "@/lib/transcription/g2p-store";
 import { cn } from "@/lib/utils";
 import { CopyButton } from "./display/copy-button";
 import { TranscriptionInfoButton } from "./display/info-button";
@@ -15,7 +17,8 @@ interface G2PInputFormProps {
 }
 
 export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
-	const [inputText, setInputText] = useState("");
+	const inputText = useG2PStore((state) => state.draftText);
+	const setDraftText = useG2PStore((state) => state.setDraftText);
 	const transcribeMutation = useTranscribe();
 	const { data: transcriptionResult } = useCurrentTranscription();
 	const isLoading = transcribeMutation.isPending;
@@ -57,7 +60,7 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 					<Input
 						ref={inputRef}
 						value={inputText}
-						onChange={(e) => setInputText(e.target.value)}
+						onChange={(e) => setDraftText(e.target.value)}
 						placeholder="Type a word or phrase..."
 						disabled={isLoading}
 						size="lg"
@@ -93,6 +96,8 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 					)}
 				</Button>
 			</div>
+
+			<SpellingSuggestionLine />
 
 			{transcriptionResult ? (
 				<div

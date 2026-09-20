@@ -1,5 +1,6 @@
 import type { LabDatabase } from "@/db/drizzle";
-import { lookupManyCmudict } from "./cmudict";
+import { generateOneSlipVariants } from "@/lib/transcription/spelling-suggestion";
+import { findExistingCmudictWords, lookupManyCmudict } from "./cmudict";
 import type { G2PWord } from "./model";
 import { fallbackG2P } from "./phoneme-generator";
 import { normalizeCmuWord } from "./text-processing";
@@ -37,6 +38,41 @@ export async function processWords(
 				variants: [fallbackG2P.generatePronunciation(lowerWord)],
 				source: "fallback",
 			});
+		}
+	}
+
+	return attachSpellingNeighbours(results, options.db);
+}
+
+async function attachSpellingNeighbours(results: G2PWord[], db?: LabDatabase): Promise<G2PWord[]> {
+	const fallbackIndexes: number[] = [];
+	for (let index = 0; index < results.length; index += 1) {
+		if (results[index]?.source === "fallback") fallbackIndexes.push(index);
+	}
+	if (fallbackIndexes.length === 0) return results;
+
+	const variants = new Set<string>();
+	for (const index of fallbackIndexes) {
+		const word = results[index]?.word;
+		if (!word) continue;
+		for (const variant of generateOneSlipVariants(word)) variants.add(variant);
+	}
+	if (variants.size === 0) return results;
+
+	const existing = new Set(
+		db
+			? await findExistingCmudictWords([...variants], db)
+			: await findExistingCmudictWords([...variants]),
+	);
+
+	for (const index of fallbackIndexes) {
+		const word = results[index];
+		if (!word) continue;
+		const spellingNeighbours = generateOneSlipVariants(word.word).filter((variant) =>
+			existing.has(variant),
+		);
+		if (spellingNeighbours.length > 0) {
+			results[index] = { ...word, spellingNeighbours };
 		}
 	}
 

@@ -88,6 +88,7 @@ describe("g2p-store", () => {
 		expect(state.lookupError).toBeNull();
 		expect(state.lastText).toBeNull();
 		expect(state.isTranscribing).toBe(false);
+		expect(state.draftText).toBe("");
 	});
 
 	it("clears result", async () => {
@@ -395,5 +396,76 @@ describe("g2p-store — transcribe", () => {
 		expect(state.lookupErrorNonce).toBe(0);
 		expect(state.lastText).toBeNull();
 		expect(state.currentResult).toBeNull();
+		expect(state.draftText).toBe("");
+	});
+});
+
+describe("g2p-store — spelling suggestions", () => {
+	function fallbackServer(neighboursByWord: Record<string, string[]> = {}): TranscribeWordsFn {
+		return async ({ words }) =>
+			words.map((word) => ({
+				word: word.toLowerCase(),
+				variants: [[syllable("X")]],
+				source: "fallback" as const,
+				spellingNeighbours: neighboursByWord[word.toLowerCase()],
+			}));
+	}
+
+	it("attaches a rewrite for an obvious missed token", async () => {
+		await useG2PStore.getState().transcribe("recieve", fallbackServer(), lookupAllMissing);
+
+		const state = useG2PStore.getState();
+		expect(state.currentResult?.words[0]?.source).toBe("fallback");
+		expect(state.currentResult?.spellingSuggestion).toMatchObject({
+			suggestedText: "receive",
+			underlinedTokenIndexes: [0],
+		});
+	});
+
+	it("accepting a rewrite writes the box and re-transcribes", async () => {
+		await useG2PStore.getState().transcribe("recieve", fallbackServer(), lookupAllMissing);
+		expect(useG2PStore.getState().currentResult?.spellingSuggestion?.suggestedText).toBe("receive");
+
+		const server = countingServer();
+		await useG2PStore.getState().acceptSpellingSuggestion(server, lookupAllFound);
+
+		const state = useG2PStore.getState();
+		expect(state.draftText).toBe("receive");
+		expect(state.currentResult?.originalText).toBe("receive");
+		expect(state.currentResult?.words[0]).toMatchObject({
+			word: "receive",
+			source: "cmudict",
+		});
+		expect(state.currentResult?.spellingSuggestion).toBeNull();
+		expect(server.calls).toEqual([]);
+	});
+
+	it("keeps the previous rewrite on a lookup error so Retry can still replay", async () => {
+		vi.spyOn(console, "error").mockImplementation(() => {});
+		await useG2PStore.getState().transcribe("recieve", fallbackServer(), lookupAllMissing);
+		const suggestion = useG2PStore.getState().currentResult?.spellingSuggestion;
+
+		await useG2PStore.getState().transcribe("recieve", countingServer(), lookupFails);
+
+		const state = useG2PStore.getState();
+		expect(state.lookupError).toBe("wordlist");
+		expect(state.currentResult?.spellingSuggestion).toBe(suggestion);
+		expect(state.lastText).toBe("recieve");
+	});
+
+	it("offers a neighbour that is only in the pronunciation dictionary", async () => {
+		const { createSpellingDictionary } = await import("./spelling-suggestion");
+		await useG2PStore
+			.getState()
+			.transcribe(
+				"aardvrk",
+				fallbackServer({ aardvrk: ["aardvark"] }),
+				lookupAllMissing,
+				createSpellingDictionary({}),
+			);
+
+		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toMatchObject({
+			suggestedText: "aardvark",
+		});
 	});
 });

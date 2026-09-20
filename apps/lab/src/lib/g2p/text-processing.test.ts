@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeCmuWord, tokenizeText } from "./text-processing";
+import { normalizeCmuWord, tokenizeText, tokenizeTextWithSpans } from "./text-processing";
 
 describe("tokenizeText", () => {
 	it("returns empty array for empty string", () => {
@@ -40,6 +40,20 @@ describe("tokenizeText", () => {
 
 	it("normalizes Unicode dashes", () => {
 		expect(tokenizeText("rock\u2013solid")).toEqual(["rock-solid"]);
+	});
+});
+
+describe("tokenizeTextWithSpans", () => {
+	it("keeps original punctuation around tokens", () => {
+		expect(tokenizeTextWithSpans("Hello, recieve!")).toEqual([
+			{ token: "Hello", start: 0, end: 5 },
+			{ token: "recieve", start: 7, end: 14 },
+		]);
+	});
+
+	it("matches tokenizeText tokens", () => {
+		const text = "Hello, don't rock\u2013solid world!";
+		expect(tokenizeTextWithSpans(text).map((span) => span.token)).toEqual(tokenizeText(text));
 	});
 });
 

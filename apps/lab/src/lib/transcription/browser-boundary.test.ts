@@ -6,6 +6,8 @@ const labRoot = resolve(import.meta.dirname, "../../..");
 
 const clientFiles = [
 	"src/lib/transcription/g2p-store.ts",
+	"src/lib/transcription/spelling-suggestion.ts",
+	"src/lib/transcription/spelling-dictionary.ts",
 	"src/hooks/use-transcribe.tsx",
 	"src/hooks/use-definition.ts",
 	"src/lib/transcription/server-function-error.ts",
@@ -17,6 +19,8 @@ const clientFiles = [
 	"src/lib/definition/word.ts",
 	"src/lib/definition/inflight.ts",
 	"src/components/transcription/transcription-journey.tsx",
+	"src/components/transcription/g2p-input-form.tsx",
+	"src/components/transcription/spelling-suggestion-line.tsx",
 	"src/components/transcription/display/index.tsx",
 	"src/components/transcription/display/word-definition-popover.tsx",
 	"src/components/transcription/display/clickable-phoneme.tsx",

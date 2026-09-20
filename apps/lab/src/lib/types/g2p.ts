@@ -1,4 +1,10 @@
 import type { CmuStressLevel, PhonemeSymbolId } from "@phonaria/phonetics-data";
+import type { SpellingSuggestion } from "@/lib/transcription/spelling-suggestion";
+
+export type {
+	SpellingSuggestion,
+	SpellingSuggestionSegment,
+} from "@/lib/transcription/spelling-suggestion";
 
 export interface TranscribedPhoneme {
 	symbol: string;
@@ -26,4 +32,5 @@ export interface TranscriptionResult {
 	originalText: string;
 	words: TranscribedWord[];
 	timestamp: Date;
+	spellingSuggestion?: SpellingSuggestion | null;
 }

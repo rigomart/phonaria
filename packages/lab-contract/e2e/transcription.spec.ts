@@ -4,6 +4,8 @@ import {
 	KNOWN_WORD,
 	LOOKUP_ERROR_COPY,
 	MISSING_WORD,
+	SPELLING_CORRECTION,
+	SPELLING_TYPO,
 } from "../src/constants";
 import { abortOriginPosts, allowOriginPosts } from "../src/failure";
 import { expect, test } from "../src/fixtures";
@@ -11,6 +13,7 @@ import {
 	copyTranscription,
 	lookupAlert,
 	retryButton,
+	spellingSuggestion,
 	textToTranscribe,
 	transcribeSubmit,
 	wordDefinitionTrigger,
@@ -43,6 +46,29 @@ test.describe("Transcription", () => {
 
 		await expect(page.getByText("Not found").first()).toBeVisible({ timeout: 20_000 });
 		await expect(page.getByText(MISSING_WORD, { exact: true }).first()).toBeVisible();
+		await expect(spellingSuggestion(page)).toHaveCount(0);
+	});
+
+	test("offers a spelling suggestion for a known one-slip typo and accepts it", async ({
+		page,
+	}) => {
+		await page.goto("/");
+		await textToTranscribe(page).fill(SPELLING_TYPO);
+		await transcribeSubmit(page).click();
+
+		await expect(page.getByText("Not found").first()).toBeVisible({ timeout: 20_000 });
+		const offer = spellingSuggestion(page);
+		await expect(offer).toBeVisible({ timeout: 20_000 });
+		await expect(offer).toContainText(`Did you mean ${SPELLING_CORRECTION}`);
+		await offer.click();
+
+		await expect(textToTranscribe(page)).toHaveValue(SPELLING_CORRECTION);
+		await expect(page.getByText("Not found")).toHaveCount(0);
+		await expect(page.getByText(SPELLING_CORRECTION, { exact: true }).first()).toBeVisible({
+			timeout: 20_000,
+		});
+		await expect(page.getByRole("button", { name: /^Details for \// }).first()).toBeVisible();
+		await expect(spellingSuggestion(page)).toHaveCount(0);
 	});
 
 	test("enforces the visible 200-character input limit", async ({ page }) => {

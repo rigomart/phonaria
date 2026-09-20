@@ -40,6 +40,7 @@ export const g2pWordSchema = z.object({
 	word: z.string(),
 	variants: z.array(z.array(g2pSyllableSchema)),
 	source: z.enum(["cmudict", "fallback", "rules"]),
+	spellingNeighbours: z.array(z.string()).optional(),
 });
 
 export const g2pResponseSchema = z.object({

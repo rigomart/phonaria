@@ -32,6 +32,10 @@ export function dictionaryMissBadge(page: Page) {
 	return page.getByText("Not found", { exact: true });
 }
 
+export function spellingSuggestion(page: Page) {
+	return page.getByRole("button", { name: /^Did you mean / });
+}
+
 export function phonemeDetailsButton(page: Page) {
 	return page.getByRole("button", { name: /^Details for \// });
 }
