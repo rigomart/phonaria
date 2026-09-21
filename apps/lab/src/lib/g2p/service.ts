@@ -56,26 +56,28 @@ async function attachSpellingNeighbours(results: G2PWord[], db?: LabDatabase): P
 	}
 	if (fallbackIndexes.length === 0) return results;
 
-	const variants = new Set<string>();
+	// Generated once per token, then read twice: for the membership query and per token.
+	const variantsByIndex = new Map<number, string[]>();
+	const allVariants = new Set<string>();
 	for (const index of fallbackIndexes) {
 		const word = results[index]?.word;
 		if (!word) continue;
-		for (const variant of generateOneSlipVariants(word)) variants.add(variant);
+		const variants = generateOneSlipVariants(word);
+		variantsByIndex.set(index, variants);
+		for (const variant of variants) allVariants.add(variant);
 	}
-	if (variants.size === 0) return results;
+	if (allVariants.size === 0) return results;
 
 	const existing = new Set(
 		db
-			? await findExistingCmudictWords([...variants], db)
-			: await findExistingCmudictWords([...variants]),
+			? await findExistingCmudictWords([...allVariants], db)
+			: await findExistingCmudictWords([...allVariants]),
 	);
 
-	for (const index of fallbackIndexes) {
+	for (const [index, variants] of variantsByIndex) {
 		const word = results[index];
 		if (!word) continue;
-		const spellingNeighbours = generateOneSlipVariants(word.word).filter((variant) =>
-			existing.has(variant),
-		);
+		const spellingNeighbours = variants.filter((variant) => existing.has(variant));
 		if (spellingNeighbours.length > 0) {
 			results[index] = { ...word, spellingNeighbours };
 		}

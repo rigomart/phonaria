@@ -7,11 +7,20 @@ const VARIANT_ALPHABET = "abcdefghijklmnopqrstuvwxyz'-";
  * Three times still keeps similar-rank misses quiet (`from`/`form` at 25 vs 30).
  */
 const FREQUENCY_LEAD_RATIO = 3;
-const BEYOND_CURATED_RANK = 10_000;
+/** Scores an unranked candidate just past the curated list, so it still rivals a leader. */
+const NO_FREQUENCY_EVIDENCE_RANK = 10_000;
+const VOWEL_LETTERS = new Set(["a", "e", "i", "o", "u", "y"]);
+const isVowel = (letter: string) => VOWEL_LETTERS.has(letter);
 
-export interface SpellingDictionary {
-	has(word: string): boolean;
-	rank(word: string): number;
+export interface SpellingFrequency {
+	/** The curated rank, or null when the list carries no evidence about the word. */
+	rank(word: string): number | null;
+}
+
+export interface SpellingMiss {
+	tokenIndex: number;
+	/** Dictionary words one slip from the token, found during the server lookup. */
+	candidates: string[];
 }
 
 export interface SpellingSuggestionSegment {
@@ -28,8 +37,8 @@ export interface SpellingSuggestion {
 export interface SuggestSpellingInput {
 	originalText: string;
 	tokens: string[];
-	missedTokenIndexes: number[];
-	dictionary: SpellingDictionary;
+	misses: SpellingMiss[];
+	frequency: SpellingFrequency;
 }
 
 export function generateOneSlipVariants(word: string): string[] {
@@ -76,55 +85,29 @@ export function generateOneSlipVariants(word: string): string[] {
 	return [...variants];
 }
 
-export function createSpellingDictionary(ranksByWord: Record<string, number>): SpellingDictionary {
+export function createSpellingFrequency(ranksByWord: Record<string, number>): SpellingFrequency {
 	const ranks = new Map<string, number>();
 	for (const [word, rank] of Object.entries(ranksByWord)) {
 		ranks.set(word.toLowerCase(), rank);
 	}
 	return {
-		has(word) {
-			return ranks.has(word.toLowerCase());
-		},
 		rank(word) {
-			return ranks.get(word.toLowerCase()) ?? BEYOND_CURATED_RANK;
-		},
-	};
-}
-
-export function withExtraHits(
-	dictionary: SpellingDictionary,
-	extraHits: Iterable<string>,
-	extraRank = BEYOND_CURATED_RANK,
-): SpellingDictionary {
-	const extra = new Set<string>();
-	for (const word of extraHits) {
-		const normalized = word.toLowerCase().trim();
-		if (normalized) extra.add(normalized);
-	}
-	if (extra.size === 0) return dictionary;
-
-	return {
-		has(word) {
-			return dictionary.has(word) || extra.has(word.toLowerCase());
-		},
-		rank(word) {
-			if (dictionary.has(word)) return dictionary.rank(word);
-			return extraRank;
+			return ranks.get(word.toLowerCase()) ?? null;
 		},
 	};
 }
 
 export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion | null {
-	const { originalText, tokens, missedTokenIndexes, dictionary } = input;
-	if (missedTokenIndexes.length === 0) return null;
+	const { originalText, tokens, misses, frequency } = input;
+	if (misses.length === 0) return null;
 
 	const replacements = new Map<number, string>();
 
-	for (const tokenIndex of missedTokenIndexes) {
+	for (const { tokenIndex, candidates } of misses) {
 		const token = tokens[tokenIndex];
 		if (token === undefined) continue;
 
-		const offered = pickObviousNeighbour(token, dictionary);
+		const offered = pickPlausibleNeighbour(token, candidates, frequency);
 		if (offered === null) continue;
 		replacements.set(tokenIndex, applyCapitalization(token, offered));
 	}
@@ -150,16 +133,106 @@ export function getVisibleSpellingSuggestion(
 	return suggestion ?? null;
 }
 
-function pickObviousNeighbour(token: string, dictionary: SpellingDictionary): string | null {
-	const candidates: string[] = [];
-	for (const variant of generateOneSlipVariants(token)) {
-		if (dictionary.has(variant)) candidates.push(variant);
-	}
-	if (candidates.length === 0) return null;
-	if (candidates.length === 1) return candidates[0] ?? null;
+type OneSlipEdit =
+	| { kind: "insert" }
+	| { kind: "delete"; doubled: boolean }
+	| { kind: "substitute"; from: string; to: string }
+	| { kind: "transpose"; first: string; second: string }
+	| { kind: "other" };
 
-	const scored = candidates
-		.map((word) => ({ word, score: 1 / (dictionary.rank(word) + 1) }))
+/** Which single slip turns `token` into `candidate`; `other` if no single slip does. */
+function classifyOneSlipEdit(token: string, candidate: string): OneSlipEdit {
+	const typed = token.toLowerCase();
+	const word = candidate.toLowerCase();
+	if (typed === word) return { kind: "other" };
+
+	if (word.length === typed.length + 1) {
+		let index = 0;
+		while (index < typed.length && typed[index] === word[index]) index += 1;
+		if (typed.slice(index) !== word.slice(index + 1)) return { kind: "other" };
+		return { kind: "insert" };
+	}
+
+	if (word.length === typed.length - 1) {
+		let index = 0;
+		while (index < word.length && typed[index] === word[index]) index += 1;
+		if (typed.slice(index + 1) !== word.slice(index)) return { kind: "other" };
+		const removed = typed[index];
+		return {
+			kind: "delete",
+			doubled: typed[index - 1] === removed || typed[index + 1] === removed,
+		};
+	}
+
+	if (word.length !== typed.length) return { kind: "other" };
+
+	const differences: number[] = [];
+	for (let index = 0; index < typed.length; index += 1) {
+		if (typed[index] !== word[index]) differences.push(index);
+	}
+
+	const [first, second] = differences;
+	if (differences.length === 1 && first !== undefined) {
+		return { kind: "substitute", from: typed[first] ?? "", to: word[first] ?? "" };
+	}
+	if (
+		differences.length === 2 &&
+		first !== undefined &&
+		second === first + 1 &&
+		typed[first] === word[first + 1] &&
+		typed[first + 1] === word[first]
+	) {
+		return { kind: "transpose", first: typed[first] ?? "", second: typed[first + 1] ?? "" };
+	}
+
+	return { kind: "other" };
+}
+
+/**
+ * Whether the slip alone justifies the candidate, with no idea how common the word is.
+ * It does when nothing the learner typed is contradicted: every letter survives in order
+ * (they left one out), a doubled keystroke is dropped, or only vowels move — vowel letters
+ * being the ambiguous part of English spelling. Replacing or reordering a consonant guesses
+ * at what they meant, and the 126k-word dictionary has such a neighbour for almost anything.
+ */
+function hasStrongSlipEvidence(edit: OneSlipEdit): boolean {
+	switch (edit.kind) {
+		case "insert":
+			return true;
+		case "delete":
+			return edit.doubled;
+		case "substitute":
+			return isVowel(edit.from) && isVowel(edit.to);
+		case "transpose":
+			return isVowel(edit.first) && isVowel(edit.second);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Offers a candidate the curated list shows is common, or one the slip itself justifies.
+ * Uniqueness is settled after that filter: one candidate only means the search found one.
+ */
+function pickPlausibleNeighbour(
+	token: string,
+	candidates: string[],
+	frequency: SpellingFrequency,
+): string | null {
+	const plausible: { word: string; rank: number }[] = [];
+	for (const candidate of candidates) {
+		const edit = classifyOneSlipEdit(token, candidate);
+		if (edit.kind === "other") continue;
+		const rank = frequency.rank(candidate);
+		if (rank === null && !hasStrongSlipEvidence(edit)) continue;
+		plausible.push({ word: candidate, rank: rank ?? NO_FREQUENCY_EVIDENCE_RANK });
+	}
+
+	if (plausible.length === 0) return null;
+	if (plausible.length === 1) return plausible[0]?.word ?? null;
+
+	const scored = plausible
+		.map(({ word, rank }) => ({ word, score: 1 / (rank + 1) }))
 		.sort((left, right) => right.score - left.score || left.word.localeCompare(right.word));
 
 	const leader = scored[0];

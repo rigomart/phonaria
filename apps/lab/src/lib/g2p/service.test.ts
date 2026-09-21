@@ -110,6 +110,28 @@ describe("processWords (tier 3 — DB lookup)", () => {
 		expect(result[0]?.spellingNeighbours).toContain("receive");
 	});
 
+	it("gives each missed token only its own neighbours", async () => {
+		// One membership query answers both tokens, so the per-token filter is the only
+		// thing keeping `receive` off `aardvrk` and `aardvark` off `recieve`.
+		const chain = {
+			from: vi.fn().mockReturnThis(),
+			where: vi
+				.fn()
+				.mockResolvedValueOnce([])
+				.mockResolvedValue([
+					{ word: "RECEIVE", pronunciations: JSON.stringify(["R IH0 S IY1 V"]) },
+					{ word: "AARDVARK", pronunciations: JSON.stringify(["AA1 R D V AA2 R K"]) },
+				]),
+		};
+		const select = vi.fn().mockReturnValue(chain);
+		vi.mocked(getDb).mockReturnValue({ select } as never);
+
+		const result = await processWords(["recieve", "aardvrk"]);
+
+		expect(result[0]?.spellingNeighbours).toEqual(["receive"]);
+		expect(result[1]?.spellingNeighbours).toEqual(["aardvark"]);
+	});
+
 	it("keeps fallback pronunciations when the optional neighbour lookup fails", async () => {
 		const failure = new Error("neighbour lookup unavailable");
 		const chain = {

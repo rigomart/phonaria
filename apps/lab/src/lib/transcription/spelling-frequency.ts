@@ -1,5 +1,5 @@
 import { loadTier2 } from "@/lib/phoneme-lookup/shared";
-import { type SpellingDictionary, withExtraHits } from "./spelling-suggestion";
+import type { SpellingFrequency } from "./spelling-suggestion";
 
 let curatedRanks: Map<string, number> | null = null;
 
@@ -10,17 +10,15 @@ async function loadCuratedRanks(): Promise<Map<string, number>> {
 	return curatedRanks;
 }
 
-export async function loadSpellingDictionary(
-	extraHits: Iterable<string> = [],
-): Promise<SpellingDictionary> {
+/**
+ * Frequency evidence from the curated top-10k. A word outside it gets no rank: the list
+ * has nothing to say about it, which is not the same as knowing it is rare.
+ */
+export async function loadSpellingFrequency(): Promise<SpellingFrequency> {
 	const rankByWord = await loadCuratedRanks();
-	const curated: SpellingDictionary = {
-		has(word) {
-			return rankByWord.has(word.toLowerCase());
-		},
+	return {
 		rank(word) {
-			return rankByWord.get(word.toLowerCase()) ?? rankByWord.size;
+			return rankByWord.get(word.toLowerCase()) ?? null;
 		},
 	};
-	return withExtraHits(curated, extraHits, rankByWord.size);
 }

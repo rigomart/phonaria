@@ -415,7 +415,13 @@ describe("g2p-store — transcribe", () => {
 });
 
 describe("g2p-store — spelling suggestions", () => {
-	function fallbackServer(neighboursByWord: Record<string, string[]> = {}): TranscribeWordsFn {
+	/**
+	 * Candidates reach the store on the word, as the server sends them. These lifecycle
+	 * tests all miss on `recieve`, so that search result is the default.
+	 */
+	function fallbackServer(
+		neighboursByWord: Record<string, string[]> = { recieve: ["receive"] },
+	): TranscribeWordsFn {
 		return async ({ words }) =>
 			words.map((word) => ({
 				word: word.toLowerCase(),
@@ -507,7 +513,7 @@ describe("g2p-store — spelling suggestions", () => {
 	});
 
 	it("uses original token positions when an earlier server response is omitted", async () => {
-		const { createSpellingDictionary } = await import("./spelling-suggestion");
+		const { createSpellingFrequency } = await import("./spelling-suggestion");
 		const lookupUniqueMisses: LookupWordsFn = async () => ({
 			found: new Map(),
 			missing: ["ghost", "recieve"],
@@ -519,6 +525,7 @@ describe("g2p-store — spelling suggestions", () => {
 					word,
 					variants: [[syllable("X")]],
 					source: "fallback" as const,
+					spellingNeighbours: ["receive"],
 				}));
 		const text = "ghost, recieve; recieve!";
 		useG2PStore.getState().setDraftText(text);
@@ -530,7 +537,7 @@ describe("g2p-store — spelling suggestions", () => {
 				text,
 				dropsFirstWord,
 				lookupUniqueMisses,
-				createSpellingDictionary({ receive: 0 }),
+				createSpellingFrequency({ receive: 0 }),
 			);
 
 		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toMatchObject({
@@ -540,7 +547,7 @@ describe("g2p-store — spelling suggestions", () => {
 	});
 
 	it("accepts capitalization, punctuation, and spacing through the existing path", async () => {
-		const { createSpellingDictionary } = await import("./spelling-suggestion");
+		const { createSpellingFrequency } = await import("./spelling-suggestion");
 		const text = "  Recieve,   please!  ";
 		useG2PStore.getState().setDraftText(text);
 		await useG2PStore
@@ -549,13 +556,13 @@ describe("g2p-store — spelling suggestions", () => {
 				text,
 				fallbackServer(),
 				lookupAllMissing,
-				createSpellingDictionary({ receive: 0 }),
+				createSpellingFrequency({ receive: 0 }),
 			);
 
 		const server = countingServer();
 		await useG2PStore
 			.getState()
-			.acceptSpellingSuggestion(server, lookupAllFound, createSpellingDictionary({ receive: 0 }));
+			.acceptSpellingSuggestion(server, lookupAllFound, createSpellingFrequency({ receive: 0 }));
 
 		const state = useG2PStore.getState();
 		expect(state.draftText).toBe("  Receive,   please!  ");
@@ -578,7 +585,7 @@ describe("g2p-store — spelling suggestions", () => {
 	});
 
 	it("offers a neighbour that is only in the pronunciation dictionary", async () => {
-		const { createSpellingDictionary } = await import("./spelling-suggestion");
+		const { createSpellingFrequency } = await import("./spelling-suggestion");
 		useG2PStore.getState().setDraftText("aardvrk");
 		await useG2PStore
 			.getState()
@@ -586,7 +593,7 @@ describe("g2p-store — spelling suggestions", () => {
 				"aardvrk",
 				fallbackServer({ aardvrk: ["aardvark"] }),
 				lookupAllMissing,
-				createSpellingDictionary({}),
+				createSpellingFrequency({}),
 			);
 
 		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toMatchObject({
