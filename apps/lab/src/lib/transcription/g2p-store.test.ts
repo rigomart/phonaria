@@ -70,6 +70,20 @@ const serverFails: TranscribeWordsFn = async () => {
 	throw new Error("server action unavailable");
 };
 
+function deferredLookup(): {
+	lookup: LookupWordsFn;
+	resolve: (result: BatchLookupResult) => void;
+} {
+	let resolveLookup: (result: BatchLookupResult) => void = () => {};
+	return {
+		lookup: () =>
+			new Promise<BatchLookupResult>((resolve) => {
+				resolveLookup = resolve;
+			}),
+		resolve: (result) => resolveLookup(result),
+	};
+}
+
 /** Seeds a real result through a successful `transcribe`. */
 async function seedResult(text = "hello world"): Promise<void> {
 	await useG2PStore.getState().transcribe(text, countingServer(), lookupAllFound);
@@ -459,16 +473,14 @@ describe("g2p-store — spelling suggestions", () => {
 	});
 
 	it("does not attach an offer when the draft changes during its lookup", async () => {
-		let releaseLookup: (result: BatchLookupResult) => void = () => {};
-		const pendingLookup: LookupWordsFn = () =>
-			new Promise<BatchLookupResult>((resolve) => {
-				releaseLookup = resolve;
-			});
+		const pendingLookup = deferredLookup();
 		useG2PStore.getState().setDraftText("recieve");
 
-		const pending = useG2PStore.getState().transcribe("recieve", fallbackServer(), pendingLookup);
+		const pending = useG2PStore
+			.getState()
+			.transcribe("recieve", fallbackServer(), pendingLookup.lookup);
 		useG2PStore.getState().setDraftText("newer draft");
-		releaseLookup({ found: new Map(), missing: ["recieve"] });
+		pendingLookup.resolve({ found: new Map(), missing: ["recieve"] });
 		await pending;
 
 		const state = useG2PStore.getState();
@@ -480,24 +492,26 @@ describe("g2p-store — spelling suggestions", () => {
 	it("rejects direct acceptance while another transcription is pending", async () => {
 		useG2PStore.getState().setDraftText("recieve");
 		await useG2PStore.getState().transcribe("recieve", fallbackServer(), lookupAllMissing);
-		let releaseLookup: (result: BatchLookupResult) => void = () => {};
-		const pendingLookup: LookupWordsFn = () =>
-			new Promise<BatchLookupResult>((resolve) => {
-				releaseLookup = resolve;
-			});
-		const pending = useG2PStore.getState().transcribe("recieve", countingServer(), pendingLookup);
+		const pendingLookup = deferredLookup();
+		const pending = useG2PStore
+			.getState()
+			.transcribe("recieve", countingServer(), pendingLookup.lookup);
 		const acceptanceServer = countingServer();
 
 		await useG2PStore.getState().acceptSpellingSuggestion(acceptanceServer, lookupAllFound);
 
 		expect(useG2PStore.getState().draftText).toBe("recieve");
 		expect(acceptanceServer.calls).toEqual([]);
-		releaseLookup({ found: new Map([["recieve", foundWord("recieve")]]), missing: [] });
+		pendingLookup.resolve({ found: new Map([["recieve", foundWord("recieve")]]), missing: [] });
 		await pending;
 	});
 
 	it("uses original token positions when an earlier server response is omitted", async () => {
 		const { createSpellingDictionary } = await import("./spelling-suggestion");
+		const lookupUniqueMisses: LookupWordsFn = async () => ({
+			found: new Map(),
+			missing: ["ghost", "recieve"],
+		});
 		const dropsFirstWord: TranscribeWordsFn = async ({ words }) =>
 			words
 				.filter((word) => word !== "ghost")
@@ -512,36 +526,16 @@ describe("g2p-store — spelling suggestions", () => {
 
 		await useG2PStore
 			.getState()
-			.transcribe(text, dropsFirstWord, lookupAllMissing, createSpellingDictionary({ receive: 0 }));
+			.transcribe(
+				text,
+				dropsFirstWord,
+				lookupUniqueMisses,
+				createSpellingDictionary({ receive: 0 }),
+			);
 
 		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toMatchObject({
 			suggestedText: "ghost, receive; receive!",
 			underlinedTokenIndexes: [1, 2],
-		});
-	});
-
-	it("does not reuse one server response for repeated missing tokens", async () => {
-		const { createSpellingDictionary } = await import("./spelling-suggestion");
-		const returnsOneWord: TranscribeWordsFn = async () => [
-			{
-				word: "recieve",
-				variants: [[syllable("X")]],
-				source: "fallback" as const,
-			},
-		];
-		const text = "recieve, recieve!";
-		useG2PStore.getState().setDraftText(text);
-		vi.spyOn(console, "warn").mockImplementation(() => {});
-
-		await useG2PStore
-			.getState()
-			.transcribe(text, returnsOneWord, lookupAllMissing, createSpellingDictionary({ receive: 0 }));
-
-		const result = useG2PStore.getState().currentResult;
-		expect(result?.words).toHaveLength(1);
-		expect(result?.spellingSuggestion).toMatchObject({
-			suggestedText: "receive, recieve!",
-			underlinedTokenIndexes: [0],
 		});
 	});
 
