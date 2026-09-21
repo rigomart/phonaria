@@ -520,9 +520,34 @@ describe("g2p-store — spelling suggestions", () => {
 		});
 	});
 
+	it("does not reuse one server response for repeated missing tokens", async () => {
+		const { createSpellingDictionary } = await import("./spelling-suggestion");
+		const returnsOneWord: TranscribeWordsFn = async () => [
+			{
+				word: "recieve",
+				variants: [[syllable("X")]],
+				source: "fallback" as const,
+			},
+		];
+		const text = "recieve, recieve!";
+		useG2PStore.getState().setDraftText(text);
+		vi.spyOn(console, "warn").mockImplementation(() => {});
+
+		await useG2PStore
+			.getState()
+			.transcribe(text, returnsOneWord, lookupAllMissing, createSpellingDictionary({ receive: 0 }));
+
+		const result = useG2PStore.getState().currentResult;
+		expect(result?.words).toHaveLength(1);
+		expect(result?.spellingSuggestion).toMatchObject({
+			suggestedText: "receive, recieve!",
+			underlinedTokenIndexes: [0],
+		});
+	});
+
 	it("accepts capitalization, punctuation, and spacing through the existing path", async () => {
 		const { createSpellingDictionary } = await import("./spelling-suggestion");
-		const text = "Recieve,   please!";
+		const text = "  Recieve,   please!  ";
 		useG2PStore.getState().setDraftText(text);
 		await useG2PStore
 			.getState()
@@ -539,8 +564,8 @@ describe("g2p-store — spelling suggestions", () => {
 			.acceptSpellingSuggestion(server, lookupAllFound, createSpellingDictionary({ receive: 0 }));
 
 		const state = useG2PStore.getState();
-		expect(state.draftText).toBe("Receive,   please!");
-		expect(state.currentResult?.originalText).toBe("Receive,   please!");
+		expect(state.draftText).toBe("  Receive,   please!  ");
+		expect(state.currentResult?.originalText).toBe("  Receive,   please!  ");
 		expect(server.calls).toEqual([]);
 	});
 

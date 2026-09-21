@@ -63,12 +63,12 @@ test.describe("Transcription", () => {
 
 		await textToTranscribe(page).fill(`${SPELLING_TYPO} again`);
 		await expect(offer).toHaveCount(0);
-		await textToTranscribe(page).fill(SPELLING_TYPO);
+		await textToTranscribe(page).fill(`  ${SPELLING_TYPO}  `);
 		await transcribeSubmit(page).click();
 		await expect(offer).toBeVisible({ timeout: 20_000 });
 		await offer.click();
 
-		await expect(textToTranscribe(page)).toHaveValue(SPELLING_CORRECTION);
+		await expect(textToTranscribe(page)).toHaveValue(`  ${SPELLING_CORRECTION}  `);
 		await expect(page.getByText("Not found")).toHaveCount(0);
 		await expect(page.getByText(SPELLING_CORRECTION, { exact: true }).first()).toBeVisible({
 			timeout: 20_000,

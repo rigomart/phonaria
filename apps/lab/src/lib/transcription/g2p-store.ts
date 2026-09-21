@@ -80,7 +80,7 @@ interface MergedWord {
 function mergeWords(
 	tokens: string[],
 	tierResult: BatchLookupResult,
-	serverWords: Map<string, G2PWord>,
+	serverWords: Map<string, G2PWord[]>,
 ): MergedWord[] {
 	const merged: MergedWord[] = [];
 
@@ -93,7 +93,7 @@ function mergeWords(
 			continue;
 		}
 
-		const serverWord = serverWords.get(normalized);
+		const serverWord = serverWords.get(normalized)?.shift();
 		if (serverWord) {
 			merged.push({ word: serverWord, tokenIndex });
 			continue;
@@ -193,7 +193,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 			// A newer transcription owns the state now — return without touching it.
 			if (activeLookup !== token) return;
 
-			const serverWordMap = new Map<string, G2PWord>();
+			const serverWordMap = new Map<string, G2PWord[]>();
 			if (tierResult.missing.length > 0) {
 				let serverWords: G2PWord[];
 				try {
@@ -209,7 +209,10 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 				for (const word of serverWords) {
 					// Key by normalized token (what `mergeWords` reads) — `transcribeWords`
 					// is injectable, so don't rely on the server echoing lowercase.
-					serverWordMap.set(word.word.toLowerCase().trim(), word);
+					const normalized = word.word.toLowerCase().trim();
+					const occurrences = serverWordMap.get(normalized) ?? [];
+					occurrences.push(word);
+					serverWordMap.set(normalized, occurrences);
 				}
 			}
 
@@ -243,7 +246,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 				spellingDictionary,
 			);
 			if (activeLookup !== token) return;
-			if (draftRevision !== submittedDraftRevision || get().draftText.trim() !== text) {
+			if (draftRevision !== submittedDraftRevision || get().draftText !== text) {
 				transformed.spellingSuggestion = null;
 			}
 
@@ -269,7 +272,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 			!suggestion ||
 			state.lookupError !== null ||
 			state.isTranscribing ||
-			state.currentResult?.originalText !== state.draftText.trim()
+			state.currentResult?.originalText !== state.draftText
 		) {
 			return;
 		}
