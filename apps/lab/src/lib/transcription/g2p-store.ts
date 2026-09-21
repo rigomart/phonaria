@@ -8,8 +8,8 @@ import {
 	type WordLookupResult,
 } from "@/lib/phoneme-lookup";
 import type { TranscriptionResult } from "@/lib/types/g2p";
-import { loadSpellingDictionary } from "./spelling-dictionary";
-import { type SpellingDictionary, suggestSpelling, withExtraHits } from "./spelling-suggestion";
+import { loadSpellingFrequency } from "./spelling-frequency";
+import { type SpellingFrequency, type SpellingMiss, suggestSpelling } from "./spelling-suggestion";
 
 /**
  * Which stage of the lookup failed. Server-action errors are digest-opaque in
@@ -49,12 +49,12 @@ interface G2PStore {
 		text: string,
 		transcribeWords: TranscribeWordsFn,
 		lookupWords?: LookupWordsFn,
-		spellingDictionary?: SpellingDictionary,
+		spellingFrequency?: SpellingFrequency,
 	) => Promise<void>;
 	acceptSpellingSuggestion: (
 		transcribeWords: TranscribeWordsFn,
 		lookupWords?: LookupWordsFn,
-		spellingDictionary?: SpellingDictionary,
+		spellingFrequency?: SpellingFrequency,
 	) => Promise<void>;
 }
 
@@ -164,7 +164,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 		});
 	},
 
-	transcribe: async (text, transcribeWords, lookupWords = batchLookup, spellingDictionary) => {
+	transcribe: async (text, transcribeWords, lookupWords = batchLookup, spellingFrequency) => {
 		const token = ++activeLookup;
 		const submittedDraftRevision = draftRevision;
 
@@ -240,7 +240,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 				tokens,
 				merged,
 				token,
-				spellingDictionary,
+				spellingFrequency,
 			);
 			if (activeLookup !== token) return;
 			if (draftRevision !== submittedDraftRevision || get().draftText !== text) {
@@ -262,7 +262,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 		}
 	},
 
-	acceptSpellingSuggestion: async (transcribeWords, lookupWords, spellingDictionary) => {
+	acceptSpellingSuggestion: async (transcribeWords, lookupWords, spellingFrequency) => {
 		const state = get();
 		const suggestion = state.currentResult?.spellingSuggestion;
 		if (
@@ -278,7 +278,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 			suggestion.suggestedText,
 			transcribeWords,
 			lookupWords,
-			spellingDictionary,
+			spellingFrequency,
 		);
 	},
 }));
@@ -288,25 +288,20 @@ async function spellingSuggestionFor(
 	tokens: string[],
 	merged: MergedWord[],
 	lookupToken: number,
-	spellingDictionary?: SpellingDictionary,
+	spellingFrequency?: SpellingFrequency,
 ) {
-	const missedTokenIndexes: number[] = [];
-	const extraHits: string[] = [];
+	// The server already searched around each missed token, so candidates ride on the word.
+	const misses: SpellingMiss[] = [];
 	for (const { word, tokenIndex } of merged) {
-		if (word.source === "fallback") missedTokenIndexes.push(tokenIndex);
-		if (word.spellingNeighbours) extraHits.push(...word.spellingNeighbours);
+		if (word.source !== "fallback") continue;
+		misses.push({ tokenIndex, candidates: word.spellingNeighbours ?? [] });
 	}
-	if (missedTokenIndexes.length === 0) return null;
+	if (misses.length === 0) return null;
 
 	try {
-		const baseDictionary = spellingDictionary ?? (await loadSpellingDictionary());
+		const frequency = spellingFrequency ?? (await loadSpellingFrequency());
 		if (activeLookup !== lookupToken) return null;
-		return suggestSpelling({
-			originalText,
-			tokens,
-			missedTokenIndexes,
-			dictionary: withExtraHits(baseDictionary, extraHits),
-		});
+		return suggestSpelling({ originalText, tokens, misses, frequency });
 	} catch (error) {
 		console.error("transcription: spelling suggestion failed", error);
 		return null;

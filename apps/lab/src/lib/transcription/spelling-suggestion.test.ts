@@ -1,14 +1,19 @@
 import { describe, expect, it } from "vitest";
 import {
-	createSpellingDictionary,
+	createSpellingFrequency,
 	getVisibleSpellingSuggestion,
-	type SpellingDictionary,
+	type SpellingFrequency,
 	type SpellingSuggestion,
 	suggestSpelling,
 } from "./spelling-suggestion";
 
-function dictionary(ranksByWord: Record<string, number>): SpellingDictionary {
-	return createSpellingDictionary(ranksByWord);
+function frequency(ranksByWord: Record<string, number>): SpellingFrequency {
+	return createSpellingFrequency(ranksByWord);
+}
+
+/** One dictionary miss, as the server reports it. */
+function miss(tokenIndex: number, ...candidates: string[]) {
+	return { tokenIndex, candidates };
 }
 
 function offerOf(result: SpellingSuggestion | null) {
@@ -24,8 +29,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "recieve",
 			tokens: ["recieve"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ receive: 1484 }),
+			misses: [miss(0, "receive")],
+			frequency: frequency({ receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -38,8 +43,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "teh",
 			tokens: ["teh"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ the: 0, ten: 948, tea: 1910 }),
+			misses: [miss(0, "the", "ten", "tea")],
+			frequency: frequency({ the: 0, ten: 948, tea: 1910 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -48,45 +53,23 @@ describe("suggestSpelling", () => {
 		});
 	});
 
-	it("offers a unique neighbour", () => {
-		const result = suggestSpelling({
-			originalText: "recieve",
-			tokens: ["recieve"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ receive: 50, unrelated: 1 }),
-		});
-
-		expect(result?.suggestedText).toBe("receive");
-	});
-
 	it("stays silent when neighbours are comparably common", () => {
 		const result = suggestSpelling({
 			originalText: "frm",
 			tokens: ["frm"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ from: 25, form: 30, farm: 40 }),
+			misses: [miss(0, "from", "form", "farm")],
+			frequency: frequency({ from: 25, form: 30, farm: 40 }),
 		});
 
 		expect(result).toBeNull();
 	});
 
-	it("stays silent for a two-slip phonetic guess", () => {
-		const result = suggestSpelling({
-			originalText: "fone",
-			tokens: ["fone"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ phone: 200, night: 10 }),
-		});
-
-		expect(result).toBeNull();
-	});
-
-	it("does not offer a spelling for a dictionary hit", () => {
+	it("does not offer a spelling when nothing missed the dictionary", () => {
 		const result = suggestSpelling({
 			originalText: "from",
 			tokens: ["from"],
-			missedTokenIndexes: [],
-			dictionary: dictionary({ from: 25, form: 479 }),
+			misses: [],
+			frequency: frequency({ from: 25, form: 479 }),
 		});
 
 		expect(result).toBeNull();
@@ -96,8 +79,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "hello recieve",
 			tokens: ["hello", "recieve"],
-			missedTokenIndexes: [1],
-			dictionary: dictionary({ hello: 1929, receive: 1484 }),
+			misses: [miss(1, "receive")],
+			frequency: frequency({ hello: 1929, receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -114,8 +97,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "Hello, recieve!",
 			tokens: ["Hello", "recieve"],
-			missedTokenIndexes: [1],
-			dictionary: dictionary({ hello: 1929, receive: 1484 }),
+			misses: [miss(1, "receive")],
+			frequency: frequency({ hello: 1929, receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -128,8 +111,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "Recieve",
 			tokens: ["Recieve"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ receive: 1484 }),
+			misses: [miss(0, "receive")],
+			frequency: frequency({ receive: 1484 }),
 		});
 
 		expect(result?.suggestedText).toBe("Receive");
@@ -139,8 +122,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "RECIEVE",
 			tokens: ["RECIEVE"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ receive: 1484 }),
+			misses: [miss(0, "receive")],
+			frequency: frequency({ receive: 1484 }),
 		});
 
 		expect(result?.suggestedText).toBe("RECEIVE");
@@ -150,8 +133,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "teh recieve",
 			tokens: ["teh", "recieve"],
-			missedTokenIndexes: [0, 1],
-			dictionary: dictionary({ the: 0, ten: 948, tea: 1910, receive: 1484 }),
+			misses: [miss(0, "the", "ten", "tea"), miss(1, "receive")],
+			frequency: frequency({ the: 0, ten: 948, tea: 1910, receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -160,12 +143,12 @@ describe("suggestSpelling", () => {
 		});
 	});
 
-	it("stays silent for an unguessable miss", () => {
+	it("stays silent for a miss with no candidates", () => {
 		const result = suggestSpelling({
 			originalText: "zxqvwoplmj",
 			tokens: ["zxqvwoplmj"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ the: 0, receive: 1484, hello: 1929 }),
+			misses: [miss(0)],
+			frequency: frequency({ the: 0, receive: 1484, hello: 1929 }),
 		});
 
 		expect(result).toBeNull();
@@ -175,8 +158,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "zxqvwoplmj recieve",
 			tokens: ["zxqvwoplmj", "recieve"],
-			missedTokenIndexes: [0, 1],
-			dictionary: dictionary({ receive: 1484 }),
+			misses: [miss(0), miss(1, "receive")],
+			frequency: frequency({ receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -189,8 +172,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "recceive",
 			tokens: ["recceive"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ receive: 1484 }),
+			misses: [miss(0, "receive")],
+			frequency: frequency({ receive: 1484 }),
 		});
 
 		expect(result?.suggestedText).toBe("receive");
@@ -200,8 +183,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "receve",
 			tokens: ["receve"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ receive: 1484 }),
+			misses: [miss(0, "receive")],
+			frequency: frequency({ receive: 1484 }),
 		});
 
 		expect(result?.suggestedText).toBe("receive");
@@ -211,8 +194,8 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "recieve",
 			tokens: ["recieve"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ receive: 1484, relieve: 9944 }),
+			misses: [miss(0, "receive", "relieve")],
+			frequency: frequency({ receive: 1484, relieve: 9944 }),
 		});
 
 		expect(result?.suggestedText).toBe("receive");
@@ -222,30 +205,98 @@ describe("suggestSpelling", () => {
 		const result = suggestSpelling({
 			originalText: "dont",
 			tokens: ["dont"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ "don't": 67, done: 229, don: 2461 }),
+			misses: [miss(0, "don't", "done", "don")],
+			frequency: frequency({ "don't": 67, done: 229, don: 2461 }),
 		});
 
 		expect(result?.suggestedText).toBe("don't");
-	});
-
-	it("offers a unique neighbour that is only in the full dictionary", () => {
-		const result = suggestSpelling({
-			originalText: "aardvrk",
-			tokens: ["aardvrk"],
-			missedTokenIndexes: [0],
-			dictionary: dictionary({ aardvark: 10_000 }),
-		});
-
-		expect(result?.suggestedText).toBe("aardvark");
 	});
 
 	it("returns no offer for empty text", () => {
 		const result = suggestSpelling({
 			originalText: "",
 			tokens: [],
-			missedTokenIndexes: [],
-			dictionary: dictionary({ the: 0 }),
+			misses: [],
+			frequency: frequency({ the: 0 }),
+		});
+
+		expect(result).toBeNull();
+	});
+});
+
+/** Offered when the curated list shows the word is common, or the slip itself justifies it. */
+describe("suggestSpelling plausibility", () => {
+	function soleOffer(token: string, candidate: string, ranks: Record<string, number> = {}) {
+		const result = suggestSpelling({
+			originalText: token,
+			tokens: [token],
+			misses: [miss(0, candidate)],
+			frequency: frequency(ranks),
+		});
+		return result?.suggestedText ?? null;
+	}
+
+	it("rejects a sole candidate reached by swapping a consonant for a vowel", () => {
+		expect(soleOffer("reciv", "recio")).toBeNull();
+	});
+
+	it("rejects a sole candidate reached by swapping one consonant for another", () => {
+		expect(soleOffer("langwidge", "langridge")).toBeNull();
+	});
+
+	it("rejects a sole candidate reached by transposing a consonant and a vowel", () => {
+		expect(soleOffer("definatly", "defiantly")).toBeNull();
+	});
+
+	it("offers a sole candidate that supplies a letter the learner left out", () => {
+		expect(soleOffer("aardvrk", "aardvark")).toBe("aardvark");
+	});
+
+	it("offers a sole candidate that drops a letter the learner doubled", () => {
+		expect(soleOffer("zucchinni", "zucchini")).toBe("zucchini");
+	});
+
+	it("offers a sole candidate reached by swapping one vowel for another", () => {
+		expect(soleOffer("rhinocerus", "rhinoceros")).toBe("rhinoceros");
+	});
+
+	it("offers a sole candidate reached by transposing two vowels", () => {
+		expect(soleOffer("wierdness", "weirdness")).toBe("weirdness");
+	});
+
+	it("offers a sole weak candidate once the curated list shows it is common", () => {
+		expect(soleOffer("thnik", "think")).toBeNull();
+		expect(soleOffer("thnik", "think", { think: 322 })).toBe("think");
+	});
+
+	it("treats an absent rank as missing evidence rather than as a common word", () => {
+		// No frequency evidence cannot carry a weak slip; a curated rank can.
+		expect(soleOffer("reciv", "recio")).toBeNull();
+		expect(soleOffer("reciv", "recio", { recio: 4000 })).toBe("recio");
+	});
+
+	it("ignores a candidate that is more than one slip from the token", () => {
+		expect(soleOffer("fone", "phone", { phone: 200 })).toBeNull();
+	});
+
+	it("lets the leader through once an implausible rival is filtered out", () => {
+		// Unfiltered, `tec` scored just past the curated list and denied `the` its lead.
+		const result = suggestSpelling({
+			originalText: "teh",
+			tokens: ["teh"],
+			misses: [miss(0, "the", "tec")],
+			frequency: frequency({ the: 9000 }),
+		});
+
+		expect(result?.suggestedText).toBe("the");
+	});
+
+	it("stays silent when two candidates rest on strong slips alone", () => {
+		const result = suggestSpelling({
+			originalText: "wrk",
+			tokens: ["wrk"],
+			misses: [miss(0, "wark", "werk")],
+			frequency: frequency({}),
 		});
 
 		expect(result).toBeNull();
