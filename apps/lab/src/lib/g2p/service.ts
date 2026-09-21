@@ -41,7 +41,12 @@ export async function processWords(
 		}
 	}
 
-	return attachSpellingNeighbours(results, options.db);
+	try {
+		return await attachSpellingNeighbours(results, options.db);
+	} catch (error) {
+		console.error("transcription: spelling neighbour lookup failed", error);
+		return results;
+	}
 }
 
 async function attachSpellingNeighbours(results: G2PWord[], db?: LabDatabase): Promise<G2PWord[]> {
