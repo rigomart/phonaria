@@ -49,7 +49,7 @@ test.describe("Transcription", () => {
 		await expect(spellingSuggestion(page)).toHaveCount(0);
 	});
 
-	test("offers a spelling suggestion for a known one-slip typo and accepts it", async ({
+	test("invalidates an edited spelling suggestion, then accepts a fresh offer", async ({
 		page,
 	}) => {
 		await page.goto("/");
@@ -60,6 +60,12 @@ test.describe("Transcription", () => {
 		const offer = spellingSuggestion(page);
 		await expect(offer).toBeVisible({ timeout: 20_000 });
 		await expect(offer).toContainText(`Did you mean ${SPELLING_CORRECTION}`);
+
+		await textToTranscribe(page).fill(`${SPELLING_TYPO} again`);
+		await expect(offer).toHaveCount(0);
+		await textToTranscribe(page).fill(SPELLING_TYPO);
+		await transcribeSubmit(page).click();
+		await expect(offer).toBeVisible({ timeout: 20_000 });
 		await offer.click();
 
 		await expect(textToTranscribe(page)).toHaveValue(SPELLING_CORRECTION);

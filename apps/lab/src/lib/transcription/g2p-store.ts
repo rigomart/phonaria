@@ -66,6 +66,11 @@ function lookupResultToG2PWord(result: WordLookupResult): G2PWord {
 	};
 }
 
+interface MergedWord {
+	word: G2PWord;
+	tokenIndex: number;
+}
+
 /**
  * Precedence per token: client tier hit → server word. The service answers every
  * requested word (falling back server-side when CMUdict misses), so a token with
@@ -76,21 +81,21 @@ function mergeWords(
 	tokens: string[],
 	tierResult: BatchLookupResult,
 	serverWords: Map<string, G2PWord>,
-): G2PWord[] {
-	const merged: G2PWord[] = [];
+): MergedWord[] {
+	const merged: MergedWord[] = [];
 
-	for (const token of tokens) {
+	for (const [tokenIndex, token] of tokens.entries()) {
 		const normalized = token.toLowerCase().trim();
 
 		const tierWord = tierResult.found.get(normalized);
 		if (tierWord) {
-			merged.push(lookupResultToG2PWord(tierWord));
+			merged.push({ word: lookupResultToG2PWord(tierWord), tokenIndex });
 			continue;
 		}
 
 		const serverWord = serverWords.get(normalized);
 		if (serverWord) {
-			merged.push(serverWord);
+			merged.push({ word: serverWord, tokenIndex });
 			continue;
 		}
 
@@ -114,6 +119,7 @@ function failed(kind: LookupErrorKind) {
  * the form, the example chips and Retry each own a `useTranscribe` instance.
  */
 let activeLookup = 0;
+let draftRevision = 0;
 
 export const useG2PStore = create<G2PStore>((set, get) => ({
 	currentResult: null,
@@ -127,6 +133,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 	clearResult: () => {
 		// Any in-flight lookup belongs to the result being cleared.
 		activeLookup += 1;
+		draftRevision += 1;
 		set({
 			currentResult: null,
 			selectedVariants: [],
@@ -139,7 +146,14 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 	},
 
 	setDraftText: (draftText) => {
-		set({ draftText });
+		if (get().draftText === draftText) return;
+		draftRevision += 1;
+		set((state) => ({
+			draftText,
+			currentResult: state.currentResult?.spellingSuggestion
+				? { ...state.currentResult, spellingSuggestion: null }
+				: state.currentResult,
+		}));
 	},
 
 	setVariant: (wordIndex: number, variantIndex: number) => {
@@ -152,6 +166,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 
 	transcribe: async (text, transcribeWords, lookupWords = batchLookup, spellingDictionary) => {
 		const token = ++activeLookup;
+		const submittedDraftRevision = draftRevision;
 
 		// Backstop: a throw escaping here becomes an unhandled rejection inside
 		// `startTransition`, which the learner never sees.
@@ -209,7 +224,10 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 
 			let transformed: TranscriptionResult;
 			try {
-				transformed = transformToTranscriptionResult({ words: merged }, text);
+				transformed = transformToTranscriptionResult(
+					{ words: merged.map((entry) => entry.word) },
+					text,
+				);
 			} catch (error) {
 				// Nothing is awaited since the last guard, so this lookup is still live.
 				console.error("transcription: building the result failed", error);
@@ -225,6 +243,9 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 				spellingDictionary,
 			);
 			if (activeLookup !== token) return;
+			if (draftRevision !== submittedDraftRevision || get().draftText.trim() !== text) {
+				transformed.spellingSuggestion = null;
+			}
 
 			// Errors clear on settle, not on start, so the alert stays mounted
 			// while a retry is in flight.
@@ -242,9 +263,17 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 	},
 
 	acceptSpellingSuggestion: async (transcribeWords, lookupWords, spellingDictionary) => {
-		const suggestion = get().currentResult?.spellingSuggestion;
-		if (!suggestion) return;
-		set({ draftText: suggestion.suggestedText });
+		const state = get();
+		const suggestion = state.currentResult?.spellingSuggestion;
+		if (
+			!suggestion ||
+			state.lookupError !== null ||
+			state.isTranscribing ||
+			state.currentResult?.originalText !== state.draftText.trim()
+		) {
+			return;
+		}
+		get().setDraftText(suggestion.suggestedText);
 		await get().transcribe(
 			suggestion.suggestedText,
 			transcribeWords,
@@ -257,14 +286,14 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 async function spellingSuggestionFor(
 	originalText: string,
 	tokens: string[],
-	merged: G2PWord[],
+	merged: MergedWord[],
 	lookupToken: number,
 	spellingDictionary?: SpellingDictionary,
 ) {
 	const missedTokenIndexes: number[] = [];
 	const extraHits: string[] = [];
-	for (const [index, word] of merged.entries()) {
-		if (word.source === "fallback") missedTokenIndexes.push(index);
+	for (const { word, tokenIndex } of merged) {
+		if (word.source === "fallback") missedTokenIndexes.push(tokenIndex);
 		if (word.spellingNeighbours) extraHits.push(...word.spellingNeighbours);
 	}
 	if (missedTokenIndexes.length === 0) return null;

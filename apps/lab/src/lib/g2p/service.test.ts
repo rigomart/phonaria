@@ -110,6 +110,39 @@ describe("processWords (tier 3 — DB lookup)", () => {
 		expect(result[0]?.spellingNeighbours).toContain("receive");
 	});
 
+	it("keeps fallback pronunciations when the optional neighbour lookup fails", async () => {
+		const failure = new Error("neighbour lookup unavailable");
+		const chain = {
+			from: vi.fn().mockReturnThis(),
+			where: vi.fn().mockResolvedValueOnce([]).mockRejectedValueOnce(failure),
+		};
+		const select = vi.fn().mockReturnValue(chain);
+		vi.mocked(getDb).mockReturnValue({ select } as never);
+		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+		const result = await processWords(["recieve"]);
+
+		expect(result).toHaveLength(1);
+		expect(result[0]).toMatchObject({ word: "recieve", source: "fallback" });
+		expect(result[0]?.spellingNeighbours).toBeUndefined();
+		expect(consoleError).toHaveBeenCalledWith(
+			"transcription: spelling neighbour lookup failed",
+			failure,
+		);
+	});
+
+	it("still rejects when the required pronunciation lookup fails", async () => {
+		const failure = new Error("pronunciation lookup unavailable");
+		const chain = {
+			from: vi.fn().mockReturnThis(),
+			where: vi.fn().mockRejectedValue(failure),
+		};
+		const select = vi.fn().mockReturnValue(chain);
+		vi.mocked(getDb).mockReturnValue({ select } as never);
+
+		await expect(processWords(["recieve"])).rejects.toBe(failure);
+	});
+
 	it("returns empty array for empty input", async () => {
 		const result = await processWords([]);
 		expect(result).toEqual([]);
