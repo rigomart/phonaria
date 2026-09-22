@@ -33,7 +33,7 @@ jobs:
       - name: Test
         run: bun run test
       - name: Production build
-        run: bun --cwd apps/lab build
+        run: bun --cwd apps/phonaria build
         env:
           CLOUDFLARE_ENV: production
           SITE_URL: https://phonaria.rigos.dev

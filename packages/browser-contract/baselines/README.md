@@ -11,7 +11,7 @@ Transcription is stored as two lanes, never one blended median:
 
 ## Collection conditions
 
-Recorded by `bun e2e:lab:baseline` with:
+Recorded by `bun e2e:baseline` with:
 
 - Browser: Chromium Desktop Chrome
 - Viewport: 1280x720
@@ -48,7 +48,7 @@ must not be reused here.
 ## Updating a committed baseline
 
 ```bash
-LAB_CONTRACT_TARGET=cloudflare-production LAB_CONTRACT_WRITE_BASELINE=1 bun e2e:lab:baseline
+LAB_CONTRACT_TARGET=cloudflare-production LAB_CONTRACT_WRITE_BASELINE=1 bun e2e:baseline
 ```
 
 Commit the updated `baselines/<target>.json` only when collection conditions

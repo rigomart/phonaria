@@ -28,7 +28,7 @@
 		"test": {
 			"dependsOn": ["^test"]
 		},
-		"e2e:lab": {
+		"e2e": {
 			"cache": false,
 			"env": [
 				"LAB_CONTRACT_TARGET",

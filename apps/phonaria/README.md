@@ -4,17 +4,17 @@ The Phonaria application: TanStack Start deployed to Cloudflare Workers.
 Production serves `phonaria.rigos.dev`; `phonaria-lab.rigos.dev` redirects to
 the main hostname. This is the only Phonaria application — the earlier Next.js
 app on Vercel was retired, as recorded in
-`docs/adr/0002-single-application-on-cloudflare-workers.md`. The leftover `lab`
-directory and `phonaria-lab` Worker names are being removed in
+`docs/adr/0002-single-application-on-cloudflare-workers.md`. The leftover
+`phonaria-lab` Worker name is being removed in
 [#254](https://github.com/rigomart/phonaria/issues/254).
 
 ```bash
-bun --cwd apps/lab dev                # http://localhost:3001
-bun --cwd apps/lab build
-bun --cwd apps/lab start
-bun --cwd apps/lab deploy:staging
-bun --cwd apps/lab cf-typegen
-bun --cwd apps/lab worker-metrics
+bun --cwd apps/phonaria dev                # http://localhost:3001
+bun --cwd apps/phonaria build
+bun --cwd apps/phonaria start
+bun --cwd apps/phonaria deploy:staging
+bun --cwd apps/phonaria cf-typegen
+bun --cwd apps/phonaria worker-metrics
 ```
 
 TanStack Start owns `src/routes`, `src/router.tsx`, `src/routeTree.gen.ts`, and

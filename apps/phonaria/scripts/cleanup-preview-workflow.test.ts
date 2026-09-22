@@ -14,13 +14,13 @@ function githubExpression(expression: string): string {
 
 describe("Cloudflare preview cleanup workflow", () => {
 	it("shares a PR-scoped concurrency group with preview deployment", () => {
-		const deployWorkflow = readWorkflow("lab-start.yml");
+		const deployWorkflow = readWorkflow("preview.yml");
 		const cleanupWorkflow = readWorkflow("cleanup-preview.yml");
 		const pullRequestNumber = githubExpression("github.event.pull_request.number");
-		const group = `lab-start-${githubExpression("github.event.pull_request.number || github.ref")}`;
+		const group = `preview-${githubExpression("github.event.pull_request.number || github.ref")}`;
 
 		expect(deployWorkflow).toContain(`group: ${group}`);
-		expect(cleanupWorkflow).toContain(`group: lab-start-${pullRequestNumber}`);
+		expect(cleanupWorkflow).toContain(`group: preview-${pullRequestNumber}`);
 	});
 
 	it("deletes only the closed PR Worker and treats an absent Worker as clean", () => {

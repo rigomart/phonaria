@@ -6,7 +6,7 @@ on:
     types: [closed]
 
 concurrency:
-  group: lab-start-${{ github.event.pull_request.number }}
+  group: preview-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions: {}

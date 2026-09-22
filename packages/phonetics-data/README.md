@@ -44,7 +44,7 @@ graph TD
   B --> D["src/languages/es/\nSpanish data"]
   C --> E["src/registries/registries.ts\nComposition + selectors"]
   D --> E
-  E --> F["Consumers\napps/lab, helper-scripts"]
+  E --> F["Consumers\napps/phonaria, helper-scripts"]
   G["src/registries/capabilities.ts\nFeature support matrix"] --> F
   H["data/en/dict + data/en/curated\nRaw JSON assets"] --> I["src/data/en/\nTyped subpath exports"]
   I --> F
@@ -96,7 +96,7 @@ Run before merging package changes:
 
 - `bun --cwd packages/phonetics-data check-types`
 - `bun --cwd packages/phonetics-data test`
-- `bun --cwd apps/lab check-types`
+- `bun --cwd apps/phonaria check-types`
 - `bun --cwd packages/helper-scripts check-types`
 
 ## Current scope

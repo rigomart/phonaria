@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: bun ci
       - name: Install Playwright Chromium
-        run: bun --cwd packages/lab-contract e2e:install
+        run: bun --cwd packages/browser-contract e2e:install
       - name: Run browser contract
         env:
           CI: true
@@ -35,13 +35,13 @@ jobs:
           LAB_CONTRACT_BASE_URL: ${{ secrets.LAB_CONTRACT_BASE_URL }}
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
-        run: bun e2e:lab
+        run: bun e2e
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lab-contract-report
+          name: browser-contract-report
           path: |
-            packages/lab-contract/playwright-report
-            packages/lab-contract/test-results
+            packages/browser-contract/playwright-report
+            packages/browser-contract/test-results
           if-no-files-found: ignore

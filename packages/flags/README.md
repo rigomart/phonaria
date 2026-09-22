@@ -33,7 +33,7 @@ Gating a new module is one new entry in the registry plus whatever gate the app 
 ## Rollout
 
 The application reads flags from Cloudflare Worker `vars`, declared per environment in
-`apps/lab/wrangler.jsonc`.
+`apps/phonaria/wrangler.jsonc`.
 
 - **Production**: leave the flag off → unreleased modules stay dark.
 - **Staging / Preview**: set e.g. `FLAG_PRACTICE="1"` to keep the module testable there.

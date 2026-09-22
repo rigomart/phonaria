@@ -12,9 +12,9 @@
 Phonaria ran as two applications for the length of the TanStack Start migration. `apps/web` was a
 Next.js App Router application on Vercel, backed by Neon PostgreSQL for dictionary lookups and
 Upstash Redis for rate limiting, with locale-prefixed routes for English and Spanish. `apps/lab`
-was a TanStack Start application on Cloudflare Workers, built to take over.
+(now `apps/phonaria`) was a TanStack Start application on Cloudflare Workers, built to take over.
 
-By the end of the migration `apps/lab` carried transcription, the IPA charts, Credits, and
+By the end of the migration that Start application carried transcription, the IPA charts, Credits, and
 Practice, and it had its own SEO metadata, observability, and a deployed-browser contract. Both
 applications drew their phoneme data from the same `packages/phonetics-data`, so the duplication
 was in delivery, not in domain data.
@@ -29,16 +29,13 @@ Issue #179 moved `phonaria.rigos.dev` onto the Worker and switched the public id
 
 ## Decision
 
-Phonaria is one application: `apps/lab`, TanStack Start on Cloudflare Workers, serving
+Phonaria is one application: `apps/phonaria`, TanStack Start on Cloudflare Workers, serving
 `phonaria.rigos.dev`. The Next.js application, its Vercel project, and its dedicated data services
 are retired rather than kept on a secondary hostname.
 
-The directory is still named `lab` and the Worker is still named `phonaria-lab` in this ADR's
-original form. Those names are leftover deployment identifiers, not a claim that a second surface
-exists. [#254](https://github.com/rigomart/phonaria/issues/254) removes them: this issue
-([#255](https://github.com/rigomart/phonaria/issues/255)) only changes language, identifiers, and
-workflow titles; later sub-issues rename packages, GitHub settings, and Worker scripts. "Lab" is
-no longer a product term — see `CONTEXT.md`.
+The application directory is `apps/phonaria` (`@phonaria/app`). The Cloudflare Worker is still
+named `phonaria-lab`; [#254](https://github.com/rigomart/phonaria/issues/254) still has to rename
+GitHub settings and Worker scripts. "Lab" is no longer a product term — see `CONTEXT.md`.
 
 ## Consequences
 
@@ -58,7 +55,7 @@ no longer a product term — see `CONTEXT.md`.
   `TRANSCRIPTION_RATE_LIMIT` binding.
 - `next-intl` and locale-prefixed routes are gone. Reintroducing a second interface language means
   choosing an i18n approach for TanStack Start, not restoring the old one.
-- Playwright now runs only as `packages/lab-contract`, against a deployed origin. There is no
+- Playwright now runs only as `packages/browser-contract`, against a deployed origin. There is no
   in-repo E2E suite that boots an application server.
 - A small set of legacy URLs redirect to their current equivalents; exhaustive legacy URL
   preservation was explicitly out of scope, and retired tools return the normal not-found page.

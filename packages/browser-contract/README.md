@@ -9,8 +9,8 @@ the only browser suite in the repository.
 ## Run
 
 ```bash
-bun --cwd packages/lab-contract e2e:install
-bun e2e:lab
+bun --cwd packages/browser-contract e2e:install
+bun e2e
 ```
 
 Default target is `cloudflare-production` (`https://phonaria.rigos.dev`).
@@ -19,10 +19,10 @@ adapter.
 
 | Command | What it does |
 | --- | --- |
-| `bun e2e:lab` | Contract against `LAB_CONTRACT_TARGET`, defaulting to Cloudflare production |
-| `bun e2e:lab:cloudflare` | Contract against Cloudflare staging (`LAB_CONTRACT_BASE_URL` + Access token) |
-| `bun e2e:lab:baseline` | Tagged page-load and transcription timing collection |
-| `LAB_CONTRACT_WRITE_BASELINE=1 bun e2e:lab:baseline` | Also write `baselines/<target>.json` |
+| `bun e2e` | Contract against `LAB_CONTRACT_TARGET`, defaulting to Cloudflare production |
+| `bun e2e:cloudflare` | Contract against Cloudflare staging (`LAB_CONTRACT_BASE_URL` + Access token) |
+| `bun e2e:baseline` | Tagged page-load and transcription timing collection |
+| `LAB_CONTRACT_WRITE_BASELINE=1 bun e2e:baseline` | Also write `baselines/<target>.json` |
 
 ## Target profiles
 
@@ -32,7 +32,7 @@ Profiles live in `targets/*.json` and are selected with `LAB_CONTRACT_TARGET`.
 | --- | --- |
 | `cloudflare-staging` | Private staging. Requires `LAB_CONTRACT_BASE_URL` and Cloudflare Access service-token env vars. Practice enabled. |
 | `cloudflare-production` | Public Cloudflare production site. Practice disabled. |
-| `local` | `http://localhost:3001`. Set `LAB_CONTRACT_START_LOCAL=1` to have Playwright start `apps/lab`. |
+| `local` | `http://localhost:3001`. Set `LAB_CONTRACT_START_LOCAL=1` to have Playwright start `apps/phonaria`. |
 
 Required fields:
 
@@ -85,4 +85,4 @@ Do not combine those samples into one median.
 2. Set `name` to the filename stem.
 3. Declare every capability. If a capability is `false`, add `skipReasons`.
 4. If the origin is not stable yet, set `requiresBaseUrlOverride: true`.
-5. Run `bun --cwd packages/lab-contract test` and the contract against that target.
+5. Run `bun --cwd packages/browser-contract test` and the contract against that target.

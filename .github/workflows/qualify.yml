@@ -29,7 +29,7 @@ on:
         default: "0"
 
 concurrency:
-  group: lab-qualify-${{ inputs.target }}
+  group: qualify-${{ inputs.target }}
   cancel-in-progress: false
 
 jobs:
@@ -65,7 +65,7 @@ jobs:
           if [ -n "$BASE_URL_INPUT" ]; then
             url="$BASE_URL_INPUT"
           elif [ "$TARGET" = "cloudflare-staging" ]; then
-            url="$(bun apps/lab/scripts/resolve-staging-origin.ts "$STAGING_URL" "$SUBDOMAIN")"
+            url="$(bun apps/phonaria/scripts/resolve-staging-origin.ts "$STAGING_URL" "$SUBDOMAIN")"
           else
             url=""
           fi
@@ -74,22 +74,22 @@ jobs:
           echo "Contract origin: ${url:-<target default>}"
 
       - name: Install Chromium
-        run: bun --cwd packages/lab-contract e2e:install
+        run: bun --cwd packages/browser-contract e2e:install
 
       - name: Run the complete browser contract
         env:
           LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
-        run: bun --cwd packages/lab-contract e2e:lab
+        run: bun --cwd packages/browser-contract e2e
 
       - name: Record performance baselines
         if: ${{ inputs.baseline }}
         env:
           LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
-        run: bun --cwd packages/lab-contract e2e:lab:baseline
+        run: bun --cwd packages/browser-contract e2e:baseline
 
       - name: Report Worker CPU and invocation outcomes
         if: ${{ inputs.worker_analytics_minutes != '0' }}
-        working-directory: apps/lab
+        working-directory: apps/phonaria
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -100,11 +100,11 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lab-qualify-${{ inputs.target }}
+          name: qualify-${{ inputs.target }}
           path: |
-            packages/lab-contract/playwright-report/
-            packages/lab-contract/test-results/
-            packages/lab-contract/baselines/${{ inputs.target }}.json
-            apps/lab/worker-analytics.log
+            packages/browser-contract/playwright-report/
+            packages/browser-contract/test-results/
+            packages/browser-contract/baselines/${{ inputs.target }}.json
+            apps/phonaria/worker-analytics.log
           if-no-files-found: ignore
           retention-days: 30

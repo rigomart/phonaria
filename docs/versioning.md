@@ -10,7 +10,7 @@ Conventional Commits → main → CI passes → manual Release workflow → Tag 
 ```
 
 1. **Development**: Work on feature branches using conventional commits.
-2. **Preview**: PRs get a protected Cloudflare preview Worker from `lab-start.yml`.
+2. **Preview**: PRs get a protected Cloudflare preview Worker from `preview.yml`.
 3. **Merge**: Merge PRs into `main`.
 4. **CI**: The `CI` workflow must pass for that `main` push.
 5. **Release**: Run the `Release` workflow from the Actions tab (manual `workflow_dispatch`).

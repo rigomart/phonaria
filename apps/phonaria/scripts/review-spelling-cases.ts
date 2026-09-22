@@ -4,8 +4,8 @@
  * the full CMUDict the server searches, and the curated top-10k the browser ranks with.
  *
  * Usage:
- *   bun --cwd apps/lab ./scripts/review-spelling-cases.ts            # the case table
- *   bun --cwd apps/lab ./scripts/review-spelling-cases.ts --sweep   # plus the sweeps
+ *   bun --cwd apps/phonaria ./scripts/review-spelling-cases.ts            # the case table
+ *   bun --cwd apps/phonaria ./scripts/review-spelling-cases.ts --sweep   # plus the sweeps
  *
  * The recorded before/after outcome lives in
  * `docs/research/issue-247-spelling-suggestion-case-review.md`.

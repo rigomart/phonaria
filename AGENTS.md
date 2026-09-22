@@ -2,9 +2,9 @@
 
 ## Project Structure & Module Organization
 - Agents can read the README for any relevant package or app to get a fast overview before making changes.
-- `apps/lab`: The Phonaria application, and the only one. TanStack Start on Vite, deployed to Cloudflare Workers at `phonaria.rigos.dev`. Routes live in `src/routes`, shared chrome in `src/components`, domain logic in `src/lib`, Practice in `src/practice`, and request-time Cloudflare adapters in `src/server/cloudflare`. Worker delivery is configured only in `wrangler.jsonc`. See `apps/lab/README.md`.
+- `apps/phonaria`: The Phonaria application, and the only one. TanStack Start on Vite, deployed to Cloudflare Workers at `phonaria.rigos.dev`. Routes live in `src/routes`, shared chrome in `src/components`, domain logic in `src/lib`, Practice in `src/practice`, and request-time Cloudflare adapters in `src/server/cloudflare`. Worker delivery is configured only in `wrangler.jsonc`. See `apps/phonaria/README.md`.
 - `packages/flags`: Env-backed feature flags (`FLAG_*`) so modules can ship dark and be enabled per environment. The app supplies them as Worker `vars`.
-- `packages/lab-contract`: Browser-level contract run with Playwright against a deployed target, selected by target profile.
+- `packages/browser-contract`: Browser-level contract run with Playwright against a deployed target, selected by target profile.
 - `packages/phonetics-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. See the package README for architecture details. Key API surface:
   - `PhonemeIpaMap` / `getIpaForPhonemeId()`: Core ID-to-IPA symbol map (language-agnostic)
   - Language-aware getters: `getConsonantArticulationRegistryForLanguage()`, `getLanguagePhonemeIds()`, `getLanguagePhonemeCount()`, etc.
@@ -25,10 +25,10 @@
 - `bun build`: Execute workspace production builds.
 - `bun lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
 - `bun check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
-- `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter @phonaria/lab test` for targeted runs.
-- `bun e2e:lab`: Run the shared browser contract against a deployed base URL (default: public Cloudflare production). See `packages/lab-contract/README.md`.
-- `bun e2e:lab:baseline`: Collect page-load and transcription latency baselines.
-- `bun --cwd packages/lab-contract e2e:install`: Install Chromium for the browser contract.
+- `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter @phonaria/app test` for targeted runs.
+- `bun e2e`: Run the shared browser contract against a deployed base URL (default: public Cloudflare production). See `packages/browser-contract/README.md`.
+- `bun e2e:baseline`: Collect page-load and transcription latency baselines.
+- `bun --cwd packages/browser-contract e2e:install`: Install Chromium for the browser contract.
 - `bun --cwd packages/audio-gen generate`: Regenerate ElevenLabs pronunciation audio (requires `ELEVENLABS_API_KEY` in `packages/audio-gen/.env`).
 - `bun --cwd packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
 - `bun --cwd packages/helper-scripts cmudict-stats`: Build CMUDict coverage statistics from the dictionary.

@@ -58,7 +58,7 @@ test.describe("Performance baselines", () => {
 
 		const outputPath = testInfo.outputPath("baseline.json");
 		writeBaselineRecord(outputPath, record);
-		await testInfo.attach("lab-contract-baseline", {
+		await testInfo.attach("browser-contract-baseline", {
 			path: outputPath,
 			contentType: "application/json",
 		});
