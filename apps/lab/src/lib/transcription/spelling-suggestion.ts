@@ -1,6 +1,6 @@
 import { tokenizeTextWithSpans } from "@/lib/g2p/text-processing";
 import { classifyEdits, type EditScript, isStrongScript } from "./spelling-edits";
-import { MAX_EDITS, type SpellingVocabulary } from "./spelling-search";
+import { MAX_EDITS, reachesTwoEdits, type SpellingVocabulary } from "./spelling-search";
 
 /**
  * The policy's numbers, in one place and passable, because the evaluation corpus has to sweep
@@ -88,6 +88,8 @@ export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion
 
 	const replacements = new Map<number, string>();
 	let scansLeft = MAX_EXPANDED_TOKENS_PER_REQUEST;
+	// One scan per distinct token: a word repeated across a paragraph is searched once.
+	const scanned = new Map<string, string[]>();
 
 	for (const { tokenIndex, candidates } of misses) {
 		const token = tokens[tokenIndex];
@@ -96,9 +98,22 @@ export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion
 		// The server searched the full dictionary one edit out; the vocabulary scan reaches
 		// the second edit. Both feed one pool, and the policy judges each candidate the same.
 		const candidatePool = new Set(candidates.map((candidate) => candidate.toLowerCase()));
-		if (weights.maxEdits > 1 && scansLeft > 0) {
-			scansLeft -= 1;
-			for (const word of vocabulary.nearWords(token)) candidatePool.add(word);
+
+		// Only tokens the scan can actually tell us something new about are charged for it.
+		// Below the two-edit length the scan would return curated words one edit out, which the
+		// server's full-dictionary search has already supplied — so it would spend the request
+		// budget to learn nothing, and a later recoverable token would be denied its search.
+		const normalized = token.toLowerCase();
+		if (weights.maxEdits > 1 && reachesTwoEdits(normalized)) {
+			const already = scanned.get(normalized);
+			if (already !== undefined) {
+				for (const word of already) candidatePool.add(word);
+			} else if (scansLeft > 0) {
+				scansLeft -= 1;
+				const found = vocabulary.nearWords(normalized);
+				scanned.set(normalized, found);
+				for (const word of found) candidatePool.add(word);
+			}
 		}
 
 		const offered = pickPlausibleNeighbour(token, [...candidatePool], vocabulary, weights);

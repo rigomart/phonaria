@@ -73,8 +73,18 @@ Per token and per request, so neither one token nor one paragraph can run away:
 | Per-token work | structural | Only lengths inside the budget are visited, and a letter-presence mask rules out most of each bucket. The curated list is a fixed 10k asset, pinned by a test, so the scan cannot grow behind the bound. |
 | `MAX_EXPANDED_TOKENS_PER_REQUEST` | 12 | A paragraph of nonsense does not become one scan per word. Earlier tokens win the budget, so the order never depends on the data. |
 
-Measured ceiling with all of them saturated: 2.1 ms warm, 4.6 ms cold, 0 added bytes.
-`classifyEdits` costs ~257 ns per call.
+Two tokens never spend the request budget: one below the two-edit length, because its scan
+could only return curated words one edit out that the server's full-dictionary search already
+supplied, and a repeat of a token already scanned. Twelve short or repeated misses therefore
+cannot deny a later `acomodate` its search.
+
+**The bound on work is derived, not sampled.** A scan reads only the length buckets inside the
+edit budget and does at most one classification per word in them, so the most any token can
+cause is the widest such window — **7,124 of the 10,000 curated words**, whatever its letters,
+since the letter mask only ever removes work. At the measured classifier cost that is ~1.2 ms
+for one scan and **~14.3 ms for a full 12-scan request, for any accepted input**. The largest
+*sampled* scan is far below it, at 0.17 ms, but a sample of selected tokens cannot establish a
+worst case and is not presented as one. Added bytes: 0.
 
 ### A per-token candidate cap was tried and removed
 
@@ -176,8 +186,8 @@ miss — so no case forces an interpretation to improve a score.
 | --- | --- | --- |
 | correct | 21 → **25** | 18 → 18 |
 | wrong | 0 → 0 | 2 → **1** |
-| missed | 4 → **0** | 3 → 4 |
-| abstained | 1 → 1 | 0 → 0 |
+| missed | 3 → **0** | 3 → 4 |
+| abstained | 2 → 1 | 0 → 0 |
 | correctly silent | 10 → 10 | 5 → 5 |
 | not offered (dictionary hit) | 4 → 4 | 7 → 7 |
 
@@ -211,12 +221,22 @@ just observed.
 curated scan finds exactly one candidate, two supplied letters and nothing contradicted, ranked
 6,777. The offer rests entirely on the absolute gate.
 
-`definatly` is the ambiguous one the ticket asked to be assessed rather than assumed.
-`defiantly` is **one** edit away; `definitely` is **two**. The nearer word loses because its
-edit reorders a consonant and nothing vouches for it, while the further one contradicts nothing
-and is ranked 1,152. Offering `defiantly` would require the learner to have made a second,
-different slip on a rarer word. Recorded as `intended: definitely`; `defiantly` is not in the
-acceptable set, and the reasoning is in the case note rather than in a threshold.
+`definatly` is the ambiguous one the ticket asked to be assessed rather than assumed, so the
+corpus does not assume. It is recorded with **`intended: null`** — silence scores as an
+abstention, and no policy is required to reach `definitely` in order to pass. What the corpus
+does refuse is `defiantly`, and the test states that as the requirement while recording the
+`definitely` offer only as the current outcome.
+
+The reasoning, which lives in the case note rather than in a threshold: `defiantly` is **one**
+edit away and `definitely` is **two**, but the nearer word's edit reorders a consonant and
+nothing vouches for the word, while the further one contradicts nothing typed and is ranked
+1,152. Offering `defiantly` would need the learner to have made a second, different slip onto a
+rarer word.
+
+Worth naming: this encoding cannot flatter the comparison, because the one-edit baseline
+**abstains** here — the #247 policy already rejects `defiantly`. Marking the case ambiguous
+moved the baseline from a miss to an abstention, which is why the tuning table above shows
+three baseline misses rather than four.
 
 ### What is still missed, and why
 

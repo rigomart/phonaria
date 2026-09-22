@@ -78,11 +78,23 @@ describe("spelling suggestion corpus", () => {
 		expect(byToken.get("reccomend")?.got).toBe("recommend");
 	});
 
-	it("reads definatly as definitely rather than as the nearer defiantly", () => {
+	it("never offers the nearer defiantly for definatly", () => {
+		// This is the requirement. `defiantly` is one edit away and a real word, so the search
+		// finds it — but the edit reorders a consonant and nothing vouches for the word.
+		// Offering it is the failure this work exists to avoid, under any policy.
 		const outcome = byToken.get("definatly");
-		// `defiantly` is the one-edit rival the old policy offered, and it is still a candidate.
 		expect(outcome?.serverCandidates).toContain("defiantly");
-		expect(outcome?.got).toBe("definitely");
+		expect(outcome?.got).not.toBe("defiantly");
+		expect(outcome?.baseline).not.toBe("defiantly");
+	});
+
+	it("records that definatly currently reaches definitely, without requiring it", () => {
+		// Not a requirement: the corpus marks this one's intent unsettled, so abstaining scores
+		// as an abstention and would pass the evaluation too. Recorded so that a later policy
+		// change has to restate what it does here rather than quietly dropping the offer.
+		expect(byToken.get("definatly")?.intended).toBeNull();
+		expect(byToken.get("definatly")?.got).toBe("definitely");
+		expect(byToken.get("definatly")?.verdict).toBe("correct");
 	});
 
 	it("still rejects the unsupported offers #247 set out to stop", () => {

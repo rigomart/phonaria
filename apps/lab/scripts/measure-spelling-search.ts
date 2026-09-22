@@ -21,6 +21,7 @@ import { classifyEdits } from "../src/lib/transcription/spelling-edits";
 import {
 	createSpellingVocabulary,
 	generateOneEditVariants,
+	MAX_EDITS,
 	MIN_LENGTH_FOR_TWO_EDITS,
 	ranksFromOrder,
 } from "../src/lib/transcription/spelling-search";
@@ -71,6 +72,22 @@ const curatedWords = Object.keys(
 const ranks = ranksFromOrder(curatedWords);
 
 console.log(`dictionary: ${dictionaryWords.size} words · curated: ${curatedWords.length} words`);
+
+// Measured first, because the derived latency ceiling is expressed in these units.
+const CLASSIFIER_PAIRS: [string, string][] = [
+	["acomodate", "accommodate"],
+	["recieve", "receive"],
+	["definatly", "definitely"],
+	["zxqvwoplmj", "receive"],
+];
+const perCallNs =
+	(timeOf(20, () => {
+		for (let run = 0; run < 10_000; run += 1) {
+			for (const [token, candidate] of CLASSIFIER_PAIRS) classifyEdits(token, candidate, 2);
+		}
+	}) /
+		(10_000 * CLASSIFIER_PAIRS.length)) *
+	1_000_000;
 
 /* ------------------------------------------------- the first edit (server) */
 
@@ -155,18 +172,55 @@ for (let length = MIN_LENGTH_FOR_TWO_EDITS; length <= 20; length += 1) {
 	}
 }
 console.log(
-	`\nWorst scan observed, over the cases above and every token length ${MIN_LENGTH_FOR_TWO_EDITS}–20: ` +
-		`${worstScanMs.toFixed(3)} ms (\`${worstToken}\`).`,
+	`\nLargest scan *sampled*, over the cases above and one vowel-heavy token per length ` +
+		`${MIN_LENGTH_FOR_TWO_EDITS}–20: ${worstScanMs.toFixed(3)} ms (\`${worstToken}\`). ` +
+		`A sample cannot establish a worst case — for that, see the derived bound below.`,
 );
 
-// The request ceiling uses that worst token, so it is a ceiling and not an average.
-const requestTokens = Array.from({ length: MAX_EXPANDED_TOKENS_PER_REQUEST }, () => worstToken);
+const sampledRequestTokens = Array.from(
+	{ length: MAX_EXPANDED_TOKENS_PER_REQUEST },
+	(_, index) => `${worstToken}${index}`,
+);
 const requestMs = timeOf(50, () => {
-	for (const token of requestTokens) vocabulary.nearWords(token);
+	for (const token of sampledRequestTokens) vocabulary.nearWords(token);
 });
 console.log(
-	`Whole-request ceiling (${MAX_EXPANDED_TOKENS_PER_REQUEST} scans, the per-request bound): ${requestMs.toFixed(2)} ms warm, ` +
-		`${(indexBuildMs + requestMs).toFixed(1)} ms cold.`,
+	`Sampled whole request (${MAX_EXPANDED_TOKENS_PER_REQUEST} distinct scans): ` +
+		`${requestMs.toFixed(2)} ms warm, ${(indexBuildMs + requestMs).toFixed(1)} ms cold.`,
+);
+
+/*
+ * The real ceiling, derived rather than sampled.
+ *
+ * A scan reads only the length buckets within the edit budget, and does at most one
+ * classification per word in them. So the most work any token can cause is the largest such
+ * window, whatever its letters — the mask filter only ever removes work, and token length
+ * beyond the longest bucket shrinks the window rather than growing it. That makes this an
+ * upper bound over every accepted input, not an observation about the ones tried.
+ */
+let widestWindow = 0;
+let widestWindowLength = 0;
+const bucketSizes = new Map<number, number>();
+for (const word of curatedWords) {
+	bucketSizes.set(word.length, (bucketSizes.get(word.length) ?? 0) + 1);
+}
+const longestWord = Math.max(...bucketSizes.keys());
+for (let length = 1; length <= longestWord + MAX_EDITS; length += 1) {
+	let window = 0;
+	for (let reach = length - MAX_EDITS; reach <= length + MAX_EDITS; reach += 1) {
+		window += bucketSizes.get(reach) ?? 0;
+	}
+	if (window > widestWindow) {
+		widestWindow = window;
+		widestWindowLength = length;
+	}
+}
+const derivedTokenMs = (widestWindow * perCallNs) / 1_000_000;
+console.log(
+	`\nDerived ceiling: the widest length window any token can read is ${widestWindow} of ` +
+		`${curatedWords.length} curated words (at length ${widestWindowLength}), so one scan is at ` +
+		`most ${derivedTokenMs.toFixed(2)} ms and a full request of ${MAX_EXPANDED_TOKENS_PER_REQUEST} ` +
+		`is at most ${(derivedTokenMs * MAX_EXPANDED_TOKENS_PER_REQUEST).toFixed(1)} ms, for any input.`,
 );
 // No result ceiling by design; the bound is the scan, so record what the pool actually reaches.
 let worstPool = 0;

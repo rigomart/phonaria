@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { damerauLevenshteinUpTo } from "./edit-distance-reference";
 import { classifyEdits, type EditScript } from "./spelling-edits";
 
 function shape(script: EditScript | null) {
@@ -81,37 +82,6 @@ describe("classifyEdits", () => {
 	});
 });
 
-/** A slow reference implementation, so the classifier's budget cannot drift from real distance. */
-function referenceDamerauLevenshtein(left: string, right: string, ceiling: number): number {
-	const rows = left.length + 1;
-	const columns = right.length + 1;
-	const table: number[][] = Array.from({ length: rows }, () => new Array<number>(columns).fill(0));
-	for (let row = 0; row < rows; row += 1) table[row][0] = row;
-	for (let column = 0; column < columns; column += 1) table[0][column] = column;
-
-	for (let row = 1; row < rows; row += 1) {
-		for (let column = 1; column < columns; column += 1) {
-			const cost = left[row - 1] === right[column - 1] ? 0 : 1;
-			let best = Math.min(
-				table[row - 1][column] + 1,
-				table[row][column - 1] + 1,
-				table[row - 1][column - 1] + cost,
-			);
-			if (
-				row > 1 &&
-				column > 1 &&
-				left[row - 1] === right[column - 2] &&
-				left[row - 2] === right[column - 1]
-			) {
-				best = Math.min(best, table[row - 2][column - 2] + 1);
-			}
-			table[row][column] = best;
-		}
-	}
-
-	return Math.min(table[left.length][right.length], ceiling + 1);
-}
-
 describe("classifyEdits against a reference distance", () => {
 	function* randomPairs(count: number) {
 		let seed = 424242;
@@ -148,7 +118,7 @@ describe("classifyEdits against a reference distance", () => {
 		const disagreements: string[] = [];
 		for (const [token, candidate] of randomPairs(4_000)) {
 			if (token === candidate || token.length === 0) continue;
-			const distance = referenceDamerauLevenshtein(token, candidate, 2);
+			const distance = damerauLevenshteinUpTo(token, candidate, 2);
 			const script = classifyEdits(token, candidate, 2);
 			const found = script === null ? null : script.edits.length;
 			if (distance <= 2 ? found !== distance : found !== null) {

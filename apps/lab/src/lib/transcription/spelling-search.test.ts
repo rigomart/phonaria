@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { damerauLevenshtein } from "./edit-distance-reference";
 import { createSpellingVocabulary, MIN_LENGTH_FOR_TWO_EDITS } from "./spelling-search";
 
 /** Ranks double as the vocabulary: the curated list is both the word set and the evidence. */
@@ -108,40 +109,9 @@ describe("createSpellingVocabulary nearWords", () => {
 		for (const token of ["acomodate", "definatly", "recieve", "seperate", "rhinocerus"]) {
 			const maxEdits = token.length >= MIN_LENGTH_FOR_TWO_EDITS ? 2 : 1;
 			const expected = words
-				.filter((word) => word !== token && withinEdits(token, word, maxEdits))
+				.filter((word) => word !== token && damerauLevenshtein(token, word) <= maxEdits)
 				.sort();
 			expect(vocabulary.nearWords(token).sort(), token).toEqual(expected);
 		}
 	});
 });
-
-/** Deliberately unoptimised: the point is to not share the search's prefilters. */
-function withinEdits(token: string, word: string, maxEdits: number): boolean {
-	const rows = token.length + 1;
-	const columns = word.length + 1;
-	const table = Array.from({ length: rows }, () => new Array<number>(columns).fill(0));
-	for (let row = 0; row < rows; row += 1) table[row][0] = row;
-	for (let column = 0; column < columns; column += 1) table[0][column] = column;
-
-	for (let row = 1; row < rows; row += 1) {
-		for (let column = 1; column < columns; column += 1) {
-			const cost = token[row - 1] === word[column - 1] ? 0 : 1;
-			let best = Math.min(
-				table[row - 1][column] + 1,
-				table[row][column - 1] + 1,
-				table[row - 1][column - 1] + cost,
-			);
-			if (
-				row > 1 &&
-				column > 1 &&
-				token[row - 1] === word[column - 2] &&
-				token[row - 2] === word[column - 1]
-			) {
-				best = Math.min(best, table[row - 2][column - 2] + 1);
-			}
-			table[row][column] = best;
-		}
-	}
-
-	return table[token.length][word.length] <= maxEdits;
-}

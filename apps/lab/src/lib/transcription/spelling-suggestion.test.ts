@@ -412,6 +412,37 @@ describe("suggestSpelling two-edit recovery", () => {
 		expect(result?.underlinedTokenIndexes).toEqual([0]);
 	});
 
+	it("does not spend the request budget on tokens too short to reach two edits", () => {
+		// A short token's scan can only return curated words one edit out, which the server has
+		// already supplied. Charging for it would deny a later recoverable token its search.
+		const shortMisses = Array.from({ length: MAX_EXPANDED_TOKENS_PER_REQUEST }, () => "cn");
+		const tokens = [...shortMisses, "acomodate"];
+
+		const result = suggestSpelling({
+			originalText: tokens.join(" "),
+			tokens,
+			misses: tokens.map((_, index) => miss(index)),
+			vocabulary: vocabulary({ accommodate: 6777 }),
+		});
+
+		expect(result?.suggestedText).toContain("accommodate");
+	});
+
+	it("scans a repeated token once rather than once per occurrence", () => {
+		// The same misspelling twelve times over is one search, so the budget survives it.
+		const repeated = Array.from({ length: MAX_EXPANDED_TOKENS_PER_REQUEST }, () => "zxqvwoplmj");
+		const tokens = [...repeated, "acomodate"];
+
+		const result = suggestSpelling({
+			originalText: tokens.join(" "),
+			tokens,
+			misses: tokens.map((_, index) => miss(index)),
+			vocabulary: vocabulary({ accommodate: 6777 }),
+		});
+
+		expect(result?.suggestedText).toContain("accommodate");
+	});
+
 	it("stops scanning once the request budget is spent", () => {
 		const filler = Array.from(
 			{ length: MAX_EXPANDED_TOKENS_PER_REQUEST },

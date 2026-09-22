@@ -27,6 +27,15 @@ const VARIANT_ALPHABET = "abcdefghijklmnopqrstuvwxyz'-";
 export const MIN_LENGTH_FOR_TWO_EDITS = 6;
 
 /**
+ * Whether a second edit is read for this token at all. The caller needs this to decide whether
+ * a scan is worth charging to the request budget: below the threshold the scan returns curated
+ * words one edit out, every one of which the server's full-dictionary search already found.
+ */
+export function reachesTwoEdits(token: string): boolean {
+	return token.length >= MIN_LENGTH_FOR_TWO_EDITS;
+}
+
+/**
  * The widest slip the feature reads. Shared with the scoring policy: if the search reached
  * further than the policy classifies, it would only ever collect candidates that get dropped.
  */
@@ -182,7 +191,7 @@ function searchIndex(index: VocabularyIndex, rawToken: string): string[] {
 	const token = rawToken.toLowerCase();
 	if (token.length === 0) return [];
 
-	const maxEdits = token.length >= MIN_LENGTH_FOR_TWO_EDITS ? MAX_EDITS : 1;
+	const maxEdits = reachesTwoEdits(token) ? MAX_EDITS : 1;
 	const tokenLetters = letterMask(token);
 	// One edit changes at most one letter on each side, so it moves at most two mask bits.
 	const maxMaskDistance = 2 * maxEdits;

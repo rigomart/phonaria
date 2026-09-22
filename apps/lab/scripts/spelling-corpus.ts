@@ -103,9 +103,9 @@ const TUNING_CASES: UnsplitCase[] = [
 	{
 		token: "definatly",
 		acceptable: ["definitely"],
-		intended: "definitely",
+		intended: null,
 		category: "two slips",
-		note: "`defiantly` is one edit away and `definitely` is two. Offering `defiantly` is wrong: it would need the learner to have made a second, different slip on a rarer word.",
+		note: "The ticket names this one ambiguous, so silence is recorded as acceptable and no policy is required to reach `definitely`. What is *not* acceptable is `defiantly`: it is the nearer word, one edit away against two, but the edit reorders a consonant and nothing vouches for the word, so offering it would need the learner to have made a second, different slip onto a rarer word. Reaching `definitely` is therefore credited, and abstaining is not penalised.",
 	},
 
 	{
