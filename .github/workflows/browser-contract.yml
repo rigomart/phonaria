@@ -31,8 +31,8 @@ jobs:
       - name: Run browser contract
         env:
           CI: true
-          LAB_CONTRACT_TARGET: ${{ inputs.target }}
-          LAB_CONTRACT_BASE_URL: ${{ secrets.LAB_CONTRACT_BASE_URL }}
+          CONTRACT_TARGET: ${{ inputs.target }}
+          CONTRACT_BASE_URL: ${{ secrets.CONTRACT_BASE_URL || secrets.LAB_CONTRACT_BASE_URL }}
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: bun e2e

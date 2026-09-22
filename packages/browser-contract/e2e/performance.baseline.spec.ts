@@ -19,6 +19,7 @@ import {
 	readCommittedBaseline,
 	writeBaselineRecord,
 } from "../src/perf";
+import { isPreferredFlagEnabled } from "../src/preferred-env";
 
 test.describe("Performance baselines", () => {
 	test("records page-load and split transcription lane timings @baseline", async ({
@@ -67,7 +68,9 @@ test.describe("Performance baselines", () => {
 		mkdirSync(latestDir, { recursive: true });
 		writeBaselineRecord(join(testInfo.project.outputDir, "baseline.json"), record);
 
-		if (process.env.LAB_CONTRACT_WRITE_BASELINE === "1") {
+		if (
+			isPreferredFlagEnabled(process.env, "CONTRACT_WRITE_BASELINE", "LAB_CONTRACT_WRITE_BASELINE")
+		) {
 			writeBaselineRecord(committedBaselinePath(target.name), record);
 		}
 

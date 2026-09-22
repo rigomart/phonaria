@@ -39,7 +39,7 @@ jobs:
       contents: read
     env:
       CI: true
-      LAB_CONTRACT_TARGET: ${{ inputs.target }}
+      CONTRACT_TARGET: ${{ inputs.target }}
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
       CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
     steps:
@@ -59,8 +59,8 @@ jobs:
         env:
           TARGET: ${{ inputs.target }}
           BASE_URL_INPUT: ${{ inputs.base_url }}
-          STAGING_URL: ${{ vars.LAB_START_STAGING_URL }}
-          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+          STAGING_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL }}
+          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN || vars.LAB_WORKERS_DEV_SUBDOMAIN }}
         run: |
           if [ -n "$BASE_URL_INPUT" ]; then
             url="$BASE_URL_INPUT"
@@ -78,13 +78,13 @@ jobs:
 
       - name: Run the complete browser contract
         env:
-          LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+          CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
         run: bun --cwd packages/browser-contract e2e
 
       - name: Record performance baselines
         if: ${{ inputs.baseline }}
         env:
-          LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+          CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
         run: bun --cwd packages/browser-contract e2e:baseline
 
       - name: Report Worker CPU and invocation outcomes

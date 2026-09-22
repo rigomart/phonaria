@@ -19,20 +19,20 @@ adapter.
 
 | Command | What it does |
 | --- | --- |
-| `bun e2e` | Contract against `LAB_CONTRACT_TARGET`, defaulting to Cloudflare production |
-| `bun e2e:cloudflare` | Contract against Cloudflare staging (`LAB_CONTRACT_BASE_URL` + Access token) |
+| `bun e2e` | Contract against `CONTRACT_TARGET`, defaulting to Cloudflare production |
+| `bun e2e:cloudflare` | Contract against Cloudflare staging (`CONTRACT_BASE_URL` + Access token) |
 | `bun e2e:baseline` | Tagged page-load and transcription timing collection |
-| `LAB_CONTRACT_WRITE_BASELINE=1 bun e2e:baseline` | Also write `baselines/<target>.json` |
+| `CONTRACT_WRITE_BASELINE=1 bun e2e:baseline` | Also write `baselines/<target>.json` |
 
 ## Target profiles
 
-Profiles live in `targets/*.json` and are selected with `LAB_CONTRACT_TARGET`.
+Profiles live in `targets/*.json` and are selected with `CONTRACT_TARGET`.
 
 | Profile | Use |
 | --- | --- |
-| `cloudflare-staging` | Private staging. Requires `LAB_CONTRACT_BASE_URL` and Cloudflare Access service-token env vars. Practice enabled. |
+| `cloudflare-staging` | Private staging. Requires `CONTRACT_BASE_URL` and Cloudflare Access service-token env vars. Practice enabled. |
 | `cloudflare-production` | Public Cloudflare production site. Practice disabled. |
-| `local` | `http://localhost:3001`. Set `LAB_CONTRACT_START_LOCAL=1` to have Playwright start `apps/phonaria`. |
+| `local` | `http://localhost:3001`. Set `CONTRACT_START_LOCAL=1` to have Playwright start `apps/phonaria`. |
 
 Required fields:
 
@@ -47,10 +47,13 @@ justification. Missing reasons fail at config load so a gap cannot pass silently
 
 ### Environment overrides
 
-- `LAB_CONTRACT_TARGET` — profile name
-- `LAB_CONTRACT_BASE_URL` — deployed origin, no trailing slash
-- `LAB_CONTRACT_CANONICAL_ORIGIN` — expected canonical origin when it differs from the request origin
-- `LAB_CONTRACT_START_LOCAL=1` — start the local application server
+Prefer the `CONTRACT_*` names. The `LAB_CONTRACT_*` names still work during the
+[#257](https://github.com/rigomart/phonaria/issues/257) cutover.
+
+- `CONTRACT_TARGET` — profile name
+- `CONTRACT_BASE_URL` — deployed origin, no trailing slash
+- `CONTRACT_CANONICAL_ORIGIN` — expected canonical origin when it differs from the request origin
+- `CONTRACT_START_LOCAL=1` — start the local application server
 - `CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` — required for `cloudflare-access` targets
 
 ## Skip policy

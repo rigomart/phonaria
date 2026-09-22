@@ -22,7 +22,8 @@ the Vite config. The approved `vite.config.ts` role is `vite.config.mts` because
 Vite 8 loads `@tanstack/react-start/plugin/vite` as ESM and this package is
 not `"type": "module"`. Cloudflare delivery is configured only in
 `wrangler.jsonc`. `deploy:staging` resolves the account-scoped origin
-from `LAB_START_STAGING_URL` or `LAB_WORKERS_DEV_SUBDOMAIN`, sets
+from `STAGING_URL` / `LAB_START_STAGING_URL` or `WORKERS_DEV_SUBDOMAIN` /
+`LAB_WORKERS_DEV_SUBDOMAIN`, sets
 `CLOUDFLARE_ENV=staging` at build time, and verifies that Vite flattened the
 Worker name to `phonaria-lab-staging` before deploying the generated config.
 Deploy the Cloudflare production Worker through the `Production` workflow.

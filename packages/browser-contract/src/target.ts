@@ -7,6 +7,7 @@ import {
 	type TargetAuthentication,
 	type TargetCapability,
 } from "./constants";
+import { isPreferredFlagEnabled, readPreferredEnv } from "./preferred-env";
 
 const TARGETS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "targets");
 
@@ -28,7 +29,8 @@ export function loadTargetFromEnv(
 	env: NodeJS.Dict<string> = process.env,
 	targetsDir = TARGETS_DIR,
 ): ContractTarget {
-	const name = env.LAB_CONTRACT_TARGET?.trim() || "cloudflare-production";
+	const name =
+		readPreferredEnv(env, "CONTRACT_TARGET", "LAB_CONTRACT_TARGET") || "cloudflare-production";
 	const available = listTargetNames(targetsDir);
 	if (!available.includes(name)) {
 		throw new TargetConfigError(
@@ -66,14 +68,21 @@ export function extraHttpHeaders(
 }
 
 function applyEnvOverrides(target: ContractTarget, env: NodeJS.Dict<string>): ContractTarget {
-	const baseUrlOverride = env.LAB_CONTRACT_BASE_URL?.trim();
-	const canonicalOverride = env.LAB_CONTRACT_CANONICAL_ORIGIN?.trim();
-	const startLocal =
-		env.LAB_CONTRACT_START_LOCAL === "1" || env.LAB_CONTRACT_START_LOCAL === "true";
+	const baseUrlOverride = readPreferredEnv(env, "CONTRACT_BASE_URL", "LAB_CONTRACT_BASE_URL");
+	const canonicalOverride = readPreferredEnv(
+		env,
+		"CONTRACT_CANONICAL_ORIGIN",
+		"LAB_CONTRACT_CANONICAL_ORIGIN",
+	);
+	const startLocal = isPreferredFlagEnabled(
+		env,
+		"CONTRACT_START_LOCAL",
+		"LAB_CONTRACT_START_LOCAL",
+	);
 
 	if (target.requiresBaseUrlOverride && !baseUrlOverride) {
 		throw new TargetConfigError(
-			`Target "${target.name}" requires LAB_CONTRACT_BASE_URL because it has no stable default origin yet.`,
+			`Target "${target.name}" requires CONTRACT_BASE_URL (or LAB_CONTRACT_BASE_URL) because it has no stable default origin yet.`,
 		);
 	}
 

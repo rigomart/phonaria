@@ -3,9 +3,9 @@
  * Build the Cloudflare workers.dev origin for a preview Worker
  * (`phonaria-lab-pr-<n>` or `phonaria-lab-staging`).
  *
- * `LAB_WORKERS_DEV_SUBDOMAIN` may be the account slug (`mirdor-dev`) or the
- * full workers.dev suffix (`mirdor-dev.workers.dev`). Always emit one
- * `*.workers.dev` hostname.
+ * `WORKERS_DEV_SUBDOMAIN` (or `LAB_WORKERS_DEV_SUBDOMAIN`) may be the account
+ * slug (`mirdor-dev`) or the full workers.dev suffix (`mirdor-dev.workers.dev`).
+ * Always emit one `*.workers.dev` hostname.
  */
 
 export function resolvePreviewOrigin(workerName: string, subdomain?: string): string {

@@ -56,6 +56,37 @@ describe("deployStaging", () => {
 		expect(commands.at(-1)?.args).not.toContain("--name");
 	});
 
+	it("prefers STAGING_URL over LAB_START_STAGING_URL from the environment", () => {
+		const commands: DeploymentCommand[] = [];
+
+		deployStaging(
+			{
+				baseEnv: {
+					STAGING_URL: "https://phonaria-lab-staging.mirdor-dev.workers.dev",
+					LAB_START_STAGING_URL: "https://phonaria-lab-staging.workers.dev",
+				},
+			},
+			(command) => commands.push(command),
+		);
+
+		expect(commands[0]?.env.SITE_URL).toBe("https://phonaria-lab-staging.mirdor-dev.workers.dev");
+	});
+
+	it("falls back to Lab-era staging env vars", () => {
+		const commands: DeploymentCommand[] = [];
+
+		deployStaging(
+			{
+				baseEnv: {
+					LAB_START_STAGING_URL: "https://phonaria-lab-staging.mirdor-dev.workers.dev",
+				},
+			},
+			(command) => commands.push(command),
+		);
+
+		expect(commands[0]?.env.SITE_URL).toBe("https://phonaria-lab-staging.mirdor-dev.workers.dev");
+	});
+
 	it.each([
 		["--name", "another-worker"],
 		["--name=another-worker"],

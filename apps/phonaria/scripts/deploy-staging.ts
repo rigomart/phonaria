@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { spawnSync } from "node:child_process";
+import { readPreferredEnv } from "./preferred-env";
 import { resolveStagingOrigin, STAGING_WORKER_NAME } from "./resolve-staging-origin";
 
 export type DeploymentCommand = {
@@ -34,7 +35,10 @@ export function deployStaging(
 		throw new Error("Worker name comes from wrangler.jsonc; --name overrides are not allowed.");
 	}
 
-	const siteUrl = resolveStagingOrigin(override, subdomain);
+	const siteUrl = resolveStagingOrigin(
+		override ?? readPreferredEnv(baseEnv, "STAGING_URL", "LAB_START_STAGING_URL"),
+		subdomain ?? readPreferredEnv(baseEnv, "WORKERS_DEV_SUBDOMAIN", "LAB_WORKERS_DEV_SUBDOMAIN"),
+	);
 	const env = {
 		...baseEnv,
 		CLOUDFLARE_ENV: "staging",
@@ -57,8 +61,6 @@ export function deployStaging(
 
 if (import.meta.main) {
 	deployStaging({
-		override: process.env.LAB_START_STAGING_URL,
-		subdomain: process.env.LAB_WORKERS_DEV_SUBDOMAIN,
 		wranglerArgs: process.argv.slice(2),
 	});
 }

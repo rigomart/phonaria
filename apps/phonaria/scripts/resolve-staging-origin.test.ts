@@ -25,7 +25,7 @@ describe("resolveStagingOrigin", () => {
 	});
 
 	it("rejects a deployment origin that lacks the account subdomain", () => {
-		expect(() => resolveStagingOrigin()).toThrow(/LAB_START_STAGING_URL/);
-		expect(() => resolveStagingOrigin("  ")).toThrow(/LAB_WORKERS_DEV_SUBDOMAIN/);
+		expect(() => resolveStagingOrigin()).toThrow(/STAGING_URL/);
+		expect(() => resolveStagingOrigin("  ")).toThrow(/WORKERS_DEV_SUBDOMAIN/);
 	});
 });

@@ -19,7 +19,7 @@ jobs:
       contents: read
     env:
       CLOUDFLARE_ENV: staging
-      SITE_URL: ${{ vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
+      SITE_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
     steps:
@@ -34,9 +34,9 @@ jobs:
       - name: Resolve staging origin
         id: staging
         env:
-          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN || vars.LAB_WORKERS_DEV_SUBDOMAIN }}
         run: |
-          url="$(bun apps/phonaria/scripts/resolve-staging-origin.ts "${{ vars.LAB_START_STAGING_URL }}" "$SUBDOMAIN")"
+          url="$(bun apps/phonaria/scripts/resolve-staging-origin.ts "${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL }}" "$SUBDOMAIN")"
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "SITE_URL=$url" >> "$GITHUB_ENV"
           echo "Staging origin: $url"
@@ -88,8 +88,8 @@ jobs:
       FLAG_PRACTICE: "1"
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      LAB_TURSO_DATABASE_URL: ${{ secrets.LAB_TURSO_DATABASE_URL }}
-      LAB_TURSO_AUTH_TOKEN: ${{ secrets.LAB_TURSO_AUTH_TOKEN }}
+      TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
+      TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
     steps:
       - name: Checkout
@@ -103,7 +103,7 @@ jobs:
       - name: Resolve preview origin
         id: origin
         env:
-          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN || vars.LAB_WORKERS_DEV_SUBDOMAIN }}
         run: |
           name="phonaria-lab-pr-${{ github.event.pull_request.number }}"
           url="$(bun apps/phonaria/scripts/resolve-preview-origin.ts "$name" "$SUBDOMAIN")"
@@ -123,22 +123,22 @@ jobs:
           workingDirectory: apps/phonaria
           command: deploy --name ${{ steps.origin.outputs.name }} --var SITE_URL:${{ steps.origin.outputs.url }}
       - name: Put Turso secrets on preview Worker
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.LAB_TURSO_DATABASE_URL != '' && env.LAB_TURSO_AUTH_TOKEN != ''
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.TURSO_DATABASE_URL != '' && env.TURSO_AUTH_TOKEN != ''
         working-directory: apps/phonaria
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          LAB_TURSO_DATABASE_URL: ${{ secrets.LAB_TURSO_DATABASE_URL }}
-          LAB_TURSO_AUTH_TOKEN: ${{ secrets.LAB_TURSO_AUTH_TOKEN }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
         run: |
-          printf '%s' "$LAB_TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name "${{ steps.origin.outputs.name }}"
-          printf '%s' "$LAB_TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name "${{ steps.origin.outputs.name }}"
+          printf '%s' "$TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name "${{ steps.origin.outputs.name }}"
+          printf '%s' "$TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name "${{ steps.origin.outputs.name }}"
       - name: Smoke Wiktionary definitions on preview
         if: env.CLOUDFLARE_API_TOKEN != ''
         env:
           CI: true
-          LAB_CONTRACT_TARGET: cloudflare-staging
-          LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+          CONTRACT_TARGET: cloudflare-staging
+          CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           if [ -z "${CF_ACCESS_CLIENT_ID}" ] || [ -z "${CF_ACCESS_CLIENT_SECRET}" ]; then
@@ -198,13 +198,13 @@ jobs:
       deployments: write
     env:
       CLOUDFLARE_ENV: staging
-      SITE_URL: ${{ vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
+      SITE_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
-      LAB_TURSO_DATABASE_URL: ${{ secrets.LAB_TURSO_DATABASE_URL }}
-      LAB_TURSO_AUTH_TOKEN: ${{ secrets.LAB_TURSO_AUTH_TOKEN }}
+      TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
+      TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -217,9 +217,9 @@ jobs:
       - name: Resolve staging origin
         id: staging
         env:
-          SUBDOMAIN: ${{ vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN || vars.LAB_WORKERS_DEV_SUBDOMAIN }}
         run: |
-          url="$(bun apps/phonaria/scripts/resolve-staging-origin.ts "${{ vars.LAB_START_STAGING_URL }}" "$SUBDOMAIN")"
+          url="$(bun apps/phonaria/scripts/resolve-staging-origin.ts "${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL }}" "$SUBDOMAIN")"
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "SITE_URL=$url" >> "$GITHUB_ENV"
           echo "Staging origin: $url"
@@ -237,14 +237,14 @@ jobs:
           workingDirectory: apps/phonaria
           command: deploy --var SITE_URL:${{ steps.staging.outputs.url }}
       - name: Put Turso secrets on staging Worker
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.LAB_TURSO_DATABASE_URL != '' && env.LAB_TURSO_AUTH_TOKEN != ''
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.TURSO_DATABASE_URL != '' && env.TURSO_AUTH_TOKEN != ''
         working-directory: apps/phonaria
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          printf '%s' "$LAB_TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria-lab-staging
-          printf '%s' "$LAB_TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria-lab-staging
+          printf '%s' "$TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria-lab-staging
+          printf '%s' "$TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria-lab-staging
       - name: Record deployed Worker metrics
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
@@ -256,8 +256,8 @@ jobs:
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CF_ACCESS_CLIENT_ID != ''
         env:
           CI: true
-          LAB_CONTRACT_TARGET: cloudflare-staging
-          LAB_CONTRACT_BASE_URL: ${{ steps.staging.outputs.url }}
+          CONTRACT_TARGET: cloudflare-staging
+          CONTRACT_BASE_URL: ${{ steps.staging.outputs.url }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           bun --cwd packages/browser-contract e2e:install
