@@ -15,9 +15,7 @@ describe("resolvePreviewOrigin", () => {
 	});
 
 	it("falls back to workers.dev when the subdomain is empty", () => {
-		expect(resolvePreviewOrigin("phonaria-pr-213")).toBe(
-			"https://phonaria-pr-213.workers.dev",
-		);
+		expect(resolvePreviewOrigin("phonaria-pr-213")).toBe("https://phonaria-pr-213.workers.dev");
 		expect(resolvePreviewOrigin("phonaria-pr-213", "  ")).toBe(
 			"https://phonaria-pr-213.workers.dev",
 		);
