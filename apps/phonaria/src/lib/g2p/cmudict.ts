@@ -1,5 +1,5 @@
 import { inArray } from "drizzle-orm";
-import { getDb, type AppDatabase } from "@/db/drizzle";
+import { type AppDatabase, getDb } from "@/db/drizzle";
 import { words } from "@/db/schema";
 import type { G2PSyllable } from "./model";
 import { syllabify } from "./syllabifier";

@@ -1,8 +1,8 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { AppProviders } from "@/components/app-providers";
-import { EnsureDocumentTitle } from "@/components/ensure-document-title";
 import { AppShell } from "@/components/app-shell";
+import { EnsureDocumentTitle } from "@/components/ensure-document-title";
 import { NotFoundContent } from "@/components/not-found-content";
 import { themeInitScript } from "@/components/theme";
 import { buildRootHead } from "@/lib/document-head";

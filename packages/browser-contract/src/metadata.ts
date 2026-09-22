@@ -1,5 +1,5 @@
 import type { APIRequestContext, APIResponse } from "@playwright/test";
-import { INDEXABLE_PATHS, type ContractTarget } from "./constants";
+import { type ContractTarget, INDEXABLE_PATHS } from "./constants";
 
 export async function fetchDocument(
 	request: APIRequestContext,

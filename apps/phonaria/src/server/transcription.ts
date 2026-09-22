@@ -1,5 +1,5 @@
 import { type DatabaseConfig, resolveDatabaseConfig } from "@/db/config";
-import { createDatabase, type AppDatabase, type LibsqlClientFactory } from "@/db/drizzle";
+import { type AppDatabase, createDatabase, type LibsqlClientFactory } from "@/db/drizzle";
 import { processWords as defaultProcessWords } from "@/lib/g2p/service";
 import type { TranscriptionWordsOutput } from "@/lib/transcription/contract";
 import { TranscriptionError, transcribeWords } from "@/lib/transcription/service";

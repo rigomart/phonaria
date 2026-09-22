@@ -4,7 +4,7 @@ vi.mock("cloudflare:workers", () => ({
 	env: {},
 }));
 
-import { type WorkerEnv, readWorkerString } from "./env";
+import { readWorkerString, type WorkerEnv } from "./env";
 
 const TRANSCRIPTION_RATE_LIMIT = { limit: async () => ({ success: true }) };
 const DEFINITION_RATE_LIMIT = { limit: async () => ({ success: true }) };

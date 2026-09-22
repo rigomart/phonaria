@@ -25,10 +25,7 @@ export function getWorkerEnv(): WorkerEnv {
 	return env;
 }
 
-export function readWorkerString(
-	bindings: WorkerEnv,
-	name: keyof WorkerEnv,
-): string | undefined {
+export function readWorkerString(bindings: WorkerEnv, name: keyof WorkerEnv): string | undefined {
 	const value = bindings[name];
 	if (typeof value !== "string") return undefined;
 	const trimmed = value.trim();

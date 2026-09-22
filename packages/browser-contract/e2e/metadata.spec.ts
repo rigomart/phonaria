@@ -62,7 +62,10 @@ test.describe("Metadata, robots, and sitemap", () => {
 		}
 	});
 
-	test("lists exactly the indexable application URLs and omits Practice", async ({ request, target }) => {
+	test("lists exactly the indexable application URLs and omits Practice", async ({
+		request,
+		target,
+	}) => {
 		const response = await request.get("/sitemap.xml");
 		expect(response.status()).toBe(200);
 		const xml = await response.text();
