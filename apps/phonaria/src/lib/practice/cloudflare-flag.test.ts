@@ -15,6 +15,14 @@ function envVarsBlock(envName: string): string {
 }
 
 describe("Cloudflare Practice flag", () => {
+	it("names Workers without Lab", () => {
+		expect(wrangler).toContain('"name": "phonaria"');
+		expect(wrangler).toContain('"name": "phonaria-staging"');
+		expect(wrangler).toContain('"name": "phonaria-preview"');
+		expect(wrangler).not.toContain('"name": "phonaria-lab"');
+		expect(wrangler).not.toContain("phonaria-lab-");
+	});
+
 	it("enables Practice on staging and preview and keeps production off", () => {
 		expect(envVarsBlock("staging")).toContain('"FLAG_PRACTICE": "1"');
 		expect(envVarsBlock("preview")).toContain('"FLAG_PRACTICE": "1"');

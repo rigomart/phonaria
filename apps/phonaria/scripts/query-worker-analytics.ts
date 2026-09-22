@@ -88,7 +88,7 @@ export function formatSummary(summary: AnalyticsSummary, scriptName: string): st
 }
 
 async function runCli(): Promise<void> {
-	const scriptName = process.argv[2] ?? "phonaria-lab";
+	const scriptName = process.argv[2] ?? "phonaria";
 	const minutes = Number(process.argv[3] ?? 30);
 	const accountTag = process.env.CLOUDFLARE_ACCOUNT_ID;
 	const token = process.env.CLOUDFLARE_API_TOKEN;

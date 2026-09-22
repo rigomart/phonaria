@@ -41,7 +41,7 @@ describe("summarize", () => {
 
 describe("formatSummary", () => {
 	it("states the guardrail alongside the measured p99", () => {
-		const text = formatSummary(summarize([{ quantiles: { cpuTimeP99: 5000 } }]), "phonaria-lab");
+		const text = formatSummary(summarize([{ quantiles: { cpuTimeP99: 5000 } }]), "phonaria");
 		expect(text).toContain("5.00 ms");
 		expect(text).toContain(`guardrail ${CPU_GUARDRAIL_MS} ms`);
 	});
@@ -49,7 +49,7 @@ describe("formatSummary", () => {
 	it("calls out failure outcomes so they cannot be skimmed past", () => {
 		const text = formatSummary(
 			summarize([{ sum: { requests: 1 }, dimensions: { status: "exceededResources" } }]),
-			"phonaria-lab",
+			"phonaria",
 		);
 		expect(text).toContain("FAILURE OUTCOMES");
 	});

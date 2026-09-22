@@ -1,6 +1,6 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "phonaria-lab",
+	"name": "phonaria",
 	"compatibility_date": "2026-09-12",
 	"compatibility_flags": ["nodejs_compat"],
 	"main": "@tanstack/react-start/server-entry",
@@ -49,7 +49,7 @@
 	// `wrangler deploy --env` is ignored once Vite writes dist/server/wrangler.json.
 	"env": {
 		"staging": {
-			"name": "phonaria-lab-staging",
+			"name": "phonaria-staging",
 			"ratelimits": [
 				{
 					"name": "TRANSCRIPTION_RATE_LIMIT",
@@ -63,13 +63,13 @@
 				}
 			],
 			"vars": {
-				"SITE_URL": "https://phonaria-lab-staging.workers.dev",
+				"SITE_URL": "https://phonaria-staging.workers.dev",
 				"SITE_INDEXING_ENABLED": "0",
 				"FLAG_PRACTICE": "1"
 			}
 		},
 		"preview": {
-			"name": "phonaria-lab-preview",
+			"name": "phonaria-preview",
 			"ratelimits": [
 				{
 					"name": "TRANSCRIPTION_RATE_LIMIT",
@@ -83,13 +83,13 @@
 				}
 			],
 			"vars": {
-				"SITE_URL": "https://phonaria-lab-preview.workers.dev",
+				"SITE_URL": "https://phonaria-preview.workers.dev",
 				"SITE_INDEXING_ENABLED": "0",
 				"FLAG_PRACTICE": "1"
 			}
 		},
 		"production": {
-			"name": "phonaria-lab",
+			"name": "phonaria",
 			"routes": [
 				{ "pattern": "phonaria.rigos.dev", "custom_domain": true },
 				{ "pattern": "phonaria-lab.rigos.dev", "custom_domain": true }

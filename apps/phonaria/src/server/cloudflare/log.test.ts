@@ -20,7 +20,7 @@ describe("logWorkerEvent", () => {
 		});
 		expect(error).toHaveBeenCalledTimes(1);
 		const payload = JSON.parse(String(error.mock.calls[0]?.[0]));
-		expect(payload.source).toBe("phonaria-lab");
+		expect(payload.source).toBe("phonaria");
 		expect(payload.details.authToken).toBe("[redacted]");
 		expect(payload.details.TURSO_DATABASE_URL).toBe("[redacted]");
 		expect(payload.details.input).toBe("[omitted]");

@@ -5,13 +5,13 @@ import { buildDevVarsContents, parseDevVars } from "./write-dev-vars";
 describe("write-dev-vars", () => {
 	it("writes public keys from the environment", () => {
 		const contents = buildDevVarsContents({
-			SITE_URL: "https://phonaria-lab-staging.example.test",
+			SITE_URL: "https://phonaria-staging.example.test",
 			FLAG_PRACTICE: "1",
 			TURSO_DATABASE_URL: "libsql://should-not-copy.turso.io",
 			TURSO_AUTH_TOKEN: "should-not-copy",
 		});
 
-		expect(contents).toContain("SITE_URL=https://phonaria-lab-staging.example.test");
+		expect(contents).toContain("SITE_URL=https://phonaria-staging.example.test");
 		expect(contents).toContain("FLAG_PRACTICE=1");
 		expect(contents).toContain(`PUBLIC_BUCKET_URL=${ASSET_BUCKET_ORIGIN}`);
 		expect(contents).not.toContain("TURSO_");

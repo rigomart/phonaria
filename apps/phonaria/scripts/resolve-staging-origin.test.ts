@@ -4,12 +4,12 @@ import { PLACEHOLDER_STAGING_ORIGIN, resolveStagingOrigin } from "./resolve-stag
 describe("resolveStagingOrigin", () => {
 	it("keeps an explicit account-scoped staging URL", () => {
 		expect(
-			resolveStagingOrigin("https://phonaria-lab-staging.mirdor-dev.workers.dev", "mirdor-dev"),
-		).toBe("https://phonaria-lab-staging.mirdor-dev.workers.dev");
+			resolveStagingOrigin("https://phonaria-staging.mirdor-dev.workers.dev", "mirdor-dev"),
+		).toBe("https://phonaria-staging.mirdor-dev.workers.dev");
 	});
 
 	it.each([
-		"phonaria-lab-staging.mirdor-dev.workers.dev",
+		"phonaria-staging.mirdor-dev.workers.dev",
 		"http://staging.example.com",
 	])("rejects an invalid explicit staging URL: %s", (override) => {
 		expect(() => resolveStagingOrigin(override, "mirdor-dev")).toThrow(/absolute HTTPS URL/);
@@ -17,10 +17,10 @@ describe("resolveStagingOrigin", () => {
 
 	it("rewrites the wrangler placeholder with the account subdomain", () => {
 		expect(resolveStagingOrigin(PLACEHOLDER_STAGING_ORIGIN, "mirdor-dev")).toBe(
-			"https://phonaria-lab-staging.mirdor-dev.workers.dev",
+			"https://phonaria-staging.mirdor-dev.workers.dev",
 		);
 		expect(resolveStagingOrigin(undefined, "mirdor-dev.workers.dev")).toBe(
-			"https://phonaria-lab-staging.mirdor-dev.workers.dev",
+			"https://phonaria-staging.mirdor-dev.workers.dev",
 		);
 	});
 

@@ -14,7 +14,7 @@ const SENSITIVE_KEY = /(token|secret|password|authorization|cookie|database|turs
  */
 export function logWorkerEvent(event: WorkerLogEvent): void {
 	const payload = {
-		source: "phonaria-lab",
+		source: "phonaria",
 		level: event.level,
 		message: event.message,
 		details: event.details ? sanitizeDetails(event.details) : undefined,

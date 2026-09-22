@@ -8,19 +8,19 @@ import {
 } from "./assert-production-custom-domain";
 
 function writeConfig(config: unknown): string {
-	const configPath = join(mkdtempSync(join(tmpdir(), "lab-routes-")), "wrangler.json");
+	const configPath = join(mkdtempSync(join(tmpdir(), "wrangler-routes-")), "wrangler.json");
 	writeFileSync(configPath, JSON.stringify(config));
 	return configPath;
 }
 
 describe("readGeneratedRoutes", () => {
 	it("treats an absent routes key as no routes", () => {
-		expect(readGeneratedRoutes(writeConfig({ name: "phonaria-lab" }))).toEqual([]);
+		expect(readGeneratedRoutes(writeConfig({ name: "phonaria" }))).toEqual([]);
 	});
 
 	it("reads custom-domain route objects", () => {
 		const configPath = writeConfig({
-			name: "phonaria-lab",
+			name: "phonaria",
 			routes: [
 				{ pattern: "phonaria.rigos.dev", custom_domain: true },
 				{ pattern: "phonaria-lab.rigos.dev", custom_domain: true },
@@ -65,7 +65,7 @@ describe("assertProductionCustomDomain", () => {
 	it("rejects missing and extra routes", () => {
 		expect(() =>
 			assertProductionCustomDomain([{ pattern: "phonaria.rigos.dev", custom_domain: true }]),
-		).toThrow(/phonaria-lab\.rigos\.dev/);
+		).toThrow(/phonaria\.rigos\.dev/);
 		expect(() =>
 			assertProductionCustomDomain([
 				{ pattern: "phonaria.rigos.dev", custom_domain: true },

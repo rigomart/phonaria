@@ -14,7 +14,7 @@ describe("deployStaging", () => {
 			(command) => commands.push(command),
 		);
 
-		const siteUrl = "https://phonaria-lab-staging.mirdor-dev.workers.dev";
+		const siteUrl = "https://phonaria-staging.mirdor-dev.workers.dev";
 		expect(commands).toEqual([
 			{
 				command: "bun",
@@ -36,7 +36,7 @@ describe("deployStaging", () => {
 			},
 			{
 				command: "bun",
-				args: ["./scripts/assert-generated-worker-name.ts", "phonaria-lab-staging"],
+				args: ["./scripts/assert-generated-worker-name.ts", "phonaria-staging"],
 				env: {
 					SITE_INDEXING_ENABLED: "0",
 					CLOUDFLARE_ENV: "staging",
@@ -62,14 +62,14 @@ describe("deployStaging", () => {
 		deployStaging(
 			{
 				baseEnv: {
-					STAGING_URL: "https://phonaria-lab-staging.mirdor-dev.workers.dev",
-					LAB_START_STAGING_URL: "https://phonaria-lab-staging.workers.dev",
+					STAGING_URL: "https://phonaria-staging.mirdor-dev.workers.dev",
+					LAB_START_STAGING_URL: "https://phonaria-staging.workers.dev",
 				},
 			},
 			(command) => commands.push(command),
 		);
 
-		expect(commands[0]?.env.SITE_URL).toBe("https://phonaria-lab-staging.mirdor-dev.workers.dev");
+		expect(commands[0]?.env.SITE_URL).toBe("https://phonaria-staging.mirdor-dev.workers.dev");
 	});
 
 	it("falls back to Lab-era staging env vars", () => {
@@ -78,13 +78,13 @@ describe("deployStaging", () => {
 		deployStaging(
 			{
 				baseEnv: {
-					LAB_START_STAGING_URL: "https://phonaria-lab-staging.mirdor-dev.workers.dev",
+					LAB_START_STAGING_URL: "https://phonaria-staging.mirdor-dev.workers.dev",
 				},
 			},
 			(command) => commands.push(command),
 		);
 
-		expect(commands[0]?.env.SITE_URL).toBe("https://phonaria-lab-staging.mirdor-dev.workers.dev");
+		expect(commands[0]?.env.SITE_URL).toBe("https://phonaria-staging.mirdor-dev.workers.dev");
 	});
 
 	it.each([
