@@ -1,14 +1,15 @@
 import { describe, expect, it } from "vitest";
+import { createSpellingVocabulary, type SpellingVocabulary } from "./spelling-search";
 import {
-	createSpellingFrequency,
 	getVisibleSpellingSuggestion,
-	type SpellingFrequency,
+	MAX_EXPANDED_TOKENS_PER_REQUEST,
 	type SpellingSuggestion,
 	suggestSpelling,
 } from "./spelling-suggestion";
 
-function frequency(ranksByWord: Record<string, number>): SpellingFrequency {
-	return createSpellingFrequency(ranksByWord);
+/** The ranks double as the searchable vocabulary, exactly as the curated list does. */
+function vocabulary(ranksByWord: Record<string, number>): SpellingVocabulary {
+	return createSpellingVocabulary(ranksByWord);
 }
 
 /** One dictionary miss, as the server reports it. */
@@ -30,7 +31,7 @@ describe("suggestSpelling", () => {
 			originalText: "recieve",
 			tokens: ["recieve"],
 			misses: [miss(0, "receive")],
-			frequency: frequency({ receive: 1484 }),
+			vocabulary: vocabulary({ receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -44,7 +45,7 @@ describe("suggestSpelling", () => {
 			originalText: "teh",
 			tokens: ["teh"],
 			misses: [miss(0, "the", "ten", "tea")],
-			frequency: frequency({ the: 0, ten: 948, tea: 1910 }),
+			vocabulary: vocabulary({ the: 0, ten: 948, tea: 1910 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -58,7 +59,7 @@ describe("suggestSpelling", () => {
 			originalText: "frm",
 			tokens: ["frm"],
 			misses: [miss(0, "from", "form", "farm")],
-			frequency: frequency({ from: 25, form: 30, farm: 40 }),
+			vocabulary: vocabulary({ from: 25, form: 30, farm: 40 }),
 		});
 
 		expect(result).toBeNull();
@@ -69,7 +70,7 @@ describe("suggestSpelling", () => {
 			originalText: "from",
 			tokens: ["from"],
 			misses: [],
-			frequency: frequency({ from: 25, form: 479 }),
+			vocabulary: vocabulary({ from: 25, form: 479 }),
 		});
 
 		expect(result).toBeNull();
@@ -80,7 +81,7 @@ describe("suggestSpelling", () => {
 			originalText: "hello recieve",
 			tokens: ["hello", "recieve"],
 			misses: [miss(1, "receive")],
-			frequency: frequency({ hello: 1929, receive: 1484 }),
+			vocabulary: vocabulary({ hello: 1929, receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -98,7 +99,7 @@ describe("suggestSpelling", () => {
 			originalText: "Hello, recieve!",
 			tokens: ["Hello", "recieve"],
 			misses: [miss(1, "receive")],
-			frequency: frequency({ hello: 1929, receive: 1484 }),
+			vocabulary: vocabulary({ hello: 1929, receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -112,7 +113,7 @@ describe("suggestSpelling", () => {
 			originalText: "Recieve",
 			tokens: ["Recieve"],
 			misses: [miss(0, "receive")],
-			frequency: frequency({ receive: 1484 }),
+			vocabulary: vocabulary({ receive: 1484 }),
 		});
 
 		expect(result?.suggestedText).toBe("Receive");
@@ -123,7 +124,7 @@ describe("suggestSpelling", () => {
 			originalText: "RECIEVE",
 			tokens: ["RECIEVE"],
 			misses: [miss(0, "receive")],
-			frequency: frequency({ receive: 1484 }),
+			vocabulary: vocabulary({ receive: 1484 }),
 		});
 
 		expect(result?.suggestedText).toBe("RECEIVE");
@@ -134,7 +135,7 @@ describe("suggestSpelling", () => {
 			originalText: "teh recieve",
 			tokens: ["teh", "recieve"],
 			misses: [miss(0, "the", "ten", "tea"), miss(1, "receive")],
-			frequency: frequency({ the: 0, ten: 948, tea: 1910, receive: 1484 }),
+			vocabulary: vocabulary({ the: 0, ten: 948, tea: 1910, receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -148,7 +149,7 @@ describe("suggestSpelling", () => {
 			originalText: "zxqvwoplmj",
 			tokens: ["zxqvwoplmj"],
 			misses: [miss(0)],
-			frequency: frequency({ the: 0, receive: 1484, hello: 1929 }),
+			vocabulary: vocabulary({ the: 0, receive: 1484, hello: 1929 }),
 		});
 
 		expect(result).toBeNull();
@@ -159,7 +160,7 @@ describe("suggestSpelling", () => {
 			originalText: "zxqvwoplmj recieve",
 			tokens: ["zxqvwoplmj", "recieve"],
 			misses: [miss(0), miss(1, "receive")],
-			frequency: frequency({ receive: 1484 }),
+			vocabulary: vocabulary({ receive: 1484 }),
 		});
 
 		expect(offerOf(result)).toEqual({
@@ -173,7 +174,7 @@ describe("suggestSpelling", () => {
 			originalText: "recceive",
 			tokens: ["recceive"],
 			misses: [miss(0, "receive")],
-			frequency: frequency({ receive: 1484 }),
+			vocabulary: vocabulary({ receive: 1484 }),
 		});
 
 		expect(result?.suggestedText).toBe("receive");
@@ -184,7 +185,7 @@ describe("suggestSpelling", () => {
 			originalText: "receve",
 			tokens: ["receve"],
 			misses: [miss(0, "receive")],
-			frequency: frequency({ receive: 1484 }),
+			vocabulary: vocabulary({ receive: 1484 }),
 		});
 
 		expect(result?.suggestedText).toBe("receive");
@@ -195,7 +196,7 @@ describe("suggestSpelling", () => {
 			originalText: "recieve",
 			tokens: ["recieve"],
 			misses: [miss(0, "receive", "relieve")],
-			frequency: frequency({ receive: 1484, relieve: 9944 }),
+			vocabulary: vocabulary({ receive: 1484, relieve: 9944 }),
 		});
 
 		expect(result?.suggestedText).toBe("receive");
@@ -206,7 +207,7 @@ describe("suggestSpelling", () => {
 			originalText: "dont",
 			tokens: ["dont"],
 			misses: [miss(0, "don't", "done", "don")],
-			frequency: frequency({ "don't": 67, done: 229, don: 2461 }),
+			vocabulary: vocabulary({ "don't": 67, done: 229, don: 2461 }),
 		});
 
 		expect(result?.suggestedText).toBe("don't");
@@ -217,7 +218,7 @@ describe("suggestSpelling", () => {
 			originalText: "",
 			tokens: [],
 			misses: [],
-			frequency: frequency({ the: 0 }),
+			vocabulary: vocabulary({ the: 0 }),
 		});
 
 		expect(result).toBeNull();
@@ -231,7 +232,8 @@ describe("suggestSpelling plausibility", () => {
 			originalText: token,
 			tokens: [token],
 			misses: [miss(0, candidate)],
-			frequency: frequency(ranks),
+			// The candidate is named as a server miss, so the vocabulary only supplies ranks here.
+			vocabulary: vocabulary(ranks),
 		});
 		return result?.suggestedText ?? null;
 	}
@@ -275,7 +277,8 @@ describe("suggestSpelling plausibility", () => {
 		expect(soleOffer("reciv", "recio", { recio: 4000 })).toBe("recio");
 	});
 
-	it("ignores a candidate that is more than one slip from the token", () => {
+	it("rejects a two-edit candidate when one of the edits guesses at a consonant", () => {
+		// `fone` → `phone` is an omitted `h` plus an `f` for a `p`: the second edit is a guess.
 		expect(soleOffer("fone", "phone", { phone: 200 })).toBeNull();
 	});
 
@@ -285,7 +288,7 @@ describe("suggestSpelling plausibility", () => {
 			originalText: "teh",
 			tokens: ["teh"],
 			misses: [miss(0, "the", "tec")],
-			frequency: frequency({ the: 9000 }),
+			vocabulary: vocabulary({ the: 9000 }),
 		});
 
 		expect(result?.suggestedText).toBe("the");
@@ -296,7 +299,7 @@ describe("suggestSpelling plausibility", () => {
 			originalText: "wrk",
 			tokens: ["wrk"],
 			misses: [miss(0, "wark", "werk")],
-			frequency: frequency({}),
+			vocabulary: vocabulary({}),
 		});
 
 		expect(result).toBeNull();
@@ -320,5 +323,133 @@ describe("getVisibleSpellingSuggestion", () => {
 
 	it("hides the rewrite while a transcription is in flight", () => {
 		expect(getVisibleSpellingSuggestion(suggestion, null, true)).toBeNull();
+	});
+});
+
+/** Everything here arrives from the vocabulary scan: the misses carry no candidates. */
+describe("suggestSpelling two-edit recovery", () => {
+	function offerFor(token: string, ranks: Record<string, number>) {
+		const result = suggestSpelling({
+			originalText: token,
+			tokens: [token],
+			misses: [miss(0)],
+			vocabulary: vocabulary(ranks),
+		});
+		return result?.suggestedText ?? null;
+	}
+
+	it("offers accommodate for acomodate", () => {
+		expect(offerFor("acomodate", { accommodate: 6777 })).toBe("accommodate");
+	});
+
+	it("offers definitely for definatly rather than the nearer defiantly", () => {
+		// `defiantly` is nearer, but reorders a consonant and nothing vouches for it.
+		expect(offerFor("definatly", { definitely: 1152 })).toBe("definitely");
+		expect(offerFor("definatly", { definitely: 1152, defiantly: 9_000 })).toBe("definitely");
+	});
+
+	it("refuses a two-edit candidate the curated list says nothing about", () => {
+		// Two edits with no frequency evidence is a search for anything nearby.
+		expect(offerFor("acomodate", {})).toBeNull();
+	});
+
+	it("refuses a two-edit candidate when only one of the edits is strong", () => {
+		// A dropped doubled `u` contradicts nothing, but `k` for `c` guesses at a consonant.
+		expect(offerFor("kompuuter", { computer: 1_500 })).toBeNull();
+	});
+
+	it("keeps a one-edit reading ahead of a two-edit rival of similar frequency", () => {
+		// Undiscounted, `received` would deny `receive` its lead and silence the offer.
+		expect(offerFor("recieve", { received: 1_000, receive: 1_484 })).toBe("receive");
+	});
+
+	it("gives way when a two-edit reading is far more common than the one-edit rival", () => {
+		expect(offerFor("recieve", { received: 5, receive: 9_000 })).toBe("received");
+	});
+
+	it("does not reach two edits for a token too short to bound them", () => {
+		// Every short word neighbours every other, so two edits out settles nothing.
+		expect(offerFor("cn", { coin: 2_000 })).toBeNull();
+	});
+
+	it("stays silent when two strong two-edit readings are comparably common", () => {
+		// `probly` reads as `probably` (two omitted letters) or `problem`; nothing settles it.
+		expect(offerFor("probly", { problem: 381, probably: 415 })).toBeNull();
+	});
+
+	it("judges every rival in a crowded field rather than a truncated sample", () => {
+		// A crowded field of comparably common rivals: the policy must see it all and abstain.
+		const crowd: Record<string, number> = {};
+		for (let letter = 0; letter < 26; letter += 1) {
+			const replacement = String.fromCodePoint(97 + letter);
+			if (replacement === "b") continue;
+			crowd[`bbbbb${replacement}`] = 100 + letter;
+		}
+
+		expect(offerFor("bbbbbb", crowd)).toBeNull();
+	});
+
+	it("bounds how many tokens one request may scan", () => {
+		const tokens = Array.from(
+			{ length: MAX_EXPANDED_TOKENS_PER_REQUEST + 1 },
+			(_, index) => `acomodate${"x".repeat(index)}`,
+		);
+		// Only the first is a real slip; the rest exist to spend the budget.
+		const result = suggestSpelling({
+			originalText: tokens.join(" "),
+			tokens,
+			misses: tokens.map((_, index) => miss(index)),
+			vocabulary: vocabulary({ accommodate: 6777 }),
+		});
+
+		expect(result?.underlinedTokenIndexes).toEqual([0]);
+	});
+
+	it("does not spend the request budget on tokens too short to reach two edits", () => {
+		// Charging short tokens would deny a later recoverable token its search.
+		const shortMisses = Array.from({ length: MAX_EXPANDED_TOKENS_PER_REQUEST }, () => "cn");
+		const tokens = [...shortMisses, "acomodate"];
+
+		const result = suggestSpelling({
+			originalText: tokens.join(" "),
+			tokens,
+			misses: tokens.map((_, index) => miss(index)),
+			vocabulary: vocabulary({ accommodate: 6777 }),
+		});
+
+		expect(result?.suggestedText).toContain("accommodate");
+	});
+
+	it("scans a repeated token once rather than once per occurrence", () => {
+		// The same misspelling twelve times over is one search, so the budget survives it.
+		const repeated = Array.from({ length: MAX_EXPANDED_TOKENS_PER_REQUEST }, () => "zxqvwoplmj");
+		const tokens = [...repeated, "acomodate"];
+
+		const result = suggestSpelling({
+			originalText: tokens.join(" "),
+			tokens,
+			misses: tokens.map((_, index) => miss(index)),
+			vocabulary: vocabulary({ accommodate: 6777 }),
+		});
+
+		expect(result?.suggestedText).toContain("accommodate");
+	});
+
+	it("stops scanning once the request budget is spent", () => {
+		const filler = Array.from(
+			{ length: MAX_EXPANDED_TOKENS_PER_REQUEST },
+			(_, index) => `zxqvwoplmj${"x".repeat(index)}`,
+		);
+		const tokens = [...filler, "acomodate"];
+
+		// The recoverable token is last, so every scan was spent before reaching it.
+		const result = suggestSpelling({
+			originalText: tokens.join(" "),
+			tokens,
+			misses: tokens.map((_, index) => miss(index)),
+			vocabulary: vocabulary({ accommodate: 6777 }),
+		});
+
+		expect(result).toBeNull();
 	});
 });

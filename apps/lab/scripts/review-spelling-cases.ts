@@ -1,291 +1,457 @@
 #!/usr/bin/env bun
 /**
- * Runs the labeled spelling-suggestion review cases against the real repository data:
- * the full CMUDict the server searches, and the curated top-10k the browser ranks with.
+ * Runs the spelling-suggestion evaluation corpus against the real repository data: the full
+ * CMUDict the server searches, and the curated top-10k the browser ranks and scans.
  *
  * Usage:
- *   bun --cwd apps/lab ./scripts/review-spelling-cases.ts            # the case table
+ *   bun --cwd apps/lab ./scripts/review-spelling-cases.ts           # the case tables
  *   bun --cwd apps/lab ./scripts/review-spelling-cases.ts --sweep   # plus the sweeps
+ *   bun --cwd apps/lab ./scripts/review-spelling-cases.ts --tune    # plus threshold sweeps
  *
- * The recorded before/after outcome lives in
- * `docs/research/issue-247-spelling-suggestion-case-review.md`.
+ * `--tune` reads the tuning split only. The recorded outcome lives in
+ * `docs/research/issue-248-two-edit-spelling-suggestions.md`.
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadSpellingFrequency } from "../src/lib/transcription/spelling-frequency";
 import {
-	generateOneSlipVariants,
-	type SpellingFrequency,
+	createSpellingVocabulary,
+	generateOneEditVariants,
+	ranksFromOrder,
+	type SpellingVocabulary,
+} from "../src/lib/transcription/spelling-search";
+import {
+	DEFAULT_SUGGESTION_WEIGHTS,
+	pickPlausibleNeighbour,
+	type SuggestionWeights,
 	suggestSpelling,
 } from "../src/lib/transcription/spelling-suggestion";
+import {
+	CORPUS_CASES,
+	type CorpusCase,
+	type CorpusSplit,
+	type Verdict,
+	verdictFor,
+} from "./spelling-corpus";
 
 /**
  * The server searches CMUDict through Turso, which is seeded from this file. It has no
  * package export, so the offline review reads it directly.
  */
-const PREVIOUS_LEAD_RATIO = 3;
-const BEYOND_CURATED_RANK = 10_000;
-
 const CMUDICT_PATH = resolve(
 	import.meta.dirname,
 	"../../../packages/phonetics-data/data/en/dict/cmudict.json",
 );
-
-type ReviewGroup =
-	| "common typo"
-	| "obscure neighbour"
-	| "short ambiguous"
-	| "name"
-	| "unknown word"
-	| "contraction"
-	| "uncommon valid"
-	| "dictionary hit";
-
-export interface ReviewCase {
-	token: string;
-	/** The correction a learner would find useful, or null when silence is the right answer. */
-	want: string | null;
-	group: ReviewGroup;
-}
+const CURATED_10K_PATH = resolve(
+	import.meta.dirname,
+	"../../../packages/phonetics-data/data/en/curated/top-10k.json",
+);
 
 /**
- * The reviewed set. `dictionary hit` tokens are listed to confirm they never reach
- * suggestion at all: CMUDict already knows them, so they are not unknown-word fixtures.
+ * The one-edit policy shipped at `46a82cf`, as the baseline this change is measured against.
+ * It read a single slip only, and discounted neither weak patterns nor a second edit — which
+ * is exactly `maxEdits: 1` with both weights at 1.
  */
-export const REVIEW_CASES: ReviewCase[] = [
-	{ token: "recieve", want: "receive", group: "common typo" },
-	{ token: "teh", want: "the", group: "common typo" },
-	{ token: "receve", want: "receive", group: "common typo" },
-	{ token: "recceive", want: "receive", group: "common typo" },
-	{ token: "seperate", want: "separate", group: "common typo" },
-	{ token: "occured", want: "occurred", group: "common typo" },
-	{ token: "becuase", want: "because", group: "common typo" },
-	{ token: "adress", want: "address", group: "common typo" },
-	{ token: "wnat", want: "want", group: "common typo" },
-	{ token: "thnik", want: "think", group: "common typo" },
-	{ token: "alwasy", want: "always", group: "common typo" },
-	{ token: "becomming", want: "becoming", group: "common typo" },
+export const ONE_EDIT_BASELINE: SuggestionWeights = {
+	...DEFAULT_SUGGESTION_WEIGHTS,
+	maxEdits: 1,
+	weakPattern: 1,
+	twoEdit: 1,
+};
 
-	{ token: "reciv", want: null, group: "obscure neighbour" },
-	{ token: "langwidge", want: null, group: "obscure neighbour" },
-	{ token: "definatly", want: null, group: "obscure neighbour" },
-
-	{ token: "frm", want: "from", group: "short ambiguous" },
-	{ token: "bg", want: null, group: "short ambiguous" },
-	{ token: "cn", want: null, group: "short ambiguous" },
-	{ token: "wrk", want: "work", group: "short ambiguous" },
-
-	{ token: "sanjeev", want: null, group: "name" },
-	{ token: "kowalevski", want: null, group: "name" },
-	{ token: "rigomart", want: null, group: "name" },
-
-	{ token: "zxqvwoplmj", want: null, group: "unknown word" },
-	{ token: "blorptastic", want: null, group: "unknown word" },
-	{ token: "flumoxinate", want: null, group: "unknown word" },
-
-	{ token: "dont", want: "don't", group: "contraction" },
-	{ token: "isnt", want: "isn't", group: "contraction" },
-	{ token: "doesnt", want: "doesn't", group: "contraction" },
-	{ token: "wouldnt", want: "wouldn't", group: "contraction" },
-
-	{ token: "aardvrk", want: "aardvark", group: "uncommon valid" },
-	{ token: "zucchinni", want: "zucchini", group: "uncommon valid" },
-	{ token: "rhinocerus", want: "rhinoceros", group: "uncommon valid" },
-	{ token: "asparagas", want: "asparagus", group: "uncommon valid" },
-	{ token: "wierdness", want: "weirdness", group: "uncommon valid" },
-
-	{ token: "fone", want: null, group: "dictionary hit" },
-	{ token: "nite", want: null, group: "dictionary hit" },
-	{ token: "alot", want: null, group: "dictionary hit" },
-	{ token: "thier", want: null, group: "dictionary hit" },
-];
+/** What this change ships. Imported, never restated, so a sweep cannot drift from the app. */
+export const SHIPPED_POLICY: SuggestionWeights = DEFAULT_SUGGESTION_WEIGHTS;
 
 export interface ReviewData {
 	/** Every word the pronunciation dictionary knows, lowercased. */
 	pronunciationWords: Set<string>;
-	frequency: SpellingFrequency;
+	vocabulary: SpellingVocabulary;
 }
 
 export async function loadReviewData(): Promise<ReviewData> {
 	const cmudict = JSON.parse(readFileSync(CMUDICT_PATH, "utf8")) as {
 		data: Record<string, unknown>;
 	};
+	const curated = JSON.parse(readFileSync(CURATED_10K_PATH, "utf8")) as {
+		words: Record<string, unknown>;
+	};
 	return {
 		pronunciationWords: new Set(Object.keys(cmudict.data).map((word) => word.toLowerCase())),
-		frequency: await loadSpellingFrequency(),
+		vocabulary: createSpellingVocabulary(ranksFromOrder(Object.keys(curated.words))),
 	};
 }
 
-export interface ReviewOutcome extends ReviewCase {
-	/** True when CMUDict already knows the token, so suggestion is never reached. */
-	dictionaryHit: boolean;
-	/** The candidates the server lookup would attach to the token. */
-	candidates: string[];
-	got: string | null;
-	/** What the policy at `3cc4464` offered, for the recorded before column. */
-	before: string | null;
-	verdict: "correct" | "correctly silent" | "wrong" | "missed" | "not offered";
+/** The candidates the server's one-edit neighbour search attaches to a missed token. */
+export function serverCandidatesFor(token: string, data: ReviewData): string[] {
+	return generateOneEditVariants(token).filter((variant) => data.pronunciationWords.has(variant));
 }
 
 /**
- * The policy shipped at `3cc4464`, frozen here so the recorded before column and the
- * sweep comparison stay reproducible. Any unique candidate was offered unconditionally.
+ * One token through the shipped policy under the given weights.
+ *
+ * Only the candidate pool is assembled here — the judging is `pickPlausibleNeighbour` itself,
+ * so a swept threshold measures the code that ships rather than a second implementation of it.
+ * The pool is the script's business because the baseline has to be reproduced by withholding
+ * the curated scan, which is a retrieval decision rather than a policy one.
  */
-export function previousPolicyPick(candidates: string[], frequency: SpellingFrequency) {
-	if (candidates.length === 0) return null;
-	if (candidates.length === 1) return candidates[0] ?? null;
-
-	const scored = candidates
-		.map((word) => ({ word, score: 1 / ((frequency.rank(word) ?? BEYOND_CURATED_RANK) + 1) }))
-		.sort((left, right) => right.score - left.score || left.word.localeCompare(right.word));
-	const [leader, runnerUp] = scored;
-	if (leader === undefined || runnerUp === undefined) return null;
-	return leader.score >= PREVIOUS_LEAD_RATIO * runnerUp.score ? leader.word : null;
+export function pickUnderPolicy(
+	token: string,
+	data: ReviewData,
+	weights: SuggestionWeights,
+): string | null {
+	const candidatePool = new Set(serverCandidatesFor(token, data));
+	if (weights.maxEdits > 1) {
+		for (const word of data.vocabulary.nearWords(token)) candidatePool.add(word);
+	}
+	return pickPlausibleNeighbour(token, [...candidatePool], data.vocabulary, weights);
 }
 
-function reviewCase(reviewCase: ReviewCase, data: ReviewData): ReviewOutcome {
-	const { token, want } = reviewCase;
-	const dictionaryHit = data.pronunciationWords.has(token.toLowerCase());
+export interface ReviewOutcome extends CorpusCase {
+	/** True when CMUDict already knows the token, so suggestion is never reached. */
+	dictionaryHit: boolean;
+	serverCandidates: string[];
+	/** Words only the curated two-edit scan reaches. */
+	scanCandidates: string[];
+	baseline: string | null;
+	got: string | null;
+	verdict: Verdict;
+	baselineVerdict: Verdict;
+}
+
+function reviewCase(entry: CorpusCase, data: ReviewData): ReviewOutcome {
+	const dictionaryHit = data.pronunciationWords.has(entry.token.toLowerCase());
 	if (dictionaryHit) {
+		// Suggestion is never reached for a word CMUDict knows, so there is nothing to search
+		// and nothing to judge. `verdictFor` is still the one place a verdict is decided.
 		return {
-			...reviewCase,
+			...entry,
 			dictionaryHit,
-			candidates: [],
+			serverCandidates: [],
+			scanCandidates: [],
+			baseline: null,
 			got: null,
-			before: null,
-			verdict: "not offered",
+			verdict: verdictFor(entry, null, true),
+			baselineVerdict: verdictFor(entry, null, true),
 		};
 	}
 
-	const candidates = candidatesFor(token, data);
-	const suggestion = suggestSpelling({
-		originalText: token,
-		tokens: [token],
-		misses: [{ tokenIndex: 0, candidates }],
-		frequency: data.frequency,
-	});
-	const got = suggestion?.suggestedText ?? null;
+	const serverCandidates = serverCandidatesFor(entry.token, data);
+	const serverSet = new Set(serverCandidates);
+	const scanCandidates = data.vocabulary
+		.nearWords(entry.token)
+		.filter((word) => !serverSet.has(word));
 
-	let verdict: ReviewOutcome["verdict"];
-	if (got === want) verdict = want === null ? "correctly silent" : "correct";
-	else if (got === null) verdict = "missed";
-	else verdict = "wrong";
+	// The shipped path, through the real module, not the parameterised copy.
+	const got =
+		suggestSpelling({
+			originalText: entry.token,
+			tokens: [entry.token],
+			misses: [{ tokenIndex: 0, candidates: serverCandidates }],
+			vocabulary: data.vocabulary,
+		})?.suggestedText ?? null;
+	const baseline = pickUnderPolicy(entry.token, data, ONE_EDIT_BASELINE);
 
-	const before = previousPolicyPick(candidates, data.frequency);
-	return { ...reviewCase, dictionaryHit, candidates, got, before, verdict };
-}
-
-/** The candidates the server's neighbour search attaches to a missed token. */
-export function candidatesFor(token: string, data: ReviewData): string[] {
-	return generateOneSlipVariants(token).filter((variant) => data.pronunciationWords.has(variant));
+	return {
+		...entry,
+		dictionaryHit,
+		serverCandidates,
+		scanCandidates,
+		baseline,
+		got,
+		verdict: verdictFor(entry, got, dictionaryHit),
+		baselineVerdict: verdictFor(entry, baseline, dictionaryHit),
+	};
 }
 
 export function runReview(data: ReviewData): ReviewOutcome[] {
-	return REVIEW_CASES.map((entry) => reviewCase(entry, data));
+	return CORPUS_CASES.map((entry) => reviewCase(entry, data));
 }
 
-/**
- * Decision support for the recorded sweep table, not a benchmark. Corrupts real dictionary
- * words with one slip and keeps the cases that miss CMUDict, so they reach suggestion.
- */
-function runSweeps(data: ReviewData): void {
-	// Seeded so the recorded numbers can be reproduced exactly.
-	let seed = 20260920;
-	function random(): number {
-		seed = (seed * 1664525 + 1013904223) % 4294967296;
-		return seed / 4294967296;
-	}
-	const pick = <T>(list: T[]): T => list[Math.floor(random() * list.length)] as T;
-	const letters = [..."abcdefghijklmnopqrstuvwxyz"];
+const VERDICT_ORDER: Verdict[] = [
+	"correct",
+	"wrong",
+	"missed",
+	"abstained",
+	"correctly silent",
+	"not offered",
+];
 
-	function corrupt(word: string): string | null {
-		const index = Math.floor(random() * word.length);
-		switch (pick(["drop", "double", "swap", "typo"])) {
-			case "drop":
-				return word.slice(0, index) + word.slice(index + 1);
-			case "double":
-				return word.slice(0, index) + word[index] + word.slice(index);
-			case "swap":
-				return index + 1 >= word.length || word[index] === word[index + 1]
-					? null
-					: word.slice(0, index) + word[index + 1] + word[index] + word.slice(index + 2);
-			default: {
-				const letter = pick(letters);
-				return letter === word[index]
-					? null
-					: word.slice(0, index) + letter + word.slice(index + 1);
-			}
-		}
-	}
+function tally(outcomes: ReviewOutcome[], read: (outcome: ReviewOutcome) => Verdict) {
+	const counts = new Map<Verdict, number>();
+	for (const outcome of outcomes) counts.set(read(outcome), (counts.get(read(outcome)) ?? 0) + 1);
+	return counts;
+}
 
-	function offerFor(token: string, policy: "before" | "after"): string | null {
-		const candidates = candidatesFor(token, data);
-		if (policy === "before") return previousPolicyPick(candidates, data.frequency);
-		return (
-			suggestSpelling({
-				originalText: token,
-				tokens: [token],
-				misses: [{ tokenIndex: 0, candidates }],
-				frequency: data.frequency,
-			})?.suggestedText ?? null
+function printCaseTable(outcomes: ReviewOutcome[], split: CorpusSplit): void {
+	console.log(`\n### ${split}\n`);
+	console.log("| category | token | acceptable | one-edit baseline | this change | verdict |");
+	console.log("| --- | --- | --- | --- | --- | --- |");
+	for (const outcome of outcomes.filter((entry) => entry.split === split)) {
+		const show = (value: string | null) => (outcome.dictionaryHit ? "—" : (value ?? "_(silent)_"));
+		const acceptable = outcome.dictionaryHit
+			? "—"
+			: outcome.acceptable.length === 0
+				? "_(silence)_"
+				: outcome.acceptable.join(" / ");
+		console.log(
+			`| ${outcome.category} | \`${outcome.token}\` | ${acceptable} | ${show(outcome.baseline)} | ${show(outcome.got)} | ${outcome.verdict} |`,
 		);
 	}
+}
 
+function printSummary(outcomes: ReviewOutcome[], split: CorpusSplit): void {
+	const subset = outcomes.filter((entry) => entry.split === split);
+	const before = tally(subset, (outcome) => outcome.baselineVerdict);
+	const after = tally(subset, (outcome) => outcome.verdict);
+	console.log(`\n${split}: | verdict | one-edit baseline | this change |`);
+	console.log("| --- | --- | --- |");
+	for (const verdict of VERDICT_ORDER) {
+		console.log(`| ${verdict} | ${before.get(verdict) ?? 0} | ${after.get(verdict) ?? 0} |`);
+	}
+}
+
+function printByCategory(outcomes: ReviewOutcome[]): void {
+	const categories = [...new Set(outcomes.map((outcome) => outcome.category))];
+	console.log(
+		"\n| category | cases | correct | wrong | missed | abstained | silent | not offered |",
+	);
+	console.log("| --- | --- | --- | --- | --- | --- | --- | --- |");
+	for (const category of categories) {
+		const subset = outcomes.filter((outcome) => outcome.category === category);
+		const counts = tally(subset, (outcome) => outcome.verdict);
+		const baseline = tally(subset, (outcome) => outcome.baselineVerdict);
+		const pair = (verdict: Verdict) =>
+			`${baseline.get(verdict) ?? 0} → ${counts.get(verdict) ?? 0}`;
+		// Every verdict is printed, so each row's columns add up to its case count.
+		const accounted = VERDICT_ORDER.reduce((sum, verdict) => sum + (counts.get(verdict) ?? 0), 0);
+		if (accounted !== subset.length) {
+			throw new Error(`${category}: ${accounted} verdicts for ${subset.length} cases`);
+		}
+		console.log(
+			`| ${category} | ${subset.length} | ${pair("correct")} | ${pair("wrong")} | ${pair("missed")} | ${pair("abstained")} | ${pair("correctly silent")} | ${pair("not offered")} |`,
+		);
+	}
+}
+
+/* ------------------------------------------------------------------ sweeps */
+
+function seededRandom(seed: number) {
+	let state = seed;
+	return () => {
+		state = (state * 1664525 + 1013904223) % 4294967296;
+		return state / 4294967296;
+	};
+}
+
+const LETTERS = [..."abcdefghijklmnopqrstuvwxyz"];
+
+/** One random slip, or null when the draw produced no change. */
+function corruptOnce(word: string, random: () => number): string | null {
+	const index = Math.floor(random() * word.length);
+	const kind = ["drop", "double", "swap", "typo"][Math.floor(random() * 4)];
+	switch (kind) {
+		case "drop":
+			return word.slice(0, index) + word.slice(index + 1);
+		case "double":
+			return word.slice(0, index) + word[index] + word.slice(index);
+		case "swap":
+			return index + 1 >= word.length || word[index] === word[index + 1]
+				? null
+				: word.slice(0, index) + word[index + 1] + word[index] + word.slice(index + 2);
+		default: {
+			const letter = LETTERS[Math.floor(random() * LETTERS.length)] ?? "a";
+			return letter === word[index] ? null : word.slice(0, index) + letter + word.slice(index + 1);
+		}
+	}
+}
+
+function corrupt(word: string, slips: number, random: () => number): string | null {
+	let result = word;
+	for (let slip = 0; slip < slips; slip += 1) {
+		const next = corruptOnce(result, random);
+		if (next === null || next.length === 0) return null;
+		result = next;
+	}
+	return result === word ? null : result;
+}
+
+interface SweepTally {
+	trials: number;
+	recovered: number;
+	wrong: number;
+	offered: number;
+}
+
+function sweepPool(
+	pool: string[],
+	slips: number,
+	data: ReviewData,
+	weights: SuggestionWeights,
+	runs: number,
+	seed: number,
+): SweepTally {
+	const random = seededRandom(seed);
+	const result: SweepTally = { trials: 0, recovered: 0, wrong: 0, offered: 0 };
+	for (let run = 0; run < runs; run += 1) {
+		const word = pool[Math.floor(random() * pool.length)];
+		if (word === undefined) continue;
+		const typo = corrupt(word, slips, random);
+		if (typo === null || data.pronunciationWords.has(typo)) continue;
+		result.trials += 1;
+		const got = pickUnderPolicy(typo, data, weights);
+		if (got !== null) result.offered += 1;
+		if (got === word) result.recovered += 1;
+		else if (got !== null) result.wrong += 1;
+	}
+	return result;
+}
+
+function nonWordPool(data: ReviewData, count: number, seed: number): string[] {
+	const random = seededRandom(seed);
+	const consonants = [..."bcdfgklmnprstvwz"];
+	const vowels = [..."aeiou"];
+	const shapes = ["cvccvc", "cvcvcc", "ccvcvc", "cvccvcv", "cvcvcvc"];
+	const pool: string[] = [];
+	while (pool.length < count) {
+		const shape = shapes[Math.floor(random() * shapes.length)] ?? "cvccvc";
+		const token = [...shape]
+			.map((slot) => {
+				const bank = slot === "c" ? consonants : vowels;
+				return bank[Math.floor(random() * bank.length)] ?? "a";
+			})
+			.join("");
+		if (!data.pronunciationWords.has(token)) pool.push(token);
+	}
+	return pool;
+}
+
+function buildPools(data: ReviewData) {
 	const curated: string[] = [];
 	const beyondCurated: string[] = [];
 	for (const word of data.pronunciationWords) {
-		if (data.frequency.rank(word) !== null) {
-			if (/^[a-z]{4,}$/.test(word)) curated.push(word);
+		if (data.vocabulary.rank(word) !== null) {
+			if (/^[a-z]{6,}$/.test(word)) curated.push(word);
 		} else if (/^[a-z]{6,}$/.test(word)) beyondCurated.push(word);
 	}
 	curated.sort();
 	beyondCurated.sort();
+	return { curated, beyondCurated };
+}
 
-	function sweep(label: string, pool: string[]): void {
-		const tally = {
-			before: { recovered: 0, wrong: 0 },
-			after: { recovered: 0, wrong: 0 },
-		};
-		let trials = 0;
-		for (let run = 0; run < 4000; run += 1) {
-			const word = pick(pool);
-			const typo = corrupt(word);
-			if (typo === null || typo.length === 0 || data.pronunciationWords.has(typo)) continue;
-			trials += 1;
-			for (const policy of ["before", "after"] as const) {
-				const got = offerFor(typo, policy);
-				if (got === word) tally[policy].recovered += 1;
-				else if (got !== null) tally[policy].wrong += 1;
-			}
-		}
-		const percent = (value: number) => `${((100 * value) / trials).toFixed(1)}%`;
-		console.log(`\n${label}: ${trials} reachable trials`);
-		for (const [policy, counts] of Object.entries(tally)) {
+const SWEEP_RUNS = 4_000;
+
+function runSweeps(data: ReviewData): void {
+	const { curated, beyondCurated } = buildPools(data);
+	const percent = (value: number, total: number) =>
+		total === 0 ? "—" : `${((100 * value) / total).toFixed(1)}%`;
+
+	const sweeps: { label: string; pool: string[]; slips: number; seed: number }[] = [
+		{ label: "curated words, one slip", pool: curated, slips: 1, seed: 20260921 },
+		{ label: "curated words, two slips", pool: curated, slips: 2, seed: 20260922 },
+		{ label: "beyond-curated words, one slip", pool: beyondCurated, slips: 1, seed: 20260923 },
+		{ label: "beyond-curated words, two slips", pool: beyondCurated, slips: 2, seed: 20260924 },
+	];
+
+	console.log("\n| sweep | policy | trials | recovered | wrong |");
+	console.log("| --- | --- | --- | --- | --- |");
+	for (const { label, pool, slips, seed } of sweeps) {
+		for (const [name, weights] of [
+			["one-edit baseline", ONE_EDIT_BASELINE],
+			["this change", SHIPPED_POLICY],
+		] as const) {
+			const tallied = sweepPool(pool, slips, data, weights, SWEEP_RUNS, seed);
 			console.log(
-				`  ${policy.padEnd(6)} recovered=${percent(counts.recovered)}  wrong=${percent(counts.wrong)}`,
+				`| ${label} | ${name} | ${tallied.trials} | ${percent(tallied.recovered, tallied.trials)} | ${percent(tallied.wrong, tallied.trials)} |`,
 			);
 		}
 	}
 
-	sweep("corrupted curated words", curated);
-	sweep("corrupted beyond-curated words", beyondCurated);
-
-	const consonants = [..."bcdfgklmnprstvwz"];
-	const vowels = [..."aeiou"];
-	const offered = { before: 0, after: 0 };
-	let nonWords = 0;
-	for (let run = 0; run < 4000; run += 1) {
-		const shape = pick(["cvccvc", "cvcvcc", "ccvcvc", "cvccvcv", "cvcvc"]);
-		const token = [...shape].map((slot) => pick(slot === "c" ? consonants : vowels)).join("");
-		if (data.pronunciationWords.has(token)) continue;
-		nonWords += 1;
-		for (const policy of ["before", "after"] as const) {
-			if (offerFor(token, policy) !== null) offered[policy] += 1;
+	const nonWords = nonWordPool(data, 4_000, 20260925);
+	console.log("\n| input | policy | offered anything |");
+	console.log("| --- | --- | --- |");
+	for (const [name, weights] of [
+		["one-edit baseline", ONE_EDIT_BASELINE],
+		["this change", SHIPPED_POLICY],
+	] as const) {
+		let offered = 0;
+		for (const token of nonWords) {
+			if (pickUnderPolicy(token, data, weights) !== null) offered += 1;
 		}
+		console.log(
+			`| random pronounceable non-words (${nonWords.length}) | ${name} | ${percent(offered, nonWords.length)} |`,
+		);
 	}
-	console.log(`\nrandom pronounceable non-words: ${nonWords} reachable trials`);
-	for (const [policy, count] of Object.entries(offered)) {
-		console.log(`  ${policy.padEnd(6)} offered=${((100 * count) / nonWords).toFixed(1)}%`);
+}
+
+/* ----------------------------------------------------- threshold selection */
+
+/** Tuning split only. The holdout cases must not influence a threshold. */
+function runTuning(data: ReviewData): void {
+	const tuningCases = CORPUS_CASES.filter((entry) => entry.split === "tuning");
+	const { curated, beyondCurated } = buildPools(data);
+	const nonWords = nonWordPool(data, 2_000, 20260925);
+
+	function score(weights: SuggestionWeights) {
+		const counts = new Map<Verdict, number>();
+		for (const entry of tuningCases) {
+			if (data.pronunciationWords.has(entry.token)) continue;
+			const got = pickUnderPolicy(entry.token, data, weights);
+			const verdict = verdictFor(entry, got, false);
+			// Dictionary hits were skipped above, so `false` here is the real state.
+			counts.set(verdict, (counts.get(verdict) ?? 0) + 1);
+		}
+		const oneSlip = sweepPool(curated, 1, data, weights, 1_500, 20260921);
+		const twoSlip = sweepPool(curated, 2, data, weights, 1_500, 20260922);
+		const beyond = sweepPool(beyondCurated, 1, data, weights, 1_500, 20260923);
+		let noise = 0;
+		for (const token of nonWords) {
+			if (pickUnderPolicy(token, data, weights) !== null) noise += 1;
+		}
+		return {
+			correct: counts.get("correct") ?? 0,
+			wrong: counts.get("wrong") ?? 0,
+			missed: counts.get("missed") ?? 0,
+			oneSlipRecovered: (100 * oneSlip.recovered) / oneSlip.trials,
+			oneSlipWrong: (100 * oneSlip.wrong) / oneSlip.trials,
+			twoSlipRecovered: (100 * twoSlip.recovered) / twoSlip.trials,
+			twoSlipWrong: (100 * twoSlip.wrong) / twoSlip.trials,
+			beyondRecovered: (100 * beyond.recovered) / beyond.trials,
+			noise: (100 * noise) / nonWords.length,
+		};
+	}
+
+	function report(label: string, weights: SuggestionWeights): void {
+		const result = score(weights);
+		console.log(
+			`| ${label} | ${result.correct} | ${result.wrong} | ${result.missed} | ` +
+				`${result.oneSlipRecovered.toFixed(1)}% / ${result.oneSlipWrong.toFixed(1)}% | ` +
+				`${result.twoSlipRecovered.toFixed(1)}% / ${result.twoSlipWrong.toFixed(1)}% | ` +
+				`${result.beyondRecovered.toFixed(1)}% | ${result.noise.toFixed(1)}% |`,
+		);
+	}
+
+	const header =
+		"| policy | correct | wrong | missed | 1-slip rec/wrong | 2-slip rec/wrong | beyond rec | noise |";
+	console.log(`\n## Threshold sweeps (tuning split only)\n\n${header}`);
+	console.log("| --- | --- | --- | --- | --- | --- | --- | --- |");
+	report("one-edit baseline", ONE_EDIT_BASELINE);
+	report("shipped", SHIPPED_POLICY);
+
+	console.log(`\n### weak pattern weight\n\n${header}`);
+	console.log("| --- | --- | --- | --- | --- | --- | --- | --- |");
+	for (const weight of [1, 0.5, 0.25, 0.1]) {
+		report(`weakPattern=${weight}`, { ...SHIPPED_POLICY, weakPattern: weight });
+	}
+
+	console.log(`\n### two-edit weight\n\n${header}`);
+	console.log("| --- | --- | --- | --- | --- | --- | --- | --- |");
+	for (const weight of [1, 0.5, 0.3, 0.2, 0.15, 0.1, 0.05]) {
+		report(`twoEdit=${weight}`, { ...SHIPPED_POLICY, twoEdit: weight });
+	}
+
+	console.log(`\n### separation ratio\n\n${header}`);
+	console.log("| --- | --- | --- | --- | --- | --- | --- | --- |");
+	for (const ratio of [1.5, 2, 2.5, 3, 4, 6]) {
+		report(`leadRatio=${ratio}`, { ...SHIPPED_POLICY, leadRatio: ratio });
 	}
 }
 
@@ -293,20 +459,20 @@ if (import.meta.main) {
 	const data = await loadReviewData();
 	const outcomes = runReview(data);
 
-	console.log("| group | token | want | before | after | verdict |");
-	console.log("| --- | --- | --- | --- | --- | --- |");
-	for (const outcome of outcomes) {
-		const show = (value: string | null) => (outcome.dictionaryHit ? "—" : (value ?? "_(silent)_"));
-		console.log(
-			`| ${outcome.group} | \`${outcome.token}\` | ${show(outcome.want)} | ${show(outcome.before)} | ${show(outcome.got)} | ${outcome.verdict} |`,
-		);
-	}
+	console.log("## Cases");
+	printCaseTable(outcomes, "tuning");
+	printCaseTable(outcomes, "holdout");
+	printSummary(outcomes, "tuning");
+	printSummary(outcomes, "holdout");
+	console.log("\n## By error category (baseline → this change)");
+	printByCategory(outcomes);
 
-	const counts = new Map<string, number>();
-	for (const outcome of outcomes) {
-		counts.set(outcome.verdict, (counts.get(outcome.verdict) ?? 0) + 1);
-	}
-	console.log(`\n${[...counts].map(([verdict, n]) => `${verdict}: ${n}`).join(", ")}`);
+	const reached = outcomes.filter((outcome) => !outcome.dictionaryHit);
+	const scanOnly = reached.filter((outcome) => outcome.scanCandidates.length > 0);
+	console.log(
+		`\nTokens the curated scan added candidates for: ${scanOnly.length}/${reached.length}`,
+	);
 
 	if (process.argv.includes("--sweep")) runSweeps(data);
+	if (process.argv.includes("--tune")) runTuning(data);
 }

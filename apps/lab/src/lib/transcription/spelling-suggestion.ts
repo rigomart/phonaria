@@ -1,21 +1,34 @@
 import { tokenizeTextWithSpans } from "@/lib/g2p/text-processing";
+import { classifyEdits, type EditScript, isStrongScript } from "./spelling-edits";
+import { MAX_EDITS, reachesTwoEdits, type SpellingVocabulary } from "./spelling-search";
 
-const VARIANT_ALPHABET = "abcdefghijklmnopqrstuvwxyz'-";
-/**
- * Zipf score is `1 / (rank + 1)`. Ten times would silence named stories:
- * `recieve` also neighbours `relieve` (~6.7x) and `dont` neighbours `done` (~3.4x).
- * Three times still keeps similar-rank misses quiet (`from`/`form` at 25 vs 30).
- */
-const FREQUENCY_LEAD_RATIO = 3;
-/** Scores an unranked candidate just past the curated list, so it still rivals a leader. */
-const NO_FREQUENCY_EVIDENCE_RANK = 10_000;
-const VOWEL_LETTERS = new Set(["a", "e", "i", "o", "u", "y"]);
-const isVowel = (letter: string) => VOWEL_LETTERS.has(letter);
-
-export interface SpellingFrequency {
-	/** The curated rank, or null when the list carries no evidence about the word. */
-	rank(word: string): number | null;
+/** Exported so the evaluation corpus sweeps this policy rather than a copy of it. */
+export interface SuggestionWeights {
+	/** One reproduces the policy shipped before issue #248. */
+	maxEdits: 1 | 2;
+	/** Ten would silence `recieve`/`relieve` (~6.7x) and `dont`/`done` (~3.4x). */
+	leadRatio: number;
+	/** Scores an unranked candidate just past the curated list, so it still rivals a leader. */
+	noFrequencyEvidenceRank: number;
+	/** Separates `adress → address` from `dress`, which rank alone cannot: 1279 against 1776. */
+	weakPattern: number;
+	/**
+	 * Undiscounted, `received` denies `receive` its lead and silences `recieve` entirely. A
+	 * tenth means a two-edit reading wins only when it is ~30x more common than a one-edit one.
+	 */
+	twoEdit: number;
 }
+
+export const DEFAULT_SUGGESTION_WEIGHTS: SuggestionWeights = {
+	maxEdits: MAX_EDITS,
+	leadRatio: 3,
+	noFrequencyEvidenceRank: 10_000,
+	weakPattern: 0.25,
+	twoEdit: 0.1,
+};
+
+/** A paragraph of nonsense should not become one scan per word. Earliest tokens win. */
+export const MAX_EXPANDED_TOKENS_PER_REQUEST = 12;
 
 export interface SpellingMiss {
 	tokenIndex: number;
@@ -38,76 +51,45 @@ export interface SuggestSpellingInput {
 	originalText: string;
 	tokens: string[];
 	misses: SpellingMiss[];
-	frequency: SpellingFrequency;
-}
-
-export function generateOneSlipVariants(word: string): string[] {
-	const normalized = word.toLowerCase();
-	if (normalized.length === 0) return [];
-
-	const variants = new Set<string>();
-	const letters = [...normalized];
-
-	for (let index = 0; index < letters.length; index += 1) {
-		const deleted = letters
-			.slice(0, index)
-			.concat(letters.slice(index + 1))
-			.join("");
-		if (deleted.length > 0 && deleted !== normalized) variants.add(deleted);
-
-		for (const char of VARIANT_ALPHABET) {
-			if (char === letters[index]) continue;
-			const substituted = letters.slice();
-			substituted[index] = char;
-			const next = substituted.join("");
-			if (next !== normalized) variants.add(next);
-		}
-
-		if (index + 1 < letters.length && letters[index] !== letters[index + 1]) {
-			const transposed = letters.slice();
-			const current = transposed[index];
-			const next = transposed[index + 1];
-			if (current === undefined || next === undefined) continue;
-			transposed[index] = next;
-			transposed[index + 1] = current;
-			const swapped = transposed.join("");
-			if (swapped !== normalized) variants.add(swapped);
-		}
-	}
-
-	for (let index = 0; index <= letters.length; index += 1) {
-		for (const char of VARIANT_ALPHABET) {
-			const inserted = letters.slice(0, index).concat(char, letters.slice(index)).join("");
-			if (inserted !== normalized) variants.add(inserted);
-		}
-	}
-
-	return [...variants];
-}
-
-export function createSpellingFrequency(ranksByWord: Record<string, number>): SpellingFrequency {
-	const ranks = new Map<string, number>();
-	for (const [word, rank] of Object.entries(ranksByWord)) {
-		ranks.set(word.toLowerCase(), rank);
-	}
-	return {
-		rank(word) {
-			return ranks.get(word.toLowerCase()) ?? null;
-		},
-	};
+	/** Supplies the curated ranks and the second edit's worth of candidates. */
+	vocabulary: SpellingVocabulary;
+	/** Defaults to the shipped policy; the evaluation corpus passes swept values. */
+	weights?: SuggestionWeights;
 }
 
 export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion | null {
-	const { originalText, tokens, misses, frequency } = input;
+	const { originalText, tokens, misses, vocabulary } = input;
+	const weights = input.weights ?? DEFAULT_SUGGESTION_WEIGHTS;
 	if (misses.length === 0) return null;
 
 	const replacements = new Map<number, string>();
+	let scansLeft = MAX_EXPANDED_TOKENS_PER_REQUEST;
+	// One scan per distinct token: a word repeated across a paragraph is searched once.
+	const scanned = new Map<string, string[]>();
 
 	for (const { tokenIndex, candidates } of misses) {
 		const token = tokens[tokenIndex];
 		if (token === undefined) continue;
 
-		const offered = pickPlausibleNeighbour(token, candidates, frequency);
+		// Server candidates (one edit, full dictionary) and scan candidates share one pool.
+		const candidatePool = new Set(candidates.map((candidate) => candidate.toLowerCase()));
+
+		// Short tokens are not charged: their scan only returns curated words one edit out,
+		// which the server already supplied, so it would spend budget a later token needs.
+		const normalized = token.toLowerCase();
+		if (weights.maxEdits > 1 && reachesTwoEdits(normalized)) {
+			const already = scanned.get(normalized);
+			if (already !== undefined) {
+				for (const word of already) candidatePool.add(word);
+			} else if (scansLeft > 0) {
+				scansLeft -= 1;
+				const found = vocabulary.nearWords(normalized);
+				scanned.set(normalized, found);
+				for (const word of found) candidatePool.add(word);
+			}
+		}
+
+		const offered = pickPlausibleNeighbour(token, [...candidatePool], vocabulary, weights);
 		if (offered === null) continue;
 		replacements.set(tokenIndex, applyCapitalization(token, offered));
 	}
@@ -133,113 +115,64 @@ export function getVisibleSpellingSuggestion(
 	return suggestion ?? null;
 }
 
-type OneSlipEdit =
-	| { kind: "insert" }
-	| { kind: "delete"; doubled: boolean }
-	| { kind: "substitute"; from: string; to: string }
-	| { kind: "transpose"; first: string; second: string }
-	| { kind: "other" };
+interface PlausibleCandidate {
+	word: string;
+	score: number;
+}
 
-/** Which single slip turns `token` into `candidate`; `other` if no single slip does. */
-function classifyOneSlipEdit(token: string, candidate: string): OneSlipEdit {
-	const typed = token.toLowerCase();
-	const word = candidate.toLowerCase();
-	if (typed === word) return { kind: "other" };
+type Admission = "on the slip alone" | "needs frequency evidence" | "never";
 
-	if (word.length === typed.length + 1) {
-		let index = 0;
-		while (index < typed.length && typed[index] === word[index]) index += 1;
-		if (typed.slice(index) !== word.slice(index + 1)) return { kind: "other" };
-		return { kind: "insert" };
-	}
+/**
+ * The absolute gate, applied before any candidate meets any other. A single slip contradicting
+ * nothing typed stands alone (`aardvrk → aardvark`); anything weaker needs the curated list to
+ * vouch for the word. A tighter rank floor was measured and rejected — see the research note.
+ */
+function admissionFor(script: EditScript): Admission {
+	const strong = isStrongScript(script);
+	if (script.edits.length === 1) return strong ? "on the slip alone" : "needs frequency evidence";
+	return strong ? "needs frequency evidence" : "never";
+}
 
-	if (word.length === typed.length - 1) {
-		let index = 0;
-		while (index < word.length && typed[index] === word[index]) index += 1;
-		if (typed.slice(index + 1) !== word.slice(index)) return { kind: "other" };
-		const removed = typed[index];
-		return {
-			kind: "delete",
-			doubled: typed[index - 1] === removed || typed[index + 1] === removed,
-		};
-	}
-
-	if (word.length !== typed.length) return { kind: "other" };
-
-	const differences: number[] = [];
-	for (let index = 0; index < typed.length; index += 1) {
-		if (typed[index] !== word[index]) differences.push(index);
-	}
-
-	const [first, second] = differences;
-	if (differences.length === 1 && first !== undefined) {
-		return { kind: "substitute", from: typed[first] ?? "", to: word[first] ?? "" };
-	}
-	if (
-		differences.length === 2 &&
-		first !== undefined &&
-		second === first + 1 &&
-		typed[first] === word[first + 1] &&
-		typed[first + 1] === word[first]
-	) {
-		return { kind: "transpose", first: typed[first] ?? "", second: typed[first + 1] ?? "" };
-	}
-
-	return { kind: "other" };
+function scoreOf(script: EditScript, rank: number | null, weights: SuggestionWeights): number {
+	const patternWeight = isStrongScript(script) ? 1 : weights.weakPattern;
+	const editWeight = script.edits.length === 1 ? 1 : weights.twoEdit;
+	return (patternWeight * editWeight) / ((rank ?? weights.noFrequencyEvidenceRank) + 1);
 }
 
 /**
- * Whether the slip alone justifies the candidate, with no idea how common the word is.
- * It does when nothing the learner typed is contradicted: every letter survives in order
- * (they left one out), a doubled keystroke is dropped, or only vowels move — vowel letters
- * being the ambiguous part of English spelling. Replacing or reordering a consonant guesses
- * at what they meant, and the 126k-word dictionary has such a neighbour for almost anything.
+ * Uniqueness is settled after the gate, never before: one surviving candidate means only that
+ * the search found one word. Exported for the corpus, which judges a token at a time.
  */
-function hasStrongSlipEvidence(edit: OneSlipEdit): boolean {
-	switch (edit.kind) {
-		case "insert":
-			return true;
-		case "delete":
-			return edit.doubled;
-		case "substitute":
-			return isVowel(edit.from) && isVowel(edit.to);
-		case "transpose":
-			return isVowel(edit.first) && isVowel(edit.second);
-		default:
-			return false;
-	}
-}
-
-/**
- * Offers a candidate the curated list shows is common, or one the slip itself justifies.
- * Uniqueness is settled after that filter: one candidate only means the search found one.
- */
-function pickPlausibleNeighbour(
+export function pickPlausibleNeighbour(
 	token: string,
 	candidates: string[],
-	frequency: SpellingFrequency,
+	vocabulary: SpellingVocabulary,
+	weights: SuggestionWeights = DEFAULT_SUGGESTION_WEIGHTS,
 ): string | null {
-	const plausible: { word: string; rank: number }[] = [];
+	const plausible: PlausibleCandidate[] = [];
 	for (const candidate of candidates) {
-		const edit = classifyOneSlipEdit(token, candidate);
-		if (edit.kind === "other") continue;
-		const rank = frequency.rank(candidate);
-		if (rank === null && !hasStrongSlipEvidence(edit)) continue;
-		plausible.push({ word: candidate, rank: rank ?? NO_FREQUENCY_EVIDENCE_RANK });
+		const script = classifyEdits(token, candidate, weights.maxEdits);
+		if (script === null) continue;
+
+		const admission = admissionFor(script);
+		if (admission === "never") continue;
+		const rank = vocabulary.rank(candidate);
+		if (rank === null && admission === "needs frequency evidence") continue;
+
+		plausible.push({ word: candidate, score: scoreOf(script, rank, weights) });
 	}
 
 	if (plausible.length === 0) return null;
-	if (plausible.length === 1) return plausible[0]?.word ?? null;
 
-	const scored = plausible
-		.map(({ word, rank }) => ({ word, score: 1 / (rank + 1) }))
-		.sort((left, right) => right.score - left.score || left.word.localeCompare(right.word));
-
+	const scored = plausible.sort(
+		(left, right) => right.score - left.score || left.word.localeCompare(right.word),
+	);
 	const leader = scored[0];
+	if (leader === undefined) return null;
+
 	const runnerUp = scored[1];
-	if (leader === undefined || runnerUp === undefined) return null;
-	if (leader.score >= FREQUENCY_LEAD_RATIO * runnerUp.score) return leader.word;
-	return null;
+	if (runnerUp === undefined) return leader.word;
+	return leader.score >= weights.leadRatio * runnerUp.score ? leader.word : null;
 }
 
 function applyCapitalization(originalToken: string, dictionarySpelling: string): string {

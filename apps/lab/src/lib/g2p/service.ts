@@ -1,5 +1,5 @@
 import type { LabDatabase } from "@/db/drizzle";
-import { generateOneSlipVariants } from "@/lib/transcription/spelling-suggestion";
+import { generateOneEditVariants } from "@/lib/transcription/spelling-search";
 import { findExistingCmudictWords, lookupManyCmudict } from "./cmudict";
 import type { G2PWord } from "./model";
 import { fallbackG2P } from "./phoneme-generator";
@@ -62,7 +62,7 @@ async function attachSpellingNeighbours(results: G2PWord[], db?: LabDatabase): P
 	for (const index of fallbackIndexes) {
 		const word = results[index]?.word;
 		if (!word) continue;
-		const variants = generateOneSlipVariants(word);
+		const variants = generateOneEditVariants(word);
 		variantsByIndex.set(index, variants);
 		for (const variant of variants) allVariants.add(variant);
 	}
