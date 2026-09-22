@@ -513,7 +513,7 @@ describe("g2p-store — spelling suggestions", () => {
 	});
 
 	it("uses original token positions when an earlier server response is omitted", async () => {
-		const { createSpellingFrequency } = await import("./spelling-suggestion");
+		const { createSpellingVocabulary } = await import("./spelling-search");
 		const lookupUniqueMisses: LookupWordsFn = async () => ({
 			found: new Map(),
 			missing: ["ghost", "recieve"],
@@ -537,7 +537,7 @@ describe("g2p-store — spelling suggestions", () => {
 				text,
 				dropsFirstWord,
 				lookupUniqueMisses,
-				createSpellingFrequency({ receive: 0 }),
+				createSpellingVocabulary({ receive: 0 }),
 			);
 
 		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toMatchObject({
@@ -547,7 +547,7 @@ describe("g2p-store — spelling suggestions", () => {
 	});
 
 	it("accepts capitalization, punctuation, and spacing through the existing path", async () => {
-		const { createSpellingFrequency } = await import("./spelling-suggestion");
+		const { createSpellingVocabulary } = await import("./spelling-search");
 		const text = "  Recieve,   please!  ";
 		useG2PStore.getState().setDraftText(text);
 		await useG2PStore
@@ -556,13 +556,13 @@ describe("g2p-store — spelling suggestions", () => {
 				text,
 				fallbackServer(),
 				lookupAllMissing,
-				createSpellingFrequency({ receive: 0 }),
+				createSpellingVocabulary({ receive: 0 }),
 			);
 
 		const server = countingServer();
 		await useG2PStore
 			.getState()
-			.acceptSpellingSuggestion(server, lookupAllFound, createSpellingFrequency({ receive: 0 }));
+			.acceptSpellingSuggestion(server, lookupAllFound, createSpellingVocabulary({ receive: 0 }));
 
 		const state = useG2PStore.getState();
 		expect(state.draftText).toBe("  Receive,   please!  ");
@@ -585,7 +585,7 @@ describe("g2p-store — spelling suggestions", () => {
 	});
 
 	it("offers a neighbour that is only in the pronunciation dictionary", async () => {
-		const { createSpellingFrequency } = await import("./spelling-suggestion");
+		const { createSpellingVocabulary } = await import("./spelling-search");
 		useG2PStore.getState().setDraftText("aardvrk");
 		await useG2PStore
 			.getState()
@@ -593,7 +593,7 @@ describe("g2p-store — spelling suggestions", () => {
 				"aardvrk",
 				fallbackServer({ aardvrk: ["aardvark"] }),
 				lookupAllMissing,
-				createSpellingFrequency({}),
+				createSpellingVocabulary({}),
 			);
 
 		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toMatchObject({

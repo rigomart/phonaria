@@ -136,11 +136,16 @@ the target word's pronunciation, such as a sound cue or example word.
 _Avoid_: Answer, correction
 
 **Spelling suggestion**:
-A pronunciation-dictionary word one slip from a missed Transcription token, offered when the
-evidence for it is strong enough: the curated frequency list shows the word is common, or the
-slip itself keeps the consonant skeleton the learner typed. Being the only candidate the search
-returned is not such evidence. The learner-facing line uses the copy **Did you mean**; that copy
-is not the name of the feature.
+A word up to two slips from a missed Transcription token, offered when the evidence for it is
+strong enough. A single slip that keeps the consonant skeleton the learner typed stands on its
+own; any weaker reading, and any reading that needs a second slip, also needs the curated
+frequency list to show the word is common. Two slips are read only for tokens long enough for
+the distance to mean something, and only when neither slip contradicts what was typed. Being
+the only candidate the search returned is not evidence, and neither is being the nearest word:
+a word one slip away loses to a word two slips away when the nearer reading rests on a guess.
+The learner-facing line uses the copy **Did you mean**; that copy is not the name of the feature.
+In code a slip is measured as an *edit* in the Damerau-Levenshtein sense, so the search and
+scoring modules name the mechanism `edit` while this glossary keeps `slip` for the concept.
 _Avoid_: Assistance, Did you mean (as the concept), autocorrect
 
 **Difficulty layer**:

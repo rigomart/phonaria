@@ -7,7 +7,9 @@ const labRoot = resolve(import.meta.dirname, "../../..");
 const clientFiles = [
 	"src/lib/transcription/g2p-store.ts",
 	"src/lib/transcription/spelling-suggestion.ts",
-	"src/lib/transcription/spelling-frequency.ts",
+	"src/lib/transcription/spelling-vocabulary.ts",
+	"src/lib/transcription/spelling-search.ts",
+	"src/lib/transcription/spelling-edits.ts",
 	"src/hooks/use-transcribe.tsx",
 	"src/hooks/use-definition.ts",
 	"src/lib/transcription/server-function-error.ts",
