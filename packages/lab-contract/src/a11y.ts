@@ -2,13 +2,13 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page } from "@playwright/test";
 
 /**
- * Current public Lab already uses muted nav/counter tokens below WCAG AA
+ * Current public Phonaria already uses muted nav/counter tokens below WCAG AA
  * contrast, a NavigationMenu list with `aria-orientation`, and a diphthong
  * switch whose visible label is not programmatically associated. Those are
  * existing product/component issues, not migration regressions, so the
  * contract excludes them while still scanning other WCAG A/AA rules.
  */
-const KNOWN_CURRENT_LAB_AXE_EXCLUSIONS = [
+const KNOWN_CURRENT_AXE_EXCLUSIONS = [
 	"color-contrast",
 	"aria-allowed-attr",
 	"aria-toggle-field-name",
@@ -17,7 +17,7 @@ const KNOWN_CURRENT_LAB_AXE_EXCLUSIONS = [
 export async function expectNoAxeViolations(page: Page): Promise<void> {
 	const results = await new AxeBuilder({ page })
 		.withTags(["wcag2a", "wcag2aa"])
-		.disableRules([...KNOWN_CURRENT_LAB_AXE_EXCLUSIONS])
+		.disableRules([...KNOWN_CURRENT_AXE_EXCLUSIONS])
 		.analyze();
 	const summary = results.violations
 		.map((violation) => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { LabContractTarget } from "./constants";
+import type { ContractTarget } from "./constants";
 import {
 	type BaselineRecord,
 	comparisonNotes,
@@ -22,7 +22,7 @@ const target = {
 		practiceSession: false,
 	},
 	skipReasons: {},
-} satisfies LabContractTarget;
+} satisfies ContractTarget;
 
 function record(overrides?: Partial<BaselineRecord>): BaselineRecord {
 	return {

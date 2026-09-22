@@ -2,7 +2,8 @@
 
 - Status: Accepted
 - Date: 2026-09-16
-- Related issues: [#182](https://github.com/rigomart/phonaria/issues/182),
+- Related issues: [#254](https://github.com/rigomart/phonaria/issues/254),
+  [#182](https://github.com/rigomart/phonaria/issues/182),
   [#179](https://github.com/rigomart/phonaria/issues/179),
   [#178](https://github.com/rigomart/phonaria/issues/178)
 
@@ -32,10 +33,12 @@ Phonaria is one application: `apps/lab`, TanStack Start on Cloudflare Workers, s
 `phonaria.rigos.dev`. The Next.js application, its Vercel project, and its dedicated data services
 are retired rather than kept on a secondary hostname.
 
-The directory is still named `lab` and the Worker is still named `phonaria-lab`. Those names are
-deployment identifiers, not a claim that a second surface exists; renaming them would break
-Cloudflare bindings and deployment history for no user-visible gain. "Lab" is no longer a product
-term — see `CONTEXT.md`.
+The directory is still named `lab` and the Worker is still named `phonaria-lab` in this ADR's
+original form. Those names are leftover deployment identifiers, not a claim that a second surface
+exists. [#254](https://github.com/rigomart/phonaria/issues/254) removes them: this issue
+([#255](https://github.com/rigomart/phonaria/issues/255)) only changes language, identifiers, and
+workflow titles; later sub-issues rename packages, GitHub settings, and Worker scripts. "Lab" is
+no longer a product term — see `CONTEXT.md`.
 
 ## Consequences
 

@@ -1,4 +1,4 @@
-# Lab browser contract
+# Browser contract
 
 Shared Playwright suite for Phonaria. The same specs run against a deployed
 base URL through target-specific configuration, not duplicated tests.
@@ -50,7 +50,7 @@ justification. Missing reasons fail at config load so a gap cannot pass silently
 - `LAB_CONTRACT_TARGET` — profile name
 - `LAB_CONTRACT_BASE_URL` — deployed origin, no trailing slash
 - `LAB_CONTRACT_CANONICAL_ORIGIN` — expected canonical origin when it differs from the request origin
-- `LAB_CONTRACT_START_LOCAL=1` — start the local Lab server
+- `LAB_CONTRACT_START_LOCAL=1` — start the local application server
 - `CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` — required for `cloudflare-access` targets
 
 ## Skip policy
@@ -60,7 +60,7 @@ disabled vs enabled is two explicit describes, not an empty `if`. Controlled
 failure tests skip on production because that environment has no test-only
 failure hook.
 
-Axe scans exclude known current-Lab findings so the contract measures
+Axe scans exclude known current findings so the contract measures
 migration parity rather than blocking on the existing design system:
 `color-contrast` on muted nav/counter tokens, `aria-allowed-attr` on the
 header NavigationMenu list, and `aria-toggle-field-name` on the diphthong

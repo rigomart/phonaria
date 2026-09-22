@@ -16,7 +16,7 @@ describe("indexing helpers", () => {
 		expect(formatRobotsTxt(policy).toLowerCase()).not.toContain("disallow");
 	});
 
-	it("lists the same indexable Lab URLs as the Next sitemap", () => {
+	it("lists the indexable application URLs and omits Practice", () => {
 		process.env.SITE_URL = "https://phonaria-lab.rigos.dev";
 		expect(getSitemapUrls()).toEqual([
 			"https://phonaria-lab.rigos.dev",

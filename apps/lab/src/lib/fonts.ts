@@ -1,5 +1,5 @@
 /**
- * Lab font contract. Import this module to load Fontsource variable faces and
+ * Application font contract. Import this module to load Fontsource variable faces and
  * apply `--font-display-serif` / `--font-noto-sans`.
  *
  * `wght.css` is the latin-weight entry used by Vite and TanStack Start.

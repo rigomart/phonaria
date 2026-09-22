@@ -1,4 +1,4 @@
-name: Lab Qualify
+name: Qualify
 
 # Runs the complete contract against a deployed target. Deploys nothing.
 
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: Lab contract target profile
+        description: Browser contract target profile
         type: choice
         required: true
         default: cloudflare-staging
@@ -76,7 +76,7 @@ jobs:
       - name: Install Chromium
         run: bun --cwd packages/lab-contract e2e:install
 
-      - name: Run the complete Lab contract
+      - name: Run the complete browser contract
         env:
           LAB_CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
         run: bun --cwd packages/lab-contract e2e:lab

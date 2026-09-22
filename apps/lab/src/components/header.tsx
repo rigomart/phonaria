@@ -11,13 +11,13 @@ import {
 	NavigationMenuTrigger,
 } from "@phonaria/ui/components/navigation-menu";
 import { Link } from "@/components/link";
-import type { LabFlags } from "@/lib/flags";
+import type { AppFlags } from "@/lib/flags";
 import { Logo } from "./logo";
 
 const navLinkClass =
 	"rounded-sm text-muted-foreground transition-colors motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
-export function Header({ flags }: { flags: LabFlags }) {
+export function Header({ flags }: { flags: AppFlags }) {
 	return (
 		<header className="relative flex items-center justify-center px-4 py-3 animate-in fade-in duration-500 motion-reduce:animate-none">
 			<Link

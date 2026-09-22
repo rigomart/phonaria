@@ -1,7 +1,7 @@
 import { createFlags } from "@phonaria/flags";
 
 /**
- * Lab feature flags. Route gates live in
+ * Application feature flags. Route gates live in
  * `src/lib/require-flag.ts`.
  * See packages/flags/README.md.
  *
@@ -28,4 +28,4 @@ export const flags = createFlags(
 	},
 );
 
-export type LabFlags = ReturnType<typeof flags.snapshot>;
+export type AppFlags = ReturnType<typeof flags.snapshot>;

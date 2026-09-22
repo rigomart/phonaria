@@ -1,4 +1,4 @@
-import type { LabDatabase } from "@/db/drizzle";
+import type { AppDatabase } from "@/db/drizzle";
 import { generateOneSlipVariants } from "@/lib/transcription/spelling-suggestion";
 import { findExistingCmudictWords, lookupManyCmudict } from "./cmudict";
 import type { G2PWord } from "./model";
@@ -6,7 +6,7 @@ import { fallbackG2P } from "./phoneme-generator";
 import { normalizeCmuWord } from "./text-processing";
 
 export type ProcessWordsOptions = {
-	db?: LabDatabase;
+	db?: AppDatabase;
 };
 
 export async function processWords(
@@ -49,7 +49,7 @@ export async function processWords(
 	}
 }
 
-async function attachSpellingNeighbours(results: G2PWord[], db?: LabDatabase): Promise<G2PWord[]> {
+async function attachSpellingNeighbours(results: G2PWord[], db?: AppDatabase): Promise<G2PWord[]> {
 	const fallbackIndexes: number[] = [];
 	for (let index = 0; index < results.length; index += 1) {
 		if (results[index]?.source === "fallback") fallbackIndexes.push(index);

@@ -1,5 +1,5 @@
 import { inArray } from "drizzle-orm";
-import { getDb, type LabDatabase } from "@/db/drizzle";
+import { getDb, type AppDatabase } from "@/db/drizzle";
 import { words } from "@/db/schema";
 import type { G2PSyllable } from "./model";
 import { syllabify } from "./syllabifier";
@@ -54,7 +54,7 @@ export type CmudictLookupOptions = {
 
 export async function lookupManyCmudict(
 	rawWords: string[],
-	db: LabDatabase = getDb(),
+	db: AppDatabase = getDb(),
 	options: CmudictLookupOptions = {},
 ): Promise<Map<string, CmudictVariant[] | undefined>> {
 	const cacheNegatives = options.cacheNegatives !== false;
@@ -106,7 +106,7 @@ const MEMBERSHIP_CHUNK = 400;
 
 export async function findExistingCmudictWords(
 	rawWords: string[],
-	db: LabDatabase = getDb(),
+	db: AppDatabase = getDb(),
 ): Promise<string[]> {
 	const unique = Array.from(
 		new Set(rawWords.map((word) => word.toLowerCase().trim()).filter((word) => word.length > 0)),

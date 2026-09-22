@@ -1,7 +1,7 @@
-# Lab contract performance baselines
+# Browser contract performance baselines
 
 These files are the comparison point for page-load and transcription latency
-across Lab deployment targets. They are **not** pass/fail gates for the
+across deployment targets. They are **not** pass/fail gates for the
 functional contract.
 
 Transcription is stored as two lanes, never one blended median:

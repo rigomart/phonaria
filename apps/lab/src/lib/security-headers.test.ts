@@ -8,7 +8,7 @@ import {
 } from "./security-headers";
 
 describe("getContentSecurityPolicy", () => {
-	it("keeps the Lab CSP intent and the asset bucket origin", () => {
+	it("keeps the CSP intent and the asset bucket origin", () => {
 		expect(ASSET_BUCKET_HOST).toBe("assets.rigos.dev");
 		expect(ASSET_BUCKET_ORIGIN).toBe(`https://${ASSET_BUCKET_HOST}`);
 		const policy = getContentSecurityPolicy();

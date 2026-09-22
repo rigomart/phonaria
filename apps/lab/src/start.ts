@@ -3,7 +3,7 @@ import { setResponseHeader } from "@tanstack/react-start/server";
 import { getContentSecurityPolicy } from "@/lib/security-headers";
 
 const MAIN_SITE_ORIGIN = "https://phonaria.rigos.dev";
-const LEGACY_LAB_HOSTNAME = "phonaria-lab.rigos.dev";
+const LEGACY_HOSTNAME = "phonaria-lab.rigos.dev";
 
 function normalizedPathname(pathname: string): string {
 	return pathname === "/" ? pathname : pathname.replace(/\/+$/, "");
@@ -13,7 +13,7 @@ export function resolveLegacyRedirect(request: Request): URL | undefined {
 	const url = new URL(request.url);
 	let shouldRedirect = false;
 
-	if (url.hostname === LEGACY_LAB_HOSTNAME) {
+	if (url.hostname === LEGACY_HOSTNAME) {
 		url.protocol = "https:";
 		url.host = new URL(MAIN_SITE_ORIGIN).host;
 		shouldRedirect = true;

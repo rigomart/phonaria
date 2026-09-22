@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Page } from "@playwright/test";
 import { clientHitFixtureIntent, serverHitFixtureIntent } from "./baseline-fixtures";
-import type { LabContractTarget } from "./constants";
+import type { ContractTarget } from "./constants";
 import { BASELINE_RUNS, REGRESSION_THRESHOLD_PERCENT } from "./constants";
 
 const PACKAGE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -137,7 +137,7 @@ export async function measureTranscriptionMs(
 }
 
 export function createBaselineRecord(
-	target: LabContractTarget,
+	target: ContractTarget,
 	coldPageLoadMs: number,
 	pageLoadSamples: number[],
 	clientTranscriptionSamples: number[],

@@ -1,7 +1,7 @@
 name: Release
 
-# Auto-release after CI is paused for the TanStack Start / Cloudflare Lab
-# migration. Restore workflow_run (post-CI on main) after cutover.
+# Auto-release after CI is paused for the TanStack Start / Cloudflare
+# cutover. Restore workflow_run (post-CI on main) after cutover.
 on:
   workflow_dispatch:
 

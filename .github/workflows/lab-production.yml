@@ -1,4 +1,4 @@
-name: Lab Production
+name: Production
 
 # Deploys production to the public custom domain.
 
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       run_contract:
-        description: Run the complete Lab contract after deploying
+        description: Run the complete browser contract after deploying
         type: boolean
         required: false
         default: true
@@ -56,7 +56,7 @@ jobs:
       - name: Generate Cloudflare Worker types
         run: bun --cwd apps/lab cf-typegen
 
-      - name: Production build (Lab Start)
+      - name: Production build
         run: bun --cwd apps/lab build
 
       - name: Assert production Worker name
@@ -116,7 +116,7 @@ jobs:
         if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
         run: bun --cwd packages/lab-contract e2e:install
 
-      - name: Run the complete Lab contract
+      - name: Run the complete browser contract
         if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
         env:
           CI: true

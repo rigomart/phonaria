@@ -4,14 +4,14 @@ vi.mock("cloudflare:workers", () => ({
 	env: {},
 }));
 
-import { type LabWorkerEnv, readWorkerString } from "./env";
+import { type WorkerEnv, readWorkerString } from "./env";
 
 const TRANSCRIPTION_RATE_LIMIT = { limit: async () => ({ success: true }) };
 const DEFINITION_RATE_LIMIT = { limit: async () => ({ success: true }) };
 
 describe("readWorkerString", () => {
 	it("returns defined non-empty binding values", () => {
-		const env: LabWorkerEnv = {
+		const env: WorkerEnv = {
 			TRANSCRIPTION_RATE_LIMIT,
 			DEFINITION_RATE_LIMIT,
 			TURSO_DATABASE_URL: "libsql://lab.example",
@@ -22,7 +22,7 @@ describe("readWorkerString", () => {
 	});
 
 	it("treats missing and blank values as unset", () => {
-		const env: LabWorkerEnv = {
+		const env: WorkerEnv = {
 			TRANSCRIPTION_RATE_LIMIT,
 			DEFINITION_RATE_LIMIT,
 			TURSO_DATABASE_URL: "  ",

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Stable staging origin for Lab Start.
+ * Stable staging origin for the application.
  *
  * Prefer `LAB_START_STAGING_URL` when it is the real workers.dev host.
  * The wrangler default `https://phonaria-lab-staging.workers.dev` is a

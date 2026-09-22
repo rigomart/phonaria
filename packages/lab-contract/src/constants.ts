@@ -14,7 +14,7 @@ export type TargetAuthentication =
 			clientSecretEnv: string;
 	  };
 
-export interface LabContractTarget {
+export interface ContractTarget {
 	name: string;
 	baseUrl: string;
 	expectedCanonicalOrigin: string;
@@ -59,7 +59,7 @@ export const CLIENT_HIT_WORD = KNOWN_WORD;
  * Server-tier transcription baseline probe. Must not be `MISSING_WORD`.
  * Verified in `src/baseline-fixtures.test.ts`: absent from curated-1k and
  * curated-10k, present in CMUdict (`AARDVARK` → `A1 R D V A2 R K`), which is
- * the dictionary loaded into Turso. Live Lab asserts IPA, not "Not found".
+ * the dictionary loaded into Turso. Live Phonaria asserts IPA, not "Not found".
  */
 export const SERVER_HIT_WORD = "aardvark";
 export const INPUT_MAX_LENGTH = 200;

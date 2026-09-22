@@ -32,7 +32,7 @@ jobs:
         run: bun run check-types
       - name: Test
         run: bun run test
-      - name: Production build (Lab Cloudflare)
+      - name: Production build
         run: bun --cwd apps/lab build
         env:
           CLOUDFLARE_ENV: production

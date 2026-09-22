@@ -1,4 +1,4 @@
-name: Lab contract
+name: Browser contract
 
 on:
   workflow_dispatch:
@@ -28,7 +28,7 @@ jobs:
         run: bun ci
       - name: Install Playwright Chromium
         run: bun --cwd packages/lab-contract e2e:install
-      - name: Run Lab contract
+      - name: Run browser contract
         env:
           CI: true
           LAB_CONTRACT_TARGET: ${{ inputs.target }}

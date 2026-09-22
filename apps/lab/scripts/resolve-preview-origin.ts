@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Build the Cloudflare workers.dev origin for a Lab Start Worker
+ * Build the Cloudflare workers.dev origin for a preview Worker
  * (`phonaria-lab-pr-<n>` or `phonaria-lab-staging`).
  *
  * `LAB_WORKERS_DEV_SUBDOMAIN` may be the account slug (`mirdor-dev`) or the

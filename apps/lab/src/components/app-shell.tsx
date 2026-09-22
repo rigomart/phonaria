@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import type { LabFlags } from "@/lib/flags";
+import type { AppFlags } from "@/lib/flags";
 import { Footer } from "./footer";
 import { Header } from "./header";
 
-/** Shared Lab chrome for the TanStack Start route tree. */
-export function LabShell({ flags, children }: { flags: LabFlags; children: ReactNode }) {
+/** Shared application chrome for the TanStack Start route tree. */
+export function AppShell({ flags, children }: { flags: AppFlags; children: ReactNode }) {
 	return (
 		<div className="min-h-screen flex flex-col">
 			<Header flags={flags} />

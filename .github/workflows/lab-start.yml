@@ -1,4 +1,4 @@
-name: Lab Start
+name: Preview
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
           echo "Staging origin: $url"
       - name: Generate Cloudflare Worker types
         run: bun --cwd apps/lab cf-typegen
-      - name: Production build (Lab Start)
+      - name: Production build
         run: bun --cwd apps/lab build
       - name: Assert staging Worker name
         working-directory: apps/lab
@@ -109,7 +109,7 @@ jobs:
           url="$(bun apps/lab/scripts/resolve-preview-origin.ts "$name" "$SUBDOMAIN")"
           echo "name=$name" >> "$GITHUB_OUTPUT"
           echo "url=$url" >> "$GITHUB_OUTPUT"
-      - name: Production build (Lab Start)
+      - name: Production build
         env:
           CLOUDFLARE_ENV: preview
           SITE_URL: ${{ steps.origin.outputs.url }}
@@ -154,11 +154,11 @@ jobs:
           script: |
             const url = `${{ steps.origin.outputs.url }}`;
             const body = [
-              '## Lab Start preview',
+              '## Preview',
               '',
               `Protected Cloudflare preview: ${url}`,
               '',
-              'This preview runs the complete TanStack Start Lab, with Practice enabled when FLAG_PRACTICE is on.',
+              'This preview runs the complete Phonaria application, with Practice enabled when FLAG_PRACTICE is on.',
               'Cloudflare Access must remain required. Do not share an unprotected URL.',
             ].join('\n');
             const { data: comments } = await github.rest.issues.listComments({
@@ -166,7 +166,9 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            const existing = comments.find((comment) => comment.body?.includes('Lab Start preview'));
+            const existing = comments.find((comment) =>
+              comment.body?.includes('## Preview') || comment.body?.includes('Lab Start preview'),
+            );
             if (existing) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
@@ -221,7 +223,7 @@ jobs:
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "SITE_URL=$url" >> "$GITHUB_ENV"
           echo "Staging origin: $url"
-      - name: Production build (Lab Start)
+      - name: Production build
         run: bun --cwd apps/lab build
       - name: Assert staging Worker name
         working-directory: apps/lab
@@ -250,7 +252,7 @@ jobs:
           WORKER_BUNDLE_DIR: dist
           WORKER_METRICS_OUT: worker-metrics.json
         run: bun ./scripts/record-worker-metrics.ts
-      - name: Run the Lab contract
+      - name: Run the browser contract
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CF_ACCESS_CLIENT_ID != ''
         env:
           CI: true

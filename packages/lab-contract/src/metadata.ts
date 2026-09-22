@@ -1,5 +1,5 @@
 import type { APIRequestContext, APIResponse } from "@playwright/test";
-import { INDEXABLE_PATHS, type LabContractTarget } from "./constants";
+import { INDEXABLE_PATHS, type ContractTarget } from "./constants";
 
 export async function fetchDocument(
 	request: APIRequestContext,
@@ -30,15 +30,15 @@ export function canonicalHref(html: string): string | undefined {
 	return match?.[1] !== undefined ? decode(match[1]) : undefined;
 }
 
-export function expectedCanonical(target: LabContractTarget, path: string): string {
+export function expectedCanonical(target: ContractTarget, path: string): string {
 	return path === "/" ? target.expectedCanonicalOrigin : `${target.expectedCanonicalOrigin}${path}`;
 }
 
-export function expectedRobots(target: LabContractTarget): string {
+export function expectedRobots(target: ContractTarget): string {
 	return target.indexingEnabled ? "index, follow" : "noindex, follow";
 }
 
-export function expectedSitemapUrls(target: LabContractTarget): string[] {
+export function expectedSitemapUrls(target: ContractTarget): string[] {
 	return INDEXABLE_PATHS.map((path) => expectedCanonical(target, path));
 }
 

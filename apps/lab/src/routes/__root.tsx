@@ -2,7 +2,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-r
 import type { ReactNode } from "react";
 import { AppProviders } from "@/components/app-providers";
 import { EnsureDocumentTitle } from "@/components/ensure-document-title";
-import { LabShell } from "@/components/lab-shell";
+import { AppShell } from "@/components/app-shell";
 import { NotFoundContent } from "@/components/not-found-content";
 import { themeInitScript } from "@/components/theme";
 import { buildRootHead } from "@/lib/document-head";
@@ -26,9 +26,9 @@ export const Route = createRootRoute({
 function RootComponent() {
 	return (
 		<AppProviders>
-			<LabShell flags={flags.snapshot()}>
+			<AppShell flags={flags.snapshot()}>
 				<Outlet />
-			</LabShell>
+			</AppShell>
 		</AppProviders>
 	);
 }

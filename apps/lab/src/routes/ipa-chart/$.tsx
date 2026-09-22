@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { notFound } from "@/lib/navigation";
 
 /**
- * Unknown chart and articulation paths must render the Lab not-found page
+ * Unknown chart and articulation paths must render the application not-found page
  * instead of a generic Worker failure.
  */
 export const Route = createFileRoute("/ipa-chart/$")({

@@ -1,4 +1,4 @@
-name: Cleanup Lab preview
+name: Cleanup preview
 
 on:
   pull_request:

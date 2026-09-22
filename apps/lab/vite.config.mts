@@ -10,7 +10,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
 
-const labRoot = path.dirname(fileURLToPath(import.meta.url));
+const appRoot = path.dirname(fileURLToPath(import.meta.url));
 const curated10kStub = new URL("./src/lib/phoneme-lookup/curated-10k.ssr-stub.ts", import.meta.url)
 	.pathname;
 
@@ -41,13 +41,13 @@ function publicBucketUrl(): string {
 }
 
 /**
- * Worker `vars` are request-time on the server. The Lab shell also reads
+ * Worker `vars` are request-time on the server. The app shell also reads
  * `FLAG_PRACTICE` while hydrating, so the client bundle must see the same
  * bake-at-build value as Credits site config.
  */
-function definePublicLabFlags(): Plugin {
+function definePublicAppFlags(): Plugin {
 	return {
-		name: "define-public-lab-flags",
+		name: "define-public-app-flags",
 		config() {
 			return {
 				define: {
@@ -68,7 +68,7 @@ export default defineConfig({
 	resolve: {
 		tsconfigPaths: true,
 		alias: {
-			"@": path.join(labRoot, "src"),
+			"@": path.join(appRoot, "src"),
 		},
 	},
 	define: {
@@ -79,7 +79,7 @@ export default defineConfig({
 	plugins: [
 		stubCurated10kOnSsr(),
 		cloudflare({ viteEnvironment: { name: "ssr" } }),
-		definePublicLabFlags(),
+		definePublicAppFlags(),
 		tanstackStart({
 			srcDirectory: "src",
 			prerender: {

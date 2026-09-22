@@ -3,7 +3,7 @@ import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
 import { type DatabaseConfig, resolveDatabaseConfig } from "./config";
 import * as schema from "./schema";
 
-export type LabDatabase = LibSQLDatabase<typeof schema>;
+export type AppDatabase = LibSQLDatabase<typeof schema>;
 
 export type LibsqlClientFactory = (config: { url: string; authToken?: string }) => Client;
 
@@ -55,7 +55,7 @@ function wrapReadOnly(client: Client): void {
 export function createDatabase(
 	config: DatabaseConfig,
 	options: { readOnly?: boolean; createClient?: LibsqlClientFactory } = {},
-): LabDatabase {
+): AppDatabase {
 	const openClient = options.createClient ?? createClient;
 	const client = openClient({
 		url: config.url,
@@ -69,7 +69,7 @@ export function createDatabase(
 	return drizzle(client, { schema });
 }
 
-let cached: { key: string; db: LabDatabase } | undefined;
+let cached: { key: string; db: AppDatabase } | undefined;
 
 function cacheKey(config: DatabaseConfig): string {
 	return `${config.url}\0${config.authToken ?? ""}`;
@@ -79,7 +79,7 @@ function cacheKey(config: DatabaseConfig): string {
  * Lazily construct the default runtime database. Importing this module does
  * not read credentials or open a connection.
  */
-export function getDb(explicit?: DatabaseConfig): LabDatabase {
+export function getDb(explicit?: DatabaseConfig): AppDatabase {
 	const config = explicit ?? resolveDatabaseConfig();
 	const key = cacheKey(config);
 	if (cached?.key === key) {

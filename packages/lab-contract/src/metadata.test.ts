@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { LabContractTarget } from "./constants";
+import type { ContractTarget } from "./constants";
 import { expectedCanonical, expectedRobots, expectedSitemapUrls } from "./metadata";
 
 const target = {
@@ -16,7 +16,7 @@ const target = {
 		practiceSession: false,
 	},
 	skipReasons: {},
-} satisfies LabContractTarget;
+} satisfies ContractTarget;
 
 describe("metadata helpers", () => {
 	it("builds canonical URLs without a trailing slash on the origin", () => {

@@ -34,6 +34,6 @@ describe("Practice word data loading", () => {
 
 	it("inlines FLAG_PRACTICE for the Start client bundle", () => {
 		expect(src("vite.config.mts")).toContain("process.env.FLAG_PRACTICE");
-		expect(src("vite.config.mts")).toContain("define-public-lab-flags");
+		expect(src("vite.config.mts")).toContain("define-public-app-flags");
 	});
 });

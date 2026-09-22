@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-	type LabContractTarget,
+	type ContractTarget,
 	TARGET_CAPABILITIES,
 	type TargetAuthentication,
 	type TargetCapability,
@@ -27,12 +27,12 @@ export function listTargetNames(targetsDir = TARGETS_DIR): string[] {
 export function loadTargetFromEnv(
 	env: NodeJS.Dict<string> = process.env,
 	targetsDir = TARGETS_DIR,
-): LabContractTarget {
+): ContractTarget {
 	const name = env.LAB_CONTRACT_TARGET?.trim() || "cloudflare-production";
 	const available = listTargetNames(targetsDir);
 	if (!available.includes(name)) {
 		throw new TargetConfigError(
-			`Unknown Lab contract target "${name}". Available targets: ${available.join(", ")}.`,
+			`Unknown contract target "${name}". Available targets: ${available.join(", ")}.`,
 		);
 	}
 
@@ -41,12 +41,12 @@ export function loadTargetFromEnv(
 	return applyEnvOverrides(target, env);
 }
 
-export function getTarget(): LabContractTarget {
+export function getTarget(): ContractTarget {
 	return loadTargetFromEnv();
 }
 
 export function extraHttpHeaders(
-	target: LabContractTarget,
+	target: ContractTarget,
 	env: NodeJS.Dict<string> = process.env,
 ): Record<string, string> {
 	if (target.authentication.type === "none") return {};
@@ -65,7 +65,7 @@ export function extraHttpHeaders(
 	};
 }
 
-function applyEnvOverrides(target: LabContractTarget, env: NodeJS.Dict<string>): LabContractTarget {
+function applyEnvOverrides(target: ContractTarget, env: NodeJS.Dict<string>): ContractTarget {
 	const baseUrlOverride = env.LAB_CONTRACT_BASE_URL?.trim();
 	const canonicalOverride = env.LAB_CONTRACT_CANONICAL_ORIGIN?.trim();
 	const startLocal =
@@ -96,7 +96,7 @@ function applyEnvOverrides(target: LabContractTarget, env: NodeJS.Dict<string>):
 	};
 }
 
-function parseTarget(raw: unknown, expectedName: string): LabContractTarget {
+function parseTarget(raw: unknown, expectedName: string): ContractTarget {
 	if (!isRecord(raw)) {
 		throw new TargetConfigError(`Target "${expectedName}" must be a JSON object.`);
 	}

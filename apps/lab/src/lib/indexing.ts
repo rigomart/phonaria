@@ -1,7 +1,7 @@
 import { getSiteUrl, isIndexingEnabled } from "./site";
 
 /**
- * Indexable Lab paths. `/ipa-chart` only redirects, and Practice stays out of
+ * Indexable application paths. `/ipa-chart` only redirects, and Practice stays out of
  * search whether or not its flag is on.
  */
 export const INDEXABLE_PATHS = [

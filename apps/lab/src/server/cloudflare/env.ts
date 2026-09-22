@@ -10,7 +10,7 @@ export type WorkerRateLimit = {
 	limit(options: { key: string }): Promise<{ success: boolean }>;
 };
 
-export type LabWorkerEnv = {
+export type WorkerEnv = {
 	SITE_URL?: string;
 	SITE_INDEXING_ENABLED?: string;
 	FLAG_PRACTICE?: string;
@@ -21,13 +21,13 @@ export type LabWorkerEnv = {
 	DEFINITION_RATE_LIMIT: WorkerRateLimit;
 };
 
-export function getWorkerEnv(): LabWorkerEnv {
+export function getWorkerEnv(): WorkerEnv {
 	return env;
 }
 
 export function readWorkerString(
-	bindings: LabWorkerEnv,
-	name: keyof LabWorkerEnv,
+	bindings: WorkerEnv,
+	name: keyof WorkerEnv,
 ): string | undefined {
 	const value = bindings[name];
 	if (typeof value !== "string") return undefined;
@@ -35,6 +35,6 @@ export function readWorkerString(
 	return trimmed ? trimmed : undefined;
 }
 
-export function getWorkerString(name: keyof LabWorkerEnv): string | undefined {
+export function getWorkerString(name: keyof WorkerEnv): string | undefined {
 	return readWorkerString(getWorkerEnv(), name);
 }

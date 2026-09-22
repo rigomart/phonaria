@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Write a Start/Wrangler `.dev.vars` file that contains only public Lab
+ * Write a Start/Wrangler `.dev.vars` file that contains only public application
  * configuration. Never copy the full process environment — that would leak
  * tokens into the prerender Worker.
  *

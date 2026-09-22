@@ -1,5 +1,5 @@
 import { type DatabaseConfig, resolveDatabaseConfig } from "@/db/config";
-import { createDatabase, type LabDatabase, type LibsqlClientFactory } from "@/db/drizzle";
+import { createDatabase, type AppDatabase, type LibsqlClientFactory } from "@/db/drizzle";
 import { processWords as defaultProcessWords } from "@/lib/g2p/service";
 import type { TranscriptionWordsOutput } from "@/lib/transcription/contract";
 import { TranscriptionError, transcribeWords } from "@/lib/transcription/service";
@@ -8,7 +8,7 @@ import { logWorkerEvent } from "@/server/cloudflare/log";
 
 export type TranscribeOnWorkerDependencies = {
 	createClient?: LibsqlClientFactory;
-	openDatabase?: (config: DatabaseConfig) => LabDatabase;
+	openDatabase?: (config: DatabaseConfig) => AppDatabase;
 	processWords?: typeof defaultProcessWords;
 	rateLimitKey?: string;
 	log?: typeof logWorkerEvent;
@@ -23,7 +23,7 @@ export type TranscriptionWorkerEnv = {
 function openWorkerDatabase(
 	config: DatabaseConfig,
 	dependencies: TranscribeOnWorkerDependencies,
-): LabDatabase {
+): AppDatabase {
 	if (dependencies.openDatabase) {
 		return dependencies.openDatabase(config);
 	}

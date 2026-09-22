@@ -16,8 +16,8 @@ There is no second surface, so no qualifier is needed to say which one is meant.
 _Avoid_: Lab, the Lab app, the new surface, the legacy web application
 
 **Lab**:
-A retired product term. It survives only as the `apps/lab` directory and the `phonaria-lab`
-Worker name, which are deployment identifiers. Do not use it to name a product surface, an
+A retired product term. [#254](https://github.com/rigomart/phonaria/issues/254) removes leftover
+directory, package, CI, secret, and Worker names. Do not use it to name a product surface, an
 audience, or a class of feature.
 _Avoid_: Using "Lab" for anything a learner would see
 

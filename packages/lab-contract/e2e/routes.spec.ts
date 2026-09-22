@@ -2,7 +2,7 @@ import { SITE_NAME } from "../src/constants";
 import { expect, test } from "../src/fixtures";
 import { notFoundHeading } from "../src/locators";
 
-test.describe("Lab routes", () => {
+test.describe("Application routes", () => {
 	test("serves the transcription landing page", async ({ page }) => {
 		const response = await page.goto("/");
 		expect(response?.status()).toBe(200);

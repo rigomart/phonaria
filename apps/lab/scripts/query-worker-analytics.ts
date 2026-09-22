@@ -24,7 +24,7 @@ export type AnalyticsSummary = {
 	failureStatuses: Record<string, number>;
 };
 
-const QUERY = `query LabWorkerAnalytics($accountTag: string, $start: string, $end: string, $scriptName: string) {
+const QUERY = `query WorkerAnalytics($accountTag: string, $start: string, $end: string, $scriptName: string) {
   viewer {
     accounts(filter: { accountTag: $accountTag }) {
       workersInvocationsAdaptive(limit: 100, filter: { scriptName: $scriptName, datetime_geq: $start, datetime_leq: $end }) {
