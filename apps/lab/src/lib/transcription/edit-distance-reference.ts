@@ -1,13 +1,7 @@
 /**
- * A slow, obvious Damerau-Levenshtein distance, for tests only.
- *
- * Its whole value is being written differently from the code it checks: `classifyEdits` walks
- * an alignment and stops at a budget, while this fills the full matrix. Both `spelling-edits`
- * and `spelling-search` compare against it — the first to confirm a script's length really is
- * the edit distance, the second to confirm the length and letter-mask prefilters never drop a
- * word that genuine classification would have kept.
- *
- * Deliberately unoptimised, and deliberately not importing anything it verifies.
+ * A slow, obvious Damerau-Levenshtein distance, for tests only. Its value is being written
+ * differently from the code it checks — a full matrix against a budgeted alignment walk — so
+ * it deliberately imports nothing it verifies.
  */
 export function damerauLevenshtein(left: string, right: string): number {
 	const rows = left.length + 1;
@@ -24,8 +18,7 @@ export function damerauLevenshtein(left: string, right: string): number {
 				table[row][column - 1] + 1,
 				table[row - 1][column - 1] + cost,
 			);
-			// Adjacent transposition, restricted (optimal string alignment) — the same variant
-			// `classifyEdits` reads, which advances past both letters after a swap.
+			// Restricted (optimal string alignment), matching what `classifyEdits` reads.
 			if (
 				row > 1 &&
 				column > 1 &&

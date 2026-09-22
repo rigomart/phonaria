@@ -2,39 +2,19 @@ import { tokenizeTextWithSpans } from "@/lib/g2p/text-processing";
 import { classifyEdits, type EditScript, isStrongScript } from "./spelling-edits";
 import { MAX_EDITS, reachesTwoEdits, type SpellingVocabulary } from "./spelling-search";
 
-/**
- * The policy's numbers, in one place and passable, because the evaluation corpus has to sweep
- * them. Exported so `scripts/review-spelling-cases.ts` drives *this* code at every swept point
- * rather than a copy of it: the threshold tables in the research note are only worth anything
- * if the thing measured is the thing that ships.
- */
+/** Exported so the evaluation corpus sweeps this policy rather than a copy of it. */
 export interface SuggestionWeights {
-	/** The widest slip to read. One reproduces the policy shipped before issue #248. */
+	/** One reproduces the policy shipped before issue #248. */
 	maxEdits: 1 | 2;
-	/**
-	 * Zipf score is `1 / (rank + 1)`. Ten times would silence named stories:
-	 * `recieve` also neighbours `relieve` (~6.7x) and `dont` neighbours `done` (~3.4x).
-	 * Three times still keeps similar-rank misses quiet (`from`/`form` at 25 vs 30).
-	 */
+	/** Ten would silence `recieve`/`relieve` (~6.7x) and `dont`/`done` (~3.4x). */
 	leadRatio: number;
 	/** Scores an unranked candidate just past the curated list, so it still rivals a leader. */
 	noFrequencyEvidenceRank: number;
-	/**
-	 * How much a weak edit pattern discounts a candidate when separating rivals. This is what
-	 * lets `adress → address` (a letter left out) beat `dress` (a letter dropped), which rank
-	 * alone could not separate: 1279 against 1776 is nowhere near a 3x lead.
-	 */
+	/** Separates `adress → address` from `dress`, which rank alone cannot: 1279 against 1776. */
 	weakPattern: number;
 	/**
-	 * How much the second edit discounts a candidate against a one-edit rival.
-	 *
-	 * This is the knob the wider search made necessary. A second edit is far less likely than a
-	 * first, and a two-edit neighbour of a common word is often itself a common word: `recieve`
-	 * is one edit from `receive` and two from `received`. Left undiscounted, that rival denies
-	 * `receive` its lead and the offer disappears — the ticket's "more misleading competitors",
-	 * exactly. At a tenth, a two-edit reading wins only when it is roughly thirty times more
-	 * common than the one-edit reading it displaces. The tuning split is flat from 0.15 down to
-	 * 0.05; a tenth is the round value in that range.
+	 * Undiscounted, `received` denies `receive` its lead and silences `recieve` entirely. A
+	 * tenth means a two-edit reading wins only when it is ~30x more common than a one-edit one.
 	 */
 	twoEdit: number;
 }
@@ -47,11 +27,7 @@ export const DEFAULT_SUGGESTION_WEIGHTS: SuggestionWeights = {
 	twoEdit: 0.1,
 };
 
-/**
- * Per-request ceiling on vocabulary scans. Each scan is bounded on its own, but a paragraph
- * of nonsense should not turn into one scan per word. Earlier tokens win the budget: the
- * learner reads the offer left to right, and the order is then independent of the data.
- */
+/** A paragraph of nonsense should not become one scan per word. Earliest tokens win. */
 export const MAX_EXPANDED_TOKENS_PER_REQUEST = 12;
 
 export interface SpellingMiss {
@@ -95,14 +71,11 @@ export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion
 		const token = tokens[tokenIndex];
 		if (token === undefined) continue;
 
-		// The server searched the full dictionary one edit out; the vocabulary scan reaches
-		// the second edit. Both feed one pool, and the policy judges each candidate the same.
+		// Server candidates (one edit, full dictionary) and scan candidates share one pool.
 		const candidatePool = new Set(candidates.map((candidate) => candidate.toLowerCase()));
 
-		// Only tokens the scan can actually tell us something new about are charged for it.
-		// Below the two-edit length the scan would return curated words one edit out, which the
-		// server's full-dictionary search has already supplied — so it would spend the request
-		// budget to learn nothing, and a later recoverable token would be denied its search.
+		// Short tokens are not charged: their scan only returns curated words one edit out,
+		// which the server already supplied, so it would spend budget a later token needs.
 		const normalized = token.toLowerCase();
 		if (weights.maxEdits > 1 && reachesTwoEdits(normalized)) {
 			const already = scanned.get(normalized);
@@ -150,18 +123,9 @@ interface PlausibleCandidate {
 type Admission = "on the slip alone" | "needs frequency evidence" | "never";
 
 /**
- * The absolute plausibility gate, applied before any candidate is compared with any other.
- *
- * Read the tiers as one sentence. A single slip that contradicts nothing the learner typed
- * stands on its own, with no idea how common the word is — that is what keeps
- * `aardvrk → aardvark` alive. Any weaker reading has to be carried by the curated list
- * vouching for the word. And two edits are read only when *both* contradict nothing: two weak
- * edits is not slip recovery but a search for anything nearby, and something is always nearby.
- *
- * A tighter floor than curated membership was measured and rejected. Capping weak readings at
- * a better rank than 10,000 cost one-slip recovery (83% down to 62% at a 5,000 cap) and *raised*
- * the wrong-offer rate, because dropping a correct leader can leave a wrong rival standing
- * alone. See the research note.
+ * The absolute gate, applied before any candidate meets any other. A single slip contradicting
+ * nothing typed stands alone (`aardvrk → aardvark`); anything weaker needs the curated list to
+ * vouch for the word. A tighter rank floor was measured and rejected — see the research note.
  */
 function admissionFor(script: EditScript): Admission {
 	const strong = isStrongScript(script);
@@ -176,12 +140,8 @@ function scoreOf(script: EditScript, rank: number | null, weights: SuggestionWei
 }
 
 /**
- * Offers the candidate the evidence supports, or nothing. Uniqueness is settled after the
- * plausibility gate, never before it: finding exactly one candidate says only that the search
- * found one word.
- *
- * Exported for the evaluation corpus, which judges one token at a time and assembles its own
- * candidate pool so it can reproduce the one-edit baseline.
+ * Uniqueness is settled after the gate, never before: one surviving candidate means only that
+ * the search found one word. Exported for the corpus, which judges a token at a time.
  */
 export function pickPlausibleNeighbour(
 	token: string,

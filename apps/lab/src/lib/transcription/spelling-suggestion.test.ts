@@ -326,10 +326,7 @@ describe("getVisibleSpellingSuggestion", () => {
 	});
 });
 
-/**
- * The bounded second edit. The server only ever finds one-edit candidates, so everything here
- * arrives from the vocabulary scan: the misses carry no candidates at all.
- */
+/** Everything here arrives from the vocabulary scan: the misses carry no candidates. */
 describe("suggestSpelling two-edit recovery", () => {
 	function offerFor(token: string, ranks: Record<string, number>) {
 		const result = suggestSpelling({
@@ -346,26 +343,23 @@ describe("suggestSpelling two-edit recovery", () => {
 	});
 
 	it("offers definitely for definatly rather than the nearer defiantly", () => {
-		// `defiantly` is one edit away but nothing vouches for it, and the edit reorders a
-		// consonant. `definitely` is two edits away, both of which contradict nothing typed.
+		// `defiantly` is nearer, but reorders a consonant and nothing vouches for it.
 		expect(offerFor("definatly", { definitely: 1152 })).toBe("definitely");
 		expect(offerFor("definatly", { definitely: 1152, defiantly: 9_000 })).toBe("definitely");
 	});
 
 	it("refuses a two-edit candidate the curated list says nothing about", () => {
-		// Two edits and no frequency evidence is a search for anything nearby, not a reading.
+		// Two edits with no frequency evidence is a search for anything nearby.
 		expect(offerFor("acomodate", {})).toBeNull();
 	});
 
 	it("refuses a two-edit candidate when only one of the edits is strong", () => {
-		// `kompuuter` drops a doubled `u`, which contradicts nothing, but also swaps `k` for
-		// `c`, which guesses at a consonant. One strong edit does not carry the other.
+		// A dropped doubled `u` contradicts nothing, but `k` for `c` guesses at a consonant.
 		expect(offerFor("kompuuter", { computer: 1_500 })).toBeNull();
 	});
 
 	it("keeps a one-edit reading ahead of a two-edit rival of similar frequency", () => {
-		// `received` is two strong edits from `recieve` and slightly more common than `receive`.
-		// Undiscounted it would deny `receive` its lead and silence the offer entirely.
+		// Undiscounted, `received` would deny `receive` its lead and silence the offer.
 		expect(offerFor("recieve", { received: 1_000, receive: 1_484 })).toBe("receive");
 	});
 
@@ -374,7 +368,7 @@ describe("suggestSpelling two-edit recovery", () => {
 	});
 
 	it("does not reach two edits for a token too short to bound them", () => {
-		// Every short word neighbours every other, so two edits out of `cn` settles nothing.
+		// Every short word neighbours every other, so two edits out settles nothing.
 		expect(offerFor("cn", { coin: 2_000 })).toBeNull();
 	});
 
@@ -384,8 +378,7 @@ describe("suggestSpelling two-edit recovery", () => {
 	});
 
 	it("judges every rival in a crowded field rather than a truncated sample", () => {
-		// One substitution from the token, all curated, all comparably common: the policy must
-		// see the whole field and abstain, not offer whichever few a truncating search returned.
+		// A crowded field of comparably common rivals: the policy must see it all and abstain.
 		const crowd: Record<string, number> = {};
 		for (let letter = 0; letter < 26; letter += 1) {
 			const replacement = String.fromCodePoint(97 + letter);
@@ -401,7 +394,7 @@ describe("suggestSpelling two-edit recovery", () => {
 			{ length: MAX_EXPANDED_TOKENS_PER_REQUEST + 1 },
 			(_, index) => `acomodate${"x".repeat(index)}`,
 		);
-		// Only the first token is a real two-edit slip; the rest exist to spend the budget.
+		// Only the first is a real slip; the rest exist to spend the budget.
 		const result = suggestSpelling({
 			originalText: tokens.join(" "),
 			tokens,
@@ -413,8 +406,7 @@ describe("suggestSpelling two-edit recovery", () => {
 	});
 
 	it("does not spend the request budget on tokens too short to reach two edits", () => {
-		// A short token's scan can only return curated words one edit out, which the server has
-		// already supplied. Charging for it would deny a later recoverable token its search.
+		// Charging short tokens would deny a later recoverable token its search.
 		const shortMisses = Array.from({ length: MAX_EXPANDED_TOKENS_PER_REQUEST }, () => "cn");
 		const tokens = [...shortMisses, "acomodate"];
 

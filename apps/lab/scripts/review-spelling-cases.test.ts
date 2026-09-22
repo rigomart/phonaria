@@ -40,9 +40,7 @@ describe("spelling suggestion corpus", () => {
 	});
 
 	it("sweeps the same policy the app ships", () => {
-		// The sweeps call `pickPlausibleNeighbour` directly, so there is no second implementation
-		// to drift. This pins the remaining seam: that assembling the pool per token and running
-		// it through the whole-text entry point agree.
+		// No second implementation to drift; this pins the per-token and whole-text paths agreeing.
 		expect(SHIPPED_POLICY).toBe(DEFAULT_SUGGESTION_WEIGHTS);
 
 		const drift: string[] = [];
@@ -58,8 +56,7 @@ describe("spelling suggestion corpus", () => {
 	});
 
 	it("reproduces the one-edit baseline by withholding the second edit", () => {
-		// The baseline must differ from the shipped policy only in reading one slip and
-		// discounting nothing, so the recorded before-column means what it says.
+		// The baseline differs only in reading one slip and discounting nothing.
 		expect(ONE_EDIT_BASELINE.maxEdits).toBe(1);
 		expect(ONE_EDIT_BASELINE.leadRatio).toBe(DEFAULT_SUGGESTION_WEIGHTS.leadRatio);
 		expect(ONE_EDIT_BASELINE.weakPattern).toBe(1);
@@ -79,9 +76,7 @@ describe("spelling suggestion corpus", () => {
 	});
 
 	it("never offers the nearer defiantly for definatly", () => {
-		// This is the requirement. `defiantly` is one edit away and a real word, so the search
-		// finds it — but the edit reorders a consonant and nothing vouches for the word.
-		// Offering it is the failure this work exists to avoid, under any policy.
+		// The requirement: the search finds `defiantly`, and no policy may offer it.
 		const outcome = byToken.get("definatly");
 		expect(outcome?.serverCandidates).toContain("defiantly");
 		expect(outcome?.got).not.toBe("defiantly");
@@ -89,9 +84,8 @@ describe("spelling suggestion corpus", () => {
 	});
 
 	it("records that definatly currently reaches definitely, without requiring it", () => {
-		// Not a requirement: the corpus marks this one's intent unsettled, so abstaining scores
-		// as an abstention and would pass the evaluation too. Recorded so that a later policy
-		// change has to restate what it does here rather than quietly dropping the offer.
+		// Not a requirement — intent is unsettled, so abstaining would pass too. Recorded so a
+		// later policy change has to restate what it does here.
 		expect(byToken.get("definatly")?.intended).toBeNull();
 		expect(byToken.get("definatly")?.got).toBe("definitely");
 		expect(byToken.get("definatly")?.verdict).toBe("correct");
@@ -137,8 +131,7 @@ describe("spelling suggestion corpus", () => {
 	});
 
 	it("records every case that never reaches suggestion", () => {
-		// CMUDict knows a fair few misspellings and names. A case that turns out to be a
-		// dictionary hit is scored as `not offered`, so it can never flatter the policy.
+		// CMUDict knows a fair few misspellings and names; those score `not offered`.
 		const hits = outcomes
 			.filter((outcome) => outcome.dictionaryHit)
 			.map((outcome) => outcome.token);
@@ -174,8 +167,7 @@ describe("spelling suggestion corpus", () => {
 	});
 
 	it("records the holdout outcome", () => {
-		// Written before the thresholds were chosen and read only after. Kept as an assertion so
-		// a later change to the policy has to restate what it does to cases it was not fitted to.
+		// Written before the thresholds were chosen, so a policy change has to restate this.
 		const holdout = outcomes.filter((outcome) => outcome.split === "holdout");
 		const of = (verdict: string) =>
 			holdout.filter((outcome) => outcome.verdict === verdict).map((outcome) => outcome.token);

@@ -1,9 +1,7 @@
 /**
- * Reads how a typed token could have become a dictionary word, within a small edit budget.
- *
- * The suggestion policy does not care about edit *distance* alone: it cares whether the
- * slip contradicts anything the learner typed. So each edit carries a strength, and the
- * classifier returns the most charitable reading of the slip rather than any reading.
+ * How a typed token could have become a dictionary word, within a small edit budget. The
+ * policy cares less about distance than about whether the slip contradicts what was typed,
+ * so each edit carries a strength and the most charitable reading wins.
  */
 
 const VOWEL_LETTERS = new Set(["a", "e", "i", "o", "u", "y"]);
@@ -14,10 +12,8 @@ export type EditKind = "insert" | "delete" | "substitute" | "transpose";
 export interface SpellingEdit {
 	kind: EditKind;
 	/**
-	 * True when the edit contradicts nothing the learner typed: they left a letter out,
-	 * repeated a keystroke, or moved between vowel letters — the ambiguous part of English
-	 * spelling. Replacing or reordering a consonant instead guesses at what they meant, and
-	 * a 126k-word dictionary holds a neighbour of that shape for almost any input.
+	 * True when the edit contradicts nothing typed: a letter left out, a repeated keystroke, or
+	 * a move between vowels. Guessing at a consonant is not — the dictionary always has one.
 	 */
 	strong: boolean;
 }
@@ -27,9 +23,8 @@ export interface EditScript {
 }
 
 /**
- * The most charitable script of at most `maxEdits` turning `token` into `candidate`, or
- * null when no script that short exists. Script length equals the real edit distance
- * (Damerau-Levenshtein, adjacent transpositions only) whenever that distance fits.
+ * The most charitable script of at most `maxEdits`, or null. Its length is the real
+ * Damerau-Levenshtein distance (adjacent transpositions only) whenever that fits the budget.
  */
 export function classifyEdits(
 	token: string,
@@ -56,9 +51,8 @@ export function isStrongScript(script: EditScript): boolean {
 }
 
 /**
- * Every script of exactly `budget` remaining edits that aligns `typed` from `i` with
- * `word` from `j`. Matching letters are consumed greedily: when two letters agree there is
- * always a shortest script that pairs them, so branching on them only repeats work.
+ * Every script of exactly `budget` edits aligning the two from `i`/`j`. Matching letters are
+ * consumed greedily — when two agree, some shortest script always pairs them.
  */
 function enumerate(
 	typed: string,
@@ -112,10 +106,7 @@ function enumerate(
 	return scripts;
 }
 
-/**
- * Most strong edits first, then strongest-earliest. Both orderings are total on the
- * enumerated scripts, so the chosen reading does not depend on branch order.
- */
+/** Most strong edits first, then strongest-earliest — total, so branch order cannot decide. */
 function pickMostCharitable(scripts: SpellingEdit[][]): SpellingEdit[] | undefined {
 	let best: SpellingEdit[] | undefined;
 	let bestKey: string | undefined;

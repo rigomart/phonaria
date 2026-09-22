@@ -1,53 +1,30 @@
 /**
- * Bounded neighbour search over the curated vocabulary.
+ * Retrieval for spelling suggestions, in two halves: the server enumerates one-edit variants
+ * and asks Turso; the second edit is searched the other way round, by scanning the curated 10k
+ * the browser already holds. Enumerating two edits would mean ~133k variants per token.
  *
- * The server already searches the full pronunciation dictionary one edit out. Reaching two
- * edits the same way is not affordable: a nine-letter token has ~530 one-edit variants and
- * ~133,000 second-order ones, far too many to enumerate and send to Turso.
- *
- * So the second edit is searched the other way round — scan the vocabulary and classify
- * each word — over the curated 10k the browser has already loaded for frequency ranks.
- * That costs no extra request, no extra payload, and no database index. It also matches
- * the policy: a two-edit candidate needs frequency evidence to be offered at all, so words
- * the curated list has never heard of could not be offered even if the search found them.
- *
- * `docs/research/issue-248-two-edit-spelling-suggestions.md` records the measured comparison
- * against a full-dictionary index and a database-backed lookup.
+ * Retrieval options and their measurements: `docs/research/issue-248-two-edit-spelling-suggestions.md`.
  */
 
 import { classifyEdits } from "./spelling-edits";
 
 const VARIANT_ALPHABET = "abcdefghijklmnopqrstuvwxyz'-";
 
-/**
- * Below this length, two edits stop being evidence of anything: almost every short word is
- * within two edits of almost every other, so `bg` and `cn` would pull in rivals rather than
- * evidence.
- */
+/** Below this, almost every short word is within two edits of almost every other. */
 export const MIN_LENGTH_FOR_TWO_EDITS = 6;
 
-/**
- * Whether a second edit is read for this token at all. The caller needs this to decide whether
- * a scan is worth charging to the request budget: below the threshold the scan returns curated
- * words one edit out, every one of which the server's full-dictionary search already found.
- */
+/** Callers check this before charging a scan to the request budget. */
 export function reachesTwoEdits(token: string): boolean {
 	return token.length >= MIN_LENGTH_FOR_TWO_EDITS;
 }
 
-/**
- * The widest slip the feature reads. Shared with the scoring policy: if the search reached
- * further than the policy classifies, it would only ever collect candidates that get dropped.
- */
+/** Shared with the scoring policy, which would drop anything found beyond it. */
 export const MAX_EDITS = 2;
 
 const LETTER_A = 97;
 const LETTER_Z = 122;
 
-/**
- * Curated ranks keyed by word, taken from the list's own order. The curated files are ordered
- * by frequency, so a word's rank is its position — which is why this is derived, not stored.
- */
+/** The curated lists are ordered by frequency, so a word's rank is its position. */
 export function ranksFromOrder(orderedWords: string[]): Record<string, number> {
 	const ranks: Record<string, number> = {};
 	for (const [index, word] of orderedWords.entries()) {
@@ -56,11 +33,7 @@ export function ranksFromOrder(orderedWords: string[]): Record<string, number> {
 	return ranks;
 }
 
-/**
- * Every word one slip from `word`, for the server to intersect with the full pronunciation
- * dictionary. This is the first edit's retrieval: enumerate the query, ask the database once.
- * A nine-letter token yields ~530 variants, which one `IN` query answers.
- */
+/** The first edit's retrieval: ~530 variants for a nine-letter token, answered by one query. */
 export function generateOneEditVariants(word: string): string[] {
 	const normalized = word.toLowerCase();
 	if (normalized.length === 0) return [];
@@ -112,10 +85,7 @@ export interface SpellingVocabulary {
 	nearWords(token: string): string[];
 }
 
-/**
- * The curated ranks double as the vocabulary: the list is both the word set searched and
- * the frequency evidence weighed, so the two can never disagree about which words exist.
- */
+/** The ranks double as the word set searched, so the two cannot disagree. */
 export function createSpellingVocabulary(ranksByWord: Record<string, number>): SpellingVocabulary {
 	const ranks = new Map<string, number>();
 	for (const [word, rank] of Object.entries(ranksByWord)) {
@@ -174,18 +144,9 @@ function countBits(value: number): number {
 }
 
 /**
- * Every curated word within the token's edit radius — all of them, deliberately.
- *
- * There is no ceiling on the result count. One here would be the wrong kind of bound: by the
- * time it could truncate, the scan has already paid for every candidate it found, so it saves
- * no measurable work — and it would give the search a say in the decision. The policy abstains
- * when rivals sit too close together, which it can only do for rivals it is shown; dropping
- * some of them in length order would let an arbitrary subset settle the offer. Tokens missing
- * an early consonant really do reach that many: `saring` has 67 curated neighbours.
- *
- * The per-token bound is on work instead, and it is structural: only lengths inside the budget
- * are visited, the letter mask rules out most of each bucket, and the curated list is a fixed
- * 10k asset. Measured worst case is 0.19 ms for one token, unchanged by dropping the old cap.
+ * Every match, uncapped: the policy abstains only over rivals it is shown, so truncating would
+ * let an arbitrary subset settle the offer (`saring` has 67 neighbours). The bound is the scan
+ * itself — at most the length buckets within budget, of a fixed 10k list.
  */
 function searchIndex(index: VocabularyIndex, rawToken: string): string[] {
 	const token = rawToken.toLowerCase();
