@@ -246,6 +246,7 @@ const HETERONYM_CASES: HeteronymCase[] = [
 	{ word: "live", sentence: "We watched a live show.", want: "lˈaɪv" },
 	{ word: "lead", sentence: "You lead the team.", want: "lˈid" },
 	{ word: "lead", sentence: "Old pipes were made of lead.", want: "lˈɛd" },
+	{ word: "lead", sentence: "She took the lead in the race.", want: "lˈid" },
 	{ word: "record", sentence: "She broke the world record.", want: "ɹˈɛkɝd" },
 	{ word: "record", sentence: "Please record the meeting.", want: "ɹɪkˈɔɹd" },
 	{ word: "close", sentence: "Please close the door.", want: "klˈoʊz" },
@@ -254,6 +255,7 @@ const HETERONYM_CASES: HeteronymCase[] = [
 	{ word: "wind", sentence: "Wind the clock before bed.", want: "wˈaɪnd" },
 	{ word: "tear", sentence: "A tear ran down her face.", want: "tˈɪɹ" },
 	{ word: "tear", sentence: "Do not tear the paper.", want: "tˈɛɹ" },
+	{ word: "tear", sentence: "There is a tear in my shirt.", want: "tˈɛɹ" },
 	{ word: "object", sentence: "What is that strange object?", want: "ˈɑbdʒɛkt" },
 	{ word: "object", sentence: "I object to this plan.", want: "əbdʒˈɛkt" },
 	{ word: "use", sentence: "What is the use of this?", want: "jˈus" },
@@ -263,6 +265,124 @@ const HETERONYM_CASES: HeteronymCase[] = [
 	{ word: "bass", sentence: "He plays bass in a band.", want: "bˈeɪs" },
 	{ word: "bass", sentence: "We caught a bass in the lake.", want: "bˈæs" },
 ];
+
+/** One reading of a word: the CMUDict variants that share it, tagged offline. */
+type Sense = { variants: string[]; pos: string; gloss: string };
+
+/**
+ * Hand-tagged for this experiment. At scale these would come from a tagged source such as
+ * Wiktionary's pronunciation sections, which are grouped by etymology and part of speech.
+ * Variants that share a reading are grouped, so `record` has two verb pronunciations.
+ */
+const SENSES: Record<string, Sense[]> = {
+	read: [
+		{
+			variants: ["ɹˈid"],
+			pos: "verb, present or future",
+			gloss: "to look at and understand written words, now or later",
+		},
+		{
+			variants: ["ɹˈɛd"],
+			pos: "verb, past tense or past participle",
+			gloss: "read at some point in the past",
+		},
+	],
+	live: [
+		{ variants: ["lˈɪv"], pos: "verb", gloss: "to be alive, or to have your home somewhere" },
+		{
+			variants: ["lˈaɪv"],
+			pos: "adjective or adverb",
+			gloss: "happening in real time, not recorded; alive; carrying electricity",
+		},
+	],
+	lead: [
+		{
+			variants: ["lˈid"],
+			pos: "verb, or noun",
+			gloss: "to guide or be in front; the first position, a clue, a dog's leash",
+		},
+		{ variants: ["lˈɛd"], pos: "noun", gloss: "the heavy grey metal; the graphite in a pencil" },
+	],
+	record: [
+		{
+			variants: ["ɹˈɛkɝd"],
+			pos: "noun or adjective",
+			gloss: "a stored account, a vinyl disc, or a best-ever result",
+		},
+		{
+			variants: ["ɹəkˈɔɹd", "ɹɪkˈɔɹd"],
+			pos: "verb",
+			gloss: "to capture sound, video, or information",
+		},
+	],
+	close: [
+		{
+			variants: ["klˈoʊz"],
+			pos: "verb, or noun",
+			gloss: "to shut or to end; the end of something",
+		},
+		{
+			variants: ["klˈoʊs"],
+			pos: "adjective or adverb",
+			gloss: "near in distance or time; intimate",
+		},
+	],
+	wind: [
+		{ variants: ["wˈɪnd"], pos: "noun", gloss: "moving air; breath" },
+		{
+			variants: ["wˈaɪnd"],
+			pos: "verb",
+			gloss: "to turn, twist, or coil, as in winding a clock or a winding road",
+		},
+	],
+	tear: [
+		{ variants: ["tˈɪɹ"], pos: "noun", gloss: "a drop of water from the eye" },
+		{
+			variants: ["tˈɛɹ"],
+			pos: "verb, or noun",
+			gloss: "to rip or pull apart; a rip or hole in something",
+		},
+	],
+	object: [
+		{
+			variants: ["ˈɑbdʒɛkt"],
+			pos: "noun",
+			gloss: "a thing you can see or touch; a goal; the object of a sentence",
+		},
+		{ variants: ["əbdʒˈɛkt"], pos: "verb", gloss: "to disagree with or protest against something" },
+	],
+	use: [
+		{ variants: ["jˈus"], pos: "noun", gloss: "the act, purpose, or value of using something" },
+		{ variants: ["jˈuz"], pos: "verb", gloss: "to employ something for a purpose" },
+	],
+	minute: [
+		{
+			variants: ["mˈɪnət"],
+			pos: "noun",
+			gloss: "sixty seconds; a short moment; notes of a meeting",
+		},
+		{
+			variants: ["maɪnˈut", "maɪnjˈut"],
+			pos: "adjective",
+			gloss: "extremely small, or very detailed",
+		},
+	],
+	bass: [
+		{
+			variants: ["bˈeɪs"],
+			pos: "noun or adjective",
+			gloss: "the lowest musical range, or the instrument that plays it",
+		},
+		{ variants: ["bˈæs"], pos: "noun", gloss: "a kind of fish" },
+	],
+};
+
+/**
+ * How each option is described to Jev. `ipa` is the first run; `pos` tests whether part of
+ * speech alone is enough; `sense` adds a plain-language meaning.
+ */
+const HETERONYM_MODES = ["ipa", "pos", "sense"] as const;
+type HeteronymMode = (typeof HETERONYM_MODES)[number];
 
 function toIpa(pronunciation: string): string {
 	return pronunciation
@@ -276,15 +396,50 @@ function toIpa(pronunciation: string): string {
 		.join("");
 }
 
-function heteronymRequest(entry: HeteronymCase, variants: string[]): ChoiceRequest {
+function sensesFor(word: string, variants: string[]): Sense[] {
+	const senses = SENSES[word];
+	if (!senses) throw new Error(`No senses tagged for "${word}"`);
+	const tagged = new Set(senses.flatMap((sense) => sense.variants));
+	const untagged = variants.filter((variant) => !tagged.has(variant));
+	if (untagged.length > 0) throw new Error(`Untagged ${word} variants: ${untagged.join(", ")}`);
+	return senses;
+}
+
+/** Criteria keys are what Jev answers with; each maps back to the variants it stands for. */
+function heteronymRequest(
+	entry: HeteronymCase,
+	variants: string[],
+	mode: HeteronymMode,
+): { request: ChoiceRequest; variantsByKey: Map<string, string[]> } {
 	const criteria: Record<string, string> = {};
-	for (const variant of variants)
-		criteria[variant] = `Pronounced /${variant}/ (IPA, General American).`;
+	const variantsByKey = new Map<string, string[]>();
+
+	if (mode === "ipa") {
+		for (const variant of variants) {
+			criteria[variant] = `Pronounced /${variant}/ (IPA, General American).`;
+			variantsByKey.set(variant, [variant]);
+		}
+	} else {
+		sensesFor(entry.word, variants).forEach((sense, index) => {
+			const key = `option_${index + 1}`;
+			criteria[key] =
+				mode === "pos"
+					? `"${entry.word}" used as a ${sense.pos}.`
+					: `"${entry.word}" used as a ${sense.pos}, meaning: ${sense.gloss}.`;
+			variantsByKey.set(key, sense.variants);
+		});
+	}
+
 	return {
-		state: { sentence: entry.sentence, word: entry.word },
-		instructions:
-			"How is the word pronounced in this sentence, in General American English? Use the meaning and grammar of the sentence.",
-		criteria,
+		request: {
+			state: { sentence: entry.sentence, word: entry.word },
+			instructions:
+				mode === "ipa"
+					? "How is the word pronounced in this sentence, in General American English? Use the meaning and grammar of the sentence."
+					: "How is the word used in this sentence? Use the meaning and grammar of the sentence.",
+			criteria,
+		},
+		variantsByKey,
 	};
 }
 
@@ -292,33 +447,69 @@ async function runHeteronyms(endpoint: Endpoint) {
 	const cmudict = JSON.parse(readFileSync(CMUDICT_PATH, "utf8")) as {
 		data: Record<string, string[]>;
 	};
-	const tally = { default: 0, jev: 0 };
 
-	console.log("\n## Heteronyms\n");
-	console.log("| sentence | want | app default | jev (confidence) |");
-	console.log("| --- | --- | --- | --- |");
+	/** Right when the pick shares a reading with the wanted variant. */
+	const isRight = (entry: HeteronymCase, picked: string[]) => {
+		const variants = (cmudict.data[entry.word.toUpperCase()] ?? []).map(toIpa);
+		const wanted = sensesFor(entry.word, variants).find((sense) =>
+			sense.variants.includes(entry.want),
+		);
+		return picked.some((variant) => wanted?.variants.includes(variant));
+	};
 
-	const results = await Promise.all(
+	const rows = await Promise.all(
 		HETERONYM_CASES.map(async (entry) => {
 			const variants = (cmudict.data[entry.word.toUpperCase()] ?? []).map(toIpa);
-			const answer = await askChoice(endpoint, heteronymRequest(entry, variants));
-			return { entry, variants, answer };
+			const picks = await Promise.all(
+				HETERONYM_MODES.map(async (mode) => {
+					const { request, variantsByKey } = heteronymRequest(entry, variants, mode);
+					const answer = await askChoice(endpoint, request);
+					const picked = variantsByKey.get(answer.choice) ?? [];
+					return { mode, picked, confidence: answer.confidence, right: isRight(entry, picked) };
+				}),
+			);
+			const fallback = variants[0] ?? "?";
+			return { entry, fallback, defaultRight: isRight(entry, [fallback]), picks };
 		}),
 	);
 
-	for (const { entry, variants, answer } of results) {
-		const fallback = variants[0] ?? "?";
-		if (fallback === entry.want) tally.default += 1;
-		if (answer.choice === entry.want) tally.jev += 1;
-		const mark = (value: string) => (value === entry.want ? "" : " **wrong**");
+	console.log("\n## Heteronyms\n");
+	console.log(`| sentence | want | app default | ${HETERONYM_MODES.join(" | ")} |`);
+	console.log(`| --- | --- | --- | ${HETERONYM_MODES.map(() => "---").join(" | ")} |`);
+
+	const mark = (right: boolean) => (right ? "" : " **wrong**");
+	const tally: Record<string, { right: number; confident: number; confidentRight: number }> = {};
+	for (const mode of ["default", ...HETERONYM_MODES]) {
+		tally[mode] = { right: 0, confident: 0, confidentRight: 0 };
+	}
+
+	for (const { entry, fallback, defaultRight, picks } of rows) {
+		if (defaultRight) (tally.default as { right: number }).right += 1;
+		const cells = picks.map(({ mode, picked, confidence, right }) => {
+			const counts = tally[mode];
+			if (counts) {
+				if (right) counts.right += 1;
+				if (confidence >= OFFER_CONFIDENCE) {
+					counts.confident += 1;
+					if (right) counts.confidentRight += 1;
+				}
+			}
+			return `/${picked[0] ?? "?"}/ (${confidence.toFixed(2)})${mark(right)}`;
+		});
 		console.log(
-			`| ${entry.sentence} | /${entry.want}/ | /${fallback}/${mark(fallback)} | /${answer.choice}/ (${answer.confidence.toFixed(2)})${mark(answer.choice)} |`,
+			`| ${entry.sentence} | /${entry.want}/ | /${fallback}/${mark(defaultRight)} | ${cells.join(" | ")} |`,
 		);
 	}
 
 	const total = HETERONYM_CASES.length;
-	console.log(`\napp default: ${tally.default}/${total} right`);
-	console.log(`jev:         ${tally.jev}/${total} right`);
+	console.log(`\napp default: ${tally.default?.right}/${total} right`);
+	for (const mode of HETERONYM_MODES) {
+		const counts = tally[mode];
+		if (!counts) continue;
+		console.log(
+			`${mode.padEnd(11)}: ${counts.right}/${total} right; ${counts.confident} picks at confidence >= ${OFFER_CONFIDENCE}, ${counts.confidentRight} of them right`,
+		);
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -341,16 +532,20 @@ if (import.meta.main) {
 		const heteronym = HETERONYM_CASES[0];
 		if (heteronym) {
 			const variants = (cmudict.data[heteronym.word.toUpperCase()] ?? []).map(toIpa);
-			console.log(
-				JSON.stringify(buildBody("jev-latest", heteronymRequest(heteronym, variants)), null, 2),
-			);
+			for (const mode of HETERONYM_MODES) {
+				const { request } = heteronymRequest(heteronym, variants, mode);
+				console.log(JSON.stringify(buildBody("jev-latest", request), null, 2));
+			}
 		}
 		process.exit(0);
 	}
 
+	// `--only spelling` or `--only heteronyms` runs one experiment.
+	const onlyIndex = process.argv.indexOf("--only");
+	const only = onlyIndex === -1 ? null : process.argv[onlyIndex + 1];
 	console.log(`Jev via ${endpoint.label}`);
-	await runSpelling(endpoint);
-	await runHeteronyms(endpoint);
+	if (only !== "heteronyms") await runSpelling(endpoint);
+	if (only !== "spelling") await runHeteronyms(endpoint);
 	const averageMs = usage.calls === 0 ? 0 : usage.ms / usage.calls;
 	console.log(
 		`\n${usage.calls} calls, ${usage.inputTokens} input tokens, ${averageMs.toFixed(0)} ms average round trip`,
