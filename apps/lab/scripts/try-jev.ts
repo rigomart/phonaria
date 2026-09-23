@@ -22,7 +22,7 @@ import { suggestSpelling } from "../src/lib/transcription/spelling-suggestion";
 import { candidatesFor, loadReviewData } from "./review-spelling-cases";
 
 /** Below this, a Jev pick is treated as silence, the same way the rule stays silent. */
-const OFFER_CONFIDENCE = 0.7;
+export const OFFER_CONFIDENCE = 0.7;
 const NONE = "none";
 
 const CMUDICT_PATH = resolve(
@@ -30,9 +30,9 @@ const CMUDICT_PATH = resolve(
 	"../../../packages/phonetics-data/data/en/dict/cmudict.json",
 );
 
-type Endpoint = { url: string; key: string; model: string; label: string };
+export type Endpoint = { url: string; key: string; model: string; label: string };
 
-function resolveEndpoint(): Endpoint | null {
+export function resolveEndpoint(): Endpoint | null {
 	if (process.env.TYPESAFE_API_KEY) {
 		return {
 			url: "https://api.typesafe.ai/v1/systemone",
@@ -66,7 +66,7 @@ type ChoiceRequest = {
 };
 
 type Usage = { calls: number; inputTokens: number; ms: number };
-const usage: Usage = { calls: 0, inputTokens: 0, ms: 0 };
+export const usage: Usage = { calls: 0, inputTokens: 0, ms: 0 };
 
 function buildBody(model: string, request: ChoiceRequest) {
 	return {
@@ -78,18 +78,19 @@ function buildBody(model: string, request: ChoiceRequest) {
 	};
 }
 
-async function askChoice(endpoint: Endpoint, request: ChoiceRequest): Promise<ChoiceAnswer> {
-	const body = JSON.stringify(buildBody(endpoint.model, request));
+/** Posts one System One request, retrying rate limits, and returns its answers by question key. */
+export async function askJev<TAnswers>(endpoint: Endpoint, body: object): Promise<TAnswers> {
+	const payload = JSON.stringify({ model: endpoint.model, ...body });
 	for (let attempt = 0; ; attempt += 1) {
 		const started = performance.now();
 		const response = await fetch(endpoint.url, {
 			method: "POST",
 			headers: { Authorization: `Bearer ${endpoint.key}`, "Content-Type": "application/json" },
-			body,
+			body: payload,
 		});
 		const elapsed = performance.now() - started;
 
-		if ((response.status === 429 || response.status === 529) && attempt < 4) {
+		if ((response.status === 429 || response.status >= 500) && attempt < 4) {
 			await Bun.sleep(500 * 2 ** attempt);
 			continue;
 		}
@@ -98,14 +99,22 @@ async function askChoice(endpoint: Endpoint, request: ChoiceRequest): Promise<Ch
 		}
 
 		const json = (await response.json()) as {
-			answers: { pick: ChoiceAnswer };
+			answers: TAnswers;
 			usage?: { input_tokens?: number };
 		};
 		usage.calls += 1;
 		usage.inputTokens += json.usage?.input_tokens ?? 0;
 		usage.ms += elapsed;
-		return json.answers.pick;
+		return json.answers;
 	}
+}
+
+export async function askChoice(endpoint: Endpoint, request: ChoiceRequest): Promise<ChoiceAnswer> {
+	const answers = await askJev<{ pick: ChoiceAnswer }>(
+		endpoint,
+		buildBody(endpoint.model, request),
+	);
+	return answers.pick;
 }
 
 // ---------------------------------------------------------------------------
