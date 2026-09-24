@@ -1,6 +1,6 @@
 {
 	"target": "cloudflare-production",
-	"baseUrl": "https://phonaria-lab.mirdor-dev.workers.dev",
+	"baseUrl": "https://phonaria.mirdor-dev.workers.dev",
 	"collectedAt": "2026-09-14T05:43:55.509Z",
 	"regressionThresholdPercent": 20,
 	"conditions": {

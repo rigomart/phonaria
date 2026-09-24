@@ -51,8 +51,8 @@ describe("formatDocumentTitle", () => {
 
 describe("tryGetDocumentMetadata", () => {
 	it("returns metadata when SITE_URL is set", () => {
-		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
-		expect(tryGetDocumentMetadata()?.siteUrl).toBe("https://phonaria-lab-staging.example.test");
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		expect(tryGetDocumentMetadata()?.siteUrl).toBe("https://phonaria-staging.example.test");
 	});
 
 	it("returns undefined on the client when production SITE_URL is missing", () => {
@@ -113,10 +113,10 @@ describe("buildRootHead", () => {
 	});
 
 	it("adds canonical SEO tags when SITE_URL is set", () => {
-		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		expect(buildRootHead().meta).toContainEqual({
 			property: "og:url",
-			content: "https://phonaria-lab-staging.example.test",
+			content: "https://phonaria-staging.example.test",
 		});
 	});
 });
@@ -135,10 +135,10 @@ describe("buildHomeHead", () => {
 	});
 
 	it("adds the home canonical when SITE_URL is set", () => {
-		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		const head = buildHomeHead();
 		expect(head.links).toEqual([
-			{ rel: "canonical", href: "https://phonaria-lab-staging.example.test" },
+			{ rel: "canonical", href: "https://phonaria-staging.example.test" },
 		]);
 	});
 });
@@ -157,10 +157,10 @@ describe("buildCreditsHead", () => {
 	});
 
 	it("adds the Credits canonical when SITE_URL is set", () => {
-		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		const head = buildCreditsHead();
 		expect(head.links).toEqual([
-			{ rel: "canonical", href: "https://phonaria-lab-staging.example.test/credits" },
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/credits" },
 		]);
 	});
 });
@@ -179,12 +179,12 @@ describe("buildConsonantsHead", () => {
 	});
 
 	it("adds the consonant chart canonical when SITE_URL is set", () => {
-		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		const head = buildConsonantsHead();
 		expect(head.links).toEqual([
 			{
 				rel: "canonical",
-				href: `https://phonaria-lab-staging.example.test${IPA_CHART_CONSONANTS_PATH}`,
+				href: `https://phonaria-staging.example.test${IPA_CHART_CONSONANTS_PATH}`,
 			},
 		]);
 	});
@@ -204,12 +204,12 @@ describe("buildVowelsHead", () => {
 	});
 
 	it("adds the vowel chart canonical when SITE_URL is set", () => {
-		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		const head = buildVowelsHead();
 		expect(head.links).toEqual([
 			{
 				rel: "canonical",
-				href: `https://phonaria-lab-staging.example.test${IPA_CHART_VOWELS_PATH}`,
+				href: `https://phonaria-staging.example.test${IPA_CHART_VOWELS_PATH}`,
 			},
 		]);
 	});
@@ -229,19 +229,19 @@ describe("buildPracticeIndexHead", () => {
 	});
 
 	it("always noindexes Practice even when site indexing is on", () => {
-		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		process.env.SITE_INDEXING_ENABLED = "1";
 		const head = buildPracticeIndexHead();
 		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
 		expect(head.links).toEqual([
-			{ rel: "canonical", href: "https://phonaria-lab-staging.example.test/practice" },
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/practice" },
 		]);
 	});
 });
 
 describe("buildPracticeTopicHead", () => {
 	it("uses the topic display name and blurb", () => {
-		process.env.SITE_URL = "https://phonaria-lab-staging.example.test";
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		const topic = getTopic("schwa");
 		expect(topic).toBeDefined();
 		const head = buildPracticeTopicHead(topic);
@@ -254,7 +254,7 @@ describe("buildPracticeTopicHead", () => {
 		});
 		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
 		expect(head.links).toEqual([
-			{ rel: "canonical", href: "https://phonaria-lab-staging.example.test/practice/schwa" },
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/practice/schwa" },
 		]);
 	});
 });

@@ -1,6 +1,6 @@
 {
 	"target": "cloudflare-staging",
-	"baseUrl": "https://phonaria-lab-staging.mirdor-dev.workers.dev",
+	"baseUrl": "https://phonaria-staging.mirdor-dev.workers.dev",
 	"collectedAt": "2026-09-14T04:56:43.715Z",
 	"regressionThresholdPercent": 20,
 	"conditions": {

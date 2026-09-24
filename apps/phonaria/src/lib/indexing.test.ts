@@ -8,7 +8,7 @@ afterEach(() => {
 
 describe("indexing helpers", () => {
 	it("omits the sitemap when indexing is off", () => {
-		process.env.SITE_URL = "https://phonaria-lab.rigos.dev";
+		process.env.SITE_URL = "https://phonaria.rigos.dev";
 		const policy = getRobotsPolicy();
 		expect(policy.rules).toEqual({ userAgent: "*", allow: "/" });
 		expect(policy.sitemap).toBeUndefined();
@@ -17,12 +17,12 @@ describe("indexing helpers", () => {
 	});
 
 	it("lists the indexable application URLs and omits Practice", () => {
-		process.env.SITE_URL = "https://phonaria-lab.rigos.dev";
+		process.env.SITE_URL = "https://phonaria.rigos.dev";
 		expect(getSitemapUrls()).toEqual([
-			"https://phonaria-lab.rigos.dev",
-			"https://phonaria-lab.rigos.dev/ipa-chart/consonants",
-			"https://phonaria-lab.rigos.dev/ipa-chart/vowels",
-			"https://phonaria-lab.rigos.dev/credits",
+			"https://phonaria.rigos.dev",
+			"https://phonaria.rigos.dev/ipa-chart/consonants",
+			"https://phonaria.rigos.dev/ipa-chart/vowels",
+			"https://phonaria.rigos.dev/credits",
 		]);
 	});
 });

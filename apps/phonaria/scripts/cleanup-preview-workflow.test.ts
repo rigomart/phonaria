@@ -25,13 +25,15 @@ describe("Cloudflare preview cleanup workflow", () => {
 
 	it("deletes only the closed PR Worker and treats an absent Worker as clean", () => {
 		const workflow = readWorkflow("cleanup-preview.yml");
+		const pullRequestNumber = githubExpression("github.event.pull_request.number");
 
 		expect(workflow).toContain("types: [closed]");
-		expect(workflow).toContain(
-			`WORKER_NAME: phonaria-lab-pr-${githubExpression("github.event.pull_request.number")}`,
-		);
-		expect(workflow).toContain("/workers/scripts/$WORKER_NAME?force=true");
-		expect(workflow).toMatch(/404\)\s+echo "\$WORKER_NAME was already absent\."/);
+		expect(workflow).toContain(`WORKER_NAME: phonaria-pr-${pullRequestNumber}`);
+		expect(workflow).toContain(`LEGACY_WORKER_NAME: phonaria-lab-pr-${pullRequestNumber}`);
+		expect(workflow).toContain("/workers/scripts/$name?force=true");
+		expect(workflow).toContain('echo "$name was already absent."');
+		expect(workflow).not.toContain("phonaria-staging");
+		expect(workflow).not.toContain("phonaria-preview");
 		expect(workflow).not.toContain("actions/checkout");
 		expect(workflow).not.toContain("--env preview");
 	});

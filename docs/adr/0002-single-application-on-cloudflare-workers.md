@@ -33,9 +33,10 @@ Phonaria is one application: `apps/phonaria`, TanStack Start on Cloudflare Worke
 `phonaria.rigos.dev`. The Next.js application, its Vercel project, and its dedicated data services
 are retired rather than kept on a secondary hostname.
 
-The application directory is `apps/phonaria` (`@phonaria/app`). The Cloudflare Worker is still
-named `phonaria-lab`; [#254](https://github.com/rigomart/phonaria/issues/254) still has to rename
-GitHub settings and Worker scripts. "Lab" is no longer a product term — see `CONTEXT.md`.
+The application directory is `apps/phonaria` (`@phonaria/app`). Cloudflare Worker scripts are
+`phonaria`, `phonaria-staging`, `phonaria-preview`, and `phonaria-pr-N`.
+`phonaria-lab.rigos.dev` stays a redirect hostname on the production Worker.
+"Lab" is no longer a product term — see `CONTEXT.md`.
 
 ## Consequences
 

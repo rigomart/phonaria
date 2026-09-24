@@ -6,14 +6,14 @@ import { assertGeneratedWorkerName, readGeneratedWorkerName } from "./assert-gen
 
 describe("readGeneratedWorkerName", () => {
 	it("reads the flattened Worker name from redirected Wrangler JSON", () => {
-		const directory = mkdtempSync(join(tmpdir(), "lab-wrangler-"));
+		const directory = mkdtempSync(join(tmpdir(), "wrangler-"));
 		const path = join(directory, "wrangler.json");
-		writeFileSync(path, JSON.stringify({ name: "phonaria-lab-staging", vars: {} }));
-		expect(readGeneratedWorkerName(path)).toBe("phonaria-lab-staging");
+		writeFileSync(path, JSON.stringify({ name: "phonaria-staging", vars: {} }));
+		expect(readGeneratedWorkerName(path)).toBe("phonaria-staging");
 	});
 
-	it("rejects a missing name so a top-level phonaria-lab flatten cannot pass silently", () => {
-		const directory = mkdtempSync(join(tmpdir(), "lab-wrangler-"));
+	it("rejects a missing name so a top-level phonaria flatten cannot pass silently", () => {
+		const directory = mkdtempSync(join(tmpdir(), "wrangler-"));
 		const path = join(directory, "wrangler.json");
 		writeFileSync(path, JSON.stringify({ vars: {} }));
 		expect(() => readGeneratedWorkerName(path)).toThrow(/missing a Worker name/);
@@ -22,14 +22,12 @@ describe("readGeneratedWorkerName", () => {
 
 describe("assertGeneratedWorkerName", () => {
 	it("fails when Vite flattened the top-level production Worker name", () => {
-		expect(() => assertGeneratedWorkerName("phonaria-lab", "phonaria-lab-staging")).toThrow(
+		expect(() => assertGeneratedWorkerName("phonaria", "phonaria-staging")).toThrow(
 			/CLOUDFLARE_ENV/,
 		);
 	});
 
 	it("accepts the staging Worker name", () => {
-		expect(() =>
-			assertGeneratedWorkerName("phonaria-lab-staging", "phonaria-lab-staging"),
-		).not.toThrow();
+		expect(() => assertGeneratedWorkerName("phonaria-staging", "phonaria-staging")).not.toThrow();
 	});
 });

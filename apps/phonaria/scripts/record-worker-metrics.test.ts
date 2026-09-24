@@ -8,7 +8,7 @@ import {
 describe("parseWranglerOutput", () => {
 	it("reads upload size, module count, and startup from Wrangler deploy text", () => {
 		const output = `
-Uploaded phonaria-lab-staging (2.41 sec)
+Uploaded phonaria-staging (2.41 sec)
   Worker Startup Time: 21 ms
 Total Upload: 1000.10 KiB / gzip: 215.14 KiB
 Your worker has access to the following bindings:

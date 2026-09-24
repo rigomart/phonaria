@@ -4,14 +4,14 @@
  *
  * Prefer `STAGING_URL` (or `LAB_START_STAGING_URL`) when it is the real
  * workers.dev host.
- * The wrangler default `https://phonaria-lab-staging.workers.dev` is a
+ * The wrangler default `https://phonaria-staging.workers.dev` is a
  * placeholder and must be rewritten with the account subdomain.
  */
 import { readPreferredEnv } from "./preferred-env";
 import { resolvePreviewOrigin } from "./resolve-preview-origin";
 
-export const STAGING_WORKER_NAME = "phonaria-lab-staging";
-export const PLACEHOLDER_STAGING_ORIGIN = "https://phonaria-lab-staging.workers.dev";
+export const STAGING_WORKER_NAME = "phonaria-staging";
+export const PLACEHOLDER_STAGING_ORIGIN = "https://phonaria-staging.workers.dev";
 
 export function resolveStagingOrigin(override?: string, subdomain?: string): string {
 	const trimmed = (override ?? "").trim().replace(/\/+$/, "");
