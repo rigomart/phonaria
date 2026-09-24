@@ -1,0 +1,268 @@
+name: Preview
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_ENV: staging
+      SITE_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
+      SITE_INDEXING_ENABLED: "0"
+      FLAG_PRACTICE: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun ci
+      - name: Resolve staging origin
+        id: staging
+        env:
+          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN || vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+        run: |
+          url="$(bun apps/phonaria/scripts/resolve-staging-origin.ts "${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL }}" "$SUBDOMAIN")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "SITE_URL=$url" >> "$GITHUB_ENV"
+          echo "Staging origin: $url"
+      - name: Generate Cloudflare Worker types
+        run: bun --cwd apps/phonaria cf-typegen
+      - name: Production build
+        run: bun --cwd apps/phonaria build
+      - name: Assert staging Worker name
+        working-directory: apps/phonaria
+        run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab-staging
+      - name: Assert Practice word data stays out of the Worker
+        working-directory: apps/phonaria
+        run: bun ./scripts/assert-worker-excludes-curated-10k.ts
+      - name: Assert server bundle keeps curated-10k client-only
+        working-directory: apps/phonaria
+        env:
+          WORKER_BUNDLE_DIR: dist/server
+        run: bun ./scripts/assert-server-bundle-boundary.ts
+      - name: Wrangler dry-run
+        working-directory: apps/phonaria
+        run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
+      - name: Record Worker metrics
+        working-directory: apps/phonaria
+        env:
+          WRANGLER_DEPLOY_LOG: wrangler-dry-run.log
+          WORKER_BUNDLE_DIR: .wrangler/dry-run
+          WORKER_METRICS_OUT: worker-metrics.json
+        run: bun ./scripts/record-worker-metrics.ts
+      - name: Upload Worker metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-worker-metrics
+          path: |
+            apps/phonaria/worker-metrics.json
+            apps/phonaria/wrangler-dry-run.log
+          if-no-files-found: ignore
+
+  deploy-preview:
+    if: github.event_name == 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      deployments: write
+    env:
+      SITE_INDEXING_ENABLED: "0"
+      FLAG_PRACTICE: "1"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
+      TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun ci
+      - name: Resolve preview origin
+        id: origin
+        env:
+          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN || vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+        run: |
+          name="phonaria-lab-pr-${{ github.event.pull_request.number }}"
+          url="$(bun apps/phonaria/scripts/resolve-preview-origin.ts "$name" "$SUBDOMAIN")"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Production build
+        env:
+          CLOUDFLARE_ENV: preview
+          SITE_URL: ${{ steps.origin.outputs.url }}
+        run: bun --cwd apps/phonaria build
+      - name: Deploy preview Worker
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/phonaria
+          command: deploy --name ${{ steps.origin.outputs.name }} --var SITE_URL:${{ steps.origin.outputs.url }}
+      - name: Put Turso secrets on preview Worker
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.TURSO_DATABASE_URL != '' && env.TURSO_AUTH_TOKEN != ''
+        working-directory: apps/phonaria
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
+        run: |
+          printf '%s' "$TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name "${{ steps.origin.outputs.name }}"
+          printf '%s' "$TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name "${{ steps.origin.outputs.name }}"
+      - name: Smoke Wiktionary definitions on preview
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        env:
+          CI: true
+          CONTRACT_TARGET: cloudflare-staging
+          CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          if [ -z "${CF_ACCESS_CLIENT_ID}" ] || [ -z "${CF_ACCESS_CLIENT_SECRET}" ]; then
+            echo "CF_ACCESS credentials are required to smoke preview definitions through Cloudflare Access."
+            exit 1
+          fi
+          bun --cwd packages/browser-contract e2e:install
+          bun --cwd packages/browser-contract e2e:definitions
+      - name: Comment preview URL
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = `${{ steps.origin.outputs.url }}`;
+            const body = [
+              '## Preview',
+              '',
+              `Protected Cloudflare preview: ${url}`,
+              '',
+              'This preview runs the complete Phonaria application, with Practice enabled when FLAG_PRACTICE is on.',
+              'Cloudflare Access must remain required. Do not share an unprotected URL.',
+            ].join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((comment) =>
+              comment.body?.includes('## Preview') || comment.body?.includes('Lab Start preview'),
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+      - name: Skip deploy when Cloudflare secrets are missing
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: |
+          echo "CLOUDFLARE_API_TOKEN is not configured. Repository-side Start validation ran; add the Cloudflare deploy secrets documented in apps/phonaria/README.md."
+
+  deploy-staging:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      CLOUDFLARE_ENV: staging
+      SITE_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL || 'https://phonaria-lab-staging.workers.dev' }}
+      SITE_INDEXING_ENABLED: "0"
+      FLAG_PRACTICE: "1"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
+      TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun ci
+      - name: Resolve staging origin
+        id: staging
+        env:
+          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN || vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+        run: |
+          url="$(bun apps/phonaria/scripts/resolve-staging-origin.ts "${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL }}" "$SUBDOMAIN")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "SITE_URL=$url" >> "$GITHUB_ENV"
+          echo "Staging origin: $url"
+      - name: Production build
+        run: bun --cwd apps/phonaria build
+      - name: Assert staging Worker name
+        working-directory: apps/phonaria
+        run: bun ./scripts/assert-generated-worker-name.ts phonaria-lab-staging
+      - name: Deploy staging Worker
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/phonaria
+          command: deploy --var SITE_URL:${{ steps.staging.outputs.url }}
+      - name: Put Turso secrets on staging Worker
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.TURSO_DATABASE_URL != '' && env.TURSO_AUTH_TOKEN != ''
+        working-directory: apps/phonaria
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          printf '%s' "$TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria-lab-staging
+          printf '%s' "$TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria-lab-staging
+      - name: Record deployed Worker metrics
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: apps/phonaria
+        env:
+          WORKER_BUNDLE_DIR: dist
+          WORKER_METRICS_OUT: worker-metrics.json
+        run: bun ./scripts/record-worker-metrics.ts
+      - name: Run the browser contract
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CF_ACCESS_CLIENT_ID != ''
+        env:
+          CI: true
+          CONTRACT_TARGET: cloudflare-staging
+          CONTRACT_BASE_URL: ${{ steps.staging.outputs.url }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          bun --cwd packages/browser-contract e2e:install
+          bun --cwd packages/browser-contract e2e
+      - name: Skip deploy when Cloudflare secrets are missing
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: |
+          echo "CLOUDFLARE_API_TOKEN is not configured. Staging deploy is waiting on the Cloudflare secrets documented in apps/phonaria/README.md."

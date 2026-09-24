@@ -1,0 +1,24 @@
+{
+	"name": "@phonaria/browser-contract",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "Shared browser-level contract. Runs against a deployed base URL through target-specific configuration.",
+	"packageManager": "bun@1.3.2",
+	"scripts": {
+		"lint": "biome check --write",
+		"check-types": "tsc --noEmit",
+		"test": "vitest run",
+		"e2e": "playwright test --grep-invert @baseline",
+		"e2e:definitions": "playwright test e2e/transcription.spec.ts --grep \"opens Wiktionary definitions\"",
+		"e2e:baseline": "playwright test --grep @baseline",
+		"e2e:install": "playwright install chromium --with-deps"
+	},
+	"devDependencies": {
+		"@axe-core/playwright": "^4.10.2",
+		"@playwright/test": "^1.58.0",
+		"@types/node": "^20",
+		"typescript": "^5",
+		"vitest": "^3.2.4"
+	}
+}

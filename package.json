@@ -25,12 +25,12 @@
 	"scripts": {
 		"build": "turbo run build",
 		"lint": "turbo run lint",
-		"dev": "turbo run dev --filter=@phonaria/lab",
+		"dev": "turbo run dev --filter=@phonaria/app",
 		"check-types": "turbo run check-types",
 		"test": "turbo run test",
-		"e2e:lab": "bun --cwd packages/lab-contract e2e:lab",
-		"e2e:lab:cloudflare": "LAB_CONTRACT_TARGET=cloudflare-staging bun --cwd packages/lab-contract e2e:lab",
-		"e2e:lab:baseline": "LAB_CONTRACT_TARGET=cloudflare-production bun --cwd packages/lab-contract e2e:lab:baseline",
+		"e2e": "bun --cwd packages/browser-contract e2e",
+		"e2e:cloudflare": "CONTRACT_TARGET=cloudflare-staging bun --cwd packages/browser-contract e2e",
+		"e2e:baseline": "CONTRACT_TARGET=cloudflare-production bun --cwd packages/browser-contract e2e:baseline",
 		"release": "semantic-release",
 		"release:dry": "semantic-release --dry-run"
 	},

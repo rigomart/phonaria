@@ -54,7 +54,7 @@ const GOLDEN_LABELS = {
 } as const satisfies Record<PhonemeSymbolId, string>;
 
 describe("formatPhonemeLabel", () => {
-	it("derives every current Lab label from structured articulation data", () => {
+	it("derives every current phoneme label from structured articulation data", () => {
 		for (const [phonemeId, expectedLabel] of Object.entries(GOLDEN_LABELS)) {
 			const id = phonemeId as PhonemeSymbolId;
 			let actualLabel: string;

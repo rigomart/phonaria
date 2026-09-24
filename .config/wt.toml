@@ -3,6 +3,6 @@
 
 [post-create]
 # Copy environment variables from main worktree
-env = "cp {{ main_worktree_path }}/apps/lab/.env.local apps/lab/.env.local"
+env = "cp {{ main_worktree_path }}/apps/phonaria/.env.local apps/phonaria/.env.local"
 # Install all dependencies
 install = "bun install"

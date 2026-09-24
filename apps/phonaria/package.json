@@ -1,0 +1,49 @@
+{
+	"name": "@phonaria/app",
+	"version": "0.1.0",
+	"private": true,
+	"packageManager": "bun@1.3.2",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "bun ./scripts/write-dev-vars.ts && vite build",
+		"start": "vite preview --port 3001",
+		"deploy": "bun ./scripts/write-dev-vars.ts && vite build && wrangler deploy",
+		"deploy:staging": "bun ./scripts/deploy-staging.ts",
+		"cf-typegen": "wrangler types",
+		"worker-metrics": "bun ./scripts/record-worker-metrics.ts",
+		"lint": "biome check --write",
+		"check-types": "tsc --noEmit",
+		"test": "vitest run",
+		"db:push": "drizzle-kit push"
+	},
+	"dependencies": {
+		"@fontsource-variable/noto-sans": "^5.3.0",
+		"@fontsource-variable/sora": "^5.3.0",
+		"@libsql/client": "0.18.0",
+		"@phonaria/flags": "workspace:*",
+		"@phonaria/phonetics-data": "workspace:*",
+		"@phonaria/ui": "workspace:*",
+		"@tanstack/react-router": "1.170.36",
+		"@tanstack/react-start": "1.168.53",
+		"drizzle-orm": "^0.45.1",
+		"lucide-react": "^0.562.0",
+		"parse5": "^8.0.1",
+		"react": "^19.2.3",
+		"react-dom": "^19.2.3",
+		"zod": "^4.1.5",
+		"zustand": "^5.0.8"
+	},
+	"devDependencies": {
+		"@cloudflare/vite-plugin": "1.54.8",
+		"@tailwindcss/postcss": "^4.1.12",
+		"@types/node": "^20",
+		"@types/react": "^19.2.7",
+		"@types/react-dom": "^19.2.3",
+		"@vitejs/plugin-react": "^5.1.2",
+		"drizzle-kit": "^0.31.8",
+		"typescript": "^5",
+		"vite": "8.3.0",
+		"vitest": "^3.2.4",
+		"wrangler": "4.131.1"
+	}
+}

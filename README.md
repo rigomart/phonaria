@@ -37,11 +37,11 @@ The **IPA chart** shares the same phoneme metadata and detail system as transcri
 ## Project Structure
 
 ```
-apps/lab/                   TanStack Start app on Cloudflare Workers
+apps/phonaria/              TanStack Start app on Cloudflare Workers
 packages/phonetics-data/    Phoneme metadata and CMUDict assets
 packages/ui/                Shared shadcn/ui components
 packages/flags/             Env-backed feature flags
-packages/lab-contract/      Browser-level contract run against a deployed app
+packages/browser-contract/  Browser-level contract run against a deployed app
 packages/helper-scripts/    CMUDict processing and word list generation
 packages/audio-gen/         ElevenLabs TTS audio generation
 docs/                       Product context, decisions, and migration records
@@ -49,7 +49,7 @@ docs/                       Product context, decisions, and migration records
 
 **Why a monorepo?** Phoneme data is consumed by both the application and the helper scripts that generate audio and word lists. Keeping it in a shared package (`phonetics-data`) means one source of truth with typed exports.
 
-**Why co-located feature code?** Practice groups its own `_components`, `_lib`, and `_store` under `apps/lab/src/practice`. This keeps feature code close to where it's used -- Practice alone has Zustand stores, scoring logic, and session generation that don't belong anywhere else.
+**Why co-located feature code?** Practice groups its own `_components`, `_lib`, and `_store` under `apps/phonaria/src/practice`. This keeps feature code close to where it's used -- Practice alone has Zustand stores, scoring logic, and session generation that don't belong anywhere else.
 
 **Why typed phoneme copy instead of JSON catalogs?** Phoneme descriptions, allophone contexts, and contrast notes live in TypeScript modules keyed by phoneme ID rather than JSON catalogs. This preserves compile-time checks against the phoneme registry -- a missing or mistyped key is a type error, not a silent gap.
 
@@ -69,7 +69,7 @@ bun install
 bun dev                                    # http://localhost:3001
 ```
 
-Copy `apps/lab/.env.example` to `apps/lab/.env.local` and fill it in. Tier-3 transcription needs `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`; for local TanStack Start those two also go in `apps/lab/.dev.vars` by hand. See [`apps/lab/README.md`](apps/lab/README.md) for the delivery details.
+Copy `apps/phonaria/.env.example` to `apps/phonaria/.env.local` and fill it in. Tier-3 transcription needs `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`; for local TanStack Start those two also go in `apps/phonaria/.dev.vars` by hand. See [`apps/phonaria/README.md`](apps/phonaria/README.md) for the delivery details.
 
 ## Scripts
 
@@ -79,13 +79,13 @@ bun build          # Production builds (Turborepo)
 bun lint           # Biome check with auto-fix
 bun check-types    # TypeScript --noEmit across packages
 bun test           # Vitest unit tests
-bun e2e:lab        # Browser contract against the deployed app
+bun e2e            # Browser contract against the deployed app
 ```
 
-Database (`apps/lab`):
+Database (`apps/phonaria`):
 
 ```bash
-bun --cwd apps/lab db:push       # Push the Drizzle schema to Turso
+bun --cwd apps/phonaria db:push       # Push the Drizzle schema to Turso
 ```
 
 Data generation (`packages/helper-scripts`):
