@@ -32,13 +32,15 @@ The application serves transcription, Credits, IPA charts, and Practice when
 `FLAG_PRACTICE` is enabled (staging and preview). Production keeps Practice
 off. Transcription uses a TanStack server function with `@libsql/client/web`
 and request-time Worker bindings for
-`TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. Put those secrets on each
-Cloudflare environment (`wrangler secret put`) and, for local Start, in
-`.dev.vars` by hand. `write-dev-vars` never copies Turso values from
-the process environment; it only preserves existing `.dev.vars` secret
-lines. `OPENROUTER_API_KEY` works the same way: the deploy workflows put
-it on each Worker when the GitHub secret exists, and locally it goes in
-`.dev.vars` by hand.
+`TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`, and spelling suggestions read
+`OPENROUTER_API_KEY`. `WORKER_SECRET_KEYS` in `scripts/write-worker-secrets.ts`
+lists every Worker secret. The deploy workflows run that script to write the
+secrets set in GitHub to a file, and `wrangler deploy --secrets-file` ships them
+with the Worker version. A secret that isn't set is left unchanged on the
+Worker. To add a secret, add its name to that list and to the deploy jobs'
+`env`. For local Start, put the secrets in `.dev.vars` by hand.
+`write-dev-vars` never copies them from the process environment; it only
+preserves existing `.dev.vars` lines for the same keys.
 
 ## Transcription guardrails
 

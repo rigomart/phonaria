@@ -4,7 +4,7 @@
  * configuration. Never copy the full process environment — that would leak
  * tokens into the prerender Worker.
  *
- * Existing Turso and OpenRouter secret lines are preserved so local `dev:start` can keep
+ * Existing Worker secret lines (`WORKER_SECRET_KEYS`) are preserved so local `dev:start` can keep
  * request-time bindings that were added manually. Those keys are never copied
  * from `process.env`.
  *
@@ -14,6 +14,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { ASSET_BUCKET_ORIGIN, formatCloudflareHeadersFile } from "../src/lib/security-headers";
+import { WORKER_SECRET_KEYS } from "./write-worker-secrets";
 
 export const PUBLIC_KEYS = [
 	"SITE_URL",
@@ -24,11 +25,7 @@ export const PUBLIC_KEYS = [
 	"GOOGLE_SITE_VERIFICATION",
 ] as const;
 
-export const PRESERVED_SECRET_KEYS = [
-	"TURSO_DATABASE_URL",
-	"TURSO_AUTH_TOKEN",
-	"OPENROUTER_API_KEY",
-] as const;
+export const PRESERVED_SECRET_KEYS = WORKER_SECRET_KEYS;
 
 const DEFAULTS: Partial<Record<(typeof PUBLIC_KEYS)[number], string>> = {
 	PUBLIC_BUCKET_URL: ASSET_BUCKET_ORIGIN,
