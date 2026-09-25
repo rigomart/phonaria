@@ -16,6 +16,12 @@ export const flags = createFlags(
 			// builds until the env var opts them in.
 			enabledByDefault: process.env.NODE_ENV !== "production",
 		},
+		spellingContext: {
+			envVar: "FLAG_SPELLING_CONTEXT",
+			// Sends learner text to Jev through OpenRouter; stays dark in production until
+			// the eval in scripts/eval-spelling-context.ts passes.
+			enabledByDefault: process.env.NODE_ENV !== "production",
+		},
 	},
 	{
 		// Live getter so unit tests can still flip FLAG_PRACTICE. Vite replaces
@@ -24,6 +30,9 @@ export const flags = createFlags(
 		// mismatch (SSR saw Worker vars, the client hid Practice in the nav).
 		get FLAG_PRACTICE() {
 			return process.env.FLAG_PRACTICE;
+		},
+		get FLAG_SPELLING_CONTEXT() {
+			return process.env.FLAG_SPELLING_CONTEXT;
 		},
 	},
 );

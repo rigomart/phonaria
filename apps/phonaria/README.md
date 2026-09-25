@@ -36,7 +36,9 @@ and request-time Worker bindings for
 Cloudflare environment (`wrangler secret put`) and, for local Start, in
 `.dev.vars` by hand. `write-dev-vars` never copies Turso values from
 the process environment; it only preserves existing `.dev.vars` secret
-lines.
+lines. `OPENROUTER_API_KEY` works the same way: the deploy workflows put
+it on each Worker when the GitHub secret exists, and locally it goes in
+`.dev.vars` by hand.
 
 ## Transcription guardrails
 
@@ -54,3 +56,19 @@ named Worker environments. A rejected transcription request returns a retryable
 error with HTTP status 429 before Turso is queried. A missing binding also fails
 closed before Turso is queried. Dictionary lookups proxy Wiktionary REST
 definitions from the Worker and never call Wiktionary from the browser.
+
+## Context-aware spelling suggestions
+
+Behind `FLAG_SPELLING_CONTEXT` (on in staging and preview, off in production).
+After a transcription lands, when some missed word has one-slip dictionary
+neighbours, the browser calls `chooseSpellingInContextFn`. The Worker checks
+the candidates against the text, then asks Jev (TypeSafe's decision model,
+through OpenRouter) which one the sentence meant, sending at most 300
+characters of whole words. `SPELLING_CONTEXT_RATE_LIMIT` allows 60 calls per
+minute per IP, and the call times out after 1.5 s without retrying. When the
+flag is off, the key is missing, the caller is rate-limited, or Jev fails, the
+Worker answers `unavailable` and the browser falls back to the frequency rule.
+Learner text is never logged. The empty state says the text is sent to a
+third party. Before enabling it in production, run
+`bun ./scripts/eval-spelling-context.ts` (see
+`docs/research/issue-262-spelling-context-eval.md`).

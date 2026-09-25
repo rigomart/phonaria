@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	createSpellingFrequency,
 	getVisibleSpellingSuggestion,
+	isOneSlipNeighbour,
 	type SpellingFrequency,
 	type SpellingSuggestion,
 	suggestSpelling,
@@ -300,6 +301,86 @@ describe("suggestSpelling plausibility", () => {
 		});
 
 		expect(result).toBeNull();
+	});
+});
+
+describe("suggestSpelling with context picks", () => {
+	it("offers the context pick where the rule stays silent", () => {
+		// `wnat` has `what` and `want` as neighbours; frequency alone cannot choose.
+		const result = suggestSpelling({
+			originalText: "I wnat to learn",
+			tokens: ["I", "wnat", "to", "learn"],
+			misses: [miss(1, "what", "want")],
+			frequency: frequency({ what: 40, want: 90 }),
+			contextPicks: new Map([[1, "want"]]),
+		});
+
+		expect(offerOf(result)).toEqual({
+			suggestedText: "I want to learn",
+			underlinedTokenIndexes: [1],
+		});
+	});
+
+	it("keeps a token silent when the context declined, even if the rule would offer", () => {
+		const result = suggestSpelling({
+			originalText: "recieve",
+			tokens: ["recieve"],
+			misses: [miss(0, "receive")],
+			frequency: frequency({ receive: 1484 }),
+			contextPicks: new Map([[0, null]]),
+		});
+
+		expect(result).toBeNull();
+	});
+
+	it("uses the rule for tokens the context did not answer", () => {
+		const result = suggestSpelling({
+			originalText: "recieve teh",
+			tokens: ["recieve", "teh"],
+			misses: [miss(0, "receive"), miss(1, "the", "tea")],
+			frequency: frequency({ receive: 1484, the: 0, tea: 2000 }),
+			contextPicks: new Map([[1, "the"]]),
+		});
+
+		expect(offerOf(result)).toEqual({
+			suggestedText: "receive the",
+			underlinedTokenIndexes: [0, 1],
+		});
+	});
+
+	it("ignores a context pick that is not one of the searched candidates", () => {
+		const result = suggestSpelling({
+			originalText: "wnat",
+			tokens: ["wnat"],
+			misses: [miss(0, "what", "want")],
+			frequency: frequency({}),
+			contextPicks: new Map([[0, "wanted"]]),
+		});
+
+		expect(result).toBeNull();
+	});
+
+	it("keeps the learner's capitalization on a context pick", () => {
+		const result = suggestSpelling({
+			originalText: "Wnat",
+			tokens: ["Wnat"],
+			misses: [miss(0, "what", "want")],
+			frequency: frequency({}),
+			contextPicks: new Map([[0, "WANT"]]),
+		});
+
+		expect(result?.suggestedText).toBe("Want");
+	});
+});
+
+describe("isOneSlipNeighbour", () => {
+	it("accepts each single slip and rejects anything further", () => {
+		expect(isOneSlipNeighbour("wnat", "want")).toBe(true);
+		expect(isOneSlipNeighbour("adress", "address")).toBe(true);
+		expect(isOneSlipNeighbour("frm", "fm")).toBe(true);
+		expect(isOneSlipNeighbour("cn", "can")).toBe(true);
+		expect(isOneSlipNeighbour("definatly", "definitely")).toBe(false);
+		expect(isOneSlipNeighbour("want", "want")).toBe(false);
 	});
 });
 

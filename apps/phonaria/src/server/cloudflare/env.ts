@@ -14,11 +14,14 @@ export type WorkerEnv = {
 	SITE_URL?: string;
 	SITE_INDEXING_ENABLED?: string;
 	FLAG_PRACTICE?: string;
+	FLAG_SPELLING_CONTEXT?: string;
 	PUBLIC_BUCKET_URL?: string;
 	TURSO_DATABASE_URL?: string;
 	TURSO_AUTH_TOKEN?: string;
+	OPENROUTER_API_KEY?: string;
 	TRANSCRIPTION_RATE_LIMIT: WorkerRateLimit;
 	DEFINITION_RATE_LIMIT: WorkerRateLimit;
+	SPELLING_CONTEXT_RATE_LIMIT: WorkerRateLimit;
 };
 
 export function getWorkerEnv(): WorkerEnv {

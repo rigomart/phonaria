@@ -139,8 +139,10 @@ _Avoid_: Answer, correction
 A pronunciation-dictionary word one slip from a missed Transcription token, offered when the
 evidence for it is strong enough: the curated frequency list shows the word is common, or the
 slip itself keeps the consonant skeleton the learner typed. Being the only candidate the search
-returned is not such evidence. The learner-facing line uses the copy **Did you mean**; that copy
-is not the name of the feature.
+returned is not such evidence. With `FLAG_SPELLING_CONTEXT` on, Jev (TypeSafe's decision
+model, through OpenRouter) picks among the same candidates with the sentence in view, and the
+frequency rule decides whenever that call is unavailable. The learner-facing line uses the
+copy **Did you mean**; that copy is not the name of the feature.
 _Avoid_: Assistance, Did you mean (as the concept), autocorrect
 
 **Difficulty layer**:

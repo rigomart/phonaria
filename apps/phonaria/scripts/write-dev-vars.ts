@@ -4,7 +4,7 @@
  * configuration. Never copy the full process environment — that would leak
  * tokens into the prerender Worker.
  *
- * Existing Turso secret lines are preserved so local `dev:start` can keep
+ * Existing Turso and OpenRouter secret lines are preserved so local `dev:start` can keep
  * request-time bindings that were added manually. Those keys are never copied
  * from `process.env`.
  *
@@ -19,11 +19,16 @@ export const PUBLIC_KEYS = [
 	"SITE_URL",
 	"SITE_INDEXING_ENABLED",
 	"FLAG_PRACTICE",
+	"FLAG_SPELLING_CONTEXT",
 	"PUBLIC_BUCKET_URL",
 	"GOOGLE_SITE_VERIFICATION",
 ] as const;
 
-export const PRESERVED_SECRET_KEYS = ["TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN"] as const;
+export const PRESERVED_SECRET_KEYS = [
+	"TURSO_DATABASE_URL",
+	"TURSO_AUTH_TOKEN",
+	"OPENROUTER_API_KEY",
+] as const;
 
 const DEFAULTS: Partial<Record<(typeof PUBLIC_KEYS)[number], string>> = {
 	PUBLIC_BUCKET_URL: ASSET_BUCKET_ORIGIN,

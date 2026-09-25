@@ -22,6 +22,7 @@ jobs:
       SITE_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL || 'https://phonaria-staging.workers.dev' }}
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
+      FLAG_SPELLING_CONTEXT: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -86,10 +87,12 @@ jobs:
     env:
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
+      FLAG_SPELLING_CONTEXT: "1"
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
       TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
     steps:
       - name: Checkout
@@ -133,6 +136,13 @@ jobs:
         run: |
           printf '%s' "$TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name "${{ steps.origin.outputs.name }}"
           printf '%s' "$TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name "${{ steps.origin.outputs.name }}"
+      - name: Put OpenRouter key on preview Worker
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.OPENROUTER_API_KEY != ''
+        working-directory: apps/phonaria
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: printf '%s' "$OPENROUTER_API_KEY" | bunx wrangler secret put OPENROUTER_API_KEY --name "${{ steps.origin.outputs.name }}"
       - name: Smoke Wiktionary definitions on preview
         if: env.CLOUDFLARE_API_TOKEN != ''
         env:
@@ -201,10 +211,12 @@ jobs:
       SITE_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL || 'https://phonaria-staging.workers.dev' }}
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
+      FLAG_SPELLING_CONTEXT: "1"
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
       TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
       TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -245,6 +257,13 @@ jobs:
         run: |
           printf '%s' "$TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria-staging
           printf '%s' "$TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria-staging
+      - name: Put OpenRouter key on staging Worker
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.OPENROUTER_API_KEY != ''
+        working-directory: apps/phonaria
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: printf '%s' "$OPENROUTER_API_KEY" | bunx wrangler secret put OPENROUTER_API_KEY --name phonaria-staging
       - name: Record deployed Worker metrics
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
