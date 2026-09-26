@@ -1,9 +1,20 @@
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
 	compareToGuardrails,
 	formatWorkerMetricsReport,
+	measureWorkerDirectory,
 	parseWranglerOutput,
+	resolveMeasurementDirectory,
 } from "./record-worker-metrics";
+
+const repoRoot = resolve(import.meta.dirname, "../../..");
+
+function readWorkflow(name: string): string {
+	return readFileSync(resolve(repoRoot, ".github/workflows", name), "utf8");
+}
 
 describe("parseWranglerOutput", () => {
 	it("reads upload size, module count, and startup from Wrangler deploy text", () => {
@@ -65,5 +76,43 @@ describe("compareToGuardrails", () => {
 				comparedToGuardrails: compared,
 			}),
 		).toContain("startup: n/a (needs a real deploy)");
+	});
+});
+
+describe("measureWorkerDirectory", () => {
+	it("does not count Vite client chunks as Worker modules", () => {
+		const directory = mkdtempSync(join(tmpdir(), "worker-metrics-"));
+		mkdirSync(join(directory, "client", "assets"), { recursive: true });
+		mkdirSync(join(directory, "server", "assets"), { recursive: true });
+		writeFileSync(join(directory, "client", "assets", "index.js"), "export default 1");
+		writeFileSync(join(directory, "server", "index.mjs"), "export default 2");
+		writeFileSync(join(directory, "server", "assets", "route.mjs"), "export default 3");
+
+		expect(resolveMeasurementDirectory(directory)).toBe(join(directory, "server"));
+		expect(measureWorkerDirectory(directory).modules).toBe(2);
+	});
+
+	it("counts a Wrangler dry-run directory that has no client tree", () => {
+		const directory = mkdtempSync(join(tmpdir(), "worker-dry-run-"));
+		writeFileSync(join(directory, "index.js"), "export default 1");
+		writeFileSync(join(directory, "chunk.mjs"), "export default 2");
+
+		expect(resolveMeasurementDirectory(directory)).toBe(directory);
+		expect(measureWorkerDirectory(directory).modules).toBe(2);
+	});
+});
+
+describe("deploy workflows", () => {
+	it("records Worker metrics from the Wrangler upload, not Vite dist", () => {
+		const preview = readWorkflow("preview.yml");
+		const production = readWorkflow("production.yml");
+		const stagingJob = preview.slice(preview.indexOf("deploy-staging:"));
+
+		expect(stagingJob).toContain("wrangler deploy --dry-run --outdir .wrangler/dry-run");
+		expect(stagingJob).toContain("WRANGLER_DEPLOY_LOG: wrangler-dry-run.log");
+		expect(stagingJob).toContain("WORKER_BUNDLE_DIR: .wrangler/dry-run");
+		expect(stagingJob).not.toMatch(/WORKER_BUNDLE_DIR:\s+dist\s*$/m);
+		expect(production).toContain("WORKER_BUNDLE_DIR: .wrangler/dry-run");
+		expect(production).not.toMatch(/WORKER_BUNDLE_DIR:\s+dist\s*$/m);
 	});
 });

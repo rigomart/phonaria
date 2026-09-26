@@ -106,7 +106,8 @@ jobs:
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
         env:
-          WORKER_BUNDLE_DIR: dist
+          # Measure the Wrangler upload, not Vite's client+server dist tree.
+          WORKER_BUNDLE_DIR: .wrangler/dry-run
           WORKER_METRICS_OUT: worker-metrics.json
           WRANGLER_DEPLOY_LOG: wrangler-dry-run.log
         run: bun ./scripts/record-worker-metrics.ts
