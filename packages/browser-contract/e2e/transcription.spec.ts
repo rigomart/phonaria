@@ -180,6 +180,32 @@ test.describe("Transcription", () => {
 		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible();
 	});
 
+	test("restores the hello transcription after Back from a punctuation-only query", async ({
+		page,
+	}) => {
+		await page.goto("/");
+		const input = textToTranscribe(page);
+		await input.fill(KNOWN_WORD);
+		await transcribeSubmit(page).click();
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
+		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
+			timeout: 20_000,
+		});
+
+		await input.fill("!!!");
+		await transcribeSubmit(page).click();
+		await expect.poll(() => searchQuery(page)).toBe("!!!");
+		await expect(input).toHaveValue("!!!");
+		await expect(page.getByText(KNOWN_WORD, { exact: true })).toHaveCount(0);
+
+		await page.goBack();
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
+		await expect(input).toHaveValue(KNOWN_WORD);
+		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
+			timeout: 20_000,
+		});
+	});
+
 	test("clears a punctuation-only query when the Transcription link drops q", async ({ page }) => {
 		await page.goto("/?q=!!!");
 		const input = textToTranscribe(page);

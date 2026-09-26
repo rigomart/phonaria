@@ -36,11 +36,14 @@ export function validateTranscriptionSearch(search: Record<string, unknown>): Tr
 }
 
 /**
- * URL → store. The same `q` as `lastText` does not look the text up again.
- * Pass `draftText` when the query just changed (including the first pass): a
- * draft that drifted from that `q` is restored, and a missing `q` clears a
- * draft even when the text never became a transcription (punctuation only).
- * Omit `draftText` on later renders so an in-progress edit is left alone.
+ * URL → store. Pass `draftText` when the query just changed (including the
+ * first pass). The same `q` as `lastText` is not looked up again while a
+ * result is still on screen. If that result was cleared — a punctuation-only
+ * submission leaves `lastText` in place so Retry never replays "" — the query
+ * change looks the text up again. A drifted draft is restored when the result
+ * is still showing. A missing `q` clears even when the text never became a
+ * transcription. Omit `draftText` on later renders so an in-progress edit is
+ * left alone.
  */
 export function resolveTranscriptionSearchSync(input: {
 	q: string | undefined;
@@ -49,6 +52,9 @@ export function resolveTranscriptionSearchSync(input: {
 	draftText?: string;
 }): TranscriptionSearchSyncAction {
 	if (input.q !== undefined && input.q !== input.lastText) {
+		return { type: "transcribe", text: input.q };
+	}
+	if (input.q !== undefined && input.draftText !== undefined && !input.resultShowing) {
 		return { type: "transcribe", text: input.q };
 	}
 	if (input.q !== undefined && input.draftText !== undefined && input.draftText !== input.q) {

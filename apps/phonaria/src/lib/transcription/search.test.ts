@@ -67,6 +67,33 @@ describe("resolveTranscriptionSearchSync", () => {
 		).toEqual({ type: "none" });
 	});
 
+	it("looks the text up again when the query returns and the result is gone", () => {
+		expect(
+			resolveTranscriptionSearchSync({
+				q: "hello",
+				lastText: "hello",
+				resultShowing: false,
+				draftText: "!!!",
+			}),
+		).toEqual({ type: "transcribe", text: "hello" });
+		expect(
+			resolveTranscriptionSearchSync({
+				q: "hello",
+				lastText: "hello",
+				resultShowing: false,
+				draftText: "hello",
+			}),
+		).toEqual({ type: "transcribe", text: "hello" });
+		expect(
+			resolveTranscriptionSearchSync({
+				q: "hello",
+				lastText: "hello",
+				resultShowing: true,
+				draftText: "hello",
+			}),
+		).toEqual({ type: "none" });
+	});
+
 	it("fills and transcribes when q differs from the submitted text", () => {
 		expect(
 			resolveTranscriptionSearchSync({ q: "hello", lastText: null, resultShowing: false }),
