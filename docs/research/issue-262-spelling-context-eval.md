@@ -1,8 +1,8 @@
 # Context-aware spelling suggestion eval (issue #262, finding 1)
 
-A point-in-time record of the live check behind `FLAG_SPELLING_CONTEXT`. Issue #262 measured
-Jev with one question per call and the full sentence. The shipped path differs in three ways,
-so this run repeats those cases through it:
+A point-in-time record of the live check behind context-aware spelling suggestions. Issue
+#262 measured Jev with one question per call and the full sentence. The shipped path differs
+in three ways, so this run repeats those cases through it:
 
 - One Jev call per sentence, with one `choice` question per missed token.
 - A whole-word excerpt capped at 300 characters (`SPELLING_CONTEXT_MAX_CHARS`). The

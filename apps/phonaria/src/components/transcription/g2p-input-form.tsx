@@ -98,17 +98,20 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 			</div>
 
 			{transcriptionResult ? (
-				<div
-					className="flex items-center gap-3 animate-in fade-in duration-500 fill-mode-both"
-					style={{
-						animationDelay: `${transcriptionResult.words.length * 50 + 400}ms`,
-					}}
-				>
-					<ButtonGroup className="shrink-0 bg-background rounded-lg border shadow-sm">
-						<TranscriptionInfoButton />
-						<ButtonGroupSeparator />
-						<CopyButton result={transcriptionResult} />
-					</ButtonGroup>
+				<div className="flex items-center gap-3">
+					{/* Timed with the transcription reveal; the suggestion fades in on its own schedule. */}
+					<div
+						className="shrink-0 animate-in fade-in duration-500 fill-mode-both"
+						style={{
+							animationDelay: `${transcriptionResult.words.length * 50 + 400}ms`,
+						}}
+					>
+						<ButtonGroup className="bg-background rounded-lg border shadow-sm">
+							<TranscriptionInfoButton />
+							<ButtonGroupSeparator />
+							<CopyButton result={transcriptionResult} />
+						</ButtonGroup>
+					</div>
 					<SpellingSuggestionLine />
 				</div>
 			) : null}

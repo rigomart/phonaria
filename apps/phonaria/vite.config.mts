@@ -42,7 +42,7 @@ function publicBucketUrl(): string {
 
 /**
  * Worker `vars` are request-time on the server. The app shell also reads
- * `FLAG_PRACTICE` and `FLAG_SPELLING_CONTEXT` while hydrating, so the client bundle must see the same
+ * `FLAG_PRACTICE` while hydrating, so the client bundle must see the same
  * bake-at-build value as Credits site config.
  */
 function definePublicAppFlags(): Plugin {
@@ -52,9 +52,6 @@ function definePublicAppFlags(): Plugin {
 			return {
 				define: {
 					"process.env.FLAG_PRACTICE": JSON.stringify(process.env.FLAG_PRACTICE ?? ""),
-					"process.env.FLAG_SPELLING_CONTEXT": JSON.stringify(
-						process.env.FLAG_SPELLING_CONTEXT ?? "",
-					),
 				},
 			};
 		},

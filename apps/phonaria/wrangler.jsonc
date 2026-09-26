@@ -75,8 +75,7 @@
 			"vars": {
 				"SITE_URL": "https://phonaria-staging.workers.dev",
 				"SITE_INDEXING_ENABLED": "0",
-				"FLAG_PRACTICE": "1",
-				"FLAG_SPELLING_CONTEXT": "1"
+				"FLAG_PRACTICE": "1"
 			}
 		},
 		"preview": {
@@ -101,8 +100,7 @@
 			"vars": {
 				"SITE_URL": "https://phonaria-preview.workers.dev",
 				"SITE_INDEXING_ENABLED": "0",
-				"FLAG_PRACTICE": "1",
-				"FLAG_SPELLING_CONTEXT": "1"
+				"FLAG_PRACTICE": "1"
 			}
 		},
 		"production": {
@@ -131,8 +129,7 @@
 			"vars": {
 				"SITE_URL": "https://phonaria.rigos.dev",
 				"SITE_INDEXING_ENABLED": "1",
-				"FLAG_PRACTICE": "0",
-				"FLAG_SPELLING_CONTEXT": "0"
+				"FLAG_PRACTICE": "0"
 			}
 		}
 	}

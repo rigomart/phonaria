@@ -71,6 +71,13 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 		},
 	},
 	{
+		key: "jev",
+		title: "Jev by TypeSafe",
+		content:
+			"Spelling suggestions use Jev, TypeSafe's decision model, through OpenRouter. When a word isn't in the dictionary, the text around it is sent to pick the likely correction.",
+		link: { text: "View Jev documentation", url: "https://docs.typesafe.ai/api" },
+	},
+	{
 		key: "phoneme-audio",
 		title: "Phoneme Audio Samples",
 		content:

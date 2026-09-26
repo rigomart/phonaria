@@ -31,7 +31,7 @@ describe("chooseSpellingOnWorker", () => {
 		const result = await chooseSpellingOnWorker(
 			input,
 			allowingEnv({ SPELLING_CONTEXT_RATE_LIMIT: { limit } }),
-			{ createAskJev, isEnabled: () => true, log, rateLimitKey: "203.0.113.10", now: () => 0 },
+			{ createAskJev, log, rateLimitKey: "203.0.113.10", now: () => 0 },
 		);
 
 		expect(result).toEqual({ status: "answered", picks: [{ tokenIndex: 1, word: "want" }] });
@@ -43,23 +43,6 @@ describe("chooseSpellingOnWorker", () => {
 			details: { picks: 1, offered: 1, ms: 0 },
 		});
 		expect(JSON.stringify(log.mock.calls)).not.toContain("wnat");
-	});
-
-	it("is unavailable, quietly, while the flag is off", async () => {
-		const log = vi.fn();
-		const limit = vi.fn();
-		const createAskJev = answeringJev();
-
-		await expect(
-			chooseSpellingOnWorker(input, allowingEnv({ SPELLING_CONTEXT_RATE_LIMIT: { limit } }), {
-				createAskJev,
-				isEnabled: () => false,
-				log,
-			}),
-		).resolves.toEqual({ status: "unavailable" });
-		expect(limit).not.toHaveBeenCalled();
-		expect(createAskJev).not.toHaveBeenCalled();
-		expect(log).not.toHaveBeenCalled();
 	});
 
 	it.each([
@@ -81,9 +64,9 @@ describe("chooseSpellingOnWorker", () => {
 		const log = vi.fn();
 		const createAskJev = answeringJev();
 
-		await expect(
-			chooseSpellingOnWorker(input, env, { createAskJev, isEnabled: () => true, log }),
-		).resolves.toEqual({ status: "unavailable" });
+		await expect(chooseSpellingOnWorker(input, env, { createAskJev, log })).resolves.toEqual({
+			status: "unavailable",
+		});
 		expect(createAskJev).not.toHaveBeenCalled();
 		expect(log).toHaveBeenCalledWith({
 			level,
@@ -101,7 +84,6 @@ describe("chooseSpellingOnWorker", () => {
 		await expect(
 			chooseSpellingOnWorker(input, allowingEnv(), {
 				createAskJev,
-				isEnabled: () => true,
 				log,
 				now: () => 0,
 			}),
@@ -119,7 +101,6 @@ describe("chooseSpellingOnWorker", () => {
 		await expect(
 			chooseSpellingOnWorker({ text: "" }, allowingEnv(), {
 				createAskJev: answeringJev(),
-				isEnabled: () => true,
 				log,
 			}),
 		).rejects.toBeInstanceOf(SpellingContextValidationError);

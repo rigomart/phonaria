@@ -61,16 +61,14 @@ definitions from the Worker and never call Wiktionary from the browser.
 
 ## Context-aware spelling suggestions
 
-Behind `FLAG_SPELLING_CONTEXT` (on in staging and preview, off in production).
 After a transcription lands, when some missed word has one-slip dictionary
 neighbours, the browser calls `chooseSpellingInContextFn`. The Worker checks
 the candidates against the text, then asks Jev (TypeSafe's decision model,
 through OpenRouter) which one the sentence meant, sending at most 300
 characters of whole words. `SPELLING_CONTEXT_RATE_LIMIT` allows 60 calls per
-minute per IP, and the call times out after 1.5 s without retrying. When the
-flag is off, the key is missing, the caller is rate-limited, or Jev fails, the
+minute per IP, and the call times out after 1.5 s without retrying. When
+`OPENROUTER_API_KEY` is missing, the caller is rate-limited, or Jev fails, the
 Worker answers `unavailable` and the browser falls back to the frequency rule.
-Learner text is never logged. A line above the footer on the empty page says
-the text goes to a third party. Before enabling it in production, run
-`bun ./scripts/eval-spelling-context.ts` (see
-`docs/research/issue-262-spelling-context-eval.md`).
+Learner text is never logged. The Credits page lists Jev among the services
+Phonaria uses. `bun ./scripts/eval-spelling-context.ts` re-checks the labeled
+sentences (see `docs/research/issue-262-spelling-context-eval.md`).

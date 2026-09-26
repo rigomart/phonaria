@@ -81,11 +81,6 @@ export function useTranscribe() {
 	return { mutate, retry, acceptSpellingSuggestion, isPending };
 }
 
-/** Whether Transcription may send text to the context spelling service (drives the privacy note). */
-export function useSpellingContextEnabled(): boolean {
-	return useTranscriptionServices().chooseSpellingInContext !== undefined;
-}
-
 export function useCurrentTranscription() {
 	const currentResult = useG2PStore((s) => s.currentResult);
 	return { data: currentResult };

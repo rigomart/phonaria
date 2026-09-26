@@ -37,7 +37,7 @@ export interface SpellingOptions {
 	frequency?: SpellingFrequency;
 	/**
 	 * Asks the Worker to pick candidates with the sentence in view. Injected like
-	 * `transcribeWords`; absent when the feature flag is off, which keeps the rule alone.
+	 * `transcribeWords`; without it the frequency rule decides alone.
 	 */
 	chooseInContext?: ChooseSpellingInContextFn;
 }

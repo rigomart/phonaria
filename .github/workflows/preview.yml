@@ -22,7 +22,6 @@ jobs:
       SITE_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL || 'https://phonaria-staging.workers.dev' }}
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
-      FLAG_SPELLING_CONTEXT: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -87,7 +86,6 @@ jobs:
     env:
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
-      FLAG_SPELLING_CONTEXT: "1"
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
@@ -197,7 +195,6 @@ jobs:
       SITE_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL || 'https://phonaria-staging.workers.dev' }}
       SITE_INDEXING_ENABLED: "0"
       FLAG_PRACTICE: "1"
-      FLAG_SPELLING_CONTEXT: "1"
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
       TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}

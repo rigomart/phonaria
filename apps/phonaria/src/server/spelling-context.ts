@@ -1,4 +1,3 @@
-import { flags } from "@/lib/flags";
 import { type AskJev, createOpenRouterJev, JevError } from "@/lib/jev/client";
 import type { SpellingContextOutput } from "@/lib/transcription/spelling-context";
 import {
@@ -19,7 +18,6 @@ export type SpellingContextWorkerEnv = {
 export type ChooseSpellingOnWorkerDependencies = {
 	chooseSpelling?: typeof defaultChooseSpelling;
 	createAskJev?: (apiKey: string) => AskJev;
-	isEnabled?: () => boolean;
 	rateLimitKey?: string;
 	log?: typeof logWorkerEvent;
 	now?: () => number;
@@ -38,14 +36,11 @@ export async function chooseSpellingOnWorker(
 	dependencies: ChooseSpellingOnWorkerDependencies = {},
 ): Promise<SpellingContextOutput> {
 	const log = dependencies.log ?? logWorkerEvent;
-	const isEnabled = dependencies.isEnabled ?? (() => flags.isEnabled("spellingContext"));
 	const now = dependencies.now ?? Date.now;
 	const unavailable = (level: "warn" | "error", reason: string, details = {}) => {
 		log({ level, message: "spelling_context_unavailable", details: { reason, ...details } });
 		return UNAVAILABLE;
 	};
-
-	if (!isEnabled()) return UNAVAILABLE;
 
 	const apiKey = env.OPENROUTER_API_KEY?.trim();
 	if (!apiKey) return unavailable("warn", "missing_api_key");

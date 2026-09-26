@@ -39,6 +39,5 @@ jobs:
           SITE_URL: https://phonaria.rigos.dev
           SITE_INDEXING_ENABLED: "1"
           FLAG_PRACTICE: "0"
-          FLAG_SPELLING_CONTEXT: "0"
           TURSO_DATABASE_URL: libsql://ci-placeholder.turso.io
           TURSO_AUTH_TOKEN: ci-placeholder

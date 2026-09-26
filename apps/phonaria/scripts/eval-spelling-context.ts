@@ -1,7 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Live check of context-aware spelling suggestions before `FLAG_SPELLING_CONTEXT` goes on in
- * production. Runs the labeled sentences from issue #262 through the shipped path: the real
+ * Live check of context-aware spelling suggestions. Runs the labeled sentences from issue #262 through the shipped path: the real
  * `chooseSpellingInContext` (one Jev call per sentence, whole-word excerpt, `none_of_these`)
  * over OpenRouter with the Worker's timeout, merged with the frequency rule as the browser does.
  *
