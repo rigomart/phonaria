@@ -4,7 +4,7 @@ import { Button } from "@phonaria/ui/components/button";
 import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@phonaria/ui/components/input-group";
 import { Loader2, SendHorizontal, X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { SpellingSuggestionLine } from "@/components/transcription/spelling-suggestion-line";
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import { useCurrentTranscription } from "@/hooks/use-transcribe";
@@ -27,6 +27,16 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 	const { submit, clear, isPending } = useSubmitTranscription();
 	const { data: transcriptionResult } = useCurrentTranscription();
 	const inputRef = useRef<HTMLInputElement>(null);
+
+	useLayoutEffect(() => {
+		// A fill or autofill can write the field before React attaches onChange.
+		// React keeps that DOM value, so copy it into the draft. Skip an empty
+		// field: a shared ?q= may already be in the store before this input re-renders.
+		const current = inputRef.current?.value ?? "";
+		if (current.length > 0 && current !== useG2PStore.getState().draftText) {
+			setDraftText(current);
+		}
+	}, [setDraftText]);
 
 	useEffect(() => {
 		function handleKeyDown(event: KeyboardEvent) {
@@ -73,7 +83,10 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		if (hasText && !isPending) submit(inputText);
+		// The DOM value is what Enter submits. It can be ahead of React state when
+		// the learner types before hydration finishes.
+		const text = inputRef.current?.value ?? inputText;
+		if (text.trim().length > 0 && !isPending) submit(text);
 	};
 
 	const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -83,7 +96,9 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
+		// method="get" lets Enter reach /?q= before React hydrates. aria-disabled
+		// (not disabled) keeps that key from being swallowed while the draft is empty.
+		<form method="get" action="/" onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
 			<div className="flex w-full flex-row gap-2">
 				<InputGroup className="flex-1">
 					<InputGroupInput
@@ -93,6 +108,7 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 						onKeyDown={handleInputKeyDown}
 						placeholder="Type a word or phrase..."
 						disabled={isPending}
+						name="q"
 						size="lg"
 						maxLength={maxLength}
 						aria-label="Text to transcribe"
@@ -117,8 +133,9 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 				<Button
 					type="submit"
 					size="lg"
-					disabled={!hasText || isPending}
-					className="gap-2"
+					disabled={isPending}
+					aria-disabled={!hasText || isPending}
+					className="gap-2 aria-disabled:pointer-events-none aria-disabled:opacity-64"
 					aria-label="Transcribe text"
 				>
 					{isPending ? (
