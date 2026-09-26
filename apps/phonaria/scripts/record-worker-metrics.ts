@@ -59,7 +59,9 @@ export function parseWranglerOutput(output: string): WranglerUploadStats {
 export function measureWorkerDirectory(
 	directory: string,
 ): Omit<WorkerMetrics, "comparedToGuardrails"> {
-	const files = listFiles(directory).filter((file) => JS_MODULE.test(file));
+	const files = listFiles(resolveMeasurementDirectory(directory)).filter((file) =>
+		JS_MODULE.test(file),
+	);
 	let uncompressedBytes = 0;
 	let gzipBytes = 0;
 	for (const file of files) {
@@ -130,8 +132,27 @@ function listFiles(directory: string): string[] {
 	return files;
 }
 
+/**
+ * Vite writes client static assets next to the Worker server bundle. Those
+ * chunks are Workers Static Assets, not Worker modules, so a `dist` tree
+ * is measured from `dist/server`. Other layouts are walked as given.
+ */
+export function resolveMeasurementDirectory(directory: string): string {
+	const serverDir = join(directory, "server");
+	const clientDir = join(directory, "client");
+	if (
+		statSync(serverDir, { throwIfNoEntry: false })?.isDirectory() &&
+		statSync(clientDir, { throwIfNoEntry: false })?.isDirectory()
+	) {
+		return serverDir;
+	}
+	return directory;
+}
+
 function candidateDirectories(): string[] {
 	return [
+		resolve(import.meta.dirname, "../.wrangler/dry-run"),
+		resolve(import.meta.dirname, "../dist/server"),
 		resolve(import.meta.dirname, "../dist"),
 		resolve(import.meta.dirname, "../.output"),
 		resolve(import.meta.dirname, "../.wrangler/tmp"),
@@ -141,11 +162,12 @@ function candidateDirectories(): string[] {
 function pickExistingDirectory(): string | undefined {
 	const requested = process.env.WORKER_BUNDLE_DIR;
 	if (requested && statSync(requested, { throwIfNoEntry: false })?.isDirectory()) {
-		return requested;
+		return resolveMeasurementDirectory(requested);
 	}
-	return candidateDirectories().find((directory) =>
+	const found = candidateDirectories().find((directory) =>
 		Boolean(statSync(directory, { throwIfNoEntry: false })?.isDirectory()),
 	);
+	return found ? resolveMeasurementDirectory(found) : undefined;
 }
 
 function runCli(): void {

@@ -81,7 +81,9 @@ jobs:
       - name: Capture Worker startup time
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
-        run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
+        run: |
+          set -o pipefail
+          bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
 
       - name: Write Worker secrets file
         if: env.CLOUDFLARE_API_TOKEN != ''
@@ -106,7 +108,8 @@ jobs:
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
         env:
-          WORKER_BUNDLE_DIR: dist
+          # Measure the Wrangler upload, not Vite's client+server dist tree.
+          WORKER_BUNDLE_DIR: .wrangler/dry-run
           WORKER_METRICS_OUT: worker-metrics.json
           WRANGLER_DEPLOY_LOG: wrangler-dry-run.log
         run: bun ./scripts/record-worker-metrics.ts
