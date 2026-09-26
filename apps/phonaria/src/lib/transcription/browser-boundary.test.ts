@@ -22,7 +22,7 @@ const clientFiles = [
 	"src/components/transcription/transcription-journey.tsx",
 	"src/components/transcription/g2p-input-form.tsx",
 	"src/components/transcription/spelling-suggestion-line.tsx",
-	"src/components/transcription/display/empty-state.tsx",
+	"src/components/transcription/spelling-context-notice.tsx",
 	"src/components/transcription/display/index.tsx",
 	"src/components/transcription/display/word-definition-popover.tsx",
 	"src/components/transcription/display/clickable-phoneme.tsx",

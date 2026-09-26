@@ -37,8 +37,9 @@ export function SpellingSuggestionLineControl({
 }
 
 /**
- * Always rendered and one line tall, so a suggestion arriving after the transcription does
- * not push the controls below it. The polite live region announces that late arrival.
+ * Sits beside the copy and info buttons, taking the rest of their row, so a suggestion that
+ * arrives after the transcription moves nothing. Always mounted: the polite live region
+ * announces that late arrival.
  */
 export function SpellingSuggestionSlot({
 	suggestion,
@@ -50,7 +51,7 @@ export function SpellingSuggestionSlot({
 	disabled?: boolean;
 }) {
 	return (
-		<div className="flex min-h-7 items-start" aria-live="polite">
+		<div className="flex min-w-0 flex-1 items-center" aria-live="polite">
 			{suggestion ? (
 				<div
 					key={suggestion.suggestedText}

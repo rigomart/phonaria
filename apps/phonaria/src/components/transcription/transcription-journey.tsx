@@ -5,6 +5,7 @@ import type { TranscribeWordsFn } from "@/lib/transcription/g2p-store";
 import type { ChooseSpellingInContextFn } from "@/lib/transcription/spelling-context";
 import { TranscriptionDisplay } from "./display";
 import { G2PInputForm } from "./g2p-input-form";
+import { SpellingContextNotice } from "./spelling-context-notice";
 
 export function TranscriptionJourney({
 	transcribeWords,
@@ -28,6 +29,8 @@ export function TranscriptionJourney({
 						<TranscriptionDisplay targetAccent="en-us" />
 					</div>
 				</div>
+
+				<SpellingContextNotice />
 			</div>
 		</TranscriptionProvider>
 	);

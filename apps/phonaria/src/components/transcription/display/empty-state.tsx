@@ -1,13 +1,12 @@
 "use client";
 
 import { ArrowRightIcon } from "lucide-react";
-import { useSpellingContextEnabled, useTranscribe } from "@/hooks/use-transcribe";
+import { useTranscribe } from "@/hooks/use-transcribe";
 
 const EXAMPLES = ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"];
 
 export function EmptyState() {
 	const transcribeMutation = useTranscribe();
-	const spellingContextEnabled = useSpellingContextEnabled();
 
 	const handleExampleClick = (example: string) => {
 		transcribeMutation.mutate({ text: example });
@@ -34,13 +33,6 @@ export function EmptyState() {
 					))}
 				</div>
 			</div>
-
-			{spellingContextEnabled ? (
-				<p className="mt-16 w-full max-w-sm text-center text-xs text-muted-foreground">
-					To suggest spellings for words our dictionary doesn't know, Phonaria sends the text around
-					them to TypeSafe's Jev model through OpenRouter.
-				</p>
-			) : null}
 		</div>
 	);
 }

@@ -70,7 +70,7 @@ characters of whole words. `SPELLING_CONTEXT_RATE_LIMIT` allows 60 calls per
 minute per IP, and the call times out after 1.5 s without retrying. When the
 flag is off, the key is missing, the caller is rate-limited, or Jev fails, the
 Worker answers `unavailable` and the browser falls back to the frequency rule.
-Learner text is never logged. The empty state says the text is sent to a
-third party. Before enabling it in production, run
+Learner text is never logged. A line above the footer on the empty page says
+the text goes to a third party. Before enabling it in production, run
 `bun ./scripts/eval-spelling-context.ts` (see
 `docs/research/issue-262-spelling-context-eval.md`).

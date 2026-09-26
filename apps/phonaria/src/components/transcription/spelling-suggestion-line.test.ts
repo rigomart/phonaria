@@ -36,22 +36,22 @@ describe("SpellingSuggestionLineControl", () => {
 });
 
 describe("SpellingSuggestionSlot", () => {
-	it("reserves one line even with nothing to offer, so a late offer shifts nothing", () => {
+	it("stays mounted as a live region with nothing to offer, taking no line of its own", () => {
 		const html = renderToStaticMarkup(
 			createElement(SpellingSuggestionSlot, { suggestion: null, onAccept: () => {} }),
 		);
 
-		expect(html).toContain("min-h-7");
 		expect(html).toContain('aria-live="polite"');
+		expect(html).toContain("flex-1");
+		expect(html).not.toContain("min-h-");
 		expect(html).not.toContain("<button");
 	});
 
-	it("fades the offer in inside the same reserved line", () => {
+	it("fades the offer in", () => {
 		const html = renderToStaticMarkup(
 			createElement(SpellingSuggestionSlot, { suggestion, onAccept: () => {} }),
 		);
 
-		expect(html).toContain("min-h-7");
 		expect(html).toMatch(/animate-in[^"]*fade-in/);
 		expect(html).toContain("motion-reduce:animate-none");
 		expect(html).toContain("Did you mean ");
