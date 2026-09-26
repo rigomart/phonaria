@@ -100,19 +100,41 @@ describe("measureWorkerDirectory", () => {
 		expect(resolveMeasurementDirectory(directory)).toBe(directory);
 		expect(measureWorkerDirectory(directory).modules).toBe(2);
 	});
+
+	it("walks every JS module in a chosen directory, including a client folder", () => {
+		const directory = mkdtempSync(join(tmpdir(), "worker-chosen-"));
+		mkdirSync(join(directory, "client"));
+		writeFileSync(join(directory, "index.mjs"), "export default 1");
+		writeFileSync(join(directory, "client", "extra.mjs"), "export default 2");
+
+		expect(resolveMeasurementDirectory(directory)).toBe(directory);
+		expect(measureWorkerDirectory(directory).modules).toBe(2);
+	});
 });
 
 describe("deploy workflows", () => {
+	const dryRunWithPipefail =
+		/set -o pipefail\s+bunx wrangler deploy --dry-run --outdir \.wrangler\/dry-run \| tee wrangler-dry-run\.log/;
+
 	it("records Worker metrics from the Wrangler upload, not Vite dist", () => {
 		const preview = readWorkflow("preview.yml");
 		const production = readWorkflow("production.yml");
 		const stagingJob = preview.slice(preview.indexOf("deploy-staging:"));
 
-		expect(stagingJob).toContain("wrangler deploy --dry-run --outdir .wrangler/dry-run");
 		expect(stagingJob).toContain("WRANGLER_DEPLOY_LOG: wrangler-dry-run.log");
 		expect(stagingJob).toContain("WORKER_BUNDLE_DIR: .wrangler/dry-run");
 		expect(stagingJob).not.toMatch(/WORKER_BUNDLE_DIR:\s+dist\s*$/m);
 		expect(production).toContain("WORKER_BUNDLE_DIR: .wrangler/dry-run");
 		expect(production).not.toMatch(/WORKER_BUNDLE_DIR:\s+dist\s*$/m);
+	});
+
+	it("fails the Wrangler dry-run step when wrangler fails before tee", () => {
+		const preview = readWorkflow("preview.yml");
+		const production = readWorkflow("production.yml");
+		const stagingJob = preview.slice(preview.indexOf("deploy-staging:"));
+
+		expect(preview).toMatch(dryRunWithPipefail);
+		expect(stagingJob).toMatch(dryRunWithPipefail);
+		expect(production).toMatch(dryRunWithPipefail);
 	});
 });

@@ -81,7 +81,9 @@ jobs:
       - name: Capture Worker startup time
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
-        run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
+        run: |
+          set -o pipefail
+          bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
 
       - name: Write Worker secrets file
         if: env.CLOUDFLARE_API_TOKEN != ''

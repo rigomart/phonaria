@@ -57,7 +57,9 @@ jobs:
         run: bun ./scripts/assert-server-bundle-boundary.ts
       - name: Wrangler dry-run
         working-directory: apps/phonaria
-        run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
+        run: |
+          set -o pipefail
+          bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
       - name: Record Worker metrics
         working-directory: apps/phonaria
         env:
@@ -225,7 +227,9 @@ jobs:
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-staging
       - name: Wrangler dry-run
         working-directory: apps/phonaria
-        run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
+        run: |
+          set -o pipefail
+          bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
       - name: Write Worker secrets file
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria

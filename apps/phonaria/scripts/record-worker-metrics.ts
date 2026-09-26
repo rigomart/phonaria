@@ -35,7 +35,6 @@ export type WranglerUploadStats = {
 };
 
 const JS_MODULE = /\.(m?js|wasm)$/i;
-const CLIENT_ASSET_DIR = "client";
 
 export function parseWranglerOutput(output: string): WranglerUploadStats {
 	const stats: WranglerUploadStats = {};
@@ -125,7 +124,6 @@ function listFiles(directory: string): string[] {
 	for (const entry of entries) {
 		const fullPath = join(directory, entry.name);
 		if (entry.isDirectory()) {
-			if (entry.name === CLIENT_ASSET_DIR) continue;
 			files.push(...listFiles(fullPath));
 			continue;
 		}
@@ -137,7 +135,7 @@ function listFiles(directory: string): string[] {
 /**
  * Vite writes client static assets next to the Worker server bundle. Those
  * chunks are Workers Static Assets, not Worker modules, so a `dist` tree
- * must be measured from `dist/server` (or by skipping `client/`).
+ * is measured from `dist/server`. Other layouts are walked as given.
  */
 export function resolveMeasurementDirectory(directory: string): string {
 	const serverDir = join(directory, "server");
