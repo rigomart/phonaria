@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import type { SpellingSuggestion } from "@/lib/transcription/spelling-suggestion";
-import { SpellingSuggestionLineControl } from "./spelling-suggestion-line";
+import { SpellingSuggestionLineControl, SpellingSuggestionSlot } from "./spelling-suggestion-line";
 
 const suggestion: SpellingSuggestion = {
 	suggestedText: "hello receive",
@@ -32,5 +32,28 @@ describe("SpellingSuggestionLineControl", () => {
 			createElement(SpellingSuggestionLineControl, { suggestion, onAccept }),
 		);
 		expect(html.match(/<button/g)).toHaveLength(1);
+	});
+});
+
+describe("SpellingSuggestionSlot", () => {
+	it("stays mounted as a live region with nothing to offer, taking no line of its own", () => {
+		const html = renderToStaticMarkup(
+			createElement(SpellingSuggestionSlot, { suggestion: null, onAccept: () => {} }),
+		);
+
+		expect(html).toContain('aria-live="polite"');
+		expect(html).toContain("flex-1");
+		expect(html).not.toContain("min-h-");
+		expect(html).not.toContain("<button");
+	});
+
+	it("fades the offer in", () => {
+		const html = renderToStaticMarkup(
+			createElement(SpellingSuggestionSlot, { suggestion, onAccept: () => {} }),
+		);
+
+		expect(html).toMatch(/animate-in[^"]*fade-in/);
+		expect(html).toContain("motion-reduce:animate-none");
+		expect(html).toContain("Did you mean ");
 	});
 });

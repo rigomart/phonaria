@@ -39,6 +39,11 @@
 			"name": "DEFINITION_RATE_LIMIT",
 			"namespace_id": "175101",
 			"simple": { "limit": 60, "period": 60 }
+		},
+		{
+			"name": "SPELLING_CONTEXT_RATE_LIMIT",
+			"namespace_id": "175201",
+			"simple": { "limit": 60, "period": 60 }
 		}
 	],
 	"vars": {
@@ -60,6 +65,11 @@
 					"name": "DEFINITION_RATE_LIMIT",
 					"namespace_id": "175102",
 					"simple": { "limit": 60, "period": 60 }
+				},
+				{
+					"name": "SPELLING_CONTEXT_RATE_LIMIT",
+					"namespace_id": "175202",
+					"simple": { "limit": 60, "period": 60 }
 				}
 			],
 			"vars": {
@@ -79,6 +89,11 @@
 				{
 					"name": "DEFINITION_RATE_LIMIT",
 					"namespace_id": "175103",
+					"simple": { "limit": 60, "period": 60 }
+				},
+				{
+					"name": "SPELLING_CONTEXT_RATE_LIMIT",
+					"namespace_id": "175203",
 					"simple": { "limit": 60, "period": 60 }
 				}
 			],
@@ -103,6 +118,11 @@
 				{
 					"name": "DEFINITION_RATE_LIMIT",
 					"namespace_id": "175104",
+					"simple": { "limit": 60, "period": 60 }
+				},
+				{
+					"name": "SPELLING_CONTEXT_RATE_LIMIT",
+					"namespace_id": "175204",
 					"simple": { "limit": 60, "period": 60 }
 				}
 			],

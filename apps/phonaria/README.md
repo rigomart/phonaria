@@ -32,11 +32,15 @@ The application serves transcription, Credits, IPA charts, and Practice when
 `FLAG_PRACTICE` is enabled (staging and preview). Production keeps Practice
 off. Transcription uses a TanStack server function with `@libsql/client/web`
 and request-time Worker bindings for
-`TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. Put those secrets on each
-Cloudflare environment (`wrangler secret put`) and, for local Start, in
-`.dev.vars` by hand. `write-dev-vars` never copies Turso values from
-the process environment; it only preserves existing `.dev.vars` secret
-lines.
+`TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`, and spelling suggestions read
+`OPENROUTER_API_KEY`. `WORKER_SECRET_KEYS` in `scripts/write-worker-secrets.ts`
+lists every Worker secret. The deploy workflows run that script to write the
+secrets set in GitHub to a file, and `wrangler deploy --secrets-file` ships them
+with the Worker version. A secret that isn't set is left unchanged on the
+Worker. To add a secret, add its name to that list and to the deploy jobs'
+`env`. For local Start, put the secrets in `.dev.vars` by hand.
+`write-dev-vars` never copies them from the process environment; it only
+preserves existing `.dev.vars` lines for the same keys.
 
 ## Transcription guardrails
 
@@ -54,3 +58,17 @@ named Worker environments. A rejected transcription request returns a retryable
 error with HTTP status 429 before Turso is queried. A missing binding also fails
 closed before Turso is queried. Dictionary lookups proxy Wiktionary REST
 definitions from the Worker and never call Wiktionary from the browser.
+
+## Context-aware spelling suggestions
+
+After a transcription lands, when some missed word has one-slip dictionary
+neighbours, the browser calls `chooseSpellingInContextFn`. The Worker checks
+the candidates against the text, then asks Jev (TypeSafe's decision model,
+through OpenRouter) which one the sentence meant, sending at most 300
+characters of whole words. `SPELLING_CONTEXT_RATE_LIMIT` allows 60 calls per
+minute per IP, and the call times out after 1.5 s without retrying. When
+`OPENROUTER_API_KEY` is missing, the caller is rate-limited, or Jev fails, the
+Worker answers `unavailable` and the browser falls back to the frequency rule.
+Learner text is never logged. The Credits page lists Jev among the services
+Phonaria uses. `bun ./scripts/eval-spelling-context.ts` re-checks the labeled
+sentences (see `docs/research/issue-262-spelling-context-eval.md`).

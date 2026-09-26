@@ -90,6 +90,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
       TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
     steps:
       - name: Checkout
@@ -114,6 +115,10 @@ jobs:
           CLOUDFLARE_ENV: preview
           SITE_URL: ${{ steps.origin.outputs.url }}
         run: bun --cwd apps/phonaria build
+      - name: Write Worker secrets file
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: apps/phonaria
+        run: bun ./scripts/write-worker-secrets.ts
       - name: Deploy preview Worker
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
@@ -121,18 +126,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/phonaria
-          command: deploy --name ${{ steps.origin.outputs.name }} --var SITE_URL:${{ steps.origin.outputs.url }}
-      - name: Put Turso secrets on preview Worker
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.TURSO_DATABASE_URL != '' && env.TURSO_AUTH_TOKEN != ''
-        working-directory: apps/phonaria
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
-          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
-        run: |
-          printf '%s' "$TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name "${{ steps.origin.outputs.name }}"
-          printf '%s' "$TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name "${{ steps.origin.outputs.name }}"
+          command: deploy --name ${{ steps.origin.outputs.name }} --var SITE_URL:${{ steps.origin.outputs.url }} --secrets-file .wrangler/worker-secrets.json
       - name: Smoke Wiktionary definitions on preview
         if: env.CLOUDFLARE_API_TOKEN != ''
         env:
@@ -205,6 +199,7 @@ jobs:
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
       TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
       TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -228,6 +223,10 @@ jobs:
       - name: Assert staging Worker name
         working-directory: apps/phonaria
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-staging
+      - name: Write Worker secrets file
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: apps/phonaria
+        run: bun ./scripts/write-worker-secrets.ts
       - name: Deploy staging Worker
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
@@ -235,16 +234,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/phonaria
-          command: deploy --var SITE_URL:${{ steps.staging.outputs.url }}
-      - name: Put Turso secrets on staging Worker
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.TURSO_DATABASE_URL != '' && env.TURSO_AUTH_TOKEN != ''
-        working-directory: apps/phonaria
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          printf '%s' "$TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria-staging
-          printf '%s' "$TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria-staging
+          command: deploy --var SITE_URL:${{ steps.staging.outputs.url }} --secrets-file .wrangler/worker-secrets.json
       - name: Record deployed Worker metrics
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria

@@ -34,6 +34,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || secrets.LAB_TURSO_DATABASE_URL }}
       TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || secrets.LAB_TURSO_AUTH_TOKEN }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -82,6 +83,11 @@ jobs:
         working-directory: apps/phonaria
         run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
 
+      - name: Write Worker secrets file
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: apps/phonaria
+        run: bun ./scripts/write-worker-secrets.ts
+
       - name: Deploy production Worker
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
@@ -89,14 +95,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/phonaria
-          command: deploy
-
-      - name: Put Turso secrets on the Worker
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.TURSO_DATABASE_URL != '' && env.TURSO_AUTH_TOKEN != ''
-        working-directory: apps/phonaria
-        run: |
-          printf '%s' "$TURSO_DATABASE_URL" | bunx wrangler secret put TURSO_DATABASE_URL --name phonaria
-          printf '%s' "$TURSO_AUTH_TOKEN" | bunx wrangler secret put TURSO_AUTH_TOKEN --name phonaria
+          command: deploy --secrets-file .wrangler/worker-secrets.json
 
       - name: Warn when Turso secrets are missing
         if: env.CLOUDFLARE_API_TOKEN != '' && (env.TURSO_DATABASE_URL == '' || env.TURSO_AUTH_TOKEN == '')

@@ -36,6 +36,38 @@ export function SpellingSuggestionLineControl({
 	);
 }
 
+/**
+ * Sits beside the copy and info buttons, taking the rest of their row, so a suggestion that
+ * arrives after the transcription moves nothing. Always mounted: the polite live region
+ * announces that late arrival.
+ */
+export function SpellingSuggestionSlot({
+	suggestion,
+	onAccept,
+	disabled = false,
+}: {
+	suggestion: SpellingSuggestion | null;
+	onAccept: () => void;
+	disabled?: boolean;
+}) {
+	return (
+		<div className="flex min-w-0 flex-1 items-center" aria-live="polite">
+			{suggestion ? (
+				<div
+					key={suggestion.suggestedText}
+					className="max-w-full animate-in fade-in slide-in-from-top-1 duration-300 motion-reduce:animate-none"
+				>
+					<SpellingSuggestionLineControl
+						suggestion={suggestion}
+						onAccept={onAccept}
+						disabled={disabled}
+					/>
+				</div>
+			) : null}
+		</div>
+	);
+}
+
 export function SpellingSuggestionLine() {
 	const suggestion = useG2PStore((state) => state.currentResult?.spellingSuggestion);
 	const lookupError = useG2PStore((state) => state.lookupError);
@@ -43,15 +75,12 @@ export function SpellingSuggestionLine() {
 	const { acceptSpellingSuggestion, isPending } = useTranscribe();
 	const isBusy = isPending || isTranscribing;
 	const visible = getVisibleSpellingSuggestion(suggestion, lookupError, isBusy);
-	if (!visible) return null;
 
 	return (
-		<div className="self-start">
-			<SpellingSuggestionLineControl
-				suggestion={visible}
-				onAccept={acceptSpellingSuggestion}
-				disabled={isBusy}
-			/>
-		</div>
+		<SpellingSuggestionSlot
+			suggestion={visible}
+			onAccept={acceptSpellingSuggestion}
+			disabled={isBusy}
+		/>
 	);
 }

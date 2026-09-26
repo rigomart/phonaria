@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { G2PSyllable } from "@/lib/g2p/model";
 import type { BatchLookupResult, WordLookupResult } from "@/lib/phoneme-lookup";
 import { type LookupWordsFn, type TranscribeWordsFn, useG2PStore } from "./g2p-store";
+import type { SpellingContextInput, SpellingContextOutput } from "./spelling-context";
+import { createSpellingFrequency } from "./spelling-suggestion";
 
 function syllable(...cmuTokens: string[]): G2PSyllable {
 	return {
@@ -531,14 +533,9 @@ describe("g2p-store — spelling suggestions", () => {
 		useG2PStore.getState().setDraftText(text);
 		vi.spyOn(console, "warn").mockImplementation(() => {});
 
-		await useG2PStore
-			.getState()
-			.transcribe(
-				text,
-				dropsFirstWord,
-				lookupUniqueMisses,
-				createSpellingFrequency({ receive: 0 }),
-			);
+		await useG2PStore.getState().transcribe(text, dropsFirstWord, lookupUniqueMisses, {
+			frequency: createSpellingFrequency({ receive: 0 }),
+		});
 
 		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toMatchObject({
 			suggestedText: "ghost, receive; receive!",
@@ -550,19 +547,14 @@ describe("g2p-store — spelling suggestions", () => {
 		const { createSpellingFrequency } = await import("./spelling-suggestion");
 		const text = "  Recieve,   please!  ";
 		useG2PStore.getState().setDraftText(text);
-		await useG2PStore
-			.getState()
-			.transcribe(
-				text,
-				fallbackServer(),
-				lookupAllMissing,
-				createSpellingFrequency({ receive: 0 }),
-			);
+		await useG2PStore.getState().transcribe(text, fallbackServer(), lookupAllMissing, {
+			frequency: createSpellingFrequency({ receive: 0 }),
+		});
 
 		const server = countingServer();
-		await useG2PStore
-			.getState()
-			.acceptSpellingSuggestion(server, lookupAllFound, createSpellingFrequency({ receive: 0 }));
+		await useG2PStore.getState().acceptSpellingSuggestion(server, lookupAllFound, {
+			frequency: createSpellingFrequency({ receive: 0 }),
+		});
 
 		const state = useG2PStore.getState();
 		expect(state.draftText).toBe("  Receive,   please!  ");
@@ -589,15 +581,168 @@ describe("g2p-store — spelling suggestions", () => {
 		useG2PStore.getState().setDraftText("aardvrk");
 		await useG2PStore
 			.getState()
-			.transcribe(
-				"aardvrk",
-				fallbackServer({ aardvrk: ["aardvark"] }),
-				lookupAllMissing,
-				createSpellingFrequency({}),
-			);
+			.transcribe("aardvrk", fallbackServer({ aardvrk: ["aardvark"] }), lookupAllMissing, {
+				frequency: createSpellingFrequency({}),
+			});
 
 		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toMatchObject({
 			suggestedText: "aardvark",
 		});
+	});
+});
+
+describe("g2p-store — context spelling suggestions", () => {
+	const neighbours: Record<string, string[]> = { wnat: ["what", "want"], recieve: ["receive"] };
+	// `what` and `want` are too close in rank for the rule to choose between them.
+	const frequency = createSpellingFrequency({ what: 40, want: 90, receive: 1484 });
+
+	function fallbackServer(): TranscribeWordsFn {
+		return async ({ words }) =>
+			words.map((word) => ({
+				word: word.toLowerCase(),
+				variants: [[syllable("X")]],
+				source: "fallback" as const,
+				spellingNeighbours: neighbours[word.toLowerCase()],
+			}));
+	}
+
+	/** Only the misspelling misses the client tiers, as in real sentences. */
+	const lookupMissesTypos: LookupWordsFn = async (words) => {
+		const missing = words.filter((word) => word.toLowerCase() in neighbours);
+		return {
+			found: new Map(
+				words
+					.filter((word) => !missing.includes(word))
+					.map((word) => [word.toLowerCase(), foundWord(word.toLowerCase())]),
+			),
+			missing,
+		};
+	};
+
+	function deferredChooser() {
+		let settle: (output: SpellingContextOutput) => void = () => {};
+		let fail: (error: Error) => void = () => {};
+		const chooseInContext = vi.fn(
+			(_input: SpellingContextInput) =>
+				new Promise<SpellingContextOutput>((resolve, reject) => {
+					settle = resolve;
+					fail = reject;
+				}),
+		);
+		return {
+			chooseInContext,
+			answer: (output: SpellingContextOutput) => settle(output),
+			fail: (error: Error) => fail(error),
+		};
+	}
+
+	const settled = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+	it("lands the transcription first, then attaches the context pick", async () => {
+		const chooser = deferredChooser();
+		const text = "I wnat to learn";
+		useG2PStore.getState().setDraftText(text);
+
+		await useG2PStore.getState().transcribe(text, fallbackServer(), lookupMissesTypos, {
+			frequency,
+			chooseInContext: chooser.chooseInContext,
+		});
+
+		const landed = useG2PStore.getState();
+		expect(landed.isTranscribing).toBe(false);
+		expect(landed.currentResult?.originalText).toBe(text);
+		expect(landed.currentResult?.spellingSuggestion).toBeNull();
+		expect(chooser.chooseInContext).toHaveBeenCalledWith({
+			text,
+			misses: [{ tokenIndex: 1, candidates: ["what", "want"] }],
+		});
+
+		chooser.answer({ status: "answered", picks: [{ tokenIndex: 1, word: "want" }] });
+		await vi.waitFor(() => {
+			expect(useG2PStore.getState().currentResult?.spellingSuggestion?.suggestedText).toBe(
+				"I want to learn",
+			);
+		});
+		expect(useG2PStore.getState().currentResult?.words).toHaveLength(4);
+	});
+
+	it("falls back to the rule when the context call fails", async () => {
+		vi.spyOn(console, "warn").mockImplementation(() => {});
+		const chooser = deferredChooser();
+		useG2PStore.getState().setDraftText("recieve");
+
+		await useG2PStore.getState().transcribe("recieve", fallbackServer(), lookupMissesTypos, {
+			frequency,
+			chooseInContext: chooser.chooseInContext,
+		});
+		chooser.fail(new Error("network"));
+
+		await vi.waitFor(() => {
+			expect(useG2PStore.getState().currentResult?.spellingSuggestion?.suggestedText).toBe(
+				"receive",
+			);
+		});
+	});
+
+	it("falls back to the rule when the service is unavailable", async () => {
+		const chooseInContext = vi.fn(async () => ({ status: "unavailable" as const }));
+		useG2PStore.getState().setDraftText("recieve");
+
+		await useG2PStore
+			.getState()
+			.transcribe("recieve", fallbackServer(), lookupMissesTypos, { frequency, chooseInContext });
+
+		await vi.waitFor(() => {
+			expect(useG2PStore.getState().currentResult?.spellingSuggestion?.suggestedText).toBe(
+				"receive",
+			);
+		});
+	});
+
+	it("drops a late pick after the draft was edited", async () => {
+		const chooser = deferredChooser();
+		useG2PStore.getState().setDraftText("I wnat it");
+		await useG2PStore.getState().transcribe("I wnat it", fallbackServer(), lookupMissesTypos, {
+			frequency,
+			chooseInContext: chooser.chooseInContext,
+		});
+
+		useG2PStore.getState().setDraftText("I wnat it now");
+		chooser.answer({ status: "answered", picks: [{ tokenIndex: 1, word: "want" }] });
+		await settled();
+
+		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toBeNull();
+	});
+
+	it("drops a late pick after a newer transcription", async () => {
+		const chooser = deferredChooser();
+		useG2PStore.getState().setDraftText("I wnat it");
+		await useG2PStore.getState().transcribe("I wnat it", fallbackServer(), lookupMissesTypos, {
+			frequency,
+			chooseInContext: chooser.chooseInContext,
+		});
+
+		useG2PStore.getState().setDraftText("hello");
+		await useG2PStore.getState().transcribe("hello", countingServer(), lookupAllFound);
+		chooser.answer({ status: "answered", picks: [{ tokenIndex: 1, word: "want" }] });
+		await settled();
+
+		const state = useG2PStore.getState();
+		expect(state.currentResult?.originalText).toBe("hello");
+		expect(state.currentResult?.spellingSuggestion).toBeNull();
+	});
+
+	it("never calls the chooser for a miss with no candidates", async () => {
+		const chooseInContext = vi.fn();
+		const noNeighbours: TranscribeWordsFn = async ({ words }) =>
+			words.map((word) => ({ word, variants: [[syllable("X")]], source: "fallback" as const }));
+		useG2PStore.getState().setDraftText("sanjeev");
+
+		await useG2PStore
+			.getState()
+			.transcribe("sanjeev", noNeighbours, lookupAllMissing, { frequency, chooseInContext });
+
+		expect(chooseInContext).not.toHaveBeenCalled();
+		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toBeNull();
 	});
 });

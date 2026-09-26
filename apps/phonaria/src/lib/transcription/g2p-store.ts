@@ -8,6 +8,13 @@ import {
 	type WordLookupResult,
 } from "@/lib/phoneme-lookup";
 import type { TranscriptionResult } from "@/lib/types/g2p";
+import {
+	buildSpellingContextRequest,
+	type ChooseSpellingInContextFn,
+	type SpellingContextInput,
+	type SpellingContextOutput,
+	spellingContextPicksByToken,
+} from "./spelling-context";
 import { loadSpellingFrequency } from "./spelling-frequency";
 import { type SpellingFrequency, type SpellingMiss, suggestSpelling } from "./spelling-suggestion";
 
@@ -24,6 +31,16 @@ export type LookupErrorKind = "wordlist" | "service" | "unknown";
  */
 export type TranscribeWordsFn = (input: { words: string[] }) => Promise<G2PWord[]>;
 export type LookupWordsFn = (words: string[]) => Promise<BatchLookupResult>;
+
+export interface SpellingOptions {
+	/** Defaults to the curated top-10k ranks. */
+	frequency?: SpellingFrequency;
+	/**
+	 * Asks the Worker to pick candidates with the sentence in view. Injected like
+	 * `transcribeWords`; without it the frequency rule decides alone.
+	 */
+	chooseInContext?: ChooseSpellingInContextFn;
+}
 
 interface G2PStore {
 	currentResult: TranscriptionResult | null;
@@ -49,12 +66,12 @@ interface G2PStore {
 		text: string,
 		transcribeWords: TranscribeWordsFn,
 		lookupWords?: LookupWordsFn,
-		spellingFrequency?: SpellingFrequency,
+		spelling?: SpellingOptions,
 	) => Promise<void>;
 	acceptSpellingSuggestion: (
 		transcribeWords: TranscribeWordsFn,
 		lookupWords?: LookupWordsFn,
-		spellingFrequency?: SpellingFrequency,
+		spelling?: SpellingOptions,
 	) => Promise<void>;
 }
 
@@ -164,7 +181,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 		});
 	},
 
-	transcribe: async (text, transcribeWords, lookupWords = batchLookup, spellingFrequency) => {
+	transcribe: async (text, transcribeWords, lookupWords = batchLookup, spelling = {}) => {
 		const token = ++activeLookup;
 		const submittedDraftRevision = draftRevision;
 
@@ -235,15 +252,18 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 				return;
 			}
 
-			transformed.spellingSuggestion = await spellingSuggestionFor(
-				text,
-				tokens,
-				merged,
-				token,
-				spellingFrequency,
-			);
+			const misses = spellingMisses(merged);
+			// With a chooser, the result lands first and the suggestion follows it, so the
+			// transcription never waits on a third-party call.
+			const contextRequest = spelling.chooseInContext
+				? buildSpellingContextRequest(text, misses)
+				: null;
+			transformed.spellingSuggestion = contextRequest
+				? null
+				: await spellingSuggestionFor(text, tokens, misses, token, spelling.frequency);
 			if (activeLookup !== token) return;
-			if (draftRevision !== submittedDraftRevision || get().draftText !== text) {
+			const draftChanged = draftRevision !== submittedDraftRevision || get().draftText !== text;
+			if (draftChanged) {
 				transformed.spellingSuggestion = null;
 			}
 
@@ -255,6 +275,22 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 				lookupError: null,
 				isTranscribing: false,
 			});
+
+			if (contextRequest && spelling.chooseInContext && !draftChanged) {
+				// Not awaited: `transcribe` settles the transition, and the input re-enables,
+				// as soon as the transcription is on screen.
+				void attachContextSpellingSuggestion({
+					text,
+					tokens,
+					misses,
+					request: contextRequest,
+					chooseInContext: spelling.chooseInContext,
+					frequency: spelling.frequency,
+					lookupToken: token,
+					submittedDraftRevision,
+					result: transformed,
+				});
+			}
 		} catch (error) {
 			if (activeLookup !== token) return;
 			console.error("transcription: unexpected failure", error);
@@ -262,7 +298,7 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 		}
 	},
 
-	acceptSpellingSuggestion: async (transcribeWords, lookupWords, spellingFrequency) => {
+	acceptSpellingSuggestion: async (transcribeWords, lookupWords, spelling) => {
 		const state = get();
 		const suggestion = state.currentResult?.spellingSuggestion;
 		if (
@@ -274,36 +310,83 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 			return;
 		}
 		get().setDraftText(suggestion.suggestedText);
-		await get().transcribe(
-			suggestion.suggestedText,
-			transcribeWords,
-			lookupWords,
-			spellingFrequency,
-		);
+		await get().transcribe(suggestion.suggestedText, transcribeWords, lookupWords, spelling);
 	},
 }));
 
-async function spellingSuggestionFor(
-	originalText: string,
-	tokens: string[],
-	merged: MergedWord[],
-	lookupToken: number,
-	spellingFrequency?: SpellingFrequency,
-) {
-	// The server already searched around each missed token, so candidates ride on the word.
+/** The server already searched around each missed token, so candidates ride on the word. */
+function spellingMisses(merged: MergedWord[]): SpellingMiss[] {
 	const misses: SpellingMiss[] = [];
 	for (const { word, tokenIndex } of merged) {
 		if (word.source !== "fallback") continue;
 		misses.push({ tokenIndex, candidates: word.spellingNeighbours ?? [] });
 	}
+	return misses;
+}
+
+async function spellingSuggestionFor(
+	originalText: string,
+	tokens: string[],
+	misses: SpellingMiss[],
+	lookupToken: number,
+	spellingFrequency?: SpellingFrequency,
+	contextPicks?: ReadonlyMap<number, string | null>,
+) {
 	if (misses.length === 0) return null;
 
 	try {
 		const frequency = spellingFrequency ?? (await loadSpellingFrequency());
 		if (activeLookup !== lookupToken) return null;
-		return suggestSpelling({ originalText, tokens, misses, frequency });
+		return suggestSpelling({ originalText, tokens, misses, frequency, contextPicks });
 	} catch (error) {
 		console.error("transcription: spelling suggestion failed", error);
 		return null;
 	}
+}
+
+/**
+ * Settles the suggestion for a result already on screen. Any failure of the context call
+ * falls back to the rule; the offer is dropped if the learner moved on in the meantime.
+ */
+async function attachContextSpellingSuggestion(options: {
+	text: string;
+	tokens: string[];
+	misses: SpellingMiss[];
+	request: SpellingContextInput;
+	chooseInContext: ChooseSpellingInContextFn;
+	frequency?: SpellingFrequency;
+	lookupToken: number;
+	submittedDraftRevision: number;
+	result: TranscriptionResult;
+}): Promise<void> {
+	const { text, lookupToken, submittedDraftRevision, result } = options;
+	const stillCurrent = () => {
+		const state = useG2PStore.getState();
+		return (
+			activeLookup === lookupToken &&
+			draftRevision === submittedDraftRevision &&
+			state.draftText === text &&
+			state.currentResult === result
+		);
+	};
+
+	let output: SpellingContextOutput | null = null;
+	try {
+		output = await options.chooseInContext(options.request);
+	} catch (error) {
+		console.warn("transcription: context spelling suggestion unavailable", error);
+	}
+	if (!stillCurrent()) return;
+
+	const spellingSuggestion = await spellingSuggestionFor(
+		text,
+		options.tokens,
+		options.misses,
+		lookupToken,
+		options.frequency,
+		spellingContextPicksByToken(output),
+	);
+	if (!spellingSuggestion || !stillCurrent()) return;
+
+	useG2PStore.setState({ currentResult: { ...result, spellingSuggestion } });
 }

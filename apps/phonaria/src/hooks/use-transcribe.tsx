@@ -1,51 +1,70 @@
 "use client";
 
-import { createContext, type ReactNode, useCallback, useContext, useTransition } from "react";
+import {
+	createContext,
+	type ReactNode,
+	useCallback,
+	useContext,
+	useMemo,
+	useTransition,
+} from "react";
 import { type TranscribeWordsFn, useG2PStore } from "@/lib/transcription/g2p-store";
+import type { ChooseSpellingInContextFn } from "@/lib/transcription/spelling-context";
 
-const TranscriptionFnContext = createContext<TranscribeWordsFn | null>(null);
+interface TranscriptionServices {
+	transcribeWords: TranscribeWordsFn;
+	chooseSpellingInContext?: ChooseSpellingInContextFn;
+}
+
+const TranscriptionServicesContext = createContext<TranscriptionServices | null>(null);
 
 export function TranscriptionProvider({
 	transcribeWords,
+	chooseSpellingInContext,
 	children,
-}: {
-	transcribeWords: TranscribeWordsFn;
-	children: ReactNode;
-}) {
+}: TranscriptionServices & { children: ReactNode }) {
+	const services = useMemo(
+		() => ({ transcribeWords, chooseSpellingInContext }),
+		[transcribeWords, chooseSpellingInContext],
+	);
 	return (
-		<TranscriptionFnContext.Provider value={transcribeWords}>
+		<TranscriptionServicesContext.Provider value={services}>
 			{children}
-		</TranscriptionFnContext.Provider>
+		</TranscriptionServicesContext.Provider>
 	);
 }
 
-function useTranscribeWordsFn(): TranscribeWordsFn {
-	const transcribeWords = useContext(TranscriptionFnContext);
-	if (!transcribeWords) {
+function useTranscriptionServices(): TranscriptionServices {
+	const services = useContext(TranscriptionServicesContext);
+	if (!services) {
 		throw new Error("useTranscribe must be used within TranscriptionProvider");
 	}
-	return transcribeWords;
+	return services;
 }
 
 /**
  * Thin wrapper over the store's `transcribe`, which owns the shared result and
- * error state; each caller keeps its own `isPending`. The server adapter is
- * injected by the route-level provider (Next server action or Start function).
+ * error state; each caller keeps its own `isPending`. The server adapters are
+ * injected by the route-level provider.
  */
 export function useTranscribe() {
 	const [isPending, startTransition] = useTransition();
 	const transcribe = useG2PStore((s) => s.transcribe);
 	const lastText = useG2PStore((s) => s.lastText);
 	const acceptSpellingSuggestionOnStore = useG2PStore((s) => s.acceptSpellingSuggestion);
-	const transcribeWords = useTranscribeWordsFn();
+	const { transcribeWords, chooseSpellingInContext } = useTranscriptionServices();
+	const spelling = useMemo(
+		() => ({ chooseInContext: chooseSpellingInContext }),
+		[chooseSpellingInContext],
+	);
 
 	const mutate = useCallback(
 		(input: { text: string }) => {
 			startTransition(async () => {
-				await transcribe(input.text, transcribeWords);
+				await transcribe(input.text, transcribeWords, undefined, spelling);
 			});
 		},
-		[transcribe, transcribeWords],
+		[transcribe, transcribeWords, spelling],
 	);
 
 	const retry = useCallback(() => {
@@ -55,9 +74,9 @@ export function useTranscribe() {
 
 	const acceptSpellingSuggestion = useCallback(() => {
 		startTransition(async () => {
-			await acceptSpellingSuggestionOnStore(transcribeWords);
+			await acceptSpellingSuggestionOnStore(transcribeWords, undefined, spelling);
 		});
-	}, [acceptSpellingSuggestionOnStore, transcribeWords]);
+	}, [acceptSpellingSuggestionOnStore, transcribeWords, spelling]);
 
 	return { mutate, retry, acceptSpellingSuggestion, isPending };
 }
