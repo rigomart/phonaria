@@ -1,39 +1,18 @@
 # @phonaria/flags
 
-Env-backed feature flags so modules can ship to production dark and be enabled per environment. Framework-agnostic and source-imported (no build step).
-
-## Usage
-
-Each app declares its own registry, typically in `src/lib/flags.ts`:
+Small, environment-backed feature flags. The app defines its flags in `apps/phonaria/src/lib/flags.ts` and uses `src/lib/require-flag.ts` to gate routes.
 
 ```ts
 import { createFlags } from "@phonaria/flags";
 
-export const flags = createFlags({
-	practice: {
-		envVar: "FLAG_PRACTICE",
-		// Visible locally, hidden in production builds until the env var opts in.
-		enabledByDefault: process.env.NODE_ENV !== "production",
-	},
+const flags = createFlags({
+  practice: { envVar: "FLAG_PRACTICE", enabledByDefault: false },
 });
+
+flags.isEnabled("practice");
+flags.snapshot(); // { practice: boolean }
 ```
 
-- `flags.isEnabled(name)` — evaluate one flag.
-- `flags.snapshot()` — plain `Record<name, boolean>` of every flag, safe to pass from a server component to client components (e.g. so navigation can hide links).
-- `createFlags(definitions, env?)` — optional second argument is a live env map (`process.env` by default). TanStack Start or tests can pass a different source without changing flag semantics.
+`createFlags(definitions, env?)` accepts an optional environment map for tests or apps with another configuration source. Values `1` and `true` (case-insensitive) enable a flag; an unset or empty value uses `enabledByDefault`.
 
-Gating a new module is one new entry in the registry plus whatever gate the app applies (a route layout that calls `notFound()`, a hidden nav link, etc.).
-
-## Conventions
-
-- Env vars are named `FLAG_*`. The Turborepo build task passes `FLAG_*` through, so new flags affect build caching without touching `turbo.json`.
-- Accepted "on" values: `1` or `true` (case-insensitive). Anything else is off. Unset or empty falls back to the flag's `enabledByDefault`.
-- Flags are read from `process.env`, so prerendered routes bake the value in at build time — flipping a flag requires a redeploy.
-
-## Rollout
-
-The application reads flags from Cloudflare Worker `vars`, declared per environment in
-`apps/phonaria/wrangler.jsonc`.
-
-- **Production**: leave the flag off → unreleased modules stay dark.
-- **Staging / Preview**: set e.g. `FLAG_PRACTICE="1"` to keep the module testable there.
+Phonaria sets `FLAG_PRACTICE` in `apps/phonaria/wrangler.jsonc` by environment. Practice is off in production and on in staging and preview. The app also enables it by default during local development. Flags used by prerendered pages are fixed at build time, so changing a deployed flag requires a rebuild and redeploy.

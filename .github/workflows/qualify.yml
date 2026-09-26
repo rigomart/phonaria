@@ -59,8 +59,8 @@ jobs:
         env:
           TARGET: ${{ inputs.target }}
           BASE_URL_INPUT: ${{ inputs.base_url }}
-          STAGING_URL: ${{ vars.STAGING_URL || vars.LAB_START_STAGING_URL }}
-          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN || vars.LAB_WORKERS_DEV_SUBDOMAIN }}
+          STAGING_URL: ${{ vars.STAGING_URL }}
+          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN }}
         run: |
           if [ -n "$BASE_URL_INPUT" ]; then
             url="$BASE_URL_INPUT"

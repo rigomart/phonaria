@@ -32,7 +32,7 @@ jobs:
         env:
           CI: true
           CONTRACT_TARGET: ${{ inputs.target }}
-          CONTRACT_BASE_URL: ${{ secrets.CONTRACT_BASE_URL || secrets.LAB_CONTRACT_BASE_URL }}
+          CONTRACT_BASE_URL: ${{ inputs.target == 'cloudflare-staging' && vars.STAGING_URL || '' }}
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: bun e2e

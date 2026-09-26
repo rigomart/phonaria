@@ -13,7 +13,7 @@
 export const SITE_NAME = "Phonaria";
 export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";
 
-const DEV_SITE_URL = "http://localhost:3001";
+const DEV_SITE_URL = "http://localhost:3000";
 
 export type DocumentMetadata = {
 	siteName: string;

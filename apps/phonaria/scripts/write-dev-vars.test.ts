@@ -31,9 +31,9 @@ describe("write-dev-vars", () => {
 		const existing = parseDevVars(
 			"SITE_URL=http://old.example\nTURSO_DATABASE_URL=libsql://lab.example\nTURSO_AUTH_TOKEN=token\n",
 		);
-		const contents = buildDevVarsContents({ SITE_URL: "http://localhost:3001" }, existing);
+		const contents = buildDevVarsContents({ SITE_URL: "http://localhost:3000" }, existing);
 
-		expect(contents).toContain("SITE_URL=http://localhost:3001");
+		expect(contents).toContain("SITE_URL=http://localhost:3000");
 		expect(contents).toContain("TURSO_DATABASE_URL=libsql://lab.example");
 		expect(contents).toContain("TURSO_AUTH_TOKEN=token");
 		expect(contents).not.toContain("old.example");

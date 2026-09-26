@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "bun ./scripts/write-dev-vars.ts && vite build",
-		"start": "vite preview --port 3001",
+		"start": "vite preview --port 3000",
 		"deploy": "bun ./scripts/write-dev-vars.ts && vite build && wrangler deploy",
 		"deploy:staging": "bun ./scripts/deploy-staging.ts",
 		"cf-typegen": "wrangler types",
