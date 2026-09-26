@@ -22,11 +22,28 @@ export function TranscriptionSearchSync({ query }: { query: string | undefined }
 	const clearResult = useG2PStore((state) => state.clearResult);
 	const { mutate } = useTranscribe();
 	const dispatchedQuery = useRef<string | undefined>(undefined);
+	const hasAligned = useRef(false);
+	const alignedQuery = useRef<string | undefined>(undefined);
 
 	useLayoutEffect(() => {
-		if (isSuppressedTranscriptionQuery(query)) return;
+		if (isSuppressedTranscriptionQuery(query)) {
+			hasAligned.current = true;
+			alignedQuery.current = query;
+			return;
+		}
 
-		const action = resolveTranscriptionSearchSync({ q: query, lastText, resultShowing });
+		// Draft is only an input when the URL's query changed. A later render
+		// (the result landing, a lookup ending) must not snap an edit back.
+		const queryChanged = !hasAligned.current || alignedQuery.current !== query;
+		hasAligned.current = true;
+		alignedQuery.current = query;
+
+		const action = resolveTranscriptionSearchSync({
+			q: query,
+			lastText,
+			resultShowing,
+			draftText: queryChanged ? useG2PStore.getState().draftText : undefined,
+		});
 		if (action.type === "transcribe") {
 			// A query that never becomes lastText (no tokens) must not be retried.
 			if (dispatchedQuery.current === action.text) return;
@@ -37,6 +54,10 @@ export function TranscriptionSearchSync({ query }: { query: string | undefined }
 		}
 
 		dispatchedQuery.current = undefined;
+		if (action.type === "restore-draft") {
+			setDraftText(action.text);
+			return;
+		}
 		if (action.type === "clear") clearResult();
 	}, [clearResult, lastText, mutate, query, resultShowing, setDraftText]);
 

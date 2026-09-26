@@ -30,10 +30,10 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 
 	useLayoutEffect(() => {
 		// A fill or autofill can write the field before React attaches onChange.
-		// React keeps that DOM value, so copy it into the draft. Skip an empty
-		// field: a shared ?q= may already be in the store before this input re-renders.
+		// React keeps that DOM value. Copy it only into an empty draft: a shared
+		// ?q= or a restored submission may already own the store.
 		const current = inputRef.current?.value ?? "";
-		if (current.length > 0 && current !== useG2PStore.getState().draftText) {
+		if (current.length > 0 && useG2PStore.getState().draftText.length === 0) {
 			setDraftText(current);
 		}
 	}, [setDraftText]);

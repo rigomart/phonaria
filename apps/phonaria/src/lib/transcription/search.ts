@@ -12,6 +12,7 @@ export type TranscriptionSearch = {
 
 export type TranscriptionSearchSyncAction =
 	| { type: "transcribe"; text: string }
+	| { type: "restore-draft"; text: string }
 	| { type: "clear" }
 	| { type: "none" };
 
@@ -35,19 +36,29 @@ export function validateTranscriptionSearch(search: Record<string, unknown>): Tr
 }
 
 /**
- * URL → store. The same `q` as `lastText` does nothing, so a submission that
- * already updated both does not run a second time. A missing `q` clears when
- * a transcription is on screen or still remembered.
+ * URL → store. The same `q` as `lastText` does not look the text up again.
+ * Pass `draftText` when the query just changed (including the first pass): a
+ * draft that drifted from that `q` is restored, and a missing `q` clears a
+ * draft even when the text never became a transcription (punctuation only).
+ * Omit `draftText` on later renders so an in-progress edit is left alone.
  */
 export function resolveTranscriptionSearchSync(input: {
 	q: string | undefined;
 	lastText: string | null;
 	resultShowing: boolean;
+	draftText?: string;
 }): TranscriptionSearchSyncAction {
 	if (input.q !== undefined && input.q !== input.lastText) {
 		return { type: "transcribe", text: input.q };
 	}
-	if (input.q === undefined && (input.resultShowing || input.lastText !== null)) {
+	if (input.q !== undefined && input.draftText !== undefined && input.draftText !== input.q) {
+		return { type: "restore-draft", text: input.q };
+	}
+	const draftLeftBehind = input.draftText !== undefined && input.draftText.length > 0;
+	if (
+		input.q === undefined &&
+		(input.resultShowing || input.lastText !== null || draftLeftBehind)
+	) {
 		return { type: "clear" };
 	}
 	return { type: "none" };

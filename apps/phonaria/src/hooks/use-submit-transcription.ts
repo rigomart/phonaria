@@ -17,7 +17,7 @@ import {
 export function useSubmitTranscription() {
 	const { q } = useSearch({ from: "/" });
 	const navigate = useNavigate();
-	const { mutate, isPending } = useTranscribe();
+	const { mutate } = useTranscribe();
 	const setDraftText = useG2PStore((state) => state.setDraftText);
 	const clearResult = useG2PStore((state) => state.clearResult);
 	const isTranscribing = useG2PStore((state) => state.isTranscribing);
@@ -44,5 +44,8 @@ export function useSubmitTranscription() {
 		}
 	}, [clearResult, navigate, q]);
 
-	return { submit, clear, isPending: isPending || isTranscribing };
+	// The transition that started a same-query rerun stays pending until that
+	// request settles. Clear already drops the store flag, so the field follows
+	// the store and becomes editable again immediately.
+	return { submit, clear, isPending: isTranscribing };
 }

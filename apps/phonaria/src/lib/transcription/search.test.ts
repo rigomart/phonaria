@@ -87,6 +87,59 @@ describe("resolveTranscriptionSearchSync", () => {
 			resolveTranscriptionSearchSync({ q: undefined, lastText: null, resultShowing: false }),
 		).toEqual({ type: "none" });
 	});
+
+	it("restores the submitted text when the draft drifted and the query is unchanged", () => {
+		expect(
+			resolveTranscriptionSearchSync({
+				q: "hello",
+				lastText: "hello",
+				resultShowing: true,
+				draftText: "world",
+			}),
+		).toEqual({ type: "restore-draft", text: "hello" });
+		expect(
+			resolveTranscriptionSearchSync({
+				q: "hello",
+				lastText: "hello",
+				resultShowing: true,
+				draftText: "hello",
+			}),
+		).toEqual({ type: "none" });
+		expect(
+			resolveTranscriptionSearchSync({
+				q: "hello",
+				lastText: "hello",
+				resultShowing: true,
+			}),
+		).toEqual({ type: "none" });
+	});
+
+	it("clears a draft that never became a transcription when q is removed", () => {
+		expect(
+			resolveTranscriptionSearchSync({
+				q: undefined,
+				lastText: null,
+				resultShowing: false,
+				draftText: "!!!",
+			}),
+		).toEqual({ type: "clear" });
+		expect(
+			resolveTranscriptionSearchSync({
+				q: "!!!",
+				lastText: null,
+				resultShowing: false,
+				draftText: "",
+			}),
+		).toEqual({ type: "transcribe", text: "!!!" });
+		expect(
+			resolveTranscriptionSearchSync({
+				q: undefined,
+				lastText: null,
+				resultShowing: false,
+				draftText: "",
+			}),
+		).toEqual({ type: "none" });
+	});
 });
 
 describe("shouldShowTranscriptionEmptyState", () => {

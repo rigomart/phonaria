@@ -157,6 +157,86 @@ test.describe("Transcription", () => {
 		await expect(page.getByRole("button", { name: "Hello world" })).toBeVisible();
 	});
 
+	test("restores the submitted text when Back returns to an edited draft", async ({ page }) => {
+		await page.goto("/");
+		const input = textToTranscribe(page);
+		await input.fill(KNOWN_WORD);
+		await transcribeSubmit(page).click();
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
+		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
+			timeout: 20_000,
+		});
+
+		await input.fill("world");
+		await expect(input).toHaveValue("world");
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
+
+		await page.getByRole("link", { name: "Credits" }).click();
+		await expect(page.getByRole("heading", { name: "Credits & Sources" })).toBeVisible();
+		await page.goBack();
+
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
+		await expect(input).toHaveValue(KNOWN_WORD);
+		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible();
+	});
+
+	test("clears a punctuation-only query when the Transcription link drops q", async ({ page }) => {
+		await page.goto("/?q=!!!");
+		const input = textToTranscribe(page);
+		await expect(input).toHaveValue("!!!");
+		await expect(page.getByRole("button", { name: "Hello world" })).toHaveCount(0);
+
+		await page.getByRole("link", { name: "Transcription" }).click();
+		await expect.poll(() => searchQuery(page)).toBeNull();
+		await expect(input).toHaveValue("");
+		await expect(page.getByRole("button", { name: "Hello world" })).toBeVisible();
+	});
+
+	test("re-enables the field when Clear interrupts a repeated lookup", async ({ page }) => {
+		await page.goto("/");
+		const input = textToTranscribe(page);
+		await input.fill(MISSING_WORD);
+		await transcribeSubmit(page).click();
+		await expect(page.getByText("Not found").first()).toBeVisible({ timeout: 20_000 });
+
+		let releaseHold = () => {};
+		const hold = new Promise<void>((resolve) => {
+			releaseHold = resolve;
+		});
+		const origin = new URL(page.url()).origin;
+		await page.route("**/*", async (route) => {
+			const request = route.request();
+			const holdsLookup = request.method() === "POST" && new URL(request.url()).origin === origin;
+			if (!holdsLookup) {
+				await route.continue();
+				return;
+			}
+			await hold;
+			try {
+				await route.abort("failed");
+			} catch {
+				// Clear already moved on, and Playwright may have settled this route.
+			}
+		});
+
+		try {
+			await page.evaluate(() => {
+				const button = document.querySelector(
+					'button[aria-label="Transcribe text"]',
+				) as HTMLButtonElement | null;
+				button?.click();
+			});
+			await expect(input).toBeDisabled();
+			await clearTranscription(page).click();
+			await expect(input).toBeEnabled();
+			await expect(input).toHaveValue("");
+			await expect(input).toBeFocused();
+		} finally {
+			releaseHold();
+			await page.unroute("**/*");
+		}
+	});
+
 	test("opens Wiktionary definitions for a spelled known word", async ({ page }) => {
 		await page.goto("/");
 		const input = textToTranscribe(page);
