@@ -2,31 +2,51 @@
 
 import { Button } from "@phonaria/ui/components/button";
 import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group";
-import { Input } from "@phonaria/ui/components/input";
-import { Loader2, SendHorizontal } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@phonaria/ui/components/input-group";
+import { Loader2, SendHorizontal, X } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { SpellingSuggestionLine } from "@/components/transcription/spelling-suggestion-line";
-import { useCurrentTranscription, useTranscribe } from "@/hooks/use-transcribe";
+import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
+import { useCurrentTranscription } from "@/hooks/use-transcribe";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
+import { TRANSCRIPTION_INPUT_MAX_LENGTH } from "@/lib/transcription/search";
 import { cn } from "@/lib/utils";
 import { CopyButton } from "./display/copy-button";
 import { TranscriptionInfoButton } from "./display/info-button";
+
+const CHARACTER_COUNT_VISIBLE_FROM = 0.8;
+const CHARACTER_COUNT_WARNING_FROM = 0.9;
 
 interface G2PInputFormProps {
 	maxLength?: number;
 }
 
-export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
+export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2PInputFormProps) {
 	const inputText = useG2PStore((state) => state.draftText);
 	const setDraftText = useG2PStore((state) => state.setDraftText);
-	const transcribeMutation = useTranscribe();
+	const { submit, clear, isPending } = useSubmitTranscription();
 	const { data: transcriptionResult } = useCurrentTranscription();
-	const isLoading = transcribeMutation.isPending;
 	const inputRef = useRef<HTMLInputElement>(null);
 
+	useLayoutEffect(() => {
+		// A fill or autofill can write the field before React attaches onChange.
+		// React keeps that DOM value. Copy it only into an empty draft: a shared
+		// ?q= or a restored submission may already own the store.
+		const current = inputRef.current?.value ?? "";
+		if (current.length > 0 && useG2PStore.getState().draftText.length === 0) {
+			setDraftText(current);
+		}
+	}, [setDraftText]);
+
 	useEffect(() => {
-		function handleKeyDown(e: KeyboardEvent) {
-			if (e.metaKey || e.ctrlKey || e.altKey || e.key === "Escape" || e.key === "Tab") {
+		function handleKeyDown(event: KeyboardEvent) {
+			if (
+				event.metaKey ||
+				event.ctrlKey ||
+				event.altKey ||
+				event.key === "Escape" ||
+				event.key === "Tab"
+			) {
 				return;
 			}
 
@@ -36,7 +56,7 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 				active !== document.body &&
 				active !== document.documentElement;
 
-			if (!hasFocusedControl && e.key.length === 1) {
+			if (!hasFocusedControl && event.key.length === 1) {
 				inputRef.current?.focus();
 			}
 		}
@@ -46,50 +66,79 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 	}, []);
 
 	const hasText = inputText.trim().length > 0;
+	const showClear = inputText.length > 0;
 	const characterCount = inputText.length;
+	const showCharacterCount = characterCount >= maxLength * CHARACTER_COUNT_VISIBLE_FROM;
+	const characterCountIsHigh = characterCount >= maxLength * CHARACTER_COUNT_WARNING_FROM;
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		if (hasText && !isLoading) transcribeMutation.mutate({ text: inputText });
+	const focusInput = () => {
+		inputRef.current?.focus();
+	};
+
+	const handleClear = () => {
+		clear();
+		focusInput();
+		requestAnimationFrame(focusInput);
+	};
+
+	const handleSubmit = (event: React.FormEvent) => {
+		event.preventDefault();
+		// The DOM value is what Enter submits. It can be ahead of React state when
+		// the learner types before hydration finishes.
+		const text = inputRef.current?.value ?? inputText;
+		if (text.trim().length > 0 && !isPending) submit(text);
+	};
+
+	const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		if (event.key !== "Escape" || event.nativeEvent.isComposing || !showClear) return;
+		event.preventDefault();
+		handleClear();
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
+		// method="get" lets Enter reach /?q= before React hydrates. aria-disabled
+		// (not disabled) keeps that key from being swallowed while the draft is empty.
+		<form method="get" action="/" onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
 			<div className="flex w-full flex-row gap-2">
-				<div className="relative flex-1">
-					<Input
+				<InputGroup className="flex-1">
+					<InputGroupInput
 						ref={inputRef}
 						value={inputText}
-						onChange={(e) => setDraftText(e.target.value)}
+						onChange={(event) => setDraftText(event.target.value)}
+						onKeyDown={handleInputKeyDown}
 						placeholder="Type a word or phrase..."
-						disabled={isLoading}
+						disabled={isPending}
+						name="q"
 						size="lg"
-						className="rounded-lg pr-20 border-border"
 						maxLength={maxLength}
 						aria-label="Text to transcribe"
 					/>
-					<div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-						<span
-							className={cn(
-								"text-xs font-medium tabular-nums transition-colors",
-								characterCount >= maxLength * 0.9
-									? "text-orange-600 dark:text-orange-400"
-									: "text-muted-foreground",
-							)}
-						>
-							{characterCount}/{maxLength}
-						</span>
-					</div>
-				</div>
+					{showClear ? (
+						<InputGroupAddon align="inline-end">
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon-sm"
+								className="text-muted-foreground"
+								aria-label="Clear text"
+								onMouseDown={(event) => event.preventDefault()}
+								onClick={handleClear}
+							>
+								<X />
+							</Button>
+						</InputGroupAddon>
+					) : null}
+				</InputGroup>
 
 				<Button
 					type="submit"
 					size="lg"
-					disabled={!hasText || isLoading}
-					className="gap-2"
+					disabled={isPending}
+					aria-disabled={!hasText || isPending}
+					className="gap-2 aria-disabled:pointer-events-none aria-disabled:opacity-64"
 					aria-label="Transcribe text"
 				>
-					{isLoading ? (
+					{isPending ? (
 						<Loader2 className="size-4 animate-spin" />
 					) : (
 						<SendHorizontal className="size-4" />
@@ -97,22 +146,33 @@ export function G2PInputForm({ maxLength = 200 }: G2PInputFormProps) {
 				</Button>
 			</div>
 
-			{transcriptionResult ? (
+			{transcriptionResult || showCharacterCount ? (
 				<div className="flex items-center gap-3">
-					{/* Timed with the transcription reveal; the suggestion fades in on its own schedule. */}
-					<div
-						className="shrink-0 animate-in fade-in duration-500 fill-mode-both"
-						style={{
-							animationDelay: `${transcriptionResult.words.length * 50 + 400}ms`,
-						}}
-					>
-						<ButtonGroup className="bg-background rounded-lg border shadow-sm">
-							<TranscriptionInfoButton />
-							<ButtonGroupSeparator />
-							<CopyButton result={transcriptionResult} />
-						</ButtonGroup>
-					</div>
-					<SpellingSuggestionLine />
+					{transcriptionResult ? (
+						<div
+							className="shrink-0 animate-in fade-in duration-500 fill-mode-both"
+							style={{
+								animationDelay: `${transcriptionResult.words.length * 50 + 400}ms`,
+							}}
+						>
+							<ButtonGroup className="bg-background rounded-lg border shadow-sm">
+								<TranscriptionInfoButton />
+								<ButtonGroupSeparator />
+								<CopyButton result={transcriptionResult} />
+							</ButtonGroup>
+						</div>
+					) : null}
+					{transcriptionResult ? <SpellingSuggestionLine /> : null}
+					{showCharacterCount ? (
+						<span
+							className={cn(
+								"ml-auto shrink-0 text-xs font-medium tabular-nums",
+								characterCountIsHigh ? "text-warning-foreground" : "text-muted-foreground",
+							)}
+						>
+							{characterCount}/{maxLength}
+						</span>
+					) : null}
 				</div>
 			) : null}
 		</form>

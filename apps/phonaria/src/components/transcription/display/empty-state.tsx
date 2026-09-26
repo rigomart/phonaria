@@ -1,15 +1,17 @@
 "use client";
 
 import { ArrowRightIcon } from "lucide-react";
-import { useTranscribe } from "@/hooks/use-transcribe";
+import { useHydrated } from "@/hooks/use-hydrated";
+import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 
 const EXAMPLES = ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"];
 
 export function EmptyState() {
-	const transcribeMutation = useTranscribe();
+	const { submit, isPending } = useSubmitTranscription();
+	const hydrated = useHydrated();
 
 	const handleExampleClick = (example: string) => {
-		transcribeMutation.mutate({ text: example });
+		submit(example);
 	};
 
 	return (
@@ -23,7 +25,7 @@ export function EmptyState() {
 							type="button"
 							key={example}
 							onClick={() => handleExampleClick(example)}
-							disabled={transcribeMutation.isPending}
+							disabled={!hydrated || isPending}
 							className="inline-flex items-center gap-1.5 rounded-lg border bg-background px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground disabled:opacity-50 animate-in fade-in slide-in-from-bottom-1 fill-mode-both duration-300"
 							style={{ animationDelay: `${300 + i * 75}ms` }}
 						>

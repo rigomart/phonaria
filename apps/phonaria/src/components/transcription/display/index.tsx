@@ -8,6 +8,7 @@ import { type ReactNode, useMemo } from "react";
 import { useCurrentTranscription, useTranscribe } from "@/hooks/use-transcribe";
 import { extractWordIpa } from "@/lib/ipa-copy";
 import { type LookupErrorKind, useG2PStore } from "@/lib/transcription/g2p-store";
+import { shouldShowTranscriptionEmptyState } from "@/lib/transcription/search";
 import type { TranscribedWord, TranscriptionResult } from "@/lib/types/g2p";
 import { EmptyState } from "./empty-state";
 import { IpaSequence } from "./ipa-sequence";
@@ -116,7 +117,13 @@ function TranscriptionResults({
  * the error, and the region is keyed by the failure nonce so a repeated
  * failure still announces.
  */
-export function TranscriptionDisplay({ targetAccent }: { targetAccent: TargetAccent }) {
+export function TranscriptionDisplay({
+	targetAccent,
+	query,
+}: {
+	targetAccent: TargetAccent;
+	query: string | undefined;
+}) {
 	const { data: result } = useCurrentTranscription();
 	const lookupError = useG2PStore((s) => s.lookupError);
 	const lookupErrorNonce = useG2PStore((s) => s.lookupErrorNonce);
@@ -133,7 +140,15 @@ export function TranscriptionDisplay({ targetAccent }: { targetAccent: TargetAcc
 				isStale={lookupError !== null}
 			/>
 		);
-	} else if (!lookupError) body = <EmptyState />;
+	} else if (
+		shouldShowTranscriptionEmptyState({
+			q: query,
+			hasResult: false,
+			hasError: lookupError !== null,
+		})
+	) {
+		body = <EmptyState />;
+	}
 
 	return (
 		<>

@@ -4,6 +4,10 @@ export function textToTranscribe(page: Page) {
 	return page.getByLabel("Text to transcribe");
 }
 
+export function clearTranscription(page: Page) {
+	return page.getByRole("button", { name: "Clear text" });
+}
+
 export function transcribeSubmit(page: Page) {
 	return page.getByLabel("Transcribe text");
 }
