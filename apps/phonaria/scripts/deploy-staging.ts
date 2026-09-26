@@ -1,7 +1,6 @@
 #!/usr/bin/env bun
 
 import { spawnSync } from "node:child_process";
-import { readPreferredEnv } from "./preferred-env";
 import { resolveStagingOrigin, STAGING_WORKER_NAME } from "./resolve-staging-origin";
 
 export type DeploymentCommand = {
@@ -36,8 +35,8 @@ export function deployStaging(
 	}
 
 	const siteUrl = resolveStagingOrigin(
-		override ?? readPreferredEnv(baseEnv, "STAGING_URL", "LAB_START_STAGING_URL"),
-		subdomain ?? readPreferredEnv(baseEnv, "WORKERS_DEV_SUBDOMAIN", "LAB_WORKERS_DEV_SUBDOMAIN"),
+		override ?? baseEnv.STAGING_URL,
+		subdomain ?? baseEnv.WORKERS_DEV_SUBDOMAIN,
 	);
 	const env = {
 		...baseEnv,

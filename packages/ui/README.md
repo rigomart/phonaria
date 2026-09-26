@@ -2,8 +2,7 @@
 
 Shared UI primitives for Phonaria (Base UI + Tailwind v4).
 
-This package is intentionally **source-imported** (no build step). Next.js apps should enable
-`transpilePackages` for `@phonaria/ui`.
+This package is source-imported by the TanStack Start app and has no build step.
 
 ## Imports
 
@@ -67,6 +66,6 @@ anchoredToastManager.add({
 From repo root:
 
 ```bash
-bun --cwd packages/ui check-types
-bun --cwd packages/ui lint
+bun run --cwd packages/ui check-types
+bun run --cwd packages/ui lint
 ```

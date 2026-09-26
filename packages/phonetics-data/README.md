@@ -94,10 +94,10 @@ if (hasLanguageFeature("es-419", "contrasts")) {
 
 Run before merging package changes:
 
-- `bun --cwd packages/phonetics-data check-types`
-- `bun --cwd packages/phonetics-data test`
-- `bun --cwd apps/phonaria check-types`
-- `bun --cwd packages/helper-scripts check-types`
+- `bun run --cwd packages/phonetics-data check-types`
+- `bun run --cwd packages/phonetics-data test`
+- `bun run --cwd apps/phonaria check-types`
+- `bun run --cwd packages/helper-scripts check-types`
 
 ## Current scope
 

@@ -2,6 +2,7 @@ import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import type { Page } from "@playwright/test";
 import { BASELINE_RUNS, CLIENT_HIT_WORD, SERVER_HIT_WORD } from "../src/constants";
+import { isFlagEnabled } from "../src/env";
 import { expect, test } from "../src/fixtures";
 import {
 	dictionaryMissBadge,
@@ -19,7 +20,6 @@ import {
 	readCommittedBaseline,
 	writeBaselineRecord,
 } from "../src/perf";
-import { isPreferredFlagEnabled } from "../src/preferred-env";
 
 test.describe("Performance baselines", () => {
 	test("records page-load and split transcription lane timings @baseline", async ({
@@ -68,9 +68,7 @@ test.describe("Performance baselines", () => {
 		mkdirSync(latestDir, { recursive: true });
 		writeBaselineRecord(join(testInfo.project.outputDir, "baseline.json"), record);
 
-		if (
-			isPreferredFlagEnabled(process.env, "CONTRACT_WRITE_BASELINE", "LAB_CONTRACT_WRITE_BASELINE")
-		) {
+		if (isFlagEnabled(process.env, "CONTRACT_WRITE_BASELINE")) {
 			writeBaselineRecord(committedBaselinePath(target.name), record);
 		}
 

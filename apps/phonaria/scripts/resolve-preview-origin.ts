@@ -3,7 +3,7 @@
  * Build the Cloudflare workers.dev origin for a preview Worker
  * (`phonaria-pr-<n>` or `phonaria-staging`).
  *
- * `WORKERS_DEV_SUBDOMAIN` (or `LAB_WORKERS_DEV_SUBDOMAIN`) may be the account
+ * `WORKERS_DEV_SUBDOMAIN` may be the account
  * slug (`mirdor-dev`) or the full workers.dev suffix (`mirdor-dev.workers.dev`).
  * Always emit one `*.workers.dev` hostname.
  */

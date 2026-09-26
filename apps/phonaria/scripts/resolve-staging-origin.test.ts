@@ -8,6 +8,12 @@ describe("resolveStagingOrigin", () => {
 		).toBe("https://phonaria-staging.mirdor-dev.workers.dev");
 	});
 
+	it("rejects an origin for the retired staging Worker", () => {
+		expect(() =>
+			resolveStagingOrigin("https://phonaria-lab-staging.mirdor-dev.workers.dev", "mirdor-dev"),
+		).toThrow(/phonaria-staging\.mirdor-dev\.workers\.dev/);
+	});
+
 	it.each([
 		"phonaria-staging.mirdor-dev.workers.dev",
 		"http://staging.example.com",

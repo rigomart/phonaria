@@ -48,7 +48,7 @@
 	],
 	"vars": {
 		"SITE_INDEXING_ENABLED": "0",
-		"SITE_URL": "http://localhost:3001"
+		"SITE_URL": "http://localhost:3000"
 	},
 	// Named environments flatten at `vite build` via CLOUDFLARE_ENV.
 	// `wrangler deploy --env` is ignored once Vite writes dist/server/wrangler.json.

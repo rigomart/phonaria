@@ -33,7 +33,7 @@ export default defineConfig({
 
 	webServer: target.startLocal
 		? {
-				command: "bun --cwd ../../apps/phonaria start",
+				command: "bun run --cwd ../../apps/phonaria start",
 				url: target.baseUrl,
 				reuseExistingServer: !IS_CI,
 				timeout: 120_000,

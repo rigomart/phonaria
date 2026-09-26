@@ -21,7 +21,7 @@
 
 ## Build, Test, and Development Commands
 - `bun install`: Install workspace dependencies once per environment.
-- `bun dev`: Launch the TanStack Start app at `http://localhost:3001`.
+- `bun dev`: Launch the TanStack Start app at `http://localhost:3000`.
 - `bun build`: Execute workspace production builds.
 - `bun lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
 - `bun check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.

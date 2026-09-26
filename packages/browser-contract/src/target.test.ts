@@ -15,10 +15,6 @@ afterEach(() => {
 	delete process.env.CONTRACT_BASE_URL;
 	delete process.env.CONTRACT_CANONICAL_ORIGIN;
 	delete process.env.CONTRACT_START_LOCAL;
-	delete process.env.LAB_CONTRACT_TARGET;
-	delete process.env.LAB_CONTRACT_BASE_URL;
-	delete process.env.LAB_CONTRACT_CANONICAL_ORIGIN;
-	delete process.env.LAB_CONTRACT_START_LOCAL;
 	delete process.env.CF_ACCESS_CLIENT_ID;
 	delete process.env.CF_ACCESS_CLIENT_SECRET;
 });
@@ -55,31 +51,6 @@ describe("loadTargetFromEnv", () => {
 		expect(target.baseUrl).toBe("https://preview.example.test");
 		expect(target.expectedCanonicalOrigin).toBe("https://preview.example.test");
 		expect(target.practiceEnabled).toBe(true);
-	});
-
-	it("falls back to Lab-era contract env vars", () => {
-		const target = loadTargetFromEnv({
-			LAB_CONTRACT_TARGET: "cloudflare-staging",
-			LAB_CONTRACT_BASE_URL: "https://legacy.example.test/",
-			LAB_CONTRACT_CANONICAL_ORIGIN: "https://legacy.example.test/",
-			CF_ACCESS_CLIENT_ID: "id",
-			CF_ACCESS_CLIENT_SECRET: "secret",
-		});
-		expect(target.baseUrl).toBe("https://legacy.example.test");
-		expect(target.expectedCanonicalOrigin).toBe("https://legacy.example.test");
-	});
-
-	it("prefers CONTRACT_* names when both generations are set", () => {
-		const target = loadTargetFromEnv({
-			CONTRACT_TARGET: "cloudflare-staging",
-			CONTRACT_BASE_URL: "https://new.example.test/",
-			LAB_CONTRACT_TARGET: "cloudflare-production",
-			LAB_CONTRACT_BASE_URL: "https://old.example.test/",
-			CF_ACCESS_CLIENT_ID: "id",
-			CF_ACCESS_CLIENT_SECRET: "secret",
-		});
-		expect(target.name).toBe("cloudflare-staging");
-		expect(target.baseUrl).toBe("https://new.example.test");
 	});
 
 	it("lists the shipped target profiles", () => {

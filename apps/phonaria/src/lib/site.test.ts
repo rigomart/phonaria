@@ -28,9 +28,9 @@ describe("getSiteUrl", () => {
 	});
 
 	it("falls back to localhost outside production", () => {
-		expect(getSiteUrl()).toBe("http://localhost:3001");
+		expect(getSiteUrl()).toBe("http://localhost:3000");
 		process.env.SITE_URL = "";
-		expect(getSiteUrl()).toBe("http://localhost:3001");
+		expect(getSiteUrl()).toBe("http://localhost:3000");
 	});
 
 	it("throws in production when unset", () => {
