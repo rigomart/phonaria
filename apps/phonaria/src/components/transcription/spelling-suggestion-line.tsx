@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranscribe } from "@/hooks/use-transcribe";
+import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
 import {
 	getVisibleSpellingSuggestion,
@@ -71,16 +71,16 @@ export function SpellingSuggestionSlot({
 export function SpellingSuggestionLine() {
 	const suggestion = useG2PStore((state) => state.currentResult?.spellingSuggestion);
 	const lookupError = useG2PStore((state) => state.lookupError);
-	const isTranscribing = useG2PStore((state) => state.isTranscribing);
-	const { acceptSpellingSuggestion, isPending } = useTranscribe();
-	const isBusy = isPending || isTranscribing;
-	const visible = getVisibleSpellingSuggestion(suggestion, lookupError, isBusy);
+	const { submit, isPending } = useSubmitTranscription();
+	const visible = getVisibleSpellingSuggestion(suggestion, lookupError, isPending);
 
 	return (
 		<SpellingSuggestionSlot
 			suggestion={visible}
-			onAccept={acceptSpellingSuggestion}
-			disabled={isBusy}
+			onAccept={() => {
+				if (visible) submit(visible.suggestedText);
+			}}
+			disabled={isPending}
 		/>
 	);
 }

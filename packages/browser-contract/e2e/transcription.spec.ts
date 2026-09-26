@@ -10,6 +10,7 @@ import {
 import { abortOriginPosts, allowOriginPosts } from "../src/failure";
 import { expect, test } from "../src/fixtures";
 import {
+	clearTranscription,
 	copyTranscription,
 	lookupAlert,
 	retryButton,
@@ -18,6 +19,10 @@ import {
 	transcribeSubmit,
 	wordDefinitionTrigger,
 } from "../src/locators";
+
+function searchQuery(page: { url: () => string }) {
+	return new URL(page.url()).searchParams.get("q");
+}
 
 test.describe("Transcription", () => {
 	test("transcribes a known phrase and exposes copy plus phoneme details", async ({ page }) => {
@@ -68,7 +73,7 @@ test.describe("Transcription", () => {
 		await expect(offer).toBeVisible({ timeout: 20_000 });
 		await offer.click();
 
-		await expect(textToTranscribe(page)).toHaveValue(`  ${SPELLING_CORRECTION}  `);
+		await expect(textToTranscribe(page)).toHaveValue(SPELLING_CORRECTION);
 		await expect(page.getByText("Not found")).toHaveCount(0);
 		await expect(page.getByText(SPELLING_CORRECTION, { exact: true }).first()).toBeVisible({
 			timeout: 20_000,
@@ -80,6 +85,11 @@ test.describe("Transcription", () => {
 	test("enforces the visible 200-character input limit", async ({ page }) => {
 		await page.goto("/");
 		const input = textToTranscribe(page);
+		const countVisibleFrom = Math.ceil(INPUT_MAX_LENGTH * 0.8);
+		await input.fill("a".repeat(countVisibleFrom - 1));
+		await expect(page.getByText(`${countVisibleFrom - 1}/${INPUT_MAX_LENGTH}`)).toHaveCount(0);
+		await input.fill("a".repeat(countVisibleFrom));
+		await expect(page.getByText(`${countVisibleFrom}/${INPUT_MAX_LENGTH}`)).toBeVisible();
 		await input.fill("a".repeat(INPUT_MAX_LENGTH + 25));
 		await expect(input).toHaveValue("a".repeat(INPUT_MAX_LENGTH));
 		await expect(page.getByText(`${INPUT_MAX_LENGTH}/${INPUT_MAX_LENGTH}`)).toBeVisible();
@@ -89,9 +99,62 @@ test.describe("Transcription", () => {
 		await page.goto("/");
 		await expect(page.getByRole("button", { name: "Hello world" })).toBeVisible();
 		await page.getByRole("button", { name: "Hello world" }).click();
+		await expect.poll(() => searchQuery(page)).toBe("Hello world");
+		await expect(textToTranscribe(page)).toHaveValue("Hello world");
 		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
 			timeout: 20_000,
 		});
+	});
+
+	test("opens a shared query and clears it", async ({ page }) => {
+		await page.goto(`/?q=${KNOWN_WORD}`);
+		const input = textToTranscribe(page);
+		await expect(input).toHaveValue(KNOWN_WORD);
+		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
+			timeout: 20_000,
+		});
+		await expect(page.getByText(`${KNOWN_WORD.length}/${INPUT_MAX_LENGTH}`)).toHaveCount(0);
+		await expect(page.getByRole("button", { name: "Hello world" })).toHaveCount(0);
+
+		await clearTranscription(page).click();
+		await expect(input).toHaveValue("");
+		await expect(input).toBeFocused();
+		await expect(page.getByRole("button", { name: "Hello world" })).toBeVisible();
+		await expect.poll(() => searchQuery(page)).toBeNull();
+
+		await input.fill(KNOWN_WORD);
+		await input.press("Escape");
+		await expect(input).toHaveValue("");
+		await expect(input).toBeFocused();
+		await expect.poll(() => searchQuery(page)).toBeNull();
+	});
+
+	test("pushes a history entry per submission and restores it on back", async ({ page }) => {
+		await page.goto("/");
+		const input = textToTranscribe(page);
+		await input.fill(KNOWN_WORD);
+		await transcribeSubmit(page).click();
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
+		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
+			timeout: 20_000,
+		});
+
+		await input.fill(KNOWN_PHRASE);
+		await transcribeSubmit(page).click();
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_PHRASE);
+		await expect(page.getByText("world", { exact: true }).first()).toBeVisible({
+			timeout: 20_000,
+		});
+
+		await transcribeSubmit(page).click();
+		await page.goBack();
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
+		await expect(input).toHaveValue(KNOWN_WORD);
+
+		await page.getByRole("link", { name: "Transcription" }).click();
+		await expect.poll(() => searchQuery(page)).toBeNull();
+		await expect(input).toHaveValue("");
+		await expect(page.getByRole("button", { name: "Hello world" })).toBeVisible();
 	});
 
 	test("opens Wiktionary definitions for a spelled known word", async ({ page }) => {
