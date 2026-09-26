@@ -6,9 +6,9 @@
 
 Issues and PRDs are tracked in GitHub Issues for `rigomart/phonaria`. See `docs/agents/issue-tracker.md`.
 
-### Triage labels
+### Issue labels
 
-Triage uses the five default canonical labels. See `docs/agents/triage-labels.md`.
+Each issue gets one type label: `idea`, `spec` (including PRDs), `task`, or `bug`. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 

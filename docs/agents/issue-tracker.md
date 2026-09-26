@@ -33,13 +33,10 @@ Create a GitHub issue.
 
 Run `gh issue view <number> --comments`.
 
-## Wayfinding operations
+## Specs and tasks
 
-Used by `/wayfinder`. The **map** is a single issue with **child** issues as tickets.
+A `spec` issue's tasks are GitHub sub-issues. See `triage-labels.md` for the labels and flow.
 
-- **Map**: a single issue labelled `wayfinder:map`, holding the Notes / Decisions-so-far / Fog body.
-- **Child ticket**: an issue linked to the map as a GitHub sub-issue. Where sub-issues aren't enabled, add the child to a task list in the map body and put `Part of #<map>` at the top of the child body.
-- **Blocking**: use GitHub’s native issue dependencies. Where dependencies aren't available, fall back to a `Blocked by: #<n>, #<n>` line.
-- **Frontier query**: list the map’s open children, dropping blocked or assigned issues; first in map order wins.
+- **Attach a task**: `gh issue edit <task> --parent <spec>`, or `gh issue edit <spec> --add-sub-issue <n>,<n>` for several at once.
+- **Blocking**: use GitHub's native issue dependencies. Where they aren't available, fall back to a `Blocked by: #<n>, #<n>` line in the body.
 - **Claim**: `gh issue edit <n> --add-assignee @me`.
-- **Resolve**: comment with the answer, close the ticket, then append a context pointer to the map’s Decisions-so-far.

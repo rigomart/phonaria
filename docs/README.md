@@ -7,7 +7,7 @@ This directory centralizes long-form product context, accepted decisions, and th
 - [`project-overview.md`](./project-overview.md) – A guided tour of the learner experience, architecture, and data sources.
 - [`versioning.md`](./versioning.md) – How tags and GitHub Releases are produced, and how deploys relate to them.
 - [`adr/`](./adr/) – Accepted architecture and data-model decisions whose reasoning should be preserved for future contributors.
-- [`agents/`](./agents/) – Conventions agents follow in this repo: the issue tracker, triage labels, and domain docs.
+- [`agents/`](./agents/) – Conventions agents follow in this repo: the issue tracker, issue labels, and domain docs.
 - [`research/`](./research/) – Point-in-time records of investigations and measured decisions, such as the migration to Cloudflare Workers and the [spelling suggestion case review](./research/issue-247-spelling-suggestion-case-review.md), kept as evidence rather than as current guidance.
 
 Add new documents in logical subfolders to keep related work clustered and easily discoverable.
