@@ -32,28 +32,26 @@ export function RecentTranscriptions() {
 	return (
 		<section
 			aria-labelledby="recent-transcriptions-heading"
-			className="w-full max-w-md space-y-3 animate-in fade-in slide-in-from-bottom-1 fill-mode-both duration-300"
+			className="mt-auto w-full max-w-sm space-y-1 animate-in fade-in fill-mode-both duration-300"
 		>
 			<h2
 				id="recent-transcriptions-heading"
-				className="text-center text-sm text-muted-foreground font-display"
+				className="text-center text-xs text-muted-foreground font-display"
 			>
 				Recent
 			</h2>
 
-			<ul className="divide-y overflow-hidden rounded-lg border bg-background">
+			<ul>
 				{visible.map((entry) => (
-					<li key={entry.text} className="flex items-center gap-1 pr-1">
+					<li key={entry.text} className="flex items-center gap-1">
 						<button
 							type="button"
 							onClick={() => submit(entry.text)}
 							disabled={isPending}
-							className="flex min-w-0 flex-1 items-baseline gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none disabled:opacity-50"
+							className="flex min-w-0 flex-1 items-baseline gap-3 rounded-md px-2 py-1 text-left text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
 						>
-							<span className="truncate text-foreground">{entry.text}</span>
-							{entry.ipa ? (
-								<span className="ml-auto shrink truncate text-muted-foreground">/{entry.ipa}/</span>
-							) : null}
+							<span className="truncate">{entry.text}</span>
+							{entry.ipa ? <span className="ml-auto shrink truncate">/{entry.ipa}/</span> : null}
 						</button>
 						<Button
 							variant="ghost"
@@ -68,9 +66,14 @@ export function RecentTranscriptions() {
 				))}
 			</ul>
 
-			<div className="flex min-h-7 items-center justify-between gap-2 text-xs">
+			<div className="flex min-h-7 items-center justify-between gap-2 px-2 text-xs text-muted-foreground">
 				{hiddenCount > 0 || expanded ? (
-					<Button variant="link" size="xs" className="px-0" onClick={() => setExpanded(!expanded)}>
+					<Button
+						variant="link"
+						size="xs"
+						className="px-0 text-muted-foreground hover:text-foreground"
+						onClick={() => setExpanded(!expanded)}
+					>
 						{expanded ? "Show fewer" : `Show all (${entries.length})`}
 					</Button>
 				) : (
@@ -78,7 +81,7 @@ export function RecentTranscriptions() {
 				)}
 
 				{confirmingClear ? (
-					<span className="flex items-center gap-1 text-muted-foreground">
+					<span className="flex items-center gap-1">
 						Clear all history?
 						<Button variant="ghost" size="xs" onClick={() => setConfirmingClear(false)}>
 							Cancel

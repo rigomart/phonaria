@@ -16,7 +16,7 @@ export function EmptyState() {
 	};
 
 	return (
-		<div className="flex flex-col items-center gap-8 px-4 pt-6 pb-8 animate-in fade-in duration-700 delay-200 fill-mode-both">
+		<div className="flex flex-1 flex-col items-center gap-8 px-4 pt-6 pb-8 animate-in fade-in duration-700 delay-200 fill-mode-both">
 			<div className="w-full max-w-md space-y-4 text-center">
 				<p className="text-sm text-muted-foreground font-display">Try an example</p>
 
