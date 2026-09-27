@@ -42,13 +42,17 @@ describe("planSpellingContext", () => {
 		]);
 	});
 
-	it("reads the token from the text and drops candidates more than one slip away", () => {
+	it("accepts candidates up to two slips away and rejects more distant words", () => {
 		const plan = planSpellingContext({
-			text: "I wnat it",
-			misses: [{ tokenIndex: 1, candidates: ["want", "WHAT", "anything goes", "wanted"] }],
+			text: "I definatly will",
+			misses: [
+				{ tokenIndex: 1, candidates: ["definitely", "DEFINITELY", "definition", "anything goes"] },
+			],
 		});
 
-		expect(plan?.asked).toEqual([{ tokenIndex: 1, token: "wnat", candidates: ["want", "what"] }]);
+		expect(plan?.asked).toEqual([
+			{ tokenIndex: 1, token: "definatly", candidates: ["definitely"] },
+		]);
 	});
 
 	it("skips misses whose index is not a token or whose candidates all fail", () => {

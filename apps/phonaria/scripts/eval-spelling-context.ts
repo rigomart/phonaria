@@ -4,18 +4,28 @@
  * `chooseSpellingInContext` (one Jev call per sentence, whole-word excerpt, `none_of_these`)
  * over OpenRouter with the Worker's timeout, merged with the frequency rule as the browser does.
  *
- * Usage (the key stays in the gitignored `apps/phonaria/.env.local`):
+ * Usage (the key stays in gitignored `apps/phonaria/.env.local` or `.dev.vars`):
  *   bun --cwd apps/phonaria ./scripts/eval-spelling-context.ts
  *   bun --cwd apps/phonaria ./scripts/eval-spelling-context.ts --dry-run   # print one request
  */
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { tokenizeText } from "../src/lib/g2p/text-processing";
 import { type AskJev, createOpenRouterJev } from "../src/lib/jev/client";
-import { spellingContextPicksByToken } from "../src/lib/transcription/spelling-context";
+import {
+	buildSpellingContextRequest,
+	spellingContextPicksByToken,
+} from "../src/lib/transcription/spelling-context";
 import {
 	chooseSpellingInContext,
 	planSpellingContext,
 } from "../src/lib/transcription/spelling-context-service";
 import { type SpellingMiss, suggestSpelling } from "../src/lib/transcription/spelling-suggestion";
+import {
+	findTwoEditCandidates,
+	loadTwoEditCandidateIndex,
+	withTwoEditCandidates,
+} from "../src/lib/transcription/two-edit-candidates";
 import { SPELLING_CONTEXT_TIMEOUT_MS } from "../src/server/spelling-context";
 import { candidatesFor, loadReviewData, type ReviewData } from "./review-spelling-cases";
 
@@ -39,9 +49,9 @@ const CASES: EvalCase[] = [
 	{ sentence: "I thnik she is right.", want: "I think she is right." },
 	{ sentence: "He alwasy arrives late.", want: "He always arrives late." },
 	{ sentence: "She is becomming a doctor.", want: "She is becoming a doctor." },
-	{ sentence: "I will reciv it tomorrow.", want: null },
+	{ sentence: "I will reciv it tomorrow.", want: "I will receive it tomorrow." },
 	{ sentence: "English is a hard langwidge.", want: null },
-	{ sentence: "I will definatly come.", want: null },
+	{ sentence: "I will definatly come.", want: "I will definitely come." },
 	{ sentence: "A letter frm my mom.", want: "A letter from my mom." },
 	{ sentence: "That is a bg problem.", want: "That is a big problem." },
 	{ sentence: "I cn swim very well.", want: "I can swim very well." },
@@ -69,6 +79,12 @@ const CASES: EvalCase[] = [
 	{ sentence: "Teh dog cn run.", want: "The dog can run." },
 	{ sentence: "I dont thnik sanjeev will come.", want: "I don't think sanjeev will come." },
 	{ sentence: "We wrk frm home.", want: "We work from home." },
+	{ sentence: "It is neccesary to practice.", want: "It is necessary to practice." },
+	{ sentence: "We can acomodate you.", want: "We can accommodate you." },
+	{ sentence: "I will call tommorow.", want: "I will call tomorrow." },
+	{ sentence: "Try this exersize.", want: "Try this exercise." },
+	{ sentence: "What is your home adres?", want: "What is your home address?" },
+	{ sentence: "I wnat to reciv it.", want: "I want to receive it." },
 ];
 
 type Verdict = "right" | "wrong" | "missed";
@@ -109,19 +125,29 @@ async function mapLimited<T, R>(items: T[], limit: number, run: (item: T) => Pro
 
 async function main() {
 	const data = await loadReviewData();
+	const candidateIndex = await loadTwoEditCandidateIndex();
+	const addTwoEditCandidates = (tokens: string[], misses: SpellingMiss[]) =>
+		withTwoEditCandidates(tokens, misses, (token) => findTwoEditCandidates(token, candidateIndex));
 
 	if (process.argv.includes("--dry-run")) {
-		const { misses } = missesFor("I wnat a bg cake.", data);
-		const plan = planSpellingContext({ text: "I wnat a bg cake.", misses });
+		const text = "I will reciv it tomorrow.";
+		const { tokens, misses } = missesFor(text, data);
+		const plan = planSpellingContext({ text, misses: addTwoEditCandidates(tokens, misses) });
 		console.log(
 			JSON.stringify({ state: { sentence: plan?.excerpt }, questions: plan?.questions }, null, 2),
 		);
 		return;
 	}
 
-	const apiKey = process.env.OPENROUTER_API_KEY;
+	const varsPath = resolve(import.meta.dirname, "../.dev.vars");
+	const varsLine = existsSync(varsPath)
+		? readFileSync(varsPath, "utf8").match(/^OPENROUTER_API_KEY=(.*)$/m)?.[1]
+		: undefined;
+	const apiKey = process.env.OPENROUTER_API_KEY ?? varsLine?.trim().replace(/^["']|["']$/g, "");
 	if (!apiKey) {
-		console.error("Set OPENROUTER_API_KEY (apps/phonaria/.env.local) or use --dry-run.");
+		console.error(
+			"Set OPENROUTER_API_KEY (apps/phonaria/.env.local or .dev.vars) or use --dry-run.",
+		);
 		process.exit(1);
 	}
 
@@ -141,28 +167,38 @@ async function main() {
 		context: { right: 0, wrong: 0, missed: 0 },
 	};
 	let fellBack = 0;
+	let newlyCalled = 0;
 
 	const rows = await mapLimited(CASES, 8, async (entry) => {
 		const { tokens, misses } = missesFor(entry.sentence, data);
 		const base = { originalText: entry.sentence, tokens, misses, frequency: data.frequency };
 		const rule = suggestSpelling(base)?.suggestedText ?? null;
 
-		const request = misses.filter((miss) => miss.candidates.length > 0);
+		const oldRequest = buildSpellingContextRequest(entry.sentence, misses);
+		const request = buildSpellingContextRequest(
+			entry.sentence,
+			addTwoEditCandidates(tokens, misses),
+		);
+		if (!oldRequest && request) newlyCalled += 1;
 		let contextPicks = new Map<number, string | null>();
 		let failure: string | null = null;
-		if (request.length > 0) {
+		if (request) {
 			try {
-				const output = await chooseSpellingInContext(
-					{ text: entry.sentence, misses: request },
-					{ askJev: timedJev },
-				);
+				const output = await chooseSpellingInContext(request, { askJev: timedJev });
 				contextPicks = spellingContextPicksByToken(output);
 			} catch (error) {
 				failure = error instanceof Error ? error.message : "failed";
 				fellBack += 1;
 			}
 		}
-		const context = suggestSpelling({ ...base, contextPicks })?.suggestedText ?? null;
+		const context =
+			suggestSpelling({
+				...base,
+				contextPicks,
+				contextCandidates: new Map(
+					request?.misses.map(({ tokenIndex, candidates }) => [tokenIndex, candidates]) ?? [],
+				),
+			})?.suggestedText ?? null;
 		return { entry, rule, context, failure };
 	});
 
@@ -187,7 +223,7 @@ async function main() {
 	console.log(`\nrule:    ${JSON.stringify(tally.rule)}`);
 	console.log(`context: ${JSON.stringify(tally.context)}`);
 	console.log(
-		`calls: ${timings.length}, fell back to the rule: ${fellBack}, p50 ${percentile(0.5)} ms, p90 ${percentile(0.9)} ms (timeout ${SPELLING_CONTEXT_TIMEOUT_MS} ms)`,
+		`calls: ${timings.length}, newly called: ${newlyCalled}, fell back to the rule: ${fellBack}, p50 ${percentile(0.5)} ms, p90 ${percentile(0.9)} ms (timeout ${SPELLING_CONTEXT_TIMEOUT_MS} ms)`,
 	);
 }
 

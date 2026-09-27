@@ -305,6 +305,32 @@ describe("suggestSpelling plausibility", () => {
 });
 
 describe("suggestSpelling with context picks", () => {
+	it("accepts a two-edit context pick only when it was sent to Jev", () => {
+		const base = {
+			originalText: "I will reciv it",
+			tokens: ["I", "will", "reciv", "it"],
+			misses: [miss(2)],
+			frequency: frequency({ receive: 100 }),
+			contextPicks: new Map([[2, "receive"]]),
+		};
+		expect(suggestSpelling(base)).toBeNull();
+		expect(
+			suggestSpelling({ ...base, contextCandidates: new Map([[2, ["receive"]]]) })?.suggestedText,
+		).toBe("I will receive it");
+	});
+
+	it("rejects a pick for a miss that was omitted from the Jev request", () => {
+		expect(
+			suggestSpelling({
+				originalText: "recieve",
+				tokens: ["recieve"],
+				misses: [miss(0, "receive")],
+				frequency: frequency({ receive: 10 }),
+				contextPicks: new Map([[0, "receive"]]),
+				contextCandidates: new Map(),
+			}),
+		).toBeNull();
+	});
 	it("offers the context pick where the rule stays silent", () => {
 		// `wnat` has `what` and `want` as neighbours; frequency alone cannot choose.
 		const result = suggestSpelling({

@@ -7,7 +7,7 @@ import {
 	type SpellingContextPick,
 	spellingContextInputSchema,
 } from "./spelling-context";
-import { isOneSlipNeighbour } from "./spelling-suggestion";
+import { spellingEditDistanceWithinTwo } from "./spelling-edit-distance";
 
 /**
  * Most text sent to Jev. Generous next to the 200-character transcription box, so in practice
@@ -45,7 +45,7 @@ function questionKey(tokenIndex: number): string {
 
 /**
  * Keeps only what the server can vouch for: the token is re-read from the text, and each
- * candidate must be one slip from it. A client cannot turn this into a free text classifier.
+ * candidate must be within two slips of it. A client cannot turn this into a free text classifier.
  */
 function verifiedMisses(input: SpellingContextInput, spans: TextTokenSpan[]): AskedMiss[] {
 	const asked: AskedMiss[] = [];
@@ -56,7 +56,10 @@ function verifiedMisses(input: SpellingContextInput, spans: TextTokenSpan[]): As
 		const token = spans[tokenIndex]?.token;
 		if (token === undefined) continue;
 		const verified = [...new Set(candidates.map((candidate) => candidate.toLowerCase()))].filter(
-			(candidate) => isOneSlipNeighbour(token, candidate),
+			(candidate) => {
+				const distance = spellingEditDistanceWithinTwo(token, candidate);
+				return distance !== null && distance > 0;
+			},
 		);
 		if (verified.length > 0) asked.push({ tokenIndex, token, candidates: verified });
 	}
