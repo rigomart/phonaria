@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	addHistoryEntry,
+	filterHistory,
 	parseStoredHistory,
 	removeHistoryEntry,
 	serializeHistory,
@@ -59,6 +60,30 @@ describe("removeHistoryEntry", () => {
 	});
 });
 
+describe("filterHistory", () => {
+	const entries = [
+		{ text: "Judge the rhythm", ipa: "ˈdʒʌdʒ ðə ˈɹɪ.ðəm", at: 3 },
+		{ text: "thorough", ipa: "ˈθɝ.oʊ", at: 2 },
+		{ text: "Hello world", ipa: "hə.ˈloʊ ˈwɝld", at: 1 },
+	];
+
+	it("keeps everything for a blank query", () => {
+		expect(filterHistory(entries, "  ")).toEqual(entries);
+	});
+
+	it("matches text ignoring case and spacing, in stored order", () => {
+		expect(filterHistory(entries, "  HELLO   wor").map((e) => e.text)).toEqual(["Hello world"]);
+		expect(filterHistory(entries, "th").map((e) => e.text)).toEqual([
+			"Judge the rhythm",
+			"thorough",
+		]);
+	});
+
+	it("matches IPA", () => {
+		expect(filterHistory(entries, "oʊ").map((e) => e.text)).toEqual(["thorough", "Hello world"]);
+	});
+});
+
 describe("parseStoredHistory", () => {
 	it("round-trips serialized history", () => {
 		const entries = [entry("hello", 2), entry("world", 1)];
@@ -101,7 +126,7 @@ describe("parseStoredHistory", () => {
 
 describe("useTranscriptionHistoryStore", () => {
 	beforeEach(() => {
-		useTranscriptionHistoryStore.setState({ entries: [] });
+		useTranscriptionHistoryStore.setState({ entries: [], loaded: false });
 	});
 
 	afterEach(() => {
@@ -117,7 +142,10 @@ describe("useTranscriptionHistoryStore", () => {
 
 		useTranscriptionHistoryStore.getState().load();
 
-		expect(useTranscriptionHistoryStore.getState().entries).toEqual([entry("hello")]);
+		expect(useTranscriptionHistoryStore.getState()).toMatchObject({
+			entries: [entry("hello")],
+			loaded: true,
+		});
 	});
 
 	it("keeps another tab's entries when recording", () => {
@@ -167,6 +195,7 @@ describe("useTranscriptionHistoryStore", () => {
 		const { load, record } = useTranscriptionHistoryStore.getState();
 
 		load();
+		expect(useTranscriptionHistoryStore.getState().loaded).toBe(true);
 		record(entry("hello"));
 		record(entry("world", 2));
 

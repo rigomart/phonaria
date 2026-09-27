@@ -81,6 +81,18 @@ export function parseStoredHistory(raw: string | null): TranscriptionHistoryEntr
 	return history.slice(0, TRANSCRIPTION_HISTORY_LIMIT);
 }
 
+/** Case-insensitive match on the text or its IPA. A blank query keeps everything. */
+export function filterHistory(
+	entries: readonly TranscriptionHistoryEntry[],
+	query: string,
+): TranscriptionHistoryEntry[] {
+	const needle = historyEntryKey(query);
+	if (!needle) return [...entries];
+	return entries.filter(
+		(entry) => historyEntryKey(entry.text).includes(needle) || entry.ipa.includes(needle),
+	);
+}
+
 export function serializeHistory(entries: readonly TranscriptionHistoryEntry[]): string {
 	return JSON.stringify({ version: STORAGE_VERSION, entries });
 }
@@ -112,6 +124,8 @@ function writeStoredHistory(entries: readonly TranscriptionHistoryEntry[]) {
 
 interface TranscriptionHistoryStore {
 	entries: TranscriptionHistoryEntry[];
+	/** False until the first `load`, so the page can hold its slot instead of guessing. */
+	loaded: boolean;
 	/** Re-reads storage. Call from an effect so the server render never depends on it. */
 	load: () => void;
 	record: (entry: TranscriptionHistoryEntry) => void;
@@ -134,9 +148,10 @@ export const useTranscriptionHistoryStore = create<TranscriptionHistoryStore>((s
 
 	return {
 		entries: [],
+		loaded: false,
 		load: () => {
 			const stored = readStoredHistory();
-			if (stored) set({ entries: stored });
+			set(stored ? { entries: stored, loaded: true } : { loaded: true });
 		},
 		record: (entry) => update((entries) => addHistoryEntry(entries, entry)),
 		remove: (text) => update((entries) => removeHistoryEntry(entries, text)),

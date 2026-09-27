@@ -31,7 +31,7 @@ export function TranscriptionJourney({
 						<G2PInputForm />
 					</div>
 
-					<div className="flex w-full min-h-0 flex-1 flex-col">
+					<div className="w-full min-h-0">
 						<TranscriptionDisplay targetAccent="en-us" query={q} />
 					</div>
 				</div>
