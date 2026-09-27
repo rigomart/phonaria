@@ -1,17 +1,18 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
+import { ChevronRight, History } from "lucide-react";
 import { useState } from "react";
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import type { TranscriptionHistoryEntry } from "@/lib/transcription/history";
-import { ClearHistoryButton, HistoryList } from "./history-list";
+import { HistoryList } from "./history-list";
 import { HistorySheet } from "./history-sheet";
 
 const RECENT_COUNT = 5;
 
 /**
  * Takes the examples' place once the learner has history: their own words are
- * a better starting point than ours. The full list opens in a sheet.
+ * a better starting point than ours. Filtering and clearing live in the sheet.
  */
 export function RecentTranscriptions({
 	entries,
@@ -24,19 +25,31 @@ export function RecentTranscriptions({
 }) {
 	const { submit, isPending } = useSubmitTranscription();
 	const [sheetOpen, setSheetOpen] = useState(false);
-	const hasMore = entries.length > RECENT_COUNT;
 
 	return (
 		<section
 			aria-labelledby="recent-transcriptions-heading"
-			className="w-full max-w-sm space-y-1 animate-in fade-in fill-mode-both duration-300"
+			className="w-full max-w-md space-y-2 animate-in fade-in fill-mode-both duration-300"
 		>
-			<h2
-				id="recent-transcriptions-heading"
-				className="text-center text-xs text-muted-foreground font-display"
-			>
-				Recent
-			</h2>
+			<div className="flex items-center justify-between px-2.5">
+				<h2
+					id="recent-transcriptions-heading"
+					className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground font-display"
+				>
+					<History className="size-3.5" aria-hidden />
+					Recent
+				</h2>
+				<Button
+					variant="ghost"
+					size="xs"
+					className="-mr-2 text-muted-foreground hover:text-foreground"
+					onClick={() => setSheetOpen(true)}
+				>
+					View all
+					{entries.length > RECENT_COUNT ? ` (${entries.length})` : null}
+					<ChevronRight aria-hidden />
+				</Button>
+			</div>
 
 			<HistoryList
 				entries={entries.slice(0, RECENT_COUNT)}
@@ -44,22 +57,6 @@ export function RecentTranscriptions({
 				onRemove={onRemove}
 				disabled={isPending}
 			/>
-
-			<div className="flex min-h-7 items-center justify-between gap-2 px-2">
-				{hasMore ? (
-					<Button
-						variant="link"
-						size="xs"
-						className="px-0 text-muted-foreground hover:text-foreground"
-						onClick={() => setSheetOpen(true)}
-					>
-						View all ({entries.length})
-					</Button>
-				) : (
-					<span />
-				)}
-				<ClearHistoryButton onClear={onClear} />
-			</div>
 
 			<HistorySheet
 				open={sheetOpen}

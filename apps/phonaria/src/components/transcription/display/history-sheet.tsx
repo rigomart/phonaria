@@ -72,7 +72,7 @@ export function HistorySheet({
 							}}
 							onRemove={onRemove}
 							disabled={disabled}
-							className="-mx-2 text-sm"
+							className="-mx-2.5"
 						/>
 					) : (
 						<p className="py-6 text-center text-sm text-muted-foreground">

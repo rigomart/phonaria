@@ -6,7 +6,10 @@ import { useState } from "react";
 import type { TranscriptionHistoryEntry } from "@/lib/transcription/history";
 import { cn } from "@/lib/utils";
 
-/** Muted rows: the text on the left, its IPA on the right, and a remove button. */
+/**
+ * One block per entry: the text, its IPA underneath. Remove shows on hover or
+ * focus, and always on touch screens where there is no hover.
+ */
 export function HistoryList({
 	entries,
 	onSelect,
@@ -21,22 +24,29 @@ export function HistoryList({
 	className?: string;
 }) {
 	return (
-		<ul className={cn("text-xs", className)}>
+		<ul className={cn("space-y-0.5", className)}>
 			{entries.map((entry) => (
-				<li key={entry.text} className="flex items-center gap-1">
+				<li
+					key={entry.text}
+					className="group flex items-center gap-1 rounded-md transition-colors hover:bg-accent focus-within:bg-accent"
+				>
 					<button
 						type="button"
 						onClick={() => onSelect(entry.text)}
 						disabled={disabled}
-						className="flex min-w-0 flex-1 items-baseline gap-3 rounded-md px-2 py-1 text-left text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+						className="flex min-w-0 flex-1 flex-col items-start gap-0.5 rounded-md px-2.5 py-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
 					>
-						<span className="truncate">{entry.text}</span>
-						{entry.ipa ? <span className="ml-auto shrink truncate">/{entry.ipa}/</span> : null}
+						<span className="w-full truncate text-sm text-muted-foreground transition-colors group-hover:text-foreground group-focus-within:text-foreground">
+							{entry.text}
+						</span>
+						{entry.ipa ? (
+							<span className="w-full truncate text-xs text-muted-foreground">/{entry.ipa}/</span>
+						) : null}
 					</button>
 					<Button
 						variant="ghost"
 						size="icon-xs"
-						className="text-muted-foreground hover:text-foreground"
+						className="mr-1 text-muted-foreground opacity-0 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100"
 						aria-label={`Remove "${entry.text}" from history`}
 						onClick={() => onRemove(entry.text)}
 					>
