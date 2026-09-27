@@ -129,7 +129,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/phonaria
           command: deploy --name ${{ steps.origin.outputs.name }} --var SITE_URL:${{ steps.origin.outputs.url }} --secrets-file .wrangler/worker-secrets.json
-      - name: Smoke Wiktionary definitions on preview
+      - name: Run preview smoke checks and Wiktionary definition check
         if: env.CLOUDFLARE_API_TOKEN != ''
         env:
           CI: true
@@ -142,6 +142,7 @@ jobs:
             exit 1
           fi
           bun --cwd packages/browser-contract e2e:install
+          bun --cwd packages/browser-contract e2e:smoke
           bun --cwd packages/browser-contract e2e:definitions
       - name: Comment preview URL
         if: env.CLOUDFLARE_API_TOKEN != ''
@@ -251,7 +252,7 @@ jobs:
           WORKER_BUNDLE_DIR: .wrangler/dry-run
           WORKER_METRICS_OUT: worker-metrics.json
         run: bun ./scripts/record-worker-metrics.ts
-      - name: Run the browser contract
+      - name: Run deployed smoke checks
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CF_ACCESS_CLIENT_ID != ''
         env:
           CI: true
@@ -260,7 +261,7 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           bun --cwd packages/browser-contract e2e:install
-          bun --cwd packages/browser-contract e2e
+          bun --cwd packages/browser-contract e2e:smoke
       - name: Skip deploy when Cloudflare secrets are missing
         if: env.CLOUDFLARE_API_TOKEN == ''
         run: |

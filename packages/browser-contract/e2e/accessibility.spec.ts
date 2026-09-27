@@ -5,11 +5,15 @@ import { expect, test } from "../src/fixtures";
 import { notFoundHeading, textToTranscribe } from "../src/locators";
 
 test.describe("Accessibility", () => {
-	test("has no serious axe violations on the transcription landing page", async ({ page }) => {
-		await page.goto("/");
-		await expect(textToTranscribe(page)).toBeVisible();
-		await expectNoAxeViolations(page);
-	});
+	test(
+		"has no serious axe violations on the transcription landing page",
+		{ tag: "@smoke" },
+		async ({ page }) => {
+			await page.goto("/");
+			await expect(textToTranscribe(page)).toBeVisible();
+			await expectNoAxeViolations(page);
+		},
+	);
 
 	test("keeps the transcription field labelled and submittable from the keyboard", async ({
 		page,

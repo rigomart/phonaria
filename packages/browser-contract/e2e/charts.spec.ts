@@ -26,7 +26,7 @@ test.describe("IPA charts", () => {
 		await expect(page.locator("[data-diphthong]").first()).toBeVisible();
 	});
 
-	test("loads articulation media from the asset bucket", async ({ page }) => {
+	test("loads articulation media from the asset bucket", { tag: "@smoke" }, async ({ page }) => {
 		skipUnlessBucketAssets();
 
 		const diagramUrls: string[] = [];
@@ -37,8 +37,10 @@ test.describe("IPA charts", () => {
 		});
 
 		await page.goto("/ipa-chart/consonants");
-		await page.getByRole("button", { name: CONSONANT_BUTTON_NAME }).click();
-		await expect(page.getByLabel("Play p")).toBeEnabled();
+		await expect(async () => {
+			await page.getByRole("button", { name: CONSONANT_BUTTON_NAME }).click();
+			await expect(page.getByLabel("Play p")).toBeEnabled({ timeout: 1_000 });
+		}).toPass({ timeout: 10_000 });
 		await expect.poll(() => diagramUrls.length).toBeGreaterThan(0);
 	});
 

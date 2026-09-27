@@ -5,12 +5,18 @@ test.describe("Navigation and theme", () => {
 		await page.goto("/");
 		await expect(page.getByLabel("Text to transcribe")).toBeVisible();
 
-		await page.getByRole("button", { name: "IPA Chart" }).click();
+		await expect(async () => {
+			await page.getByRole("button", { name: "IPA Chart" }).click();
+			await expect(page.getByRole("link", { name: "Consonants" })).toBeVisible({ timeout: 1_000 });
+		}).toPass({ timeout: 10_000 });
 		await page.getByRole("link", { name: "Consonants" }).click();
 		await expect(page).toHaveURL(/\/ipa-chart\/consonants$/);
 		await expect(page.getByRole("heading", { name: "Consonants" })).toBeVisible();
 
-		await page.getByRole("button", { name: "IPA Chart" }).click();
+		await expect(async () => {
+			await page.getByRole("button", { name: "IPA Chart" }).click();
+			await expect(page.getByRole("link", { name: "Vowels" })).toBeVisible({ timeout: 1_000 });
+		}).toPass({ timeout: 10_000 });
 		await page.getByRole("link", { name: "Vowels" }).click();
 		await expect(page).toHaveURL(/\/ipa-chart\/vowels$/);
 
@@ -25,7 +31,10 @@ test.describe("Navigation and theme", () => {
 
 	test("persists the dark theme across reload and navigation", async ({ page }) => {
 		await page.goto("/");
-		await page.getByLabel("Toggle theme").click();
+		await expect(async () => {
+			await page.getByLabel("Toggle theme").click();
+			await expect(page.getByRole("menuitem", { name: "Dark" })).toBeVisible({ timeout: 1_000 });
+		}).toPass({ timeout: 10_000 });
 		await page.getByRole("menuitem", { name: "Dark" }).click();
 		await expect(page.locator("html")).toHaveClass(/dark/);
 

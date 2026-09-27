@@ -29,6 +29,7 @@
 		"check-types": "turbo run check-types",
 		"test": "turbo run test",
 		"e2e": "bun --cwd packages/browser-contract e2e",
+		"e2e:smoke": "bun --cwd packages/browser-contract e2e:smoke",
 		"e2e:cloudflare": "CONTRACT_TARGET=cloudflare-staging bun --cwd packages/browser-contract e2e",
 		"e2e:baseline": "CONTRACT_TARGET=cloudflare-production bun --cwd packages/browser-contract e2e:baseline",
 		"release": "semantic-release",

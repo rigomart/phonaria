@@ -4,6 +4,7 @@ import {
 	KNOWN_WORD,
 	LOOKUP_ERROR_COPY,
 	MISSING_WORD,
+	SERVER_HIT_WORD,
 	SPELLING_CORRECTION,
 	SPELLING_TYPO,
 } from "../src/constants";
@@ -12,10 +13,13 @@ import { expect, test } from "../src/fixtures";
 import {
 	clearTranscription,
 	copyTranscription,
+	dictionaryMissBadge,
 	lookupAlert,
+	phonemeDetailsButton,
 	retryButton,
 	spellingSuggestion,
 	textToTranscribe,
+	transcribedWordLabel,
 	transcribeSubmit,
 	wordDefinitionTrigger,
 } from "../src/locators";
@@ -25,24 +29,42 @@ function searchQuery(page: { url: () => string }) {
 }
 
 test.describe("Transcription", () => {
-	test("transcribes a known phrase and exposes copy plus phoneme details", async ({ page }) => {
-		await page.goto("/");
-		await textToTranscribe(page).fill(KNOWN_PHRASE);
-		await transcribeSubmit(page).click();
+	test(
+		"transcribes a known phrase and exposes copy plus phoneme details",
+		{ tag: "@smoke" },
+		async ({ page }) => {
+			await page.goto("/");
+			await textToTranscribe(page).fill(KNOWN_PHRASE);
+			await transcribeSubmit(page).click();
 
-		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
-			timeout: 20_000,
-		});
-		await expect(page.getByText("world", { exact: true }).first()).toBeVisible();
-		await expect(copyTranscription(page)).toBeVisible();
-		await expect(copyTranscription(page)).toBeEnabled();
+			await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
+				timeout: 20_000,
+			});
+			await expect(page.getByText("world", { exact: true }).first()).toBeVisible();
+			await expect(copyTranscription(page)).toBeVisible();
+			await expect(copyTranscription(page)).toBeEnabled();
 
-		await page
-			.getByRole("button", { name: /^Details for \// })
-			.first()
-			.click();
-		await expect(page.getByRole("button", { name: /^Play / }).first()).toBeVisible();
-	});
+			await page
+				.getByRole("button", { name: /^Details for \// })
+				.first()
+				.click();
+			await expect(page.getByRole("button", { name: /^Play / }).first()).toBeVisible();
+		},
+	);
+
+	test(
+		"transcribes a dictionary word through the server lookup",
+		{ tag: "@smoke" },
+		async ({ page }) => {
+			await page.goto("/");
+			await textToTranscribe(page).fill(SERVER_HIT_WORD);
+			await transcribeSubmit(page).click();
+
+			await expect(transcribedWordLabel(page, SERVER_HIT_WORD)).toBeVisible({ timeout: 20_000 });
+			await expect(dictionaryMissBadge(page)).toHaveCount(0);
+			await expect(phonemeDetailsButton(page).first()).toBeVisible();
+		},
+	);
 
 	test("shows a Not found badge for a missing dictionary word", async ({ page }) => {
 		await page.goto("/");
@@ -97,8 +119,8 @@ test.describe("Transcription", () => {
 
 	test("keeps example chips available from the empty state", async ({ page }) => {
 		await page.goto("/");
-		await expect(page.getByRole("button", { name: "Hello world" })).toBeVisible();
-		await page.getByRole("button", { name: "Hello world" }).click();
+		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toBeVisible();
+		await page.getByRole("button", { name: "Hello world", exact: true }).click();
 		await expect.poll(() => searchQuery(page)).toBe("Hello world");
 		await expect(textToTranscribe(page)).toHaveValue("Hello world");
 		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
@@ -114,12 +136,12 @@ test.describe("Transcription", () => {
 			timeout: 20_000,
 		});
 		await expect(page.getByText(`${KNOWN_WORD.length}/${INPUT_MAX_LENGTH}`)).toHaveCount(0);
-		await expect(page.getByRole("button", { name: "Hello world" })).toHaveCount(0);
+		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toHaveCount(0);
 
 		await clearTranscription(page).click();
 		await expect(input).toHaveValue("");
 		await expect(input).toBeFocused();
-		await expect(page.getByRole("button", { name: "Hello world" })).toBeVisible();
+		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toBeVisible();
 		await expect.poll(() => searchQuery(page)).toBeNull();
 
 		await input.fill(KNOWN_WORD);
@@ -154,7 +176,7 @@ test.describe("Transcription", () => {
 		await page.getByRole("link", { name: "Transcription" }).click();
 		await expect.poll(() => searchQuery(page)).toBeNull();
 		await expect(input).toHaveValue("");
-		await expect(page.getByRole("button", { name: "Hello world" })).toBeVisible();
+		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toBeVisible();
 	});
 
 	test("restores the submitted text when Back returns to an edited draft", async ({ page }) => {
@@ -210,12 +232,12 @@ test.describe("Transcription", () => {
 		await page.goto("/?q=!!!");
 		const input = textToTranscribe(page);
 		await expect(input).toHaveValue("!!!");
-		await expect(page.getByRole("button", { name: "Hello world" })).toHaveCount(0);
+		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toHaveCount(0);
 
 		await page.getByRole("link", { name: "Transcription" }).click();
 		await expect.poll(() => searchQuery(page)).toBeNull();
 		await expect(input).toHaveValue("");
-		await expect(page.getByRole("button", { name: "Hello world" })).toBeVisible();
+		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toBeVisible();
 	});
 
 	test("re-enables the field when Clear interrupts a repeated lookup", async ({ page }) => {

@@ -1,7 +1,9 @@
 # Browser contract
 
 Shared Playwright suite for Phonaria. The same specs run against a deployed
-base URL through target-specific configuration, not duplicated tests.
+base URL through target-specific configuration, not duplicated tests. A small
+`@smoke` set checks each deployment; the full suite remains available for
+deliberate qualification runs.
 
 This package is the acceptance seam for deployed Phonaria environments. It is
 the only browser suite in the repository.
@@ -20,9 +22,16 @@ adapter.
 | Command | What it does |
 | --- | --- |
 | `bun run e2e` | Contract against `CONTRACT_TARGET`, defaulting to Cloudflare production |
+| `bun run e2e:smoke` | Focused deployed checks for transcription (client and server), charts/media, Practice flag, landing page, headers, and accessibility |
 | `bun run e2e:cloudflare` | Contract against Cloudflare staging (`CONTRACT_BASE_URL` + Access token) |
 | `bun run e2e:baseline` | Tagged page-load and transcription timing collection |
 | `CONTRACT_WRITE_BASELINE=1 bun run e2e:baseline` | Also write `baselines/<target>.json` |
+
+Preview, staging, and production deployment workflows run `e2e:smoke` after
+deployment. The preview workflow also checks Wiktionary definitions. The
+manual Browser contract and Qualify workflows run the full `e2e` suite.
+Tag only checks that prove a deployed service boundary or a core entry point
+with `@smoke`; keep detailed interactions in the full suite.
 
 ## Target profiles
 
