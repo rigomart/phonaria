@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
 import { Input } from "@phonaria/ui/components/input";
 import {
 	Sheet,
@@ -16,7 +17,7 @@ import {
 	TRANSCRIPTION_HISTORY_LIMIT,
 	type TranscriptionHistoryEntry,
 } from "@/lib/transcription/history";
-import { ClearHistoryButton, HistoryList } from "./history-list";
+import { PhraseList } from "./phrase-list";
 
 /** The full history, with a filter, for when the Recent block is not enough. */
 export function HistorySheet({
@@ -64,13 +65,14 @@ export function HistorySheet({
 
 				<SheetPanel>
 					{matches.length > 0 ? (
-						<HistoryList
-							entries={matches}
+						<PhraseList
+							phrases={matches}
 							onSelect={(text) => {
 								handleOpenChange(false);
 								onSelect(text);
 							}}
 							onRemove={onRemove}
+							removeLabel={(text) => `Remove "${text}" from history`}
 							disabled={disabled}
 							className="-mx-2.5"
 						/>
@@ -94,5 +96,42 @@ export function HistorySheet({
 				</SheetFooter>
 			</SheetPopup>
 		</Sheet>
+	);
+}
+
+/** Asks inline before clearing, so one stray click cannot empty the history. */
+function ClearHistoryButton({ onClear }: { onClear: () => void }) {
+	const [confirming, setConfirming] = useState(false);
+
+	if (!confirming) {
+		return (
+			<Button
+				variant="ghost"
+				size="xs"
+				className="text-muted-foreground hover:text-foreground"
+				onClick={() => setConfirming(true)}
+			>
+				Clear history
+			</Button>
+		);
+	}
+
+	return (
+		<span className="flex items-center gap-1 text-xs text-muted-foreground">
+			Clear all history?
+			<Button variant="ghost" size="xs" onClick={() => setConfirming(false)}>
+				Cancel
+			</Button>
+			<Button
+				variant="destructive-outline"
+				size="xs"
+				onClick={() => {
+					setConfirming(false);
+					onClear();
+				}}
+			>
+				Clear
+			</Button>
+		</span>
 	);
 }
