@@ -14,7 +14,7 @@ test.describe("Practice disabled", () => {
 		);
 	});
 
-	test("returns not-found for the Practice index", async ({ page }) => {
+	test("returns not-found for the Practice index", { tag: "@smoke" }, async ({ page }) => {
 		const response = await page.goto("/practice");
 		expect(response?.status()).toBe(404);
 		await expect(notFoundHeading(page)).toBeVisible();
@@ -53,7 +53,7 @@ test.describe("Practice enabled", () => {
 		await expect(notFoundHeading(page)).toBeVisible();
 	});
 
-	test("completes one Schwa session with blank answers", async ({ page }) => {
+	test("completes one Schwa session with blank answers", { tag: "@smoke" }, async ({ page }) => {
 		test.setTimeout(90_000);
 		await page.goto("/practice/schwa");
 		await expect(page.getByRole("heading", { name: "Schwa" })).toBeVisible();

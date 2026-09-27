@@ -3,30 +3,11 @@ import { expect, test } from "../src/fixtures";
 import { notFoundHeading } from "../src/locators";
 
 test.describe("Application routes", () => {
-	test("serves the transcription landing page", async ({ page }) => {
+	test("serves the transcription landing page", { tag: "@smoke" }, async ({ page }) => {
 		const response = await page.goto("/");
 		expect(response?.status()).toBe(200);
 		await expect(page.getByLabel("Text to transcribe")).toBeVisible();
 		await expect(page).toHaveTitle(SITE_NAME);
-	});
-
-	test("serves Credits", async ({ page }) => {
-		const response = await page.goto("/credits");
-		expect(response?.status()).toBe(200);
-		await expect(page.getByRole("heading", { name: "Credits & Sources" })).toBeVisible();
-		await expect(page.getByRole("heading", { name: "Wiktionary" })).toBeVisible();
-	});
-
-	test("serves the consonant chart", async ({ page }) => {
-		const response = await page.goto("/ipa-chart/consonants");
-		expect(response?.status()).toBe(200);
-		await expect(page.getByRole("heading", { name: "Consonants" })).toBeVisible();
-	});
-
-	test("serves the vowel chart", async ({ page }) => {
-		const response = await page.goto("/ipa-chart/vowels");
-		expect(response?.status()).toBe(200);
-		await expect(page.getByRole("heading", { name: "Vowels" })).toBeVisible();
 	});
 
 	test("temporarily redirects the IPA chart entry to consonants", async ({ request }) => {

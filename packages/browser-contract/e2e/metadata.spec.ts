@@ -45,22 +45,23 @@ test.describe("Metadata, robots, and sitemap", () => {
 		});
 	}
 
-	test("keeps robots.txt crawlable and only links the sitemap when indexing is on", async ({
-		request,
-		target,
-	}) => {
-		const response = await request.get("/robots.txt");
-		expect(response.status()).toBe(200);
-		const body = await response.text();
-		expect(body).toMatch(/User-Agent:\s*\*/i);
-		expect(body).toMatch(/Allow:\s*\//i);
-		expect(body.toLowerCase()).not.toContain("disallow");
-		if (target.indexingEnabled) {
-			expect(body).toContain(`${target.expectedCanonicalOrigin}/sitemap.xml`);
-		} else {
-			expect(body.toLowerCase()).not.toContain("sitemap");
-		}
-	});
+	test(
+		"keeps robots.txt crawlable and only links the sitemap when indexing is on",
+		{ tag: "@smoke" },
+		async ({ request, target }) => {
+			const response = await request.get("/robots.txt");
+			expect(response.status()).toBe(200);
+			const body = await response.text();
+			expect(body).toMatch(/User-Agent:\s*\*/i);
+			expect(body).toMatch(/Allow:\s*\//i);
+			expect(body.toLowerCase()).not.toContain("disallow");
+			if (target.indexingEnabled) {
+				expect(body).toContain(`${target.expectedCanonicalOrigin}/sitemap.xml`);
+			} else {
+				expect(body.toLowerCase()).not.toContain("sitemap");
+			}
+		},
+	);
 
 	test("lists exactly the indexable application URLs and omits Practice", async ({
 		request,

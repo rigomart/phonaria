@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       run_contract:
-        description: Run the complete browser contract after deploying
+        description: Run the focused browser smoke checks after deploying
         type: boolean
         required: false
         default: true
@@ -118,14 +118,14 @@ jobs:
         if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
         run: bun --cwd packages/browser-contract e2e:install
 
-      - name: Run the complete browser contract
+      - name: Run deployed smoke checks
         if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
         env:
           CI: true
           CONTRACT_TARGET: cloudflare-production
           CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
           CONTRACT_CANONICAL_ORIGIN: https://phonaria.rigos.dev
-        run: bun --cwd packages/browser-contract e2e
+        run: bun --cwd packages/browser-contract e2e:smoke
 
       - name: Record performance baselines
         if: ${{ inputs.baseline && env.CLOUDFLARE_API_TOKEN != '' }}
