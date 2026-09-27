@@ -126,7 +126,7 @@ describe("parseStoredHistory", () => {
 
 describe("useTranscriptionHistoryStore", () => {
 	beforeEach(() => {
-		useTranscriptionHistoryStore.setState({ entries: [], loaded: false });
+		useTranscriptionHistoryStore.setState({ entries: [] });
 	});
 
 	afterEach(() => {
@@ -142,10 +142,7 @@ describe("useTranscriptionHistoryStore", () => {
 
 		useTranscriptionHistoryStore.getState().load();
 
-		expect(useTranscriptionHistoryStore.getState()).toMatchObject({
-			entries: [entry("hello")],
-			loaded: true,
-		});
+		expect(useTranscriptionHistoryStore.getState().entries).toEqual([entry("hello")]);
 	});
 
 	it("keeps another tab's entries when recording", () => {
@@ -195,7 +192,6 @@ describe("useTranscriptionHistoryStore", () => {
 		const { load, record } = useTranscriptionHistoryStore.getState();
 
 		load();
-		expect(useTranscriptionHistoryStore.getState().loaded).toBe(true);
 		record(entry("hello"));
 		record(entry("world", 2));
 

@@ -34,7 +34,6 @@ export function useRecordTranscriptionHistory() {
 /** Reads the stored history after hydration and follows changes from other tabs. */
 export function useTranscriptionHistory() {
 	const entries = useTranscriptionHistoryStore((state) => state.entries);
-	const loaded = useTranscriptionHistoryStore((state) => state.loaded);
 	const load = useTranscriptionHistoryStore((state) => state.load);
 	const remove = useTranscriptionHistoryStore((state) => state.remove);
 	const clear = useTranscriptionHistoryStore((state) => state.clear);
@@ -49,5 +48,5 @@ export function useTranscriptionHistory() {
 		return () => window.removeEventListener("storage", handleStorage);
 	}, [load]);
 
-	return { entries, loaded, remove, clear };
+	return { entries, remove, clear };
 }

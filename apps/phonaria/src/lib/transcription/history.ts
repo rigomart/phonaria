@@ -124,8 +124,6 @@ function writeStoredHistory(entries: readonly TranscriptionHistoryEntry[]) {
 
 interface TranscriptionHistoryStore {
 	entries: TranscriptionHistoryEntry[];
-	/** False until the first `load`, so the page can hold its slot instead of guessing. */
-	loaded: boolean;
 	/** Re-reads storage. Call from an effect so the server render never depends on it. */
 	load: () => void;
 	record: (entry: TranscriptionHistoryEntry) => void;
@@ -148,10 +146,9 @@ export const useTranscriptionHistoryStore = create<TranscriptionHistoryStore>((s
 
 	return {
 		entries: [],
-		loaded: false,
 		load: () => {
 			const stored = readStoredHistory();
-			set(stored ? { entries: stored, loaded: true } : { loaded: true });
+			if (stored) set({ entries: stored });
 		},
 		record: (entry) => update((entries) => addHistoryEntry(entries, entry)),
 		remove: (text) => update((entries) => removeHistoryEntry(entries, text)),
