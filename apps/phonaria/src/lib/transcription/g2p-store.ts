@@ -17,6 +17,11 @@ import {
 } from "./spelling-context";
 import { loadSpellingFrequency } from "./spelling-frequency";
 import { type SpellingFrequency, type SpellingMiss, suggestSpelling } from "./spelling-suggestion";
+import {
+	findTwoEditCandidates,
+	loadTwoEditCandidateIndex,
+	withTwoEditCandidates,
+} from "./two-edit-candidates";
 
 /**
  * Which stage of the lookup failed. Server-action errors are digest-opaque in
@@ -40,6 +45,8 @@ export interface SpellingOptions {
 	 * `transcribeWords`; without it the frequency rule decides alone.
 	 */
 	chooseInContext?: ChooseSpellingInContextFn;
+	/** Optional candidate source for controlled callers; defaults to the curated top 10k. */
+	twoEditCandidates?: (token: string) => string[];
 }
 
 interface G2PStore {
@@ -255,12 +262,10 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 			const misses = spellingMisses(merged);
 			// With a chooser, the result lands first and the suggestion follows it, so the
 			// transcription never waits on a third-party call.
-			const contextRequest = spelling.chooseInContext
-				? buildSpellingContextRequest(text, misses)
-				: null;
-			transformed.spellingSuggestion = contextRequest
-				? null
-				: await spellingSuggestionFor(text, tokens, misses, token, spelling.frequency);
+			transformed.spellingSuggestion =
+				spelling.chooseInContext && misses.length > 0
+					? null
+					: await spellingSuggestionFor(text, tokens, misses, token, spelling.frequency);
 			if (activeLookup !== token) return;
 			const draftChanged = draftRevision !== submittedDraftRevision || get().draftText !== text;
 			if (draftChanged) {
@@ -276,15 +281,15 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 				isTranscribing: false,
 			});
 
-			if (contextRequest && spelling.chooseInContext && !draftChanged) {
+			if (spelling.chooseInContext && misses.length > 0 && !draftChanged) {
 				// Not awaited: `transcribe` settles the transition, and the input re-enables,
 				// as soon as the transcription is on screen.
 				void attachContextSpellingSuggestion({
 					text,
 					tokens,
 					misses,
-					request: contextRequest,
 					chooseInContext: spelling.chooseInContext,
+					twoEditCandidates: spelling.twoEditCandidates,
 					frequency: spelling.frequency,
 					lookupToken: token,
 					submittedDraftRevision,
@@ -331,13 +336,21 @@ async function spellingSuggestionFor(
 	lookupToken: number,
 	spellingFrequency?: SpellingFrequency,
 	contextPicks?: ReadonlyMap<number, string | null>,
+	contextCandidates?: ReadonlyMap<number, string[]>,
 ) {
 	if (misses.length === 0) return null;
 
 	try {
 		const frequency = spellingFrequency ?? (await loadSpellingFrequency());
 		if (activeLookup !== lookupToken) return null;
-		return suggestSpelling({ originalText, tokens, misses, frequency, contextPicks });
+		return suggestSpelling({
+			originalText,
+			tokens,
+			misses,
+			frequency,
+			contextPicks,
+			contextCandidates,
+		});
 	} catch (error) {
 		console.error("transcription: spelling suggestion failed", error);
 		return null;
@@ -352,8 +365,8 @@ async function attachContextSpellingSuggestion(options: {
 	text: string;
 	tokens: string[];
 	misses: SpellingMiss[];
-	request: SpellingContextInput;
 	chooseInContext: ChooseSpellingInContextFn;
+	twoEditCandidates?: (token: string) => string[];
 	frequency?: SpellingFrequency;
 	lookupToken: number;
 	submittedDraftRevision: number;
@@ -371,8 +384,20 @@ async function attachContextSpellingSuggestion(options: {
 	};
 
 	let output: SpellingContextOutput | null = null;
+	let request: SpellingContextInput | null = null;
 	try {
-		output = await options.chooseInContext(options.request);
+		const hasLongMiss = options.misses.some(({ tokenIndex }) =>
+			/^[a-z]{5,}$/i.test(options.tokens[tokenIndex] ?? ""),
+		);
+		const candidateIndex =
+			hasLongMiss && !options.twoEditCandidates ? await loadTwoEditCandidateIndex() : null;
+		if (!stillCurrent()) return;
+		const findCandidates =
+			options.twoEditCandidates ??
+			((token: string) => findTwoEditCandidates(token, candidateIndex ?? new Map()));
+		const combinedMisses = withTwoEditCandidates(options.tokens, options.misses, findCandidates);
+		request = buildSpellingContextRequest(text, combinedMisses);
+		if (request) output = await options.chooseInContext(request);
 	} catch (error) {
 		console.warn("transcription: context spelling suggestion unavailable", error);
 	}
@@ -385,6 +410,7 @@ async function attachContextSpellingSuggestion(options: {
 		lookupToken,
 		options.frequency,
 		spellingContextPicksByToken(output),
+		new Map(request?.misses.map(({ tokenIndex, candidates }) => [tokenIndex, candidates]) ?? []),
 	);
 	if (!spellingSuggestion || !stillCurrent()) return;
 

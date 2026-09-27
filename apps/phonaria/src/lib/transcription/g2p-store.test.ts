@@ -638,6 +638,72 @@ describe("g2p-store — context spelling suggestions", () => {
 
 	const settled = () => new Promise((resolve) => setTimeout(resolve, 0));
 
+	it("commits the result before scanning and asks Jev for a miss with no one-edit options", async () => {
+		const text = "I will reciv it";
+		useG2PStore.getState().setDraftText(text);
+		const twoEditCandidates = vi.fn((token: string) => {
+			expect(useG2PStore.getState().currentResult?.originalText).toBe(text);
+			expect(useG2PStore.getState().isTranscribing).toBe(false);
+			return token === "reciv" ? ["receive"] : [];
+		});
+		const chooseInContext = vi.fn(async (_input: SpellingContextInput) => ({
+			status: "answered" as const,
+			picks: [{ tokenIndex: 2, word: "receive" }],
+		}));
+		await useG2PStore.getState().transcribe(text, fallbackServer(), lookupAllMissing, {
+			frequency,
+			twoEditCandidates,
+			chooseInContext,
+		});
+		await vi.waitFor(() => {
+			expect(useG2PStore.getState().currentResult?.spellingSuggestion?.suggestedText).toBe(
+				"I will receive it",
+			);
+		});
+		expect(twoEditCandidates).toHaveBeenCalledWith("reciv");
+		expect(chooseInContext).toHaveBeenCalledWith({
+			text,
+			misses: [{ tokenIndex: 2, candidates: ["receive"] }],
+		});
+	});
+
+	it("leaves two-edit choices out of the frequency fallback", async () => {
+		useG2PStore.getState().setDraftText("reciv");
+		await useG2PStore.getState().transcribe("reciv", fallbackServer(), lookupAllMissing, {
+			frequency,
+			twoEditCandidates: () => ["receive"],
+			chooseInContext: async () => ({ status: "unavailable" }),
+		});
+		await settled();
+		expect(useG2PStore.getState().currentResult?.spellingSuggestion).toBeNull();
+	});
+
+	it("keeps a miss in the Jev request when added candidates reach its option limit", async () => {
+		const oneEdit = Array.from({ length: 98 }, (_, index) => `option${index}`);
+		const twoEdit = Array.from({ length: 10 }, (_, index) => `extra${index}`);
+		const server: TranscribeWordsFn = async () => [
+			{
+				word: "reciv",
+				variants: [[syllable("X")]],
+				source: "fallback",
+				spellingNeighbours: oneEdit,
+			},
+		];
+		const chooseInContext = vi.fn(async (_input: SpellingContextInput) => ({
+			status: "answered" as const,
+			picks: [],
+		}));
+		useG2PStore.getState().setDraftText("reciv");
+		await useG2PStore.getState().transcribe("reciv", server, lookupAllMissing, {
+			frequency,
+			twoEditCandidates: () => twoEdit,
+			chooseInContext,
+		});
+		await vi.waitFor(() => expect(chooseInContext).toHaveBeenCalled());
+		const request = chooseInContext.mock.calls[0]?.[0];
+		expect(request?.misses[0]?.candidates).toEqual([...oneEdit, "extra0", "extra1"]);
+	});
+
 	it("lands the transcription first, then attaches the context pick", async () => {
 		const chooser = deferredChooser();
 		const text = "I wnat to learn";
@@ -675,6 +741,7 @@ describe("g2p-store — context spelling suggestions", () => {
 			frequency,
 			chooseInContext: chooser.chooseInContext,
 		});
+		await vi.waitFor(() => expect(chooser.chooseInContext).toHaveBeenCalled());
 		chooser.fail(new Error("network"));
 
 		await vi.waitFor(() => {

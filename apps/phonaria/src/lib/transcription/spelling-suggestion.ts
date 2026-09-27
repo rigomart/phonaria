@@ -44,6 +44,8 @@ export interface SuggestSpellingInput {
 	 * for that token and `null` keeps it silent. Tokens without an entry use the rule.
 	 */
 	contextPicks?: ReadonlyMap<number, string | null>;
+	/** The exact candidates sent to the context chooser, including two-edit words. */
+	contextCandidates?: ReadonlyMap<number, string[]>;
 }
 
 export function generateOneSlipVariants(word: string): string[] {
@@ -103,7 +105,7 @@ export function createSpellingFrequency(ranksByWord: Record<string, number>): Sp
 }
 
 export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion | null {
-	const { originalText, tokens, misses, frequency, contextPicks } = input;
+	const { originalText, tokens, misses, frequency, contextPicks, contextCandidates } = input;
 	if (misses.length === 0) return null;
 
 	const replacements = new Map<number, string>();
@@ -113,7 +115,10 @@ export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion
 		if (token === undefined) continue;
 
 		const offered = contextPicks?.has(tokenIndex)
-			? pickFromContext(contextPicks.get(tokenIndex) ?? null, candidates)
+			? pickFromContext(
+					contextPicks.get(tokenIndex) ?? null,
+					contextCandidates ? (contextCandidates.get(tokenIndex) ?? []) : candidates,
+				)
 			: pickPlausibleNeighbour(token, candidates, frequency);
 		if (offered === null) continue;
 		replacements.set(tokenIndex, applyCapitalization(token, offered));
