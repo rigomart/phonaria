@@ -2,6 +2,7 @@
 
 import { useSearch } from "@tanstack/react-router";
 import { TranscriptionProvider } from "@/hooks/use-transcribe";
+import { useRecordTranscriptionHistory } from "@/hooks/use-transcription-history";
 import type { TranscribeWordsFn } from "@/lib/transcription/g2p-store";
 import type { ChooseSpellingInContextFn } from "@/lib/transcription/spelling-context";
 import { TranscriptionDisplay } from "./display";
@@ -16,6 +17,7 @@ export function TranscriptionJourney({
 	chooseSpellingInContext?: ChooseSpellingInContextFn;
 }) {
 	const { q } = useSearch({ from: "/" });
+	useRecordTranscriptionHistory();
 
 	return (
 		<TranscriptionProvider
