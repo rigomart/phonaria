@@ -1,4 +1,3 @@
-import type { PhonemeArticulatoryFeatureKey } from "../core/articulatory-features";
 import type { TargetAccent } from "../core/types";
 import type { LanguagePhonemeId } from "./inventories";
 
@@ -31,21 +30,21 @@ export type LanguagePhonemeAllophoneRegistry<TLanguage extends TargetAccent = Ta
 
 // Contrast types
 
-export type PhonemeContrastPair = {
-	word: string;
-	phonemic: string;
-};
+export type MinimalPair = { readonly words: readonly [string, string] };
 
 export type PhonemeContrast<TLanguage extends TargetAccent = TargetAccent> = {
-	phonemeIds: [LanguagePhonemeId<TLanguage>, LanguagePhonemeId<TLanguage>];
-	contrastType: PhonemeArticulatoryFeatureKey[];
-	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
+	/** Lowercased phoneme IDs joined by "-", e.g. "i-ix". Unique; a future route slug. */
+	id: string;
+	phonemeIds: readonly [LanguagePhonemeId<TLanguage>, LanguagePhonemeId<TLanguage>];
+	/** words[0] contains phonemeIds[0]; words[1] contains phonemeIds[1] at the same position. */
+	minimalPairs: readonly MinimalPair[];
 };
 
 export type PhonemeContrastMatch<TLanguage extends TargetAccent = TargetAccent> = {
+	contrastId: string;
 	partnerId: LanguagePhonemeId<TLanguage>;
-	contrastType: PhonemeArticulatoryFeatureKey[];
-	minimalPairs: [PhonemeContrastPair, PhonemeContrastPair][];
+	/** Oriented to the looked-up phoneme: words[0] contains the phoneme this entry is indexed under. */
+	minimalPairs: readonly MinimalPair[];
 };
 
 export type LanguagePhonemeContrastRegistry<TLanguage extends TargetAccent = TargetAccent> =

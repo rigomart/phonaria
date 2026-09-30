@@ -22,7 +22,13 @@ export {
 	PhonemeArpabetLabel,
 	tryExtractBasePhonemeId,
 } from "./en/cmu-arpa";
-export { EnglishContrastsByPhonemeId } from "./en/contrasts";
+export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./en/contrasts";
+export {
+	findSubstitution,
+	getSinglePronunciation,
+	type PhonemeSubstitution,
+	toBasePhonemeIds,
+} from "./en/minimal-pairs";
 export { EnglishPhonemeSpellingPatterns } from "./en/patterns";
 export {
 	SpanishConsonantArticulations,
@@ -62,10 +68,10 @@ export type {
 	LanguagePhonemeAllophoneRegistry,
 	LanguagePhonemeContrastRegistry,
 	LanguageSpellingPatternRegistry,
+	MinimalPair,
 	PhonemeAllophone,
 	PhonemeAllophoneContextKey,
 	PhonemeContrast,
 	PhonemeContrastMatch,
-	PhonemeContrastPair,
 	SpellingPattern,
 } from "./types";

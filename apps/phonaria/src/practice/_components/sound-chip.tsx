@@ -63,7 +63,7 @@ export function SoundChip({ sound, onRemove, className }: SoundChipProps) {
 					{key.ipa}
 				</PopoverTrigger>
 				<PopoverContent sideOffset={8}>
-					<PhonemePopoverContent targetAccent="en-us" phonemeId={key.id} />
+					<PhonemePopoverContent targetAccent="en-us" phonemeId={key.id} showComparisons={false} />
 				</PopoverContent>
 			</Popover>
 

@@ -2,8 +2,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 import {
-	EnglishContrastsByPhonemeId,
+	cmuVariantToIpa,
 	EnglishPhonemeAllophones,
+	EnglishPhonemeContrasts,
 	EnglishPhonemeSpellingPatterns,
 } from "@phonaria/phonetics-data";
 
@@ -133,15 +134,13 @@ function collectFromSpellingPatterns(cmudict: CMUDict): WordMapping[] {
 function collectFromContrasts(cmudict: CMUDict): WordMapping[] {
 	const mappings: WordMapping[] = [];
 
-	for (const matches of Object.values(EnglishContrastsByPhonemeId ?? {})) {
-		if (!matches) continue;
-		for (const match of matches) {
-			for (const pair of match.minimalPairs) {
-				for (const item of pair) {
-					const mapping = lookupCMUArpa(item.word, cmudict);
-					mapping.phonemic = item.phonemic;
-					mappings.push(mapping);
-				}
+	for (const contrast of EnglishPhonemeContrasts) {
+		for (const { words } of contrast.minimalPairs) {
+			for (const word of words) {
+				// Contrasts store no pronunciations; derive one from the dictionary.
+				const mapping = lookupCMUArpa(word, cmudict);
+				mapping.phonemic = mapping.cmuArpa ? cmuVariantToIpa(mapping.cmuArpa) : "";
+				mappings.push(mapping);
 			}
 		}
 	}

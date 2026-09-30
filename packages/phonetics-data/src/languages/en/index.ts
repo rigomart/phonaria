@@ -22,5 +22,11 @@ export {
 	PhonemeArpabetLabel,
 	tryExtractBasePhonemeId,
 } from "./cmu-arpa";
-export { EnglishContrastsByPhonemeId } from "./contrasts";
+export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./contrasts";
+export {
+	findSubstitution,
+	getSinglePronunciation,
+	type PhonemeSubstitution,
+	toBasePhonemeIds,
+} from "./minimal-pairs";
 export { EnglishPhonemeSpellingPatterns } from "./patterns";
