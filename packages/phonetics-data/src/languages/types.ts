@@ -36,8 +36,6 @@ export type PhonemeContrast<TLanguage extends TargetAccent = TargetAccent> = {
 	/** Lowercased phoneme IDs joined by "-", e.g. "i-ix". Unique; a future route slug. */
 	id: string;
 	phonemeIds: readonly [LanguagePhonemeId<TLanguage>, LanguagePhonemeId<TLanguage>];
-	/** One plain-language sentence on hearing or making the difference. */
-	tip: string;
 	/** words[0] contains phonemeIds[0]; words[1] contains phonemeIds[1] at the same position. */
 	minimalPairs: readonly MinimalPair[];
 };
@@ -45,7 +43,6 @@ export type PhonemeContrast<TLanguage extends TargetAccent = TargetAccent> = {
 export type PhonemeContrastMatch<TLanguage extends TargetAccent = TargetAccent> = {
 	contrastId: string;
 	partnerId: LanguagePhonemeId<TLanguage>;
-	tip: string;
 	/** Oriented to the looked-up phoneme: words[0] contains the phoneme this entry is indexed under. */
 	minimalPairs: readonly MinimalPair[];
 };

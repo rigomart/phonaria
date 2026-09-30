@@ -57,7 +57,7 @@ describe("EnglishPhonemeContrasts", () => {
 	});
 
 	describe.each(EnglishPhonemeContrasts)("$id", (contrast) => {
-		const { id, phonemeIds, tip, minimalPairs } = contrast;
+		const { id, phonemeIds, minimalPairs } = contrast;
 
 		it("derives its id from its phoneme IDs", () => {
 			expect(id).toBe(phonemeIds.map((phonemeId) => phonemeId.toLowerCase()).join("-"));
@@ -71,13 +71,6 @@ describe("EnglishPhonemeContrasts", () => {
 					`${id}: ${phonemeId} is not in the en-us inventory`,
 				).toBe(true);
 			}
-		});
-
-		it("has a one-sentence tip", () => {
-			const trimmed = tip.trim();
-			expect(trimmed, `${id}: tip is empty`).not.toBe("");
-			expect(trimmed, `${id}: tip should end with a full stop`).toMatch(/[.!?]$/);
-			expect(trimmed, `${id}: tip should be a single sentence`).not.toMatch(/[.!?]\s/);
 		});
 
 		it("has at least one minimal pair and no duplicates", () => {
