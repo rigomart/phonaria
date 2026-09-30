@@ -64,6 +64,12 @@ export {
 	tryExtractBasePhonemeId,
 } from "./languages/en/cmu-arpa";
 export { EnglishContrastsByPhonemeId } from "./languages/en/contrasts";
+export {
+	findSubstitution,
+	getSinglePronunciation,
+	type PhonemeSubstitution,
+	toBasePhonemeIds,
+} from "./languages/en/minimal-pairs";
 export { EnglishPhonemeSpellingPatterns } from "./languages/en/patterns";
 export type {
 	EnglishConsonantSymbolId,
