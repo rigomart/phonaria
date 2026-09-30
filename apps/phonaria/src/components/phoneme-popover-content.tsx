@@ -17,9 +17,10 @@ import {
 	ToggleGroupSeparator,
 } from "@phonaria/ui/components/toggle-group";
 import { ChevronDown, MoveRight } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { AudioControls } from "@/components/audio-controls";
 import { Image } from "@/components/image";
+import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
 import { getPublicAssetBaseUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
@@ -36,11 +37,17 @@ const BUCKET_URL = getPublicAssetBaseUrl();
 interface PhonemePopoverProps<TLanguage extends TargetAccent> {
 	targetAccent: TLanguage;
 	phonemeId: LanguagePhonemeId<TLanguage>;
+	/**
+	 * Minimal pairs against similar sounds. Off where the popover is Practice
+	 * assistance, since a pair could spell out the word being answered.
+	 */
+	showComparisons?: boolean;
 }
 
 export function PhonemePopoverContent<TLanguage extends TargetAccent>({
 	targetAccent,
 	phonemeId,
+	showComparisons = true,
 }: PhonemePopoverProps<TLanguage>) {
 	const articulationRegistry = getPhonemeArticulationRegistryForLanguage(targetAccent) as Record<
 		LanguagePhonemeId<TLanguage>,
@@ -76,7 +83,42 @@ export function PhonemePopoverContent<TLanguage extends TargetAccent>({
 				label={label}
 				articulation={articulation}
 			/>
+
+			{showComparisons && <PhonemeComparisons targetAccent={targetAccent} phonemeId={phonemeId} />}
 		</div>
+	);
+}
+
+function PhonemeComparisons({
+	targetAccent,
+	phonemeId,
+}: {
+	targetAccent: TargetAccent;
+	phonemeId: LanguagePhonemeId<TargetAccent>;
+}) {
+	const headingId = useId();
+	const comparisons = getPhonemeComparisons(targetAccent, phonemeId);
+	if (comparisons.length === 0) return null;
+
+	return (
+		<section aria-labelledby={headingId} className="flex flex-col gap-1.5 border-t pt-2">
+			<h3 id={headingId} className="text-xs text-muted-foreground">
+				Compare with
+			</h3>
+			<ul className="flex flex-col gap-1">
+				{comparisons.map(({ contrastId, partnerId, partnerIpa, pairs }) => (
+					<li key={contrastId} className="flex items-baseline gap-2 text-sm">
+						<span aria-hidden="true" className="min-w-10 shrink-0 font-medium">
+							/{partnerIpa}/
+						</span>
+						<span className="sr-only">{formatPhonemeLabel(targetAccent, partnerId)}:</span>
+						<span className="text-muted-foreground">
+							{pairs.map(({ words: [own, partner] }) => `${own} – ${partner}`).join(", ")}
+						</span>
+					</li>
+				))}
+			</ul>
+		</section>
 	);
 }
 
