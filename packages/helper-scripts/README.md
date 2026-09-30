@@ -15,6 +15,16 @@ These scripts generate dictionary data and example-word mappings used by Phonari
 
 The mappings script gathers example words from `@phonaria/phonetics-data` and records their CMU ARPABET and IPA pronunciations for audio generation. It reads `CMUDICT_JSON_PATH` when set, otherwise the default dictionary JSON above.
 
+## Minimal-pair candidates
+
+| Command, from the repo root | Output |
+| --- | --- |
+| `bun run --cwd packages/helper-scripts find-minimal-pairs` | `packages/helper-scripts/output/minimal-pair-candidates.{json,md}` (git-ignored) |
+
+The script proposes minimal pairs from the curated top-10k list for a person to review before adding any to the contrast catalog. It never edits the catalog. By default it covers every contrast already in the catalog. Pass `--contrast I-IX` (repeatable, phoneme IDs) to check other contrasts, and `--limit N` to change how many pairs each contrast shows (default 40).
+
+Words must be alphabetic, at least 3 letters, and have one pronunciation. Homophones are grouped under their most frequent spelling. Pairs are sorted so that pairs of common words come first. The Markdown review sheet has a checkbox per pair and flags likely-bad words (profanity, interjections, first names) without removing them.
+
 ## Checks
 
 ```bash

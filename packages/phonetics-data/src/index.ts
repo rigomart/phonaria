@@ -63,7 +63,7 @@ export {
 	PhonemeArpabetLabel,
 	tryExtractBasePhonemeId,
 } from "./languages/en/cmu-arpa";
-export { EnglishContrastsByPhonemeId } from "./languages/en/contrasts";
+export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./languages/en/contrasts";
 export {
 	findSubstitution,
 	getSinglePronunciation,
@@ -102,10 +102,11 @@ export type {
 	LanguagePhonemeAllophoneRegistry,
 	LanguagePhonemeContrastRegistry,
 	LanguageSpellingPatternRegistry,
+	MinimalPair,
 	PhonemeAllophone,
 	PhonemeAllophoneContextKey,
 	PhonemeContrast,
-	PhonemeContrastPair,
+	PhonemeContrastMatch,
 	SpellingPattern,
 } from "./languages/types";
 export type {

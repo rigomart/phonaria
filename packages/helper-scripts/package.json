@@ -17,6 +17,7 @@
 		"cmudict-to-json": "tsx src/cmudict-to-json.ts",
 		"cmudict-stats": "tsx src/cmudict-stats.ts",
 		"generate-word-mappings": "tsx src/generate-word-mappings.ts",
+		"find-minimal-pairs": "tsx src/find-minimal-pairs.ts",
 		"phoneme-trie-to-json": "tsx src/phoneme-trie-to-json.ts",
 		"migrate-diagrams": "tsx src/migrate-diagrams.ts",
 		"migrate-diagrams-to-accent": "tsx src/migrate-diagrams-to-accent.ts",

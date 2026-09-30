@@ -22,7 +22,7 @@ export {
 	PhonemeArpabetLabel,
 	tryExtractBasePhonemeId,
 } from "./cmu-arpa";
-export { EnglishContrastsByPhonemeId } from "./contrasts";
+export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./contrasts";
 export {
 	findSubstitution,
 	getSinglePronunciation,
