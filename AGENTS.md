@@ -12,7 +12,8 @@
   - English-specific data: `EnglishPhonemeContrasts` (minimal-pair catalog, validated against top-10k) / `EnglishContrastsByPhonemeId`, `EnglishPhonemeAllophones`, `EnglishPhonemeSpellingPatterns`, `CmuArpaMap`
   - Minimal-pair helpers: `getSinglePronunciation()`, `findSubstitution()`, `toBasePhonemeIds()`
   - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`
-- `packages/helper-scripts`: Utilities for data generation. TypeScript scripts handle ElevenLabs audio generation and CMUDict processing; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`; generated audio is produced locally and manually uploaded to the external audio bucket the app references.
+- `packages/helper-scripts`: Utilities for CMUDict processing and word-mapping reports; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`.
+- `packages/audio-gen`: Local Azure Speech pronunciation generation from the minimal-pair catalog. Reads `.env`, writes recordings and review sheets to ignored `output/` directories, and never uploads audio automatically. See the package README.
 - `docs`: Product context and the project overview, accepted decisions in `adr/`, agent conventions in `agents/`, and migration records in `research/`.
 
 ## Phoneme ID System & Target Accent
@@ -30,7 +31,7 @@
 - `bun e2e`: Run the shared browser contract against a deployed base URL (default: public Cloudflare production). See `packages/browser-contract/README.md`.
 - `bun e2e:baseline`: Collect page-load and transcription latency baselines.
 - `bun --cwd packages/browser-contract e2e:install`: Install Chromium for the browser contract.
-- `bun --cwd packages/audio-gen generate`: Regenerate ElevenLabs pronunciation audio (requires `ELEVENLABS_API_KEY` in `packages/audio-gen/.env`).
+- `bun run --cwd packages/audio-gen generate --dry-run`: Prepare the Azure pronunciation catalog without network calls. Omit `--dry-run` to generate (requires `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` in `packages/audio-gen/.env`).
 - `bun --cwd packages/helper-scripts cmudict-to-json`: Convert CMUDict plaintext to JSON format consumed by the app (configure `CMUDICT_SRC_URL` or `CMUDICT_JSON_PATH`).
 - `bun --cwd packages/helper-scripts cmudict-stats`: Build CMUDict coverage statistics from the dictionary.
 - `bun --cwd packages/helper-scripts generate-word-mappings`: Produce CMU ARPA mappings for example words derived from `@phonaria/phonetics-data`.

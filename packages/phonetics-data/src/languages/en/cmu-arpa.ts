@@ -124,6 +124,28 @@ export function getCmuArpaForEnglishPhonemeId(phonemeId: EnglishPhonemeSymbolId)
 		.filter(isCmuArpaToken);
 }
 
+/** Convert dictionary phoneme IDs to actual CMU ARPAbet, preserving vowel stress. */
+export function phonemeVariantToCmuArpa(variant: string): string {
+	if (!variant.trim()) throw new Error("A pronunciation cannot be empty");
+	return variant
+		.trim()
+		.split(/\s+/)
+		.map((token) => {
+			const id = extractBasePhonemeId(token);
+			if (!isEnglishPhonemeSymbolId(id)) {
+				throw new Error(`Not an English phoneme: ${token}`);
+			}
+			const stress = token.match(/[012]$/)?.[0];
+			const candidates = getCmuArpaForEnglishPhonemeId(id);
+			const arpa = candidates.find((candidate) =>
+				stress ? candidate.endsWith(stress) : !/[012]$/.test(candidate),
+			);
+			if (!arpa) throw new Error(`Cannot represent phoneme and stress in CMU ARPAbet: ${token}`);
+			return arpa;
+		})
+		.join(" ");
+}
+
 /**
  * Maps phoneme symbol IDs to standard ARPABET labels (without stress markers).
  * Used as trie keys for phoneme search.

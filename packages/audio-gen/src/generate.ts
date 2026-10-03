@@ -1,40 +1,43 @@
 import "dotenv/config";
-
-import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import catalogConfig from "../catalog-config.json";
+import { parseArguments } from "./cli";
+import { runGeneration } from "./generation";
 
-import { createElevenLabsProvider } from "./providers/elevenlabs";
-import { getWordInputs } from "./word-inputs";
-
-const outputDir = path.resolve(process.cwd(), "output");
-
-function toSafeFilename(word: string): string {
-	return word
-		.trim()
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-+|-+$/g, "");
-}
-
-async function synthesize(): Promise<void> {
-	const tts = createElevenLabsProvider();
-	const limit = process.env.WORDS_LIMIT ? Number(process.env.WORDS_LIMIT) : undefined;
-	const inputs = getWordInputs(Number.isFinite(limit) ? limit : undefined);
-
-	await mkdir(outputDir, { recursive: true });
-
-	for (const utterance of inputs) {
-		console.log(`Generating audio for "${utterance.id}"...`);
-		const [{ audio }] = await tts.synthesize([utterance]);
-		const filepath = path.join(outputDir, `${toSafeFilename(utterance.id)}.mp3`);
-		await writeFile(filepath, audio);
-		console.log(`Saved ${filepath}`);
+async function main() {
+	if (process.argv.slice(2).includes("--help")) {
+		console.log(
+			"Azure word audio: --dry-run --words=seat,seed --limit=24 --out=path --resume --rpm=20 --rate=-10 --format=ogg|mp3",
+		);
+		return;
 	}
-
-	console.log("Done. Check the output directory for the generated samples.");
+	const options = parseArguments(process.argv.slice(2));
+	const outputDir = path.resolve(options.outputDir ?? `output/azure-${Date.now()}`);
+	const result = await runGeneration({
+		...options,
+		outputDir,
+		voiceId: process.env.AZURE_SPEECH_VOICE ?? catalogConfig.voiceId,
+		audioFormat:
+			options.audioFormat ?? process.env.AZURE_SPEECH_FORMAT ?? catalogConfig.audioFormat,
+		ratePercent:
+			options.ratePercent ??
+			(process.env.AZURE_SPEECH_RATE_PERCENT
+				? Number(process.env.AZURE_SPEECH_RATE_PERCENT)
+				: catalogConfig.ratePercent),
+		limit: options.limit ?? (process.env.WORDS_LIMIT ? Number(process.env.WORDS_LIMIT) : undefined),
+		requestsPerMinute:
+			options.requestsPerMinute ??
+			(process.env.AZURE_REQUESTS_PER_MINUTE
+				? Number(process.env.AZURE_REQUESTS_PER_MINUTE)
+				: undefined),
+	});
+	console.log(
+		`${result.planned} words planned; ${result.generated} new recordings. Output: ${outputDir}`,
+	);
+	console.log("Listen to each word and its pairs, then fill review.tsv.");
 }
 
-void synthesize().catch((error: unknown) => {
-	console.error(error);
+void main().catch((error: unknown) => {
+	console.error(error instanceof Error ? error.message : "Audio generation failed");
 	process.exitCode = 1;
 });
