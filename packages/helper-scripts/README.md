@@ -1,6 +1,6 @@
 # Helper scripts
 
-These scripts generate dictionary data and example-word mappings used by Phonaria. Run `bun install` at the repo root first. Optional overrides go in `packages/helper-scripts/.env` (see `.env.example`).
+These scripts generate dictionary data and word-mapping reports used by Phonaria. Run `bun install` at the repo root first. Optional overrides go in `packages/helper-scripts/.env` (see `.env.example`).
 
 ## Dictionary and word data
 
@@ -11,9 +11,9 @@ These scripts generate dictionary data and example-word mappings used by Phonari
 | `bun run --cwd packages/helper-scripts generate-word-mappings` | `packages/audio-gen/data/cmu-arpa-mappings.json` |
 | `python3 packages/helper-scripts/generate-curated-chunks.py` | Top-1k and top-10k pronunciation lists in `packages/phonetics-data/data/en/curated/` |
 
-`cmudict-to-json` requires `CMUDICT_SRC_URL` and accepts `CMUDICT_JSON_PATH` as an output override. Generate the dictionary JSON before word mappings or curated lists. The curated-list script needs Python's `wordfreq` package (`python3 -m pip install wordfreq`). Its outputs contain word-frequency data with CC-BY-SA 4.0 attribution; CMUDict retains its own license.
+`cmudict-to-json` requires `CMUDICT_SRC_URL` and accepts `CMUDICT_JSON_PATH` as an output override. Generate the dictionary JSON before curated lists. The word-mapping report can use the bundled curated dictionary directly. The curated-list script needs Python's `wordfreq` package (`python3 -m pip install wordfreq`). Its outputs contain word-frequency data with CC-BY-SA 4.0 attribution; CMUDict retains its own license.
 
-The mappings script gathers example words from `@phonaria/phonetics-data` and records their CMU ARPABET and IPA pronunciations for audio generation. It reads `CMUDICT_JSON_PATH` when set, otherwise the default dictionary JSON above.
+The mappings script gathers only minimal-pair catalog words from `@phonaria/phonetics-data` and exports their actual CMU ARPAbet and IPA pronunciations. It uses the bundled curated top-10k dictionary by default; `CMUDICT_JSON_PATH` selects an explicit dictionary JSON override. Missing or ambiguous entries have no API pronunciation and cause a nonzero exit. This report is optional: `packages/audio-gen` now reads the catalog and curated dictionary directly.
 
 ## Minimal-pair candidates
 

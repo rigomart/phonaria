@@ -1,28 +1,29 @@
 {
 	"name": "@phonaria/audio-gen",
 	"version": "1.0.0",
-	"description": "Audio generation for Phonaria application using ElevenLabs",
+	"description": "Local Azure Speech pronunciation audio generation for Phonaria",
 	"keywords": [
 		"phonaria",
 		"audio-gen",
 		"tts",
 		"audio-generation",
-		"elevenlabs"
+		"azure-speech"
 	],
 	"author": "Miguel Rodriguez",
 	"packageManager": "bun@1.3.2",
 	"scripts": {
 		"lint": "biome check --write",
 		"check-types": "tsc --noEmit",
-		"generate": "tsx src/generate.ts"
+		"test": "vitest run",
+		"generate": "bun src/generate.ts",
+		"probe": "bun src/probe.ts"
 	},
 	"dependencies": {
-		"@elevenlabs/elevenlabs-js": "^2.25.0",
 		"dotenv": "^17.2.0",
 		"@phonaria/phonetics-data": "workspace:*"
 	},
 	"devDependencies": {
-		"tsx": "^4.20.3",
+		"vitest": "^3.2.4",
 		"typescript": "~5.8.3",
 		"@types/node": "^24.0.10"
 	}

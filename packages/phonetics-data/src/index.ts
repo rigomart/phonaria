@@ -61,6 +61,7 @@ export {
 	isEnglishPhonemeSymbolId,
 	isValidPhonemeToken,
 	PhonemeArpabetLabel,
+	phonemeVariantToCmuArpa,
 	tryExtractBasePhonemeId,
 } from "./languages/en/cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./languages/en/contrasts";

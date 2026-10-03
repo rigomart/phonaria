@@ -20,6 +20,7 @@ export {
 	isEnglishPhonemeSymbolId,
 	isValidPhonemeToken,
 	PhonemeArpabetLabel,
+	phonemeVariantToCmuArpa,
 	tryExtractBasePhonemeId,
 } from "./cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./contrasts";
