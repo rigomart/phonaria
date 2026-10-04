@@ -25,7 +25,7 @@ interface VariantStackProps {
 
 /**
  * The active variant in front, the word's other variants piled underneath:
- * the top one blurred and faded, the rest behind it, fainter and blurrier.
+ * the top one faded, the rest behind it, fainter and blurred.
  * Hovering, tapping, or focusing the pile fans the cards out; choosing one
  * swaps it with the active variant and animates both into place. Cards are
  * keyed by slot, so focus stays on the slot that was clicked.
@@ -117,7 +117,7 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 									<span
 										ref={track(variantIndex)}
 										className="inline-block transition-[opacity,filter] duration-300 motion-reduce:transition-none"
-										style={expanded ? undefined : { opacity: 0.45, filter: `blur(${1 + slot}px)` }}
+										style={collapsedTextStyle(slot, expanded)}
 									>
 										<FadedVariant syllables={word.variants[variantIndex] ?? []} />
 									</span>
@@ -143,6 +143,12 @@ function cardStyle(slot: number, expanded: boolean): CSSProperties {
 		opacity: COLLAPSED_OPACITY[slot] ?? COLLAPSED_OPACITY.at(-1),
 		zIndex: 30 - slot,
 	};
+}
+
+function collapsedTextStyle(slot: number, expanded: boolean): CSSProperties | undefined {
+	if (expanded) return undefined;
+	if (slot === 0) return { opacity: 0.6 };
+	return { opacity: 0.45, filter: `blur(${slot}px)` };
 }
 
 function FadedVariant({ syllables }: { syllables: TranscribedSyllable[] }) {
