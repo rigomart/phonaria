@@ -2,12 +2,17 @@
 import { expectTypeOf } from "vitest";
 import {
 	formatPhonemeLabel,
+	getAllophoneRegistryForLanguage,
 	getCmuArpaRegistryForLanguage,
 	getContrastRegistryForLanguage,
+	getLanguageArticulationData,
+	getLanguageFeatureCapabilities,
+	getLanguagePhonemeCount,
 	getLanguagePhonemeIds,
 	getSpellingPatternRegistryForLanguage,
 	type LanguageDiphthongSymbolId,
 	type LanguagePhonemeId,
+	type LanguageSpellingPatternRegistry,
 } from "./index";
 
 const englishIds = getLanguagePhonemeIds("en-us");
@@ -33,3 +38,45 @@ formatPhonemeLabel("en-us", "EE");
 getLanguagePhonemeIds("fr-fr");
 // @ts-expect-error Unknown inventory subset.
 getLanguagePhonemeIds("en-us", "syllables");
+
+// Shared data stays readonly through nested records, arrays, and examples.
+// @ts-expect-error Counts cannot be changed by consumers.
+getLanguagePhonemeCount("en-us").total = 0;
+// @ts-expect-error Feature support is shared readonly data.
+getLanguageFeatureCapabilities("en-us").articulations = false;
+// @ts-expect-error Articulation registry entries cannot be replaced.
+getLanguageArticulationData("en-us").consonants.P =
+	getLanguageArticulationData("en-us").consonants.B;
+// @ts-expect-error Nested articulation features cannot be changed.
+getLanguageArticulationData("en-us").consonants.P.features.place = "dental";
+// @ts-expect-error Derived feature indexes cannot be edited.
+getLanguageArticulationData("en-us").featureValuesByPhoneme.place.P = "dental";
+// @ts-expect-error Contrast arrays cannot be appended to.
+getContrastRegistryForLanguage("en-us").P?.push({
+	contrastId: "p-b",
+	partnerId: "B",
+	minimalPairs: [],
+});
+const contrastMatch = getContrastRegistryForLanguage("en-us").P?.[0];
+if (contrastMatch) {
+	// @ts-expect-error Nested contrast records cannot be edited.
+	contrastMatch.partnerId = "T";
+}
+const allophoneExample = getAllophoneRegistryForLanguage("en-us").P?.[0]?.examples[0];
+if (allophoneExample) {
+	// @ts-expect-error Allophone examples cannot be edited.
+	allophoneExample.word = "changed";
+}
+// @ts-expect-error Spelling pattern arrays cannot be replaced.
+getSpellingPatternRegistryForLanguage("en-us").P.patterns = ["changed"];
+// @ts-expect-error Inventory arrays cannot be appended to.
+englishIds.push("P");
+
+// Named public types must preserve the same protection as inferred selectors.
+const spellingPatterns: LanguageSpellingPatternRegistry<"en-us"> =
+	getSpellingPatternRegistryForLanguage("en-us");
+const spellingExample = spellingPatterns.P?.examples[0];
+if (spellingExample) {
+	// @ts-expect-error Nested examples stay readonly through the public registry type.
+	spellingExample.word = "changed";
+}

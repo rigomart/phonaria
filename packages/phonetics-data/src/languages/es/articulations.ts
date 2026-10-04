@@ -4,6 +4,7 @@ import type {
 	MonophthongVowelArticulation,
 	PhonemeArticulation,
 } from "../../core/phoneme-articulations";
+import { deepFreeze } from "../../shared/readonly";
 import type {
 	SpanishConsonantSymbolId,
 	SpanishDiphthongSymbolId,
@@ -13,10 +14,9 @@ import type {
 
 export type SpanishPhonemeArticulation = PhonemeArticulation;
 
-export const SpanishConsonantArticulations: Record<
-	SpanishConsonantSymbolId,
-	ConsonantArticulation
-> = {
+export const SpanishConsonantArticulations: Readonly<
+	Record<SpanishConsonantSymbolId, ConsonantArticulation>
+> = deepFreeze({
 	P: {
 		category: "consonant",
 		features: { manner: "plosive", place: "bilabial", voicing: "voiceless" },
@@ -93,12 +93,11 @@ export const SpanishConsonantArticulations: Record<
 		category: "consonant",
 		features: { manner: "approximant", place: "labial-velar", voicing: "voiced" },
 	},
-};
+});
 
-export const SpanishMonophthongArticulations: Record<
-	SpanishMonophthongSymbolId,
-	MonophthongVowelArticulation
-> = {
+export const SpanishMonophthongArticulations: Readonly<
+	Record<SpanishMonophthongSymbolId, MonophthongVowelArticulation>
+> = deepFreeze({
 	I: {
 		category: "vowel",
 		vowelType: "monophthong",
@@ -149,15 +148,14 @@ export const SpanishMonophthongArticulations: Record<
 			tenseness: "tense",
 		},
 	},
-};
+});
 
-export const SpanishDiphthongArticulations: Record<
-	SpanishDiphthongSymbolId,
-	DiphthongVowelArticulation
-> = {};
+export const SpanishDiphthongArticulations: Readonly<
+	Record<SpanishDiphthongSymbolId, DiphthongVowelArticulation>
+> = deepFreeze({});
 
-export const SpanishPhonemeArticulations = {
+export const SpanishPhonemeArticulations = deepFreeze({
 	...SpanishConsonantArticulations,
 	...SpanishMonophthongArticulations,
 	...SpanishDiphthongArticulations,
-} as const satisfies Record<SpanishPhonemeSymbolId, PhonemeArticulation>;
+} as const satisfies Record<SpanishPhonemeSymbolId, PhonemeArticulation>);

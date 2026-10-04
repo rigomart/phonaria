@@ -105,6 +105,14 @@ Run before merging package changes:
 - English currently provides CMU/ARPABET mappings, spelling patterns, allophones, contrasts, and curated dictionary datasets.
 - Selectors return `null` for not-yet-implemented language features instead of widening types with placeholder data.
 
+Inventories, counts, capabilities, and feature registries returned by selectors
+are shared readonly data, including nested records and arrays. They and their
+backing language data are frozen once during module initialization. Mutation
+attempts cannot change later callers' results and throw in strict mode. Make a
+copy (for example, `structuredClone(data)`) before editing; copy an array before
+sorting it. Helpers that build fresh results, such as
+`buildFeatureValueByPhoneme`, still return independently owned data.
+
 ## Testing
 
 Run `bun run --cwd packages/phonetics-data test` for the runtime suite and

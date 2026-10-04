@@ -1,3 +1,4 @@
+import { deepFreeze } from "../../shared/readonly";
 import type { EnglishPhonemeSymbolId } from "../inventories";
 import type { PhonemeAllophone } from "../types";
 
@@ -105,6 +106,6 @@ const phonemeAllophonesData = {
 	],
 } as const satisfies Partial<Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>>;
 
-export const EnglishPhonemeAllophones: Partial<
-	Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>
-> = phonemeAllophonesData;
+export const EnglishPhonemeAllophones: Readonly<
+	Partial<Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>>
+> = deepFreeze(phonemeAllophonesData);

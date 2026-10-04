@@ -1,4 +1,5 @@
 import type { TargetAccent } from "../core/types";
+import { deepFreeze } from "../shared/readonly";
 
 export const LANGUAGE_FEATURE_KEYS = [
 	"articulations",
@@ -12,9 +13,9 @@ export const LANGUAGE_FEATURE_KEYS = [
 
 export type LanguageFeatureKey = (typeof LANGUAGE_FEATURE_KEYS)[number];
 
-export type LanguageFeatureCapabilities = Record<LanguageFeatureKey, boolean>;
+export type LanguageFeatureCapabilities = Readonly<Record<LanguageFeatureKey, boolean>>;
 
-export const LanguageFeatureCapabilitiesRegistry = {
+export const LanguageFeatureCapabilitiesRegistry = deepFreeze({
 	"en-us": {
 		articulations: true,
 		cmuArpa: true,
@@ -33,7 +34,7 @@ export const LanguageFeatureCapabilitiesRegistry = {
 		curatedWordData: false,
 		transcription: true,
 	},
-} as const satisfies Record<TargetAccent, LanguageFeatureCapabilities>;
+} as const satisfies Record<TargetAccent, LanguageFeatureCapabilities>);
 
 export function getLanguageFeatureCapabilities(
 	language: TargetAccent,

@@ -1,3 +1,4 @@
+import type { DeepReadonly } from "../shared/readonly";
 import type {
 	ConsonantArticulatoryFeatures,
 	PhonemeArticulatoryFeatureKey,
@@ -10,29 +11,29 @@ import type { PhonemeSymbolId } from "./ipa-map";
 export type VowelType = "monophthong" | "diphthong";
 
 export type DiphthongVowelArticulatoryFeatures = {
-	height: VowelArticulatoryFeatures["height"];
-	backness: VowelArticulatoryFeatures["backness"];
-	roundness: VowelArticulatoryFeatures["roundness"];
-	targetHeight: VowelArticulatoryFeatures["height"];
-	targetBackness: VowelArticulatoryFeatures["backness"];
-	targetRoundness: VowelArticulatoryFeatures["roundness"];
+	readonly height: VowelArticulatoryFeatures["height"];
+	readonly backness: VowelArticulatoryFeatures["backness"];
+	readonly roundness: VowelArticulatoryFeatures["roundness"];
+	readonly targetHeight: VowelArticulatoryFeatures["height"];
+	readonly targetBackness: VowelArticulatoryFeatures["backness"];
+	readonly targetRoundness: VowelArticulatoryFeatures["roundness"];
 };
 
 export type ConsonantArticulation = {
-	category: "consonant";
-	features: ConsonantArticulatoryFeatures;
+	readonly category: "consonant";
+	readonly features: ConsonantArticulatoryFeatures;
 };
 
 export type MonophthongVowelArticulation = {
-	category: "vowel";
-	vowelType: "monophthong";
-	features: VowelArticulatoryFeatures;
+	readonly category: "vowel";
+	readonly vowelType: "monophthong";
+	readonly features: VowelArticulatoryFeatures;
 };
 
 export type DiphthongVowelArticulation = {
-	category: "vowel";
-	vowelType: "diphthong";
-	features: DiphthongVowelArticulatoryFeatures;
+	readonly category: "vowel";
+	readonly vowelType: "diphthong";
+	readonly features: DiphthongVowelArticulatoryFeatures;
 };
 
 export type PhonemeArticulation =
@@ -40,15 +41,19 @@ export type PhonemeArticulation =
 	| MonophthongVowelArticulation
 	| DiphthongVowelArticulation;
 
-export type FeatureValueLookup<TPhonemeId extends PhonemeSymbolId> = {
+type MutableFeatureValueLookup<TPhonemeId extends PhonemeSymbolId> = {
 	[K in PhonemeArticulatoryFeatureKey]: Partial<
 		Record<TPhonemeId, PhonemeArticulatoryFeatureValueMap[K]>
 	>;
 };
 
+export type FeatureValueLookup<TPhonemeId extends PhonemeSymbolId> = DeepReadonly<
+	MutableFeatureValueLookup<TPhonemeId>
+>;
+
 function hasCompleteFeatureLookup<TPhonemeId extends PhonemeSymbolId>(
-	lookup: Partial<FeatureValueLookup<TPhonemeId>>,
-): lookup is FeatureValueLookup<TPhonemeId> {
+	lookup: Partial<MutableFeatureValueLookup<TPhonemeId>>,
+): lookup is MutableFeatureValueLookup<TPhonemeId> {
 	return PHONEME_ARTICULATORY_FEATURE_KEYS.every(
 		(featureKey) => Object.getOwnPropertyDescriptor(lookup, featureKey) !== undefined,
 	);
@@ -58,7 +63,7 @@ function assignFeatureValueByKey<
 	TPhonemeId extends PhonemeSymbolId,
 	TFeatureKey extends PhonemeArticulatoryFeatureKey,
 >(
-	lookup: Partial<FeatureValueLookup<TPhonemeId>>,
+	lookup: Partial<MutableFeatureValueLookup<TPhonemeId>>,
 	featureKey: TFeatureKey,
 	phonemeId: TPhonemeId,
 	featureValues: Partial<PhonemeArticulatoryFeatureValueMap>,
@@ -78,9 +83,9 @@ function assignFeatureValueByKey<
 
 export function buildFeatureValueByPhoneme<TPhonemeId extends PhonemeSymbolId>(
 	phonemeIds: readonly TPhonemeId[],
-	phonemeArticulationRegistry: Record<TPhonemeId, PhonemeArticulation>,
-): FeatureValueLookup<TPhonemeId> {
-	const lookup: Partial<FeatureValueLookup<TPhonemeId>> = {};
+	phonemeArticulationRegistry: Readonly<Record<TPhonemeId, PhonemeArticulation>>,
+): MutableFeatureValueLookup<TPhonemeId> {
+	const lookup: Partial<MutableFeatureValueLookup<TPhonemeId>> = {};
 
 	for (const featureKey of PHONEME_ARTICULATORY_FEATURE_KEYS) {
 		lookup[featureKey] = {};

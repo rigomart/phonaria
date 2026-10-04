@@ -32,32 +32,33 @@ import type {
 } from "../languages/inventories";
 import { getLanguagePhonemeIds } from "../languages/inventories";
 import type { PhonemeAllophone, PhonemeContrastMatch, SpellingPattern } from "../languages/types";
+import { deepFreeze } from "../shared/readonly";
 
 // Language articulation registry types
 
 export type LanguageConsonantArticulationRegistry<TLanguage extends TargetAccent = TargetAccent> =
-	Record<LanguageConsonantSymbolId<TLanguage>, ConsonantArticulation>;
+	Readonly<Record<LanguageConsonantSymbolId<TLanguage>, ConsonantArticulation>>;
 
 export type LanguageMonophthongVowelArticulationRegistry<
 	TLanguage extends TargetAccent = TargetAccent,
-> = Record<LanguageMonophthongSymbolId<TLanguage>, MonophthongVowelArticulation>;
+> = Readonly<Record<LanguageMonophthongSymbolId<TLanguage>, MonophthongVowelArticulation>>;
 
 export type LanguageDiphthongVowelArticulationRegistry<
 	TLanguage extends TargetAccent = TargetAccent,
-> = Record<LanguageDiphthongSymbolId<TLanguage>, DiphthongVowelArticulation>;
+> = Readonly<Record<LanguageDiphthongSymbolId<TLanguage>, DiphthongVowelArticulation>>;
 
 export type LanguagePhonemeArticulationRegistry<TLanguage extends TargetAccent = TargetAccent> =
-	Record<LanguagePhonemeId<TLanguage>, PhonemeArticulation>;
+	Readonly<Record<LanguagePhonemeId<TLanguage>, PhonemeArticulation>>;
 
 export type LanguageFeatureValueByPhonemeRegistry<TLanguage extends TargetAccent = TargetAccent> =
 	FeatureValueLookup<LanguagePhonemeId<TLanguage>>;
 
 export type LanguageArticulationData<TLanguage extends TargetAccent> = {
-	consonants: LanguageConsonantArticulationRegistry<TLanguage>;
-	monophthongs: LanguageMonophthongVowelArticulationRegistry<TLanguage>;
-	diphthongs: LanguageDiphthongVowelArticulationRegistry<TLanguage>;
-	phonemes: LanguagePhonemeArticulationRegistry<TLanguage>;
-	featureValuesByPhoneme: LanguageFeatureValueByPhonemeRegistry<TLanguage>;
+	readonly consonants: LanguageConsonantArticulationRegistry<TLanguage>;
+	readonly monophthongs: LanguageMonophthongVowelArticulationRegistry<TLanguage>;
+	readonly diphthongs: LanguageDiphthongVowelArticulationRegistry<TLanguage>;
+	readonly phonemes: LanguagePhonemeArticulationRegistry<TLanguage>;
+	readonly featureValuesByPhoneme: LanguageFeatureValueByPhonemeRegistry<TLanguage>;
 };
 
 const EnglishLanguageArticulationData = {
@@ -82,12 +83,12 @@ const SpanishLanguageArticulationData = {
 	),
 } satisfies LanguageArticulationData<"es-419">;
 
-export const LanguageArticulationRegistry = {
+export const LanguageArticulationRegistry = deepFreeze({
 	"en-us": EnglishLanguageArticulationData,
 	"es-419": SpanishLanguageArticulationData,
 } satisfies {
 	[L in TargetAccent]: LanguageArticulationData<L>;
-};
+});
 
 export function getLanguageArticulationData<TLanguage extends TargetAccent>(
 	language: TLanguage,
@@ -128,31 +129,34 @@ export function getFeatureValueByPhonemeRegistryForLanguage<TLanguage extends Ta
 // Per-feature language registries.
 // To add support for a new language, register its data in the relevant registry.
 
-export const LanguageCmuArpaDataRegistry = {
+export const LanguageCmuArpaDataRegistry = deepFreeze({
 	"en-us": CmuArpaMap,
 	"es-419": null,
-} as const satisfies Record<TargetAccent, Readonly<Record<string, string>> | null>;
+} as const satisfies Record<TargetAccent, Readonly<Record<string, string>> | null>);
 
-export const LanguageAllophoneDataRegistry = {
+export const LanguageAllophoneDataRegistry = deepFreeze({
 	"en-us": EnglishPhonemeAllophones,
 	"es-419": null,
 } as const satisfies Record<
 	TargetAccent,
 	Partial<Record<PhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>> | null
->;
+>);
 
-export const LanguageContrastDataRegistry = {
+export const LanguageContrastDataRegistry = deepFreeze({
 	"en-us": EnglishContrastsByPhonemeId,
 	"es-419": null,
 } as const satisfies Record<
 	TargetAccent,
-	Partial<Record<PhonemeSymbolId, PhonemeContrastMatch[]>> | null
->;
+	Partial<Record<PhonemeSymbolId, readonly PhonemeContrastMatch[]>> | null
+>);
 
-export const LanguageSpellingPatternDataRegistry = {
+export const LanguageSpellingPatternDataRegistry = deepFreeze({
 	"en-us": EnglishPhonemeSpellingPatterns,
 	"es-419": null,
-} as const satisfies Record<TargetAccent, Partial<Record<PhonemeSymbolId, SpellingPattern>> | null>;
+} as const satisfies Record<
+	TargetAccent,
+	Partial<Record<PhonemeSymbolId, SpellingPattern>> | null
+>);
 
 export function getCmuArpaRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
