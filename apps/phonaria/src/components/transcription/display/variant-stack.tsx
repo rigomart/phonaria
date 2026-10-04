@@ -1,10 +1,11 @@
 import type { TargetAccent } from "@phonaria/phonetics-data";
 import { type CSSProperties, type FocusEvent, useEffect, useRef, useState } from "react";
-import { useSwapAnimation } from "@/hooks/use-swap-animation";
 import { extractWordIpa } from "@/lib/ipa-copy";
+import { alignVariants } from "@/lib/transcription/variant-alignment";
 import { orderVariants } from "@/lib/transcription/variant-order";
 import type { TranscribedSyllable, TranscribedWord } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
+import { morphIpa, prefersReducedMotion } from "./ipa-morph";
 import { IpaSequence } from "./ipa-sequence";
 
 /** Height of one alternative: text-base line plus py-1. */
@@ -27,7 +28,7 @@ interface VariantStackProps {
  * The active variant in front, the word's other variants piled underneath:
  * the top one faded, the rest behind it, fainter and blurred.
  * Hovering, tapping, or focusing the pile fans the cards out; choosing one
- * swaps it with the active variant and animates both into place. Cards are
+ * morphs the active variant into it, sound by sound. Cards are
  * keyed by slot, so focus stays on the slot that was clicked.
  */
 export function VariantStack({ targetAccent, word, selected, onSelect }: VariantStackProps) {
@@ -38,7 +39,8 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 	const toggleRef = useRef<HTMLButtonElement>(null);
 	const order = orderVariants(previousOrder, selected, count);
 	const [active, ...alternatives] = order;
-	const { track, swap } = useSwapAnimation<number>();
+	const activeRef = useRef<HTMLDivElement>(null);
+	const slotText = useRef(new Map<number, HTMLElement>());
 
 	useEffect(() => {
 		if (!expanded) return;
@@ -49,11 +51,27 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 		return () => document.removeEventListener("pointerdown", collapseOnOutsidePress);
 	}, [expanded]);
 
-	function choose(variantIndex: number) {
-		swap(() => {
+	function choose(variantIndex: number, slot: number) {
+		const update = () => {
 			setPreviousOrder(orderVariants(order, variantIndex, count));
 			onSelect(word.wordIndex, variantIndex);
-		});
+		};
+		const root = activeRef.current;
+		if (!root) {
+			update();
+			return;
+		}
+		const alignment = alignVariants(
+			word.variants[active ?? 0] ?? [],
+			word.variants[variantIndex] ?? [],
+		);
+		morphIpa(root, alignment, update);
+		// The slot now holds the old active variant; let it fade in quietly.
+		if (!prefersReducedMotion()) {
+			slotText.current
+				.get(slot)
+				?.animate([{ opacity: 0 }, {}], { duration: 240, easing: "ease-out" });
+		}
 	}
 
 	function collapseOnFocusLeave(event: FocusEvent<HTMLFieldSetElement>) {
@@ -62,7 +80,7 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 
 	return (
 		<div className="flex flex-col items-center" data-expanded={expanded || undefined}>
-			<div ref={track(active ?? 0)}>
+			<div ref={activeRef}>
 				<IpaSequence
 					targetAccent={targetAccent}
 					syllables={word.variants[active ?? 0] ?? []}
@@ -102,7 +120,7 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 							<li key={slot}>
 								<button
 									type="button"
-									onClick={() => choose(variantIndex)}
+									onClick={() => choose(variantIndex, slot)}
 									aria-label={`Use pronunciation /${extractWordIpa(word, variantIndex)}/`}
 									style={cardStyle(slot, expanded)}
 									className={cn(
@@ -115,7 +133,13 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 									)}
 								>
 									<span
-										ref={track(variantIndex)}
+										ref={(node) => {
+											if (!node) return;
+											slotText.current.set(slot, node);
+											return () => {
+												slotText.current.delete(slot);
+											};
+										}}
 										className="inline-block transition-[opacity,filter] duration-300 motion-reduce:transition-none"
 										style={collapsedTextStyle(slot, expanded)}
 									>
