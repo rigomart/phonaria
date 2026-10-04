@@ -8,9 +8,14 @@ describe("toBasePhonemeIds", () => {
 	it("rejects an unknown sound rather than shortening a pronunciation", () => {
 		expect(() => toBasePhonemeIds("S UNKNOWN T")).toThrow();
 	});
-	// Normalizing whitespace is deferred to the pronunciation-parser improvement.
-	it.fails("accepts repeated spaces, tabs, and surrounding whitespace", () => {
+	it("accepts repeated spaces, tabs, and surrounding whitespace", () => {
 		expect(toBasePhonemeIds("  S\tI1  T\n")).toEqual(["S", "I", "T"]);
+	});
+	it.each(["", " \t\n"])("rejects an empty pronunciation: %j", (input) => {
+		expect(() => toBasePhonemeIds(input)).toThrow();
+	});
+	it("extracts base IDs without enforcing pronunciation stress rules", () => {
+		expect(toBasePhonemeIds("P1 AX1 I EE")).toEqual(["P", "AX", "I", "EE"]);
 	});
 });
 

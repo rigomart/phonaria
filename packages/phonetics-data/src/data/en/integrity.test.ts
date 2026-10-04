@@ -5,6 +5,7 @@ import {
 	EnglishPhonemeAllophones,
 	EnglishPhonemeSpellingPatterns,
 	getLanguagePhonemeInventory,
+	parsePhonemePronunciation,
 } from "../../index";
 import { EnglishCmudictStatsData } from "./cmudict-stats";
 import { EnglishCuratedTop1k } from "./curated-1k";
@@ -39,7 +40,7 @@ describe("dictionary integrity", () => {
 				if (!variant || variant !== variant.trim().split(/\s+/).join(" ")) {
 					errors.push(`${word}: noncanonical pronunciation ${JSON.stringify(variant)}`);
 				}
-				for (const token of variant.split(" ")) {
+				for (const token of parsePhonemePronunciation(variant)) {
 					const match = /^([A-Z]+)([012])?$/.exec(token);
 					const id = match?.[1] ?? "";
 					const stress = match?.[2];

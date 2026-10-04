@@ -13,12 +13,12 @@ export interface CuratedWordData {
 		attribution: string;
 		sources: { wordfreq: string; cmudict: string };
 	};
-	/** Word to CMU ARPABET variants mapping (each word may have multiple pronunciations) */
+	/** Word to Phonaria pronunciation variants mapping (each word may have multiple pronunciations) */
 	words: Record<string, string[]>;
 }
 
 /**
- * Top 1,000 most frequent English words with CMU pronunciations.
+ * Top 1,000 most frequent English words with internal pronunciations derived from CMUDict.
  * Covers ~80% of everyday usage. Bundled inline (~22KB).
  */
 export const EnglishCuratedTop1k: CuratedWordData = curatedTop1kJson;

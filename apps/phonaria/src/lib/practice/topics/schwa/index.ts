@@ -1,4 +1,4 @@
-import { tryExtractBasePhonemeId } from "@phonaria/phonetics-data";
+import { tokenizePronunciation, tryExtractBasePhonemeId } from "@phonaria/phonetics-data";
 import type { TopicDefinition } from "../types";
 
 /**
@@ -9,7 +9,7 @@ export function everyVariantContainsSchwa(variants: readonly string[]): boolean 
 	return (
 		variants.length > 0 &&
 		variants.every((variant) =>
-			variant.split(" ").some((token) => tryExtractBasePhonemeId(token) === "AX"),
+			tokenizePronunciation(variant).some((token) => tryExtractBasePhonemeId(token) === "AX"),
 		)
 	);
 }

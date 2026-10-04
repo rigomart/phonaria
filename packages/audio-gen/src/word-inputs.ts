@@ -1,4 +1,8 @@
-import { cmuVariantToIpa, phonemeVariantToCmuArpa } from "@phonaria/phonetics-data";
+import {
+	phonemeVariantToCmuArpa,
+	phonemeVariantToIpa,
+	tokenizePronunciation,
+} from "@phonaria/phonetics-data";
 import type { TtsInput } from "./providers/types";
 import type { WordWithPhonemic } from "./words";
 
@@ -40,7 +44,7 @@ export function escapeXml(value: string): string {
 
 export function getAzureIpa(word: WordWithPhonemic): string {
 	phonemeVariantToCmuArpa(word.variant); // Reject invalid sounds or stress.
-	const variant = word.variant.trim().split(/\s+/).join(" ");
+	const variant = tokenizePronunciation(word.variant).join(" ");
 	const vowelCount = variant.match(/[012]/g)?.length ?? 0;
 	const syllables = vowelCount === 1 ? [variant] : syllablesByWord[word.word];
 	if (!syllables) throw new Error(`Checked syllable boundaries required for "${word.word}"`);
@@ -55,9 +59,8 @@ export function getAzureIpa(word: WordWithPhonemic): string {
 			const stress =
 				syllables.length === 1 ? "" : stresses[0] === "1" ? "ˈ" : stresses[0] === "2" ? "ˌ" : "";
 			// The shared phoneme chart combines ER0/ER1. Spoken unstressed ER0 is /ɚ/.
-			const ipa = syllable
-				.split(" ")
-				.map((token) => (token === "ER0" ? "ɚ" : cmuVariantToIpa(token)))
+			const ipa = tokenizePronunciation(syllable)
+				.map((token) => (token === "ER0" ? "ɚ" : phonemeVariantToIpa(token)))
 				.join("");
 			return stress + ipa;
 		})

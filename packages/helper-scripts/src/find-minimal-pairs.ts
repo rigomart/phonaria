@@ -13,7 +13,6 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { parseArgs } from "node:util";
 import {
-	cmuVariantToIpa,
 	EnglishPhonemeContrasts,
 	findSubstitution,
 	getIpaForPhonemeId,
@@ -21,6 +20,8 @@ import {
 	isEnglishPhonemeSymbolId,
 	PhonemeIpaMap,
 	type PhonemeSymbolId,
+	parsePhonemePronunciation,
+	phonemeVariantToIpa,
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import { ensureDirectoryForFile } from "./utils/fs";
@@ -192,6 +193,7 @@ function buildHomophoneGroups(words: Record<string, string[]>): HomophoneGroup[]
 	for (const [word, variants] of Object.entries(words)) {
 		rank++;
 		if (!isSuitableWord(word)) continue;
+		for (const variant of variants) parsePhonemePronunciation(variant);
 		const ids = getSinglePronunciation(variants);
 		if (!ids) continue;
 		const key = ids.join(" ");
@@ -208,7 +210,7 @@ function buildHomophoneGroups(words: Record<string, string[]>): HomophoneGroup[]
 				.replace(/[^012 ]/g, "")
 				.replace(/\s+/g, " ")
 				.trim(),
-			ipa: cmuVariantToIpa(variants[0]),
+			ipa: phonemeVariantToIpa(variants[0]),
 			homophones: [],
 		});
 	}

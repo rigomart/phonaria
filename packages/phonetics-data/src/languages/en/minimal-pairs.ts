@@ -4,15 +4,21 @@
  * script, so both apply one definition of "differs by exactly one sound".
  */
 import type { PhonemeSymbolId } from "../../core/ipa-map";
-import { extractBasePhonemeId } from "./cmu-arpa";
+import { extractBasePhonemeId, tokenizePronunciation } from "./cmu-arpa";
 
-/** Phoneme IDs of one CMU variant (e.g. "S I1 T"), stress digits removed. */
+/**
+ * Base IDs from internal notation, ignoring stress validity and language.
+ * Rejects empty input or unknown IDs; use parsePhonemePronunciation when the
+ * full stored-English pronunciation must be valid before comparing sounds.
+ */
 export function toBasePhonemeIds(variant: string): PhonemeSymbolId[] {
-	return variant.split(" ").map(extractBasePhonemeId);
+	const tokens = tokenizePronunciation(variant);
+	if (!tokens.length) throw new Error("A pronunciation cannot be empty");
+	return tokens.map(extractBasePhonemeId);
 }
 
 /**
- * The one pronunciation a word can be taught with, or null when its CMU
+ * The one sound sequence ignoring stress validity, or null when its internal
  * variants disagree beyond stress. A word with competing pronunciations is an
  * ambiguous stimulus: the learner cannot know which sound to listen for.
  */

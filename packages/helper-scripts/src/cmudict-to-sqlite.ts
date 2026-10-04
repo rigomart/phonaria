@@ -8,6 +8,7 @@
  */
 import { Database } from "bun:sqlite";
 import { resolve } from "node:path";
+import { normalizeDictionaryPronunciations } from "./validate-cmudict";
 
 const CMUDICT_PATH = resolve(import.meta.dirname, "../../phonetics-data/data/en/dict/cmudict.json");
 
@@ -25,7 +26,7 @@ interface CmudictJson {
 }
 
 const cmudict: CmudictJson = await Bun.file(CMUDICT_PATH).json();
-const entries = Object.entries(cmudict.data);
+const entries = Object.entries(normalizeDictionaryPronunciations(cmudict.data));
 const selected = maxWords ? entries.slice(0, maxWords) : entries;
 
 const suffix = maxWords ? `-${maxWords}` : "";

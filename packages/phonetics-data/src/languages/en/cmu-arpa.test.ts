@@ -3,6 +3,7 @@ import type { PhonemeSymbolId } from "../../core/ipa-map";
 import { getLanguagePhonemeIds } from "../inventories";
 import {
 	CmuArpaMap,
+	cmuArpaVariantToPhonemeVariant,
 	cmuVariantToIpa,
 	extractBasePhonemeId,
 	getArpabetForEnglishPhonemeId,
@@ -10,8 +11,13 @@ import {
 	getPhonemeIdForCmuArpa,
 	isCmuArpaToken,
 	isEnglishPhonemeSymbolId,
+	isValidEnglishPhonemeToken,
 	isValidPhonemeToken,
+	parseCmuPronunciation,
+	parsePhonemePronunciation,
 	phonemeVariantToCmuArpa,
+	phonemeVariantToIpa,
+	tokenizePronunciation,
 	tryExtractBasePhonemeId,
 } from "./cmu-arpa";
 
@@ -184,4 +190,73 @@ describe("inherited-property validation regressions", () => {
 		"__proto__",
 	])("rejects inherited object property %s as an English sound", (token) =>
 		expect(isEnglishPhonemeSymbolId(token as PhonemeSymbolId)).toBe(false));
+});
+
+describe("pronunciation parsing contracts", () => {
+	it("normalizes all pronunciation whitespace", () => {
+		expect(tokenizePronunciation("  S\tI1\n T\r\n")).toEqual(["S", "I1", "T"]);
+		expect(tokenizePronunciation(" \t\n")).toEqual([]);
+		expect(parseCmuPronunciation("  HH\tAH0\nL OW1 ")).toEqual(["HH", "AH0", "L", "OW1"]);
+		expect(parsePhonemePronunciation("  H\tAX0\nL OU1 ")).toEqual(["H", "AX0", "L", "OU1"]);
+	});
+	it("converts raw CMU to stored IDs while preserving every sound and stress", () => {
+		for (const [token, id] of Object.entries(CmuArpaMap)) {
+			const variant = cmuArpaVariantToPhonemeVariant(token);
+			expect(variant).toBe(id + (token.match(/[012]$/)?.[0] ?? ""));
+			expect(phonemeVariantToCmuArpa(variant)).toBe(token);
+			expect(isValidEnglishPhonemeToken(variant)).toBe(true);
+		}
+		expect(cmuArpaVariantToPhonemeVariant(" HH\tAH0  L OW1 ")).toBe("H AX0 L OU1");
+	});
+	it.each([
+		"",
+		" \t\n",
+		"P UNKNOWN AE1 T",
+		"P AE T",
+		"P1 AE1 T",
+		"AH3",
+		"H AX0 L OU1",
+		"constructor",
+	])("rejects an entire malformed raw CMU pronunciation: %j", (input) => {
+		expect(() => parseCmuPronunciation(input)).toThrow();
+		expect(() => cmuArpaVariantToPhonemeVariant(input)).toThrow();
+	});
+	it.each([
+		"",
+		" \t\n",
+		"P UNKNOWN AE1 T",
+		"P AE T",
+		"P1 AE1 T",
+		"AX1",
+		"AX2",
+		"AH0",
+		"EE1",
+		"I3",
+		"I11",
+		"HH AH0 L OW1",
+		"constructor1",
+	])("rejects an entire malformed stored pronunciation: %j", (input) => {
+		expect(() => parsePhonemePronunciation(input)).toThrow();
+		expect(() => phonemeVariantToIpa(input)).toThrow();
+	});
+	it("validates tokens separately from base-ID recognition", () => {
+		for (const token of ["P1", "AX1", "AH0", "I", "EE1"]) {
+			expect(tryExtractBasePhonemeId(token)).not.toBeNull();
+			expect(isValidEnglishPhonemeToken(token)).toBe(false);
+		}
+		for (const token of [" P", "P ", "constructor", "toString1", "__proto__0"]) {
+			expect(isValidEnglishPhonemeToken(token)).toBe(false);
+		}
+	});
+	it("keeps tolerant IPA conversion explicit and compatible", () => {
+		const input = " P1 UNKNOWN\tAX1 I EE1 ";
+		expect(phonemeVariantToIpa(input, { mode: "tolerant" })).toBe("pəie");
+		expect(cmuVariantToIpa(input)).toBe("pəie");
+		expect(phonemeVariantToIpa("", { mode: "tolerant" })).toBe("");
+		expect(phonemeVariantToIpa(" H\tAX0 L OU1 ")).toBe("həloʊ");
+	});
+	it("does not require a vowel or impose word-level stress counts", () => {
+		expect(parsePhonemePronunciation("S T")).toEqual(["S", "T"]);
+		expect(parsePhonemePronunciation("I0 I1 I1 I2")).toEqual(["I0", "I1", "I1", "I2"]);
+	});
 });
