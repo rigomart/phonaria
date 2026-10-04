@@ -96,11 +96,11 @@ export type PhonemeType = "consonant" | "monophthong" | "diphthong";
 // Helper functions
 
 export function isVowelPhoneme(phonemeId: PhonemeSymbolId): boolean {
-	return phonemeId in VowelIpaMap;
+	return Object.getOwnPropertyDescriptor(VowelIpaMap, phonemeId) !== undefined;
 }
 
 export function isConsonantPhoneme(phonemeId: PhonemeSymbolId): boolean {
-	return phonemeId in ConsonantIpaMap;
+	return Object.getOwnPropertyDescriptor(ConsonantIpaMap, phonemeId) !== undefined;
 }
 
 export function getPhonemeCategory(phonemeId: PhonemeSymbolId): PhonemeCategory {
@@ -112,10 +112,10 @@ export function getPhonemeCategory(phonemeId: PhonemeSymbolId): PhonemeCategory 
  * based on which registry it is found in.
  */
 export function getPhonemeType(phonemeId: PhonemeSymbolId): PhonemeType {
-	if (phonemeId in MonophthongIpaMap) {
+	if (Object.getOwnPropertyDescriptor(MonophthongIpaMap, phonemeId) !== undefined) {
 		return "monophthong";
 	}
-	if (phonemeId in DiphthongIpaMap) {
+	if (Object.getOwnPropertyDescriptor(DiphthongIpaMap, phonemeId) !== undefined) {
 		return "diphthong";
 	}
 	return "consonant";

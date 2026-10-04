@@ -118,10 +118,12 @@ dictionary pronunciation, compare both curated tiers with their source, recomput
 dictionary statistics, and check that teaching examples contain their advertised
 sounds. These are consistency checks, not a substitute for linguistic review.
 
-Seven regression cases currently use Vitest's `it.fails`: six cover inherited
-object properties incorrectly accepted by token validation, and one covers
-whitespace normalization in `toBasePhonemeIds`. They assert the desired behavior
-while acknowledging known bugs deferred from this testing pass. When a fix makes
-one pass, Vitest fails the suite until its `.fails` marker is removed. Keep these
-cases separate from passing behavior tests; do not change their assertions to
-accept the bugs.
+Inherited-property regression tests ensure token validation rejects object
+prototype keys, including when they carry stress suffixes. Related sound guards
+and pronunciation conversions are also covered.
+
+One regression case currently uses Vitest's `it.fails` for whitespace normalization
+in `toBasePhonemeIds`. It asserts the desired behavior while acknowledging a known
+bug deferred from the testing pass. When a fix makes it pass, Vitest fails the
+suite until its `.fails` marker is removed. Keep this case separate from passing
+behavior tests; do not change its assertions to accept the bug.

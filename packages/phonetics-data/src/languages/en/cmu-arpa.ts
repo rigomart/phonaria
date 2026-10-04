@@ -217,7 +217,7 @@ export function getArpabetForEnglishPhonemeId(phonemeId: EnglishPhonemeSymbolId)
 export function isEnglishPhonemeSymbolId(
 	phonemeId: PhonemeSymbolId,
 ): phonemeId is EnglishPhonemeSymbolId {
-	return phonemeId in PhonemeArpabetLabel;
+	return Object.getOwnPropertyDescriptor(PhonemeArpabetLabel, phonemeId) !== undefined;
 }
 
 /**
@@ -226,7 +226,7 @@ export function isEnglishPhonemeSymbolId(
  * @returns True if the token is a valid CMU ARPA token.
  */
 export function isCmuArpaToken(token: string): token is CmuArpaToken {
-	return token in CmuArpaMap;
+	return Object.getOwnPropertyDescriptor(CmuArpaMap, token) !== undefined;
 }
 
 /**
@@ -239,7 +239,7 @@ export function isCmuArpaToken(token: string): token is CmuArpaToken {
  */
 export function tryExtractBasePhonemeId(token: string): PhonemeSymbolId | null {
 	const baseId = token.replace(/[012]$/, "");
-	if (!(baseId in PhonemeIpaMap)) {
+	if (Object.getOwnPropertyDescriptor(PhonemeIpaMap, baseId) === undefined) {
 		return null;
 	}
 	return baseId as PhonemeSymbolId;
