@@ -7,12 +7,13 @@ import type { TranscribedSyllable, TranscribedWord } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
 import { IpaSequence } from "./ipa-sequence";
 
-/** Height of one alternative card: text-base line, py-1, 1px borders. */
-const CARD_HEIGHT_PX = 34;
+/** Height of one alternative: text-base line plus py-1. */
+const CARD_HEIGHT_PX = 32;
 /** How far each card behind the top one peeks out while collapsed. */
 const PEEK_PX = 8;
 const SCALE_STEP = 0.08;
-const FAN_GAP_PX = 6;
+/** Line spacing of the fanned-out alternatives; tighter than their height. */
+const FAN_STEP_PX = 26;
 const COLLAPSED_OPACITY = [1, 0.7, 0.45];
 
 interface VariantStackProps {
@@ -23,8 +24,8 @@ interface VariantStackProps {
 }
 
 /**
- * The active variant in front, the word's other variants piled underneath as
- * cards: the top one blurred and faded, the rest peeking out behind it.
+ * The active variant in front, the word's other variants piled underneath:
+ * the top one blurred and faded, the rest behind it, fainter and blurrier.
  * Hovering, tapping, or focusing the pile fans the cards out; choosing one
  * swaps it with the active variant and animates both into place. Cards are
  * keyed by slot, so focus stays on the slot that was clicked.
@@ -106,16 +107,17 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 									style={cardStyle(slot, expanded)}
 									className={cn(
 										"absolute left-1/2 top-0 origin-top whitespace-nowrap cursor-pointer",
-										"rounded-lg border border-border bg-card px-3 py-1 text-base text-muted-foreground",
-										"transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none",
-										"hover:bg-accent hover:text-foreground",
+										"rounded-lg px-3 py-1 text-base text-muted-foreground hover:text-foreground",
+										"transition-[transform,opacity,color] duration-300 ease-out motion-reduce:transition-none",
+										// Page-coloured while fanned out, so the cards hide the text beneath them.
+										expanded ? "bg-background" : "bg-transparent",
 										"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:text-foreground",
 									)}
 								>
 									<span
 										ref={track(variantIndex)}
 										className="inline-block transition-[opacity,filter] duration-300 motion-reduce:transition-none"
-										style={expanded ? undefined : { opacity: 0.45, filter: "blur(1px)" }}
+										style={expanded ? undefined : { opacity: 0.45, filter: `blur(${1 + slot}px)` }}
 									>
 										<FadedVariant syllables={word.variants[variantIndex] ?? []} />
 									</span>
@@ -132,7 +134,7 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 function cardStyle(slot: number, expanded: boolean): CSSProperties {
 	if (expanded) {
 		return {
-			transform: `translate(-50%, ${slot * (CARD_HEIGHT_PX + FAN_GAP_PX)}px)`,
+			transform: `translate(-50%, ${slot * FAN_STEP_PX}px)`,
 			zIndex: 30 - slot,
 		};
 	}
