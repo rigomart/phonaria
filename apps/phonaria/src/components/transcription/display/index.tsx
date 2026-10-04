@@ -34,7 +34,7 @@ function WordColumn({ targetAccent, word, index }: WordColumnProps) {
 
 	return (
 		<div
-			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
+			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 has-[[data-expanded]]:z-20 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
 			style={{ animationDelay: `${index * 50}ms`, animationDuration: "300ms" }}
 		>
 			<WordDefinitionPopover word={word.word} ipa={ipa} />
@@ -98,7 +98,7 @@ function TranscriptionResults({
 			>
 				<p className="text-xs text-muted-foreground">
 					Click a word for its meaning · click a sound for how to say it
-					{hasVariants ? " · click a faded transcription to use it" : null}
+					{hasVariants ? " · open the stack under a word for other pronunciations" : null}
 				</p>
 			</div>
 		</div>

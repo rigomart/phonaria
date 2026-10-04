@@ -1,11 +1,19 @@
 import type { TargetAccent } from "@phonaria/phonetics-data";
-import { useState } from "react";
+import { type CSSProperties, type FocusEvent, useEffect, useRef, useState } from "react";
 import { useSwapAnimation } from "@/hooks/use-swap-animation";
 import { extractWordIpa } from "@/lib/ipa-copy";
 import { orderVariants } from "@/lib/transcription/variant-order";
 import type { TranscribedSyllable, TranscribedWord } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
 import { IpaSequence } from "./ipa-sequence";
+
+/** Height of one alternative card: text-base line, py-1, 1px borders. */
+const CARD_HEIGHT_PX = 34;
+/** How far each card behind the top one peeks out while collapsed. */
+const PEEK_PX = 8;
+const SCALE_STEP = 0.08;
+const FAN_GAP_PX = 6;
+const COLLAPSED_OPACITY = [1, 0.7, 0.45];
 
 interface VariantStackProps {
 	targetAccent: TargetAccent;
@@ -15,17 +23,30 @@ interface VariantStackProps {
 }
 
 /**
- * The active variant at full size, with the word's other variants stacked
- * underneath, smaller and faded. Choosing a faded variant swaps it with the
- * active one and animates both into place. Faded slots are keyed by position,
- * so focus stays on the slot that was clicked.
+ * The active variant in front, the word's other variants piled underneath as
+ * cards: the top one blurred and faded, the rest peeking out behind it.
+ * Hovering, tapping, or focusing the pile fans the cards out; choosing one
+ * swaps it with the active variant and animates both into place. Cards are
+ * keyed by slot, so focus stays on the slot that was clicked.
  */
 export function VariantStack({ targetAccent, word, selected, onSelect }: VariantStackProps) {
 	const count = word.variants.length;
 	const [previousOrder, setPreviousOrder] = useState<number[]>([]);
+	const [expanded, setExpanded] = useState(false);
+	const pileRef = useRef<HTMLFieldSetElement>(null);
+	const toggleRef = useRef<HTMLButtonElement>(null);
 	const order = orderVariants(previousOrder, selected, count);
-	const [active, ...faded] = order;
+	const [active, ...alternatives] = order;
 	const { track, swap } = useSwapAnimation<number>();
+
+	useEffect(() => {
+		if (!expanded) return;
+		const collapseOnOutsidePress = (event: PointerEvent) => {
+			if (!pileRef.current?.contains(event.target as Node)) setExpanded(false);
+		};
+		document.addEventListener("pointerdown", collapseOnOutsidePress);
+		return () => document.removeEventListener("pointerdown", collapseOnOutsidePress);
+	}, [expanded]);
 
 	function choose(variantIndex: number) {
 		swap(() => {
@@ -34,8 +55,12 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 		});
 	}
 
+	function collapseOnFocusLeave(event: FocusEvent<HTMLFieldSetElement>) {
+		if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setExpanded(false);
+	}
+
 	return (
-		<div className="flex flex-col items-center">
+		<div className="flex flex-col items-center" data-expanded={expanded || undefined}>
 			<div ref={track(active ?? 0)}>
 				<IpaSequence
 					targetAccent={targetAccent}
@@ -44,35 +69,78 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 				/>
 			</div>
 
-			{faded.length > 0 ? (
-				<ul
+			{alternatives.length > 0 ? (
+				<fieldset
+					ref={pileRef}
 					aria-label={`Other pronunciations of ${word.word}`}
-					className="flex flex-col items-center"
+					className="relative w-full min-w-0"
+					style={{ height: CARD_HEIGHT_PX + (alternatives.length - 1) * PEEK_PX }}
+					onPointerEnter={(event) => event.pointerType === "mouse" && setExpanded(true)}
+					onPointerLeave={(event) => event.pointerType === "mouse" && setExpanded(false)}
+					onBlur={collapseOnFocusLeave}
+					onKeyDown={(event) => {
+						if (event.key !== "Escape" || !expanded) return;
+						setExpanded(false);
+						toggleRef.current?.focus();
+					}}
 				>
-					{faded.map((variantIndex, slot) => (
-						<li key={slot}>
-							<button
-								type="button"
-								onClick={() => choose(variantIndex)}
-								aria-label={`Use pronunciation /${extractWordIpa(word, variantIndex)}/`}
-								className={cn(
-									"rounded-md px-2 py-0.5 leading-snug text-muted-foreground cursor-pointer",
-									"transition-colors duration-150 hover:bg-accent hover:text-foreground",
-									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:text-foreground",
-									"pointer-coarse:min-h-11",
-									slot === 0 ? "text-base md:text-xl" : "text-sm md:text-base",
-								)}
-							>
-								<span ref={track(variantIndex)} className="inline-block whitespace-nowrap">
-									<FadedVariant syllables={word.variants[variantIndex] ?? []} />
-								</span>
-							</button>
-						</li>
-					))}
-				</ul>
+					<button
+						ref={toggleRef}
+						type="button"
+						aria-expanded={expanded}
+						aria-label={`${expanded ? "Hide" : "Show"} other pronunciations of ${word.word}`}
+						onClick={() => setExpanded((open) => !open)}
+						className={cn(
+							"absolute inset-0 z-40 rounded-lg cursor-pointer",
+							"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+							expanded && "pointer-events-none",
+						)}
+					/>
+					<ul inert={!expanded}>
+						{alternatives.map((variantIndex, slot) => (
+							<li key={slot}>
+								<button
+									type="button"
+									onClick={() => choose(variantIndex)}
+									aria-label={`Use pronunciation /${extractWordIpa(word, variantIndex)}/`}
+									style={cardStyle(slot, expanded)}
+									className={cn(
+										"absolute left-1/2 top-0 origin-top whitespace-nowrap cursor-pointer",
+										"rounded-lg border border-border bg-card px-3 py-1 text-base text-muted-foreground",
+										"transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none",
+										"hover:bg-accent hover:text-foreground",
+										"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:text-foreground",
+									)}
+								>
+									<span
+										ref={track(variantIndex)}
+										className="inline-block transition-[opacity,filter] duration-300 motion-reduce:transition-none"
+										style={expanded ? undefined : { opacity: 0.45, filter: "blur(1px)" }}
+									>
+										<FadedVariant syllables={word.variants[variantIndex] ?? []} />
+									</span>
+								</button>
+							</li>
+						))}
+					</ul>
+				</fieldset>
 			) : null}
 		</div>
 	);
+}
+
+function cardStyle(slot: number, expanded: boolean): CSSProperties {
+	if (expanded) {
+		return {
+			transform: `translate(-50%, ${slot * (CARD_HEIGHT_PX + FAN_GAP_PX)}px)`,
+			zIndex: 30 - slot,
+		};
+	}
+	return {
+		transform: `translate(-50%, ${slot * PEEK_PX}px) scale(${1 - slot * SCALE_STEP})`,
+		opacity: COLLAPSED_OPACITY[slot] ?? COLLAPSED_OPACITY.at(-1),
+		zIndex: 30 - slot,
+	};
 }
 
 function FadedVariant({ syllables }: { syllables: TranscribedSyllable[] }) {
