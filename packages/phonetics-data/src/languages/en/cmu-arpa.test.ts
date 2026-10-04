@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { PhonemeSymbolId } from "../../core/ipa-map";
 import { getLanguagePhonemeIds } from "../inventories";
 import {
 	CmuArpaMap,
@@ -156,19 +157,31 @@ describe("internal pronunciation to IPA", () => {
 	});
 });
 
-// These desired assertions currently fail because `in` accepts inherited keys.
-// When validation is fixed, remove `.fails`; an unexpected pass fails the suite.
-describe("known validation regressions", () => {
-	it.fails.each([
+describe("inherited-property validation regressions", () => {
+	it.each([
 		"constructor",
 		"toString",
 		"__proto__",
 	])("rejects inherited object property %s as a raw CMU token", (token) =>
 		expect(isCmuArpaToken(token)).toBe(false));
-	it.fails.each([
+	it.each([
 		"constructor",
 		"toString",
 		"__proto__",
-	])("rejects inherited object property %s as an internal sound", (token) =>
-		expect(tryExtractBasePhonemeId(token)).toBeNull());
+	])("rejects inherited object property %s as an internal sound", (token) => {
+		for (const suffix of ["", "0", "1", "2"]) {
+			const stressedToken = token + suffix;
+			expect(tryExtractBasePhonemeId(stressedToken)).toBeNull();
+			expect(isValidPhonemeToken(stressedToken)).toBe(false);
+			expect(() => extractBasePhonemeId(stressedToken)).toThrow();
+			expect(() => phonemeVariantToCmuArpa(`P ${stressedToken} AE1 T`)).toThrow();
+			expect(cmuVariantToIpa(`P ${stressedToken} AE1 T`)).toBe("pæt");
+		}
+	});
+	it.each([
+		"constructor",
+		"toString",
+		"__proto__",
+	])("rejects inherited object property %s as an English sound", (token) =>
+		expect(isEnglishPhonemeSymbolId(token as PhonemeSymbolId)).toBe(false));
 });

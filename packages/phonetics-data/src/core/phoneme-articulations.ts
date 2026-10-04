@@ -49,7 +49,9 @@ export type FeatureValueLookup<TPhonemeId extends PhonemeSymbolId> = {
 function hasCompleteFeatureLookup<TPhonemeId extends PhonemeSymbolId>(
 	lookup: Partial<FeatureValueLookup<TPhonemeId>>,
 ): lookup is FeatureValueLookup<TPhonemeId> {
-	return PHONEME_ARTICULATORY_FEATURE_KEYS.every((featureKey) => featureKey in lookup);
+	return PHONEME_ARTICULATORY_FEATURE_KEYS.every(
+		(featureKey) => Object.getOwnPropertyDescriptor(lookup, featureKey) !== undefined,
+	);
 }
 
 function assignFeatureValueByKey<
