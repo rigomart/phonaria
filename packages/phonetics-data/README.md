@@ -104,3 +104,24 @@ Run before merging package changes:
 - Spanish currently ships core inventory + articulatory data.
 - English currently provides CMU/ARPABET mappings, spelling patterns, allophones, contrasts, and curated dictionary datasets.
 - Selectors return `null` for not-yet-implemented language features instead of widening types with placeholder data.
+
+## Testing
+
+Run `bun run --cwd packages/phonetics-data test` for the runtime suite and
+`bun run --cwd packages/phonetics-data check-types` for public API type contracts
+in `src/public-api.test-d.ts`. Both commands run in the existing workspace CI.
+
+The tests cover inventory membership and classification, accent-specific
+articulations and feature indexes, feature availability, CMU conversion and
+minimal-pair helpers, and the real generated datasets. Dataset checks scan every
+dictionary pronunciation, compare both curated tiers with their source, recompute
+dictionary statistics, and check that teaching examples contain their advertised
+sounds. These are consistency checks, not a substitute for linguistic review.
+
+Seven regression cases currently use Vitest's `it.fails`: six cover inherited
+object properties incorrectly accepted by token validation, and one covers
+whitespace normalization in `toBasePhonemeIds`. They assert the desired behavior
+while acknowledging known bugs deferred from this testing pass. When a fix makes
+one pass, Vitest fails the suite until its `.fails` marker is removed. Keep these
+cases separate from passing behavior tests; do not change their assertions to
+accept the bugs.
