@@ -2,9 +2,10 @@ import * as path from "node:path";
 import cmudictJson from "../../phonetics-data/data/en/dict/cmudict.json";
 import type { CmudictPayload } from "../../phonetics-data/src/dict/types";
 import {
+	extractBasePhonemeId,
 	getArpabetForEnglishPhonemeId,
 	isEnglishPhonemeSymbolId,
-	tryExtractBasePhonemeId,
+	parsePhonemePronunciation,
 } from "../../phonetics-data/src/languages/en/cmu-arpa";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
@@ -59,53 +60,39 @@ function normalizeCmuWord(input: string): string {
 	return base.toUpperCase();
 }
 
-function buildTrieFromCmudict(cmudict: CmudictPayload): {
+export function buildTrieFromCmudict(cmudict: CmudictPayload): {
 	trie: PhonemeTrieNode;
 	phonemePathCount: number;
 	totalEntries: number;
-	skippedWords: number;
 } {
 	const trie = createTrieNode();
 	let phonemePathCount = 0;
 	let totalEntries = 0;
-	let skippedWords = 0;
 
 	for (const [word, variants] of Object.entries(cmudict.data)) {
-		for (const variant of variants as string[]) {
-			const tokens = variant.trim().split(/\s+/);
-			const standardArpabetPhonemes: string[] = [];
-
-			let allMapped = true;
-
-			for (const token of tokens) {
-				const phonemeId = tryExtractBasePhonemeId(token);
-				if (!phonemeId || !isEnglishPhonemeSymbolId(phonemeId)) {
-					console.warn(`Warning: Could not map token '${token}' for word '${word}'`);
-					allMapped = false;
-					break;
-				}
-
-				// Get standard ARPABET label for trie key
-				const standardArpabet = getArpabetForEnglishPhonemeId(phonemeId);
-				standardArpabetPhonemes.push(standardArpabet);
+		if (!variants.length) throw new Error(`No pronunciations for '${word}'`);
+		for (const variant of variants) {
+			let tokens: string[];
+			try {
+				tokens = parsePhonemePronunciation(variant);
+			} catch (cause) {
+				throw new Error(`Invalid pronunciation for '${word}': ${variant}`, { cause });
 			}
-
-			if (allMapped && standardArpabetPhonemes.length > 0) {
-				const normalizedWord = normalizeCmuWord(word);
-				insertIntoTrie(trie, standardArpabetPhonemes, normalizedWord);
-				phonemePathCount++;
-				totalEntries++;
-			} else {
-				skippedWords++;
-			}
+			const phonemes = tokens.map((token) => {
+				const id = extractBasePhonemeId(token);
+				if (!isEnglishPhonemeSymbolId(id)) throw new Error(`Not an English phoneme: ${token}`);
+				return getArpabetForEnglishPhonemeId(id);
+			});
+			insertIntoTrie(trie, phonemes, normalizeCmuWord(word));
+			phonemePathCount++;
+			totalEntries++;
 		}
 	}
 
 	console.log(`Built trie with ${Object.keys(trie.next).length} root phonemes`);
 	console.log(`Processed ${totalEntries} entries`);
-	console.log(`Skipped ${skippedWords} entries due to unmapped phonemes`);
 
-	return { trie, phonemePathCount, totalEntries, skippedWords };
+	return { trie, phonemePathCount, totalEntries };
 }
 
 function saveToJson(payload: PhonemeTriePayload): void {

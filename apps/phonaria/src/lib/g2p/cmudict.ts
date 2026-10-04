@@ -1,3 +1,4 @@
+import { tokenizePronunciation } from "@phonaria/phonetics-data";
 import { inArray } from "drizzle-orm";
 import { type AppDatabase, getDb } from "@/db/drizzle";
 import { words } from "@/db/schema";
@@ -35,10 +36,7 @@ function mapVariants(pronunciationsJson: string): CmudictVariant[] {
 	for (const variant of parsed) {
 		if (typeof variant !== "string") continue;
 
-		const tokens = variant
-			.split(" ")
-			.map((t) => t.trim())
-			.filter((t) => t.length > 0);
+		const tokens = tokenizePronunciation(variant);
 
 		if (tokens.length === 0) continue;
 		mapped.push(syllabify(tokens));

@@ -6,6 +6,7 @@
 import {
 	getPhonemeCategory,
 	type PhonemeSymbolId,
+	tokenizePronunciation,
 	tryExtractBasePhonemeId,
 } from "@phonaria/phonetics-data";
 import type { CuratedWordData } from "@phonaria/phonetics-data/data/en/curated-1k";
@@ -80,7 +81,7 @@ export function deriveWordPool(data: CuratedWordData, topic: TopicDefinition): P
 
 		// Vowel nuclei of the first variant: one per syllable, in order.
 		const nuclei: PhonemeSymbolId[] = [];
-		for (const token of variants[0].split(" ")) {
+		for (const token of tokenizePronunciation(variants[0])) {
 			const baseId = tryExtractBasePhonemeId(token);
 			if (baseId && getPhonemeCategory(baseId) === "vowel") nuclei.push(baseId);
 		}

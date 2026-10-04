@@ -1,7 +1,7 @@
 import {
-	cmuVariantToIpa,
 	EnglishPhonemeContrasts,
 	phonemeVariantToCmuArpa,
+	phonemeVariantToIpa,
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 
@@ -24,7 +24,7 @@ export function getWordPronunciation(
 	return {
 		word,
 		variant: variants[0],
-		phonemic: cmuVariantToIpa(variants[0]),
+		phonemic: phonemeVariantToIpa(variants[0]),
 		cmuArpa: [...pronunciations][0],
 	};
 }

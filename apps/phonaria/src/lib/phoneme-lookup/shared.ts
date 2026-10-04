@@ -1,3 +1,4 @@
+import { tokenizePronunciation } from "@phonaria/phonetics-data";
 import {
 	type CuratedWordData,
 	EnglishCuratedTop1k,
@@ -16,7 +17,7 @@ export const loadTier2: () => Promise<CuratedWordData> = createRetryableLoader((
 );
 
 export function cmuToSyllables(cmuVariant: string): G2PSyllable[] {
-	const tokens = cmuVariant.split(" ").filter((t) => t.length > 0);
+	const tokens = tokenizePronunciation(cmuVariant);
 	return syllabify(tokens);
 }
 

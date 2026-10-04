@@ -11,7 +11,7 @@ describe("normalizeVariant", () => {
 	});
 
 	it("ignores extra whitespace", () => {
-		expect(normalizeVariant(" DH  AX0 ")).toEqual(["DH", "AX"]);
+		expect(normalizeVariant(" DH\t AX0\n ")).toEqual(["DH", "AX"]);
 	});
 
 	it("throws on tokens that are not known phoneme IDs", () => {

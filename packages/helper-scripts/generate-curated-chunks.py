@@ -2,7 +2,7 @@
 """
 Generate curated word chunks for client-side tiered lookup.
 
-This script generates top-1k and top-10k word lists with CMU ARPABET pronunciations
+This script generates top-1k and top-10k word lists with Phonaria phoneme IDs with vowel stress
 from wordfreq frequency data and CMUDict.
 
 The client-side code handles IPA conversion, syllabification, and phoneme key
@@ -25,6 +25,7 @@ License:
 """
 
 import json
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -36,10 +37,17 @@ except ImportError:
 
 
 def load_cmudict(cmudict_path: Path) -> dict:
-    """Load CMUDict JSON file."""
-    with open(cmudict_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return data["data"]
+    """Load and validate stored Phonaria IDs using the shared TypeScript grammar."""
+    validator = Path(__file__).parent / "src/validate-cmudict.ts"
+    result = subprocess.run(
+        ["bun", str(validator), str(cmudict_path)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode:
+        raise ValueError(f"Invalid CMUDict pronunciations: {result.stderr}")
+    return json.loads(result.stdout)
 
 
 def generate_curated_chunk(
@@ -48,9 +56,9 @@ def generate_curated_chunk(
     tier: str,
     version: str,
 ) -> dict:
-    """Generate a curated word chunk with CMU ARPABET pronunciations.
+    """Generate a curated word chunk with Phonaria phoneme IDs with vowel stress.
 
-    The output maps each word to an array of CMU ARPABET variants.
+    The output maps each word to an array of Phonaria pronunciation variants.
     IPA conversion, syllabification, and phoneme key generation are
     handled at runtime by the client using existing TypeScript utilities.
     """
@@ -67,7 +75,7 @@ def generate_curated_chunk(
         if not variants:
             continue
 
-        # Store all CMU ARPABET variants
+        # Store all Phonaria pronunciation variants
         entries[word] = variants
 
     return {

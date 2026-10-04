@@ -8,7 +8,7 @@
  * (e.g. what schwa is); topics filter the per-sound tallies downstream.
  */
 
-import { extractBasePhonemeId } from "@phonaria/phonetics-data";
+import { extractBasePhonemeId, tokenizePronunciation } from "@phonaria/phonetics-data";
 
 /** One step in the alignment between a learner sequence and a reference. */
 export type AlignmentOp =
@@ -46,10 +46,7 @@ export interface WordScore {
  * Throws on tokens that aren't known phoneme IDs.
  */
 export function normalizeVariant(cmuVariant: string): string[] {
-	return cmuVariant
-		.split(" ")
-		.filter((token) => token.length > 0)
-		.map((token) => extractBasePhonemeId(token));
+	return tokenizePronunciation(cmuVariant).map(extractBasePhonemeId);
 }
 
 /**

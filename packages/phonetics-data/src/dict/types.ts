@@ -17,6 +17,7 @@ export type CmudictPayload = {
 		skippedLineCount: number;
 		deduplicatedVariantCount: number;
 	};
+	/** Internal English IDs with vowel stress (e.g. H AX0 L OU1), not raw CMU. */
 	data: Record<string, string[]>;
 };
 

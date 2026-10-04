@@ -5,7 +5,7 @@ import type {
 	CmudictStatsPayload,
 	PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
-import { PhonemeIpaMap } from "@phonaria/phonetics-data";
+import { extractBasePhonemeId, parsePhonemePronunciation } from "@phonaria/phonetics-data";
 import { ensureDirectoryForFile, writeJsonFile } from "./utils/fs";
 
 const cmudictPath =
@@ -14,26 +14,6 @@ const cmudictPath =
 const statsOutputPath =
 	process.env.CMUDICT_STATS_JSON_PATH ||
 	path.resolve(__dirname, "../../phonetics-data/data/en/dict/cmudict-stats.json");
-
-/**
- * Extracts the base phoneme ID from a stressed phoneme token.
- * Our cmudict.json format uses phoneme IDs with optional stress suffix (0, 1, 2).
- * @example
- * extractBasePhonemeId("AU1") // "AU"
- * extractBasePhonemeId("P") // "P"
- * extractBasePhonemeId("AX") // "AX"
- */
-function extractBasePhonemeId(token: string): PhonemeSymbolId {
-	return token.replace(/[012]$/, "") as PhonemeSymbolId;
-}
-
-/**
- * Checks if a token (with stress removed) is a valid phoneme ID.
- */
-function isValidPhonemeToken(token: string): boolean {
-	const baseId = extractBasePhonemeId(token);
-	return baseId in PhonemeIpaMap;
-}
 
 /** Vowels with stress markers count as syllables. */
 function countSyllables(tokens: string[]): number {
@@ -45,7 +25,14 @@ function countSyllablesForWord(
 	variants: string[],
 	zeroSyllableWords: Set<string>,
 ): { syllableCount: number; tokensPerVariant: string[][] } {
-	const tokensPerVariant = variants.map((variant) => variant.split(/\s+/).filter(Boolean));
+	if (!variants.length) throw new Error(`No pronunciations for '${word}'`);
+	const tokensPerVariant = variants.map((variant) => {
+		try {
+			return parsePhonemePronunciation(variant);
+		} catch (cause) {
+			throw new Error(`Invalid pronunciation for '${word}': ${variant}`, { cause });
+		}
+	});
 	const syllableCounts = tokensPerVariant.map((tokens) => countSyllables(tokens));
 
 	const representativeSyllableCount =
@@ -99,7 +86,6 @@ function aggregateCounts(data: CmudictPayload["data"]): AggregatedCounts {
 
 		for (const tokens of tokensPerVariant) {
 			for (const token of tokens) {
-				if (!isValidPhonemeToken(token)) continue;
 				const phonemeId = extractBasePhonemeId(token);
 				increment(phonemeTokenCounts, phonemeId);
 				getOrCreateWordSet(phonemeId).add(word);
@@ -161,7 +147,7 @@ function buildSyllableStats(
 		.sort((a, b) => a.count - b.count);
 }
 
-function generateStats(payload: CmudictPayload): {
+export function generateStats(payload: CmudictPayload): {
 	stats: CmudictStatsPayload;
 	zeroSyllableWords: Set<string>;
 } {

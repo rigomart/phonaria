@@ -52,6 +52,7 @@ export {
 	CmuArpaMap,
 	type CmuArpaToken,
 	type CmuStressLevel,
+	cmuArpaVariantToPhonemeVariant,
 	cmuVariantToIpa,
 	extractBasePhonemeId,
 	getArpabetForEnglishPhonemeId,
@@ -59,9 +60,15 @@ export {
 	getPhonemeIdForCmuArpa,
 	isCmuArpaToken,
 	isEnglishPhonemeSymbolId,
+	isValidEnglishPhonemeToken,
 	isValidPhonemeToken,
 	PhonemeArpabetLabel,
+	type PhonemeIpaConversionOptions,
+	parseCmuPronunciation,
+	parsePhonemePronunciation,
 	phonemeVariantToCmuArpa,
+	phonemeVariantToIpa,
+	tokenizePronunciation,
 	tryExtractBasePhonemeId,
 } from "./languages/en/cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./languages/en/contrasts";

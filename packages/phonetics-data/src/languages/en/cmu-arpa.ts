@@ -124,25 +124,67 @@ export function getCmuArpaForEnglishPhonemeId(phonemeId: EnglishPhonemeSymbolId)
 		.filter(isCmuArpaToken);
 }
 
-/** Convert dictionary phoneme IDs to actual CMU ARPAbet, preserving vowel stress. */
+/** Split either notation on whitespace; this does not validate sounds or stress. */
+export function tokenizePronunciation(variant: string): string[] {
+	return variant.trim() ? variant.trim().split(/\s+/) : [];
+}
+
+function pronunciationTokens(variant: string): string[] {
+	const tokens = tokenizePronunciation(variant);
+	if (!tokens.length) throw new Error("A pronunciation cannot be empty");
+	return tokens;
+}
+
+/** Parse raw CMU notation, requiring exactly one 0/1/2 suffix on vowels, none on consonants. */
+export function parseCmuPronunciation(variant: string): CmuArpaToken[] {
+	return pronunciationTokens(variant).map((token) => {
+		if (!isCmuArpaToken(token)) throw new Error(`Invalid CMU ARPA token: ${token}`);
+		return token;
+	});
+}
+
+function cmuTokenToPhonemeToken(token: CmuArpaToken): string {
+	return CmuArpaMap[token] + (token.match(/[012]$/)?.[0] ?? "");
+}
+
+// Derive the stored-token grammar from the raw CMU mapping so both directions
+// agree, including AH0 -> AX0 and AH1/AH2 -> AH1/AH2.
+const cmuTokenByPhonemeToken = new Map<string, CmuArpaToken>(
+	(Object.keys(CmuArpaMap) as CmuArpaToken[]).map((token) => [
+		cmuTokenToPhonemeToken(token),
+		token,
+	]),
+);
+
+/** Validate a stored English token, including its vowel/consonant stress rules. */
+export function isValidEnglishPhonemeToken(token: string): boolean {
+	return cmuTokenByPhonemeToken.has(token);
+}
+
+/**
+ * Parse stored English IDs, not raw CMU. Vowels require one 0/1/2 suffix,
+ * consonants forbid stress; schwa is AX0 and strut is AH1 or AH2.
+ * Rejects empty input and any invalid token without dropping sounds.
+ * Does not enforce vowel presence or word-level stress counts.
+ */
+export function parsePhonemePronunciation(variant: string): string[] {
+	return pronunciationTokens(variant).map((token) => {
+		if (!isValidEnglishPhonemeToken(token)) {
+			throw new Error(`Invalid English pronunciation token: ${token}`);
+		}
+		return token;
+	});
+}
+
+/** Convert raw CMU to stored English IDs, preserving every sound and stress. */
+export function cmuArpaVariantToPhonemeVariant(variant: string): string {
+	return parseCmuPronunciation(variant).map(cmuTokenToPhonemeToken).join(" ");
+}
+
+/** Convert validated stored English IDs to raw CMU, preserving every sound and stress. */
 export function phonemeVariantToCmuArpa(variant: string): string {
-	if (!variant.trim()) throw new Error("A pronunciation cannot be empty");
-	return variant
-		.trim()
-		.split(/\s+/)
-		.map((token) => {
-			const id = extractBasePhonemeId(token);
-			if (!isEnglishPhonemeSymbolId(id)) {
-				throw new Error(`Not an English phoneme: ${token}`);
-			}
-			const stress = token.match(/[012]$/)?.[0];
-			const candidates = getCmuArpaForEnglishPhonemeId(id);
-			const arpa = candidates.find((candidate) =>
-				stress ? candidate.endsWith(stress) : !/[012]$/.test(candidate),
-			);
-			if (!arpa) throw new Error(`Cannot represent phoneme and stress in CMU ARPAbet: ${token}`);
-			return arpa;
-		})
+	return parsePhonemePronunciation(variant)
+		.map((token) => cmuTokenByPhonemeToken.get(token))
 		.join(" ");
 }
 
@@ -230,7 +272,9 @@ export function isCmuArpaToken(token: string): token is CmuArpaToken {
 }
 
 /**
- * Extracts the base phoneme ID from a token with optional stress suffix.
+ * Recognizes a core ID after removing at most one optional 0/1/2 suffix.
+ * This is not pronunciation validation: P1, AX1, bare vowels, and Spanish IDs
+ * can all yield a base ID. Use parsePhonemePronunciation for stored English.
  * cmudict.json stores phoneme IDs with stress (e.g., "AX0", "OU1").
  * @example
  * extractBasePhonemeId("AU1") // "AU"
@@ -254,38 +298,46 @@ export function extractBasePhonemeId(token: string): PhonemeSymbolId {
 }
 
 /**
- * Checks if a token (with stress removed) is a valid phoneme ID.
+ * Legacy base-ID recognition predicate; does not validate pronunciation stress.
+ * @deprecated Use tryExtractBasePhonemeId for recognition or
+ * isValidEnglishPhonemeToken for stored English pronunciation validation.
  */
 export function isValidPhonemeToken(token: string): boolean {
 	return tryExtractBasePhonemeId(token) !== null;
 }
 
+export type PhonemeIpaConversionOptions = {
+	mode?: "strict" | "tolerant";
+};
+
 /**
- * Converts a pronunciation variant string to an IPA string.
- * Accepts phoneme IDs with stress suffixes (e.g., "P AE1 T" or "AX0 B AU1 T").
- * Tokens that don't map to known phonemes are skipped.
- * @param variant - A space-separated pronunciation string.
- * @returns The IPA representation (e.g., "pæt").
- * @example
- * cmuVariantToIpa("P AE1 T") // "pæt"
- * cmuVariantToIpa("K AE1 T S") // "kæts"
- * cmuVariantToIpa("H AX0 L OU1") // "həloʊ"
+ * Convert stored English pronunciation IDs to IPA. Strict by default.
+ * Explicit tolerant mode recognizes all core IDs with optional stress, skips
+ * unknown tokens, ignores stress validity, and renders empty input as "".
+ * Neither mode interprets raw CMU notation; stress marks are omitted in IPA.
+ */
+export function phonemeVariantToIpa(
+	variant: string,
+	{ mode = "strict" }: PhonemeIpaConversionOptions = {},
+): string {
+	if (mode === "strict") {
+		return parsePhonemePronunciation(variant)
+			.map((token) => PhonemeIpaMap[extractBasePhonemeId(token)])
+			.join("");
+	}
+	return tokenizePronunciation(variant)
+		.map((token) => {
+			const id = tryExtractBasePhonemeId(token);
+			return id ? PhonemeIpaMap[id] : "";
+		})
+		.join("");
+}
+
+/**
+ * Legacy tolerant conversion of internal IDs (despite the CMU name).
+ * @deprecated Use phonemeVariantToIpa(variant, { mode: "tolerant" }) to opt in
+ * explicitly, or omit the option for strict stored-English validation.
  */
 export function cmuVariantToIpa(variant: string): string {
-	const tokens = variant.split(/\s+/).filter((t) => t.length > 0);
-	const ipaSymbols: string[] = [];
-
-	for (const token of tokens) {
-		const phonemeId = tryExtractBasePhonemeId(token);
-		if (!phonemeId) {
-			continue;
-		}
-
-		const ipa = PhonemeIpaMap[phonemeId];
-		if (ipa) {
-			ipaSymbols.push(ipa);
-		}
-	}
-
-	return ipaSymbols.join("");
+	return phonemeVariantToIpa(variant, { mode: "tolerant" });
 }

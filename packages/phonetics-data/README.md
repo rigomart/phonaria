@@ -122,8 +122,40 @@ Inherited-property regression tests ensure token validation rejects object
 prototype keys, including when they carry stress suffixes. Related sound guards
 and pronunciation conversions are also covered.
 
-One regression case currently uses Vitest's `it.fails` for whitespace normalization
-in `toBasePhonemeIds`. It asserts the desired behavior while acknowledging a known
-bug deferred from the testing pass. When a fix makes it pass, Vitest fails the
-suite until its `.fails` marker is removed. Keep this case separate from passing
-behavior tests; do not change its assertions to accept the bug.
+The whitespace regression in `toBasePhonemeIds` is a passing test. All
+pronunciation string consumers split on whitespace consistently, including tabs,
+newlines, repeated spaces, and surrounding whitespace.
+
+## Pronunciation parsing contracts
+
+Raw CMU notation and stored Phonaria IDs are different formats. Raw
+`HH AH0 L OW1` becomes stored `H AX0 L OU1`. Both use uppercase tokens;
+consonants have no stress suffix and vowels require exactly one `0`, `1`, or `2`.
+In the stored English format, schwa is only `AX0` and strut is `AH1` or `AH2`.
+The parsers validate tokens, not linguistic word structure: consonant-only
+sequences and multiple primary stresses are allowed.
+
+| API | Contract |
+| --- | --- |
+| `tokenizePronunciation` | Split either notation on whitespace; empty input yields `[]`. No validation. |
+| `parseCmuPronunciation` | Validate raw CMU tokens; return tokens or throw for empty input or any invalid token. |
+| `cmuArpaVariantToPhonemeVariant` | Convert validated raw CMU to stored IDs, preserving sounds and stress. |
+| `parsePhonemePronunciation` | Validate stored English tokens and stress; return tokens or throw. |
+| `isValidEnglishPhonemeToken` | Check one stored English token, including stress rules. |
+| `phonemeVariantToCmuArpa` | Convert validated stored English IDs to raw CMU, preserving sounds and stress. |
+| `phonemeVariantToIpa` | Render validated stored English IDs; strict by default, without IPA stress marks. |
+| `tryExtractBasePhonemeId` / `extractBasePhonemeId` | Recognize any core ID after removing at most one optional `0/1/2` suffix. Do not validate pronunciation stress or English membership. |
+| `toBasePhonemeIds` / `getSinglePronunciation` | Compare internal sound sequences independently of stress validity. Empty pronunciations and unknown IDs throw; an empty variant list returns `null`. |
+
+Base-ID extraction can recognize `P1`, `AX1`, bare `I`, or Spanish `EE1` even
+though each is invalid in a stored English pronunciation. The legacy
+`isValidPhonemeToken` predicate also only recognizes base IDs; use the explicit
+English validator for full token validation.
+
+For intentional tolerant display conversion, call
+`phonemeVariantToIpa(variant, { mode: "tolerant" })`. This recognizes all core
+IDs with optional stress, ignores stress validity, skips unknown tokens, and
+returns `""` for empty input. The deprecated `cmuVariantToIpa` wrapper preserves
+that behavior for existing callers; despite its name, it consumes internal IDs,
+not raw CMU. Generators use strict conversion so invalid input cannot silently
+shorten a pronunciation.

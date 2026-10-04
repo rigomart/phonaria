@@ -1,9 +1,9 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import {
-	cmuVariantToIpa,
 	EnglishPhonemeContrasts,
 	phonemeVariantToCmuArpa,
+	phonemeVariantToIpa,
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 
@@ -30,7 +30,7 @@ export function buildWordMappings(dictionary: Record<string, readonly string[]>)
 		}
 		return {
 			word,
-			phonemic: cmuVariantToIpa(variants[0]),
+			phonemic: phonemeVariantToIpa(variants[0]),
 			cmuArpa: arpaVariants[0],
 			status: "found",
 		};

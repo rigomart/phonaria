@@ -21,6 +21,9 @@ describe("lookupTier1", () => {
 });
 
 describe("cmuToSyllables", () => {
+	it("normalizes pronunciation whitespace without removing sounds", () => {
+		expect(cmuToSyllables("  H\tAX0\nL  OU1 ")).toEqual(cmuToSyllables("H AX0 L OU1"));
+	});
 	it("produces syllabified structure from CMU string", () => {
 		const result = cmuToSyllables("DH AX0");
 		expect(result).toHaveLength(1);
