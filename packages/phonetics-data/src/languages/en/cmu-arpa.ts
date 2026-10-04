@@ -1,4 +1,5 @@
 import { PhonemeIpaMap, type PhonemeSymbolId } from "../../core/ipa-map";
+import { deepFreeze } from "../../shared/readonly";
 import type { EnglishPhonemeSymbolId } from "../inventories";
 
 /**
@@ -14,7 +15,7 @@ export type CmuStressLevel = "none" | "primary" | "secondary";
  * Each stress variant (0, 1, 2) for vowels maps to the same base phoneme ID.
  * Note: AH0 maps to schwa (AX), while AH1/AH2 map to strut (AH).
  */
-export const CmuArpaMap = {
+export const CmuArpaMap = deepFreeze({
 	// Consonants
 	P: "P",
 	B: "B",
@@ -91,7 +92,7 @@ export const CmuArpaMap = {
 	ER0: "ER",
 	ER1: "ER",
 	ER2: "ER",
-} as const satisfies Record<string, EnglishPhonemeSymbolId>;
+} as const satisfies Record<string, EnglishPhonemeSymbolId>);
 
 export type CmuArpaToken = keyof typeof CmuArpaMap;
 

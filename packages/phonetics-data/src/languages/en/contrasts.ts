@@ -1,3 +1,4 @@
+import { deepFreeze } from "../../shared/readonly";
 import type { EnglishPhonemeSymbolId } from "../inventories";
 import type { PhonemeContrast, PhonemeContrastMatch } from "../types";
 
@@ -9,7 +10,7 @@ import type { PhonemeContrast, PhonemeContrastMatch } from "../types";
  * Contrasts carry no authored explanations: Phonaria is a toolbox, so how two
  * sounds differ is shown through the existing articulation data instead.
  */
-export const EnglishPhonemeContrasts: PhonemeContrast<"en-us">[] = [
+export const EnglishPhonemeContrasts: readonly PhonemeContrast<"en-us">[] = deepFreeze([
 	// Consonants: voice
 	{
 		id: "p-b",
@@ -421,42 +422,42 @@ export const EnglishPhonemeContrasts: PhonemeContrast<"en-us">[] = [
 			{ words: ["boat", "bout"] },
 		],
 	},
-];
+]);
 
 /**
  * Contrasts indexed under each of their two phonemes. Pairs are flipped for
  * the second phoneme so words[0] always contains the phoneme looked up.
  */
-export const EnglishContrastsByPhonemeId: Partial<
-	Record<EnglishPhonemeSymbolId, PhonemeContrastMatch<"en-us">[]>
-> = (() => {
-	const record: Partial<Record<EnglishPhonemeSymbolId, PhonemeContrastMatch<"en-us">[]>> = {};
+export const EnglishContrastsByPhonemeId = deepFreeze(
+	(() => {
+		const record: Partial<Record<EnglishPhonemeSymbolId, PhonemeContrastMatch<"en-us">[]>> = {};
 
-	const addEntry = (phonemeId: EnglishPhonemeSymbolId, entry: PhonemeContrastMatch<"en-us">) => {
-		const existing = record[phonemeId];
-		if (existing) {
-			existing.push(entry);
-		} else {
-			record[phonemeId] = [entry];
+		const addEntry = (phonemeId: EnglishPhonemeSymbolId, entry: PhonemeContrastMatch<"en-us">) => {
+			const existing = record[phonemeId];
+			if (existing) {
+				existing.push(entry);
+			} else {
+				record[phonemeId] = [entry];
+			}
+		};
+
+		for (const contrast of EnglishPhonemeContrasts) {
+			const [leftId, rightId] = contrast.phonemeIds;
+
+			addEntry(leftId, {
+				contrastId: contrast.id,
+				partnerId: rightId,
+				minimalPairs: contrast.minimalPairs,
+			});
+			addEntry(rightId, {
+				contrastId: contrast.id,
+				partnerId: leftId,
+				minimalPairs: contrast.minimalPairs.map(({ words: [left, right] }) => ({
+					words: [right, left],
+				})),
+			});
 		}
-	};
 
-	for (const contrast of EnglishPhonemeContrasts) {
-		const [leftId, rightId] = contrast.phonemeIds;
-
-		addEntry(leftId, {
-			contrastId: contrast.id,
-			partnerId: rightId,
-			minimalPairs: contrast.minimalPairs,
-		});
-		addEntry(rightId, {
-			contrastId: contrast.id,
-			partnerId: leftId,
-			minimalPairs: contrast.minimalPairs.map(({ words: [left, right] }) => ({
-				words: [right, left],
-			})),
-		});
-	}
-
-	return record;
-})();
+		return record;
+	})(),
+);

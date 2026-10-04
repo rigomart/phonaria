@@ -5,6 +5,7 @@ import type {
 	PhonemeArticulation,
 	VowelType,
 } from "../../core/phoneme-articulations";
+import { deepFreeze } from "../../shared/readonly";
 import type {
 	EnglishConsonantSymbolId,
 	EnglishDiphthongSymbolId,
@@ -14,10 +15,9 @@ import type {
 
 export type { PhonemeArticulation, VowelType };
 
-export const EnglishConsonantArticulations: Record<
-	EnglishConsonantSymbolId,
-	ConsonantArticulation
-> = {
+export const EnglishConsonantArticulations: Readonly<
+	Record<EnglishConsonantSymbolId, ConsonantArticulation>
+> = deepFreeze({
 	P: {
 		category: "consonant",
 		features: { manner: "plosive", place: "bilabial", voicing: "voiceless" },
@@ -114,14 +114,13 @@ export const EnglishConsonantArticulations: Record<
 		category: "consonant",
 		features: { manner: "approximant", place: "labial-velar", voicing: "voiced" },
 	},
-};
+});
 
 // Monophthong vowel articulations
 
-export const EnglishMonophthongArticulations: Record<
-	EnglishMonophthongSymbolId,
-	MonophthongVowelArticulation
-> = {
+export const EnglishMonophthongArticulations: Readonly<
+	Record<EnglishMonophthongSymbolId, MonophthongVowelArticulation>
+> = deepFreeze({
 	I: {
 		category: "vowel",
 		vowelType: "monophthong",
@@ -233,14 +232,13 @@ export const EnglishMonophthongArticulations: Record<
 			rhoticity: "r-colored",
 		},
 	},
-};
+});
 
 // Diphthong vowel articulations
 
-export const EnglishDiphthongArticulations: Record<
-	EnglishDiphthongSymbolId,
-	DiphthongVowelArticulation
-> = {
+export const EnglishDiphthongArticulations: Readonly<
+	Record<EnglishDiphthongSymbolId, DiphthongVowelArticulation>
+> = deepFreeze({
 	EI: {
 		category: "vowel",
 		vowelType: "diphthong",
@@ -301,10 +299,10 @@ export const EnglishDiphthongArticulations: Record<
 			targetRoundness: "unrounded",
 		},
 	},
-};
+});
 
-export const EnglishPhonemeArticulations = {
+export const EnglishPhonemeArticulations = deepFreeze({
 	...EnglishConsonantArticulations,
 	...EnglishMonophthongArticulations,
 	...EnglishDiphthongArticulations,
-} as const satisfies Record<EnglishPhonemeSymbolId, PhonemeArticulation>;
+} as const satisfies Record<EnglishPhonemeSymbolId, PhonemeArticulation>);

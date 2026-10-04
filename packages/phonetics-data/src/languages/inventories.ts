@@ -6,6 +6,7 @@ import type {
 	VowelSymbolId,
 } from "../core/ipa-map";
 import type { TargetAccent } from "../core/types";
+import { deepFreeze } from "../shared/readonly";
 
 const ENGLISH_CONSONANTS = [
 	"P",
@@ -88,7 +89,7 @@ const SPANISH_MONOPHTHONGS = [
 
 const SPANISH_DIPHTHONGS = [] as const satisfies readonly DiphthongSymbolId[];
 
-export const LanguagePhonemeInventoryMap = {
+export const LanguagePhonemeInventoryMap = deepFreeze({
 	"en-us": {
 		consonants: ENGLISH_CONSONANTS,
 		monophthongs: ENGLISH_MONOPHTHONGS,
@@ -112,7 +113,7 @@ export const LanguagePhonemeInventoryMap = {
 		vowels: readonly VowelSymbolId[];
 		phonemes: readonly PhonemeSymbolId[];
 	}
->;
+>);
 
 type LanguagePhonemeInventoryMapType = typeof LanguagePhonemeInventoryMap;
 
@@ -174,13 +175,13 @@ export function isPhonemeInLanguage<TLanguage extends TargetAccent>(
 	return languagePhonemeSets[language].has(phonemeId);
 }
 
-export type LanguagePhonemeCount = {
+export type LanguagePhonemeCount = Readonly<{
 	consonants: number;
 	monophthongs: number;
 	diphthongs: number;
 	vowels: number;
 	total: number;
-};
+}>;
 
 function createLanguagePhonemeCount(inventory: LanguagePhonemeInventory): LanguagePhonemeCount {
 	return {
@@ -192,10 +193,10 @@ function createLanguagePhonemeCount(inventory: LanguagePhonemeInventory): Langua
 	};
 }
 
-const languagePhonemeCountRegistry: Record<TargetAccent, LanguagePhonemeCount> = {
+const languagePhonemeCountRegistry = deepFreeze({
 	"en-us": createLanguagePhonemeCount(LanguagePhonemeInventoryMap["en-us"]),
 	"es-419": createLanguagePhonemeCount(LanguagePhonemeInventoryMap["es-419"]),
-};
+} satisfies Record<TargetAccent, LanguagePhonemeCount>);
 
 export function getLanguagePhonemeCount(language: TargetAccent): LanguagePhonemeCount {
 	return languagePhonemeCountRegistry[language];

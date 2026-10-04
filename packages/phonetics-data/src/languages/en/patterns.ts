@@ -1,3 +1,4 @@
+import { deepFreeze } from "../../shared/readonly";
 // Common spelling patterns for English phonemes
 // Because English spelling is historically inconsistent, these represent general tendencies rather than fixed rules
 
@@ -6,7 +7,7 @@ import type { SpellingPattern } from "../types";
 
 //? Future:examples should be per pattern, also add fields for position (coda, onset, etc.)
 
-export const EnglishPhonemeSpellingPatterns = {
+export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	// Plosives
 	P: {
 		patterns: ["p", "pp"],
@@ -322,4 +323,4 @@ export const EnglishPhonemeSpellingPatterns = {
 			{ word: "work", phonemic: "wɝk" },
 		],
 	},
-} as const satisfies Partial<Record<EnglishPhonemeSymbolId, SpellingPattern>>;
+} as const satisfies Partial<Record<EnglishPhonemeSymbolId, SpellingPattern>>);

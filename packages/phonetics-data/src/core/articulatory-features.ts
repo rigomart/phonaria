@@ -38,28 +38,28 @@ export type Rhoticity = "r-colored";
 // Composite feature types
 
 export type ConsonantArticulatoryFeatures = {
-	voicing: Voicing;
-	place: PlaceOfArticulation;
-	manner: MannerOfArticulation;
+	readonly voicing: Voicing;
+	readonly place: PlaceOfArticulation;
+	readonly manner: MannerOfArticulation;
 };
 
 export type VowelArticulatoryFeatures = {
-	height: VowelHeight;
-	backness: VowelBackness;
-	roundness: VowelRoundness;
-	tenseness: VowelTenseness;
-	rhoticity?: Rhoticity;
+	readonly height: VowelHeight;
+	readonly backness: VowelBackness;
+	readonly roundness: VowelRoundness;
+	readonly tenseness: VowelTenseness;
+	readonly rhoticity?: Rhoticity;
 };
 
 export type PhonemeArticulatoryFeatureValueMap = {
-	voicing: Voicing;
-	place: PlaceOfArticulation;
-	manner: MannerOfArticulation;
-	height: VowelHeight;
-	backness: VowelBackness;
-	roundness: VowelRoundness;
-	tenseness: VowelTenseness;
-	rhoticity?: Rhoticity;
+	readonly voicing: Voicing;
+	readonly place: PlaceOfArticulation;
+	readonly manner: MannerOfArticulation;
+	readonly height: VowelHeight;
+	readonly backness: VowelBackness;
+	readonly roundness: VowelRoundness;
+	readonly tenseness: VowelTenseness;
+	readonly rhoticity?: Rhoticity;
 };
 
 export type ConsonantPhonemeArticulatoryFeatureKey = keyof ConsonantArticulatoryFeatures;
