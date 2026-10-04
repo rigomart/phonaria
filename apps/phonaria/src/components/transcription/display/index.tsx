@@ -4,15 +4,14 @@ import type { TargetAccent } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
-import { type ReactNode, useMemo } from "react";
+import type { ReactNode } from "react";
 import { useCurrentTranscription, useTranscribe } from "@/hooks/use-transcribe";
 import { extractWordIpa } from "@/lib/ipa-copy";
 import { type LookupErrorKind, useG2PStore } from "@/lib/transcription/g2p-store";
 import { shouldShowTranscriptionEmptyState } from "@/lib/transcription/search";
 import type { TranscribedWord, TranscriptionResult } from "@/lib/types/g2p";
 import { EmptyState } from "./empty-state";
-import { IpaSequence } from "./ipa-sequence";
-import { VariantSelector } from "./variant-selector";
+import { VariantStack } from "./variant-stack";
 import { WordDefinitionPopover } from "./word-definition-popover";
 
 const LOOKUP_ERROR_COPY: Record<LookupErrorKind, string> = {
@@ -30,40 +29,31 @@ interface WordColumnProps {
 function WordColumn({ targetAccent, word, index }: WordColumnProps) {
 	const selected = useG2PStore((s) => s.selectedVariants[word.wordIndex] ?? 0);
 	const setVariant = useG2PStore((s) => s.setVariant);
-	const currentVariant = useMemo(() => word.variants[selected] ?? [], [word.variants, selected]);
 	const isUnknown = word.source === "fallback";
 	const ipa = extractWordIpa(word, selected);
 
 	return (
 		<div
-			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
+			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 has-[[data-expanded]]:z-20 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
 			style={{ animationDelay: `${index * 50}ms`, animationDuration: "300ms" }}
 		>
 			<WordDefinitionPopover word={word.word} ipa={ipa} />
 
-			<div className="flex items-center gap-2">
-				{isUnknown ? (
-					<div
-						className="flex items-center justify-center text-muted-foreground text-xs font-medium uppercase tracking-wider border border-dashed border-muted-foreground/30 rounded px-2 py-1 h-8 select-none"
-						title="Pronunciation not found in dictionary"
-					>
-						Not found
-					</div>
-				) : (
-					<>
-						<IpaSequence
-							targetAccent={targetAccent}
-							syllables={currentVariant}
-							wordIndex={word.wordIndex}
-						/>
-						<VariantSelector
-							variants={word.variants}
-							wordIndex={word.wordIndex}
-							onSelect={setVariant}
-						/>
-					</>
-				)}
-			</div>
+			{isUnknown ? (
+				<div
+					className="flex items-center justify-center text-muted-foreground text-xs font-medium uppercase tracking-wider border border-dashed border-muted-foreground/30 rounded px-2 py-1 h-8 select-none"
+					title="Pronunciation not found in dictionary"
+				>
+					Not found
+				</div>
+			) : (
+				<VariantStack
+					targetAccent={targetAccent}
+					word={word}
+					selected={selected}
+					onSelect={setVariant}
+				/>
+			)}
 		</div>
 	);
 }
@@ -77,6 +67,10 @@ function TranscriptionResults({
 	result: TranscriptionResult;
 	isStale: boolean;
 }) {
+	const hasVariants = result.words.some(
+		(word) => word.source !== "fallback" && word.variants.length > 1,
+	);
+
 	return (
 		<div className="flex flex-col items-center overflow-x-auto px-4 py-4">
 			{isStale ? (
@@ -104,6 +98,7 @@ function TranscriptionResults({
 			>
 				<p className="text-xs text-muted-foreground">
 					Click a word for its meaning · click a sound for how to say it
+					{hasVariants ? " · open the stack under a word for other pronunciations" : null}
 				</p>
 			</div>
 		</div>
