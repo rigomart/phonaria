@@ -1,0 +1,7 @@
+{
+	"extends": "../../../../packages/browser-contract/tsconfig.json",
+	"compilerOptions": {
+		"typeRoots": ["../../../../packages/browser-contract/node_modules/@types"]
+	},
+	"include": ["*.ts"]
+}

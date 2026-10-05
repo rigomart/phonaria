@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify Phonaria"
+  short_description: "Check real app behavior and save browser evidence"
+  default_prompt: "Use $verify-phonaria to verify the requested feature in the running app and report the saved evidence."
