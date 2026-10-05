@@ -22,6 +22,7 @@
 - Per-language phoneme inventories live in `packages/phonetics-data/src/languages/inventories.ts` and bridge core IDs to language scopes. Articulation data lives in `src/languages/{lang}/articulations.ts`.
 
 ## Build, Test, and Development Commands
+- For user-facing browser verification, use the project skill at `.agents/skills/verify-phonaria/SKILL.md`. It uses agent-browser and saves local evidence; the existing Playwright browser contract remains the CI regression suite.
 - `bun install`: Install workspace dependencies once per environment.
 - `bun dev`: Launch the TanStack Start app at `http://localhost:3000`.
 - `bun build`: Execute workspace production builds.

@@ -23,6 +23,9 @@
 	"license": "MIT",
 	"packageManager": "bun@1.3.2",
 	"scripts": {
+		"verify": "bun .agents/skills/verify-phonaria/scripts/session.ts",
+		"verify:test": "bun test ./.agents/skills/verify-phonaria/scripts/session.test.ts",
+		"verify:types": "tsc --project .agents/skills/verify-phonaria/scripts/tsconfig.json",
 		"build": "turbo run build",
 		"lint": "turbo run lint",
 		"dev": "turbo run dev --filter=@phonaria/app",
