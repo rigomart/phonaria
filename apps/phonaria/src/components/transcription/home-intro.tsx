@@ -30,8 +30,9 @@ const NAME_IPA = NAME_PRONUNCIATION.map(
 	(segment) => `${"stressed" in segment ? "ˈ" : ""}${getIpaForPhonemeId(segment.phonemeId)}`,
 ).join("");
 
-// Milliseconds. Each letter group turns into its sound one after another.
-const MORPH_START = 600;
+// Milliseconds. Each letter group turns into its sound one after another. The
+// first turn waits out the name's 700 ms entrance.
+const MORPH_START = 900;
 const MORPH_STEP = 120;
 const SOUND_LAG = 140;
 const CAPTION_LAG = 380;
@@ -42,13 +43,11 @@ const SETTLE_AT =
 	MORPH_START + (NAME_PRONUNCIATION.length - 1) * MORPH_STEP + SOUND_LAG + TURN_MS + 100;
 const EASING = "cubic-bezier(0.2, 0, 0, 1)";
 const FOLD_MS = 500;
-/** On a slow connection, stop waiting for the faces and play in the fallback. */
-const FONT_WAIT_MS = 3000;
 
 /**
- * `waiting`: invisible until the faces it is drawn in have loaded, so the
- * fallback font never shows and swaps. `playing`: the morph. `settled`: the
- * sounds in normal flow; with reduced motion the intro goes straight here.
+ * `waiting`: the plain name, until React is listening and the IPA's face has
+ * loaded. `playing`: the morph. `settled`: the sounds in normal flow; with
+ * reduced motion the intro goes straight here.
  */
 type Phase = "waiting" | "playing" | "settled";
 
@@ -67,17 +66,20 @@ function revealDelay(phase: Phase, ms: number) {
 	return phase === "waiting" ? undefined : delay(ms);
 }
 
-/** Resolves once the name's and the IPA's faces are usable, or after a cap. */
+/**
+ * Resolves once the name's and the IPA's faces have loaded or failed. The home
+ * route preloads them, so Sora is normally there by first paint; the IPA's
+ * latin-ext face is the one a slow connection waits on. The plain name stays
+ * up meanwhile, so there is no reason to give up and morph in a fallback.
+ */
 function whenFontsReady(): Promise<void> {
-	const faces = Promise.all([
+	return Promise.all([
 		document.fonts.load('500 1em "Sora Variable"', "Phonaria"),
 		document.fonts.load('400 1em "Noto Sans Variable"', `/${NAME_IPA}/`),
 	]).then(
 		() => undefined,
 		() => undefined,
 	);
-	const cap = new Promise<void>((resolve) => window.setTimeout(resolve, FONT_WAIT_MS));
-	return Promise.race([faces, cap]);
 }
 
 /**
@@ -122,9 +124,9 @@ export function HomeIntro({ query }: { query: string | undefined }) {
 }
 
 function NamePronunciation({ onReplay }: { onReplay: () => void }) {
-	// The server renders the intro invisible. It shows once React is listening
-	// and its faces have loaded, so the column widths the morph animates are
-	// measured in the fonts it ends in.
+	// The server renders the plain name, which animates in on first paint. The
+	// morph waits for React and for the IPA's face, so the column widths it
+	// animates are measured in the fonts it ends in.
 	const [phase, setPhase] = useState<Phase>("waiting");
 
 	useEffect(() => {
@@ -148,19 +150,14 @@ function NamePronunciation({ onReplay }: { onReplay: () => void }) {
 	return (
 		<section
 			aria-labelledby="home-intro-heading"
-			className="flex flex-col items-center gap-6 px-4 pt-[4vh] pb-10 md:pb-14"
+			className="flex flex-col items-center gap-6 px-4 pb-8 md:pb-10"
 		>
 			<h1 id="home-intro-heading" className="sr-only">
 				Phonaria
 			</h1>
 
-			<figure
-				className={cn(
-					"relative flex items-start pb-8",
-					phase === "waiting" && "opacity-0",
-					phase === "playing" && "animate-in fade-in duration-300",
-				)}
-			>
+			{/* CSS, so it plays on the server-rendered paint before hydration. */}
+			<figure className="relative flex items-start pb-8 animate-in fade-in blur-in-sm slide-in-from-bottom-2 duration-700 ease-out motion-reduce:animate-none">
 				<figcaption className="sr-only">Phonaria is pronounced /{NAME_IPA}/</figcaption>
 				<Slash phase={phase} className="right-full" />
 				{NAME_PRONUNCIATION.map((segment, index) => (
@@ -241,7 +238,7 @@ function NameSegment({
 	return (
 		<div
 			ref={columnRef}
-			className="group relative flex justify-center text-5xl sm:text-7xl md:text-8xl"
+			className="group relative flex justify-center text-5xl sm:text-6xl md:text-7xl"
 		>
 			<span
 				ref={lettersRef}
@@ -310,7 +307,7 @@ function Slash({ phase, className }: { phase: Phase; className: string }) {
 		<span
 			aria-hidden="true"
 			className={cn(
-				"absolute top-0 px-1 text-5xl sm:text-7xl md:text-8xl font-light leading-tight text-muted-foreground select-none",
+				"absolute top-0 px-1 text-5xl sm:text-6xl md:text-7xl font-light leading-tight text-muted-foreground select-none",
 				reveal(phase, "duration-700"),
 				className,
 			)}
