@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 const platformDir = import.meta.dirname;
 const fontsTs = readFileSync(resolve(platformDir, "fonts.ts"), "utf8");
 const fontsCss = readFileSync(resolve(platformDir, "fonts.css"), "utf8");
+const stylesCss = readFileSync(resolve(platformDir, "../styles.css"), "utf8");
 const rootRouteSource = readFileSync(resolve(platformDir, "../routes/__root.tsx"), "utf8");
 const homeRouteSource = readFileSync(resolve(platformDir, "../routes/index.tsx"), "utf8");
 const packageJson = readFileSync(resolve(platformDir, "../../package.json"), "utf8");
@@ -15,16 +16,21 @@ describe("Fontsource fonts", () => {
 		expect(packageJson).toContain('"@fontsource-variable/sora"');
 		expect(packageJson).toContain('"@fontsource-variable/noto-sans"');
 		expect(packageJson).not.toContain("noto-serif");
-		expect(fontsTs).toContain('import "@fontsource-variable/sora/wght.css"');
-		expect(fontsTs).toContain('import "@fontsource-variable/noto-sans/wght.css"');
+		expect(fontsTs).toContain('from "@fontsource-variable/sora/wght.css?url"');
+		expect(fontsTs).toContain('from "@fontsource-variable/noto-sans/wght.css?url"');
 		expect(fontsTs).not.toContain("@fontsource-variable/noto-serif");
+		expect(stylesCss).toContain('@import "./lib/fonts.css";');
+		// Inlined by Tailwind, Fontsource's relative font URLs are not rebased in the build.
+		expect(stylesCss).not.toMatch(/@import "@fontsource/);
 		expect(fontsCss).toContain("--font-display-serif");
 		expect(fontsCss).toContain("--font-noto-sans");
 		expect(fontsCss).toContain('"Sora Variable"');
 		expect(fontsCss).toContain('"Noto Sans Variable"');
 		expect(fontsCss).not.toContain("@font-face");
 		expect(fontsCss).not.toContain("/fonts/");
-		expect(`${fontsTs}\n${fontsCss}`).not.toMatch(/fonts\.googleapis\.com|fonts\.gstatic.com/i);
+		expect(`${fontsTs}\n${fontsCss}\n${stylesCss}`).not.toMatch(
+			/fonts\.googleapis\.com|fonts\.gstatic.com/i,
+		);
 	});
 
 	it("preloads only Fontsource's own files, from the home route", () => {
@@ -41,6 +47,12 @@ describe("Fontsource fonts", () => {
 	it("does not vendor public font files", () => {
 		expect(existsSync(publicFontsDir)).toBe(false);
 		expect(rootRouteSource).not.toContain("FONT_PRELOADS");
-		expect(rootRouteSource).toContain('import "@/lib/fonts"');
+	});
+
+	it("links its stylesheets instead of importing CSS for its side effects", () => {
+		expect(rootRouteSource).toContain('import appCss from "@/styles.css?url"');
+		expect(rootRouteSource).toContain('{ rel: "stylesheet", href: appCss }, ...fontStylesheets');
+		expect(rootRouteSource).not.toMatch(/^import "[^"]+\.css";?$/m);
+		expect(fontsTs).not.toMatch(/^import "[^"]+";?$/m);
 	});
 });

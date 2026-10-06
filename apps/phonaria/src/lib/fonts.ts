@@ -1,15 +1,18 @@
 /**
- * Application font contract. Import this module to load Fontsource variable faces and
- * apply `--font-display-serif` / `--font-noto-sans`.
- *
- * `wght.css` is the latin-weight entry used by Vite and TanStack Start.
+ * Application fonts. Fontsource's latin-weight `wght.css` entries declare the
+ * faces; `./fonts.css` (imported by `src/styles.css`) maps them to
+ * `--font-display-serif` / `--font-noto-sans`. The entries are linked as their
+ * own stylesheets so Vite resolves their relative font URLs where they live.
  */
-import "@fontsource-variable/sora/wght.css";
-import "@fontsource-variable/noto-sans/wght.css";
-import "./fonts.css";
+
 import notoSansLatinExtUrl from "@fontsource-variable/noto-sans/files/noto-sans-latin-ext-wght-normal.woff2?url";
 import notoSansLatinUrl from "@fontsource-variable/noto-sans/files/noto-sans-latin-wght-normal.woff2?url";
+import notoSansCss from "@fontsource-variable/noto-sans/wght.css?url";
 import soraLatinUrl from "@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url";
+import soraCss from "@fontsource-variable/sora/wght.css?url";
+
+/** Linked by the root route on every page. */
+export const fontStylesheets = [soraCss, notoSansCss].map((href) => ({ rel: "stylesheet", href }));
 
 /**
  * The faces the home intro draws at display size: Sora for the name, Noto Sans

@@ -7,14 +7,15 @@ import { NotFoundContent } from "@/components/not-found-content";
 import { themeInitScript } from "@/components/theme";
 import { buildRootHead } from "@/lib/document-head";
 import { flags } from "@/lib/flags";
-import "@phonaria/ui/globals.css";
-import "@/lib/fonts";
+import { fontStylesheets } from "@/lib/fonts";
+import appCss from "@/styles.css?url";
 
 export const Route = createRootRoute({
 	head: () => {
 		const head = buildRootHead();
 		return {
 			...head,
+			links: [{ rel: "stylesheet", href: appCss }, ...fontStylesheets, ...(head.links ?? [])],
 			scripts: [{ children: themeInitScript() }],
 		};
 	},
