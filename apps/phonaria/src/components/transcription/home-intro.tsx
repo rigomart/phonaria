@@ -42,22 +42,42 @@ const SETTLE_AT =
 	MORPH_START + (NAME_PRONUNCIATION.length - 1) * MORPH_STEP + SOUND_LAG + TURN_MS + 100;
 const EASING = "cubic-bezier(0.2, 0, 0, 1)";
 const FOLD_MS = 500;
+/** On a slow connection, stop waiting for the faces and play in the fallback. */
+const FONT_WAIT_MS = 3000;
 
-type Phase = "spelling" | "playing" | "settled";
+/**
+ * `waiting`: invisible until the faces it is drawn in have loaded, so the
+ * fallback font never shows and swaps. `playing`: the morph. `settled`: the
+ * sounds in normal flow; with reduced motion the intro goes straight here.
+ */
+type Phase = "waiting" | "playing" | "settled";
 
 const delay = (ms: number) => ({ animationDelay: `${ms}ms` });
 
 /**
- * Hidden on the plain name, then fades in. The classes stay the same once the
+ * Hidden while waiting, then fades in. The classes stay the same once the
  * morph settles, so an entrance still running is not cut short.
  */
 function reveal(phase: Phase, entrance: string): string {
-	if (phase === "spelling") return "opacity-0 motion-reduce:opacity-100";
+	if (phase === "waiting") return "opacity-0";
 	return cn("animate-in fade-in fill-mode-both motion-reduce:animate-none", entrance);
 }
 
 function revealDelay(phase: Phase, ms: number) {
-	return phase === "spelling" ? undefined : delay(ms);
+	return phase === "waiting" ? undefined : delay(ms);
+}
+
+/** Resolves once the name's and the IPA's faces are usable, or after a cap. */
+function whenFontsReady(): Promise<void> {
+	const faces = Promise.all([
+		document.fonts.load('500 1em "Sora Variable"', "Phonaria"),
+		document.fonts.load('400 1em "Noto Sans Variable"', `/${NAME_IPA}/`),
+	]).then(
+		() => undefined,
+		() => undefined,
+	);
+	const cap = new Promise<void>((resolve) => window.setTimeout(resolve, FONT_WAIT_MS));
+	return Promise.race([faces, cap]);
 }
 
 /**
@@ -102,18 +122,27 @@ export function HomeIntro({ query }: { query: string | undefined }) {
 }
 
 function NamePronunciation({ onReplay }: { onReplay: () => void }) {
-	// The server renders the plain name. The morph starts once React is
-	// listening, so the column widths it animates can be measured first.
-	const [phase, setPhase] = useState<Phase>("spelling");
+	// The server renders the intro invisible. It shows once React is listening
+	// and its faces have loaded, so the column widths the morph animates are
+	// measured in the fonts it ends in.
+	const [phase, setPhase] = useState<Phase>("waiting");
 
-	useLayoutEffect(() => {
-		if (prefersReducedMotion()) {
-			setPhase("settled");
-			return;
-		}
-		setPhase("playing");
-		const timer = window.setTimeout(() => setPhase("settled"), SETTLE_AT);
-		return () => window.clearTimeout(timer);
+	useEffect(() => {
+		let cancelled = false;
+		let settleTimer: number | undefined;
+		void whenFontsReady().then(() => {
+			if (cancelled) return;
+			if (prefersReducedMotion()) {
+				setPhase("settled");
+				return;
+			}
+			setPhase("playing");
+			settleTimer = window.setTimeout(() => setPhase("settled"), SETTLE_AT);
+		});
+		return () => {
+			cancelled = true;
+			window.clearTimeout(settleTimer);
+		};
 	}, []);
 
 	return (
@@ -125,7 +154,13 @@ function NamePronunciation({ onReplay }: { onReplay: () => void }) {
 				Phonaria
 			</h1>
 
-			<figure className="relative flex items-start pb-8">
+			<figure
+				className={cn(
+					"relative flex items-start pb-8",
+					phase === "waiting" && "opacity-0",
+					phase === "playing" && "animate-in fade-in duration-300",
+				)}
+			>
 				<figcaption className="sr-only">Phonaria is pronounced /{NAME_IPA}/</figcaption>
 				<Slash phase={phase} className="right-full" />
 				{NAME_PRONUNCIATION.map((segment, index) => (
@@ -170,8 +205,7 @@ function NamePronunciation({ onReplay }: { onReplay: () => void }) {
  * One letter group over one sound. The letters drop and shrink toward the
  * caption while the sound settles where they were, and the column eases from
  * the letters' width to the sound's. The sound stays out of the flow until the
- * morph ends, so the plain name keeps its own spacing. With reduced motion the
- * sound and caption simply show.
+ * morph ends, so the plain name keeps its own spacing.
  */
 function NameSegment({
 	phase,
@@ -213,7 +247,7 @@ function NameSegment({
 				ref={lettersRef}
 				aria-hidden="true"
 				className={cn(
-					"whitespace-nowrap font-display font-medium leading-tight motion-reduce:hidden",
+					"whitespace-nowrap font-display font-medium leading-tight",
 					phase === "playing" &&
 						"animate-out fade-out blur-out-sm slide-out-to-bottom-3/4 zoom-out-25 fill-mode-forwards duration-500 ease-in",
 					phase === "settled" && "hidden",
@@ -229,9 +263,8 @@ function NameSegment({
 					// Flex, so the button sets the line height and the column keeps the
 					// letters' height when the sound takes over the flow.
 					"flex whitespace-nowrap",
-					phase !== "settled" &&
-						"absolute top-0 left-1/2 -translate-x-1/2 motion-reduce:static motion-reduce:translate-x-0",
-					phase === "spelling" && "opacity-0 motion-reduce:opacity-100",
+					phase !== "settled" && "absolute top-0 left-1/2 -translate-x-1/2",
+					phase === "waiting" && "opacity-0",
 					phase === "playing" &&
 						"animate-in fade-in blur-in-md slide-in-from-top-1/4 fill-mode-both duration-500 ease-out",
 				)}

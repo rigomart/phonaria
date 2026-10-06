@@ -6,6 +6,7 @@ const platformDir = import.meta.dirname;
 const fontsTs = readFileSync(resolve(platformDir, "fonts.ts"), "utf8");
 const fontsCss = readFileSync(resolve(platformDir, "fonts.css"), "utf8");
 const rootRouteSource = readFileSync(resolve(platformDir, "../routes/__root.tsx"), "utf8");
+const homeRouteSource = readFileSync(resolve(platformDir, "../routes/index.tsx"), "utf8");
 const packageJson = readFileSync(resolve(platformDir, "../../package.json"), "utf8");
 const publicFontsDir = resolve(platformDir, "../../public/fonts");
 
@@ -24,6 +25,17 @@ describe("Fontsource fonts", () => {
 		expect(fontsCss).not.toContain("@font-face");
 		expect(fontsCss).not.toContain("/fonts/");
 		expect(`${fontsTs}\n${fontsCss}`).not.toMatch(/fonts\.googleapis\.com|fonts\.gstatic.com/i);
+	});
+
+	it("preloads only Fontsource's own files, from the home route", () => {
+		const preloads = [...fontsTs.matchAll(/from "([^"]+\.woff2)\?url"/g)].map((match) => match[1]);
+		expect(preloads).toEqual([
+			"@fontsource-variable/noto-sans/files/noto-sans-latin-ext-wght-normal.woff2",
+			"@fontsource-variable/noto-sans/files/noto-sans-latin-wght-normal.woff2",
+			"@fontsource-variable/sora/files/sora-latin-wght-normal.woff2",
+		]);
+		expect(homeRouteSource).toContain("homeIntroFontPreloads");
+		expect(rootRouteSource).not.toContain("homeIntroFontPreloads");
 	});
 
 	it("does not vendor public font files", () => {
