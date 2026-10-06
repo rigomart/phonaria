@@ -19,6 +19,7 @@ import {
 	TRANSCRIPTION_HISTORY_LIMIT,
 	type TranscriptionHistoryEntry,
 } from "@/lib/transcription/history";
+import { cn } from "@/lib/utils";
 import { PhraseList } from "./phrase-list";
 
 /** The full history, with a text filter and, once it is long enough, sound chips. */
@@ -57,39 +58,32 @@ export function HistorySheet({
 	return (
 		<Sheet open={open} onOpenChange={handleOpenChange}>
 			<SheetPopup side="right">
-				<SheetHeader>
-					<SheetTitle className="font-display text-lg">History</SheetTitle>
-					<SheetDescription>
-						Saved in this browser only. Keeps your last {TRANSCRIPTION_HISTORY_LIMIT}.
-					</SheetDescription>
+				<SheetHeader className="gap-4 border-b border-border">
+					<div className="pe-10">
+						<SheetTitle className="font-display">History</SheetTitle>
+						<SheetDescription className="mt-1.5">
+							{entries.length} of {TRANSCRIPTION_HISTORY_LIMIT} saved in this browser.
+						</SheetDescription>
+					</div>
 					<Input
 						type="search"
 						value={query}
 						onChange={(event) => setQuery(event.target.value)}
 						placeholder="Filter by word or IPA"
 						aria-label="Filter history"
-						className="mt-2"
 					/>
 					{sounds.length > 0 ? (
-						<fieldset className="w-full min-w-0 border-0 p-0">
+						<fieldset className="min-w-0 border-0 p-0">
 							<legend className="sr-only">Filter by sound</legend>
-							<div className="flex flex-wrap gap-1.5">
-								{sounds.map((sound) => {
-									const selected = sound === activeSound;
-									return (
-										<Button
-											key={sound}
-											variant={selected ? "default" : "outline"}
-											size="sm"
-											aria-pressed={selected}
-											aria-label={`Filter by /${sound}/`}
-											onClick={() => setSelectedSound(selected ? null : sound)}
-											className="px-2 font-display"
-										>
-											{sound}
-										</Button>
-									);
-								})}
+							<div className="flex flex-wrap gap-2">
+								{sounds.map((sound) => (
+									<SoundFilterChip
+										key={sound}
+										sound={sound}
+										selected={sound === activeSound}
+										onSelect={() => setSelectedSound(sound === activeSound ? null : sound)}
+									/>
+								))}
 							</div>
 						</fieldset>
 					) : null}
@@ -98,6 +92,7 @@ export function HistorySheet({
 				<SheetPanel>
 					{matches.length > 0 ? (
 						<PhraseList
+							className="-mx-6"
 							phrases={matches}
 							onSelect={(text) => {
 								handleOpenChange(false);
@@ -107,19 +102,15 @@ export function HistorySheet({
 							removeLabel={(text) => `Remove "${text}" from history`}
 							disabled={disabled}
 							highlightSound={activeSound ?? undefined}
-							className="-mx-2.5"
 						/>
 					) : (
-						<p className="py-6 text-center text-sm text-muted-foreground">
+						<p className="px-2 py-10 text-center text-sm text-muted-foreground">
 							{noMatchesMessage(query, activeSound)}
 						</p>
 					)}
 				</SheetPanel>
 
-				<SheetFooter variant="bare" className="items-center sm:justify-between">
-					<span className="text-xs text-muted-foreground">
-						{entries.length} of {TRANSCRIPTION_HISTORY_LIMIT}
-					</span>
+				<SheetFooter variant="bare" className="border-t border-border sm:justify-start">
 					<ClearHistoryButton
 						onClear={() => {
 							handleOpenChange(false);
@@ -129,6 +120,33 @@ export function HistorySheet({
 				</SheetFooter>
 			</SheetPopup>
 		</Sheet>
+	);
+}
+
+function SoundFilterChip({
+	sound,
+	selected,
+	onSelect,
+}: {
+	sound: string;
+	selected: boolean;
+	onSelect: () => void;
+}) {
+	return (
+		<button
+			type="button"
+			aria-pressed={selected}
+			aria-label={`Filter by /${sound}/`}
+			onClick={onSelect}
+			className={cn(
+				"inline-flex h-9 min-w-9 cursor-pointer items-center justify-center rounded-lg border px-2 font-display text-lg leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-popover motion-reduce:transition-none",
+				selected
+					? "border-primary bg-primary text-primary-foreground"
+					: "border-border bg-background-soft text-foreground hover:border-primary hover:bg-background-strong",
+			)}
+		>
+			{sound}
+		</button>
 	);
 }
 

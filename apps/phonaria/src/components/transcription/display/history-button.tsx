@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import { useTranscriptionHistory } from "@/hooks/use-transcription-history";
 import type { TranscriptionHistoryEntry } from "@/lib/transcription/history";
-import { cn } from "@/lib/utils";
 import { HistorySheet } from "./history-sheet";
 
 export function HistoryButton({
@@ -27,13 +26,12 @@ export function HistoryButton({
 		<>
 			<Button
 				variant="ghost"
-				size="sm"
-				className={cn("max-sm:size-8 max-sm:px-0", className)}
+				size="icon-sm"
+				aria-label={`History, ${entries.length} saved`}
+				className={className}
 				onClick={() => setSheetOpen(true)}
 			>
 				<History aria-hidden />
-				<span className="max-sm:sr-only">History</span>
-				<span className="tabular-nums text-muted-foreground max-sm:sr-only">{entries.length}</span>
 			</Button>
 
 			<HistorySheet
