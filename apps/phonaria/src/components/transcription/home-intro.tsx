@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { PhonemePopoverButton } from "./display/clickable-phoneme";
 import { prefersReducedMotion } from "./display/ipa-morph";
 
-/** "Phonaria" spelled out, each letter group paired with the sound it spells: /fəˈnɑɹiə/. */
+/** /fəˈnɑɹiə/, by letter group. */
 const NAME_PRONUNCIATION = [
 	{ spelling: "Ph", phonemeId: "F" },
 	{ spelling: "o", phonemeId: "AX" },
@@ -30,33 +30,27 @@ const NAME_IPA = NAME_PRONUNCIATION.map(
 	(segment) => `${"stressed" in segment ? "ˈ" : ""}${getIpaForPhonemeId(segment.phonemeId)}`,
 ).join("");
 
-// Milliseconds. Each letter group turns into its sound one after another. The
-// first turn waits out the name's 700 ms entrance.
+// Milliseconds. MORPH_START waits out the name's 700 ms entrance.
 const MORPH_START = 900;
 const MORPH_STEP = 120;
 const SOUND_LAG = 140;
 const CAPTION_LAG = 380;
 const TURN_MS = 500;
 const MORPH_END = MORPH_START + NAME_PRONUNCIATION.length * MORPH_STEP + CAPTION_LAG;
-/** The last sound has landed, so every column can take its natural width. */
 const SETTLE_AT =
 	MORPH_START + (NAME_PRONUNCIATION.length - 1) * MORPH_STEP + SOUND_LAG + TURN_MS + 100;
 const EASING = "cubic-bezier(0.2, 0, 0, 1)";
 const FOLD_MS = 500;
 
 /**
- * `waiting`: the plain name, until React is listening and the IPA's face has
- * loaded. `playing`: the morph. `settled`: the sounds in normal flow; with
- * reduced motion the intro goes straight here.
+ * `waiting` lasts until hydration and the IPA font, so the morph measures
+ * widths in its final fonts. Reduced motion skips `playing`.
  */
 type Phase = "waiting" | "playing" | "settled";
 
 const delay = (ms: number) => ({ animationDelay: `${ms}ms` });
 
-/**
- * Hidden while waiting, then fades in. The classes stay the same once the
- * morph settles, so an entrance still running is not cut short.
- */
+/** Same classes in `playing` and `settled`, so a running entrance isn't restarted. */
 function reveal(phase: Phase, entrance: string): string {
 	if (phase === "waiting") return "opacity-0";
 	return cn("animate-in fade-in fill-mode-both motion-reduce:animate-none", entrance);
@@ -66,12 +60,7 @@ function revealDelay(phase: Phase, ms: number) {
 	return phase === "waiting" ? undefined : delay(ms);
 }
 
-/**
- * Resolves once the name's and the IPA's faces have loaded or failed. The home
- * route preloads them, so Sora is normally there by first paint; the IPA's
- * latin-ext face is the one a slow connection waits on. The plain name stays
- * up meanwhile, so there is no reason to give up and morph in a fallback.
- */
+/** Settles on load or failure. No timeout: the plain name holds the space meanwhile. */
 function whenFontsReady(): Promise<void> {
 	return Promise.all([
 		document.fonts.load('500 1em "Sora Variable"', "Phonaria"),
@@ -82,12 +71,7 @@ function whenFontsReady(): Promise<void> {
 	);
 }
 
-/**
- * The home page's opening: the app name turns into its pronunciation, and each
- * sound opens the same details a transcription does. Folds away once there is a
- * transcription to show and unmounts, so only the result's sounds remain on the
- * page. Coming back to the empty page mounts it again, which replays it.
- */
+/** Unmounts after folding, so only the result's phoneme buttons stay on the page. */
 export function HomeIntro({ query }: { query: string | undefined }) {
 	const { data: result } = useCurrentTranscription();
 	const lookupError = useG2PStore((s) => s.lookupError);
@@ -124,9 +108,6 @@ export function HomeIntro({ query }: { query: string | undefined }) {
 }
 
 function NamePronunciation({ onReplay }: { onReplay: () => void }) {
-	// The server renders the plain name, which animates in on first paint. The
-	// morph waits for React and for the IPA's face, so the column widths it
-	// animates are measured in the fonts it ends in.
 	const [phase, setPhase] = useState<Phase>("waiting");
 
 	useEffect(() => {
@@ -156,13 +137,13 @@ function NamePronunciation({ onReplay }: { onReplay: () => void }) {
 				Phonaria
 			</h1>
 
-			{/* CSS, so it plays on the server-rendered paint before hydration. */}
+			{/* CSS, so it plays before hydration. */}
 			<figure className="relative flex items-start pb-8 animate-in fade-in blur-in-sm slide-in-from-bottom-2 duration-700 ease-out motion-reduce:animate-none">
 				<figcaption className="sr-only">Phonaria is pronounced /{NAME_IPA}/</figcaption>
 				<Slash phase={phase} className="right-full" />
 				{NAME_PRONUNCIATION.map((segment, index) => (
 					<NameSegment
-						// The name repeats "a" → /ə/, and the list never changes.
+						// Static list, and "a" → /ə/ repeats.
 						key={index}
 						phase={phase}
 						spelling={segment.spelling}
@@ -198,12 +179,7 @@ function NamePronunciation({ onReplay }: { onReplay: () => void }) {
 	);
 }
 
-/**
- * One letter group over one sound. The letters drop and shrink toward the
- * caption while the sound settles where they were, and the column eases from
- * the letters' width to the sound's. The sound stays out of the flow until the
- * morph ends, so the plain name keeps its own spacing.
- */
+/** The sound stays out of flow until settled, so the plain name keeps its own spacing. */
 function NameSegment({
 	phase,
 	spelling,
@@ -257,8 +233,7 @@ function NameSegment({
 			<span
 				ref={soundRef}
 				className={cn(
-					// Flex, so the button sets the line height and the column keeps the
-					// letters' height when the sound takes over the flow.
+					// Flex drops the inline strut, so settling keeps the column's height.
 					"flex whitespace-nowrap",
 					phase !== "settled" && "absolute top-0 left-1/2 -translate-x-1/2",
 					phase === "waiting" && "opacity-0",

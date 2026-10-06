@@ -20,7 +20,7 @@ describe("Fontsource fonts", () => {
 		expect(fontsTs).toContain('from "@fontsource-variable/noto-sans/wght.css?url"');
 		expect(fontsTs).not.toContain("@fontsource-variable/noto-serif");
 		expect(stylesCss).toContain('@import "./lib/fonts.css";');
-		// Inlined by Tailwind, Fontsource's relative font URLs are not rebased in the build.
+		// Tailwind inlining breaks Fontsource's relative font URLs in the build.
 		expect(stylesCss).not.toMatch(/@import "@fontsource/);
 		expect(fontsCss).toContain("--font-display-serif");
 		expect(fontsCss).toContain("--font-noto-sans");

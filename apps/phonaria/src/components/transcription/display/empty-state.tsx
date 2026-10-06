@@ -8,11 +8,7 @@ import { HistoryButton } from "./history-button";
 
 const EXAMPLES = ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"];
 
-/**
- * Example chips, then a way into the learner's history once there is any.
- * History is read after hydration, so the button only ever appears below the
- * chips and never moves them.
- */
+/** History loads after hydration, so its button sits below the chips and never moves them. */
 export function EmptyState() {
 	const { submit, isPending } = useSubmitTranscription();
 	const hydrated = useHydrated();

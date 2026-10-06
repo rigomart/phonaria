@@ -1,13 +1,7 @@
 /*
- * The app stylesheet. The root route links it with `?url`, so the server render
- * references a compiled file in dev and in production alike. Imported as a side
- * effect instead, it reaches the dev page twice: first through TanStack Start's
- * collected dev styles, which also carry Tailwind's raw sources, then as
- * Vite-injected <style> tags, with the dev link removed after hydration. Each
- * hand-off moved the layout and dropped the font faces.
- *
- * Fontsource's faces are linked separately (see `@/lib/fonts`): inlined here,
- * their relative `./files/*.woff2` URLs would not be rebased in the build.
+ * Linked with `?url` from the root route. As a side-effect import, dev served it
+ * twice (collected, then injected) and the hand-off shifted the layout.
+ * Fontsource is linked separately: inlined here, its font URLs break in the build.
  */
 @import "@phonaria/ui/globals.css";
 @import "./lib/fonts.css";

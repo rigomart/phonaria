@@ -7,7 +7,6 @@ import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import type { TranscriptionHistoryEntry } from "@/lib/transcription/history";
 import { HistorySheet } from "./history-sheet";
 
-/** Opens the learner's saved transcriptions without listing them on the page. */
 export function HistoryButton({
 	entries,
 	onRemove,

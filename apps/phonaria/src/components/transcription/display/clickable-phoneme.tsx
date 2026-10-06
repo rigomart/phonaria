@@ -38,7 +38,6 @@ export function ClickablePhoneme({ targetAccent, phoneme }: ClickablePhonemeProp
 	);
 }
 
-/** A phoneme symbol that opens its sound and articulation details. */
 export function PhonemePopoverButton({
 	targetAccent,
 	phonemeId,
