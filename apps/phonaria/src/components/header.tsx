@@ -12,6 +12,7 @@ import {
 } from "@phonaria/ui/components/navigation-menu";
 import { Link } from "@/components/link";
 import type { AppFlags } from "@/lib/flags";
+import { HeaderActionsSlot } from "./header-actions";
 import { Logo } from "./logo";
 
 const navLinkClass =
@@ -61,6 +62,7 @@ export function Header({ flags }: { flags: AppFlags }) {
 					</NavigationMenuList>
 				</NavigationMenu>
 			</nav>
+			<HeaderActionsSlot className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center" />
 		</header>
 	);
 }
