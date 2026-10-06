@@ -3,6 +3,7 @@
 import {
 	isPhonemeInLanguage,
 	type LanguagePhonemeId,
+	type PhonemeSymbolId,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
@@ -16,9 +17,7 @@ interface ClickablePhonemeProps {
 }
 
 export function ClickablePhoneme({ targetAccent, phoneme }: ClickablePhonemeProps) {
-	const isKnown = Boolean(phoneme.phonemeId);
-
-	if (!isKnown) {
+	if (!phoneme.phonemeId) {
 		return (
 			<span
 				className="text-2xl md:text-4xl rounded-lg px-1.5 py-1 opacity-70 underline decoration-dotted underline-offset-4"
@@ -29,8 +28,27 @@ export function ClickablePhoneme({ targetAccent, phoneme }: ClickablePhonemeProp
 		);
 	}
 
-	const phonemeId = phoneme.phonemeId;
-	if (!phonemeId) return null;
+	return (
+		<PhonemePopoverButton
+			targetAccent={targetAccent}
+			phonemeId={phoneme.phonemeId}
+			symbol={phoneme.symbol}
+			className="text-2xl md:text-4xl"
+		/>
+	);
+}
+
+export function PhonemePopoverButton({
+	targetAccent,
+	phonemeId,
+	symbol,
+	className,
+}: {
+	targetAccent: TargetAccent;
+	phonemeId: PhonemeSymbolId;
+	symbol: string;
+	className?: string;
+}) {
 	if (!isPhonemeInLanguage(targetAccent, phonemeId)) return null;
 
 	return (
@@ -40,16 +58,17 @@ export function ClickablePhoneme({ targetAccent, phoneme }: ClickablePhonemeProp
 					<button
 						type="button"
 						className={cn(
-							"text-2xl md:text-4xl rounded-lg px-1.5 py-1 cursor-pointer",
+							"rounded-lg px-1.5 py-1 cursor-pointer",
 							"transition-colors duration-150",
 							"hover:bg-primary/10 hover:text-primary",
 							"data-popup-open:bg-primary/10 data-popup-open:text-primary",
+							className,
 						)}
-						aria-label={`Details for /${phoneme.symbol}/`}
+						aria-label={`Details for /${symbol}/`}
 					/>
 				}
 			>
-				{phoneme.symbol}
+				{symbol}
 			</PopoverTrigger>
 			<PopoverContent sideOffset={8}>
 				<PhonemePopoverContent

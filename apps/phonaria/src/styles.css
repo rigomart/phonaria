@@ -1,0 +1,7 @@
+/*
+ * Linked with `?url` from the root route. As a side-effect import, dev served it
+ * twice (collected, then injected) and the hand-off shifted the layout.
+ * Fontsource is linked separately: inlined here, its font URLs break in the build.
+ */
+@import "@phonaria/ui/globals.css";
+@import "./lib/fonts.css";

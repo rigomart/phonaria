@@ -2,38 +2,11 @@
 
 import { Button } from "@phonaria/ui/components/button";
 import { X } from "lucide-react";
-import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface Phrase {
 	text: string;
 	ipa: string;
-}
-
-/** Icon and title on the left, an optional action on the right. */
-export function PhraseSectionHeader({
-	id,
-	icon,
-	title,
-	action,
-}: {
-	id: string;
-	icon: ReactNode;
-	title: string;
-	action?: ReactNode;
-}) {
-	return (
-		<div className="flex min-h-7 items-center justify-between px-2.5">
-			<h2
-				id={id}
-				className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground font-display [&_svg]:size-3.5"
-			>
-				{icon}
-				{title}
-			</h2>
-			{action}
-		</div>
-	);
 }
 
 /**
