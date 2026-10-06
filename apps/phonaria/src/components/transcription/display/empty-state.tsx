@@ -3,16 +3,12 @@
 import { ArrowRightIcon } from "lucide-react";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
-import { useTranscriptionHistory } from "@/hooks/use-transcription-history";
-import { HistoryButton } from "./history-button";
 
 const EXAMPLES = ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"];
 
-/** History loads after hydration, so its button sits below the chips and never moves them. */
 export function EmptyState() {
 	const { submit, isPending } = useSubmitTranscription();
 	const hydrated = useHydrated();
-	const { entries, remove, clear } = useTranscriptionHistory();
 
 	return (
 		<div className="flex flex-col items-center gap-6 px-4 pt-6 pb-8 animate-in fade-in duration-700 delay-200 fill-mode-both">
@@ -35,15 +31,6 @@ export function EmptyState() {
 					))}
 				</div>
 			</div>
-
-			{entries.length > 0 ? (
-				<HistoryButton
-					entries={entries}
-					onRemove={remove}
-					onClear={clear}
-					className="text-muted-foreground hover:text-foreground animate-in fade-in fill-mode-both duration-300"
-				/>
-			) : null}
 		</div>
 	);
 }
