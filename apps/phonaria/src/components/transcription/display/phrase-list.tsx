@@ -2,11 +2,40 @@
 
 import { Button } from "@phonaria/ui/components/button";
 import { X } from "lucide-react";
+import { segmentHistoryIpa } from "@/lib/transcription/history";
 import { cn } from "@/lib/utils";
 
 interface Phrase {
 	text: string;
 	ipa: string;
+}
+
+function PhraseIpa({ ipa, highlightSound }: { ipa: string; highlightSound?: string }) {
+	if (!highlightSound) {
+		return <span className="w-full truncate text-xs text-muted-foreground">/{ipa}/</span>;
+	}
+
+	const segments = segmentHistoryIpa(ipa);
+	return (
+		<span className="w-full truncate text-xs text-muted-foreground">
+			/
+			{segments.map((segment, index) => {
+				const value = segment.kind === "sound" ? segment.symbol : segment.text;
+				if (segment.kind === "sound" && segment.symbol === highlightSound) {
+					return (
+						<mark
+							key={`${index}-${value}`}
+							className="rounded-sm bg-primary text-primary-foreground"
+						>
+							{value}
+						</mark>
+					);
+				}
+				return <span key={`${index}-${value}`}>{value}</span>;
+			})}
+			/
+		</span>
+	);
 }
 
 /**
@@ -19,6 +48,7 @@ export function PhraseList({
 	onRemove,
 	removeLabel = (text) => `Remove "${text}"`,
 	disabled = false,
+	highlightSound,
 	className,
 }: {
 	phrases: readonly Phrase[];
@@ -26,6 +56,8 @@ export function PhraseList({
 	onRemove?: (text: string) => void;
 	removeLabel?: (text: string) => string;
 	disabled?: boolean;
+	/** Whole-symbol highlight inside each IPA line. */
+	highlightSound?: string;
 	className?: string;
 }) {
 	return (
@@ -44,9 +76,7 @@ export function PhraseList({
 						<span className="w-full truncate text-sm text-muted-foreground transition-colors group-hover:text-foreground group-focus-within:text-foreground">
 							{phrase.text}
 						</span>
-						{phrase.ipa ? (
-							<span className="w-full truncate text-xs text-muted-foreground">/{phrase.ipa}/</span>
-						) : null}
+						{phrase.ipa ? <PhraseIpa ipa={phrase.ipa} highlightSound={highlightSound} /> : null}
 					</button>
 					{onRemove ? (
 						<Button

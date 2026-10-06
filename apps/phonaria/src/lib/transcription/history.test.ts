@@ -2,9 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	addHistoryEntry,
 	filterHistory,
+	filterHistoryBySound,
+	HISTORY_SOUND_FILTER_MIN_ENTRIES,
 	parseStoredHistory,
+	rankHistorySounds,
 	removeHistoryEntry,
 	serializeHistory,
+	splitHistoryIpa,
 	TRANSCRIPTION_HISTORY_LIMIT,
 	TRANSCRIPTION_HISTORY_STORAGE_KEY,
 	type TranscriptionHistoryEntry,
@@ -81,6 +85,91 @@ describe("filterHistory", () => {
 
 	it("matches IPA", () => {
 		expect(filterHistory(entries, "oʊ").map((e) => e.text)).toEqual(["thorough", "Hello world"]);
+	});
+});
+
+describe("splitHistoryIpa", () => {
+	it("splits ˈskwɝ.əl into s, k, w, ɝ, ə, l", () => {
+		expect(splitHistoryIpa("ˈskwɝ.əl")).toEqual(["s", "k", "w", "ɝ", "ə", "l"]);
+	});
+
+	it("splits ˈðoʊ into ð and oʊ", () => {
+		const sounds = splitHistoryIpa("ˈðoʊ");
+		expect(sounds).toEqual(["ð", "oʊ"]);
+		expect(sounds).not.toContain("ʊ");
+	});
+
+	it("keeps affricates whole and skips stress, dots, and spaces", () => {
+		expect(splitHistoryIpa("dʒ")).toEqual(["dʒ"]);
+		expect(splitHistoryIpa("hə.ˈloʊ ˈwɝld")).toEqual(["h", "ə", "l", "oʊ", "w", "ɝ", "l", "d"]);
+	});
+});
+
+describe("filterHistoryBySound", () => {
+	const entries = [
+		{ text: "though", ipa: "ˈðoʊ", at: 2 },
+		{ text: "book", ipa: "bʊk", at: 1 },
+	];
+
+	it("matches a whole symbol", () => {
+		expect(filterHistoryBySound(entries, "oʊ").map((entry) => entry.text)).toEqual(["though"]);
+		expect(filterHistoryBySound(entries, "ʊ").map((entry) => entry.text)).toEqual(["book"]);
+	});
+
+	it("keeps everything when no sound is selected", () => {
+		expect(filterHistoryBySound(entries, "")).toEqual(entries);
+	});
+});
+
+describe("rankHistorySounds", () => {
+	it("returns no chips below 10 entries", () => {
+		const entries = Array.from({ length: HISTORY_SOUND_FILTER_MIN_ENTRIES - 1 }, (_, index) => ({
+			text: `word ${index}`,
+			ipa: "pə",
+			at: index,
+		}));
+		expect(rankHistorySounds(entries)).toEqual([]);
+	});
+
+	it("counts each entry once per sound", () => {
+		const entries = [
+			{ text: "a", ipa: "ppp", at: 10 },
+			{ text: "b", ipa: "p", at: 9 },
+			{ text: "c", ipa: "b", at: 8 },
+			{ text: "d", ipa: "b", at: 7 },
+			{ text: "e", ipa: "b", at: 6 },
+			{ text: "f", ipa: "ə", at: 5 },
+			{ text: "g", ipa: "ə", at: 4 },
+			{ text: "h", ipa: "ə", at: 3 },
+			{ text: "i", ipa: "ə", at: 2 },
+			{ text: "j", ipa: "ə", at: 1 },
+		];
+		expect(rankHistorySounds(entries)).toEqual(["ə", "b", "p"]);
+	});
+
+	it("returns at most 8 sounds and breaks ties by inventory order", () => {
+		const ranked = [
+			["ə", 10],
+			["p", 9],
+			["b", 8],
+			["t", 7],
+			["d", 6],
+			["k", 5],
+			["f", 4],
+			["v", 3],
+			["θ", 3],
+			["s", 1],
+		] as const;
+		const entries = Array.from({ length: HISTORY_SOUND_FILTER_MIN_ENTRIES }, (_, index) => ({
+			text: `word ${index}`,
+			ipa: ranked
+				.filter(([, count]) => index < count)
+				.map(([symbol]) => symbol)
+				.join(""),
+			at: HISTORY_SOUND_FILTER_MIN_ENTRIES - index,
+		}));
+
+		expect(rankHistorySounds(entries)).toEqual(["ə", "p", "b", "t", "d", "k", "f", "v"]);
 	});
 });
 

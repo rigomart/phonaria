@@ -1,3 +1,4 @@
+import { getIpaForPhonemeId, getLanguagePhonemeIds } from "@phonaria/phonetics-data";
 import { create } from "zustand";
 
 /**
@@ -91,6 +92,108 @@ export function filterHistory(
 	return entries.filter(
 		(entry) => historyEntryKey(entry.text).includes(needle) || entry.ipa.includes(needle),
 	);
+}
+
+/**
+ * The sound-chip row appears once history is long enough to be worth scanning,
+ * and it never offers more chips than fit in one wrapping row.
+ */
+export const HISTORY_SOUND_FILTER_MIN_ENTRIES = 10;
+export const HISTORY_SOUND_FILTER_LIMIT = 8;
+
+/** Stress marks, syllable dots (stored "." and displayed "·"), and spaces. */
+const HISTORY_IPA_SEPARATORS = new Set([" ", ".", "·", "ˈ", "ˌ"]);
+
+const historyIpaSymbols = getLanguagePhonemeIds("en-us").map((id) => getIpaForPhonemeId(id));
+const historyIpaSymbolsLongestFirst = [...historyIpaSymbols].sort(
+	(left, right) => right.length - left.length,
+);
+const historyIpaInventoryOrder = new Map(historyIpaSymbols.map((symbol, index) => [symbol, index]));
+
+export type HistoryIpaSegment = { kind: "sound"; symbol: string } | { kind: "mark"; text: string };
+
+/**
+ * Splits a stored IPA string into en-us sounds and the marks between them.
+ * Matching is longest-first, so each diphthong and affricate is one symbol.
+ */
+export function segmentHistoryIpa(ipa: string): HistoryIpaSegment[] {
+	const segments: HistoryIpaSegment[] = [];
+	let marks = "";
+	let index = 0;
+
+	const flushMarks = () => {
+		if (marks.length === 0) return;
+		segments.push({ kind: "mark", text: marks });
+		marks = "";
+	};
+
+	while (index < ipa.length) {
+		const character = ipa[index] ?? "";
+		if (HISTORY_IPA_SEPARATORS.has(character)) {
+			marks += character;
+			index += 1;
+			continue;
+		}
+
+		const rest = ipa.slice(index);
+		const symbol = historyIpaSymbolsLongestFirst.find((candidate) => rest.startsWith(candidate));
+		if (symbol) {
+			flushMarks();
+			segments.push({ kind: "sound", symbol });
+			index += symbol.length;
+			continue;
+		}
+
+		marks += character;
+		index += 1;
+	}
+
+	flushMarks();
+	return segments;
+}
+
+/** Sound symbols in order, with repeats. Marks are dropped. */
+export function splitHistoryIpa(ipa: string): string[] {
+	return segmentHistoryIpa(ipa).flatMap((segment) =>
+		segment.kind === "sound" ? [segment.symbol] : [],
+	);
+}
+
+/** Entries whose IPA contains `sound` as a whole en-us symbol. */
+export function filterHistoryBySound(
+	entries: readonly TranscriptionHistoryEntry[],
+	sound: string,
+): TranscriptionHistoryEntry[] {
+	if (!sound) return [...entries];
+	return entries.filter((entry) => splitHistoryIpa(entry.ipa).includes(sound));
+}
+
+/**
+ * Sounds that show up in the most entries, at most {@link HISTORY_SOUND_FILTER_LIMIT}.
+ * Each entry counts once per sound. Ties follow en-us inventory order.
+ * Fewer than {@link HISTORY_SOUND_FILTER_MIN_ENTRIES} entries yield no chips.
+ */
+export function rankHistorySounds(entries: readonly TranscriptionHistoryEntry[]): string[] {
+	if (entries.length < HISTORY_SOUND_FILTER_MIN_ENTRIES) return [];
+
+	const counts = new Map<string, number>();
+	for (const entry of entries) {
+		for (const sound of new Set(splitHistoryIpa(entry.ipa))) {
+			counts.set(sound, (counts.get(sound) ?? 0) + 1);
+		}
+	}
+
+	return [...counts.entries()]
+		.sort((left, right) => {
+			const byCount = right[1] - left[1];
+			if (byCount !== 0) return byCount;
+			return (
+				(historyIpaInventoryOrder.get(left[0]) ?? Number.MAX_SAFE_INTEGER) -
+				(historyIpaInventoryOrder.get(right[0]) ?? Number.MAX_SAFE_INTEGER)
+			);
+		})
+		.slice(0, HISTORY_SOUND_FILTER_LIMIT)
+		.map(([sound]) => sound);
 }
 
 export function serializeHistory(entries: readonly TranscriptionHistoryEntry[]): string {

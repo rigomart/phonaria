@@ -14,12 +14,14 @@ import {
 import { useState } from "react";
 import {
 	filterHistory,
+	filterHistoryBySound,
+	rankHistorySounds,
 	TRANSCRIPTION_HISTORY_LIMIT,
 	type TranscriptionHistoryEntry,
 } from "@/lib/transcription/history";
 import { PhraseList } from "./phrase-list";
 
-/** The full history, with a filter, for when the Recent block is not enough. */
+/** The full history, with a text filter and, once it is long enough, sound chips. */
 export function HistorySheet({
 	open,
 	onOpenChange,
@@ -38,10 +40,17 @@ export function HistorySheet({
 	disabled?: boolean;
 }) {
 	const [query, setQuery] = useState("");
-	const matches = filterHistory(entries, query);
+	const [selectedSound, setSelectedSound] = useState<string | null>(null);
+	const sounds = rankHistorySounds(entries);
+	const activeSound =
+		selectedSound !== null && sounds.includes(selectedSound) ? selectedSound : null;
+	const matches = filterHistoryBySound(filterHistory(entries, query), activeSound ?? "");
 
 	const handleOpenChange = (next: boolean) => {
-		if (!next) setQuery("");
+		if (!next) {
+			setQuery("");
+			setSelectedSound(null);
+		}
 		onOpenChange(next);
 	};
 
@@ -61,6 +70,29 @@ export function HistorySheet({
 						aria-label="Filter history"
 						className="mt-2"
 					/>
+					{sounds.length > 0 ? (
+						<fieldset className="w-full min-w-0 border-0 p-0">
+							<legend className="sr-only">Filter by sound</legend>
+							<div className="flex flex-wrap gap-1.5">
+								{sounds.map((sound) => {
+									const selected = sound === activeSound;
+									return (
+										<Button
+											key={sound}
+											variant={selected ? "default" : "outline"}
+											size="sm"
+											aria-pressed={selected}
+											aria-label={`Filter by /${sound}/`}
+											onClick={() => setSelectedSound(selected ? null : sound)}
+											className="px-2 font-display"
+										>
+											{sound}
+										</Button>
+									);
+								})}
+							</div>
+						</fieldset>
+					) : null}
 				</SheetHeader>
 
 				<SheetPanel>
@@ -74,11 +106,12 @@ export function HistorySheet({
 							onRemove={onRemove}
 							removeLabel={(text) => `Remove "${text}" from history`}
 							disabled={disabled}
+							highlightSound={activeSound ?? undefined}
 							className="-mx-2.5"
 						/>
 					) : (
 						<p className="py-6 text-center text-sm text-muted-foreground">
-							No transcriptions match "{query.trim()}".
+							{noMatchesMessage(query, activeSound)}
 						</p>
 					)}
 				</SheetPanel>
@@ -97,6 +130,13 @@ export function HistorySheet({
 			</SheetPopup>
 		</Sheet>
 	);
+}
+
+function noMatchesMessage(query: string, sound: string | null): string {
+	const text = query.trim();
+	if (text && sound) return `No transcriptions with /${sound}/ match "${text}".`;
+	if (sound) return `No transcriptions include /${sound}/.`;
+	return `No transcriptions match "${text}".`;
 }
 
 /** Asks inline before clearing, so one stray click cannot empty the history. */
