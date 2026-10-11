@@ -1,8 +1,6 @@
 "use client";
 
 import { type EnglishPhonemeSymbolId, getIpaForPhonemeId } from "@phonaria/phonetics-data";
-import { Button } from "@phonaria/ui/components/button";
-import { RotateCcw } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useCurrentTranscription } from "@/hooks/use-transcribe";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
@@ -40,6 +38,11 @@ const MORPH_END = MORPH_START + NAME_PRONUNCIATION.length * MORPH_STEP + CAPTION
 const SETTLE_AT =
 	MORPH_START + (NAME_PRONUNCIATION.length - 1) * MORPH_STEP + SOUND_LAG + TURN_MS + 100;
 const EASING = "cubic-bezier(0.2, 0, 0, 1)";
+// Once the name settles, a soft glow passes across the sounds to show they can be opened.
+// Each glow outlasts the stagger many times over, so it reads as one wave, not steps.
+const SWEEP_START = SETTLE_AT + 400;
+const SWEEP_STAGGER = 70;
+const SWEEP_MS = 900;
 const FOLD_MS = 500;
 
 /**
@@ -81,7 +84,6 @@ export function HomeIntro({ query }: { query: string | undefined }) {
 		hasError: lookupError !== null,
 	});
 	const [folding, setFolding] = useState(false);
-	const [playCount, setPlayCount] = useState(0);
 
 	useEffect(() => {
 		if (open) return;
@@ -99,20 +101,20 @@ export function HomeIntro({ query }: { query: string | undefined }) {
 			)}
 		>
 			<div className="min-h-0 overflow-hidden">
-				{open || folding ? (
-					<NamePronunciation key={playCount} onReplay={() => setPlayCount((count) => count + 1)} />
-				) : null}
+				{open || folding ? <NamePronunciation /> : null}
 			</div>
 		</div>
 	);
 }
 
-function NamePronunciation({ onReplay }: { onReplay: () => void }) {
+function NamePronunciation() {
 	const [phase, setPhase] = useState<Phase>("waiting");
+	const [sweeping, setSweeping] = useState(false);
 
 	useEffect(() => {
 		let cancelled = false;
 		let settleTimer: number | undefined;
+		let sweepTimer: number | undefined;
 		void whenFontsReady().then(() => {
 			if (cancelled) return;
 			if (prefersReducedMotion()) {
@@ -121,17 +123,19 @@ function NamePronunciation({ onReplay }: { onReplay: () => void }) {
 			}
 			setPhase("playing");
 			settleTimer = window.setTimeout(() => setPhase("settled"), SETTLE_AT);
+			sweepTimer = window.setTimeout(() => setSweeping(true), SWEEP_START);
 		});
 		return () => {
 			cancelled = true;
 			window.clearTimeout(settleTimer);
+			window.clearTimeout(sweepTimer);
 		};
 	}, []);
 
 	return (
 		<section
 			aria-labelledby="home-intro-heading"
-			className="flex flex-col items-center gap-6 px-4 pb-8 md:pb-10"
+			className="flex flex-col items-center px-4 pb-8 md:pb-10"
 		>
 			<h1 id="home-intro-heading" className="sr-only">
 				Phonaria
@@ -150,31 +154,11 @@ function NamePronunciation({ onReplay }: { onReplay: () => void }) {
 						phonemeId={segment.phonemeId}
 						stressed={"stressed" in segment}
 						turnAt={MORPH_START + index * MORPH_STEP}
+						sweepDelay={sweeping ? index * SWEEP_STAGGER : null}
 					/>
 				))}
 				<Slash phase={phase} className="left-full" />
 			</figure>
-
-			<div
-				className={cn(
-					"flex items-center gap-1",
-					reveal(phase, "slide-in-from-bottom-1 duration-500"),
-				)}
-				style={revealDelay(phase, MORPH_END + 200)}
-			>
-				<p className="text-sm text-muted-foreground">
-					Tap a sound to hear it and see how it's made
-				</p>
-				<Button
-					variant="ghost"
-					size="icon-xs"
-					className="text-muted-foreground hover:text-foreground"
-					aria-label="Replay the animation"
-					onClick={onReplay}
-				>
-					<RotateCcw />
-				</Button>
-			</div>
 		</section>
 	);
 }
@@ -186,12 +170,14 @@ function NameSegment({
 	phonemeId,
 	stressed,
 	turnAt,
+	sweepDelay,
 }: {
 	phase: Phase;
 	spelling: string;
 	phonemeId: EnglishPhonemeSymbolId;
 	stressed: boolean;
 	turnAt: number;
+	sweepDelay: number | null;
 }) {
 	const symbol = getIpaForPhonemeId(phonemeId);
 	const columnRef = useRef<HTMLDivElement>(null);
@@ -210,6 +196,18 @@ function NameSegment({
 		);
 		return () => animation.cancel();
 	}, [phase, turnAt]);
+
+	useEffect(() => {
+		const button = soundRef.current?.querySelector("button");
+		if (sweepDelay === null || !button) return;
+		const glow = getComputedStyle(button).getPropertyValue("--secondary").trim();
+		const animation = button.animate([{ offset: 0.4, backgroundColor: glow }], {
+			duration: SWEEP_MS,
+			delay: sweepDelay,
+			easing: "ease-in-out",
+		});
+		return () => animation.cancel();
+	}, [sweepDelay]);
 
 	return (
 		<div
