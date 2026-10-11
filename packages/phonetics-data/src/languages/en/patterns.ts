@@ -1,7 +1,7 @@
-import { deepFreeze } from "../../shared/readonly";
 // Common spelling patterns for English phonemes
 // Because English spelling is historically inconsistent, these represent general tendencies rather than fixed rules
 
+import { deepFreeze } from "../../shared/readonly";
 import type { EnglishPhonemeSymbolId } from "../inventories";
 import type { SpellingPattern } from "../types";
 

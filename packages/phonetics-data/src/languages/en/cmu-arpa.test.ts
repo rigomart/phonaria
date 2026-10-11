@@ -30,17 +30,12 @@ describe("phonemeVariantToCmuArpa", () => {
 	])("converts %s without changing its sounds or stress", (input, expected) => {
 		expect(phonemeVariantToCmuArpa(input)).toBe(expected);
 	});
-	it.each([
-		"",
-		"S UNKNOWN T",
-		"S I T",
-		"AX1",
-		"AH0",
-		"P1",
-		"EE1",
-	])("rejects an invalid or unrepresentable pronunciation: %s", (input) => {
-		expect(() => phonemeVariantToCmuArpa(input)).toThrow();
-	});
+	it.each(["", "S UNKNOWN T", "S I T", "AX1", "AH0", "P1", "EE1"])(
+		"rejects an invalid or unrepresentable pronunciation: %s",
+		(input) => {
+			expect(() => phonemeVariantToCmuArpa(input)).toThrow();
+		},
+	);
 });
 
 describe("CMU mappings", () => {
@@ -92,27 +87,15 @@ describe("CMU mappings", () => {
 		expect(getArpabetForEnglishPhonemeId(id)).toBe(expected);
 	});
 
-	it.each([
-		"EE",
-		"AA",
-		"OO",
-		"NY",
-		"RX",
-		"RR",
-		"X",
-		"YH",
-	] as const)("does not treat Spanish-only %s as an English sound", (id) =>
-		expect(isEnglishPhonemeSymbolId(id)).toBe(false));
+	it.each(["EE", "AA", "OO", "NY", "RX", "RR", "X", "YH"] as const)(
+		"does not treat Spanish-only %s as an English sound",
+		(id) => expect(isEnglishPhonemeSymbolId(id)).toBe(false),
+	);
 
-	it.each([
-		"",
-		"UNKNOWN",
-		"IY",
-		"AH3",
-		"P1",
-		"I1",
-		"HH1",
-	])("rejects invalid raw CMU token %s", (token) => expect(isCmuArpaToken(token)).toBe(false));
+	it.each(["", "UNKNOWN", "IY", "AH3", "P1", "I1", "HH1"])(
+		"rejects invalid raw CMU token %s",
+		(token) => expect(isCmuArpaToken(token)).toBe(false),
+	);
 });
 
 describe("internal phoneme tokens", () => {
@@ -128,20 +111,14 @@ describe("internal phoneme tokens", () => {
 		expect(isValidPhonemeToken(token)).toBe(true);
 	});
 
-	it.each([
-		"",
-		"UNKNOWN",
-		"IY1",
-		"I3",
-		"I11",
-		" I1",
-		"I1 ",
-		"i1",
-	])("rejects malformed or raw-CMU token %s", (token) => {
-		expect(tryExtractBasePhonemeId(token)).toBeNull();
-		expect(isValidPhonemeToken(token)).toBe(false);
-		expect(() => extractBasePhonemeId(token)).toThrow();
-	});
+	it.each(["", "UNKNOWN", "IY1", "I3", "I11", " I1", "I1 ", "i1"])(
+		"rejects malformed or raw-CMU token %s",
+		(token) => {
+			expect(tryExtractBasePhonemeId(token)).toBeNull();
+			expect(isValidPhonemeToken(token)).toBe(false);
+			expect(() => extractBasePhonemeId(token)).toThrow();
+		},
+	);
 });
 
 describe("internal pronunciation to IPA", () => {
@@ -164,32 +141,27 @@ describe("internal pronunciation to IPA", () => {
 });
 
 describe("inherited-property validation regressions", () => {
-	it.each([
-		"constructor",
-		"toString",
-		"__proto__",
-	])("rejects inherited object property %s as a raw CMU token", (token) =>
-		expect(isCmuArpaToken(token)).toBe(false));
-	it.each([
-		"constructor",
-		"toString",
-		"__proto__",
-	])("rejects inherited object property %s as an internal sound", (token) => {
-		for (const suffix of ["", "0", "1", "2"]) {
-			const stressedToken = token + suffix;
-			expect(tryExtractBasePhonemeId(stressedToken)).toBeNull();
-			expect(isValidPhonemeToken(stressedToken)).toBe(false);
-			expect(() => extractBasePhonemeId(stressedToken)).toThrow();
-			expect(() => phonemeVariantToCmuArpa(`P ${stressedToken} AE1 T`)).toThrow();
-			expect(cmuVariantToIpa(`P ${stressedToken} AE1 T`)).toBe("pæt");
-		}
-	});
-	it.each([
-		"constructor",
-		"toString",
-		"__proto__",
-	])("rejects inherited object property %s as an English sound", (token) =>
-		expect(isEnglishPhonemeSymbolId(token as PhonemeSymbolId)).toBe(false));
+	it.each(["constructor", "toString", "__proto__"])(
+		"rejects inherited object property %s as a raw CMU token",
+		(token) => expect(isCmuArpaToken(token)).toBe(false),
+	);
+	it.each(["constructor", "toString", "__proto__"])(
+		"rejects inherited object property %s as an internal sound",
+		(token) => {
+			for (const suffix of ["", "0", "1", "2"]) {
+				const stressedToken = token + suffix;
+				expect(tryExtractBasePhonemeId(stressedToken)).toBeNull();
+				expect(isValidPhonemeToken(stressedToken)).toBe(false);
+				expect(() => extractBasePhonemeId(stressedToken)).toThrow();
+				expect(() => phonemeVariantToCmuArpa(`P ${stressedToken} AE1 T`)).toThrow();
+				expect(cmuVariantToIpa(`P ${stressedToken} AE1 T`)).toBe("pæt");
+			}
+		},
+	);
+	it.each(["constructor", "toString", "__proto__"])(
+		"rejects inherited object property %s as an English sound",
+		(token) => expect(isEnglishPhonemeSymbolId(token as PhonemeSymbolId)).toBe(false),
+	);
 });
 
 describe("pronunciation parsing contracts", () => {

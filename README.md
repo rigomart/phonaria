@@ -18,7 +18,7 @@ For full transcription, add `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to `apps
 ```bash
 bun run check-types
 bun run test
-bunx biome check . # read-only; bun run lint applies fixes
+bun run lint:check # read-only; bun run lint applies fixes
 bun run build
 ```
 

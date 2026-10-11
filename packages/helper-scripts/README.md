@@ -32,7 +32,7 @@ Words must be alphabetic, at least 3 letters, and have one pronunciation. Homoph
 
 ```bash
 bun run --cwd packages/helper-scripts check-types
-bun run --cwd packages/helper-scripts lint # applies Biome fixes
+bun run --cwd packages/helper-scripts lint # applies Oxlint fixes and Oxfmt formatting
 ```
 
 The generator parsing regressions run in `bun run --cwd packages/audio-gen test` alongside the mapping-report tests. The Python curated-list boundary and the phoneme-frequency computation are checked with `python3 -m unittest discover -s packages/helper-scripts -p 'test_*.py'` (no `wordfreq` installation needed for tests).

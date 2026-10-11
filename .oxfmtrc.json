@@ -1,0 +1,32 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"useTabs": true,
+	"tabWidth": 2,
+	"printWidth": 100,
+	"sortImports": {
+		"newlinesBetween": false
+	},
+	"sortPackageJson": false,
+	"ignorePatterns": [
+		"*.md",
+		"*.mdx",
+		"*.yml",
+		"*.yaml",
+		"*.html",
+		"apps/phonaria/public",
+		"apps/phonaria/.wrangler",
+		"apps/phonaria/.output",
+		"apps/phonaria/src/routeTree.gen.ts",
+		"apps/phonaria/worker-configuration.d.ts",
+		"packages/phonetics-data/data",
+		"packages/browser-contract/baselines/*.json"
+	],
+	"overrides": [
+		{
+			"files": ["*.jsonc", "tsconfig*.json", ".vscode/*.json"],
+			"options": {
+				"trailingComma": "none"
+			}
+		}
+	]
+}

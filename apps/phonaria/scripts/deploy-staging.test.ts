@@ -71,15 +71,17 @@ describe("deployStaging", () => {
 		expect(commands[0]?.env.SITE_URL).toBe("https://phonaria-staging.mirdor-dev.workers.dev");
 	});
 
-	it.each([
-		["--name", "another-worker"],
-		["--name=another-worker"],
-	])("rejects a Wrangler name override before running commands: %j", (...wranglerArgs) => {
-		const commands: DeploymentCommand[] = [];
+	it.each([["--name", "another-worker"], ["--name=another-worker"]])(
+		"rejects a Wrangler name override before running commands: %j",
+		(...wranglerArgs) => {
+			const commands: DeploymentCommand[] = [];
 
-		expect(() =>
-			deployStaging({ subdomain: "mirdor-dev", wranglerArgs }, (command) => commands.push(command)),
-		).toThrow(/Worker name comes from wrangler.jsonc/);
-		expect(commands).toEqual([]);
-	});
+			expect(() =>
+				deployStaging({ subdomain: "mirdor-dev", wranglerArgs }, (command) =>
+					commands.push(command),
+				),
+			).toThrow(/Worker name comes from wrangler.jsonc/);
+			expect(commands).toEqual([]);
+		},
+	);
 });

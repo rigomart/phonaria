@@ -18,16 +18,14 @@ jobs:
         uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
-        with:
-          version: 2.3.6
-      - name: Lint
-        run: biome ci .
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
       - name: Install dependencies
         run: bun ci
+      - name: Lint
+        run: bunx oxlint --format=github
+      - name: Format
+        run: bunx oxfmt --check
       - name: Type check
         run: bun run check-types
       - name: Test

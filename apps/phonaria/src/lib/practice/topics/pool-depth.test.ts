@@ -10,15 +10,16 @@ import { listTopics } from "./index";
  */
 const MIN_BAND_DEPTH = 200;
 
-describe.each(
-	listTopics().map((topic) => [topic.id, topic] as const),
-)("%s word pool over shipped top-10k data", (_id, topic) => {
-	const pool = deriveWordPool(EnglishCuratedTop10k, topic);
+describe.each(listTopics().map((topic) => [topic.id, topic] as const))(
+	"%s word pool over shipped top-10k data",
+	(_id, topic) => {
+		const pool = deriveWordPool(EnglishCuratedTop10k, topic);
 
-	it("keeps every syllable band comfortably above slot demand", () => {
-		for (const band of topic.slotSpec) {
-			const depth = pool.filter((word) => isInSyllableBand(word, band)).length;
-			expect(depth, `band ${band.min}–${band.max ?? "∞"}`).toBeGreaterThan(MIN_BAND_DEPTH);
-		}
-	});
-});
+		it("keeps every syllable band comfortably above slot demand", () => {
+			for (const band of topic.slotSpec) {
+				const depth = pool.filter((word) => isInSyllableBand(word, band)).length;
+				expect(depth, `band ${band.min}–${band.max ?? "∞"}`).toBeGreaterThan(MIN_BAND_DEPTH);
+			}
+		});
+	},
+);

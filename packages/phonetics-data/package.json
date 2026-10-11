@@ -18,7 +18,7 @@
 	},
 	"packageManager": "bun@1.3.2",
 	"scripts": {
-		"lint": "biome check --write",
+		"lint": "oxlint --fix && oxfmt",
 		"check-types": "tsc --noEmit",
 		"test": "vitest run"
 	},

@@ -89,6 +89,7 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 			</div>
 
 			{alternatives.length > 0 ? (
+				// oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- the handlers only fan the pile of focusable cards in and out
 				<fieldset
 					ref={pileRef}
 					aria-label={`Other pronunciations of ${word.word}`}

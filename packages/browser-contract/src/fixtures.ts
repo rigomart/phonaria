@@ -4,7 +4,7 @@ import { getTarget } from "./target";
 
 export const test = base.extend<{ target: ContractTarget }>({
 	target: async (
-		// biome-ignore lint/correctness/noEmptyPattern: Playwright requires object destructuring here.
+		// oxlint-disable-next-line no-empty-pattern -- Playwright requires object destructuring here.
 		{},
 		use,
 	) => {

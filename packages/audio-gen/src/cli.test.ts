@@ -27,14 +27,10 @@ describe("Azure generation command", () => {
 			outputDir: "output/preview",
 		});
 	});
-	it.each([
-		"--out=",
-		"--limit=",
-		"--rpm=",
-		"--limit=2.5",
-		"--words=",
-		"--takes=2",
-	])("rejects malformed or obsolete options %s", (argument) => {
-		expect(() => parseArguments([argument])).toThrow();
-	});
+	it.each(["--out=", "--limit=", "--rpm=", "--limit=2.5", "--words=", "--takes=2"])(
+		"rejects malformed or obsolete options %s",
+		(argument) => {
+			expect(() => parseArguments([argument])).toThrow();
+		},
+	);
 });
