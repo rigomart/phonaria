@@ -25,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      deployments: write
     env:
       CLOUDFLARE_ENV: production
       SITE_URL: https://phonaria.rigos.dev
@@ -90,6 +91,16 @@ jobs:
         working-directory: apps/phonaria
         run: bun ./scripts/write-worker-secrets.ts
 
+      - name: Start GitHub deployment
+        id: deployment
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          id="$(bun apps/phonaria/scripts/github-deployment.ts start production --production)"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
       - name: Deploy production Worker
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
@@ -153,6 +164,13 @@ jobs:
             packages/browser-contract/test-results/
           if-no-files-found: ignore
           retention-days: 30
+
+      - name: Finish GitHub deployment
+        if: always() && steps.deployment.outputs.id != ''
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bun apps/phonaria/scripts/github-deployment.ts finish "${{ steps.deployment.outputs.id }}" "${{ job.status }}" "${{ steps.origin.outputs.url }}"
 
       - name: Skip deploy when Cloudflare secrets are missing
         if: env.CLOUDFLARE_API_TOKEN == ''

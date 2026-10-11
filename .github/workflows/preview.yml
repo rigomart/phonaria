@@ -121,6 +121,16 @@ jobs:
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
         run: bun ./scripts/write-worker-secrets.ts
+      - name: Start GitHub deployment
+        id: deployment
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          DEPLOYMENT_REF: ${{ github.head_ref }}
+        run: |
+          id="$(bun apps/phonaria/scripts/github-deployment.ts start preview --transient)"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
       - name: Deploy preview Worker
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
@@ -181,6 +191,12 @@ jobs:
                 body,
               });
             }
+      - name: Finish GitHub deployment
+        if: always() && steps.deployment.outputs.id != ''
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bun apps/phonaria/scripts/github-deployment.ts finish "${{ steps.deployment.outputs.id }}" "${{ job.status }}" "${{ steps.origin.outputs.url }}"
       - name: Skip deploy when Cloudflare secrets are missing
         if: env.CLOUDFLARE_API_TOKEN == ''
         run: |
@@ -235,6 +251,15 @@ jobs:
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
         run: bun ./scripts/write-worker-secrets.ts
+      - name: Start GitHub deployment
+        id: deployment
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          id="$(bun apps/phonaria/scripts/github-deployment.ts start staging)"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
       - name: Deploy staging Worker
         if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
@@ -262,6 +287,12 @@ jobs:
         run: |
           bun --cwd packages/browser-contract e2e:install
           bun --cwd packages/browser-contract e2e:smoke
+      - name: Finish GitHub deployment
+        if: always() && steps.deployment.outputs.id != ''
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bun apps/phonaria/scripts/github-deployment.ts finish "${{ steps.deployment.outputs.id }}" "${{ job.status }}" "${{ steps.staging.outputs.url }}"
       - name: Skip deploy when Cloudflare secrets are missing
         if: env.CLOUDFLARE_API_TOKEN == ''
         run: |
