@@ -1,41 +1,14 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
-	"plugins": ["typescript", "unicorn", "oxc", "import", "react", "jsx-a11y", "vitest"],
+	"plugins": ["typescript", "unicorn", "oxc", "import", "vitest"],
 	"categories": {
 		"correctness": "error"
 	},
-	"env": {
-		"browser": true,
-		"node": true,
-		"es2024": true
-	},
 	"rules": {
-		"jsx-a11y/prefer-tag-over-role": "off",
-		"react/purity": "off",
-		"react/react-in-jsx-scope": "off",
-		"react/set-state-in-effect": "off",
 		"unicorn/no-new-array": "off",
 		"vitest/no-conditional-expect": "off",
 		"vitest/require-mock-type-parameters": "off",
 		"vitest/require-to-throw-message": "off",
 		"vitest/valid-expect": ["error", { "maxArgs": 2 }]
-	},
-	"overrides": [
-		{
-			"files": ["packages/ui/src/components/**"],
-			"rules": {
-				"jsx-a11y/click-events-have-key-events": "off",
-				"jsx-a11y/label-has-associated-control": "off",
-				"jsx-a11y/no-noninteractive-element-interactions": "off"
-			}
-		}
-	],
-	"ignorePatterns": [
-		"apps/phonaria/public",
-		"apps/phonaria/.wrangler",
-		"apps/phonaria/.output",
-		"apps/phonaria/src/routeTree.gen.ts",
-		"apps/phonaria/worker-configuration.d.ts",
-		"packages/phonetics-data/data"
-	]
+	}
 }

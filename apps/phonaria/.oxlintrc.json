@@ -1,0 +1,11 @@
+{
+	"$schema": "../../node_modules/oxlint/configuration_schema.json",
+	"extends": ["../../.oxlintrc.json", "../../oxlint.react.json"],
+	"ignorePatterns": [
+		"public",
+		".wrangler",
+		".output",
+		"src/routeTree.gen.ts",
+		"worker-configuration.d.ts"
+	]
+}
