@@ -102,7 +102,7 @@ Run before merging package changes:
 ## Current scope
 
 - Spanish currently ships core inventory + articulatory data.
-- English currently provides CMU/ARPABET mappings, spelling patterns, allophones, contrasts, and curated dictionary datasets.
+- English currently provides CMU/ARPABET mappings, spelling patterns, allophones, contrasts, a letter-to-sound matcher, and curated dictionary datasets.
 - Selectors return `null` for not-yet-implemented language features instead of widening types with placeholder data.
 
 Inventories, counts, capabilities, and feature registries returned by selectors

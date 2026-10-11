@@ -25,6 +25,14 @@ The script proposes minimal pairs from the curated top-10k list for a person to 
 
 Words must be alphabetic, at least 3 letters, and have one pronunciation. Homophones are grouped under their most frequent spelling. Pairs are sorted so that pairs of common words come first. The Markdown review sheet has a checkbox per pair and flags likely-bad words (profanity, interjections, first names) without removing them.
 
+## Letter-to-sound coverage
+
+| Command, from the repo root | Output |
+| --- | --- |
+| `bun run --cwd packages/helper-scripts letter-sound-coverage` | `packages/helper-scripts/output/letter-sound-coverage.md` (git-ignored) |
+
+The script runs the English letter-to-sound matcher (`matchLettersToSounds`) over the curated top-10k list. It reports the share of words split cleanly by their first pronunciation, by any pronunciation, and within the top 1k. Failures are grouped by the letters and first sound left over where matching gave up. Use it after editing the letter-group table in `packages/phonetics-data/src/languages/en/letter-sounds.ts`. The last measurement is in `docs/research/issue-283-letter-sound-matcher.md`.
+
 ## Checks
 
 ```bash

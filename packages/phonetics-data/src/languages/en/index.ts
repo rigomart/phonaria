@@ -32,6 +32,12 @@ export {
 } from "./cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./contrasts";
 export {
+	findLetterSoundGap,
+	type LetterGroup,
+	type LetterSoundGap,
+	matchLettersToSounds,
+} from "./letter-sounds";
+export {
 	findSubstitution,
 	getSinglePronunciation,
 	type PhonemeSubstitution,

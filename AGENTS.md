@@ -11,6 +11,7 @@
   - `hasLanguageFeature()` / `getLanguageFeatureCapabilities()`: Feature flags per language (Spanish currently has articulations only)
   - English-specific data: `EnglishPhonemeContrasts` (minimal-pair catalog, validated against top-10k) / `EnglishContrastsByPhonemeId`, `EnglishPhonemeAllophones`, `EnglishPhonemeSpellingPatterns`, `CmuArpaMap`
   - Minimal-pair helpers: `getSinglePronunciation()`, `findSubstitution()`, `toBasePhonemeIds()`
+  - Letter-to-sound matcher: `matchLettersToSounds()` splits a spelling into letter groups for one pronunciation (`null` when it can't); `findLetterSoundGap()` reports where it gave up
   - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`
 - `packages/helper-scripts`: Utilities for CMUDict processing and word-mapping reports; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`.
 - `packages/audio-gen`: Local Azure Speech pronunciation generation from the minimal-pair catalog. Reads `.env`, writes recordings and review sheets to ignored `output/` directories, and never uploads audio automatically. See the package README.
@@ -37,6 +38,7 @@
 - `bun --cwd packages/helper-scripts cmudict-stats`: Build CMUDict coverage statistics from the dictionary.
 - `bun --cwd packages/helper-scripts generate-word-mappings`: Produce CMU ARPA mappings for example words derived from `@phonaria/phonetics-data`.
 - `bun --cwd packages/helper-scripts find-minimal-pairs`: Propose minimal-pair candidates per contrast from the top-10k list into a review sheet under `packages/helper-scripts/output/`; reviewed pairs go into `packages/phonetics-data/src/languages/en/contrasts.ts` by hand.
+- `bun --cwd packages/helper-scripts letter-sound-coverage`: Measure how much of the top-10k list the letter-to-sound matcher splits; failures go to a review sheet under `packages/helper-scripts/output/`.
 - `python3 packages/helper-scripts/generate-curated-chunks.py`: Generate curated top-1k and top-10k word lists for client-side tiered lookup (requires `pip install wordfreq`).
 
 ## Design & UX Patterns

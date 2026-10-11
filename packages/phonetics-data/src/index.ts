@@ -73,6 +73,12 @@ export {
 } from "./languages/en/cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./languages/en/contrasts";
 export {
+	findLetterSoundGap,
+	type LetterGroup,
+	type LetterSoundGap,
+	matchLettersToSounds,
+} from "./languages/en/letter-sounds";
+export {
 	findSubstitution,
 	getSinglePronunciation,
 	type PhonemeSubstitution,
