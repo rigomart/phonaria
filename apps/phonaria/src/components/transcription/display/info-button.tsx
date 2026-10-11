@@ -9,16 +9,9 @@ export function TranscriptionInfoButton() {
 	return (
 		<Popover>
 			<PopoverTrigger
-				render={
-					<Button
-						variant="ghost"
-						size="icon"
-						className="size-8 text-muted-foreground hover:text-foreground"
-						aria-label="Transcription information"
-					/>
-				}
+				render={<Button variant="outline" size="icon-sm" aria-label="Transcription information" />}
 			>
-				<Info className="size-4" />
+				<Info />
 			</PopoverTrigger>
 			<PopoverContent align="end" className="sm:w-96">
 				<div className="space-y-2">

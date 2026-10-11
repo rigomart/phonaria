@@ -1,15 +1,15 @@
 {
 	"$schema": "https://ui.shadcn.com/schema.json",
-	"style": "base-nova",
+	"style": "base-luma",
 	"rsc": false,
 	"tsx": true,
 	"tailwind": {
 		"config": "",
 		"css": "../../packages/ui/src/styles/globals.css",
-		"baseColor": "zinc",
+		"baseColor": "stone",
 		"cssVariables": true
 	},
-	"iconLibrary": "hugeicons",
+	"iconLibrary": "lucide",
 	"aliases": {
 		"components": "@/components",
 		"utils": "@phonaria/ui/lib/utils",
@@ -17,7 +17,6 @@
 		"lib": "@/lib",
 		"hooks": "@/hooks"
 	},
-	"registries": {
-		"@coss": "https://coss.com/ui/r/{name}.json"
-	}
+	"menuColor": "default",
+	"menuAccent": "subtle"
 }

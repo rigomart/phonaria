@@ -41,13 +41,12 @@ export function CopyButton({ result }: CopyButtonProps) {
 
 	return (
 		<Button
-			variant="ghost"
-			size="icon"
-			className="size-8 text-muted-foreground hover:text-foreground"
+			variant="outline"
+			size="icon-sm"
 			onClick={handleCopyToClipboard}
 			aria-label="Copy IPA transcription"
 		>
-			{isCopied ? <Check className="size-4" /> : <Copy className="size-4" />}
+			{isCopied ? <Check /> : <Copy />}
 		</Button>
 	);
 }

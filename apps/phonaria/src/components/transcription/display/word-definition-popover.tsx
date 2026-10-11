@@ -128,7 +128,7 @@ export function WordDefinitionPopover({ word, ipa }: WordDefinitionPopoverProps)
 			>
 				{word}
 			</PopoverTrigger>
-			<PopoverContent sideOffset={8}>
+			<PopoverContent sideOffset={8} className="w-auto">
 				<DefinitionBody
 					word={word}
 					ipa={ipa}

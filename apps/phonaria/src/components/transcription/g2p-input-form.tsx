@@ -1,9 +1,15 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
-import { ButtonGroup, ButtonGroupSeparator } from "@phonaria/ui/components/group";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@phonaria/ui/components/input-group";
-import { Loader2, SendHorizontal, X } from "lucide-react";
+import { ButtonGroup } from "@phonaria/ui/components/button-group";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupButton,
+	InputGroupInput,
+} from "@phonaria/ui/components/input-group";
+import { Spinner } from "@phonaria/ui/components/spinner";
+import { SendHorizontal, X } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { SpellingSuggestionLine } from "@/components/transcription/spelling-suggestion-line";
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
@@ -100,7 +106,7 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 		// (not disabled) keeps that key from being swallowed while the draft is empty.
 		<form method="get" action="/" onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
 			<div className="flex w-full flex-row gap-2">
-				<InputGroup className="flex-1">
+				<InputGroup className="h-10 flex-1">
 					<InputGroupInput
 						ref={inputRef}
 						value={inputText}
@@ -109,40 +115,32 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 						placeholder="Type a word or phrase..."
 						disabled={isPending}
 						name="q"
-						size="lg"
 						maxLength={maxLength}
 						aria-label="Text to transcribe"
 					/>
 					{showClear ? (
 						<InputGroupAddon align="inline-end">
-							<Button
-								type="button"
-								variant="ghost"
-								size="icon-sm"
-								className="text-muted-foreground"
+							<InputGroupButton
+								size="icon-xs"
 								aria-label="Clear text"
 								onMouseDown={(event) => event.preventDefault()}
 								onClick={handleClear}
 							>
 								<X />
-							</Button>
+							</InputGroupButton>
 						</InputGroupAddon>
 					) : null}
 				</InputGroup>
 
 				<Button
 					type="submit"
-					size="lg"
+					size="icon-lg"
 					disabled={isPending}
 					aria-disabled={!hasText || isPending}
-					className="gap-2 aria-disabled:pointer-events-none aria-disabled:opacity-64"
+					className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
 					aria-label="Transcribe text"
 				>
-					{isPending ? (
-						<Loader2 className="size-4 animate-spin" />
-					) : (
-						<SendHorizontal className="size-4" />
-					)}
+					{isPending ? <Spinner /> : <SendHorizontal />}
 				</Button>
 			</div>
 
@@ -155,9 +153,8 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 								animationDelay: `${transcriptionResult.words.length * 50 + 400}ms`,
 							}}
 						>
-							<ButtonGroup className="bg-background rounded-lg border shadow-sm">
+							<ButtonGroup>
 								<TranscriptionInfoButton />
-								<ButtonGroupSeparator />
 								<CopyButton result={transcriptionResult} />
 							</ButtonGroup>
 						</div>

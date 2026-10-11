@@ -18,7 +18,13 @@ export function NotFoundContent() {
 				<p className="text-sm text-muted-foreground text-pretty">
 					The address may have a typo, or the page may have moved.
 				</p>
-				<Button variant="outline" size="lg" className="mt-2" render={<Link href="/" />}>
+				<Button
+					variant="outline"
+					size="lg"
+					className="mt-2"
+					nativeButton={false}
+					render={<Link href="/" />}
+				>
 					<Home />
 					Back to Phonaria
 				</Button>

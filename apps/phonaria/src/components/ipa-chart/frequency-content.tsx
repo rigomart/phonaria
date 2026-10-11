@@ -95,7 +95,7 @@ function RankingRow({ sound }: { sound: RankedPhoneme<typeof targetAccent> }) {
 					</span>
 					<span className="text-right text-sm tabular-nums">{share}</span>
 				</PopoverTrigger>
-				<PopoverContent sideOffset={8}>
+				<PopoverContent sideOffset={8} className="w-auto">
 					<PhonemePopoverContent
 						targetAccent={targetAccent}
 						phonemeId={sound.phonemeId}

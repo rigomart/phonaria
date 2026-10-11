@@ -50,6 +50,7 @@ Styling Guidelines:
 - Use semantic color tokens from shadcn (e.g. `bg-muted`, `text-foreground`, `border`).
 - Avoid opacity modifiers on colors like `bg-primary/10` or `border-border/40`.
 - Use full-opacity borders and backgrounds; define new tokens if variants are needed.
+- These rules apply to app code. `packages/ui/src/components` holds vendored shadcn/ui source; keep it close to upstream so `shadcn add --diff` stays useful, and theme through tokens in `globals.css` instead of editing component classes.
 
 ## Learning Experience Principles
 - Toolbox over coursework: allow learners to enter through any feature and combine tools as needed.

@@ -1,6 +1,6 @@
 "use client";
 
-import { toastManager } from "@phonaria/ui/components/toast";
+import { toast } from "@phonaria/ui/components/sonner";
 import { createContext, useEffect, useRef, useState } from "react";
 
 type PlaybackStatus = "idle" | "loading" | "playing" | "error";
@@ -82,10 +82,8 @@ export function AudioManagerProvider({ children }: { children: React.ReactNode }
 				});
 				if (toastedRequestIdRef.current !== playRequestIdRef.current) {
 					toastedRequestIdRef.current = playRequestIdRef.current;
-					toastManager.add({
-						title: "Playback error",
+					toast.error("Playback error", {
 						description: "Could not play the audio. Please try again.",
-						type: "error",
 					});
 				}
 			}
@@ -143,10 +141,8 @@ export function AudioManagerProvider({ children }: { children: React.ReactNode }
 			});
 			if (toastedRequestIdRef.current === requestId) return;
 			toastedRequestIdRef.current = requestId;
-			toastManager.add({
-				title: "Playback error",
+			toast.error("Playback error", {
 				description: "Could not play the audio. Please try again.",
-				type: "error",
 			});
 		});
 	};
