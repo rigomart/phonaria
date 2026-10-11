@@ -12,46 +12,46 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	P: {
 		patterns: ["p", "pp"],
 		examples: [
-			{ word: "pat", phonemic: "pæt" },
-			{ word: "happy", phonemic: "ˈhæpi" },
+			{ word: "pat", phonemic: "pæt", spelled: "[p]at" },
+			{ word: "happy", phonemic: "ˈhæpi", spelled: "ha[pp]y" },
 		],
 	},
 	B: {
 		patterns: ["b", "bb"],
 		examples: [
-			{ word: "bat", phonemic: "bæt" },
-			{ word: "rabbit", phonemic: "ˈɹæbɪt" },
+			{ word: "bat", phonemic: "bæt", spelled: "[b]at" },
+			{ word: "rabbit", phonemic: "ˈɹæbɪt", spelled: "ra[bb]it" },
 		],
 	},
 	T: {
 		patterns: ["t", "tt", "-ed"],
 		examples: [
-			{ word: "top", phonemic: "tɑp" },
-			{ word: "letter", phonemic: "ˈlɛtɝ" },
-			{ word: "jumped", phonemic: "dʒʌmpt" },
+			{ word: "top", phonemic: "tɑp", spelled: "[t]op" },
+			{ word: "letter", phonemic: "ˈlɛtɝ", spelled: "le[tt]er" },
+			{ word: "jumped", phonemic: "dʒʌmpt", spelled: "jump[ed]" },
 		],
 	},
 	D: {
 		patterns: ["d", "dd", "-ed"],
 		examples: [
-			{ word: "day", phonemic: "deɪ" },
-			{ word: "ladder", phonemic: "ˈlædɝ" },
-			{ word: "rained", phonemic: "ɹeɪnd" },
+			{ word: "day", phonemic: "deɪ", spelled: "[d]ay" },
+			{ word: "ladder", phonemic: "ˈlædɝ", spelled: "la[dd]er" },
+			{ word: "rained", phonemic: "ɹeɪnd", spelled: "rain[ed]" },
 		],
 	},
 	K: {
 		patterns: ["c", "k", "ck"],
 		examples: [
-			{ word: "cat", phonemic: "kæt" },
-			{ word: "kid", phonemic: "kɪd" },
-			{ word: "back", phonemic: "bæk" },
+			{ word: "cat", phonemic: "kæt", spelled: "[c]at" },
+			{ word: "kid", phonemic: "kɪd", spelled: "[k]id" },
+			{ word: "back", phonemic: "bæk", spelled: "ba[ck]" },
 		],
 	},
 	G: {
 		patterns: ["g", "gg"],
 		examples: [
-			{ word: "gum", phonemic: "ɡʌm" },
-			{ word: "bigger", phonemic: "ˈbɪɡɝ" },
+			{ word: "gum", phonemic: "ɡʌm", spelled: "[g]um" },
+			{ word: "bigger", phonemic: "ˈbɪɡɝ", spelled: "bi[gg]er" },
 		],
 	},
 
@@ -59,23 +59,23 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	M: {
 		patterns: ["m", "mm"],
 		examples: [
-			{ word: "ram", phonemic: "ræm" },
-			{ word: "summer", phonemic: "ˈsʌmɝ" },
+			{ word: "ram", phonemic: "ræm", spelled: "ra[m]" },
+			{ word: "summer", phonemic: "ˈsʌmɝ", spelled: "su[mm]er" },
 		],
 	},
 	N: {
 		patterns: ["n", "nn", "kn-"],
 		examples: [
-			{ word: "sun", phonemic: "sʌn" },
-			{ word: "dinner", phonemic: "ˈdɪnɝ" },
-			{ word: "know", phonemic: "noʊ" },
+			{ word: "sun", phonemic: "sʌn", spelled: "su[n]" },
+			{ word: "dinner", phonemic: "ˈdɪnɝ", spelled: "di[nn]er" },
+			{ word: "know", phonemic: "noʊ", spelled: "[kn]ow" },
 		],
 	},
 	NG: {
 		patterns: ["-ng", "n"],
 		examples: [
-			{ word: "sing", phonemic: "sɪŋ" },
-			{ word: "think", phonemic: "θɪŋk" },
+			{ word: "sing", phonemic: "sɪŋ", spelled: "si[ng]" },
+			{ word: "think", phonemic: "θɪŋk", spelled: "thi[n]k" },
 		],
 	},
 
@@ -83,29 +83,29 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	L: {
 		patterns: ["l", "ll"],
 		examples: [
-			{ word: "let", phonemic: "lɛt" },
-			{ word: "hello", phonemic: "hɛˈloʊ" },
+			{ word: "let", phonemic: "lɛt", spelled: "[l]et" },
+			{ word: "hello", phonemic: "hɛˈloʊ", spelled: "he[ll]o" },
 		],
 	},
 	R: {
 		patterns: ["r", "rr", "wr-"],
 		examples: [
-			{ word: "red", phonemic: "ɹɛd" },
-			{ word: "write", phonemic: "ɹaɪt" },
+			{ word: "red", phonemic: "ɹɛd", spelled: "[r]ed" },
+			{ word: "write", phonemic: "ɹaɪt", spelled: "[wr]ite" },
 		],
 	},
 	W: {
 		patterns: ["w"],
 		examples: [
-			{ word: "west", phonemic: "wɛst" },
-			{ word: "away", phonemic: "əˈweɪ" },
+			{ word: "west", phonemic: "wɛst", spelled: "[w]est" },
+			{ word: "away", phonemic: "əˈweɪ", spelled: "a[w]ay" },
 		],
 	},
 	Y: {
 		patterns: ["y"],
 		examples: [
-			{ word: "yoke", phonemic: "joʊk" },
-			{ word: "you", phonemic: "ju" },
+			{ word: "yoke", phonemic: "joʊk", spelled: "[y]oke" },
+			{ word: "you", phonemic: "ju", spelled: "[y]ou" },
 		],
 	},
 
@@ -113,66 +113,66 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	F: {
 		patterns: ["f", "ff", "ph"],
 		examples: [
-			{ word: "fan", phonemic: "fæn" },
-			{ word: "coffee", phonemic: "ˈkɔfi" },
-			{ word: "phone", phonemic: "foʊn" },
+			{ word: "fan", phonemic: "fæn", spelled: "[f]an" },
+			{ word: "coffee", phonemic: "ˈkɔfi", spelled: "co[ff]ee" },
+			{ word: "phone", phonemic: "foʊn", spelled: "[ph]one" },
 		],
 	},
 	V: {
 		patterns: ["v"],
 		examples: [
-			{ word: "van", phonemic: "væn" },
-			{ word: "save", phonemic: "seɪv" },
+			{ word: "van", phonemic: "væn", spelled: "[v]an" },
+			{ word: "save", phonemic: "seɪv", spelled: "sa[v]e" },
 		],
 	},
 	TH: {
 		patterns: ["th"],
 		examples: [
-			{ word: "thin", phonemic: "θɪn" },
-			{ word: "think", phonemic: "θɪŋk" },
+			{ word: "thin", phonemic: "θɪn", spelled: "[th]in" },
+			{ word: "think", phonemic: "θɪŋk", spelled: "[th]ink" },
 		],
 	},
 	DH: {
 		patterns: ["th"],
 		examples: [
-			{ word: "this", phonemic: "ðɪs" },
-			{ word: "mother", phonemic: "ˈmʌðɝ" },
+			{ word: "this", phonemic: "ðɪs", spelled: "[th]is" },
+			{ word: "mother", phonemic: "ˈmʌðɝ", spelled: "mo[th]er" },
 		],
 	},
 	S: {
 		patterns: ["s", "ss", "c"],
 		examples: [
-			{ word: "sun", phonemic: "sʌn" },
-			{ word: "city", phonemic: "ˈsɪti" },
+			{ word: "sun", phonemic: "sʌn", spelled: "[s]un" },
+			{ word: "city", phonemic: "ˈsɪti", spelled: "[c]ity" },
 		],
 	},
 	Z: {
 		patterns: ["z", "-s", "zz"],
 		examples: [
-			{ word: "zoo", phonemic: "zu" },
-			{ word: "dogs", phonemic: "dɔɡz" },
-			{ word: "buzz", phonemic: "bʌz" },
+			{ word: "zoo", phonemic: "zu", spelled: "[z]oo" },
+			{ word: "dogs", phonemic: "dɔɡz", spelled: "dog[s]" },
+			{ word: "buzz", phonemic: "bʌz", spelled: "bu[zz]" },
 		],
 	},
 	SH: {
 		patterns: ["sh", "-tion", "-sion"],
 		examples: [
-			{ word: "shop", phonemic: "ʃɑp" },
-			{ word: "nation", phonemic: "ˈneɪʃən" },
+			{ word: "shop", phonemic: "ʃɑp", spelled: "[sh]op" },
+			{ word: "nation", phonemic: "ˈneɪʃən", spelled: "na[ti]on" },
 		],
 	},
 	ZH: {
 		patterns: ["-sion", "-sure"],
 		examples: [
-			{ word: "vision", phonemic: "ˈvɪʒən" },
-			{ word: "measure", phonemic: "ˈmɛʒɝ" },
+			{ word: "vision", phonemic: "ˈvɪʒən", spelled: "vi[si]on" },
+			{ word: "measure", phonemic: "ˈmɛʒɝ", spelled: "mea[s]ure" },
 		],
 	},
 	H: {
 		patterns: ["h"],
 		examples: [
-			{ word: "house", phonemic: "haʊs" },
-			{ word: "hello", phonemic: "hɛˈloʊ" },
+			{ word: "house", phonemic: "haʊs", spelled: "[h]ouse" },
+			{ word: "hello", phonemic: "hɛˈloʊ", spelled: "[h]ello" },
 		],
 	},
 
@@ -180,16 +180,16 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	CH: {
 		patterns: ["ch", "tch"],
 		examples: [
-			{ word: "cheap", phonemic: "tʃip" },
-			{ word: "catch", phonemic: "kætʃ" },
+			{ word: "cheap", phonemic: "tʃip", spelled: "[ch]eap" },
+			{ word: "catch", phonemic: "kætʃ", spelled: "ca[tch]" },
 		],
 	},
 	J: {
 		patterns: ["j", "-dge", "-ge"],
 		examples: [
-			{ word: "jeep", phonemic: "dʒip" },
-			{ word: "bridge", phonemic: "bɹɪdʒ" },
-			{ word: "page", phonemic: "peɪdʒ" },
+			{ word: "jeep", phonemic: "dʒip", spelled: "[j]eep" },
+			{ word: "bridge", phonemic: "bɹɪdʒ", spelled: "bri[dge]" },
+			{ word: "page", phonemic: "peɪdʒ", spelled: "pa[ge]" },
 		],
 	},
 
@@ -197,32 +197,32 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	I: {
 		patterns: ["ee", "ea", "-y", "e"],
 		examples: [
-			{ word: "seed", phonemic: "sid" },
-			{ word: "sea", phonemic: "si" },
-			{ word: "happy", phonemic: "ˈhæpi" },
-			{ word: "be", phonemic: "bi" },
+			{ word: "seed", phonemic: "sid", spelled: "s[ee]d" },
+			{ word: "sea", phonemic: "si", spelled: "s[ea]" },
+			{ word: "happy", phonemic: "ˈhæpi", spelled: "happ[y]" },
+			{ word: "be", phonemic: "bi", spelled: "b[e]" },
 		],
 	},
 	IX: {
 		patterns: ["i"],
 		examples: [
-			{ word: "sit", phonemic: "sɪt" },
-			{ word: "big", phonemic: "bɪɡ" },
+			{ word: "sit", phonemic: "sɪt", spelled: "s[i]t" },
+			{ word: "big", phonemic: "bɪɡ", spelled: "b[i]g" },
 		],
 	},
 	U: {
 		patterns: ["oo", "u-e", "ew"],
 		examples: [
-			{ word: "food", phonemic: "fud" },
-			{ word: "mood", phonemic: "mud" },
-			{ word: "new", phonemic: "nu" },
+			{ word: "food", phonemic: "fud", spelled: "f[oo]d" },
+			{ word: "mood", phonemic: "mud", spelled: "m[oo]d" },
+			{ word: "new", phonemic: "nu", spelled: "n[ew]" },
 		],
 	},
 	UX: {
 		patterns: ["oo", "u"],
 		examples: [
-			{ word: "book", phonemic: "bʊk" },
-			{ word: "put", phonemic: "pʊt" },
+			{ word: "book", phonemic: "bʊk", spelled: "b[oo]k" },
+			{ word: "put", phonemic: "pʊt", spelled: "p[u]t" },
 		],
 	},
 
@@ -230,30 +230,30 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	E: {
 		patterns: ["e", "ea"],
 		examples: [
-			{ word: "red", phonemic: "ɹɛd" },
-			{ word: "bread", phonemic: "bɹɛd" },
+			{ word: "red", phonemic: "ɹɛd", spelled: "r[e]d" },
+			{ word: "bread", phonemic: "bɹɛd", spelled: "br[ea]d" },
 		],
 	},
 	AX: {
 		patterns: ["a", "e", "o"],
 		examples: [
-			{ word: "sofa", phonemic: "ˈsoʊfə" },
-			{ word: "lemon", phonemic: "ˈlɛmən" },
+			{ word: "sofa", phonemic: "ˈsoʊfə", spelled: "sof[a]" },
+			{ word: "lemon", phonemic: "ˈlɛmən", spelled: "lem[o]n" },
 		],
 	},
 	AH: {
 		patterns: ["u", "o"],
 		examples: [
-			{ word: "cup", phonemic: "kʌp" },
-			{ word: "love", phonemic: "lʌv" },
+			{ word: "cup", phonemic: "kʌp", spelled: "c[u]p" },
+			{ word: "love", phonemic: "lʌv", spelled: "l[o]ve" },
 		],
 	},
 	O: {
 		patterns: ["aw", "au", "al"],
 		examples: [
-			{ word: "saw", phonemic: "sɔ" },
-			{ word: "cause", phonemic: "kɔz" },
-			{ word: "talk", phonemic: "tɔk" },
+			{ word: "saw", phonemic: "sɔ", spelled: "s[aw]" },
+			{ word: "cause", phonemic: "kɔz", spelled: "c[au]se" },
+			{ word: "talk", phonemic: "tɔk", spelled: "t[al]k" },
 		],
 	},
 
@@ -261,15 +261,15 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	AE: {
 		patterns: ["a"],
 		examples: [
-			{ word: "cat", phonemic: "kæt" },
-			{ word: "back", phonemic: "bæk" },
+			{ word: "cat", phonemic: "kæt", spelled: "c[a]t" },
+			{ word: "back", phonemic: "bæk", spelled: "b[a]ck" },
 		],
 	},
 	A: {
 		patterns: ["o", "a"],
 		examples: [
-			{ word: "hot", phonemic: "hɑt" },
-			{ word: "father", phonemic: "ˈfɑðɝ" },
+			{ word: "hot", phonemic: "hɑt", spelled: "h[o]t" },
+			{ word: "father", phonemic: "ˈfɑðɝ", spelled: "f[a]ther" },
 		],
 	},
 
@@ -277,39 +277,39 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	EI: {
 		patterns: ["a-e", "ai", "-ay"],
 		examples: [
-			{ word: "make", phonemic: "meɪk" },
-			{ word: "rain", phonemic: "ɹeɪn" },
-			{ word: "day", phonemic: "deɪ" },
+			{ word: "make", phonemic: "meɪk", spelled: "m[a]k[e]" },
+			{ word: "rain", phonemic: "ɹeɪn", spelled: "r[ai]n" },
+			{ word: "day", phonemic: "deɪ", spelled: "d[ay]" },
 		],
 	},
 	AI: {
 		patterns: ["i-e", "igh", "-y"],
 		examples: [
-			{ word: "time", phonemic: "taɪm" },
-			{ word: "night", phonemic: "naɪt" },
-			{ word: "my", phonemic: "maɪ" },
+			{ word: "time", phonemic: "taɪm", spelled: "t[i]m[e]" },
+			{ word: "night", phonemic: "naɪt", spelled: "n[igh]t" },
+			{ word: "my", phonemic: "maɪ", spelled: "m[y]" },
 		],
 	},
 	OI: {
 		patterns: ["oi", "-oy"],
 		examples: [
-			{ word: "coin", phonemic: "kɔɪn" },
-			{ word: "boy", phonemic: "bɔɪ" },
+			{ word: "coin", phonemic: "kɔɪn", spelled: "c[oi]n" },
+			{ word: "boy", phonemic: "bɔɪ", spelled: "b[oy]" },
 		],
 	},
 	OU: {
 		patterns: ["o", "oa", "o-e"],
 		examples: [
-			{ word: "code", phonemic: "koʊd" },
-			{ word: "boat", phonemic: "boʊt" },
-			{ word: "home", phonemic: "hoʊm" },
+			{ word: "code", phonemic: "koʊd", spelled: "c[o]d[e]" },
+			{ word: "boat", phonemic: "boʊt", spelled: "b[oa]t" },
+			{ word: "home", phonemic: "hoʊm", spelled: "h[o]m[e]" },
 		],
 	},
 	AU: {
 		patterns: ["ou", "ow"],
 		examples: [
-			{ word: "out", phonemic: "aʊt" },
-			{ word: "now", phonemic: "naʊ" },
+			{ word: "out", phonemic: "aʊt", spelled: "[ou]t" },
+			{ word: "now", phonemic: "naʊ", spelled: "n[ow]" },
 		],
 	},
 
@@ -317,10 +317,10 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	ER: {
 		patterns: ["er", "ir", "ur", "or"],
 		examples: [
-			{ word: "her", phonemic: "hɝ" },
-			{ word: "bird", phonemic: "bɝd" },
-			{ word: "turn", phonemic: "tɝn" },
-			{ word: "work", phonemic: "wɝk" },
+			{ word: "her", phonemic: "hɝ", spelled: "h[er]" },
+			{ word: "bird", phonemic: "bɝd", spelled: "b[ir]d" },
+			{ word: "turn", phonemic: "tɝn", spelled: "t[ur]n" },
+			{ word: "work", phonemic: "wɝk", spelled: "w[or]k" },
 		],
 	},
 } as const satisfies Partial<Record<EnglishPhonemeSymbolId, SpellingPattern>>);

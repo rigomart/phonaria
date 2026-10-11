@@ -7,7 +7,10 @@ import types
 import unittest
 
 # Loading the data helper does not need the optional frequency-data package.
-sys.modules.setdefault("wordfreq", types.SimpleNamespace(top_n_list=lambda *args: []))
+# Other test modules may stub it too, so add to a shared stub instead of replacing it.
+wordfreq_stub = sys.modules.setdefault("wordfreq", types.SimpleNamespace())
+if not hasattr(wordfreq_stub, "top_n_list"):
+    wordfreq_stub.top_n_list = lambda *args: []
 spec = importlib.util.spec_from_file_location(
     "curated_chunks", Path(__file__).with_name("generate-curated-chunks.py")
 )

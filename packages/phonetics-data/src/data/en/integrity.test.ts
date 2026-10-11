@@ -4,12 +4,15 @@ import type { CmudictPayload } from "../../dict/types";
 import {
 	EnglishPhonemeAllophones,
 	EnglishPhonemeSpellingPatterns,
+	getLanguagePhonemeIds,
 	getLanguagePhonemeInventory,
 	parsePhonemePronunciation,
+	splitSpelledWord,
 } from "../../index";
 import { EnglishCmudictStatsData } from "./cmudict-stats";
 import { EnglishCuratedTop1k } from "./curated-1k";
 import { EnglishCuratedTop10k } from "./curated-10k";
+import { EnglishPhonemeFrequencyData } from "./phoneme-frequency";
 
 const dictionary: CmudictPayload = dictionaryJson;
 const entries = Object.entries(dictionary.data);
@@ -156,7 +159,46 @@ describe("dictionary statistics", () => {
 	});
 });
 
+describe("phoneme frequency", () => {
+	const rows = EnglishPhonemeFrequencyData.phonemes;
+
+	it("covers every English sound exactly once", () => {
+		const ids = rows.map(({ phonemeId }) => phonemeId);
+		expect(new Set(ids).size).toBe(ids.length);
+		expect([...ids].sort()).toEqual([...getLanguagePhonemeIds("en-us")].sort());
+	});
+
+	it("splits speech into shares that add up to 100%", () => {
+		const total = rows.reduce((sum, row) => sum + row.percentage, 0);
+		// Each share is rounded to four decimals.
+		expect(Math.abs(total - 100)).toBeLessThan(rows.length * 0.00005);
+		for (const row of rows) expect(row.percentage, row.phonemeId).toBeGreaterThan(0);
+	});
+
+	it("ranks every sound by its share, most common first", () => {
+		expect(rows.map((row) => row.rank)).toEqual(rows.map((_, index) => index + 1));
+		for (let index = 1; index < rows.length; index++) {
+			expect(rows[index - 1].percentage).toBeGreaterThanOrEqual(rows[index].percentage);
+		}
+	});
+});
+
 describe("teaching examples", () => {
+	it("marks the letters that spell the sound in each spelling example", () => {
+		for (const [id, entry] of Object.entries(EnglishPhonemeSpellingPatterns)) {
+			for (const example of entry.examples) {
+				const segments = splitSpelledWord(example.spelled);
+				expect(segments.map(({ text }) => text).join(""), `${id}: ${example.spelled}`).toBe(
+					example.word,
+				);
+				expect(
+					segments.some(({ highlighted }) => highlighted),
+					`${id}: ${example.spelled}`,
+				).toBe(true);
+			}
+		}
+	});
+
 	it.each([
 		[
 			"spelling patterns",

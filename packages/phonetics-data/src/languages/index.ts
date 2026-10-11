@@ -31,6 +31,7 @@ export {
 	tryExtractBasePhonemeId,
 } from "./en/cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./en/contrasts";
+export { EnglishPhonemeFrequencies } from "./en/frequency";
 export {
 	findSubstitution,
 	getSinglePronunciation,
@@ -75,11 +76,13 @@ export type {
 	AllophoneExample,
 	LanguagePhonemeAllophoneRegistry,
 	LanguagePhonemeContrastRegistry,
+	LanguagePhonemeFrequencyRegistry,
 	LanguageSpellingPatternRegistry,
 	MinimalPair,
 	PhonemeAllophone,
 	PhonemeAllophoneContextKey,
 	PhonemeContrast,
 	PhonemeContrastMatch,
+	PhonemeFrequency,
 	SpellingPattern,
 } from "./types";

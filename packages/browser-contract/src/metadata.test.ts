@@ -30,6 +30,7 @@ describe("metadata helpers", () => {
 			"https://phonaria.rigos.dev",
 			"https://phonaria.rigos.dev/ipa-chart/consonants",
 			"https://phonaria.rigos.dev/ipa-chart/vowels",
+			"https://phonaria.rigos.dev/ipa-chart/frequency",
 			"https://phonaria.rigos.dev/credits",
 		]);
 		expect(expectedSitemapUrls(target).join(" ")).not.toContain("practice");
