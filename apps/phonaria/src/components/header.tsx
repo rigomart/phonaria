@@ -1,65 +1,174 @@
 "use client";
 
+import { Button } from "@phonaria/ui/components/button";
 import {
-	NavigationMenu,
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuList,
-	NavigationMenuTrigger,
-} from "@phonaria/ui/components/navigation-menu";
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@phonaria/ui/components/sheet";
+import { MenuIcon } from "lucide-react";
+import { useState } from "react";
 import { Link } from "@/components/link";
+import { useScrolled } from "@/hooks/use-scrolled";
 import type { AppFlags } from "@/lib/flags";
+import { IPA_CHART_INDEX_PATH } from "@/lib/ipa-chart-metadata";
+import { cn } from "@/lib/utils";
 import { HeaderActionsSlot } from "./header-actions";
 import { Logo } from "./logo";
+import { chartSections, getTools, usePathname } from "./site-nav";
+import { ThemeSwitcher } from "./theme-switcher";
 
-const navLinkClass =
-	"rounded-sm text-muted-foreground transition-colors motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+const focusRing =
+	"rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function Header({ flags }: { flags: AppFlags }) {
+	const pathname = usePathname();
+	const scrolled = useScrolled();
+	const onChart = pathname.startsWith(IPA_CHART_INDEX_PATH);
+
 	return (
-		<header className="relative flex items-center justify-center px-4 py-3 animate-in fade-in duration-500 motion-reduce:animate-none">
-			<Link
-				href="/"
-				className="group absolute left-4 flex items-center gap-1.5 text-foreground hover:text-primary transition-colors motion-reduce:transition-none"
-				aria-label="Phonaria"
-			>
-				<Logo className="size-6" />
-				<span className="font-display text-sm font-medium opacity-0 blur-[4px] transition-[opacity,filter] duration-200 group-hover:opacity-100 group-hover:blur-[0px] motion-reduce:transition-none">
-					Phonaria
-				</span>
-			</Link>
-			<nav className="flex items-center gap-3 text-sm">
-				<Link href="/" className={navLinkClass}>
-					Transcription
+		<header
+			className={cn(
+				"sticky top-0 z-40 border-b bg-background transition-[border-color] motion-reduce:transition-none",
+				scrolled || onChart ? "border-border" : "border-transparent",
+			)}
+		>
+			<div className="mx-auto flex h-12 w-full max-w-6xl items-center gap-6 px-4 sm:px-6">
+				<Link
+					href="/"
+					aria-label="Phonaria"
+					className={cn("flex items-center text-foreground", focusRing)}
+				>
+					<Logo className="size-5" />
 				</Link>
-				{flags.practice && (
-					<Link href="/practice" className={navLinkClass}>
-						Practice
-					</Link>
-				)}
-				<NavigationMenu>
-					<NavigationMenuList>
-						<NavigationMenuItem>
-							<NavigationMenuTrigger className="h-auto px-0 py-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground focus:bg-transparent data-popup-open:bg-transparent data-open:bg-transparent">
-								IPA Chart
-							</NavigationMenuTrigger>
-							<NavigationMenuContent className="w-40">
-								<NavigationMenuLink render={<Link href="/ipa-chart/consonants" />}>
-									Consonants
-								</NavigationMenuLink>
-								<NavigationMenuLink render={<Link href="/ipa-chart/vowels" />}>
-									Vowels
-								</NavigationMenuLink>
-								<NavigationMenuLink render={<Link href="/ipa-chart/frequency" />}>
-									Frequency
-								</NavigationMenuLink>
-							</NavigationMenuContent>
-						</NavigationMenuItem>
-					</NavigationMenuList>
-				</NavigationMenu>
-			</nav>
-			<HeaderActionsSlot className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center" />
+
+				<nav aria-label="Main" className="hidden h-full items-stretch gap-5 text-sm sm:flex">
+					{getTools(flags).map((tool) => {
+						const active = tool.match(pathname);
+						return (
+							<Link
+								key={tool.id}
+								href={tool.href}
+								aria-current={active ? "page" : undefined}
+								className={cn(
+									"relative flex items-center transition-colors motion-reduce:transition-none",
+									focusRing,
+									active
+										? "text-foreground after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:rounded-full after:bg-foreground"
+										: "text-muted-foreground hover:text-foreground",
+								)}
+							>
+								{tool.label}
+							</Link>
+						);
+					})}
+				</nav>
+
+				<div className="ml-auto flex items-center gap-1">
+					<HeaderActionsSlot className="flex items-center" />
+					<ThemeSwitcher />
+					<MobileMenu flags={flags} />
+				</div>
+			</div>
+
+			{onChart && (
+				<div className="border-t">
+					<nav
+						aria-label="IPA Chart"
+						className="mx-auto flex w-full max-w-6xl gap-1 px-4 py-2 text-sm sm:px-6"
+					>
+						{chartSections.map((section) => {
+							const active = pathname === section.href;
+							return (
+								<Link
+									key={section.href}
+									href={section.href}
+									aria-current={active ? "page" : undefined}
+									className={cn(
+										"rounded-full px-3 py-1 transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+										active
+											? "bg-secondary text-foreground"
+											: "text-muted-foreground hover:text-foreground",
+									)}
+								>
+									{section.label}
+								</Link>
+							);
+						})}
+					</nav>
+				</div>
+			)}
 		</header>
+	);
+}
+
+function MobileMenu({ flags }: { flags: AppFlags }) {
+	const pathname = usePathname();
+	const [open, setOpen] = useState(false);
+	const close = () => setOpen(false);
+
+	return (
+		<Sheet open={open} onOpenChange={setOpen}>
+			<SheetTrigger
+				render={
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						className="text-muted-foreground hover:text-foreground sm:hidden"
+						aria-label="Open menu"
+					/>
+				}
+			>
+				<MenuIcon aria-hidden />
+			</SheetTrigger>
+			<SheetContent side="top">
+				<SheetHeader>
+					<SheetTitle>Menu</SheetTitle>
+				</SheetHeader>
+				<nav aria-label="Main" className="flex flex-col px-4 pb-6">
+					{getTools(flags).map((tool) => {
+						const active = tool.match(pathname);
+						return (
+							<div key={tool.id} className="border-b last:border-b-0">
+								<Link
+									href={tool.href}
+									onClick={close}
+									aria-current={active ? "page" : undefined}
+									className={cn(
+										"flex items-center gap-3 py-3 text-base",
+										active ? "font-medium text-foreground" : "text-muted-foreground",
+									)}
+								>
+									<tool.icon className="size-4" aria-hidden />
+									{tool.label}
+								</Link>
+								{tool.id === "ipa-chart" && (
+									<div className="flex gap-2 pb-3 pl-7">
+										{chartSections.map((section) => (
+											<Link
+												key={section.href}
+												href={section.href}
+												onClick={close}
+												aria-current={pathname === section.href ? "page" : undefined}
+												className={cn(
+													"rounded-full border px-3 py-1 text-sm",
+													pathname === section.href
+														? "bg-secondary text-foreground"
+														: "text-muted-foreground",
+												)}
+											>
+												{section.label}
+											</Link>
+										))}
+									</div>
+								)}
+							</div>
+						);
+					})}
+				</nav>
+			</SheetContent>
+		</Sheet>
 	);
 }
