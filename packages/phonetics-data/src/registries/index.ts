@@ -1,7 +1,4 @@
-export type {
-	LanguageFeatureCapabilities,
-	LanguageFeatureKey,
-} from "./capabilities";
+export type { LanguageFeatureCapabilities, LanguageFeatureKey } from "./capabilities";
 export {
 	getLanguageFeatureCapabilities,
 	hasLanguageFeature,

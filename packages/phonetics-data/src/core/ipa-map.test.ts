@@ -15,15 +15,14 @@ import {
 } from "../index";
 
 describe("IPA classification", () => {
-	it.each([
-		"constructor",
-		"toString",
-		"__proto__",
-	])("rejects inherited object property %s in sound classification guards", (token) => {
-		const id = token as PhonemeSymbolId;
-		expect(isVowelPhoneme(id)).toBe(false);
-		expect(isConsonantPhoneme(id)).toBe(false);
-	});
+	it.each(["constructor", "toString", "__proto__"])(
+		"rejects inherited object property %s in sound classification guards",
+		(token) => {
+			const id = token as PhonemeSymbolId;
+			expect(isVowelPhoneme(id)).toBe(false);
+			expect(isConsonantPhoneme(id)).toBe(false);
+		},
+	);
 
 	it.each([
 		["consonant", ConsonantIpaMap],

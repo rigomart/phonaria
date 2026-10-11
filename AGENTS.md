@@ -28,7 +28,7 @@
 - `bun install`: Install workspace dependencies once per environment.
 - `bun dev`: Launch the TanStack Start app at `http://localhost:3000`.
 - `bun build`: Execute workspace production builds.
-- `bun lint`: Run Biome check with auto-fixing (`--write`); commits should land clean.
+- `bun lint`: Run Oxlint with auto-fixing (`--fix`) and format with Oxfmt; commits should land clean. `bun lint:check` is the read-only version CI runs.
 - `bun check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
 - `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter @phonaria/app test` for targeted runs.
 - `bun e2e`: Run the shared browser contract against a deployed base URL (default: public Cloudflare production). See `packages/browser-contract/README.md`.

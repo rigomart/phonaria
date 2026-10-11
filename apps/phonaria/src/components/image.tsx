@@ -36,7 +36,6 @@ export function Image({
 }: AppImageProps) {
 	return (
 		// Articulation SVGs are already served unoptimized.
-		// biome-ignore lint/performance/noImgElement: framework-neutral <img> is the application image contract
 		<img
 			src={src}
 			alt={alt}

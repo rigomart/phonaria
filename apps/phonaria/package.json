@@ -11,7 +11,7 @@
 		"deploy:staging": "bun ./scripts/deploy-staging.ts",
 		"cf-typegen": "wrangler types",
 		"worker-metrics": "bun ./scripts/record-worker-metrics.ts",
-		"lint": "biome check --write",
+		"lint": "oxlint --fix && oxfmt",
 		"check-types": "tsc --noEmit",
 		"test": "vitest run",
 		"db:push": "drizzle-kit push"

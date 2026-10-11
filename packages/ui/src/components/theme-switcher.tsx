@@ -2,7 +2,6 @@
 
 import { MonitorIcon, Moon, MoonIcon, Sun, SunIcon } from "lucide-react";
 import type * as React from "react";
-
 import { Button } from "./button";
 import {
 	DropdownMenu,

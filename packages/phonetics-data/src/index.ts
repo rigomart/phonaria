@@ -126,10 +126,7 @@ export type {
 	PhonemeFrequency,
 	SpellingPattern,
 } from "./languages/types";
-export type {
-	LanguageFeatureCapabilities,
-	LanguageFeatureKey,
-} from "./registries/capabilities";
+export type { LanguageFeatureCapabilities, LanguageFeatureKey } from "./registries/capabilities";
 export {
 	getLanguageFeatureCapabilities,
 	hasLanguageFeature,

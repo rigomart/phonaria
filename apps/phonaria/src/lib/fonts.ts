@@ -1,7 +1,7 @@
 import notoSansLatinExtUrl from "@fontsource-variable/noto-sans/files/noto-sans-latin-ext-wght-normal.woff2?url";
 import notoSansLatinUrl from "@fontsource-variable/noto-sans/files/noto-sans-latin-wght-normal.woff2?url";
-import notoSansCss from "@fontsource-variable/noto-sans/wght.css?url";
 import soraLatinUrl from "@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url";
+import notoSansCss from "@fontsource-variable/noto-sans/wght.css?url";
 import soraCss from "@fontsource-variable/sora/wght.css?url";
 
 /** Linked on their own so Vite resolves their relative font URLs. */

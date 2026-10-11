@@ -80,30 +80,32 @@ describe("EnglishPhonemeContrasts", () => {
 			expect(duplicates, `${id}: duplicate minimal pairs`).toEqual([]);
 		});
 
-		it.each(
-			minimalPairs.map(({ words }) => words),
-		)("%s / %s differ only by the contrasted sounds", (first, second) => {
-			const substitution = substitutionOf(id, [first, second]);
-			expect(
-				substitution,
-				`${id}: "${first}" and "${second}" do not differ by exactly one sound`,
-			).not.toBeNull();
-			expect(
-				[substitution?.from, substitution?.to],
-				`${id}: "${first}" / "${second}" should swap ${phonemeIds[0]} for ${phonemeIds[1]}`,
-			).toEqual(phonemeIds);
-		});
+		it.each(minimalPairs.map(({ words }) => words))(
+			"%s / %s differ only by the contrasted sounds",
+			(first, second) => {
+				const substitution = substitutionOf(id, [first, second]);
+				expect(
+					substitution,
+					`${id}: "${first}" and "${second}" do not differ by exactly one sound`,
+				).not.toBeNull();
+				expect(
+					[substitution?.from, substitution?.to],
+					`${id}: "${first}" / "${second}" should swap ${phonemeIds[0]} for ${phonemeIds[1]}`,
+				).toEqual(phonemeIds);
+			},
+		);
 
-		it.each(
-			minimalPairs.map(({ words }) => words),
-		)("%s / %s share a stress pattern", (first, second) => {
-			// Sound IDs ignore stress, so a pair stressed on different syllables would
-			// otherwise pass while sounding like more than one difference.
-			const patternsOf = (word: string) => new Set((dictionary[word] ?? []).map(stressPattern));
-			const secondPatterns = patternsOf(second);
-			const shared = [...patternsOf(first)].some((pattern) => secondPatterns.has(pattern));
-			expect(shared, `${id}: "${first}" and "${second}" are stressed differently`).toBe(true);
-		});
+		it.each(minimalPairs.map(({ words }) => words))(
+			"%s / %s share a stress pattern",
+			(first, second) => {
+				// Sound IDs ignore stress, so a pair stressed on different syllables would
+				// otherwise pass while sounding like more than one difference.
+				const patternsOf = (word: string) => new Set((dictionary[word] ?? []).map(stressPattern));
+				const secondPatterns = patternsOf(second);
+				const shared = [...patternsOf(first)].some((pattern) => secondPatterns.has(pattern));
+				expect(shared, `${id}: "${first}" and "${second}" are stressed differently`).toBe(true);
+			},
+		);
 	});
 });
 

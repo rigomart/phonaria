@@ -108,7 +108,7 @@ export function SoundComposer({ sequence, onAppend, onRemoveAt }: SoundComposerP
 						aria-controls={listboxId}
 						aria-expanded={matches.length > 0}
 						aria-label="Search for a sound"
-						// biome-ignore lint/a11y/noAutofocus: typing is the primary road, and the field remounts per word
+						// oxlint-disable-next-line jsx-a11y/no-autofocus -- typing is the primary road, and the field remounts per word
 						autoFocus
 						className="min-w-40 flex-1 bg-transparent px-1 py-2 text-base outline-none placeholder:text-muted-foreground"
 						onChange={(event) => {

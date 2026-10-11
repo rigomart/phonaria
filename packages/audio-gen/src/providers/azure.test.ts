@@ -52,16 +52,14 @@ describe("Azure pronunciation generation", () => {
 			'<prosody rate="-10%"><phoneme alphabet="ipa" ph="ə.ˈdæpt">adapt</phoneme></prosody>',
 		);
 	});
-	it.each([
-		-51,
-		101,
-		Number.NaN,
-		0.5,
-	])("rejects invalid rate %s before requesting audio", (ratePercent) => {
-		expect(() => createAzureProvider({ apiKey: "key", region: "eastus", ratePercent })).toThrow(
-			/rate/,
-		);
-	});
+	it.each([-51, 101, Number.NaN, 0.5])(
+		"rejects invalid rate %s before requesting audio",
+		(ratePercent) => {
+			expect(() => createAzureProvider({ apiKey: "key", region: "eastus", ratePercent })).toThrow(
+				/rate/,
+			);
+		},
+	);
 	it("sends explicit IPA and returns the audio bytes", async () => {
 		const fetcher = vi
 			.fn()

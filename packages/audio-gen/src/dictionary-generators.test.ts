@@ -29,17 +29,12 @@ describe("dictionary generators", () => {
 		expect(parsed.result).toEqual({ SHIP: ["SH IX1 P"], ABOUT: ["AX0 B AU1 T"] });
 		expect(parsed.deduplicatedVariantCount).toBe(1);
 	});
-	it.each([
-		"",
-		"   ",
-		"SH UNKNOWN IH1 P",
-		"SH IX1 P",
-		"SH IH P",
-		"SH1 IH1 P",
-		"constructor IH1 P",
-	])("rejects malformed raw input without emitting a shortened pronunciation: %s", (input) => {
-		expect(() => parseCmudict(`SHIP ${input}`)).toThrow(/SHIP.*line 1/);
-	});
+	it.each(["", "   ", "SH UNKNOWN IH1 P", "SH IX1 P", "SH IH P", "SH1 IH1 P", "constructor IH1 P"])(
+		"rejects malformed raw input without emitting a shortened pronunciation: %s",
+		(input) => {
+			expect(() => parseCmudict(`SHIP ${input}`)).toThrow(/SHIP.*line 1/);
+		},
+	);
 	it("uses normalized stored pronunciations for statistics and search paths", () => {
 		const input = dictionary("  SH\tIX1\nP  ");
 		expect(normalizeDictionaryPronunciations(input.data)).toEqual({ SHIP: ["SH IX1 P"] });

@@ -1,0 +1,14 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["typescript", "unicorn", "oxc", "import", "vitest"],
+	"categories": {
+		"correctness": "error"
+	},
+	"rules": {
+		"unicorn/no-new-array": "off",
+		"vitest/no-conditional-expect": "off",
+		"vitest/require-mock-type-parameters": "off",
+		"vitest/require-to-throw-message": "off",
+		"vitest/valid-expect": ["error", { "maxArgs": 2 }]
+	}
+}

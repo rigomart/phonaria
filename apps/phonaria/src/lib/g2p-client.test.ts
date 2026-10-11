@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { G2PResponse } from "./g2p/model";
 import { transformToTranscriptionResult } from "./g2p-client";
+import type { G2PResponse } from "./g2p/model";
 
 describe("transformToTranscriptionResult", () => {
 	it("transforms a single word with known phonemes", () => {

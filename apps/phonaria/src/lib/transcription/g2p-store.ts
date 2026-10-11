@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { G2PWord } from "@/lib/g2p/model";
 import { transformToTranscriptionResult } from "@/lib/g2p-client";
+import type { G2PWord } from "@/lib/g2p/model";
 import {
 	type BatchLookupResult,
 	batchLookup,
