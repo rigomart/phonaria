@@ -6,6 +6,7 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
+import { Link } from "@/components/link";
 import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
 import { SpelledWord } from "@/components/spelled-word";
 import {
@@ -34,6 +35,15 @@ export function FrequencyContent() {
 						<RankingRow key={sound.phonemeId} sound={sound} />
 					))}
 				</ol>
+				<p className="text-xs text-muted-foreground">
+					Based on how often words are used in everyday English (wordfreq).{" "}
+					<Link
+						href="/credits"
+						className="rounded-sm underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+					>
+						Sources
+					</Link>
+				</p>
 			</div>
 		</div>
 	);
