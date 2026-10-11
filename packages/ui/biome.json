@@ -4,5 +4,19 @@
 	"root": false,
 	"files": {
 		"includes": ["**", "!node_modules", "!dist", "!build"]
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["src/components/**"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"noLabelWithoutControl": "off",
+						"useKeyWithClickEvents": "off",
+						"useSemanticElements": "off"
+					}
+				}
+			}
+		}
+	]
 }

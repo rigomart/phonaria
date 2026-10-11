@@ -295,7 +295,7 @@ function VowelMarker({
 					</div>
 				</TooltipContent>
 			</Tooltip>
-			<PopoverContent sideOffset={8}>
+			<PopoverContent sideOffset={8} className="w-auto">
 				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={marker.entry.id} />
 			</PopoverContent>
 		</Popover>
@@ -344,7 +344,7 @@ function DiphthongLabel({
 					</div>
 				</TooltipContent>
 			</Tooltip>
-			<PopoverContent sideOffset={8}>
+			<PopoverContent sideOffset={8} className="w-auto">
 				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={glide.entry.id} />
 			</PopoverContent>
 		</Popover>

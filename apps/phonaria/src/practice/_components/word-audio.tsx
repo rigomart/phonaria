@@ -6,7 +6,7 @@
  * button simply never appears where the API is missing.
  */
 import { Button } from "@phonaria/ui/components/button";
-import { toastManager } from "@phonaria/ui/components/toast";
+import { toast } from "@phonaria/ui/components/sonner";
 import { Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -31,10 +31,8 @@ export function WordAudio({ word }: { word: string }) {
 					// `cancel()` fires the previous utterance's error as "canceled" or
 					// "interrupted" — expected on rapid replays, not a failure to surface.
 					if (event.error === "canceled" || event.error === "interrupted") return;
-					toastManager.add({
-						title: "Playback error",
+					toast.error("Playback error", {
 						description: "Your browser couldn't speak this word. Please try again.",
-						type: "error",
 					});
 				};
 				window.speechSynthesis.speak(utterance);

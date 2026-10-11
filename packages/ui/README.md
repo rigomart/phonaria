@@ -1,6 +1,7 @@
 # `@phonaria/ui`
 
-Shared UI primitives for Phonaria (Base UI + Tailwind v4).
+Shared UI primitives for Phonaria: shadcn/ui components (`base-luma` style) on Base UI and Tailwind v4,
+themed by Phonaria's palette and fonts in `src/styles/globals.css`.
 
 This package is source-imported by the TanStack Start app and has no build step.
 
@@ -34,32 +35,29 @@ Example:
 
 ## Toasts
 
-Add providers once (typically in your app-level client `Providers` component):
+Render `<Toaster />` once with the app theme, then call `toast` anywhere:
 
 ```tsx
-import { AnchoredToastProvider, ToastProvider } from "@phonaria/ui/components/toast";
+import { Toaster, toast } from "@phonaria/ui/components/sonner";
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <ToastProvider position="top-center">
-      <AnchoredToastProvider>{children}</AnchoredToastProvider>
-    </ToastProvider>
-  );
-}
+<Toaster theme={theme} position="top-center" />;
+toast.error("Playback error", { description: "Could not play the audio." });
 ```
 
-Use the managers to show notifications:
+## Adding and updating components
 
-```ts
-import { anchoredToastManager, toastManager } from "@phonaria/ui/components/toast";
+Components are shadcn/ui source in the `base-luma` style (see `components.json`). Run the CLI from
+`apps/phonaria`; it writes into this package:
 
-toastManager.add({ title: "Saved", type: "success" });
-anchoredToastManager.add({
-  title: "Copied!",
-  positionerProps: { anchor: someElement },
-  data: { tooltipStyle: true },
-});
+```bash
+bunx --bun shadcn@latest add <component>
+bunx --bun shadcn@latest add <component> --diff <file>   # preview upstream changes
 ```
+
+The CLI rewrites the `cn` import to a bare `"cn"` module; change it back to
+`@phonaria/ui/lib/utils` and do not keep the `cn` package it adds. The state variants the components
+use (`data-open:` and friends) are copied into `src/styles/shadcn.css` instead of importing the shadcn
+package.
 
 ## Development
 

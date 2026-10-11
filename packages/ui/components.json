@@ -1,23 +1,22 @@
 {
 	"$schema": "https://ui.shadcn.com/schema.json",
-	"style": "base-nova",
-	"rsc": true,
+	"style": "base-luma",
+	"rsc": false,
 	"tsx": true,
 	"tailwind": {
 		"config": "",
 		"css": "src/styles/globals.css",
-		"baseColor": "zinc",
+		"baseColor": "stone",
 		"cssVariables": true
 	},
-	"iconLibrary": "hugeicons",
+	"iconLibrary": "lucide",
 	"aliases": {
-		"components": "@/components",
-		"utils": "@/lib/utils",
-		"ui": "@/components",
-		"lib": "@/lib",
-		"hooks": "@/hooks"
+		"components": "@phonaria/ui/components",
+		"utils": "@phonaria/ui/lib/utils",
+		"ui": "@phonaria/ui/components",
+		"lib": "@phonaria/ui/lib",
+		"hooks": "@phonaria/ui/hooks"
 	},
-	"registries": {
-		"@coss": "https://coss.com/ui/r/{name}.json"
-	}
+	"menuColor": "default",
+	"menuAccent": "subtle"
 }

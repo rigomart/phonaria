@@ -6,8 +6,6 @@ import {
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
-	NavigationMenuPopup,
-	NavigationMenuPositioner,
 	NavigationMenuTrigger,
 } from "@phonaria/ui/components/navigation-menu";
 import { Link } from "@/components/link";
@@ -43,24 +41,20 @@ export function Header({ flags }: { flags: AppFlags }) {
 				<NavigationMenu>
 					<NavigationMenuList>
 						<NavigationMenuItem>
-							<NavigationMenuTrigger className="h-auto px-0 py-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground focus:bg-transparent data-popup-open:bg-transparent">
+							<NavigationMenuTrigger className="h-auto px-0 py-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground focus:bg-transparent data-popup-open:bg-transparent data-open:bg-transparent">
 								IPA Chart
 							</NavigationMenuTrigger>
-							<NavigationMenuPositioner>
-								<NavigationMenuPopup className="w-40">
-									<NavigationMenuContent>
-										<NavigationMenuLink render={<Link href="/ipa-chart/consonants" />}>
-											Consonants
-										</NavigationMenuLink>
-										<NavigationMenuLink render={<Link href="/ipa-chart/vowels" />}>
-											Vowels
-										</NavigationMenuLink>
-										<NavigationMenuLink render={<Link href="/ipa-chart/frequency" />}>
-											Frequency
-										</NavigationMenuLink>
-									</NavigationMenuContent>
-								</NavigationMenuPopup>
-							</NavigationMenuPositioner>
+							<NavigationMenuContent className="w-40">
+								<NavigationMenuLink render={<Link href="/ipa-chart/consonants" />}>
+									Consonants
+								</NavigationMenuLink>
+								<NavigationMenuLink render={<Link href="/ipa-chart/vowels" />}>
+									Vowels
+								</NavigationMenuLink>
+								<NavigationMenuLink render={<Link href="/ipa-chart/frequency" />}>
+									Frequency
+								</NavigationMenuLink>
+							</NavigationMenuContent>
 						</NavigationMenuItem>
 					</NavigationMenuList>
 				</NavigationMenu>

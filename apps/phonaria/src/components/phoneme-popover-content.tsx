@@ -13,11 +13,7 @@ import {
 	type TargetAccent,
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
-import {
-	ToggleGroup,
-	ToggleGroupItem,
-	ToggleGroupSeparator,
-} from "@phonaria/ui/components/toggle-group";
+import { ToggleGroup, ToggleGroupItem } from "@phonaria/ui/components/toggle-group";
 import { ArrowRight, ChevronDown, MoveRight } from "lucide-react";
 import { Fragment, useId, useState } from "react";
 import { AudioControls } from "@/components/audio-controls";
@@ -313,7 +309,8 @@ function AffricateConsonantDiagram({
 
 			<ToggleGroup
 				aria-label="Affricate phase"
-				className="self-start rounded-lg bg-background-strong"
+				className="self-start"
+				spacing={0}
 				value={[phase]}
 				onValueChange={(nextPhase) => {
 					const [nextValue] = nextPhase;
@@ -326,7 +323,6 @@ function AffricateConsonantDiagram({
 				<ToggleGroupItem value="stop" aria-label={stopLabel}>
 					{stopLabel}
 				</ToggleGroupItem>
-				<ToggleGroupSeparator orientation="vertical" />
 				<ToggleGroupItem value="fricative" aria-label={fricativeLabel}>
 					{fricativeLabel}
 				</ToggleGroupItem>

@@ -70,7 +70,7 @@ export function PhonemePopoverButton({
 			>
 				{symbol}
 			</PopoverTrigger>
-			<PopoverContent sideOffset={8}>
+			<PopoverContent sideOffset={8} className="w-auto">
 				<PhonemePopoverContent
 					targetAccent={targetAccent}
 					phonemeId={phonemeId as LanguagePhonemeId<typeof targetAccent>}

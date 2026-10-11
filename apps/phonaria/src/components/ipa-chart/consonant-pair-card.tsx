@@ -98,7 +98,7 @@ function ConsonantButton({
 					</div>
 				</TooltipContent>
 			</Tooltip>
-			<PopoverContent sideOffset={8}>
+			<PopoverContent sideOffset={8} className="w-auto">
 				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={phoneme.id} />
 			</PopoverContent>
 		</Popover>

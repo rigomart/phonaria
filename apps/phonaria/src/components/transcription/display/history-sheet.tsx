@@ -2,13 +2,13 @@
 
 import { Button } from "@phonaria/ui/components/button";
 import { Input } from "@phonaria/ui/components/input";
+import { ScrollArea } from "@phonaria/ui/components/scroll-area";
 import {
 	Sheet,
+	SheetContent,
 	SheetDescription,
 	SheetFooter,
 	SheetHeader,
-	SheetPanel,
-	SheetPopup,
 	SheetTitle,
 } from "@phonaria/ui/components/sheet";
 import { useState } from "react";
@@ -57,8 +57,8 @@ export function HistorySheet({
 
 	return (
 		<Sheet open={open} onOpenChange={handleOpenChange}>
-			<SheetPopup side="right">
-				<SheetHeader className="gap-4 border-b border-border">
+			<SheetContent side="right">
+				<SheetHeader className="gap-4 border-b">
 					<div className="pe-10">
 						<SheetTitle className="font-display">History</SheetTitle>
 						<SheetDescription className="mt-1.5">
@@ -89,28 +89,30 @@ export function HistorySheet({
 					) : null}
 				</SheetHeader>
 
-				<SheetPanel>
-					{matches.length > 0 ? (
-						<PhraseList
-							className="-mx-6"
-							phrases={matches}
-							onSelect={(text) => {
-								handleOpenChange(false);
-								onSelect(text);
-							}}
-							onRemove={onRemove}
-							removeLabel={(text) => `Remove "${text}" from history`}
-							disabled={disabled}
-							highlightSound={activeSound ?? undefined}
-						/>
-					) : (
-						<p className="px-2 py-10 text-center text-sm text-muted-foreground">
-							{noMatchesMessage(query, activeSound)}
-						</p>
-					)}
-				</SheetPanel>
+				<ScrollArea className="min-h-0 flex-1">
+					<div className="px-6 py-2">
+						{matches.length > 0 ? (
+							<PhraseList
+								className="-mx-6"
+								phrases={matches}
+								onSelect={(text) => {
+									handleOpenChange(false);
+									onSelect(text);
+								}}
+								onRemove={onRemove}
+								removeLabel={(text) => `Remove "${text}" from history`}
+								disabled={disabled}
+								highlightSound={activeSound ?? undefined}
+							/>
+						) : (
+							<p className="px-2 py-10 text-center text-sm text-muted-foreground">
+								{noMatchesMessage(query, activeSound)}
+							</p>
+						)}
+					</div>
+				</ScrollArea>
 
-				<SheetFooter variant="bare" className="border-t border-border sm:justify-start">
+				<SheetFooter className="flex-row border-t py-4">
 					<ClearHistoryButton
 						onClear={() => {
 							handleOpenChange(false);
@@ -118,7 +120,7 @@ export function HistorySheet({
 						}}
 					/>
 				</SheetFooter>
-			</SheetPopup>
+			</SheetContent>
 		</Sheet>
 	);
 }
@@ -181,7 +183,7 @@ function ClearHistoryButton({ onClear }: { onClear: () => void }) {
 				Cancel
 			</Button>
 			<Button
-				variant="destructive-outline"
+				variant="destructive"
 				size="xs"
 				onClick={() => {
 					setConfirming(false);
