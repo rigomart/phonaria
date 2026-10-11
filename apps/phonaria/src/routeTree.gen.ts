@@ -17,6 +17,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as IpaChartIndexRouteImport } from './routes/ipa-chart/index'
 import { Route as IpaChartSplatRouteImport } from './routes/ipa-chart/$'
 import { Route as IpaChartConsonantsRouteImport } from './routes/ipa-chart/consonants'
+import { Route as IpaChartFrequencyRouteImport } from './routes/ipa-chart/frequency'
 import { Route as IpaChartVowelsRouteImport } from './routes/ipa-chart/vowels'
 import { Route as PracticeIndexRouteImport } from './routes/practice.index'
 import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
@@ -61,6 +62,11 @@ const IpaChartConsonantsRoute = IpaChartConsonantsRouteImport.update({
   path: '/ipa-chart/consonants',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IpaChartFrequencyRoute = IpaChartFrequencyRouteImport.update({
+  id: '/ipa-chart/frequency',
+  path: '/ipa-chart/frequency',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IpaChartVowelsRoute = IpaChartVowelsRouteImport.update({
   id: '/ipa-chart/vowels',
   path: '/ipa-chart/vowels',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
+  '/ipa-chart/frequency': typeof IpaChartFrequencyRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
+  '/ipa-chart/frequency': typeof IpaChartFrequencyRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/ipa-chart': typeof IpaChartIndexRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
+  '/ipa-chart/frequency': typeof IpaChartFrequencyRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
+    | '/ipa-chart/frequency'
     | '/ipa-chart/vowels'
     | '/practice/$topic'
     | '/ipa-chart/'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
+    | '/ipa-chart/frequency'
     | '/ipa-chart/vowels'
     | '/practice/$topic'
     | '/ipa-chart'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
+    | '/ipa-chart/frequency'
     | '/ipa-chart/vowels'
     | '/practice/$topic'
     | '/ipa-chart/'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   IpaChartSplatRoute: typeof IpaChartSplatRoute
   IpaChartConsonantsRoute: typeof IpaChartConsonantsRoute
+  IpaChartFrequencyRoute: typeof IpaChartFrequencyRoute
   IpaChartVowelsRoute: typeof IpaChartVowelsRoute
   IpaChartIndexRoute: typeof IpaChartIndexRoute
 }
@@ -227,6 +240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IpaChartConsonantsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ipa-chart/frequency': {
+      id: '/ipa-chart/frequency'
+      path: '/ipa-chart/frequency'
+      fullPath: '/ipa-chart/frequency'
+      preLoaderRoute: typeof IpaChartFrequencyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ipa-chart/vowels': {
       id: '/ipa-chart/vowels'
       path: '/ipa-chart/vowels'
@@ -273,6 +293,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   IpaChartSplatRoute: IpaChartSplatRoute,
   IpaChartConsonantsRoute: IpaChartConsonantsRoute,
+  IpaChartFrequencyRoute: IpaChartFrequencyRoute,
   IpaChartVowelsRoute: IpaChartVowelsRoute,
   IpaChartIndexRoute: IpaChartIndexRoute,
 }

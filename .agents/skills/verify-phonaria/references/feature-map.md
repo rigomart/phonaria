@@ -1,6 +1,6 @@
 # Phonaria feature map
 
-This map describes how to reach features, not a claim that all features pass. Only the common-word transcription journey below has an executable verification recipe. Other entries are navigation references awaiting dedicated journeys.
+This map describes how to reach features, not a claim that all features pass. The common-word transcription and sound-frequency journeys below have executable verification recipes. Other entries are navigation references awaiting dedicated journeys.
 
 | Feature | Entry point | Coverage here |
 | --- | --- | --- |
@@ -8,8 +8,10 @@ This map describes how to reach features, not a claim that all features pass. On
 | Other pronunciation variants | Transcribe a word, **Show other pronunciations of hello** | Not exercised |
 | Word definitions | Transcribe, **Definition of hello** | Not exercised; requires Worker/Wiktionary |
 | Spelling suggestions and server lookup | `/`, words outside the bundled lists | Not exercised; server lookup needs Turso |
-| Consonant chart | `/ipa-chart/consonants`, header **IPA Chart** | Not exercised |
+| Consonant chart | `/ipa-chart/consonants`, header **IPA Chart** | Not exercised beyond the sound-frequency check that it stays unshaded |
 | Vowel chart | `/ipa-chart/vowels`, **Show diphthongs** | Not exercised |
+| Frequency | `/ipa-chart/frequency`, header **IPA Chart** → **Frequency** | Executable journey below |
+| Sound card "Frequency" and "Spelling" | Any sound, or **Details for /h/** after transcribing | Executable journey below |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Credits and theme | `/credits`, footer **Credits** / **Toggle theme** | Not exercised |
 
@@ -93,3 +95,53 @@ This journey covers desktop Chromium, client common-word lookup, shared-query re
 - A missing /h/ diagram or failed asset request: inspect browser diagnostics and public asset settings. Do not copy placeholder `.env.example` values into local settings.
 - A changed primary IPA: inspect curated word data and `src/core/ipa-map.ts` before changing expected literals. Do not derive the expected value using the same function that produced the UI.
 - A failed assertion: inspect its actual values and screenshot, preserve this run, and start a new run after a fix. Do not overwrite a failure with a later success claim.
+
+## Sound frequency
+
+Target accent: American English (`en-us`). Expected ranks, shares, bands and card text are literal values from `docs/research/issue-287-phoneme-frequency.md`, the record of the generated `phoneme-frequency.json`. The [checkpoints](../scripts/sound-frequency.ts) read the page heading, legend, ranked rows and their bar color classes, header menu links, and the card's Frequency section (rank, meter, "All sounds" link) and Spelling section.
+
+Interact only after the page hydrates. On a cold dev server, an early click can land before React attaches handlers and nothing happens. Wait with `wait --fn` until the control has React props, as below. If port 3000 is taken by another server, initialize the run with `http://127.0.0.1:3001` and use that origin in `open`.
+
+### Controls
+
+| User control | CLI locator |
+| --- | --- |
+| A ranked sound | `find role button click --name "/ð/ as in this: 11th, 3.1%, common" --exact` (rank, share and band) |
+| Header menu | `find role button click --name "IPA Chart" --exact` |
+| Card link | `find role link click --name "All sounds" --exact` |
+
+### Executable journey
+
+Desktop viewport 1280 × 900. After `init sound-frequency` and `serve`:
+
+```bash
+HYD="Object.keys(document.querySelector('ol button')||{}).some(k=>k.startsWith('__reactProps'))"
+bun run verify browser "$VERIFY_RUN" open about:blank
+bun run verify browser "$VERIFY_RUN" trace start
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/frequency
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" ranking
+bun run verify browser "$VERIFY_RUN" find role button click --name "/ð/ as in this: 11th, 3.1%, common" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('section h3')"
+bun run verify observe "$VERIFY_RUN" page-card
+
+bun run verify browser "$VERIFY_RUN" press Escape
+bun run verify browser "$VERIFY_RUN" find role button click --name "IPA Chart" --exact
+bun run verify observe "$VERIFY_RUN" menu
+
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/consonants
+bun run verify observe "$VERIFY_RUN" plain-charts
+
+bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/?q=hello"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Details for /h/" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('section h3')"
+bun run verify observe "$VERIFY_RUN" result-card
+bun run verify browser "$VERIFY_RUN" find role link click --name "All sounds" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname === '/ipa-chart/frequency'"
+bun run verify observe "$VERIFY_RUN" followed-link
+```
+
+`ranking` requires the Frequency heading, no tabs or comparison chart, the four-band legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and bar colors `bg-frequency-4` to `-1` for /t/, /ð/, /h/ and /ʒ/. `page-card` requires "Common · 11th of 40", a 75% meter, spelling `th` with "this, mother" and both `th` emphasized, and no "All sounds" link on the page itself. `menu` requires the three IPA Chart links. `plain-charts` requires the consonant chart without any switch. `result-card` requires the /h/ card from a transcription result to show "Less common · 29th of 40", a 30% meter, spelling `h` with "house, hello", and an "All sounds" link; `followed-link` requires that link to open the Frequency page.
+
+Clicking a sound whose card is already open closes it. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.

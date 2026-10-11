@@ -55,6 +55,9 @@ export function Header({ flags }: { flags: AppFlags }) {
 										<NavigationMenuLink render={<Link href="/ipa-chart/vowels" />}>
 											Vowels
 										</NavigationMenuLink>
+										<NavigationMenuLink render={<Link href="/ipa-chart/frequency" />}>
+											Frequency
+										</NavigationMenuLink>
 									</NavigationMenuContent>
 								</NavigationMenuPopup>
 							</NavigationMenuPositioner>

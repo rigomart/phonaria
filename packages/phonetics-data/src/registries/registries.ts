@@ -17,6 +17,7 @@ import {
 } from "../languages/en/articulations";
 import { CmuArpaMap, type CmuArpaToken, type CmuStressLevel } from "../languages/en/cmu-arpa";
 import { EnglishContrastsByPhonemeId } from "../languages/en/contrasts";
+import { EnglishPhonemeFrequencies } from "../languages/en/frequency";
 import { EnglishPhonemeSpellingPatterns } from "../languages/en/patterns";
 import {
 	SpanishConsonantArticulations,
@@ -31,7 +32,12 @@ import type {
 	LanguagePhonemeId,
 } from "../languages/inventories";
 import { getLanguagePhonemeIds } from "../languages/inventories";
-import type { PhonemeAllophone, PhonemeContrastMatch, SpellingPattern } from "../languages/types";
+import type {
+	PhonemeAllophone,
+	PhonemeContrastMatch,
+	PhonemeFrequency,
+	SpellingPattern,
+} from "../languages/types";
 import { deepFreeze } from "../shared/readonly";
 
 // Language articulation registry types
@@ -158,6 +164,14 @@ export const LanguageSpellingPatternDataRegistry = deepFreeze({
 	Partial<Record<PhonemeSymbolId, SpellingPattern>> | null
 >);
 
+export const LanguagePhonemeFrequencyDataRegistry = deepFreeze({
+	"en-us": EnglishPhonemeFrequencies,
+	"es-419": null,
+} as const satisfies Record<
+	TargetAccent,
+	Partial<Record<PhonemeSymbolId, PhonemeFrequency>> | null
+>);
+
 export function getCmuArpaRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageCmuArpaDataRegistry)[TLanguage] {
@@ -180,6 +194,12 @@ export function getSpellingPatternRegistryForLanguage<TLanguage extends TargetAc
 	language: TLanguage,
 ): (typeof LanguageSpellingPatternDataRegistry)[TLanguage] {
 	return LanguageSpellingPatternDataRegistry[language];
+}
+
+export function getPhonemeFrequencyRegistryForLanguage<TLanguage extends TargetAccent>(
+	language: TLanguage,
+): (typeof LanguagePhonemeFrequencyDataRegistry)[TLanguage] {
+	return LanguagePhonemeFrequencyDataRegistry[language];
 }
 
 export type { CmuArpaToken, CmuStressLevel };

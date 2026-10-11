@@ -26,10 +26,12 @@ export {
 	getLanguageArticulationData,
 	getMonophthongVowelArticulationRegistryForLanguage,
 	getPhonemeArticulationRegistryForLanguage,
+	getPhonemeFrequencyRegistryForLanguage,
 	getSpellingPatternRegistryForLanguage,
 	LanguageAllophoneDataRegistry,
 	LanguageArticulationRegistry,
 	LanguageCmuArpaDataRegistry,
 	LanguageContrastDataRegistry,
+	LanguagePhonemeFrequencyDataRegistry,
 	LanguageSpellingPatternDataRegistry,
 } from "./registries";

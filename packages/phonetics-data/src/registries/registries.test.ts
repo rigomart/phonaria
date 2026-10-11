@@ -12,6 +12,7 @@ import {
 	getLanguagePhonemeIds,
 	getMonophthongVowelArticulationRegistryForLanguage,
 	getPhonemeArticulationRegistryForLanguage,
+	getPhonemeFrequencyRegistryForLanguage,
 	getSpellingPatternRegistryForLanguage,
 	hasLanguageFeature,
 	LANGUAGE_FEATURE_KEYS,
@@ -103,6 +104,7 @@ describe.each(TARGET_ACCENTS)("%s feature availability", (accent) => {
 			allophones: getAllophoneRegistryForLanguage(accent) !== null,
 			contrasts: getContrastRegistryForLanguage(accent) !== null,
 			spellingPatterns: getSpellingPatternRegistryForLanguage(accent) !== null,
+			phonemeFrequency: getPhonemeFrequencyRegistryForLanguage(accent) !== null,
 		};
 		const capabilities = getLanguageFeatureCapabilities(accent);
 		for (const feature of LANGUAGE_FEATURE_KEYS) {
@@ -121,6 +123,7 @@ describe("English-only features", () => {
 		["allophones", getAllophoneRegistryForLanguage],
 		["contrasts", getContrastRegistryForLanguage],
 		["spellingPatterns", getSpellingPatternRegistryForLanguage],
+		["phonemeFrequency", getPhonemeFrequencyRegistryForLanguage],
 	] as const)("makes %s usable for English and unavailable for Spanish", (feature, getData) => {
 		const english = getData("en-us");
 		expect(english).not.toBeNull();

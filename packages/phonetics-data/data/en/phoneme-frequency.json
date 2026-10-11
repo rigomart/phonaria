@@ -1,0 +1,213 @@
+{
+	"meta": {
+		"wordCount": 10000,
+		"wordfreq": {
+			"version": "3.1.1",
+			"language": "en"
+		},
+		"license": "CC-BY-SA-4.0",
+		"attribution": "Derived from wordfreq (Robyn Speer, CC-BY-SA 4.0). Pronunciations from CMUDict (Public Domain)."
+	},
+	"phonemes": [
+		{
+			"phonemeId": "AX",
+			"percentage": 7.9229,
+			"rank": 1
+		},
+		{
+			"phonemeId": "T",
+			"percentage": 7.3543,
+			"rank": 2
+		},
+		{
+			"phonemeId": "N",
+			"percentage": 7.1659,
+			"rank": 3
+		},
+		{
+			"phonemeId": "IX",
+			"percentage": 6.1608,
+			"rank": 4
+		},
+		{
+			"phonemeId": "S",
+			"percentage": 4.8346,
+			"rank": 5
+		},
+		{
+			"phonemeId": "R",
+			"percentage": 4.5491,
+			"rank": 6
+		},
+		{
+			"phonemeId": "D",
+			"percentage": 4.1436,
+			"rank": 7
+		},
+		{
+			"phonemeId": "L",
+			"percentage": 3.9316,
+			"rank": 8
+		},
+		{
+			"phonemeId": "I",
+			"percentage": 3.3269,
+			"rank": 9
+		},
+		{
+			"phonemeId": "K",
+			"percentage": 3.1861,
+			"rank": 10
+		},
+		{
+			"phonemeId": "DH",
+			"percentage": 3.0995,
+			"rank": 11
+		},
+		{
+			"phonemeId": "M",
+			"percentage": 2.9009,
+			"rank": 12
+		},
+		{
+			"phonemeId": "E",
+			"percentage": 2.7898,
+			"rank": 13
+		},
+		{
+			"phonemeId": "Z",
+			"percentage": 2.7423,
+			"rank": 14
+		},
+		{
+			"phonemeId": "AE",
+			"percentage": 2.5811,
+			"rank": 15
+		},
+		{
+			"phonemeId": "AH",
+			"percentage": 2.4818,
+			"rank": 16
+		},
+		{
+			"phonemeId": "ER",
+			"percentage": 2.2892,
+			"rank": 17
+		},
+		{
+			"phonemeId": "U",
+			"percentage": 2.2354,
+			"rank": 18
+		},
+		{
+			"phonemeId": "P",
+			"percentage": 2.0804,
+			"rank": 19
+		},
+		{
+			"phonemeId": "W",
+			"percentage": 2.0435,
+			"rank": 20
+		},
+		{
+			"phonemeId": "V",
+			"percentage": 2.0417,
+			"rank": 21
+		},
+		{
+			"phonemeId": "A",
+			"percentage": 1.9828,
+			"rank": 22
+		},
+		{
+			"phonemeId": "AI",
+			"percentage": 1.931,
+			"rank": 23
+		},
+		{
+			"phonemeId": "F",
+			"percentage": 1.8631,
+			"rank": 24
+		},
+		{
+			"phonemeId": "B",
+			"percentage": 1.8164,
+			"rank": 25
+		},
+		{
+			"phonemeId": "O",
+			"percentage": 1.7076,
+			"rank": 26
+		},
+		{
+			"phonemeId": "EI",
+			"percentage": 1.6388,
+			"rank": 27
+		},
+		{
+			"phonemeId": "OU",
+			"percentage": 1.3551,
+			"rank": 28
+		},
+		{
+			"phonemeId": "H",
+			"percentage": 1.3477,
+			"rank": 29
+		},
+		{
+			"phonemeId": "NG",
+			"percentage": 1.0831,
+			"rank": 30
+		},
+		{
+			"phonemeId": "Y",
+			"percentage": 1.0,
+			"rank": 31
+		},
+		{
+			"phonemeId": "G",
+			"percentage": 0.8991,
+			"rank": 32
+		},
+		{
+			"phonemeId": "SH",
+			"percentage": 0.7953,
+			"rank": 33
+		},
+		{
+			"phonemeId": "J",
+			"percentage": 0.6095,
+			"rank": 34
+		},
+		{
+			"phonemeId": "AU",
+			"percentage": 0.5984,
+			"rank": 35
+		},
+		{
+			"phonemeId": "CH",
+			"percentage": 0.5182,
+			"rank": 36
+		},
+		{
+			"phonemeId": "UX",
+			"percentage": 0.4302,
+			"rank": 37
+		},
+		{
+			"phonemeId": "TH",
+			"percentage": 0.4207,
+			"rank": 38
+		},
+		{
+			"phonemeId": "OI",
+			"percentage": 0.0917,
+			"rank": 39
+		},
+		{
+			"phonemeId": "ZH",
+			"percentage": 0.0501,
+			"rank": 40
+		}
+	]
+}

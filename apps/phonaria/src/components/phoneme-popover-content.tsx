@@ -6,8 +6,10 @@ import {
 	getIpaForPhonemeId,
 	getPhonemeArticulationRegistryForLanguage,
 	getPhonemeType,
+	getSpellingPatternRegistryForLanguage,
 	type LanguagePhonemeId,
 	type PhonemeArticulation,
+	type SpellingPattern,
 	type TargetAccent,
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
@@ -16,11 +18,15 @@ import {
 	ToggleGroupItem,
 	ToggleGroupSeparator,
 } from "@phonaria/ui/components/toggle-group";
-import { ChevronDown, MoveRight } from "lucide-react";
-import { useId, useState } from "react";
+import { ArrowRight, ChevronDown, MoveRight } from "lucide-react";
+import { Fragment, useId, useState } from "react";
 import { AudioControls } from "@/components/audio-controls";
 import { Image } from "@/components/image";
+import { Link } from "@/components/link";
+import { SpelledWord } from "@/components/spelled-word";
+import { IPA_CHART_FREQUENCY_PATH } from "@/lib/ipa-chart-metadata";
 import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
+import { summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
 import { getPublicAssetBaseUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
@@ -42,12 +48,18 @@ interface PhonemePopoverProps<TLanguage extends TargetAccent> {
 	 * assistance, since a pair could spell out the word being answered.
 	 */
 	showComparisons?: boolean;
+	/** Off for Practice assistance too: an example word could be the answer. */
+	showSpellings?: boolean;
+	/** Off on the frequency page itself, and in Practice so following it doesn't end the session. */
+	showFrequencyLink?: boolean;
 }
 
 export function PhonemePopoverContent<TLanguage extends TargetAccent>({
 	targetAccent,
 	phonemeId,
 	showComparisons = true,
+	showSpellings = true,
+	showFrequencyLink = true,
 }: PhonemePopoverProps<TLanguage>) {
 	const articulationRegistry = getPhonemeArticulationRegistryForLanguage(targetAccent) as Record<
 		LanguagePhonemeId<TLanguage>,
@@ -84,8 +96,93 @@ export function PhonemePopoverContent<TLanguage extends TargetAccent>({
 				articulation={articulation}
 			/>
 
+			<PhonemeFrequency
+				targetAccent={targetAccent}
+				phonemeId={phonemeId}
+				showLink={showFrequencyLink}
+			/>
+
+			{showSpellings && <PhonemeSpelling targetAccent={targetAccent} phonemeId={phonemeId} />}
+
 			{showComparisons && <PhonemeComparisons targetAccent={targetAccent} phonemeId={phonemeId} />}
 		</div>
+	);
+}
+
+const SPELLING_EXAMPLE_COUNT = 2;
+
+function PhonemeFrequency({
+	targetAccent,
+	phonemeId,
+	showLink,
+}: {
+	targetAccent: TargetAccent;
+	phonemeId: LanguagePhonemeId<TargetAccent>;
+	showLink: boolean;
+}) {
+	const headingId = useId();
+	const frequency = summarizePhonemeFrequency(targetAccent, phonemeId);
+	if (!frequency) return null;
+
+	return (
+		<section aria-labelledby={headingId} className="flex flex-col gap-1.5 border-t pt-2">
+			<div className="flex items-baseline justify-between gap-2 text-xs text-muted-foreground">
+				<h3 id={headingId}>Frequency</h3>
+				{showLink && (
+					<Link
+						href={IPA_CHART_FREQUENCY_PATH}
+						className="inline-flex items-center gap-0.5 rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+					>
+						All sounds
+						<ArrowRight aria-hidden="true" className="size-3" />
+					</Link>
+				)}
+			</div>
+			<p className="text-sm">
+				<span className="font-medium">{frequency.band.label}</span>
+				<span className="text-muted-foreground"> · {frequency.ranking}</span>
+			</p>
+			<span aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-accent">
+				<span
+					className={cn("block h-full rounded-full", frequency.band.barClass)}
+					style={{ width: `${frequency.position * 100}%` }}
+				/>
+			</span>
+		</section>
+	);
+}
+
+function PhonemeSpelling({
+	targetAccent,
+	phonemeId,
+}: {
+	targetAccent: TargetAccent;
+	phonemeId: LanguagePhonemeId<TargetAccent>;
+}) {
+	const headingId = useId();
+	const registry = getSpellingPatternRegistryForLanguage(targetAccent) as Partial<
+		Record<LanguagePhonemeId<TargetAccent>, SpellingPattern>
+	> | null;
+	const spelling = registry?.[phonemeId];
+	if (!spelling) return null;
+
+	return (
+		<section aria-labelledby={headingId} className="flex flex-col gap-1.5 border-t pt-2">
+			<h3 id={headingId} className="text-xs text-muted-foreground">
+				Spelling
+			</h3>
+			<p className="flex items-baseline gap-2 text-sm">
+				<span className="min-w-10 shrink-0 font-medium">{spelling.patterns.join(", ")}</span>
+				<span className="text-muted-foreground">
+					{spelling.examples.slice(0, SPELLING_EXAMPLE_COUNT).map((example, index) => (
+						<Fragment key={example.word}>
+							{index > 0 && ", "}
+							<SpelledWord spelled={example.spelled} />
+						</Fragment>
+					))}
+				</span>
+			</p>
+		</section>
 	);
 }
 

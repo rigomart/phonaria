@@ -45,8 +45,14 @@ export type {
 } from "./core/phoneme-articulations";
 export { type PhonemeCategory, TARGET_ACCENTS, type TargetAccent } from "./core/types";
 export type { CuratedWordData } from "./data/en/curated-1k";
-export type { CmudictPayload, CmudictStatsPayload, PhonemeTrieNode } from "./dict/types";
+export type {
+	CmudictPayload,
+	CmudictStatsPayload,
+	PhonemeFrequencyPayload,
+	PhonemeTrieNode,
+} from "./dict/types";
 export { formatPhonemeLabel } from "./formatters/phoneme-label";
+export { type SpelledWordSegment, splitSpelledWord } from "./formatters/spelled-word";
 export { EnglishPhonemeAllophones } from "./languages/en/allophones";
 export {
 	CmuArpaMap,
@@ -72,6 +78,7 @@ export {
 	tryExtractBasePhonemeId,
 } from "./languages/en/cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./languages/en/contrasts";
+export { EnglishPhonemeFrequencies } from "./languages/en/frequency";
 export {
 	findSubstitution,
 	getSinglePronunciation,
@@ -109,12 +116,14 @@ export type {
 	AllophoneExample,
 	LanguagePhonemeAllophoneRegistry,
 	LanguagePhonemeContrastRegistry,
+	LanguagePhonemeFrequencyRegistry,
 	LanguageSpellingPatternRegistry,
 	MinimalPair,
 	PhonemeAllophone,
 	PhonemeAllophoneContextKey,
 	PhonemeContrast,
 	PhonemeContrastMatch,
+	PhonemeFrequency,
 	SpellingPattern,
 } from "./languages/types";
 export type {
@@ -145,10 +154,12 @@ export {
 	getLanguageArticulationData,
 	getMonophthongVowelArticulationRegistryForLanguage,
 	getPhonemeArticulationRegistryForLanguage,
+	getPhonemeFrequencyRegistryForLanguage,
 	getSpellingPatternRegistryForLanguage,
 	LanguageAllophoneDataRegistry,
 	LanguageArticulationRegistry,
 	LanguageCmuArpaDataRegistry,
 	LanguageContrastDataRegistry,
+	LanguagePhonemeFrequencyDataRegistry,
 	LanguageSpellingPatternDataRegistry,
 } from "./registries/registries";

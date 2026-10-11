@@ -2,7 +2,10 @@ import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-meta
 import {
 	CONSONANTS_PAGE_DESCRIPTION,
 	CONSONANTS_PAGE_TITLE,
+	FREQUENCY_PAGE_DESCRIPTION,
+	FREQUENCY_PAGE_TITLE,
 	IPA_CHART_CONSONANTS_PATH,
+	IPA_CHART_FREQUENCY_PATH,
 	IPA_CHART_VOWELS_PATH,
 	VOWELS_PAGE_DESCRIPTION,
 	VOWELS_PAGE_TITLE,
@@ -52,6 +55,10 @@ export function consonantsDocumentTitle(): string {
 
 export function vowelsDocumentTitle(): string {
 	return formatDocumentTitle(VOWELS_PAGE_TITLE);
+}
+
+export function frequencyDocumentTitle(): string {
+	return formatDocumentTitle(FREQUENCY_PAGE_TITLE);
 }
 
 export function practiceDocumentTitle(pageTitle: string = PracticeActivity.name): string {
@@ -177,6 +184,14 @@ export function buildVowelsHead(): StartHead {
 		path: IPA_CHART_VOWELS_PATH,
 		title: VOWELS_PAGE_TITLE,
 		description: VOWELS_PAGE_DESCRIPTION,
+	});
+}
+
+export function buildFrequencyHead(): StartHead {
+	return buildPageHead({
+		path: IPA_CHART_FREQUENCY_PATH,
+		title: FREQUENCY_PAGE_TITLE,
+		description: FREQUENCY_PAGE_DESCRIPTION,
 	});
 }
 

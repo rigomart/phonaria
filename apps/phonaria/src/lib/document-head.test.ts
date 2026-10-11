@@ -3,7 +3,9 @@ import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-meta
 import {
 	CONSONANTS_PAGE_DESCRIPTION,
 	CONSONANTS_PAGE_TITLE,
+	FREQUENCY_PAGE_DESCRIPTION,
 	IPA_CHART_CONSONANTS_PATH,
+	IPA_CHART_FREQUENCY_PATH,
 	IPA_CHART_VOWELS_PATH,
 	VOWELS_PAGE_DESCRIPTION,
 	VOWELS_PAGE_TITLE,
@@ -14,6 +16,7 @@ import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import {
 	buildConsonantsHead,
 	buildCreditsHead,
+	buildFrequencyHead,
 	buildHomeHead,
 	buildPracticeIndexHead,
 	buildPracticeTopicHead,
@@ -23,6 +26,7 @@ import {
 	creditsDocumentTitle,
 	extractDocumentTitle,
 	formatDocumentTitle,
+	frequencyDocumentTitle,
 	practiceDocumentTitle,
 	tryGetDocumentMetadata,
 	vowelsDocumentTitle,
@@ -185,6 +189,21 @@ describe("buildConsonantsHead", () => {
 			{
 				rel: "canonical",
 				href: `https://phonaria-staging.example.test${IPA_CHART_CONSONANTS_PATH}`,
+			},
+		]);
+	});
+});
+
+describe("buildFrequencyHead", () => {
+	it("titles, describes and canonicalizes the frequency page", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const head = buildFrequencyHead();
+		expect(head.meta).toContainEqual({ title: frequencyDocumentTitle() });
+		expect(head.meta).toContainEqual({ name: "description", content: FREQUENCY_PAGE_DESCRIPTION });
+		expect(head.links).toEqual([
+			{
+				rel: "canonical",
+				href: `https://phonaria-staging.example.test${IPA_CHART_FREQUENCY_PATH}`,
 			},
 		]);
 	});

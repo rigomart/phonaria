@@ -59,8 +59,23 @@ export type SpellingPattern = {
 	readonly examples: ReadonlyArray<{
 		readonly word: string;
 		readonly phonemic: string;
+		/** The word with the letters that spell the sound in brackets, e.g. "ha[pp]y" or "m[a]k[e]". */
+		readonly spelled: string;
 	}>;
 };
 
 export type LanguageSpellingPatternRegistry<TLanguage extends TargetAccent = TargetAccent> =
 	Readonly<Partial<Record<LanguagePhonemeId<TLanguage>, SpellingPattern>>>;
+
+// Phoneme frequency types
+
+/** How common a sound is in everyday speech. */
+export type PhonemeFrequency = {
+	/** The sound's share of all sounds spoken, weighting each word by how often it is used. */
+	readonly percentage: number;
+	/** 1 is the most common sound. */
+	readonly rank: number;
+};
+
+export type LanguagePhonemeFrequencyRegistry<TLanguage extends TargetAccent = TargetAccent> =
+	Readonly<Record<LanguagePhonemeId<TLanguage>, PhonemeFrequency>>;

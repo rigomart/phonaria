@@ -7,6 +7,7 @@ export const LANGUAGE_FEATURE_KEYS = [
 	"allophones",
 	"contrasts",
 	"spellingPatterns",
+	"phonemeFrequency",
 	"curatedWordData",
 	"transcription",
 ] as const;
@@ -22,6 +23,7 @@ export const LanguageFeatureCapabilitiesRegistry = deepFreeze({
 		allophones: true,
 		contrasts: true,
 		spellingPatterns: true,
+		phonemeFrequency: true,
 		curatedWordData: true,
 		transcription: true,
 	},
@@ -31,6 +33,7 @@ export const LanguageFeatureCapabilitiesRegistry = deepFreeze({
 		allophones: false,
 		contrasts: false,
 		spellingPatterns: false,
+		phonemeFrequency: false,
 		curatedWordData: false,
 		transcription: true,
 	},

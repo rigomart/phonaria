@@ -7,6 +7,7 @@ import {
 	getLanguageFeatureCapabilities,
 	getLanguagePhonemeCount,
 	getLanguagePhonemeInventory,
+	getPhonemeFrequencyRegistryForLanguage,
 	getSpellingPatternRegistryForLanguage,
 	hasLanguageFeature,
 	isPhonemeInLanguage,
@@ -81,6 +82,7 @@ it.each([
 	["allophones", () => getAllophoneRegistryForLanguage("en-us")],
 	["contrasts", () => getContrastRegistryForLanguage("en-us")],
 	["spelling patterns", () => getSpellingPatternRegistryForLanguage("en-us")],
+	["phoneme frequency", () => getPhonemeFrequencyRegistryForLanguage("en-us")],
 ] as const)("protects all nested %s data shared with later callers", (_name, getData) => {
 	const before = structuredClone(getData());
 	expectProtected(getData());

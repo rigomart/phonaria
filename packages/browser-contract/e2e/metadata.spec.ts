@@ -31,6 +31,11 @@ const PUBLIC_ROUTES = [
 		title: "Vowels — IPA Chart - Phonaria",
 		description: "Interactive IPA chart for American English vowels.",
 	},
+	{
+		path: "/ipa-chart/frequency",
+		title: "Frequency — IPA Chart - Phonaria",
+		description: "How often each American English sound comes up in everyday speech.",
+	},
 ] as const;
 
 test.describe("Metadata, robots, and sitemap", () => {

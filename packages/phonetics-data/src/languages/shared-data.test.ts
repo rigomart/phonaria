@@ -6,6 +6,7 @@ import {
 	EnglishContrastsByPhonemeId,
 	EnglishPhonemeAllophones,
 	EnglishPhonemeContrasts,
+	EnglishPhonemeFrequencies,
 	EnglishPhonemeSpellingPatterns,
 } from "./en";
 import { SpanishConsonantArticulations } from "./es";
@@ -21,6 +22,7 @@ it.each([
 	["catalog word pairs", () => EnglishPhonemeContrasts[0]?.minimalPairs[0]?.words, "0"],
 	["indexed word pairs", () => EnglishContrastsByPhonemeId.B?.[0]?.minimalPairs[0]?.words, "0"],
 	["spelling examples", () => EnglishPhonemeSpellingPatterns.P.examples[0], "word"],
+	["phoneme frequencies", () => EnglishPhonemeFrequencies.DH, "rank"],
 ] as const)("protects directly imported %s", (_name, getData, key) => {
 	const data = getData();
 	if (!data) throw new Error("Missing regression fixture");

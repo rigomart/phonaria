@@ -46,7 +46,7 @@ graph TD
   D --> E
   E --> F["Consumers\napps/phonaria, helper-scripts"]
   G["src/registries/capabilities.ts\nFeature support matrix"] --> F
-  H["data/en/dict + data/en/curated\nRaw JSON assets"] --> I["src/data/en/\nTyped subpath exports"]
+  H["data/en/dict + data/en/curated\n+ phoneme-frequency.json\nRaw JSON assets"] --> I["src/data/en/\nTyped subpath exports"]
   I --> F
 ```
 

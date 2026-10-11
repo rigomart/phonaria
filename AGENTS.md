@@ -11,7 +11,9 @@
   - `hasLanguageFeature()` / `getLanguageFeatureCapabilities()`: Feature flags per language (Spanish currently has articulations only)
   - English-specific data: `EnglishPhonemeContrasts` (minimal-pair catalog, validated against top-10k) / `EnglishContrastsByPhonemeId`, `EnglishPhonemeAllophones`, `EnglishPhonemeSpellingPatterns`, `CmuArpaMap`
   - Minimal-pair helpers: `getSinglePronunciation()`, `findSubstitution()`, `toBasePhonemeIds()`
-  - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`
+  - `getPhonemeFrequencyRegistryForLanguage()`: each sound's share of everyday speech and its rank (en-us only, behind the `phonemeFrequency` capability)
+  - Spelling examples carry a `spelled` form marking the letters that spell the sound (`"ha[pp]y"`); `splitSpelledWord()` splits it for display
+  - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`, `phoneme-frequency`
 - `packages/helper-scripts`: Utilities for CMUDict processing and word-mapping reports; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`.
 - `packages/audio-gen`: Local Azure Speech pronunciation generation from the minimal-pair catalog. Reads `.env`, writes recordings and review sheets to ignored `output/` directories, and never uploads audio automatically. See the package README.
 - `docs`: Product context and the project overview, accepted decisions in `adr/`, agent conventions in `agents/`, and migration records in `research/`.
@@ -38,6 +40,7 @@
 - `bun --cwd packages/helper-scripts generate-word-mappings`: Produce CMU ARPA mappings for example words derived from `@phonaria/phonetics-data`.
 - `bun --cwd packages/helper-scripts find-minimal-pairs`: Propose minimal-pair candidates per contrast from the top-10k list into a review sheet under `packages/helper-scripts/output/`; reviewed pairs go into `packages/phonetics-data/src/languages/en/contrasts.ts` by hand.
 - `python3 packages/helper-scripts/generate-curated-chunks.py`: Generate curated top-1k and top-10k word lists for client-side tiered lookup (requires `pip install wordfreq`).
+- `python3 packages/helper-scripts/generate-phoneme-frequency.py`: Regenerate each sound's share of everyday speech (`packages/phonetics-data/data/en/phoneme-frequency.json`) from the curated top-10k list (requires `pip install wordfreq`).
 
 ## Design & UX Patterns
 

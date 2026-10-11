@@ -1,0 +1,134 @@
+import { type Feature, observation } from "./feature";
+
+// These functions run in the browser after serialization. Keep their dependencies
+// inside the function body and read only rendered DOM and browser state.
+// Expected ranks, shares and bands come from docs/research/issue-287-phoneme-frequency.md.
+
+const ranking = observation(
+	() => {
+		const rows = Array.from(document.querySelectorAll("ol > li > button"));
+		const ipa = (row: Element) => row.children[1]?.textContent?.trim() ?? null;
+		const barColor = (row: Element) =>
+			Array.from(row.querySelector("[aria-hidden='true'] > span")?.classList ?? []).find((name) =>
+				name.startsWith("bg-frequency-"),
+			) ?? null;
+		const rowFor = (symbol: string) => rows.find((row) => ipa(row) === symbol);
+		return {
+			path: location.pathname,
+			heading: document.querySelector("h1")?.textContent?.trim() ?? null,
+			tabs: document.querySelectorAll('[role="tab"]').length,
+			comparisonChart: !!document.querySelector('svg[role="img"]'),
+			legend: Array.from(document.querySelectorAll('[aria-label="Bar colors"] li')).map((item) =>
+				item.textContent?.trim(),
+			),
+			rows: rows.length,
+			first: rows.slice(0, 3).map(ipa),
+			last: rows.length ? ipa(rows[rows.length - 1]) : null,
+			// One sound per band, so each color is checked against a known share.
+			colors: ["t", "ð", "h", "ʒ"].map((symbol) => {
+				const row = rowFor(symbol);
+				return row ? barColor(row) : null;
+			}),
+		};
+	},
+	{
+		path: "/ipa-chart/frequency",
+		heading: "Frequency",
+		tabs: 0,
+		comparisonChart: false,
+		legend: ["Very common", "Common", "Less common", "Rare"],
+		rows: 40,
+		first: ["ə", "t", "n"],
+		last: "ʒ",
+		colors: ["bg-frequency-4", "bg-frequency-3", "bg-frequency-2", "bg-frequency-1"],
+	},
+);
+
+function readCard() {
+	const section = (heading: string) =>
+		Array.from(document.querySelectorAll("section")).find(
+			(node) => node.querySelector("h3")?.textContent?.trim() === heading,
+		);
+	const frequency = section("Frequency");
+	const spelling = section("Spelling");
+	const meter = frequency?.querySelector<HTMLElement>("[aria-hidden='true'] > span");
+	return {
+		openTrigger:
+			document
+				.querySelector('button[aria-expanded="true"][aria-label]')
+				?.getAttribute("aria-label") ?? null,
+		link: frequency?.querySelector("a")?.getAttribute("href") ?? null,
+		rank: frequency?.querySelector("p")?.textContent?.trim() ?? null,
+		meter: meter?.style.width ?? null,
+		spelling: Array.from(spelling?.querySelectorAll("p > span") ?? []).map((part) =>
+			part.textContent?.trim(),
+		),
+		highlighted: Array.from(spelling?.querySelectorAll("mark") ?? []).map((mark) =>
+			mark.textContent?.trim(),
+		),
+	};
+}
+
+// Meter width is the sound's position among 40: (40 - rank + 1) / 40.
+const pageCard = observation(readCard, {
+	openTrigger: "/ð/ as in this: 11th, 3.1%, common",
+	link: null,
+	rank: "Common · 11th of 40",
+	meter: "75%",
+	spelling: ["th", "this, mother"],
+	highlighted: ["th", "th"],
+});
+
+const resultCard = observation(readCard, {
+	openTrigger: "Details for /h/",
+	link: "/ipa-chart/frequency",
+	rank: "Less common · 29th of 40",
+	meter: "30%",
+	spelling: ["h", "house, hello"],
+	highlighted: ["h", "h"],
+});
+
+const followedLink = observation(
+	() => ({
+		path: location.pathname,
+		heading: document.querySelector("h1")?.textContent?.trim() ?? null,
+	}),
+	{ path: "/ipa-chart/frequency", heading: "Frequency" },
+);
+
+const menu = observation(
+	() =>
+		Array.from(document.querySelectorAll("a"))
+			.filter((link) => link.getClientRects().length > 0)
+			.map((link) => link.getAttribute("href"))
+			.filter((href) => href?.startsWith("/ipa-chart/")),
+	["/ipa-chart/consonants", "/ipa-chart/vowels", "/ipa-chart/frequency"],
+);
+
+const plainCharts = observation(
+	() => ({
+		path: location.pathname,
+		switches: Array.from(document.querySelectorAll('[role="switch"]')).map(
+			(control) => control.closest("label")?.textContent?.trim() ?? null,
+		),
+		voicingLegend: ["Voiceless", "Voiced"].every((text) => document.body.innerText.includes(text)),
+	}),
+	{ path: "/ipa-chart/consonants", switches: [], voicingLegend: true },
+);
+
+export const soundFrequency = {
+	title: "Frequency page and sound card",
+	checkpoints: {
+		ranking,
+		"page-card": pageCard,
+		menu,
+		"plain-charts": plainCharts,
+		"result-card": resultCard,
+		"followed-link": followedLink,
+	},
+	coverageLimits: [
+		"order and band colors read from the DOM; bar lengths, color steps and layout checked by screenshot review only",
+		"en-us only; the unavailable-accent path is covered by unit tests, as no route renders es-419 data",
+		"desktop Chromium; mobile layout reviewed by screenshot only when captured",
+	],
+} satisfies Feature;

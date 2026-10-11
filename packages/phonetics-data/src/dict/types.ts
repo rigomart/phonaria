@@ -1,4 +1,5 @@
 import type { PhonemeSymbolId } from "../core/ipa-map";
+import type { PhonemeFrequency } from "../languages/types";
 
 export type PhonemeTrieNode = {
 	words: string[];
@@ -49,4 +50,15 @@ export type CmudictStatsPayload = {
 		words: number;
 		percentage: number;
 	}>;
+};
+
+export type PhonemeFrequencyPayload = {
+	meta: {
+		wordCount: number;
+		wordfreq: { version: string; language: string };
+		license: string;
+		attribution: string;
+	};
+	/** Sorted by rank. */
+	phonemes: Array<{ phonemeId: PhonemeSymbolId } & PhonemeFrequency>;
 };

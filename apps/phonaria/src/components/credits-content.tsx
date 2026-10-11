@@ -95,7 +95,7 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 		key: "wordfreq",
 		title: "wordfreq Word Frequency Data",
 		content:
-			"Curated word lists for client-side lookup are generated using wordfreq by Robyn Speer. The library combines frequency data from Google Books Ngrams, OpenSubtitles, SUBTLEX, Wikipedia, and other corpora.",
+			"Curated word lists for client-side lookup and the speech frequencies on the Frequency page are generated using wordfreq by Robyn Speer. The library combines frequency data from Google Books Ngrams, OpenSubtitles, SUBTLEX, Wikipedia, and other corpora.",
 		link: { text: "View wordfreq on GitHub", url: "https://github.com/rspeer/wordfreq" },
 		license: {
 			text: "CC BY-SA 4.0",

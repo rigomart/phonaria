@@ -1,7 +1,9 @@
 import type { Feature } from "./feature";
+import { soundFrequency } from "./sound-frequency";
 import { transcription } from "./transcription";
 
 export const features: Record<string, Feature> = {
+	"sound-frequency": soundFrequency,
 	transcription,
 };
 
