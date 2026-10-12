@@ -116,25 +116,21 @@ describe("deploy workflows", () => {
 	const dryRunWithPipefail =
 		/set -o pipefail\s+bunx wrangler deploy --dry-run --outdir \.wrangler\/dry-run \| tee wrangler-dry-run\.log/;
 
-	it("records Worker metrics from the Wrangler upload, not Vite dist", () => {
-		const preview = readWorkflow("preview.yml");
-		const production = readWorkflow("production.yml");
-		const stagingJob = preview.slice(preview.indexOf("deploy-staging:"));
+	const workflows = ["preview.yml", "staging.yml", "production.yml"];
 
-		expect(stagingJob).toContain("WRANGLER_DEPLOY_LOG: wrangler-dry-run.log");
-		expect(stagingJob).toContain("WORKER_BUNDLE_DIR: .wrangler/dry-run");
-		expect(stagingJob).not.toMatch(/WORKER_BUNDLE_DIR:\s+dist\s*$/m);
-		expect(production).toContain("WORKER_BUNDLE_DIR: .wrangler/dry-run");
-		expect(production).not.toMatch(/WORKER_BUNDLE_DIR:\s+dist\s*$/m);
+	it("records Worker metrics from the Wrangler upload, not Vite dist", () => {
+		for (const name of workflows) {
+			const workflow = readWorkflow(name);
+
+			expect(workflow).toContain("WRANGLER_DEPLOY_LOG: wrangler-dry-run.log");
+			expect(workflow).toContain("WORKER_BUNDLE_DIR: .wrangler/dry-run");
+			expect(workflow).not.toMatch(/WORKER_BUNDLE_DIR:\s+dist\s*$/m);
+		}
 	});
 
 	it("fails the Wrangler dry-run step when wrangler fails before tee", () => {
-		const preview = readWorkflow("preview.yml");
-		const production = readWorkflow("production.yml");
-		const stagingJob = preview.slice(preview.indexOf("deploy-staging:"));
-
-		expect(preview).toMatch(dryRunWithPipefail);
-		expect(stagingJob).toMatch(dryRunWithPipefail);
-		expect(production).toMatch(dryRunWithPipefail);
+		for (const name of workflows) {
+			expect(readWorkflow(name)).toMatch(dryRunWithPipefail);
+		}
 	});
 });

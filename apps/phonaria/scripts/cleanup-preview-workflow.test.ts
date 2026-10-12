@@ -16,11 +16,10 @@ describe("Cloudflare preview cleanup workflow", () => {
 	it("shares a PR-scoped concurrency group with preview deployment", () => {
 		const deployWorkflow = readWorkflow("preview.yml");
 		const cleanupWorkflow = readWorkflow("cleanup-preview.yml");
-		const pullRequestNumber = githubExpression("github.event.pull_request.number");
-		const group = `preview-${githubExpression("github.event.pull_request.number || github.ref")}`;
+		const group = `group: preview-${githubExpression("github.event.pull_request.number")}`;
 
-		expect(deployWorkflow).toContain(`group: ${group}`);
-		expect(cleanupWorkflow).toContain(`group: preview-${pullRequestNumber}`);
+		expect(deployWorkflow).toContain(group);
+		expect(cleanupWorkflow).toContain(group);
 	});
 
 	it("deletes only the closed PR Worker and treats an absent Worker as clean", () => {
