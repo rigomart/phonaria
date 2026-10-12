@@ -84,13 +84,16 @@ describe("deploy workflows", () => {
 
 	it("records preview, staging, and production deploys", () => {
 		const preview = readWorkflow("preview.yml");
+		const staging = readWorkflow("staging.yml");
 		const production = readWorkflow("production.yml");
 
+		expect(preview).toContain("deployments: write");
 		expect(preview).toContain("github-deployment.ts start preview --transient");
 		expect(preview).toContain(`DEPLOYMENT_REF: ${githubExpression("github.head_ref")}`);
 		expect(preview).toContain(finish("steps.origin.outputs.url"));
-		expect(preview).toContain("github-deployment.ts start staging)");
-		expect(preview).toContain(finish("steps.staging.outputs.url"));
+		expect(staging).toContain("deployments: write");
+		expect(staging).toContain("github-deployment.ts start staging)");
+		expect(staging).toContain(finish("steps.origin.outputs.url"));
 		expect(production).toContain("deployments: write");
 		expect(production).toContain("github-deployment.ts start production --production");
 		expect(production).toContain(finish("steps.origin.outputs.url"));

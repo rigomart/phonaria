@@ -1,0 +1,133 @@
+name: Staging
+
+# Deploys every main push to the protected staging Worker.
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      CLOUDFLARE_ENV: staging
+      SITE_INDEXING_ENABLED: "0"
+      FLAG_PRACTICE: "1"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+      TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun ci
+
+      - name: Resolve staging origin
+        id: origin
+        env:
+          SUBDOMAIN: ${{ vars.WORKERS_DEV_SUBDOMAIN }}
+        run: |
+          url="$(bun apps/phonaria/scripts/resolve-staging-origin.ts "${{ vars.STAGING_URL }}" "$SUBDOMAIN")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "SITE_URL=$url" >> "$GITHUB_ENV"
+          echo "Staging origin: $url"
+
+      - name: Generate Cloudflare Worker types
+        run: bun --cwd apps/phonaria cf-typegen
+
+      - name: Production build
+        run: bun --cwd apps/phonaria build
+
+      - name: Assert staging Worker name
+        working-directory: apps/phonaria
+        run: bun ./scripts/assert-generated-worker-name.ts phonaria-staging
+
+      - name: Assert Practice word data stays out of the Worker
+        working-directory: apps/phonaria
+        run: bun ./scripts/assert-worker-excludes-curated-10k.ts
+
+      - name: Assert server bundle keeps curated-10k client-only
+        working-directory: apps/phonaria
+        env:
+          WORKER_BUNDLE_DIR: dist/server
+        run: bun ./scripts/assert-server-bundle-boundary.ts
+
+      - name: Wrangler dry-run
+        working-directory: apps/phonaria
+        run: |
+          set -o pipefail
+          bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
+
+      - name: Write Worker secrets file
+        working-directory: apps/phonaria
+        run: bun ./scripts/write-worker-secrets.ts
+
+      - name: Start GitHub deployment
+        id: deployment
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          id="$(bun apps/phonaria/scripts/github-deployment.ts start staging)"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy staging Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/phonaria
+          command: deploy --var SITE_URL:${{ steps.origin.outputs.url }} --secrets-file .wrangler/worker-secrets.json
+
+      - name: Record deployed Worker metrics
+        working-directory: apps/phonaria
+        env:
+          # Measure the Wrangler upload, not Vite's client+server dist tree.
+          WRANGLER_DEPLOY_LOG: wrangler-dry-run.log
+          WORKER_BUNDLE_DIR: .wrangler/dry-run
+          WORKER_METRICS_OUT: worker-metrics.json
+        run: bun ./scripts/record-worker-metrics.ts
+
+      - name: Run deployed smoke checks
+        env:
+          CI: true
+          CONTRACT_TARGET: cloudflare-staging
+          CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          bun --cwd packages/browser-contract e2e:install
+          bun --cwd packages/browser-contract e2e:smoke
+
+      - name: Upload Worker metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-worker-metrics
+          path: |
+            apps/phonaria/worker-metrics.json
+            apps/phonaria/wrangler-dry-run.log
+          if-no-files-found: ignore
+
+      - name: Finish GitHub deployment
+        if: always() && steps.deployment.outputs.id != ''
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bun apps/phonaria/scripts/github-deployment.ts finish "${{ steps.deployment.outputs.id }}" "${{ job.status }}" "${{ steps.origin.outputs.url }}"

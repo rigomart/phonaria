@@ -80,20 +80,17 @@ jobs:
         run: bun ./scripts/assert-server-bundle-boundary.ts
 
       - name: Capture Worker startup time
-        if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
         run: |
           set -o pipefail
           bunx wrangler deploy --dry-run --outdir .wrangler/dry-run | tee wrangler-dry-run.log
 
       - name: Write Worker secrets file
-        if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
         run: bun ./scripts/write-worker-secrets.ts
 
       - name: Start GitHub deployment
         id: deployment
-        if: env.CLOUDFLARE_API_TOKEN != ''
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -102,7 +99,6 @@ jobs:
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
       - name: Deploy production Worker
-        if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -111,12 +107,11 @@ jobs:
           command: deploy --secrets-file .wrangler/worker-secrets.json
 
       - name: Warn when Turso secrets are missing
-        if: env.CLOUDFLARE_API_TOKEN != '' && (env.TURSO_DATABASE_URL == '' || env.TURSO_AUTH_TOKEN == '')
+        if: env.TURSO_DATABASE_URL == '' || env.TURSO_AUTH_TOKEN == ''
         run: |
           echo "::warning::Turso secrets are not configured. Server-tier transcription will fail on the production Worker until TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are set."
 
       - name: Record deployed Worker metrics
-        if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
         env:
           # Measure the Wrangler upload, not Vite's client+server dist tree.
@@ -126,11 +121,11 @@ jobs:
         run: bun ./scripts/record-worker-metrics.ts
 
       - name: Install Chromium
-        if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
+        if: ${{ inputs.run_contract }}
         run: bun --cwd packages/browser-contract e2e:install
 
       - name: Run deployed smoke checks
-        if: ${{ inputs.run_contract && env.CLOUDFLARE_API_TOKEN != '' }}
+        if: ${{ inputs.run_contract }}
         env:
           CI: true
           CONTRACT_TARGET: cloudflare-production
@@ -139,7 +134,7 @@ jobs:
         run: bun --cwd packages/browser-contract e2e:smoke
 
       - name: Record performance baselines
-        if: ${{ inputs.baseline && env.CLOUDFLARE_API_TOKEN != '' }}
+        if: ${{ inputs.baseline }}
         env:
           CI: true
           CONTRACT_TARGET: cloudflare-production
@@ -148,7 +143,6 @@ jobs:
         run: bun --cwd packages/browser-contract e2e:baseline
 
       - name: Report Worker CPU and invocation outcomes
-        if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: apps/phonaria
         run: bun ./scripts/query-worker-analytics.ts phonaria 30 | tee worker-analytics.log
 
@@ -171,8 +165,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: bun apps/phonaria/scripts/github-deployment.ts finish "${{ steps.deployment.outputs.id }}" "${{ job.status }}" "${{ steps.origin.outputs.url }}"
-
-      - name: Skip deploy when Cloudflare secrets are missing
-        if: env.CLOUDFLARE_API_TOKEN == ''
-        run: |
-          echo "CLOUDFLARE_API_TOKEN is not configured; nothing was deployed."
