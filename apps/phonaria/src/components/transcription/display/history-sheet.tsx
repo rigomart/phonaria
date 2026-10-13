@@ -1,7 +1,12 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
-import { Input } from "@phonaria/ui/components/input";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupButton,
+	InputGroupInput,
+} from "@phonaria/ui/components/input-group";
 import { ScrollArea } from "@phonaria/ui/components/scroll-area";
 import {
 	Sheet,
@@ -11,10 +16,12 @@ import {
 	SheetHeader,
 	SheetTitle,
 } from "@phonaria/ui/components/sheet";
-import { useState } from "react";
+import { SearchIcon, SearchXIcon, Trash2Icon, XIcon } from "lucide-react";
+import { type ReactNode, useId, useState } from "react";
 import {
 	filterHistory,
 	filterHistoryBySound,
+	groupHistoryByDay,
 	rankHistorySounds,
 	TRANSCRIPTION_HISTORY_LIMIT,
 	type TranscriptionHistoryEntry,
@@ -22,7 +29,7 @@ import {
 import { cn } from "@/lib/utils";
 import { PhraseList } from "./phrase-list";
 
-/** The full history, with a text filter and, once it is long enough, sound chips. */
+/** The full history by day, with a text filter and, once it is long enough, sound chips. */
 export function HistorySheet({
 	open,
 	onOpenChange,
@@ -46,6 +53,7 @@ export function HistorySheet({
 	const activeSound =
 		selectedSound !== null && sounds.includes(selectedSound) ? selectedSound : null;
 	const matches = filterHistoryBySound(filterHistory(entries, query), activeSound ?? "");
+	const groups = groupHistoryByDay(matches, Date.now());
 
 	const handleOpenChange = (next: boolean) => {
 		if (!next) {
@@ -57,98 +65,139 @@ export function HistorySheet({
 
 	return (
 		<Sheet open={open} onOpenChange={handleOpenChange}>
-			<SheetContent side="right">
-				<SheetHeader className="gap-4 border-b">
+			{/* Wide enough on phones for the sound chips to fit one row. */}
+			<SheetContent side="right" className="data-[side=right]:w-11/12">
+				<SheetHeader className="gap-4 px-5 pt-5 pb-4">
 					<div className="pe-10">
-						<SheetTitle className="font-display">History</SheetTitle>
-						<SheetDescription className="mt-1.5">
-							{entries.length} of {TRANSCRIPTION_HISTORY_LIMIT} saved in this browser.
-						</SheetDescription>
+						<SheetTitle className="font-display text-lg font-semibold tracking-tight">
+							History
+						</SheetTitle>
+						<SheetDescription>Recent transcriptions, saved in this browser.</SheetDescription>
 					</div>
-					<Input
-						type="search"
-						value={query}
-						onChange={(event) => setQuery(event.target.value)}
-						placeholder="Filter by word or IPA"
-						aria-label="Filter history"
-					/>
+					<InputGroup>
+						<InputGroupAddon>
+							<SearchIcon aria-hidden />
+						</InputGroupAddon>
+						<InputGroupInput
+							type="search"
+							value={query}
+							onChange={(event) => setQuery(event.target.value)}
+							placeholder="Filter by word or IPA"
+							aria-label="Filter history"
+							className="[&::-webkit-search-cancel-button]:appearance-none"
+						/>
+						{query ? (
+							<InputGroupAddon align="inline-end">
+								<InputGroupButton
+									size="icon-xs"
+									aria-label="Clear filter"
+									onClick={() => setQuery("")}
+								>
+									<XIcon />
+								</InputGroupButton>
+							</InputGroupAddon>
+						) : null}
+					</InputGroup>
 					{sounds.length > 0 ? (
-						<fieldset className="min-w-0 border-0 p-0">
-							<legend className="sr-only">Filter by sound</legend>
-							<div className="flex flex-wrap gap-2">
-								{sounds.map((sound) => (
-									<SoundFilterChip
-										key={sound}
-										sound={sound}
-										selected={sound === activeSound}
-										onSelect={() => setSelectedSound(sound === activeSound ? null : sound)}
-									/>
-								))}
-							</div>
-						</fieldset>
+						<SoundFilter
+							sounds={sounds}
+							activeSound={activeSound}
+							onSelect={(sound) => setSelectedSound(sound === activeSound ? null : sound)}
+						/>
 					) : null}
 				</SheetHeader>
 
-				<ScrollArea className="min-h-0 flex-1">
-					<div className="px-6 py-2">
-						{matches.length > 0 ? (
-							<PhraseList
-								className="-mx-6"
-								phrases={matches}
-								onSelect={(text) => {
-									handleOpenChange(false);
-									onSelect(text);
-								}}
-								onRemove={onRemove}
-								removeLabel={(text) => `Remove "${text}" from history`}
-								disabled={disabled}
-								highlightSound={activeSound ?? undefined}
-							/>
-						) : (
-							<p className="px-2 py-10 text-center text-sm text-muted-foreground">
+				<ScrollArea className="min-h-0 flex-1 border-t">
+					{groups.length > 0 ? (
+						<div className="flex flex-col gap-4 p-2">
+							{groups.map((group) => (
+								<HistoryDaySection key={group.label} label={group.label}>
+									<PhraseList
+										phrases={group.entries}
+										onSelect={(text) => {
+											handleOpenChange(false);
+											onSelect(text);
+										}}
+										onRemove={onRemove}
+										removeLabel={(text) => `Remove "${text}" from history`}
+										disabled={disabled}
+										highlightSound={activeSound ?? undefined}
+									/>
+								</HistoryDaySection>
+							))}
+						</div>
+					) : (
+						<div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
+							<SearchXIcon className="size-5 text-muted-foreground" aria-hidden />
+							<p className="text-sm text-muted-foreground">
 								{noMatchesMessage(query, activeSound)}
 							</p>
-						)}
-					</div>
+						</div>
+					)}
 				</ScrollArea>
 
-				<SheetFooter className="flex-row border-t py-4">
-					<ClearHistoryButton
-						onClear={() => {
-							handleOpenChange(false);
-							onClear();
-						}}
-					/>
-				</SheetFooter>
+				<HistoryFooter
+					count={entries.length}
+					onClear={() => {
+						handleOpenChange(false);
+						onClear();
+					}}
+				/>
 			</SheetContent>
 		</Sheet>
 	);
 }
 
-function SoundFilterChip({
-	sound,
-	selected,
+function HistoryDaySection({ label, children }: { label: string; children: ReactNode }) {
+	const headingId = useId();
+	return (
+		<section aria-labelledby={headingId} className="flex flex-col gap-1">
+			<h3 id={headingId} className="px-3 pt-2 text-xs font-medium text-muted-foreground">
+				{label}
+			</h3>
+			{children}
+		</section>
+	);
+}
+
+function SoundFilter({
+	sounds,
+	activeSound,
 	onSelect,
 }: {
-	sound: string;
-	selected: boolean;
-	onSelect: () => void;
+	sounds: readonly string[];
+	activeSound: string | null;
+	onSelect: (sound: string) => void;
 }) {
+	const labelId = useId();
 	return (
-		<button
-			type="button"
-			aria-pressed={selected}
-			aria-label={`Filter by /${sound}/`}
-			onClick={onSelect}
-			className={cn(
-				"inline-flex h-9 min-w-9 cursor-pointer items-center justify-center rounded-lg border px-2 font-display text-lg leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-popover motion-reduce:transition-none",
-				selected
-					? "border-primary bg-primary text-primary-foreground"
-					: "border-border bg-background-soft text-foreground hover:border-primary hover:bg-background-strong",
-			)}
-		>
-			{sound}
-		</button>
+		<div role="group" aria-labelledby={labelId} className="flex flex-col gap-2">
+			<p id={labelId} className="text-xs font-medium text-muted-foreground">
+				Filter by sound
+			</p>
+			<div className="flex flex-wrap gap-1.5">
+				{sounds.map((sound) => {
+					const selected = sound === activeSound;
+					return (
+						<button
+							key={sound}
+							type="button"
+							aria-pressed={selected}
+							aria-label={`Filter by /${sound}/`}
+							onClick={() => onSelect(sound)}
+							className={cn(
+								"inline-flex size-8 items-center justify-center rounded-full text-base leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-popover motion-reduce:transition-none",
+								selected
+									? "bg-primary text-primary-foreground"
+									: "bg-secondary text-secondary-foreground hover:bg-accent",
+							)}
+						>
+							{sound}
+						</button>
+					);
+				})}
+			</div>
+		</div>
 	);
 }
 
@@ -160,38 +209,46 @@ function noMatchesMessage(query: string, sound: string | null): string {
 }
 
 /** Asks inline before clearing, so one stray click cannot empty the history. */
-function ClearHistoryButton({ onClear }: { onClear: () => void }) {
+function HistoryFooter({ count, onClear }: { count: number; onClear: () => void }) {
 	const [confirming, setConfirming] = useState(false);
 
-	if (!confirming) {
-		return (
-			<Button
-				variant="ghost"
-				size="xs"
-				className="text-muted-foreground hover:text-foreground"
-				onClick={() => setConfirming(true)}
-			>
-				Clear history
-			</Button>
-		);
-	}
-
 	return (
-		<span className="flex items-center gap-1 text-xs text-muted-foreground">
-			Clear all history?
-			<Button variant="ghost" size="xs" onClick={() => setConfirming(false)}>
-				Cancel
-			</Button>
-			<Button
-				variant="destructive"
-				size="xs"
-				onClick={() => {
-					setConfirming(false);
-					onClear();
-				}}
-			>
-				Clear
-			</Button>
-		</span>
+		<SheetFooter className="min-h-14 flex-row items-center justify-between gap-2 border-t px-5 py-3">
+			{confirming ? (
+				<>
+					<p className="text-sm text-foreground">Clear all history?</p>
+					<div className="flex items-center gap-1">
+						<Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>
+							Cancel
+						</Button>
+						<Button
+							variant="destructive"
+							size="sm"
+							onClick={() => {
+								setConfirming(false);
+								onClear();
+							}}
+						>
+							Clear
+						</Button>
+					</div>
+				</>
+			) : (
+				<>
+					<p className="text-xs text-muted-foreground tabular-nums">
+						{count} of {TRANSCRIPTION_HISTORY_LIMIT} saved
+					</p>
+					<Button
+						variant="ghost"
+						size="sm"
+						className="text-muted-foreground hover:text-foreground"
+						onClick={() => setConfirming(true)}
+					>
+						<Trash2Icon data-icon="inline-start" aria-hidden />
+						Clear history
+					</Button>
+				</>
+			)}
+		</SheetFooter>
 	);
 }

@@ -196,6 +196,48 @@ export function rankHistorySounds(entries: readonly TranscriptionHistoryEntry[])
 		.map(([sound]) => sound);
 }
 
+export type HistoryDayLabel = "Today" | "Yesterday" | "Previous 7 days" | "Older";
+
+export interface HistoryDayGroup {
+	label: HistoryDayLabel;
+	entries: TranscriptionHistoryEntry[];
+}
+
+function startOfLocalDay(ms: number): number {
+	const date = new Date(ms);
+	date.setHours(0, 0, 0, 0);
+	return date.getTime();
+}
+
+/** Local calendar days, so "Yesterday" means before the last midnight. */
+function historyDayLabel(at: number, now: number): HistoryDayLabel {
+	// Rounded because a day across a DST change is 23 or 25 hours long.
+	const daysAgo = Math.round((startOfLocalDay(now) - startOfLocalDay(at)) / 86_400_000);
+	if (daysAgo <= 0) return "Today";
+	if (daysAgo === 1) return "Yesterday";
+	if (daysAgo < 7) return "Previous 7 days";
+	return "Older";
+}
+
+/** Buckets in newest-first order. Entries keep their order inside each bucket. */
+export function groupHistoryByDay(
+	entries: readonly TranscriptionHistoryEntry[],
+	now: number,
+): HistoryDayGroup[] {
+	const groups = new Map<HistoryDayLabel, TranscriptionHistoryEntry[]>();
+	for (const entry of entries) {
+		const label = historyDayLabel(entry.at, now);
+		const group = groups.get(label);
+		if (group) group.push(entry);
+		else groups.set(label, [entry]);
+	}
+	const order: HistoryDayLabel[] = ["Today", "Yesterday", "Previous 7 days", "Older"];
+	return order.flatMap((label) => {
+		const group = groups.get(label);
+		return group ? [{ label, entries: group }] : [];
+	});
+}
+
 export function serializeHistory(entries: readonly TranscriptionHistoryEntry[]): string {
 	return JSON.stringify({ version: STORAGE_VERSION, entries });
 }
