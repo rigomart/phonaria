@@ -36,6 +36,10 @@ export const INDEXABLE_PATHS = [
 	"/credits",
 ] as const;
 
+/** One page per American English sound; the sitemap lists them all after the paths above. */
+export const SOUND_PAGE_COUNT = 40;
+export const SOUND_PAGE_SAMPLES = ["/ipa-chart/t", "/ipa-chart/sh", "/ipa-chart/oi"] as const;
+
 export const SITE_NAME = "Phonaria";
 export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";
 
@@ -69,8 +73,8 @@ export const CONSONANT_COUNT_COPY = "24 American English consonant sounds";
 export const VOWEL_COUNT_COPY =
 	"16 American English vowel sounds: 11 monophthongs and 5 diphthongs";
 
-export const CONSONANT_BUTTON_NAME = /Voiceless bilabial plosive \(p\)/i;
-export const VOWEL_BUTTON_NAME = /Close front unrounded vowel \(i\)/i;
+export const CONSONANT_SOUND_NAME = /Voiceless bilabial plosive \(p\)/i;
+export const VOWEL_SOUND_NAME = /Close front unrounded vowel \(i\)/i;
 
 export const BASELINE_RUNS = 5;
 export const REGRESSION_THRESHOLD_PERCENT = 20;

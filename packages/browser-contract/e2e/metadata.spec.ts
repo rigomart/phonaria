@@ -5,6 +5,7 @@ import {
 	documentTitle,
 	expectedCanonical,
 	expectedRobots,
+	EXPECTED_SITEMAP_URL_COUNT,
 	expectedSitemapUrls,
 	fetchDocument,
 	metaContent,
@@ -35,6 +36,12 @@ const PUBLIC_ROUTES = [
 		path: "/ipa-chart/frequency",
 		title: "Frequency — IPA Chart - Phonaria",
 		description: "How often each American English sound comes up in everyday speech.",
+	},
+	{
+		path: "/ipa-chart/t",
+		title: "/t/ Voiceless alveolar plosive — IPA Chart - Phonaria",
+		description:
+			"The American English sound /t/, voiceless alveolar plosive: how it's made, how common it is, how it's spelled and which sounds it's confused with.",
 	},
 ] as const;
 
@@ -80,6 +87,6 @@ test.describe("Metadata, robots, and sitemap", () => {
 		}
 		expect(xml).not.toContain("/practice");
 		expect(xml).not.toContain("/ipa-chart</loc>");
-		expect(xml.match(/<loc>/g)?.length).toBe(expectedSitemapUrls(target).length);
+		expect(xml.match(/<loc>/g)?.length).toBe(EXPECTED_SITEMAP_URL_COUNT);
 	});
 });

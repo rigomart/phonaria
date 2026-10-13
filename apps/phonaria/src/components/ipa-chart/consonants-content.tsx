@@ -1,41 +1,32 @@
 import { getLanguagePhonemeCount, type TargetAccent } from "@phonaria/phonetics-data";
 import { ScrollArea, ScrollBar } from "@phonaria/ui/components/scroll-area";
-import { type ChartSoundProps, parseChartSound } from "@/lib/ipa-chart/sound-search";
 import { ConsonantChart } from "./consonant-chart";
-import { SoundDetailsLayout } from "./sound-details-layout";
 
 const targetAccent = "en-us" satisfies TargetAccent;
 const phonemeCounts = getLanguagePhonemeCount(targetAccent);
 
-export function ConsonantsContent({ selectedSound, onSelectSound, onCloseSound }: ChartSoundProps) {
+export function ConsonantsContent() {
 	return (
-		<SoundDetailsLayout
-			targetAccent={targetAccent}
-			selectedId={parseChartSound(selectedSound, targetAccent, "consonants")}
-			onSelect={onSelectSound}
-			onClose={onCloseSound}
-		>
-			<div className="flex flex-1 flex-col items-center bg-background p-4 sm:p-6 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-				<div className="w-full max-w-5xl flex flex-col gap-1">
-					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Consonants</h1>
-					<p className="text-sm text-muted-foreground">
-						{phonemeCounts.consonants} American English consonant sounds. Click any sound for
-						details and audio.
-					</p>
-				</div>
-
-				<div className="w-full max-w-5xl">
-					<ConsonantChartLegend />
-				</div>
-
-				<ScrollArea className="w-full">
-					<div className="flex justify-center-safe">
-						<ConsonantChart targetAccent={targetAccent} />
-					</div>
-					<ScrollBar orientation="horizontal" />
-				</ScrollArea>
+		<div className="flex flex-1 flex-col items-center bg-background p-4 sm:p-6 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+			<div className="w-full max-w-5xl flex flex-col gap-1">
+				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Consonants</h1>
+				<p className="text-sm text-muted-foreground">
+					{phonemeCounts.consonants} American English consonant sounds. Click any sound for details
+					and audio.
+				</p>
 			</div>
-		</SoundDetailsLayout>
+
+			<div className="w-full max-w-5xl">
+				<ConsonantChartLegend />
+			</div>
+
+			<ScrollArea className="w-full">
+				<div className="flex justify-center-safe">
+					<ConsonantChart targetAccent={targetAccent} />
+				</div>
+				<ScrollBar orientation="horizontal" />
+			</ScrollArea>
+		</div>
 	);
 }
 

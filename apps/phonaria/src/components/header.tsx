@@ -14,6 +14,7 @@ import { Link } from "@/components/link";
 import { useScrolled } from "@/hooks/use-scrolled";
 import type { AppFlags } from "@/lib/flags";
 import { IPA_CHART_INDEX_PATH } from "@/lib/ipa-chart-metadata";
+import { getChartTabPath } from "@/lib/ipa-chart/sound-route";
 import { cn } from "@/lib/utils";
 import { HeaderActionsSlot } from "./header-actions";
 import { Logo } from "./logo";
@@ -27,6 +28,7 @@ export function Header({ flags }: { flags: AppFlags }) {
 	const pathname = usePathname();
 	const scrolled = useScrolled();
 	const onChart = pathname.startsWith(IPA_CHART_INDEX_PATH);
+	const chartTab = getChartTabPath(pathname, "en-us");
 
 	return (
 		<header
@@ -72,12 +74,42 @@ export function Header({ flags }: { flags: AppFlags }) {
 					<MobileMenu flags={flags} />
 				</div>
 			</div>
+
+			{onChart && (
+				<div className="border-t">
+					<nav
+						aria-label="IPA Chart"
+						className="mx-auto flex w-full max-w-6xl gap-1 px-4 py-2 text-sm sm:px-6"
+					>
+						{chartSections.map((section) => {
+							// A sound's page keeps its chart's tab lit.
+							const active = chartTab === section.href;
+							return (
+								<Link
+									key={section.href}
+									href={section.href}
+									aria-current={pathname === section.href ? "page" : undefined}
+									className={cn(
+										"rounded-full px-3 py-1 transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+										active
+											? "bg-secondary text-foreground"
+											: "text-muted-foreground hover:text-foreground",
+									)}
+								>
+									{section.label}
+								</Link>
+							);
+						})}
+					</nav>
+				</div>
+			)}
 		</header>
 	);
 }
 
 function MobileMenu({ flags }: { flags: AppFlags }) {
 	const pathname = usePathname();
+	const chartTab = getChartTabPath(pathname, "en-us");
 	const [open, setOpen] = useState(false);
 	const close = () => setOpen(false);
 
@@ -126,7 +158,7 @@ function MobileMenu({ flags }: { flags: AppFlags }) {
 												aria-current={pathname === section.href ? "page" : undefined}
 												className={cn(
 													"rounded-full border px-3 py-1 text-sm",
-													pathname === section.href
+													chartTab === section.href
 														? "bg-secondary text-foreground"
 														: "text-muted-foreground",
 												)}

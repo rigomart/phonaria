@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	type DiphthongVowelArticulation,
 	getIpaForPhonemeId,
 	type LanguagePhonemeId,
 	type PhonemeArticulation,
@@ -9,7 +8,6 @@ import {
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
 import { ToggleGroup, ToggleGroupItem } from "@phonaria/ui/components/toggle-group";
-import { ChevronDown, MoveRight } from "lucide-react";
 import { useId, useState } from "react";
 import { Image } from "@/components/image";
 import { getPublicAssetBaseUrl } from "@/lib/site";
@@ -40,8 +38,6 @@ export function ArticulationDiagram({
 	label,
 	articulation,
 }: ArticulationProps) {
-	const phonemeIpa = getIpaForPhonemeId(phonemeId);
-
 	if (articulation.category === "consonant") {
 		if (articulation.features.manner === "affricate") {
 			return (
@@ -54,7 +50,7 @@ export function ArticulationDiagram({
 		}
 
 		return (
-			<div className="relative aspect-square w-full rounded-md bg-neutral-900/60 overflow-hidden">
+			<div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-neutral-900/60">
 				<Image
 					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}.svg`}
 					alt={`${label} articulation`}
@@ -66,15 +62,14 @@ export function ArticulationDiagram({
 		);
 	}
 
-	if (articulation.vowelType === "monophthong") {
-		return <MonophthongChart ipa={phonemeIpa} features={articulation.features} />;
-	}
-
-	if (articulation.vowelType === "diphthong") {
-		return <DiphthongGlide phonemeId={phonemeId} articulation={articulation} />;
-	}
-
-	return null;
+	const isDiphthong = articulation.vowelType === "diphthong";
+	return (
+		<VowelChart
+			marks={getVowelMarks(articulation, getIpaForPhonemeId(phonemeId), true)}
+			ariaLabel={`${label} placement`}
+			glide={isDiphthong}
+		/>
+	);
 }
 
 /**
@@ -102,38 +97,46 @@ export function ArticulationThumbnail({
 		);
 	}
 
-	const { features } = articulation;
-	const start = {
-		point: getVowelPoint(features.height, features.backness, SMALL_VOWEL_CHART_LAYOUT),
-		roundness: features.roundness,
-		isRhotic: "rhoticity" in features && features.rhoticity === "r-colored",
-	};
-	const marks =
-		articulation.vowelType === "diphthong"
-			? [
-					start,
-					{
-						point: getVowelPoint(
-							articulation.features.targetHeight,
-							articulation.features.targetBackness,
-							SMALL_VOWEL_CHART_LAYOUT,
-						),
-						roundness: articulation.features.targetRoundness,
-						isRhotic: false,
-					},
-				]
-			: [start];
-
 	return (
 		<div className="size-32 shrink-0">
 			<VowelChart
-				marks={marks}
+				marks={getVowelMarks(articulation, getIpaForPhonemeId(phonemeId), false)}
 				ariaLabel={`${label} placement`}
 				compact
 				glide={articulation.vowelType === "diphthong"}
 			/>
 		</div>
 	);
+}
+
+/** Chart marks for a vowel: one point, or a diphthong's start and target. */
+function getVowelMarks(
+	articulation: Exclude<PhonemeArticulation, { category: "consonant" }>,
+	ipa: string,
+	labeled: boolean,
+): VowelChartMark[] {
+	const { features } = articulation;
+	const start: VowelChartMark = {
+		point: getVowelPoint(features.height, features.backness, SMALL_VOWEL_CHART_LAYOUT),
+		roundness: features.roundness,
+		isRhotic: "rhoticity" in features && features.rhoticity === "r-colored",
+	};
+	if (articulation.vowelType === "monophthong") {
+		return [{ ...start, label: labeled ? ipa : undefined }];
+	}
+	const target: VowelChartMark = {
+		point: getVowelPoint(
+			articulation.features.targetHeight,
+			articulation.features.targetBackness,
+			SMALL_VOWEL_CHART_LAYOUT,
+		),
+		roundness: articulation.features.targetRoundness,
+		isRhotic: false,
+	};
+	return [
+		{ ...start, label: labeled ? ipa.charAt(0) : undefined },
+		{ ...target, label: labeled ? ipa.slice(-1) : undefined },
+	];
 }
 
 // --- Affricate (stop + fricative phases) ---
@@ -155,7 +158,7 @@ function AffricateConsonantDiagram({
 
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="relative aspect-square w-full rounded-md bg-neutral-900/60 overflow-hidden">
+			<div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-neutral-900/60">
 				<Image
 					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}_stop.svg`}
 					alt={`${label} (${stopLabel})`}
@@ -204,133 +207,6 @@ function AffricateConsonantDiagram({
 	);
 }
 
-// --- Diphthong Glide ---
-
-type GlidePosition = "start" | "target";
-
-function DiphthongGlide({
-	phonemeId,
-	articulation,
-}: {
-	phonemeId: LanguagePhonemeId<TargetAccent>;
-	articulation: DiphthongVowelArticulation;
-}) {
-	const [expanded, setExpanded] = useState<GlidePosition | null>(null);
-	const { features } = articulation;
-
-	const fullIpa = getIpaForPhonemeId(phonemeId);
-	const startIpa = fullIpa.charAt(0);
-	const targetIpa = fullIpa.slice(-1);
-
-	return (
-		<div className="flex flex-col gap-2.5">
-			<div className="flex items-center gap-1.5">
-				<GlidePositionButton
-					ipa={startIpa}
-					roundness={features.roundness}
-					active={expanded === "start"}
-					onClick={() => setExpanded(expanded === "start" ? null : "start")}
-				/>
-				<MoveRight className="size-3 shrink-0 text-muted-foreground" />
-				<GlidePositionButton
-					ipa={targetIpa}
-					roundness={features.targetRoundness}
-					active={expanded === "target"}
-					onClick={() => setExpanded(expanded === "target" ? null : "target")}
-				/>
-			</div>
-
-			<div
-				className={cn(
-					"grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none",
-					expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-				)}
-			>
-				<div className="overflow-hidden">
-					{expanded === "start" && (
-						<MonophthongChart
-							ipa={startIpa}
-							features={{
-								height: features.height,
-								backness: features.backness,
-								roundness: features.roundness,
-							}}
-						/>
-					)}
-					{expanded === "target" && (
-						<MonophthongChart
-							ipa={targetIpa}
-							features={{
-								height: features.targetHeight,
-								backness: features.targetBackness,
-								roundness: features.targetRoundness,
-							}}
-						/>
-					)}
-				</div>
-			</div>
-		</div>
-	);
-}
-
-function GlidePositionButton({
-	ipa,
-	roundness,
-	active,
-	onClick,
-}: {
-	ipa: string;
-	roundness: VowelArticulatoryFeatures["roundness"];
-	active: boolean;
-	onClick: () => void;
-}) {
-	return (
-		<button
-			type="button"
-			onClick={onClick}
-			className={cn(
-				"group flex-1 flex items-center gap-1.5 rounded-lg border px-2.5 py-2 text-left transition-all duration-150 cursor-pointer motion-reduce:transition-none",
-				active
-					? "border-primary bg-primary/10 text-foreground shadow-sm"
-					: "border-border hover:border-primary/50 hover:bg-muted/50",
-			)}
-		>
-			<span className="text-lg font-medium leading-none">{ipa}</span>
-			<span className="text-[10px] text-muted-foreground leading-tight">{roundness}</span>
-			<ChevronDown
-				className={cn(
-					"size-3 shrink-0 ml-auto text-muted-foreground transition-transform duration-150 motion-reduce:transition-none",
-					active && "rotate-180 text-primary",
-				)}
-			/>
-		</button>
-	);
-}
-
-// --- Monophthong / single-position chart ---
-
-type MonophthongChartProps = {
-	ipa: string;
-	features: {
-		height: VowelArticulatoryFeatures["height"];
-		backness: VowelArticulatoryFeatures["backness"];
-		roundness: VowelArticulatoryFeatures["roundness"];
-		rhoticity?: VowelArticulatoryFeatures["rhoticity"];
-	};
-};
-
-function MonophthongChart({ ipa, features }: MonophthongChartProps) {
-	const point = getVowelPoint(features.height, features.backness, SMALL_VOWEL_CHART_LAYOUT);
-	const isRhotic = features.rhoticity === "r-colored";
-
-	return (
-		<VowelChart
-			marks={[{ point, roundness: features.roundness, isRhotic, label: ipa }]}
-			ariaLabel={`${ipa} vowel placement`}
-		/>
-	);
-}
-
 // --- Vowel Chart (one point, or a glide between two) ---
 
 type VowelChartMark = {
@@ -363,7 +239,7 @@ function VowelChart({ marks, ariaLabel, compact = false, glide = false }: VowelC
 	const [start, target] = marks;
 
 	return (
-		<div className={cn("rounded-md border bg-muted/30", compact ? "p-0.5" : "p-1.5")}>
+		<div className={cn("rounded-2xl border bg-muted/30", compact ? "p-0.5" : "p-1.5")}>
 			<svg
 				viewBox={`0 0 ${layout.viewBoxWidth} ${layout.viewBoxHeight}`}
 				role="img"

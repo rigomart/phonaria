@@ -11,7 +11,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Consonant chart | `/ipa-chart/consonants`, header **IPA Chart** → **Consonants**; `?sound=T` selects a sound | Exercised by the sound-frequency journey (unshaded chart, details opened from a link) |
 | Vowel chart | `/ipa-chart/vowels`, **Show diphthongs**; `?sound=AI` selects a sound and shows diphthongs | Not exercised |
 | Frequency | `/ipa-chart/frequency`, header **IPA Chart** → **Frequency** tab | Executable journey below |
-| Sound details | Chart pages: a sheet beside the chart from 1024px, a bottom drawer below that. Elsewhere, **Details for /h/** after transcribing opens a short popover whose sound name links to the chart | Executable journey below |
+| Sound pages | `/ipa-chart/<id>` (e.g. `/ipa-chart/t`), opened from any chart or Frequency row. Elsewhere, **Details for /h/** after transcribing opens a short popover whose sound name links to the page | Executable journey below |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 
@@ -98,7 +98,7 @@ This journey covers desktop Chromium, client common-word lookup, shared-query re
 
 ## Sound frequency
 
-Target accent: American English (`en-us`). Expected ranks, shares, bands and card text are literal values from `docs/research/issue-287-phoneme-frequency.md`, the record of the generated `phoneme-frequency.json`. The [checkpoints](../scripts/sound-frequency.ts) read the page heading, legend, ranked rows and their bar color classes, header chart tabs, the sheet's Frequency section (rank, meter, "All sounds" link) and Spelling section, and the short popover a transcription result opens.
+Target accent: American English (`en-us`). Expected ranks, shares, bands and card text are literal values from `docs/research/issue-287-phoneme-frequency.md`, the record of the generated `phoneme-frequency.json`. The [checkpoints](../scripts/sound-frequency.ts) read the page heading, legend, ranked rows and their bar color classes, header chart tabs, a sound page's Frequency section (rank, meter, "All sounds" link) and Spelling section, and the short popover a transcription result opens.
 
 Interact only after the page hydrates. On a cold dev server, an early click can land before React attaches handlers and nothing happens. Wait with `wait --fn` until the control has React props, as below. If port 3000 is taken by another server, initialize the run with `http://127.0.0.1:3001` and use that origin in `open`.
 
@@ -106,26 +106,24 @@ Interact only after the page hydrates. On a cold dev server, an early click can 
 
 | User control | CLI locator |
 | --- | --- |
-| A ranked sound | `find role button click --name "/ð/ as in this: 11th, 3.1%, common" --exact` (rank, share and band) |
-| Popover link | `find role link click --name "Voiceless glottal fricative, open in the IPA chart" --exact` |
+| A ranked sound | `find role link click --name "/ð/ as in this: 11th, 3.1%, common" --exact` (rank, share and band) |
+| Popover link | `find role link click --name "Voiceless glottal fricative, open its page" --exact` |
 
 ### Executable journey
 
 Desktop viewport 1280 × 900. After `init sound-frequency` and `serve`:
 
 ```bash
-HYD="Object.keys(document.querySelector('ol button')||{}).some(k=>k.startsWith('__reactProps'))"
+HYD="Object.keys(document.querySelector('ol a')||{}).some(k=>k.startsWith('__reactProps'))"
 bun run verify browser "$VERIFY_RUN" open about:blank
 bun run verify browser "$VERIFY_RUN" trace start
 bun run verify browser "$VERIFY_RUN" set viewport 1280 900
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/frequency
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify observe "$VERIFY_RUN" ranking
-bun run verify browser "$VERIFY_RUN" find role button click --name "/ð/ as in this: 11th, 3.1%, common" --exact
-bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('section h3')"
-bun run verify observe "$VERIFY_RUN" page-card
-
-bun run verify browser "$VERIFY_RUN" press Escape
+bun run verify browser "$VERIFY_RUN" find role link click --name "/ð/ as in this: 11th, 3.1%, common" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname === '/ipa-chart/dh'"
+bun run verify observe "$VERIFY_RUN" sound-page
 bun run verify observe "$VERIFY_RUN" menu
 
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/consonants
@@ -135,11 +133,11 @@ bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/?q=hello"
 bun run verify browser "$VERIFY_RUN" find role button click --name "Details for /h/" --exact
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-slot=popover-content] a')"
 bun run verify observe "$VERIFY_RUN" result-card
-bun run verify browser "$VERIFY_RUN" find role link click --name "Voiceless glottal fricative, open in the IPA chart" --exact
-bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('aside[data-open] h2')"
+bun run verify browser "$VERIFY_RUN" find role link click --name "Voiceless glottal fricative, open its page" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname === '/ipa-chart/h'"
 bun run verify observe "$VERIFY_RUN" followed-link
 ```
 
-`ranking` requires the Frequency heading, no tabs or comparison chart, the four-band legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and bar colors `bg-frequency-4` to `-1` for /t/, /ð/, /h/ and /ʒ/. `page-card` requires the /ð/ row to be the selected one and its sheet to show "Common · 11th of 40", a 75% meter, spelling `th` with "this, mother" and both `th` emphasized, and no "All sounds" link on the page itself. `menu` requires the header's three IPA Chart tabs, which show on every chart page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the short /h/ popover from a transcription result to show "Less common · 29th of 40" and "as in house, hello" with both `h` emphasized, and the name "Voiceless glottal fricative" as a link to `/ipa-chart/consonants?sound=H`; `followed-link` requires that link to open the consonant chart with /h/ selected and its details in the sheet.
+`ranking` requires the Frequency heading, no tabs or comparison chart, the four-band legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and bar colors `bg-frequency-4` to `-1` for /t/, /ð/, /h/ and /ʒ/. `sound-page` requires the /ð/ row to open `/ipa-chart/dh`, headed /ð/, showing "Common" and "11th of 40", a 75% meter, an "All sounds" link to Frequency, spelling `th` with "as in this, mother" and both `th` emphasized. `menu` requires the header's three IPA Chart tabs, which show on every chart and sound page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the short /h/ popover from a transcription result to show "Less common · 29th of 40" and "as in house, hello" with both `h` emphasized, and the name "Voiceless glottal fricative" as a link to `/ipa-chart/h`; `followed-link` requires that link to open the /h/ page with the Consonants tab active.
 
-Clicking the selected sound again keeps it selected; Escape or the sheet's close button clears it. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.
+Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.

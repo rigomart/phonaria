@@ -1,8 +1,10 @@
+import { getLanguagePhonemeIds } from "@phonaria/phonetics-data";
+import { getSoundPath } from "./ipa-chart/sound-route";
 import { getSiteUrl, isIndexingEnabled } from "./site";
 
 /**
- * Indexable application paths. `/ipa-chart` only redirects, and Practice stays out of
- * search whether or not its flag is on.
+ * Indexable application paths, before the sound pages. `/ipa-chart` only redirects, and
+ * Practice stays out of search whether or not its flag is on.
  */
 export const INDEXABLE_PATHS = [
 	"/",
@@ -35,8 +37,15 @@ export function formatRobotsTxt(policy: RobotsPolicy = getRobotsPolicy()): strin
 	return `${lines.join("\n")}\n`;
 }
 
+/** One page per American English sound, under the IPA chart. */
+export function getSoundPagePaths(): string[] {
+	return getLanguagePhonemeIds("en-us").map(getSoundPath);
+}
+
 export function getSitemapUrls(siteUrl = getSiteUrl()): string[] {
-	return INDEXABLE_PATHS.map((path) => (path === "/" ? siteUrl : `${siteUrl}${path}`));
+	return [...INDEXABLE_PATHS, ...getSoundPagePaths()].map((path) =>
+		path === "/" ? siteUrl : `${siteUrl}${path}`,
+	);
 }
 
 export function formatSitemapXml(urls: string[] = getSitemapUrls()): string {

@@ -7,7 +7,7 @@ import {
 } from "@phonaria/phonetics-data";
 import { Link } from "@/components/link";
 import { SpelledWord } from "@/components/spelled-word";
-import { type ChartSoundProps, parseChartSound } from "@/lib/ipa-chart/sound-search";
+import { getSoundPath } from "@/lib/ipa-chart/sound-route";
 import {
 	FREQUENCY_BANDS,
 	formatOrdinal,
@@ -16,44 +16,35 @@ import {
 	rankPhonemes,
 } from "@/lib/phoneme-frequency";
 import { cn } from "@/lib/utils";
-import { SoundDetailsLayout, useSoundSelection } from "./sound-details-layout";
 
 const targetAccent = "en-us" satisfies TargetAccent;
 const ranked = rankPhonemes(targetAccent);
 const largest = ranked[0]?.percentage ?? 1;
 
-export function FrequencyContent({ selectedSound, onSelectSound, onCloseSound }: ChartSoundProps) {
+export function FrequencyContent() {
 	return (
-		<SoundDetailsLayout
-			targetAccent={targetAccent}
-			selectedId={parseChartSound(selectedSound, targetAccent, "all")}
-			onSelect={onSelectSound}
-			onClose={onCloseSound}
-			showFrequencyLink={false}
-		>
-			<div className="flex flex-1 flex-col items-center bg-background">
-				<div className="w-full max-w-3xl space-y-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-					<div className="flex flex-wrap items-end justify-between gap-3">
-						<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Frequency</h1>
-						<FrequencyLegend />
-					</div>
-					<ol className="flex flex-col">
-						{ranked.map((sound) => (
-							<RankingRow key={sound.phonemeId} sound={sound} />
-						))}
-					</ol>
-					<p className="text-xs text-muted-foreground">
-						Based on how often words are used in everyday English (wordfreq).{" "}
-						<Link
-							href="/credits"
-							className="rounded-sm underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-						>
-							Sources
-						</Link>
-					</p>
+		<div className="flex flex-1 flex-col items-center bg-background">
+			<div className="w-full max-w-3xl space-y-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+				<div className="flex flex-wrap items-end justify-between gap-3">
+					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Frequency</h1>
+					<FrequencyLegend />
 				</div>
+				<ol className="flex flex-col">
+					{ranked.map((sound) => (
+						<RankingRow key={sound.phonemeId} sound={sound} />
+					))}
+				</ol>
+				<p className="text-xs text-muted-foreground">
+					Based on how often words are used in everyday English (wordfreq).{" "}
+					<Link
+						href="/credits"
+						className="rounded-sm underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+					>
+						Sources
+					</Link>
+				</p>
 			</div>
-		</SoundDetailsLayout>
+		</div>
 	);
 }
 
@@ -77,16 +68,13 @@ function RankingRow({ sound }: { sound: RankedPhoneme<typeof targetAccent> }) {
 	const ipa = getIpaForPhonemeId(sound.phonemeId);
 	const example = EnglishPhonemeSpellingPatterns[sound.phonemeId].examples[0];
 	const share = formatPercentage(sound.percentage);
-	const { selected, select } = useSoundSelection(sound.phonemeId);
 
 	return (
 		<li>
-			<button
-				type="button"
+			<Link
+				href={getSoundPath(sound.phonemeId)}
 				aria-label={`/${ipa}/ as in ${example.word}: ${formatOrdinal(sound.rank)}, ${share}, ${sound.band.label.toLowerCase()}`}
-				aria-current={selected ? "true" : undefined}
-				onClick={select}
-				className="grid w-full grid-cols-[1.75rem_3rem_5.5rem_1fr_3.5rem] items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[current=true]:bg-muted motion-reduce:transition-none sm:grid-cols-[2rem_3.5rem_7rem_1fr_4rem]"
+				className="grid w-full grid-cols-[1.75rem_3rem_5.5rem_1fr_3.5rem] items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:grid-cols-[2rem_3.5rem_7rem_1fr_4rem]"
 			>
 				<span className="text-xs tabular-nums text-muted-foreground">{sound.rank}</span>
 				<span className="font-display text-lg leading-none">{ipa}</span>
@@ -100,7 +88,7 @@ function RankingRow({ sound }: { sound: RankedPhoneme<typeof targetAccent> }) {
 					/>
 				</span>
 				<span className="text-right text-sm tabular-nums">{share}</span>
-			</button>
+			</Link>
 		</li>
 	);
 }

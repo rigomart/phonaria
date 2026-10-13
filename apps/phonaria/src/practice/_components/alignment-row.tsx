@@ -7,7 +7,7 @@
  * `GlyphSequence` shows the dictionary reference for blank words.
  */
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
-import { PhonemeSummary } from "@/components/phoneme-details/phoneme-summary";
+import { SoundSummary } from "@/components/sound/sound-summary";
 import type { AlignmentOp } from "@/lib/practice/scoring";
 import { cn } from "@/lib/utils";
 import { describeSound, findSound } from "../_lib/sound-palette";
@@ -73,7 +73,7 @@ export function Glyph({
 				{key.ipa}
 			</PopoverTrigger>
 			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemeSummary targetAccent="en-us" phonemeId={key.id} showChartLink={false} />
+				<SoundSummary targetAccent="en-us" phonemeId={key.id} showPageLink={false} />
 			</PopoverContent>
 		</Popover>
 	);

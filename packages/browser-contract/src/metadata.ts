@@ -1,5 +1,10 @@
 import type { APIRequestContext, APIResponse } from "@playwright/test";
-import { type ContractTarget, INDEXABLE_PATHS } from "./constants";
+import {
+	type ContractTarget,
+	INDEXABLE_PATHS,
+	SOUND_PAGE_COUNT,
+	SOUND_PAGE_SAMPLES,
+} from "./constants";
 
 export async function fetchDocument(
 	request: APIRequestContext,
@@ -38,9 +43,12 @@ export function expectedRobots(target: ContractTarget): string {
 	return target.indexingEnabled ? "index, follow" : "noindex, follow";
 }
 
+/** URLs the sitemap must contain: every fixed page and a sample of sound pages. */
 export function expectedSitemapUrls(target: ContractTarget): string[] {
-	return INDEXABLE_PATHS.map((path) => expectedCanonical(target, path));
+	return [...INDEXABLE_PATHS, ...SOUND_PAGE_SAMPLES].map((path) => expectedCanonical(target, path));
 }
+
+export const EXPECTED_SITEMAP_URL_COUNT = INDEXABLE_PATHS.length + SOUND_PAGE_COUNT;
 
 function escapeRegExp(value: string): string {
 	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

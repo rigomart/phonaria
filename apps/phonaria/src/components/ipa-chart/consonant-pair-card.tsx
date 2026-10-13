@@ -6,14 +6,14 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
-import { useEffect, useRef } from "react";
+import { Link } from "@/components/link";
 import type {
 	MannerOfArticulation,
 	PlaceOfArticulation,
 	Voicing,
 } from "@/lib/ipa-chart/consonant-grid";
+import { getSoundPath } from "@/lib/ipa-chart/sound-route";
 import { cn } from "@/lib/utils";
-import { SHEET_TRANSITION_MS, useSoundSelection } from "./sound-details-layout";
 
 export interface ConsonantPhoneme {
 	id: ConsonantSymbolId;
@@ -60,33 +60,14 @@ function ConsonantButton({
 	const isVoiceless = phoneme.voicing === "voiceless";
 	const label = formatPhonemeLabel(targetAccent, phoneme.id);
 	const ariaLabel = `${label} (${phoneme.symbol})`;
-	const { selected, select } = useSoundSelection(phoneme.id);
-	const buttonRef = useRef<HTMLButtonElement>(null);
-
-	// The opening sheet narrows the chart, which can scroll this sound out of view.
-	useEffect(() => {
-		if (!selected) return;
-		const timer = setTimeout(() => {
-			const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-			buttonRef.current?.scrollIntoView({
-				block: "nearest",
-				inline: "nearest",
-				behavior: reduceMotion ? "auto" : "smooth",
-			});
-		}, SHEET_TRANSITION_MS);
-		return () => clearTimeout(timer);
-	}, [selected]);
 
 	return (
 		<Tooltip>
 			<TooltipTrigger
 				render={
-					<button
-						ref={buttonRef}
-						type="button"
+					<Link
+						href={getSoundPath(phoneme.id)}
 						aria-label={ariaLabel}
-						aria-current={selected ? "true" : undefined}
-						onClick={select}
 						className={cn(
 							"group relative grid place-items-center text-center",
 							"min-w-10 min-h-10 px-2 py-1.5 rounded-md border",
@@ -96,14 +77,13 @@ function ConsonantButton({
 							isVoiceless
 								? "bg-background border-border"
 								: "bg-primary/15 border-primary/20 font-semibold",
-							"aria-[current=true]:border-primary aria-[current=true]:ring-2 aria-[current=true]:ring-primary",
 						)}
 					/>
 				}
 			>
-				<div className="text-base sm:text-lg font-medium leading-none tracking-tight">
+				<span className="text-base sm:text-lg font-medium leading-none tracking-tight">
 					{phoneme.symbol}
-				</div>
+				</span>
 			</TooltipTrigger>
 			<TooltipContent side="top" align="center">
 				<div className="max-w-56 text-pretty text-xs leading-snug font-medium">

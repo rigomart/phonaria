@@ -10,6 +10,8 @@ import { getPublicAssetBaseUrl } from "@/lib/site";
 type Props = {
 	path: string;
 	label: string;
+	/** `labeled` adds "Play" and "Slow" beside the icons, for a sound's own page. */
+	variant?: "compact" | "labeled";
 };
 
 const baseUrl = getPublicAssetBaseUrl();
@@ -19,29 +21,33 @@ function buildAudioSrc(path: string) {
 	return `${baseUrl}/${path.replace(/^\/+/, "")}`;
 }
 
-export function AudioControls({ path, label }: Props) {
+export function AudioControls({ path, label, variant = "compact" }: Props) {
 	const audioSrc = buildAudioSrc(path);
 	const { play, status } = useAudioManager(audioSrc ?? "");
+	const labeled = variant === "labeled";
+	const size = labeled ? "lg" : "xs";
 
 	return (
 		<ButtonGroup>
 			<Button
-				size="xs"
+				size={size}
 				variant="outline"
 				onClick={() => audioSrc && play()}
 				aria-label={`Play ${label}`}
 				disabled={!audioSrc || status === "loading" || status === "playing"}
 			>
 				{status === "loading" ? <Spinner /> : <PlayIcon />}
+				{labeled && "Play"}
 			</Button>
 			<Button
-				size="xs"
+				size={size}
 				variant="outline"
 				onClick={() => audioSrc && play(0.75)}
 				aria-label={`Play slow ${label}`}
 				disabled={!audioSrc || status === "loading" || status === "playing"}
 			>
 				{status === "loading" ? <Spinner /> : <Turtle />}
+				{labeled && "Slow"}
 			</Button>
 		</ButtonGroup>
 	);

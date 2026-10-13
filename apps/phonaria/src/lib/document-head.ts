@@ -1,3 +1,8 @@
+import {
+	formatPhonemeLabel,
+	getIpaForPhonemeId,
+	type LanguagePhonemeId,
+} from "@phonaria/phonetics-data";
 import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
 import {
 	CONSONANTS_PAGE_DESCRIPTION,
@@ -10,6 +15,7 @@ import {
 	VOWELS_PAGE_DESCRIPTION,
 	VOWELS_PAGE_TITLE,
 } from "@/lib/ipa-chart-metadata";
+import { getSoundPath } from "@/lib/ipa-chart/sound-route";
 import { PracticeActivity } from "@/lib/practice/activity";
 import {
 	type DocumentMetadata,
@@ -192,6 +198,17 @@ export function buildFrequencyHead(): StartHead {
 		path: IPA_CHART_FREQUENCY_PATH,
 		title: FREQUENCY_PAGE_TITLE,
 		description: FREQUENCY_PAGE_DESCRIPTION,
+	});
+}
+
+/** A sound's page, e.g. "/t/ Voiceless alveolar plosive — IPA Chart". */
+export function buildSoundHead(phonemeId: LanguagePhonemeId<"en-us">): StartHead {
+	const ipa = getIpaForPhonemeId(phonemeId);
+	const label = formatPhonemeLabel("en-us", phonemeId);
+	return buildPageHead({
+		path: getSoundPath(phonemeId),
+		title: `/${ipa}/ ${label} — IPA Chart`,
+		description: `The American English sound /${ipa}/, ${label.toLowerCase()}: how it's made, how common it is, how it's spelled and which sounds it's confused with.`,
 	});
 }
 

@@ -44,6 +44,12 @@ test.describe("Accessibility", () => {
 		await expectNoAxeViolations(page);
 	});
 
+	test("has no serious axe violations on a sound page", async ({ page }) => {
+		await page.goto("/ipa-chart/t");
+		await expect(page.getByRole("heading", { name: "Compare with" })).toBeVisible();
+		await expectNoAxeViolations(page);
+	});
+
 	test("has no serious axe violations on the not-found page", async ({ page }) => {
 		await page.goto("/does-not-exist");
 		await expect(notFoundHeading(page)).toBeVisible();
