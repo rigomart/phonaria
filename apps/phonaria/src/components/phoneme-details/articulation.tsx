@@ -90,7 +90,7 @@ export function ArticulationThumbnail({
 	if (articulation.category === "consonant") {
 		const isAffricate = articulation.features.manner === "affricate";
 		return (
-			<div className="relative size-24 shrink-0 overflow-hidden rounded-md bg-neutral-900/60">
+			<div className="relative size-32 shrink-0 overflow-hidden rounded-md bg-neutral-900/60">
 				<Image
 					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}${isAffricate ? "_stop" : ""}.svg`}
 					alt={`${label} articulation`}
@@ -125,7 +125,7 @@ export function ArticulationThumbnail({
 			: [start];
 
 	return (
-		<div className="size-24 shrink-0">
+		<div className="size-32 shrink-0">
 			<VowelChart
 				marks={marks}
 				ariaLabel={`${label} placement`}

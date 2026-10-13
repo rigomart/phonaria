@@ -72,34 +72,6 @@ export function Header({ flags }: { flags: AppFlags }) {
 					<MobileMenu flags={flags} />
 				</div>
 			</div>
-
-			{onChart && (
-				<div className="border-t">
-					<nav
-						aria-label="IPA Chart"
-						className="mx-auto flex w-full max-w-6xl gap-1 px-4 py-2 text-sm sm:px-6"
-					>
-						{chartSections.map((section) => {
-							const active = pathname === section.href;
-							return (
-								<Link
-									key={section.href}
-									href={section.href}
-									aria-current={active ? "page" : undefined}
-									className={cn(
-										"rounded-full px-3 py-1 transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-										active
-											? "bg-secondary text-foreground"
-											: "text-muted-foreground hover:text-foreground",
-									)}
-								>
-									{section.label}
-								</Link>
-							);
-						})}
-					</nav>
-				</div>
-			)}
 		</header>
 	);
 }

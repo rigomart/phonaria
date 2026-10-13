@@ -68,7 +68,7 @@ function readCard() {
 	};
 }
 
-// On the Frequency page the card is the side panel, next to the selected row.
+// On the Frequency page the card is the sheet beside the list.
 // Meter width is the sound's position among 40: (40 - rank + 1) / 40.
 const pageCard = observation(readCard, {
 	selected: "/ð/ as in this: 11th, 3.1%, common",
@@ -79,7 +79,7 @@ const pageCard = observation(readCard, {
 	highlighted: ["th", "th"],
 });
 
-// Outside the chart the card is the short popover: label, rank, examples, chart link.
+// Outside the chart the card is the short popover; the sound's name links to the chart.
 const resultCard = observation(
 	() => {
 		const popup = document.querySelector('[data-slot="popover-content"]');
@@ -88,6 +88,7 @@ const resultCard = observation(
 				document
 					.querySelector('button[aria-expanded="true"][aria-label]')
 					?.getAttribute("aria-label") ?? null,
+			name: popup?.querySelector("a")?.textContent?.trim() ?? null,
 			lines: Array.from(popup?.querySelectorAll("p") ?? []).map((line) => line.textContent?.trim()),
 			highlighted: Array.from(popup?.querySelectorAll("mark") ?? []).map((mark) =>
 				mark.textContent?.trim(),
@@ -97,13 +98,14 @@ const resultCard = observation(
 	},
 	{
 		openTrigger: "Details for /h/",
-		lines: ["Voiceless glottal fricative", "Less common · 29th of 40", "as in house, hello"],
+		name: "Voiceless glottal fricative",
+		lines: ["Less common · 29th of 40", "as in house, hello"],
 		highlighted: ["h", "h"],
 		link: "/ipa-chart/consonants?sound=H",
 	},
 );
 
-// At 1280px the consonant details slide in from the right over the chart.
+// The details open in the sheet beside the chart.
 const followedLink = observation(
 	() => ({
 		path: location.pathname,
@@ -112,7 +114,7 @@ const followedLink = observation(
 		selected:
 			document.querySelector('[aria-current="true"][aria-label]')?.getAttribute("aria-label") ??
 			null,
-		details: document.querySelector('[data-slot="drawer-content"] h2')?.textContent?.trim() ?? null,
+		details: document.querySelector("aside[data-open] h2")?.textContent?.trim() ?? null,
 	}),
 	{
 		path: "/ipa-chart/consonants",
@@ -155,6 +157,6 @@ export const soundFrequency = {
 	coverageLimits: [
 		"order and band colors read from the DOM; bar lengths, color steps and layout checked by screenshot review only",
 		"en-us only; the unavailable-accent path is covered by unit tests, as no route renders es-419 data",
-		"desktop Chromium at 1280px; the docked consonant panel (1536px+) and the mobile drawer are reviewed by screenshot only when captured",
+		"desktop Chromium at 1280px; the mobile drawer is reviewed by screenshot only when captured",
 	],
 } satisfies Feature;

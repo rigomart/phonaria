@@ -12,7 +12,7 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { ArrowRight } from "lucide-react";
-import { Fragment, useId } from "react";
+import { Fragment, type ReactNode, useId } from "react";
 import { AudioControls } from "@/components/audio-controls";
 import { Link } from "@/components/link";
 import { SpelledWord } from "@/components/spelled-word";
@@ -25,10 +25,12 @@ import { ArticulationDiagram } from "./articulation";
 export type PhonemeDetailsProps<TLanguage extends TargetAccent> = {
 	targetAccent: TLanguage;
 	phonemeId: LanguagePhonemeId<TLanguage>;
-	/** Id for the sound's heading, so a panel or drawer can be labelled by it. */
+	/** Id for the sound's heading, so a sheet or drawer can be labelled by it. */
 	headingId?: string;
 	/** Off on the Frequency page itself. */
 	showFrequencyLink?: boolean;
+	/** Shown at the end of the header row, e.g. a close button. */
+	action?: ReactNode;
 	className?: string;
 };
 
@@ -43,12 +45,13 @@ export function getPhonemeArticulation<TLanguage extends TargetAccent>(
 	return registry[phonemeId];
 }
 
-/** Everything about one sound. Shown in the IPA chart's side panel and drawer. */
+/** Everything about one sound. Shown in the IPA chart's side sheet and drawer. */
 export function PhonemeDetails<TLanguage extends TargetAccent>({
 	targetAccent,
 	phonemeId,
 	headingId,
 	showFrequencyLink = true,
+	action,
 	className,
 }: PhonemeDetailsProps<TLanguage>) {
 	const label = formatPhonemeLabel(targetAccent, phonemeId);
@@ -56,7 +59,10 @@ export function PhonemeDetails<TLanguage extends TargetAccent>({
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)}>
-			<PhonemeHeader phonemeId={phonemeId} headingId={headingId} as="h2" />
+			<div className="flex items-start justify-between gap-2">
+				<PhonemeHeader phonemeId={phonemeId} headingId={headingId} as="h2" />
+				{action}
+			</div>
 
 			{!isDiphthong && <p className="text-xs text-muted-foreground leading-snug">{label}</p>}
 
@@ -95,7 +101,7 @@ export function PhonemeHeader({
 	const showAudio = phonemeType === "consonant" || phonemeType === "monophthong";
 
 	return (
-		<div className="flex items-center justify-between gap-2">
+		<div className="flex items-center gap-3">
 			<Heading id={headingId} className="flex items-baseline gap-0.5 text-2xl font-medium">
 				<span aria-hidden="true" className="text-muted-foreground/50">
 					/

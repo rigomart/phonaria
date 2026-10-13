@@ -11,7 +11,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Consonant chart | `/ipa-chart/consonants`, header **IPA Chart** → **Consonants**; `?sound=T` selects a sound | Exercised by the sound-frequency journey (unshaded chart, details opened from a link) |
 | Vowel chart | `/ipa-chart/vowels`, **Show diphthongs**; `?sound=AI` selects a sound and shows diphthongs | Not exercised |
 | Frequency | `/ipa-chart/frequency`, header **IPA Chart** → **Frequency** tab | Executable journey below |
-| Sound details | Chart pages: side panel from 1280px (consonants from 1536px, a right-side sheet below that), bottom drawer on narrow screens. Elsewhere, **Details for /h/** after transcribing opens a short popover with **Open in IPA chart** | Executable journey below |
+| Sound details | Chart pages: a sheet beside the chart from 1024px, a bottom drawer below that. Elsewhere, **Details for /h/** after transcribing opens a short popover whose sound name links to the chart | Executable journey below |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 
@@ -98,7 +98,7 @@ This journey covers desktop Chromium, client common-word lookup, shared-query re
 
 ## Sound frequency
 
-Target accent: American English (`en-us`). Expected ranks, shares, bands and card text are literal values from `docs/research/issue-287-phoneme-frequency.md`, the record of the generated `phoneme-frequency.json`. The [checkpoints](../scripts/sound-frequency.ts) read the page heading, legend, ranked rows and their bar color classes, header chart tabs, the side panel's Frequency section (rank, meter, "All sounds" link) and Spelling section, and the short popover a transcription result opens.
+Target accent: American English (`en-us`). Expected ranks, shares, bands and card text are literal values from `docs/research/issue-287-phoneme-frequency.md`, the record of the generated `phoneme-frequency.json`. The [checkpoints](../scripts/sound-frequency.ts) read the page heading, legend, ranked rows and their bar color classes, header chart tabs, the sheet's Frequency section (rank, meter, "All sounds" link) and Spelling section, and the short popover a transcription result opens.
 
 Interact only after the page hydrates. On a cold dev server, an early click can land before React attaches handlers and nothing happens. Wait with `wait --fn` until the control has React props, as below. If port 3000 is taken by another server, initialize the run with `http://127.0.0.1:3001` and use that origin in `open`.
 
@@ -107,7 +107,7 @@ Interact only after the page hydrates. On a cold dev server, an early click can 
 | User control | CLI locator |
 | --- | --- |
 | A ranked sound | `find role button click --name "/ð/ as in this: 11th, 3.1%, common" --exact` (rank, share and band) |
-| Popover link | `find role link click --name "Open in IPA chart" --exact` |
+| Popover link | `find role link click --name "Voiceless glottal fricative, open in the IPA chart" --exact` |
 
 ### Executable journey
 
@@ -135,11 +135,11 @@ bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/?q=hello"
 bun run verify browser "$VERIFY_RUN" find role button click --name "Details for /h/" --exact
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-slot=popover-content] a')"
 bun run verify observe "$VERIFY_RUN" result-card
-bun run verify browser "$VERIFY_RUN" find role link click --name "Open in IPA chart" --exact
-bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-slot=drawer-content] h2')"
+bun run verify browser "$VERIFY_RUN" find role link click --name "Voiceless glottal fricative, open in the IPA chart" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('aside[data-open] h2')"
 bun run verify observe "$VERIFY_RUN" followed-link
 ```
 
-`ranking` requires the Frequency heading, no tabs or comparison chart, the four-band legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and bar colors `bg-frequency-4` to `-1` for /t/, /ð/, /h/ and /ʒ/. `page-card` requires the /ð/ row to be the selected one and its side panel to show "Common · 11th of 40", a 75% meter, spelling `th` with "this, mother" and both `th` emphasized, and no "All sounds" link on the page itself. `menu` requires the header's three IPA Chart tabs, which show on every chart page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the short /h/ popover from a transcription result to show "Voiceless glottal fricative", "Less common · 29th of 40" and "as in house, hello" with both `h` emphasized, and a link to `/ipa-chart/consonants?sound=H`; `followed-link` requires that link to open the consonant chart with /h/ selected and its details in the right-side sheet, which is what 1280px shows.
+`ranking` requires the Frequency heading, no tabs or comparison chart, the four-band legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and bar colors `bg-frequency-4` to `-1` for /t/, /ð/, /h/ and /ʒ/. `page-card` requires the /ð/ row to be the selected one and its sheet to show "Common · 11th of 40", a 75% meter, spelling `th` with "this, mother" and both `th` emphasized, and no "All sounds" link on the page itself. `menu` requires the header's three IPA Chart tabs, which show on every chart page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the short /h/ popover from a transcription result to show "Less common · 29th of 40" and "as in house, hello" with both `h` emphasized, and the name "Voiceless glottal fricative" as a link to `/ipa-chart/consonants?sound=H`; `followed-link` requires that link to open the consonant chart with /h/ selected and its details in the sheet.
 
-Clicking the selected sound again keeps it selected; on the Frequency page Escape does not clear the panel. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.
+Clicking the selected sound again keeps it selected; Escape or the sheet's close button clears it. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.

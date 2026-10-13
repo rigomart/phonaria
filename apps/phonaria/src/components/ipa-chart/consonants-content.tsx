@@ -9,37 +9,33 @@ const phonemeCounts = getLanguagePhonemeCount(targetAccent);
 
 export function ConsonantsContent({ selectedSound, onSelectSound, onCloseSound }: ChartSoundProps) {
 	return (
-		<div className="flex flex-1 flex-col items-center bg-background p-4 sm:p-6 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-			<div className="w-full max-w-5xl 2xl:max-w-none flex flex-col gap-1">
-				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Consonants</h1>
-				<p className="text-sm text-muted-foreground">
-					{phonemeCounts.consonants} American English consonant sounds. Click any sound for details
-					and audio.
-				</p>
-			</div>
+		<SoundDetailsLayout
+			targetAccent={targetAccent}
+			selectedId={parseChartSound(selectedSound, targetAccent, "consonants")}
+			onSelect={onSelectSound}
+			onClose={onCloseSound}
+		>
+			<div className="flex flex-1 flex-col items-center bg-background p-4 sm:p-6 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+				<div className="w-full max-w-5xl flex flex-col gap-1">
+					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Consonants</h1>
+					<p className="text-sm text-muted-foreground">
+						{phonemeCounts.consonants} American English consonant sounds. Click any sound for
+						details and audio.
+					</p>
+				</div>
 
-			<div className="w-full max-w-5xl 2xl:max-w-none">
-				<ConsonantChartLegend />
-			</div>
+				<div className="w-full max-w-5xl">
+					<ConsonantChartLegend />
+				</div>
 
-			<div className="w-full">
-				<SoundDetailsLayout
-					targetAccent={targetAccent}
-					selectedId={parseChartSound(selectedSound, targetAccent, "consonants")}
-					onSelect={onSelectSound}
-					onClose={onCloseSound}
-					// At `xl` the nine places of articulation need the full row.
-					dockFrom="2xl"
-				>
-					<ScrollArea className="w-full">
-						<div className="flex justify-center-safe">
-							<ConsonantChart targetAccent={targetAccent} />
-						</div>
-						<ScrollBar orientation="horizontal" />
-					</ScrollArea>
-				</SoundDetailsLayout>
+				<ScrollArea className="w-full">
+					<div className="flex justify-center-safe">
+						<ConsonantChart targetAccent={targetAccent} />
+					</div>
+					<ScrollBar orientation="horizontal" />
+				</ScrollArea>
 			</div>
-		</div>
+		</SoundDetailsLayout>
 	);
 }
 

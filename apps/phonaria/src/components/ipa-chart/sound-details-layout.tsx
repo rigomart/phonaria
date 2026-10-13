@@ -5,31 +5,19 @@ import {
 	type LanguagePhonemeId,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
+import { Button } from "@phonaria/ui/components/button";
 import { Drawer, DrawerBody, DrawerContent } from "@phonaria/ui/components/drawer";
-import { type ReactNode, createContext, useContext, useId, useState } from "react";
+import { XIcon } from "lucide-react";
+import { type ReactNode, createContext, useContext, useEffect, useId, useState } from "react";
 import { PhonemeDetails } from "@/components/phoneme-details/phoneme-details";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { cn } from "@/lib/utils";
+import { ChartNav } from "./chart-nav";
 
-/** Below Tailwind's `xl`, details open in a bottom drawer. */
-const NARROW_QUERY = "(max-width: 79.98rem)";
+/** Below Tailwind's `lg`, details open in a bottom drawer instead of the sheet. */
+const NARROW_QUERY = "(max-width: 63.98rem)";
 
-/**
- * Where the side panel docks next to the chart. Between `xl` and a later dock
- * point, details slide in from the right over the chart instead.
- */
-const DOCK = {
-	xl: {
-		undocked: NARROW_QUERY,
-		grid: "xl:grid-cols-[minmax(0,1fr)_20rem]",
-		panel: "xl:block",
-	},
-	"2xl": {
-		undocked: "(max-width: 95.98rem)",
-		grid: "2xl:grid-cols-[minmax(0,1fr)_20rem]",
-		panel: "2xl:block",
-	},
-} as const;
+/** How long the sheet takes to open, so the chart can reveal the sound after. */
+export const SHEET_TRANSITION_MS = 300;
 
 type SoundSelection = {
 	selectedId: string | undefined;
@@ -57,37 +45,43 @@ type SoundDetailsLayoutProps<TLanguage extends TargetAccent> = {
 	selectedId: LanguagePhonemeId<TLanguage> | undefined;
 	onSelect: (phonemeId: LanguagePhonemeId<TLanguage>) => void;
 	onClose: () => void;
-	/** `2xl` for a chart too wide to share the row with the panel at `xl`. */
-	dockFrom?: keyof typeof DOCK;
 	/** Off on the Frequency page, which is where that link goes. */
 	showFrequencyLink?: boolean;
 	children: ReactNode;
 };
 
 /**
- * Chart pages put the selected sound's details in a side panel on wide
- * screens, so the chart stays in view, and in a bottom drawer on narrow ones.
+ * Chart pages: the chart tabs and page content, with the selected sound's
+ * details in a sheet beside them. The sheet runs from the site header to the
+ * footer and pushes the chart over as it opens. Narrow screens get a bottom
+ * drawer instead.
  */
 export function SoundDetailsLayout<TLanguage extends TargetAccent>({
 	targetAccent,
 	selectedId,
 	onSelect,
 	onClose,
-	dockFrom = "xl",
 	showFrequencyLink = true,
 	children,
 }: SoundDetailsLayoutProps<TLanguage>) {
-	const dock = DOCK[dockFrom];
 	const narrow = useMediaQuery(NARROW_QUERY);
-	const undocked = useMediaQuery(dock.undocked);
-	// The panel is hidden until it docks; skip its diagram and audio before then.
-	const panelSound = undocked ? undefined : selectedId;
-	const drawerSide = narrow ? "bottom" : "right";
-	const panelHeadingId = useId();
+	const sheetOpen = !narrow && Boolean(selectedId);
+	const sheetHeadingId = useId();
 	const drawerHeadingId = useId();
-	// Keep the last sound in the drawer while it animates closed.
-	const [drawerSound, setDrawerSound] = useState(selectedId);
-	if (selectedId && selectedId !== drawerSound) setDrawerSound(selectedId);
+	// Keep the last sound in the sheet and drawer while they animate closed.
+	const [shownSound, setShownSound] = useState(selectedId);
+	if (selectedId && selectedId !== shownSound) setShownSound(selectedId);
+	// The sheet is hidden on narrow screens; skip its diagram and audio there.
+	const sheetSound = narrow ? undefined : shownSound;
+
+	useEffect(() => {
+		if (!sheetOpen) return;
+		const closeOnEscape = (event: KeyboardEvent) => {
+			if (event.key === "Escape" && !event.defaultPrevented) onClose();
+		};
+		window.addEventListener("keydown", closeOnEscape);
+		return () => window.removeEventListener("keydown", closeOnEscape);
+	}, [sheetOpen, onClose]);
 
 	const selection: SoundSelection = {
 		selectedId,
@@ -96,56 +90,58 @@ export function SoundDetailsLayout<TLanguage extends TargetAccent>({
 
 	return (
 		<SoundSelectionContext value={selection}>
-			<div className={cn("grid w-full items-start gap-6", dock.grid)}>
-				<div className="min-w-0">{children}</div>
+			<div className="flex flex-1">
+				<div className="flex min-w-0 flex-1 flex-col">
+					<ChartNav />
+					{children}
+				</div>
 
 				<aside
-					aria-labelledby={panelSound ? panelHeadingId : undefined}
-					aria-label={panelSound ? undefined : "Sound details"}
-					className={cn(
-						"sticky top-28 hidden max-h-[calc(100dvh-8rem)] overflow-y-auto rounded-3xl border bg-popover p-4 text-popover-foreground",
-						dock.panel,
-					)}
+					aria-labelledby={sheetOpen ? sheetHeadingId : undefined}
+					inert={!sheetOpen}
+					data-open={sheetOpen ? "" : undefined}
+					className="sticky top-12 hidden max-h-[calc(100dvh-3rem)] w-0 shrink-0 self-stretch overflow-hidden border-l border-transparent bg-popover text-popover-foreground transition-[width,border-color] duration-300 ease-out data-open:w-80 data-open:border-border motion-reduce:transition-none lg:block"
 				>
-					{panelSound ? (
-						<PhonemeDetails
-							targetAccent={targetAccent}
-							phonemeId={panelSound}
-							headingId={panelHeadingId}
-							showFrequencyLink={showFrequencyLink}
-						/>
-					) : (
-						<p className="py-10 text-center text-sm text-muted-foreground text-balance">
-							Pick a sound to hear it, see how it's made and find words that use it.
-						</p>
-					)}
+					<div className="h-full w-80 overflow-y-auto p-4">
+						{sheetSound && (
+							<PhonemeDetails
+								targetAccent={targetAccent}
+								phonemeId={sheetSound}
+								headingId={sheetHeadingId}
+								showFrequencyLink={showFrequencyLink}
+								action={
+									<Button
+										variant="ghost"
+										size="icon-sm"
+										className="shrink-0 text-muted-foreground hover:text-foreground"
+										aria-label="Close sound details"
+										onClick={onClose}
+									>
+										<XIcon aria-hidden />
+									</Button>
+								}
+							/>
+						)}
+					</div>
 				</aside>
 			</div>
 
 			<p className="sr-only" aria-live="polite">
-				{panelSound ? `Showing details for /${getIpaForPhonemeId(panelSound)}/` : ""}
+				{sheetOpen && selectedId ? `Showing details for /${getIpaForPhonemeId(selectedId)}/` : ""}
 			</p>
 
-			{/*
-			 * The side sheet is non-modal, so sounds left of it can still be picked;
-			 * the bottom drawer covers most of a phone screen and stays modal.
-			 */}
 			<Drawer
-				key={drawerSide}
-				open={undocked && Boolean(selectedId)}
+				open={narrow && Boolean(selectedId)}
 				onOpenChange={(open) => {
 					if (!open) onClose();
 				}}
-				swipeDirection={narrow ? "down" : "right"}
-				modal={narrow}
-				disablePointerDismissal={!narrow}
 			>
-				<DrawerContent aria-labelledby={drawerHeadingId} side={drawerSide} showBackdrop={narrow}>
+				<DrawerContent aria-labelledby={drawerHeadingId}>
 					<DrawerBody>
-						{drawerSound && (
+						{shownSound && (
 							<PhonemeDetails
 								targetAccent={targetAccent}
-								phonemeId={drawerSound}
+								phonemeId={shownSound}
 								headingId={drawerHeadingId}
 								showFrequencyLink={showFrequencyLink}
 								className="mx-auto max-w-sm"

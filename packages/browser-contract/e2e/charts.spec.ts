@@ -30,7 +30,7 @@ test.describe("IPA charts", () => {
 	test("opens a transcribed sound in the IPA chart", async ({ page }) => {
 		await page.goto("/?q=hello");
 		await page.getByRole("button", { name: "Details for /h/" }).first().click();
-		await page.getByRole("link", { name: "Open in IPA chart" }).click();
+		await page.getByRole("link", { name: /open in the IPA chart/ }).click();
 		await expect(page).toHaveURL(/\/ipa-chart\/consonants\?sound=H$/);
 		await expect(
 			page.getByRole("button", { name: /Voiceless glottal fricative \(h\)/ }),

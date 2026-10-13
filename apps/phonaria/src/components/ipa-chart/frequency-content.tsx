@@ -24,40 +24,36 @@ const largest = ranked[0]?.percentage ?? 1;
 
 export function FrequencyContent({ selectedSound, onSelectSound, onCloseSound }: ChartSoundProps) {
 	return (
-		<div className="flex flex-1 flex-col items-center bg-background">
-			<div className="w-full max-w-3xl xl:max-w-6xl space-y-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-				<SoundDetailsLayout
-					targetAccent={targetAccent}
-					selectedId={parseChartSound(selectedSound, targetAccent, "all")}
-					onSelect={onSelectSound}
-					onClose={onCloseSound}
-					showFrequencyLink={false}
-				>
-					<div className="space-y-6">
-						<div className="flex flex-wrap items-end justify-between gap-3">
-							<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">
-								Frequency
-							</h1>
-							<FrequencyLegend />
-						</div>
-						<ol className="flex flex-col">
-							{ranked.map((sound) => (
-								<RankingRow key={sound.phonemeId} sound={sound} />
-							))}
-						</ol>
-						<p className="text-xs text-muted-foreground">
-							Based on how often words are used in everyday English (wordfreq).{" "}
-							<Link
-								href="/credits"
-								className="rounded-sm underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-							>
-								Sources
-							</Link>
-						</p>
+		<SoundDetailsLayout
+			targetAccent={targetAccent}
+			selectedId={parseChartSound(selectedSound, targetAccent, "all")}
+			onSelect={onSelectSound}
+			onClose={onCloseSound}
+			showFrequencyLink={false}
+		>
+			<div className="flex flex-1 flex-col items-center bg-background">
+				<div className="w-full max-w-3xl space-y-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+					<div className="flex flex-wrap items-end justify-between gap-3">
+						<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Frequency</h1>
+						<FrequencyLegend />
 					</div>
-				</SoundDetailsLayout>
+					<ol className="flex flex-col">
+						{ranked.map((sound) => (
+							<RankingRow key={sound.phonemeId} sound={sound} />
+						))}
+					</ol>
+					<p className="text-xs text-muted-foreground">
+						Based on how often words are used in everyday English (wordfreq).{" "}
+						<Link
+							href="/credits"
+							className="rounded-sm underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						>
+							Sources
+						</Link>
+					</p>
+				</div>
 			</div>
-		</div>
+		</SoundDetailsLayout>
 	);
 }
 

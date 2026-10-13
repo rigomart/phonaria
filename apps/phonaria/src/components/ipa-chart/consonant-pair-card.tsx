@@ -6,13 +6,14 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
+import { useEffect, useRef } from "react";
 import type {
 	MannerOfArticulation,
 	PlaceOfArticulation,
 	Voicing,
 } from "@/lib/ipa-chart/consonant-grid";
 import { cn } from "@/lib/utils";
-import { useSoundSelection } from "./sound-details-layout";
+import { SHEET_TRANSITION_MS, useSoundSelection } from "./sound-details-layout";
 
 export interface ConsonantPhoneme {
 	id: ConsonantSymbolId;
@@ -60,12 +61,28 @@ function ConsonantButton({
 	const label = formatPhonemeLabel(targetAccent, phoneme.id);
 	const ariaLabel = `${label} (${phoneme.symbol})`;
 	const { selected, select } = useSoundSelection(phoneme.id);
+	const buttonRef = useRef<HTMLButtonElement>(null);
+
+	// The opening sheet narrows the chart, which can scroll this sound out of view.
+	useEffect(() => {
+		if (!selected) return;
+		const timer = setTimeout(() => {
+			const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+			buttonRef.current?.scrollIntoView({
+				block: "nearest",
+				inline: "nearest",
+				behavior: reduceMotion ? "auto" : "smooth",
+			});
+		}, SHEET_TRANSITION_MS);
+		return () => clearTimeout(timer);
+	}, [selected]);
 
 	return (
 		<Tooltip>
 			<TooltipTrigger
 				render={
 					<button
+						ref={buttonRef}
 						type="button"
 						aria-label={ariaLabel}
 						aria-current={selected ? "true" : undefined}
