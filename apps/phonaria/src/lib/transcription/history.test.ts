@@ -3,6 +3,7 @@ import {
 	addHistoryEntry,
 	filterHistory,
 	filterHistoryBySound,
+	groupHistoryByDay,
 	HISTORY_SOUND_FILTER_MIN_ENTRIES,
 	parseStoredHistory,
 	rankHistorySounds,
@@ -170,6 +171,42 @@ describe("rankHistorySounds", () => {
 		}));
 
 		expect(rankHistorySounds(entries)).toEqual(["ə", "p", "b", "t", "d", "k", "f", "v"]);
+	});
+});
+
+describe("groupHistoryByDay", () => {
+	const now = new Date(2026, 9, 12, 9, 30).getTime();
+	const at = (day: number, hour: number) => new Date(2026, 9, day, hour).getTime();
+
+	it("buckets by local calendar day, newest first", () => {
+		const groups = groupHistoryByDay(
+			[
+				entry("this morning", at(12, 8)),
+				entry("just after midnight", at(12, 0)),
+				entry("last night", at(11, 23)),
+				entry("two days ago", at(10, 12)),
+				entry("six days ago", at(6, 12)),
+				entry("a week ago", at(5, 12)),
+			],
+			now,
+		);
+
+		expect(groups.map((group) => [group.label, group.entries.map((e) => e.text)])).toEqual([
+			["Today", ["this morning", "just after midnight"]],
+			["Yesterday", ["last night"]],
+			["Previous 7 days", ["two days ago", "six days ago"]],
+			["Older", ["a week ago"]],
+		]);
+	});
+
+	it("leaves out empty buckets", () => {
+		const groups = groupHistoryByDay([entry("old", at(1, 12))], now);
+		expect(groups.map((group) => group.label)).toEqual(["Older"]);
+	});
+
+	it("counts a timestamp ahead of the clock as today", () => {
+		const groups = groupHistoryByDay([entry("future", at(13, 12))], now);
+		expect(groups.map((group) => group.label)).toEqual(["Today"]);
 	});
 });
 

@@ -11,7 +11,7 @@ interface Phrase {
 }
 
 function PhraseIpa({ ipa, highlightSound }: { ipa: string; highlightSound?: string }) {
-	const className = "w-full truncate font-display text-base leading-6 text-muted-foreground";
+	const className = "w-full truncate text-sm text-muted-foreground";
 	if (!highlightSound) {
 		return <span className={className}>/{ipa}/</span>;
 	}
@@ -26,7 +26,7 @@ function PhraseIpa({ ipa, highlightSound }: { ipa: string; highlightSound?: stri
 					return (
 						<mark
 							key={`${index}-${value}`}
-							className="bg-transparent text-primary underline decoration-primary decoration-2 underline-offset-4"
+							className="rounded-sm bg-primary px-0.5 text-primary-foreground"
 						>
 							{value}
 						</mark>
@@ -40,8 +40,8 @@ function PhraseIpa({ ipa, highlightSound }: { ipa: string; highlightSound?: stri
 }
 
 /**
- * One block per phrase: the text, its IPA underneath. With `onRemove`, remove
- * shows on hover or focus, and always on touch screens where there is no hover.
+ * One rounded row per phrase: the text, its IPA underneath. With `onRemove`,
+ * remove shows on hover or focus, and always on touch screens where there is no hover.
  */
 export function PhraseList({
 	phrases,
@@ -66,15 +66,15 @@ export function PhraseList({
 			{phrases.map((phrase) => (
 				<li
 					key={phrase.text}
-					className="group flex items-center border-b border-border transition-colors last:border-b-0 hover:bg-muted focus-within:bg-muted"
+					className="group flex items-center rounded-xl transition-colors hover:bg-secondary focus-within:bg-secondary motion-reduce:transition-none"
 				>
 					<button
 						type="button"
 						onClick={() => onSelect(phrase.text)}
 						disabled={disabled}
-						className="flex min-w-0 flex-1 flex-col items-start gap-0.5 px-6 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset disabled:opacity-50"
+						className="flex min-w-0 flex-1 flex-col items-start gap-0.5 rounded-xl py-2.5 ps-3 pe-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
 					>
-						<span className="w-full truncate text-base font-medium text-foreground">
+						<span className="w-full truncate text-sm font-medium text-foreground">
 							{phrase.text}
 						</span>
 						{phrase.ipa ? <PhraseIpa ipa={phrase.ipa} highlightSound={highlightSound} /> : null}
@@ -82,8 +82,8 @@ export function PhraseList({
 					{onRemove ? (
 						<Button
 							variant="ghost"
-							size="icon-xs"
-							className="me-4 text-muted-foreground opacity-0 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100"
+							size="icon-sm"
+							className="me-1.5 text-muted-foreground opacity-0 hover:bg-accent hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100"
 							aria-label={removeLabel(phrase.text)}
 							onClick={() => onRemove(phrase.text)}
 						>
