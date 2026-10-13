@@ -1,13 +1,11 @@
 "use client";
 
-import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
+import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { Label } from "@phonaria/ui/components/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { ScrollArea } from "@phonaria/ui/components/scroll-area";
 import { Switch } from "@phonaria/ui/components/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { type CSSProperties, useId, useState } from "react";
-import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
 import type {
 	StaticDiphthongVowelChartEntry,
 	StaticMonophthongVowelChartEntry,
@@ -15,6 +13,7 @@ import type {
 } from "@/lib/ipa-chart/vowel-chart-data";
 import { cn } from "@/lib/utils";
 import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
+import { useSelectedSound, useSoundSelection } from "./sound-details-layout";
 import {
 	getMarkerPercentPosition,
 	VowelChartSurface,
@@ -23,7 +22,6 @@ import {
 } from "./vowel-chart-surface";
 
 type VowelChartProps = {
-	targetAccent: TargetAccent;
 	entries: StaticVowelChartEntry[];
 };
 
@@ -81,8 +79,18 @@ const DIPHTHONG_BOWS = {
 	OI: 22,
 } as const satisfies Partial<Record<PhonemeSymbolId, number>>;
 
-export function VowelChart({ targetAccent, entries }: VowelChartProps) {
-	const [showDiphthongs, setShowDiphthongs] = useState(false);
+export function VowelChart({ entries }: VowelChartProps) {
+	const selectedSound = useSelectedSound();
+	const selectedDiphthong = entries.find(
+		(entry) => entry.id === selectedSound && entry.vowelType === "diphthong",
+	);
+	const [showDiphthongs, setShowDiphthongs] = useState(Boolean(selectedDiphthong));
+	// A diphthong selected from a link or the URL needs its layer on to be seen.
+	const [shownFor, setShownFor] = useState(selectedDiphthong?.id);
+	if (selectedDiphthong && selectedDiphthong.id !== shownFor) {
+		setShownFor(selectedDiphthong.id);
+		setShowDiphthongs(true);
+	}
 	const reactId = useId();
 	const arrowMarkerId = `vowel-diphthong-arrow-${reactId.replaceAll(":", "")}`;
 	const statusId = `vowel-diphthong-status-${reactId.replaceAll(":", "")}`;
@@ -112,7 +120,7 @@ export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 			</div>
 
 			<ScrollArea className="w-full">
-				<div className="flex justify-center">
+				<div className="flex justify-center-safe">
 					<div className="w-full max-w-2xl min-w-96 shrink-0">
 						<VowelChartSurface
 							arrowMarkerId={arrowMarkerId}
@@ -126,19 +134,11 @@ export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 							overlay={
 								<>
 									{monophthongMarkers.map((marker) => (
-										<VowelMarker
-											key={marker.entry.id}
-											targetAccent={targetAccent}
-											marker={marker}
-										/>
+										<VowelMarker key={marker.entry.id} marker={marker} />
 									))}
 									{showDiphthongs &&
 										diphthongGlides.map((glide) => (
-											<DiphthongLabel
-												key={glide.entry.id}
-												targetAccent={targetAccent}
-												glide={glide}
-											/>
+											<DiphthongLabel key={glide.entry.id} glide={glide} />
 										))}
 								</>
 							}
@@ -238,13 +238,7 @@ function getRenderedMarkerPoint(marker: VowelMarkerData) {
 	return addPoints(marker.start, marker.offset);
 }
 
-function VowelMarker({
-	targetAccent,
-	marker,
-}: {
-	targetAccent: TargetAccent;
-	marker: MonophthongMarkerData;
-}) {
+function VowelMarker({ marker }: { marker: MonophthongMarkerData }) {
 	const markerPoint = addPoints(marker.start, marker.offset);
 	const { leftPercent, topPercent } = getMarkerPercentPosition(markerPoint, vowelChartLayout);
 	const buttonStyles = {
@@ -254,100 +248,79 @@ function VowelMarker({
 	const ariaLabel = `${marker.entry.label} (${marker.entry.ipa})`;
 	const isRounded = marker.entry.features.roundness === "rounded";
 	const isRhotic = marker.entry.features.rhoticity === "r-colored";
+	const { selected, select } = useSoundSelection(marker.entry.id);
 
 	return (
-		<Popover>
-			<Tooltip>
-				<TooltipTrigger
-					render={
-						<PopoverTrigger
-							render={
-								<button
-									type="button"
-									className={cn(
-										vowelMarkerButtonBaseClass,
-										"left-[calc(var(--marker-left)-0.75rem)] top-[calc(var(--marker-top)-0.75rem)]",
-										"sm:left-[calc(var(--marker-left)-1.125rem)] sm:top-[calc(var(--marker-top)-1.125rem)]",
-										"hover:z-10 motion-reduce:transition-none",
-										{
-											"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary":
-												isRounded && !isRhotic,
-											"border-primary bg-background text-foreground rounded-full size-6 sm:size-9 hover:bg-background-strong":
-												!isRounded && !isRhotic,
-											"border-dashed border-primary bg-background-strong text-foreground rounded-full size-6 sm:size-9 hover:bg-background":
-												isRhotic,
-										},
-									)}
-									style={buttonStyles as CSSProperties}
-									aria-label={ariaLabel}
-								/>
-							}
-						>
-							{marker.entry.ipa}
-						</PopoverTrigger>
-					}
-				>
-					{marker.entry.ipa}
-				</TooltipTrigger>
-				<TooltipContent side="top" align="center">
-					<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">
-						{marker.entry.label}
-					</div>
-				</TooltipContent>
-			</Tooltip>
-			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={marker.entry.id} />
-			</PopoverContent>
-		</Popover>
+		<Tooltip>
+			<TooltipTrigger
+				render={
+					<button
+						type="button"
+						className={cn(
+							vowelMarkerButtonBaseClass,
+							"left-[calc(var(--marker-left)-0.75rem)] top-[calc(var(--marker-top)-0.75rem)]",
+							"sm:left-[calc(var(--marker-left)-1.125rem)] sm:top-[calc(var(--marker-top)-1.125rem)]",
+							"hover:z-10 motion-reduce:transition-none",
+							"aria-[current=true]:z-10 aria-[current=true]:ring-2 aria-[current=true]:ring-ring aria-[current=true]:ring-offset-2 aria-[current=true]:ring-offset-background",
+							{
+								"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary":
+									isRounded && !isRhotic,
+								"border-primary bg-background text-foreground rounded-full size-6 sm:size-9 hover:bg-background-strong":
+									!isRounded && !isRhotic,
+								"border-dashed border-primary bg-background-strong text-foreground rounded-full size-6 sm:size-9 hover:bg-background":
+									isRhotic,
+							},
+						)}
+						style={buttonStyles as CSSProperties}
+						aria-label={ariaLabel}
+						aria-current={selected ? "true" : undefined}
+						onClick={select}
+					/>
+				}
+			>
+				{marker.entry.ipa}
+			</TooltipTrigger>
+			<TooltipContent side="top" align="center">
+				<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">
+					{marker.entry.label}
+				</div>
+			</TooltipContent>
+		</Tooltip>
 	);
 }
 
-function DiphthongLabel({
-	targetAccent,
-	glide,
-}: {
-	targetAccent: TargetAccent;
-	glide: DiphthongGlideData;
-}) {
+function DiphthongLabel({ glide }: { glide: DiphthongGlideData }) {
 	const { leftPercent, topPercent } = getMarkerPercentPosition(glide.label, vowelChartLayout);
 	const buttonStyles = {
 		"--marker-left": `${leftPercent}%`,
 		"--marker-top": `${topPercent}%`,
 	};
 	const ariaLabel = `${glide.entry.label} (${glide.entry.ipa})`;
+	const { selected, select } = useSoundSelection(glide.entry.id);
 
 	return (
-		<Popover>
-			<Tooltip>
-				<TooltipTrigger
-					render={
-						<PopoverTrigger
-							render={
-								<button
-									type="button"
-									data-diphthong={glide.entry.id}
-									className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg"
-									style={buttonStyles as CSSProperties}
-									aria-label={ariaLabel}
-								/>
-							}
-						>
-							{glide.entry.ipa}
-						</PopoverTrigger>
-					}
-				>
-					{glide.entry.ipa}
-				</TooltipTrigger>
-				<TooltipContent side="top" align="center">
-					<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">
-						{glide.entry.label}
-					</div>
-				</TooltipContent>
-			</Tooltip>
-			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={glide.entry.id} />
-			</PopoverContent>
-		</Popover>
+		<Tooltip>
+			<TooltipTrigger
+				render={
+					<button
+						type="button"
+						data-diphthong={glide.entry.id}
+						className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring aria-[current=true]:bg-primary aria-[current=true]:text-primary-foreground motion-reduce:transition-none sm:text-lg"
+						style={buttonStyles as CSSProperties}
+						aria-label={ariaLabel}
+						aria-current={selected ? "true" : undefined}
+						onClick={select}
+					/>
+				}
+			>
+				{glide.entry.ipa}
+			</TooltipTrigger>
+			<TooltipContent side="top" align="center">
+				<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">
+					{glide.entry.label}
+				</div>
+			</TooltipContent>
+		</Tooltip>
 	);
 }
 

@@ -7,7 +7,7 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
-import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
+import { PhonemeSummary } from "@/components/phoneme-details/phoneme-summary";
 import type { TranscribedPhoneme } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
 
@@ -71,7 +71,7 @@ export function PhonemePopoverButton({
 				{symbol}
 			</PopoverTrigger>
 			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemePopoverContent
+				<PhonemeSummary
 					targetAccent={targetAccent}
 					phonemeId={phonemeId as LanguagePhonemeId<typeof targetAccent>}
 				/>

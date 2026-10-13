@@ -6,7 +6,7 @@
  */
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { X } from "lucide-react";
-import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
+import { PhonemeSummary } from "@/components/phoneme-details/phoneme-summary";
 import { cn } from "@/lib/utils";
 import { describeSound, findSound } from "../_lib/sound-palette";
 
@@ -63,12 +63,11 @@ export function SoundChip({ sound, onRemove, className }: SoundChipProps) {
 					{key.ipa}
 				</PopoverTrigger>
 				<PopoverContent sideOffset={8} className="w-auto">
-					<PhonemePopoverContent
+					<PhonemeSummary
 						targetAccent="en-us"
 						phonemeId={key.id}
-						showComparisons={false}
-						showSpellings={false}
-						showFrequencyLink={false}
+						showExamples={false}
+						showChartLink={false}
 					/>
 				</PopoverContent>
 			</Popover>

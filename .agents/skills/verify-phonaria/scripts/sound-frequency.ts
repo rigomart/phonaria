@@ -53,10 +53,9 @@ function readCard() {
 	const spelling = section("Spelling");
 	const meter = frequency?.querySelector<HTMLElement>("[aria-hidden='true'] > span");
 	return {
-		openTrigger:
-			document
-				.querySelector('button[aria-expanded="true"][aria-label]')
-				?.getAttribute("aria-label") ?? null,
+		selected:
+			document.querySelector('[aria-current="true"][aria-label]')?.getAttribute("aria-label") ??
+			null,
 		link: frequency?.querySelector("a")?.getAttribute("href") ?? null,
 		rank: frequency?.querySelector("p")?.textContent?.trim() ?? null,
 		meter: meter?.style.width ?? null,
@@ -69,9 +68,10 @@ function readCard() {
 	};
 }
 
+// On the Frequency page the card is the side panel, next to the selected row.
 // Meter width is the sound's position among 40: (40 - rank + 1) / 40.
 const pageCard = observation(readCard, {
-	openTrigger: "/ð/ as in this: 11th, 3.1%, common",
+	selected: "/ð/ as in this: 11th, 3.1%, common",
 	link: null,
 	rank: "Common · 11th of 40",
 	meter: "75%",
@@ -79,21 +79,48 @@ const pageCard = observation(readCard, {
 	highlighted: ["th", "th"],
 });
 
-const resultCard = observation(readCard, {
-	openTrigger: "Details for /h/",
-	link: "/ipa-chart/frequency",
-	rank: "Less common · 29th of 40",
-	meter: "30%",
-	spelling: ["h", "house, hello"],
-	highlighted: ["h", "h"],
-});
+// Outside the chart the card is the short popover: label, rank, examples, chart link.
+const resultCard = observation(
+	() => {
+		const popup = document.querySelector('[data-slot="popover-content"]');
+		return {
+			openTrigger:
+				document
+					.querySelector('button[aria-expanded="true"][aria-label]')
+					?.getAttribute("aria-label") ?? null,
+			lines: Array.from(popup?.querySelectorAll("p") ?? []).map((line) => line.textContent?.trim()),
+			highlighted: Array.from(popup?.querySelectorAll("mark") ?? []).map((mark) =>
+				mark.textContent?.trim(),
+			),
+			link: popup?.querySelector("a")?.getAttribute("href") ?? null,
+		};
+	},
+	{
+		openTrigger: "Details for /h/",
+		lines: ["Voiceless glottal fricative", "Less common · 29th of 40", "as in house, hello"],
+		highlighted: ["h", "h"],
+		link: "/ipa-chart/consonants?sound=H",
+	},
+);
 
+// At 1280px the consonant details slide in from the right over the chart.
 const followedLink = observation(
 	() => ({
 		path: location.pathname,
+		search: location.search,
 		heading: document.querySelector("h1")?.textContent?.trim() ?? null,
+		selected:
+			document.querySelector('[aria-current="true"][aria-label]')?.getAttribute("aria-label") ??
+			null,
+		details: document.querySelector('[data-slot="drawer-content"] h2')?.textContent?.trim() ?? null,
 	}),
-	{ path: "/ipa-chart/frequency", heading: "Frequency" },
+	{
+		path: "/ipa-chart/consonants",
+		search: "?sound=H",
+		heading: "Consonants",
+		selected: "Voiceless glottal fricative (h)",
+		details: "/h/",
+	},
 );
 
 const menu = observation(
@@ -116,7 +143,7 @@ const plainCharts = observation(
 );
 
 export const soundFrequency = {
-	title: "Frequency page and sound card",
+	title: "Frequency page and sound details",
 	checkpoints: {
 		ranking,
 		"page-card": pageCard,
@@ -128,6 +155,6 @@ export const soundFrequency = {
 	coverageLimits: [
 		"order and band colors read from the DOM; bar lengths, color steps and layout checked by screenshot review only",
 		"en-us only; the unavailable-accent path is covered by unit tests, as no route renders es-419 data",
-		"desktop Chromium; mobile layout reviewed by screenshot only when captured",
+		"desktop Chromium at 1280px; the docked consonant panel (1536px+) and the mobile drawer are reviewed by screenshot only when captured",
 	],
 } satisfies Feature;

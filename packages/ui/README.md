@@ -67,3 +67,6 @@ From repo root:
 bun run --cwd packages/ui check-types
 bun run --cwd packages/ui lint
 ```
+
+`drawer.tsx` is the exception: it wraps Base UI's Drawer directly, because shadcn/ui's drawer depends
+on vaul. Don't replace it with `shadcn add drawer`.

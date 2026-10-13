@@ -1,5 +1,7 @@
 import { getLanguagePhonemeCount, type TargetAccent } from "@phonaria/phonetics-data";
+import { type ChartSoundProps, parseChartSound } from "@/lib/ipa-chart/sound-search";
 import { getDiphthongEntries, getMonophthongEntries } from "@/lib/ipa-chart/vowel-chart-data";
+import { SoundDetailsLayout } from "./sound-details-layout";
 import { VowelChart } from "./vowel-chart";
 
 const targetAccent = "en-us" satisfies TargetAccent;
@@ -9,10 +11,10 @@ const diphthongEntries = phonemeCounts.diphthongs > 0 ? getDiphthongEntries(targ
 const vowelEntries = [...monophthongEntries, ...diphthongEntries];
 const vowelCount = phonemeCounts.monophthongs + phonemeCounts.diphthongs;
 
-export function VowelsContent() {
+export function VowelsContent({ selectedSound, onSelectSound, onCloseSound }: ChartSoundProps) {
 	return (
 		<div className="flex flex-1 flex-col items-center bg-background">
-			<div className="w-full p-4 sm:p-6 max-w-5xl space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+			<div className="w-full p-4 sm:p-6 max-w-5xl xl:max-w-7xl space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
 				<div className="flex flex-col gap-1">
 					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Vowels</h1>
 					<p className="text-sm text-muted-foreground">
@@ -23,7 +25,14 @@ export function VowelsContent() {
 					</p>
 				</div>
 
-				<VowelChart targetAccent={targetAccent} entries={vowelEntries} />
+				<SoundDetailsLayout
+					targetAccent={targetAccent}
+					selectedId={parseChartSound(selectedSound, targetAccent, "vowels")}
+					onSelect={onSelectSound}
+					onClose={onCloseSound}
+				>
+					<VowelChart entries={vowelEntries} />
+				</SoundDetailsLayout>
 			</div>
 		</div>
 	);

@@ -25,7 +25,9 @@ const clientFiles = [
 	"src/components/transcription/display/index.tsx",
 	"src/components/transcription/display/word-definition-popover.tsx",
 	"src/components/transcription/display/clickable-phoneme.tsx",
-	"src/components/phoneme-popover-content.tsx",
+	"src/components/phoneme-details/phoneme-summary.tsx",
+	"src/components/phoneme-details/phoneme-details.tsx",
+	"src/components/phoneme-details/articulation.tsx",
 	"src/routes/index.tsx",
 ];
 
@@ -117,7 +119,9 @@ describe("browser transcription boundary", () => {
 	it("keeps phoneme popovers free of dictionary definitions", () => {
 		const files = [
 			"src/components/transcription/display/clickable-phoneme.tsx",
-			"src/components/phoneme-popover-content.tsx",
+			"src/components/phoneme-details/phoneme-summary.tsx",
+			"src/components/phoneme-details/phoneme-details.tsx",
+			"src/components/phoneme-details/articulation.tsx",
 		];
 		for (const file of files) {
 			const source = readFileSync(resolve(labRoot, file), "utf8");

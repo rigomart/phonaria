@@ -5,15 +5,14 @@ import {
 	formatPhonemeLabel,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
-import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
-import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
 import type {
 	MannerOfArticulation,
 	PlaceOfArticulation,
 	Voicing,
 } from "@/lib/ipa-chart/consonant-grid";
 import { cn } from "@/lib/utils";
+import { useSoundSelection } from "./sound-details-layout";
 
 export interface ConsonantPhoneme {
 	id: ConsonantSymbolId;
@@ -60,47 +59,40 @@ function ConsonantButton({
 	const isVoiceless = phoneme.voicing === "voiceless";
 	const label = formatPhonemeLabel(targetAccent, phoneme.id);
 	const ariaLabel = `${label} (${phoneme.symbol})`;
+	const { selected, select } = useSoundSelection(phoneme.id);
 
 	return (
-		<Popover>
-			<Tooltip>
-				<TooltipTrigger
-					render={
-						<PopoverTrigger
-							render={
-								<button
-									type="button"
-									aria-label={ariaLabel}
-									className={cn(
-										"group relative grid place-items-center text-center",
-										"min-w-10 min-h-10 px-2 py-1.5 rounded-md border",
-										"hover:border-primary hover:bg-muted transition-all duration-150",
-										"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-										"active:scale-[0.98]",
-										isVoiceless
-											? "bg-background border-border"
-											: "bg-primary/15 border-primary/20 font-semibold",
-									)}
-								/>
-							}
-						>
-							<div className="text-base sm:text-lg font-medium leading-none tracking-tight">
-								{phoneme.symbol}
-							</div>
-						</PopoverTrigger>
-					}
-				>
+		<Tooltip>
+			<TooltipTrigger
+				render={
+					<button
+						type="button"
+						aria-label={ariaLabel}
+						aria-current={selected ? "true" : undefined}
+						onClick={select}
+						className={cn(
+							"group relative grid place-items-center text-center",
+							"min-w-10 min-h-10 px-2 py-1.5 rounded-md border",
+							"hover:border-primary hover:bg-muted transition-all duration-150",
+							"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+							"active:scale-[0.98]",
+							isVoiceless
+								? "bg-background border-border"
+								: "bg-primary/15 border-primary/20 font-semibold",
+							"aria-[current=true]:border-primary aria-[current=true]:ring-2 aria-[current=true]:ring-primary",
+						)}
+					/>
+				}
+			>
+				<div className="text-base sm:text-lg font-medium leading-none tracking-tight">
 					{phoneme.symbol}
-				</TooltipTrigger>
-				<TooltipContent side="top" align="center">
-					<div className="max-w-56 text-pretty text-xs leading-snug font-medium">
-						/{phoneme.symbol}/ - {label}
-					</div>
-				</TooltipContent>
-			</Tooltip>
-			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={phoneme.id} />
-			</PopoverContent>
-		</Popover>
+				</div>
+			</TooltipTrigger>
+			<TooltipContent side="top" align="center">
+				<div className="max-w-56 text-pretty text-xs leading-snug font-medium">
+					/{phoneme.symbol}/ - {label}
+				</div>
+			</TooltipContent>
+		</Tooltip>
 	);
 }

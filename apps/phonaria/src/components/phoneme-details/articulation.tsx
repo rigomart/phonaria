@@ -2,27 +2,16 @@
 
 import {
 	type DiphthongVowelArticulation,
-	formatPhonemeLabel,
 	getIpaForPhonemeId,
-	getPhonemeArticulationRegistryForLanguage,
-	getPhonemeType,
-	getSpellingPatternRegistryForLanguage,
 	type LanguagePhonemeId,
 	type PhonemeArticulation,
-	type SpellingPattern,
 	type TargetAccent,
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
 import { ToggleGroup, ToggleGroupItem } from "@phonaria/ui/components/toggle-group";
-import { ArrowRight, ChevronDown, MoveRight } from "lucide-react";
-import { Fragment, useId, useState } from "react";
-import { AudioControls } from "@/components/audio-controls";
+import { ChevronDown, MoveRight } from "lucide-react";
+import { useId, useState } from "react";
 import { Image } from "@/components/image";
-import { Link } from "@/components/link";
-import { SpelledWord } from "@/components/spelled-word";
-import { IPA_CHART_FREQUENCY_PATH } from "@/lib/ipa-chart-metadata";
-import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
-import { summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
 import { getPublicAssetBaseUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
@@ -36,196 +25,21 @@ import {
 } from "@/lib/vowel-chart-geometry";
 
 const BUCKET_URL = getPublicAssetBaseUrl();
-interface PhonemePopoverProps<TLanguage extends TargetAccent> {
-	targetAccent: TLanguage;
-	phonemeId: LanguagePhonemeId<TLanguage>;
-	/**
-	 * Minimal pairs against similar sounds. Off where the popover is Practice
-	 * assistance, since a pair could spell out the word being answered.
-	 */
-	showComparisons?: boolean;
-	/** Off for Practice assistance too: an example word could be the answer. */
-	showSpellings?: boolean;
-	/** Off on the frequency page itself, and in Practice so following it doesn't end the session. */
-	showFrequencyLink?: boolean;
-}
 
-export function PhonemePopoverContent<TLanguage extends TargetAccent>({
-	targetAccent,
-	phonemeId,
-	showComparisons = true,
-	showSpellings = true,
-	showFrequencyLink = true,
-}: PhonemePopoverProps<TLanguage>) {
-	const articulationRegistry = getPhonemeArticulationRegistryForLanguage(targetAccent) as Record<
-		LanguagePhonemeId<TLanguage>,
-		PhonemeArticulation
-	>;
-	const ipa = getIpaForPhonemeId(phonemeId);
-	const label = formatPhonemeLabel(targetAccent, phonemeId);
-	const phonemeType = getPhonemeType(phonemeId);
-	const isDiphthong = phonemeType === "diphthong";
-	const showAudio = phonemeType === "consonant" || phonemeType === "monophthong";
-	const articulation = articulationRegistry[phonemeId];
-
-	return (
-		<div className="flex flex-col gap-2 w-72">
-			<div className="flex items-center justify-between gap-2">
-				<div className="flex items-baseline gap-0.5 text-2xl font-medium">
-					<span aria-hidden="true" className="text-muted-foreground/50">
-						/
-					</span>
-					<span>{ipa}</span>
-					<span aria-hidden="true" className="text-muted-foreground/50">
-						/
-					</span>
-				</div>
-				{showAudio && <AudioControls path={`/audio/phonemes/${phonemeId}.ogg`} label={ipa} />}
-			</div>
-
-			{!isDiphthong && <p className="text-xs text-muted-foreground leading-snug">{label}</p>}
-
-			<ArticulationDiagram
-				targetAccent={targetAccent}
-				phonemeId={phonemeId}
-				label={label}
-				articulation={articulation}
-			/>
-
-			<PhonemeFrequency
-				targetAccent={targetAccent}
-				phonemeId={phonemeId}
-				showLink={showFrequencyLink}
-			/>
-
-			{showSpellings && <PhonemeSpelling targetAccent={targetAccent} phonemeId={phonemeId} />}
-
-			{showComparisons && <PhonemeComparisons targetAccent={targetAccent} phonemeId={phonemeId} />}
-		</div>
-	);
-}
-
-const SPELLING_EXAMPLE_COUNT = 2;
-
-function PhonemeFrequency({
-	targetAccent,
-	phonemeId,
-	showLink,
-}: {
-	targetAccent: TargetAccent;
-	phonemeId: LanguagePhonemeId<TargetAccent>;
-	showLink: boolean;
-}) {
-	const headingId = useId();
-	const frequency = summarizePhonemeFrequency(targetAccent, phonemeId);
-	if (!frequency) return null;
-
-	return (
-		<section aria-labelledby={headingId} className="flex flex-col gap-1.5 border-t pt-2">
-			<div className="flex items-baseline justify-between gap-2 text-xs text-muted-foreground">
-				<h3 id={headingId}>Frequency</h3>
-				{showLink && (
-					<Link
-						href={IPA_CHART_FREQUENCY_PATH}
-						className="inline-flex items-center gap-0.5 rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
-					>
-						All sounds
-						<ArrowRight aria-hidden="true" className="size-3" />
-					</Link>
-				)}
-			</div>
-			<p className="text-sm">
-				<span className="font-medium">{frequency.band.label}</span>
-				<span className="text-muted-foreground"> · {frequency.ranking}</span>
-			</p>
-			<span aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-accent">
-				<span
-					className={cn("block h-full rounded-full", frequency.band.barClass)}
-					style={{ width: `${frequency.position * 100}%` }}
-				/>
-			</span>
-		</section>
-	);
-}
-
-function PhonemeSpelling({
-	targetAccent,
-	phonemeId,
-}: {
-	targetAccent: TargetAccent;
-	phonemeId: LanguagePhonemeId<TargetAccent>;
-}) {
-	const headingId = useId();
-	const registry = getSpellingPatternRegistryForLanguage(targetAccent) as Partial<
-		Record<LanguagePhonemeId<TargetAccent>, SpellingPattern>
-	> | null;
-	const spelling = registry?.[phonemeId];
-	if (!spelling) return null;
-
-	return (
-		<section aria-labelledby={headingId} className="flex flex-col gap-1.5 border-t pt-2">
-			<h3 id={headingId} className="text-xs text-muted-foreground">
-				Spelling
-			</h3>
-			<p className="flex items-baseline gap-2 text-sm">
-				<span className="min-w-10 shrink-0 font-medium">{spelling.patterns.join(", ")}</span>
-				<span className="text-muted-foreground">
-					{spelling.examples.slice(0, SPELLING_EXAMPLE_COUNT).map((example, index) => (
-						<Fragment key={example.word}>
-							{index > 0 && ", "}
-							<SpelledWord spelled={example.spelled} />
-						</Fragment>
-					))}
-				</span>
-			</p>
-		</section>
-	);
-}
-
-function PhonemeComparisons({
-	targetAccent,
-	phonemeId,
-}: {
-	targetAccent: TargetAccent;
-	phonemeId: LanguagePhonemeId<TargetAccent>;
-}) {
-	const headingId = useId();
-	const comparisons = getPhonemeComparisons(targetAccent, phonemeId);
-	if (comparisons.length === 0) return null;
-
-	return (
-		<section aria-labelledby={headingId} className="flex flex-col gap-1.5 border-t pt-2">
-			<h3 id={headingId} className="text-xs text-muted-foreground">
-				Compare with
-			</h3>
-			<ul className="flex flex-col gap-1">
-				{comparisons.map(({ contrastId, partnerId, partnerIpa, pairs }) => (
-					<li key={contrastId} className="flex items-baseline gap-2 text-sm">
-						<span aria-hidden="true" className="min-w-10 shrink-0 font-medium">
-							/{partnerIpa}/
-						</span>
-						<span className="sr-only">{formatPhonemeLabel(targetAccent, partnerId)}:</span>
-						<span className="text-muted-foreground">
-							{pairs.map(({ words: [own, partner] }) => `${own} – ${partner}`).join(", ")}
-						</span>
-					</li>
-				))}
-			</ul>
-		</section>
-	);
-}
-
-function ArticulationDiagram({
-	phonemeId,
-	targetAccent,
-	label,
-	articulation,
-}: {
+type ArticulationProps = {
 	targetAccent: TargetAccent;
 	phonemeId: LanguagePhonemeId<TargetAccent>;
 	label: string;
 	articulation: PhonemeArticulation;
-}) {
+};
+
+/** Full-size diagram: mouth image for consonants, vowel chart placement for vowels. */
+export function ArticulationDiagram({
+	phonemeId,
+	targetAccent,
+	label,
+	articulation,
+}: ArticulationProps) {
 	const phonemeIpa = getIpaForPhonemeId(phonemeId);
 
 	if (articulation.category === "consonant") {
@@ -261,6 +75,65 @@ function ArticulationDiagram({
 	}
 
 	return null;
+}
+
+/**
+ * Small, static version of the diagram for the short popover. Affricates show
+ * their stop phase; diphthongs show the glide from start to target.
+ */
+export function ArticulationThumbnail({
+	phonemeId,
+	targetAccent,
+	label,
+	articulation,
+}: ArticulationProps) {
+	if (articulation.category === "consonant") {
+		const isAffricate = articulation.features.manner === "affricate";
+		return (
+			<div className="relative size-24 shrink-0 overflow-hidden rounded-md bg-neutral-900/60">
+				<Image
+					src={`${BUCKET_URL}/diagrams/${targetAccent}/${phonemeId}${isAffricate ? "_stop" : ""}.svg`}
+					alt={`${label} articulation`}
+					fill
+					unoptimized
+					className="object-cover"
+				/>
+			</div>
+		);
+	}
+
+	const { features } = articulation;
+	const start = {
+		point: getVowelPoint(features.height, features.backness, SMALL_VOWEL_CHART_LAYOUT),
+		roundness: features.roundness,
+		isRhotic: "rhoticity" in features && features.rhoticity === "r-colored",
+	};
+	const marks =
+		articulation.vowelType === "diphthong"
+			? [
+					start,
+					{
+						point: getVowelPoint(
+							articulation.features.targetHeight,
+							articulation.features.targetBackness,
+							SMALL_VOWEL_CHART_LAYOUT,
+						),
+						roundness: articulation.features.targetRoundness,
+						isRhotic: false,
+					},
+				]
+			: [start];
+
+	return (
+		<div className="size-24 shrink-0">
+			<VowelChart
+				marks={marks}
+				ariaLabel={`${label} placement`}
+				compact
+				glide={articulation.vowelType === "diphthong"}
+			/>
+		</div>
+	);
 }
 
 // --- Affricate (stop + fricative phases) ---
@@ -376,7 +249,7 @@ function DiphthongGlide({
 				<div className="overflow-hidden">
 					{expanded === "start" && (
 						<MonophthongChart
-							ipa={getIpaForPhonemeId(phonemeId).charAt(0)}
+							ipa={startIpa}
 							features={{
 								height: features.height,
 								backness: features.backness,
@@ -386,7 +259,7 @@ function DiphthongGlide({
 					)}
 					{expanded === "target" && (
 						<MonophthongChart
-							ipa={getIpaForPhonemeId(phonemeId).slice(-1)}
+							ipa={targetIpa}
 							features={{
 								height: features.targetHeight,
 								backness: features.targetBackness,
@@ -450,36 +323,69 @@ function MonophthongChart({ ipa, features }: MonophthongChartProps) {
 	const point = getVowelPoint(features.height, features.backness, SMALL_VOWEL_CHART_LAYOUT);
 	const isRhotic = features.rhoticity === "r-colored";
 
-	return <VowelChart ipa={ipa} point={point} roundness={features.roundness} isRhotic={isRhotic} />;
+	return (
+		<VowelChart
+			marks={[{ point, roundness: features.roundness, isRhotic, label: ipa }]}
+			ariaLabel={`${ipa} vowel placement`}
+		/>
+	);
 }
 
-// --- Vowel Chart (single point) ---
+// --- Vowel Chart (one point, or a glide between two) ---
 
-type VowelChartProps = {
-	ipa: string;
+type VowelChartMark = {
 	point: ChartPoint;
 	roundness: VowelArticulatoryFeatures["roundness"];
 	isRhotic: boolean;
+	label?: string;
+};
+
+type VowelChartProps = {
+	marks: VowelChartMark[];
+	ariaLabel: string;
+	/** Drops the axis labels, which are unreadable at thumbnail size. */
+	compact?: boolean;
+	/** Draws an arrow from the first mark to the second. */
+	glide?: boolean;
 };
 
 const IPA_LABEL_FONT_SIZE = 8;
 const IPA_LABEL_PADDING_X = 4;
 const IPA_LABEL_PADDING_Y = 2;
 const IPA_LABEL_OFFSET_X = 10;
+const MARKER_RADIUS = 4;
 
-function VowelChart({ ipa, point, roundness, isRhotic }: VowelChartProps) {
+function VowelChart({ marks, ariaLabel, compact = false, glide = false }: VowelChartProps) {
 	const layout = SMALL_VOWEL_CHART_LAYOUT;
 	const topHeight = VOWEL_HEIGHT_ORDER[0];
 	const bottomHeight = VOWEL_HEIGHT_ORDER[VOWEL_HEIGHT_ORDER.length - 1];
+	const arrowId = `vowel-glide-arrow-${useId().replaceAll(":", "")}`;
+	const [start, target] = marks;
 
 	return (
-		<div className="rounded-md border bg-muted/30 p-1.5">
+		<div className={cn("rounded-md border bg-muted/30", compact ? "p-0.5" : "p-1.5")}>
 			<svg
 				viewBox={`0 0 ${layout.viewBoxWidth} ${layout.viewBoxHeight}`}
 				role="img"
-				aria-label={`${ipa} vowel placement`}
+				aria-label={ariaLabel}
 				className="w-full"
 			>
+				{glide && (
+					<defs>
+						<marker
+							id={arrowId}
+							viewBox="0 0 10 10"
+							refX="8"
+							refY="5"
+							markerWidth="5"
+							markerHeight="5"
+							orient="auto-start-reverse"
+						>
+							<path d="M 0 0 L 10 5 L 0 10 z" className="fill-primary" />
+						</marker>
+					</defs>
+				)}
+
 				<polygon
 					points={[
 						`${getLeftBoundaryX(topHeight, layout)},${getHeightPosition(topHeight, layout)}`,
@@ -491,11 +397,43 @@ function VowelChart({ ipa, point, roundness, isRhotic }: VowelChartProps) {
 					strokeWidth={1.2}
 				/>
 
-				<VowelGrid />
+				<VowelGrid showLabels={!compact} />
 
-				<ChartMarker point={point} rounded={roundness} label={ipa} isRhotic={isRhotic} />
+				{glide && start && target && (
+					<GlideLine from={start.point} to={target.point} markerId={arrowId} />
+				)}
+
+				{marks.map((mark) => (
+					<ChartMarker
+						key={`${mark.point.x},${mark.point.y}`}
+						point={mark.point}
+						rounded={mark.roundness}
+						label={mark.label}
+						isRhotic={mark.isRhotic}
+						scale={compact ? 1.6 : 1}
+					/>
+				))}
 			</svg>
 		</div>
+	);
+}
+
+function GlideLine({ from, to, markerId }: { from: ChartPoint; to: ChartPoint; markerId: string }) {
+	const dx = to.x - from.x;
+	const dy = to.y - from.y;
+	const length = Math.hypot(dx, dy) || 1;
+	// Stop short of both markers so the arrowhead stays visible.
+	const inset = MARKER_RADIUS * 1.6 + 2;
+	return (
+		<line
+			x1={from.x + (dx / length) * inset}
+			y1={from.y + (dy / length) * inset}
+			x2={to.x - (dx / length) * inset}
+			y2={to.y - (dy / length) * inset}
+			className="stroke-primary"
+			strokeWidth={2.4}
+			markerEnd={`url(#${markerId})`}
+		/>
 	);
 }
 
@@ -514,7 +452,7 @@ const HEIGHT_LABELS: { value: VowelArticulatoryFeatures["height"]; label: string
 	{ value: "open", label: "Open" },
 ];
 
-function VowelGrid() {
+function VowelGrid({ showLabels }: { showLabels: boolean }) {
 	const layout = SMALL_VOWEL_CHART_LAYOUT;
 	const topHeight = VOWEL_HEIGHT_ORDER[0];
 	const bottomHeight = VOWEL_HEIGHT_ORDER[VOWEL_HEIGHT_ORDER.length - 1];
@@ -532,15 +470,17 @@ function VowelGrid() {
 						className="stroke-border/60 stroke-[1.2px]"
 						fill="none"
 					/>
-					<text
-						x={getBacknessPosition(value, topHeight, layout)}
-						y={topLabelY}
-						className="fill-muted-foreground uppercase text-[5px]"
-						fontWeight={600}
-						textAnchor={i === 0 ? "start" : i === BACKNESS_LABELS.length - 1 ? "end" : "middle"}
-					>
-						{label}
-					</text>
+					{showLabels && (
+						<text
+							x={getBacknessPosition(value, topHeight, layout)}
+							y={topLabelY}
+							className="fill-muted-foreground uppercase text-[5px]"
+							fontWeight={600}
+							textAnchor={i === 0 ? "start" : i === BACKNESS_LABELS.length - 1 ? "end" : "middle"}
+						>
+							{label}
+						</text>
+					)}
 				</g>
 			))}
 			{HEIGHT_LABELS.map(({ value, label }) => (
@@ -552,15 +492,17 @@ function VowelGrid() {
 						y2={getHeightPosition(value, layout)}
 						className="stroke-border/60 stroke-[1.2px]"
 					/>
-					<text
-						x={getLeftBoundaryX(value, layout) - 4}
-						y={getHeightPosition(value, layout) + 1.5}
-						className="fill-muted-foreground uppercase text-[5px]"
-						fontWeight={600}
-						textAnchor="end"
-					>
-						{label}
-					</text>
+					{showLabels && (
+						<text
+							x={getLeftBoundaryX(value, layout) - 4}
+							y={getHeightPosition(value, layout) + 1.5}
+							className="fill-muted-foreground uppercase text-[5px]"
+							fontWeight={600}
+							textAnchor="end"
+						>
+							{label}
+						</text>
+					)}
 				</g>
 			))}
 		</>
@@ -572,11 +514,13 @@ function ChartMarker({
 	rounded,
 	label,
 	isRhotic = false,
+	scale = 1,
 }: {
 	point: ChartPoint;
 	rounded: VowelArticulatoryFeatures["roundness"];
 	label?: string;
 	isRhotic?: boolean;
+	scale?: number;
 }) {
 	const isRounded = rounded === "rounded";
 
@@ -615,9 +559,9 @@ function ChartMarker({
 			<circle
 				cx={point.x}
 				cy={point.y}
-				r={4}
+				r={MARKER_RADIUS * scale}
 				className={`${fillClass} ${strokeClass}`}
-				strokeWidth={strokeWidth}
+				strokeWidth={strokeWidth * scale}
 				strokeDasharray={strokeDasharray}
 			/>
 			{label && (
