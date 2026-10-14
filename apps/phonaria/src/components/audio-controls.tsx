@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
-import { ButtonGroup } from "@phonaria/ui/components/button-group";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { PlayIcon, Turtle } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
@@ -19,30 +18,34 @@ function buildAudioSrc(path: string) {
 	return `${baseUrl}/${path.replace(/^\/+/, "")}`;
 }
 
+/** Play the recording at full speed or slowed down. */
 export function AudioControls({ path, label }: Props) {
 	const audioSrc = buildAudioSrc(path);
 	const { play, status } = useAudioManager(audioSrc ?? "");
+	const disabled = !audioSrc || status === "loading" || status === "playing";
 
 	return (
-		<ButtonGroup>
+		<div className="flex gap-2">
 			<Button
-				size="xs"
-				variant="outline"
+				variant="default"
+				className="h-11 px-5"
 				onClick={() => audioSrc && play()}
 				aria-label={`Play ${label}`}
-				disabled={!audioSrc || status === "loading" || status === "playing"}
+				disabled={disabled}
 			>
-				{status === "loading" ? <Spinner /> : <PlayIcon />}
+				{status === "loading" ? <Spinner /> : <PlayIcon data-icon="inline-start" aria-hidden />}
+				Play
 			</Button>
 			<Button
-				size="xs"
-				variant="outline"
+				variant="secondary"
+				className="h-11 px-5"
 				onClick={() => audioSrc && play(0.75)}
 				aria-label={`Play slow ${label}`}
-				disabled={!audioSrc || status === "loading" || status === "playing"}
+				disabled={disabled}
 			>
-				{status === "loading" ? <Spinner /> : <Turtle />}
+				{status === "loading" ? <Spinner /> : <Turtle data-icon="inline-start" aria-hidden />}
+				Slow
 			</Button>
-		</ButtonGroup>
+		</div>
 	);
 }

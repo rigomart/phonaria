@@ -53,6 +53,11 @@
 	--frequency-2: oklch(0.66 0.03 257);
 	--frequency-3: oklch(0.52 0.035 257);
 	--frequency-4: oklch(0.372 0.039 257);
+	/* Backdrop for the light-line articulation diagrams. */
+	--diagram: oklch(0.45 0.02 257);
+	/* Voiced consonants on the chart: a light primary tint. */
+	--voiced: color-mix(in oklch, var(--primary) 15%, var(--background-strong));
+	--voiced-border: color-mix(in oklch, var(--primary) 20%, var(--background-strong));
 
 	--radius: 0.875rem;
 	--shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
@@ -112,6 +117,7 @@
 	--frequency-2: oklch(0.56 0.025 257);
 	--frequency-3: oklch(0.7 0.03 257);
 	--frequency-4: oklch(0.86 0.03 257);
+	--diagram: oklch(0.25 0.015 257);
 	--shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
 	--shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
 	--shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -167,6 +173,9 @@
 	--color-frequency-2: var(--frequency-2);
 	--color-frequency-3: var(--frequency-3);
 	--color-frequency-4: var(--frequency-4);
+	--color-diagram: var(--diagram);
+	--color-voiced: var(--voiced);
+	--color-voiced-border: var(--voiced-border);
 
 	--font-sans: var(--font-noto-sans);
 	--font-mono: var(--font-noto-sans-mono);

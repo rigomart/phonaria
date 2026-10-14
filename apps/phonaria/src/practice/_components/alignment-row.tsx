@@ -2,12 +2,11 @@
 
 /**
  * Renders scored sounds on the reveal (#146). `Glyph` is the one atom: every
- * known sound opens the shared phoneme popover; unknown strings fall back to a
+ * known sound opens the shared phoneme details; unknown strings fall back to a
  * plain bordered box. `AlignmentDiff` compares each answer with the dictionary;
  * `GlyphSequence` shows the dictionary reference for blank words.
  */
-import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
-import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
+import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details-sheet";
 import type { AlignmentOp } from "@/lib/practice/scoring";
 import { cn } from "@/lib/utils";
 import { describeSound, findSound } from "../_lib/sound-palette";
@@ -49,33 +48,29 @@ export function Glyph({
 	}
 
 	return (
-		<Popover>
-			<PopoverTrigger
-				render={
-					<button
-						aria-label={ariaLabel ?? describeSound(key)}
-						className={glyphClass(
-							strike,
-							cn(
-								// Centered coarse-pointer hit-area overlay. Glyphs sit on a
-								// 36px pitch (size-8 + gap-1) horizontally, and AlignmentDiff
-								// stacks its answer/dictionary rows at the same pitch vertically,
-								// so the overlay clamps at 36px on both axes — 44px minimums
-								// would overlap neighbours and steal their taps.
-								"relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring data-popup-open:border-primary pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-9 pointer-coarse:after:min-w-9",
-								className,
-							),
-						)}
-						type="button"
-					/>
-				}
-			>
-				{key.ipa}
-			</PopoverTrigger>
-			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemePopoverContent targetAccent="en-us" phonemeId={key.id} showFrequencyLink={false} />
-			</PopoverContent>
-		</Popover>
+		<PhonemeDetailsTrigger
+			details={{ targetAccent: "en-us", phonemeId: key.id, showFrequencyLink: false }}
+			render={
+				<button
+					aria-label={ariaLabel ?? describeSound(key)}
+					className={glyphClass(
+						strike,
+						cn(
+							// Centered coarse-pointer hit-area overlay. Glyphs sit on a
+							// 36px pitch (size-8 + gap-1) horizontally, and AlignmentDiff
+							// stacks its answer/dictionary rows at the same pitch vertically,
+							// so the overlay clamps at 36px on both axes — 44px minimums
+							// would overlap neighbours and steal their taps.
+							"relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring data-popup-open:border-primary pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-9 pointer-coarse:after:min-w-9",
+							className,
+						),
+					)}
+					type="button"
+				/>
+			}
+		>
+			{key.ipa}
+		</PhonemeDetailsTrigger>
 	);
 }
 

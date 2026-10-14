@@ -5,9 +5,8 @@ import {
 	formatPhonemeLabel,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
-import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
-import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
+import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details-sheet";
 import type {
 	MannerOfArticulation,
 	PlaceOfArticulation,
@@ -62,45 +61,41 @@ function ConsonantButton({
 	const ariaLabel = `${label} (${phoneme.symbol})`;
 
 	return (
-		<Popover>
-			<Tooltip>
-				<TooltipTrigger
-					render={
-						<PopoverTrigger
-							render={
-								<button
-									type="button"
-									aria-label={ariaLabel}
-									className={cn(
-										"group relative grid place-items-center text-center",
-										"min-w-10 min-h-10 px-2 py-1.5 rounded-md border",
-										"hover:border-primary hover:bg-muted transition-all duration-150",
-										"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-										"active:scale-[0.98]",
-										isVoiceless
-											? "bg-background border-border"
-											: "bg-primary/15 border-primary/20 font-semibold",
-									)}
-								/>
-							}
-						>
-							<div className="text-base sm:text-lg font-medium leading-none tracking-tight">
-								{phoneme.symbol}
-							</div>
-						</PopoverTrigger>
-					}
-				>
-					{phoneme.symbol}
-				</TooltipTrigger>
-				<TooltipContent side="top" align="center">
-					<div className="max-w-56 text-pretty text-xs leading-snug font-medium">
-						/{phoneme.symbol}/ - {label}
-					</div>
-				</TooltipContent>
-			</Tooltip>
-			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={phoneme.id} />
-			</PopoverContent>
-		</Popover>
+		<Tooltip>
+			<TooltipTrigger
+				render={
+					<PhonemeDetailsTrigger
+						details={{ targetAccent, phonemeId: phoneme.id }}
+						render={
+							<button
+								type="button"
+								aria-label={ariaLabel}
+								className={cn(
+									"group relative grid place-items-center text-center",
+									"min-w-10 min-h-10 px-2 py-1.5 rounded-md border",
+									"hover:border-primary hover:bg-muted transition-all duration-150",
+									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+									"active:scale-98",
+									isVoiceless
+										? "bg-background border-border"
+										: "bg-voiced border-voiced-border font-semibold",
+								)}
+							/>
+						}
+					>
+						<div className="text-base sm:text-lg font-medium leading-none tracking-tight">
+							{phoneme.symbol}
+						</div>
+					</PhonemeDetailsTrigger>
+				}
+			>
+				{phoneme.symbol}
+			</TooltipTrigger>
+			<TooltipContent side="top" align="center">
+				<div className="max-w-56 text-pretty text-xs leading-snug font-medium">
+					/{phoneme.symbol}/ - {label}
+				</div>
+			</TooltipContent>
+		</Tooltip>
 	);
 }

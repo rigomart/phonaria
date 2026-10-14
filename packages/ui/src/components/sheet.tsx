@@ -6,13 +6,16 @@ import { cn } from "@phonaria/ui/lib/utils";
 import { XIcon } from "lucide-react";
 import type * as React from "react";
 
-function Sheet({ ...props }: SheetPrimitive.Root.Props) {
+function Sheet<Payload>({ ...props }: SheetPrimitive.Root.Props<Payload>) {
 	return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
 
-function SheetTrigger({ ...props }: SheetPrimitive.Trigger.Props) {
+function SheetTrigger<Payload>({ ...props }: SheetPrimitive.Trigger.Props<Payload>) {
 	return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
 }
+
+/** Links one `Sheet` to triggers rendered elsewhere, each passing its own payload. */
+const createSheetHandle = SheetPrimitive.createHandle;
 
 function SheetClose({ ...props }: SheetPrimitive.Close.Props) {
 	return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
@@ -40,14 +43,16 @@ function SheetContent({
 	children,
 	side = "right",
 	showCloseButton = true,
+	showOverlay = true,
 	...props
 }: SheetPrimitive.Popup.Props & {
 	side?: "top" | "right" | "bottom" | "left";
 	showCloseButton?: boolean;
+	showOverlay?: boolean;
 }) {
 	return (
 		<SheetPortal>
-			<SheetOverlay />
+			{showOverlay && <SheetOverlay />}
 			<SheetPrimitive.Popup
 				data-slot="sheet-content"
 				data-side={side}
@@ -119,6 +124,7 @@ function SheetDescription({ className, ...props }: SheetPrimitive.Description.Pr
 }
 
 export {
+	createSheetHandle,
 	Sheet,
 	SheetTrigger,
 	SheetClose,

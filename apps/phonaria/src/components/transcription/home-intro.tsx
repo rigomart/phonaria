@@ -6,7 +6,7 @@ import { useCurrentTranscription } from "@/hooks/use-transcribe";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
 import { shouldShowTranscriptionEmptyState } from "@/lib/transcription/search";
 import { cn } from "@/lib/utils";
-import { PhonemePopoverButton } from "./display/clickable-phoneme";
+import { PhonemeDetailsButton } from "./display/clickable-phoneme";
 import { prefersReducedMotion } from "./display/ipa-morph";
 
 /** /fəˈnɑɹiə/, by letter group. */
@@ -240,7 +240,7 @@ function NameSegment({
 				)}
 				style={phase === "playing" ? delay(turnAt + SOUND_LAG) : undefined}
 			>
-				<PhonemePopoverButton
+				<PhonemeDetailsButton
 					targetAccent="en-us"
 					phonemeId={phonemeId}
 					symbol={symbol}

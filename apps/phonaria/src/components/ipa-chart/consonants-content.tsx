@@ -38,7 +38,7 @@ function ConsonantChartLegend() {
 				<span>Voiceless</span>
 			</div>
 			<div className="flex items-center gap-1 sm:gap-1.5">
-				<span className="size-4 rounded-md border border-primary/20 bg-primary/15" />
+				<span className="size-4 rounded-md border border-voiced-border bg-voiced" />
 				<span>Voiced</span>
 			</div>
 		</div>
