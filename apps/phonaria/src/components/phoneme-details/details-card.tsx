@@ -63,6 +63,8 @@ function CardContent({
 		<PopoverContent
 			sideOffset={8}
 			aria-labelledby={titleId}
+			// The sound's name, like the drawer and panel announce, rather than the first link.
+			initialFocus={() => document.getElementById(titleId)}
 			finalFocus={finalFocus}
 			className="w-80 gap-0 p-0"
 		>
