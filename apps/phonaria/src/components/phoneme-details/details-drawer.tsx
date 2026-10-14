@@ -172,9 +172,7 @@ function DrawerSheet({
 								</DrawerClose>
 							}
 						/>
-						{expanded ? null : (
-							<MoreButton ipa={sound.ipa} sections={sections} direction="up" onClick={onExpand} />
-						)}
+						{expanded ? null : <MoreButton ipa={sound.ipa} direction="up" onClick={onExpand} />}
 					</div>
 					{/* Compact, the sections are clipped out of view, so they are out of reach too. */}
 					<div ref={sectionsRef} inert={!expanded} className="px-5 pb-safe-6">

@@ -60,8 +60,6 @@ export type PhonemeFrequencySummary = {
 	band: FrequencyBand;
 	/** "11th of 40" */
 	ranking: string;
-	/** Where the sound sits among all sounds: 1 for the most common, near 0 for the least. */
-	position: number;
 };
 
 /** The card's Frequency section, or null when the accent has no frequency data. */
@@ -76,7 +74,6 @@ export function summarizePhonemeFrequency(
 	return {
 		band: getFrequencyBand(frequency.percentage),
 		ranking: `${formatOrdinal(frequency.rank)} of ${soundCount}`,
-		position: (soundCount - frequency.rank + 1) / soundCount,
 	};
 }
 

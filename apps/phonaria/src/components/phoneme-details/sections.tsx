@@ -1,10 +1,8 @@
 import type { ReactNode } from "react";
 import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
-import { summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
 import { Articulation } from "./articulation";
 import { ComparisonList } from "./comparisons";
 import { DetailsSection } from "./details-section";
-import { AllSoundsLink, FrequencyMeter } from "./frequency";
 import { getSpellingPattern, type PhonemeDetailsOptions } from "./sound";
 import { SpellingPatterns } from "./spelling";
 
@@ -18,20 +16,15 @@ export interface DetailSection {
 
 /**
  * The full view's sections, most hands-on first: how the sound is made, what
- * it gets confused with, how it is spelled, how common it is. Sections without
+ * it gets confused with, and how it is spelled (how common it is sits in the header). Sections without
  * data, or switched off by the host, are left out here, at the source, so the
  * "More about" summary and the full view always list the same things.
- *
- * Planned sections slot in without touching the containers: allophones after
- * `articulation`, all spellings and word audio inside `spelling` and
- * `comparisons`.
  */
 export function getDetailSections({
 	targetAccent,
 	phonemeId,
 	showComparisons = true,
 	showSpellings = true,
-	showFrequencyLink = true,
 }: PhonemeDetailsOptions): DetailSection[] {
 	const sections: DetailSection[] = [
 		{
@@ -56,16 +49,6 @@ export function getDetailSections({
 			id: "spelling",
 			title: "Spelling",
 			content: <SpellingPatterns spelling={spelling} />,
-		});
-	}
-
-	const frequency = summarizePhonemeFrequency(targetAccent, phonemeId);
-	if (frequency) {
-		sections.push({
-			id: "frequency",
-			title: "How common",
-			action: showFrequencyLink ? <AllSoundsLink /> : undefined,
-			content: <FrequencyMeter frequency={frequency} />,
 		});
 	}
 

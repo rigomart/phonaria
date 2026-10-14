@@ -8,6 +8,7 @@ import {
 	type SpellingPattern,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
+import { summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
 
 /** What a host decides about the details view. Practice hosts switch the answer-revealing parts off. */
 export interface PhonemeDetailsOptions {
@@ -40,6 +41,7 @@ export function describeSound({
 	targetAccent,
 	phonemeId,
 	showSpellings = true,
+	showFrequencyLink = true,
 }: PhonemeDetailsOptions) {
 	const type = getPhonemeType(phonemeId);
 	const ipa = getIpaForPhonemeId(phonemeId);
@@ -57,6 +59,9 @@ export function describeSound({
 		example: showSpellings
 			? getSpellingPattern(targetAccent, phonemeId)?.examples[0]?.spelled
 			: undefined,
+		/** Band and rank among all sounds, or null when the accent has no frequency data. */
+		frequency: summarizePhonemeFrequency(targetAccent, phonemeId),
+		showFrequencyLink,
 	};
 }
 

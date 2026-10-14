@@ -4,7 +4,6 @@ import { Popover, PopoverContent } from "@phonaria/ui/components/popover";
 import { useId, useRef } from "react";
 import { cardHandle, type DetailsPayload, focusTrigger } from "./context";
 import { MoreButton } from "./more-button";
-import { getDetailSections } from "./sections";
 import { describeSound } from "./sound";
 import { SoundHeader } from "./sound-header";
 
@@ -70,12 +69,7 @@ function CardContent({
 		>
 			<div data-phoneme-details className="flex flex-col gap-4 p-4">
 				<SoundHeader sound={sound} titleId={titleId} />
-				<MoreButton
-					ipa={sound.ipa}
-					sections={getDetailSections(payload.options)}
-					direction="right"
-					onClick={onExpand}
-				/>
+				<MoreButton ipa={sound.ipa} direction="right" onClick={onExpand} />
 			</div>
 		</PopoverContent>
 	);

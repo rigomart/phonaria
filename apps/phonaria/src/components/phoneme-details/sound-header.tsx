@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 import { AudioControls } from "@/components/audio-controls";
 import { SpelledWord } from "@/components/spelled-word";
+import { SoundFrequency } from "./frequency";
 import type { SoundSummary } from "./sound";
 
 /**
- * What the sound is and what it sounds like: symbol, type, name, an example
- * word, and audio. Both levels open with it, so the sound keeps its shape when
+ * What the sound is and what it sounds like: symbol, name, type with an
+ * example word, how common it is, and audio. Both levels open with it, so the sound keeps its shape when
  * the details expand. `action` is the corner control (close); `titleId` labels
  * the surrounding dialog.
  */
@@ -28,7 +29,6 @@ export function SoundHeader({
 					{sound.ipa}
 				</span>
 				<div className="flex min-w-0 flex-1 flex-col gap-1">
-					<p className="text-xs font-medium text-muted-foreground">{sound.typeLabel}</p>
 					<h2
 						id={titleId}
 						// Focus lands here when the card opens or the drawer is dragged back to compact.
@@ -38,14 +38,21 @@ export function SoundHeader({
 						<span className="sr-only">/{sound.ipa}/, </span>
 						{sound.name}
 					</h2>
-					{sound.example ? (
-						<p className="text-sm text-muted-foreground">
-							as in <SpelledWord spelled={sound.example} />
-						</p>
-					) : null}
+					<p className="text-sm text-muted-foreground">
+						{sound.typeLabel}
+						{sound.example ? (
+							<>
+								{" · as in "}
+								<SpelledWord spelled={sound.example} />
+							</>
+						) : null}
+					</p>
 				</div>
 				{action}
 			</div>
+			{sound.frequency ? (
+				<SoundFrequency frequency={sound.frequency} showLink={sound.showFrequencyLink} />
+			) : null}
 			{sound.audioPath ? <AudioControls path={sound.audioPath} label={sound.ipa} /> : null}
 		</div>
 	);

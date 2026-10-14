@@ -3,32 +3,41 @@ import { Link } from "@/components/link";
 import { IPA_CHART_FREQUENCY_PATH } from "@/lib/ipa-chart-metadata";
 import type { PhonemeFrequencySummary } from "@/lib/phoneme-frequency";
 import { cn } from "@/lib/utils";
-import { DetailsCard } from "./details-section";
 
-/** The sound's band and rank among all sounds, with a meter for its position. */
-export function FrequencyMeter({ frequency }: { frequency: PhonemeFrequencySummary }) {
+/**
+ * How common the sound is, in one line: its band, marked with the Frequency
+ * page's band colour, and its rank. `showLink` adds "All sounds" opposite.
+ */
+export function SoundFrequency({
+	frequency,
+	showLink,
+}: {
+	frequency: PhonemeFrequencySummary;
+	showLink: boolean;
+}) {
 	return (
-		<DetailsCard className="flex flex-col gap-3">
-			<p className="flex items-baseline justify-between gap-2 text-sm">
-				<span className="font-medium">{frequency.band.label}</span>
-				<span className="text-muted-foreground tabular-nums">{frequency.ranking}</span>
-			</p>
-			<span aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-accent">
+		<div className="flex flex-wrap items-center gap-x-2 gap-y-3 text-sm leading-4">
+			<p className="flex items-center gap-1.5 whitespace-nowrap">
 				<span
-					className={cn("block h-full rounded-full", frequency.band.barClass)}
-					style={{ width: `${frequency.position * 100}%` }}
+					aria-hidden="true"
+					className={cn("h-2 w-4 shrink-0 rounded-full", frequency.band.barClass)}
 				/>
-			</span>
-		</DetailsCard>
+				<span>
+					<span className="font-medium">{frequency.band.label}</span>
+					<span className="text-muted-foreground tabular-nums"> · {frequency.ranking}</span>
+				</span>
+			</p>
+			{showLink ? <AllSoundsLink /> : null}
+		</div>
 	);
 }
 
 /** Opens the Frequency page with every sound ranked. */
-export function AllSoundsLink() {
+function AllSoundsLink() {
 	return (
 		<Link
 			href={IPA_CHART_FREQUENCY_PATH}
-			className="relative inline-flex items-center gap-1 rounded-full text-sm text-muted-foreground transition-colors after:absolute after:-inset-x-2 after:top-1/2 after:h-11 after:-translate-y-1/2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+			className="relative ms-auto inline-flex shrink-0 items-center gap-1 rounded-full text-muted-foreground transition-colors after:absolute after:-inset-x-2 after:top-1/2 after:h-11 after:-translate-y-1/2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 		>
 			All sounds
 			<ArrowRight aria-hidden="true" className="size-4" />
