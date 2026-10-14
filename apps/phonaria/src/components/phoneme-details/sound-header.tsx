@@ -31,7 +31,9 @@ export function SoundHeader({
 					<p className="text-xs font-medium text-muted-foreground">{sound.typeLabel}</p>
 					<h2
 						id={titleId}
-						className="font-display text-lg leading-snug font-semibold tracking-tight text-balance"
+						// Focus lands here when the card opens or the drawer is dragged back to compact.
+						tabIndex={-1}
+						className="font-display text-lg leading-snug font-semibold tracking-tight text-balance outline-none"
 					>
 						<span className="sr-only">/{sound.ipa}/, </span>
 						{sound.name}

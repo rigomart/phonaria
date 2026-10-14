@@ -3,7 +3,15 @@
 import { Button } from "@phonaria/ui/components/button";
 import { Drawer, DrawerClose, DrawerContent } from "@phonaria/ui/components/drawer";
 import { XIcon } from "lucide-react";
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+	type KeyboardEvent,
+	useEffect,
+	useId,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { cn } from "@/lib/utils";
 import { type DetailsPayload, drawerHandle } from "./context";
 import { MoreButton } from "./more-button";
@@ -21,7 +29,9 @@ const FULL = 1;
  * height, where the sections scroll under the pinned header.
  *
  * Non-modal, so tapping another sound in view swaps the drawer's content;
- * tapping anywhere else closes it.
+ * tapping anywhere else closes it. The keyboard stays inside: Tab wraps around
+ * the drawer's controls (the page stays readable to screen readers), and Esc
+ * closes it, returning focus to the sound.
  */
 export function DetailsDrawer({
 	onTriggerChange,
@@ -78,6 +88,7 @@ function DrawerSheet({
 	const sound = describeSound(payload.options);
 	const sections = getDetailSections(payload.options);
 	const rootRef = useRef<HTMLDivElement>(null);
+	const sectionsRef = useRef<HTMLDivElement>(null);
 	// State rather than refs: the portal mounts the drawer's DOM after the first render.
 	const [content, setContent] = useState<HTMLDivElement | null>(null);
 	const [summary, setSummary] = useState<HTMLDivElement | null>(null);
@@ -99,22 +110,31 @@ function DrawerSheet({
 		return () => observer.disconnect();
 	}, [content, summary, expanded, onCompactHeightChange]);
 
+	const wasExpanded = useRef(expanded);
 	useEffect(() => {
+		const collapsed = wasExpanded.current && !expanded;
+		wasExpanded.current = expanded;
 		const root = rootRef.current;
 		if (!root) return;
 		if (!expanded) {
 			root.scrollTop = 0;
+			// Dragged down to compact: the sections went inert and took focus with them.
+			const active = document.activeElement;
+			if (collapsed && (active === document.body || sectionsRef.current?.contains(active))) {
+				document.getElementById(titleId)?.focus({ preventScroll: true });
+			}
 			return;
 		}
-		// "More about" just left the screen; keep focus inside the drawer.
+		// The expand control just left the screen; keep focus inside the drawer.
 		if (!root.contains(document.activeElement)) root.focus({ preventScroll: true });
-	}, [expanded]);
+	}, [expanded, titleId]);
 
 	return (
 		<DrawerContent
 			side="bottom"
 			showOverlay={false}
 			aria-labelledby={titleId}
+			onKeyDown={wrapTab}
 			style={{ height }}
 			className="mx-auto max-w-lg touch-none overflow-clip motion-reduce:transition-none"
 		>
@@ -130,7 +150,11 @@ function DrawerSheet({
 				<div ref={setContent}>
 					<div
 						ref={setSummary}
-						className="sticky top-0 z-10 flex flex-col gap-4 bg-popover px-5 pt-3 pb-4"
+						className={cn(
+							"sticky top-0 z-10 flex flex-col gap-4 bg-popover px-5 pt-3",
+							// Compact, the summary ends at the bottom of the screen.
+							expanded ? "pb-4" : "pb-safe-4",
+						)}
 					>
 						<span
 							aria-hidden="true"
@@ -152,11 +176,31 @@ function DrawerSheet({
 							<MoreButton ipa={sound.ipa} sections={sections} direction="up" onClick={onExpand} />
 						)}
 					</div>
-					<div className="px-5 pb-6">
+					{/* Compact, the sections are clipped out of view, so they are out of reach too. */}
+					<div ref={sectionsRef} inert={!expanded} className="px-5 pb-safe-6">
 						<DetailSections sections={sections} />
 					</div>
 				</div>
 			</div>
 		</DrawerContent>
 	);
+}
+
+const TABBABLE = "a[href], button:not(:disabled), [tabindex]:not([tabindex='-1'])";
+
+/** Tab past the drawer's last control returns to its first, and Shift+Tab the other way. */
+function wrapTab(event: KeyboardEvent<HTMLElement>) {
+	if (event.key !== "Tab") return;
+	const controls = [...event.currentTarget.querySelectorAll<HTMLElement>(TABBABLE)].filter(
+		(control) => !control.closest("[inert]"),
+	);
+	const first = controls[0];
+	const last = controls.at(-1);
+	if (!first || !last) return;
+	const active = document.activeElement;
+	const atStart = active === first || !controls.includes(active as HTMLElement);
+	if (event.shiftKey ? atStart : active === last) {
+		event.preventDefault();
+		(event.shiftKey ? last : first).focus();
+	}
 }

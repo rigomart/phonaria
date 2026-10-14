@@ -376,3 +376,11 @@
 		z-index: 1;
 	}
 }
+
+/*
+ * Bottom padding on the spacing scale plus the phone's home-indicator inset, for
+ * content that ends at the bottom edge of the screen (`pb-safe-6`).
+ */
+@utility pb-safe-* {
+	padding-bottom: calc(var(--spacing) * --value(integer) + env(safe-area-inset-bottom, 0px));
+}
