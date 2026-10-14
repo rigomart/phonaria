@@ -6,7 +6,7 @@
  * plain bordered box. `AlignmentDiff` compares each answer with the dictionary;
  * `GlyphSequence` shows the dictionary reference for blank words.
  */
-import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details-sheet";
+import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import type { AlignmentOp } from "@/lib/practice/scoring";
 import { cn } from "@/lib/utils";
 import { describeSound, findSound } from "../_lib/sound-palette";
@@ -61,7 +61,7 @@ export function Glyph({
 							// stacks its answer/dictionary rows at the same pitch vertically,
 							// so the overlay clamps at 36px on both axes — 44px minimums
 							// would overlap neighbours and steal their taps.
-							"relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring data-popup-open:border-primary pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-9 pointer-coarse:after:min-w-9",
+							"relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring data-details-open:border-primary pointer-coarse:after:-translate-x-1/2 pointer-coarse:after:-translate-y-1/2 pointer-coarse:after:absolute pointer-coarse:after:top-1/2 pointer-coarse:after:left-1/2 pointer-coarse:after:size-full pointer-coarse:after:min-h-9 pointer-coarse:after:min-w-9",
 							className,
 						),
 					)}

@@ -1,83 +1,50 @@
-"use client";
-
-import {
-	formatPhonemeLabel,
-	getIpaForPhonemeId,
-	getPhonemeType,
-	type LanguagePhonemeId,
-	type PhonemeType,
-	type TargetAccent,
-} from "@phonaria/phonetics-data";
-import { Button } from "@phonaria/ui/components/button";
-import { SheetClose, SheetDescription, SheetTitle } from "@phonaria/ui/components/sheet";
-import { XIcon } from "lucide-react";
-import type { HTMLAttributes } from "react";
+import type { ReactNode } from "react";
 import { AudioControls } from "@/components/audio-controls";
-import { cn } from "@/lib/utils";
-
-const TYPE_LABELS: Record<PhonemeType, string> = {
-	consonant: "Consonant",
-	monophthong: "Vowel",
-	diphthong: "Diphthong",
-};
+import { SpelledWord } from "@/components/spelled-word";
+import type { SoundSummary } from "./sound";
 
 /**
- * What the sound is and how it sounds. Sticky, so the symbol and audio stay in
- * reach while the sections below scroll.
+ * What the sound is and what it sounds like: symbol, type, name, an example
+ * word, and audio. Both levels open with it, so the sound keeps its shape when
+ * the details expand. `action` is the corner control (close); `titleId` labels
+ * the surrounding dialog.
  */
 export function SoundHeader({
-	targetAccent,
-	phonemeId,
-	dragHandleProps,
+	sound,
+	titleId,
+	action,
 }: {
-	targetAccent: TargetAccent;
-	phonemeId: LanguagePhonemeId<TargetAccent>;
-	/** On a bottom sheet, the header is what a finger pulls down to close it. */
-	dragHandleProps?: HTMLAttributes<HTMLElement>;
+	sound: SoundSummary;
+	titleId: string;
+	action?: ReactNode;
 }) {
-	const ipa = getIpaForPhonemeId(phonemeId);
-	const type = getPhonemeType(phonemeId);
-	// Diphthong names run to a dozen words; where it glides says the same thing plainly.
-	const name =
-		type === "diphthong"
-			? `Glides from ${ipa.charAt(0)} to ${ipa.slice(-1)}`
-			: formatPhonemeLabel(targetAccent, phonemeId);
-	// Diphthongs have no recordings yet.
-	const hasAudio = type !== "diphthong";
-
 	return (
-		<header
-			className={cn(
-				"sticky top-0 z-10 flex flex-col gap-3 bg-popover px-5 pt-3 pb-4",
-				dragHandleProps && "touch-none",
-			)}
-			{...dragHandleProps}
-		>
-			{dragHandleProps ? (
-				<span aria-hidden="true" className="mx-auto h-1.5 w-10 shrink-0 rounded-full bg-accent" />
-			) : null}
+		<div className="flex flex-col gap-4">
 			<div className="flex items-start gap-4">
 				<span
 					aria-hidden="true"
-					className="grid size-14 shrink-0 place-items-center rounded-2xl bg-background font-display text-4xl leading-none text-foreground"
+					className="flex h-16 min-w-16 shrink-0 items-center justify-center rounded-2xl bg-background px-3 font-display text-4xl leading-none text-foreground"
 				>
-					{ipa}
+					{sound.ipa}
 				</span>
-				<div className="flex min-w-0 flex-1 flex-col gap-1 pt-1">
-					<SheetDescription className="text-xs font-medium">{TYPE_LABELS[type]}</SheetDescription>
-					<SheetTitle className="font-display text-lg leading-snug font-semibold tracking-tight text-balance">
-						<span className="sr-only">/{ipa}/, </span>
-						{name}
-					</SheetTitle>
+				<div className="flex min-w-0 flex-1 flex-col gap-1">
+					<p className="text-xs font-medium text-muted-foreground">{sound.typeLabel}</p>
+					<h2
+						id={titleId}
+						className="font-display text-lg leading-snug font-semibold tracking-tight text-balance"
+					>
+						<span className="sr-only">/{sound.ipa}/, </span>
+						{sound.name}
+					</h2>
+					{sound.example ? (
+						<p className="text-sm text-muted-foreground">
+							as in <SpelledWord spelled={sound.example} />
+						</p>
+					) : null}
 				</div>
-				<SheetClose
-					render={<Button variant="secondary" size="icon" className="size-11 shrink-0" />}
-				>
-					<XIcon aria-hidden />
-					<span className="sr-only">Close</span>
-				</SheetClose>
+				{action}
 			</div>
-			{hasAudio ? <AudioControls path={`/audio/phonemes/${phonemeId}.ogg`} label={ipa} /> : null}
-		</header>
+			{sound.audioPath ? <AudioControls path={sound.audioPath} label={sound.ipa} /> : null}
+		</div>
 	);
 }

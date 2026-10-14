@@ -1,7 +1,8 @@
 import { type ReactNode, useId } from "react";
+import { cn } from "@/lib/utils";
 
 /**
- * One titled block of the details. Sections are separated by space, not
+ * One titled block of the full details. Sections are separated by space, not
  * lines; `action` sits opposite the title for a link or a "show all" toggle.
  */
 export function DetailsSection({
@@ -26,4 +27,9 @@ export function DetailsSection({
 			{children}
 		</section>
 	);
+}
+
+/** The rounded soft surface every section's content sits on. */
+export function DetailsCard({ className, children }: { className?: string; children: ReactNode }) {
+	return <div className={cn("rounded-2xl bg-background p-4", className)}>{children}</div>;
 }

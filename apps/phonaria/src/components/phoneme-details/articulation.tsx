@@ -16,13 +16,12 @@ import { type ReactNode, useState } from "react";
 import { Image } from "@/components/image";
 import { getPublicAssetBaseUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
-import { DetailsSection } from "./details-section";
 import { type VowelPosition, VowelPositionChart } from "./vowel-position-chart";
 
 const BUCKET_URL = getPublicAssetBaseUrl();
 
 /** How the sound is made: a mouth diagram for consonants, a chart position for vowels. */
-export function ArticulationSection({
+export function Articulation({
 	targetAccent,
 	phonemeId,
 }: {
@@ -37,29 +36,6 @@ export function ArticulationSection({
 	)[phonemeId];
 	const label = formatPhonemeLabel(targetAccent, phonemeId);
 
-	return (
-		<DetailsSection title="How it's made">
-			<ArticulationDiagram
-				targetAccent={targetAccent}
-				phonemeId={phonemeId}
-				label={label}
-				articulation={articulation}
-			/>
-		</DetailsSection>
-	);
-}
-
-function ArticulationDiagram({
-	targetAccent,
-	phonemeId,
-	label,
-	articulation,
-}: {
-	targetAccent: TargetAccent;
-	phonemeId: LanguagePhonemeId<TargetAccent>;
-	label: string;
-	articulation: PhonemeArticulation;
-}) {
 	if (articulation.category === "consonant") {
 		if (articulation.features.manner === "affricate") {
 			return <AffricateDiagram targetAccent={targetAccent} phonemeId={phonemeId} label={label} />;

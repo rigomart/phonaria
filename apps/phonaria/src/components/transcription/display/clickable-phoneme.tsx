@@ -6,7 +6,7 @@ import {
 	type PhonemeSymbolId,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
-import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details-sheet";
+import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import type { TranscribedPhoneme } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
 
@@ -63,7 +63,7 @@ export function PhonemeDetailsButton({
 						"rounded-lg px-1.5 py-1 cursor-pointer",
 						"transition-colors duration-150",
 						"hover:bg-secondary hover:text-primary",
-						"data-popup-open:bg-secondary data-popup-open:text-primary",
+						"data-details-open:bg-secondary data-details-open:text-primary",
 						className,
 					)}
 					aria-label={`Details for /${symbol}/`}

@@ -6,7 +6,7 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
-import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details-sheet";
+import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import type {
 	MannerOfArticulation,
 	PlaceOfArticulation,
@@ -76,6 +76,7 @@ function ConsonantButton({
 									"hover:border-primary hover:bg-muted transition-all duration-150",
 									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
 									"active:scale-98",
+									"data-details-open:border-primary data-details-open:ring-2 data-details-open:ring-ring",
 									isVoiceless
 										? "bg-background border-border"
 										: "bg-voiced border-voiced-border font-semibold",

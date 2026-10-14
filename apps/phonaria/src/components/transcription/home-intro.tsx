@@ -264,7 +264,7 @@ function NameSegment({
 			<span
 				aria-hidden="true"
 				className={cn(
-					"absolute top-full left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-base text-muted-foreground transition-colors group-hover:text-foreground group-has-data-popup-open:text-foreground",
+					"absolute top-full left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-base text-muted-foreground transition-colors group-hover:text-foreground group-has-data-details-open:text-foreground",
 					reveal(phase, "duration-300"),
 				)}
 				style={revealDelay(phase, turnAt + CAPTION_LAG)}

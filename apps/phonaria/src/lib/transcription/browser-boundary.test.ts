@@ -117,8 +117,10 @@ describe("browser transcription boundary", () => {
 	it("keeps phoneme details free of dictionary definitions", () => {
 		const files = [
 			"src/components/transcription/display/clickable-phoneme.tsx",
-			"src/components/phoneme-details/phoneme-details-sheet.tsx",
 			"src/components/phoneme-details/phoneme-details.tsx",
+			"src/components/phoneme-details/details-card.tsx",
+			"src/components/phoneme-details/details-drawer.tsx",
+			"src/components/phoneme-details/details-panel.tsx",
 		];
 		for (const file of files) {
 			const source = readFileSync(resolve(labRoot, file), "utf8");

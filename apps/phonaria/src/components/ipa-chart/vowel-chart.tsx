@@ -6,7 +6,7 @@ import { ScrollArea } from "@phonaria/ui/components/scroll-area";
 import { Switch } from "@phonaria/ui/components/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { type CSSProperties, useId, useState } from "react";
-import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details-sheet";
+import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import type {
 	StaticDiphthongVowelChartEntry,
 	StaticMonophthongVowelChartEntry,
@@ -267,6 +267,7 @@ function VowelMarker({
 									vowelMarkerButtonBaseClass,
 									"left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2",
 									"hover:z-10 motion-reduce:transition-none",
+									"data-details-open:z-10 data-details-open:ring-2 data-details-open:ring-ring data-details-open:ring-offset-2 data-details-open:ring-offset-background",
 									{
 										"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary":
 											isRounded && !isRhotic,
@@ -320,7 +321,7 @@ function DiphthongLabel({
 							<button
 								type="button"
 								data-diphthong={glide.entry.id}
-								className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg"
+								className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors hover:text-primary data-details-open:bg-secondary data-details-open:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg"
 								style={buttonStyles as CSSProperties}
 								aria-label={ariaLabel}
 							/>

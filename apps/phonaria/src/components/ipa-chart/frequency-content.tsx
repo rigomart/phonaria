@@ -6,7 +6,7 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { Link } from "@/components/link";
-import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details-sheet";
+import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import { SpelledWord } from "@/components/spelled-word";
 import {
 	FREQUENCY_BANDS,
@@ -77,7 +77,7 @@ function RankingRow({ sound }: { sound: RankedPhoneme<typeof targetAccent> }) {
 					<button
 						type="button"
 						aria-label={`/${ipa}/ as in ${example.word}: ${formatOrdinal(sound.rank)}, ${share}, ${sound.band.label.toLowerCase()}`}
-						className="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-popup-open:bg-muted motion-reduce:transition-none"
+						className="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-details-open:bg-accent motion-reduce:transition-none"
 					/>
 				}
 			>

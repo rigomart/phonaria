@@ -18,32 +18,31 @@ function buildAudioSrc(path: string) {
 	return `${baseUrl}/${path.replace(/^\/+/, "")}`;
 }
 
-/** Play the recording at full speed or slowed down. */
+/** Play and Slow, labeled and thumb-sized: the first thing a learner reaches for. */
 export function AudioControls({ path, label }: Props) {
 	const audioSrc = buildAudioSrc(path);
 	const { play, status } = useAudioManager(audioSrc ?? "");
 	const disabled = !audioSrc || status === "loading" || status === "playing";
 
 	return (
-		<div className="flex gap-2">
+		<div className="grid grid-cols-2 gap-2">
 			<Button
-				variant="default"
-				className="h-11 px-5"
+				className="h-11"
 				onClick={() => audioSrc && play()}
 				aria-label={`Play ${label}`}
 				disabled={disabled}
 			>
-				{status === "loading" ? <Spinner /> : <PlayIcon data-icon="inline-start" aria-hidden />}
+				{status === "loading" ? <Spinner /> : <PlayIcon data-icon="inline-start" />}
 				Play
 			</Button>
 			<Button
+				className="h-11"
 				variant="secondary"
-				className="h-11 px-5"
 				onClick={() => audioSrc && play(0.75)}
 				aria-label={`Play slow ${label}`}
 				disabled={disabled}
 			>
-				{status === "loading" ? <Spinner /> : <Turtle data-icon="inline-start" aria-hidden />}
+				{status === "loading" ? <Spinner /> : <Turtle data-icon="inline-start" />}
 				Slow
 			</Button>
 		</div>
