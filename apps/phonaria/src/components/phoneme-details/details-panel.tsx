@@ -46,7 +46,7 @@ function PanelContent({ payload }: { payload: DetailsPayload }) {
 			showOverlay={false}
 			aria-labelledby={titleId}
 			finalFocus={() => document.getElementById(payload.triggerId)}
-			className="inset-y-3 right-3 h-auto w-96 overflow-clip rounded-3xl border-0"
+			className="inset-y-3 right-3 h-auto w-96 overflow-clip rounded-3xl border-0 motion-reduce:transition-none"
 		>
 			{/* Keyed by trigger so a swapped sound starts at the top. */}
 			<div

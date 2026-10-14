@@ -116,7 +116,7 @@ function DrawerSheet({
 			showOverlay={false}
 			aria-labelledby={titleId}
 			style={{ height }}
-			className="mx-auto max-w-lg touch-none overflow-clip"
+			className="mx-auto max-w-lg touch-none overflow-clip motion-reduce:transition-none"
 		>
 			<div
 				ref={rootRef}
