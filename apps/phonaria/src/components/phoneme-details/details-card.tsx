@@ -2,7 +2,7 @@
 
 import { Popover, PopoverContent } from "@phonaria/ui/components/popover";
 import { useId, useRef } from "react";
-import { cardHandle, type DetailsPayload } from "./context";
+import { cardHandle, type DetailsPayload, focusTrigger } from "./context";
 import { MoreButton } from "./more-button";
 import { getDetailSections } from "./sections";
 import { describeSound } from "./sound";
@@ -34,7 +34,7 @@ export function DetailsCard({
 				payload ? (
 					<CardContent
 						payload={payload}
-						finalFocus={() => !handingOver.current}
+						finalFocus={() => !handingOver.current && focusTrigger(payload.triggerId)}
 						onExpand={() => {
 							handingOver.current = true;
 							onExpand(payload);
@@ -53,7 +53,7 @@ function CardContent({
 	onExpand,
 }: {
 	payload: DetailsPayload;
-	finalFocus: () => boolean;
+	finalFocus: () => HTMLElement | false;
 	onExpand: () => void;
 }) {
 	const titleId = useId();

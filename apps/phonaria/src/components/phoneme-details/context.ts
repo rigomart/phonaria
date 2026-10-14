@@ -15,6 +15,15 @@ export const drawerHandle = createDrawerHandle<DetailsPayload>();
 /** Wide screens: the compact card anchored to the sound. */
 export const cardHandle = createPopoverHandle<DetailsPayload>();
 
+/**
+ * Where focus goes when a container closes: back to the sound's trigger. When
+ * the trigger is gone, focus stays where the page put it (the body at worst)
+ * rather than jumping to whatever was focused before.
+ */
+export function focusTrigger(triggerId: string): HTMLElement | false {
+	return document.getElementById(triggerId) ?? false;
+}
+
 interface PhonemeDetailsContextValue {
 	/** Card and side panel when true; the bottom drawer otherwise. */
 	wide: boolean;
@@ -24,6 +33,12 @@ interface PhonemeDetailsContextValue {
 	activeTriggerId: string | null;
 	openPanel: (payload: DetailsPayload) => void;
 	closePanel: () => void;
+	/**
+	 * A trigger calls this as it unmounts. When it belongs to the open sound,
+	 * every container closes: the host swapped its sounds in place (a new
+	 * Practice round, a new search, diphthongs off), so the details go too.
+	 */
+	releaseTrigger: (triggerId: string) => void;
 }
 
 export const PhonemeDetailsContext = createContext<PhonemeDetailsContextValue | null>(null);

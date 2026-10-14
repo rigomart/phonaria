@@ -71,4 +71,31 @@ test.describe("Practice enabled", () => {
 		await expect(page.getByText("Session complete")).toBeVisible();
 		await expect(page.getByRole("button", { name: "New session" })).toBeVisible();
 	});
+
+	test("closes a reviewed sound's details when a new session starts", async ({ page }) => {
+		test.setTimeout(90_000);
+		await page.goto("/practice/schwa");
+		await expect(page.getByRole("button", { name: "Start session" })).toBeEnabled({
+			timeout: 30_000,
+		});
+		await page.getByRole("button", { name: "Start session" }).click();
+		for (let round = 0; round < 4; round++) {
+			await page.getByRole("button", { name: "Next word" }).click();
+		}
+		await page.getByRole("button", { name: "Finish session" }).click();
+		await page.getByRole("button", { name: "Submit with 5 blanks" }).click();
+		await expect(page.getByText("Session complete")).toBeVisible();
+
+		// Review shows comparisons and spellings, which would give away the next answers.
+		const detailHeadings = page.getByRole("heading", {
+			name: /^(How it's made|Compare with|Spelling)$/,
+		});
+		await page.getByRole("main").locator('button[aria-haspopup="dialog"]').first().click();
+		await page.getByRole("button", { name: /^More about / }).click();
+		await expect(page.getByRole("heading", { name: "How it's made" })).toBeVisible();
+
+		await page.getByRole("button", { name: "New session" }).click();
+		await expect(page.getByRole("button", { name: "Next word" })).toBeVisible();
+		await expect(detailHeadings).toHaveCount(0);
+	});
 });

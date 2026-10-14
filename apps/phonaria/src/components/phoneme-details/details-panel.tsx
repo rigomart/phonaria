@@ -4,7 +4,7 @@ import { Button } from "@phonaria/ui/components/button";
 import { Drawer, DrawerClose, DrawerContent } from "@phonaria/ui/components/drawer";
 import { XIcon } from "lucide-react";
 import { useId } from "react";
-import type { DetailsPayload } from "./context";
+import { type DetailsPayload, focusTrigger } from "./context";
 import { DetailSections, getDetailSections } from "./sections";
 import { describeSound } from "./sound";
 import { SoundHeader } from "./sound-header";
@@ -45,7 +45,7 @@ function PanelContent({ payload }: { payload: DetailsPayload }) {
 			side="right"
 			showOverlay={false}
 			aria-labelledby={titleId}
-			finalFocus={() => document.getElementById(payload.triggerId)}
+			finalFocus={() => focusTrigger(payload.triggerId)}
 			className="inset-y-3 right-3 h-auto w-96 overflow-clip rounded-3xl border-0 motion-reduce:transition-none"
 		>
 			{/* Keyed by trigger so a swapped sound starts at the top. */}
