@@ -21,7 +21,7 @@ export function ConsonantsContent() {
 			</div>
 
 			<ScrollArea className="w-full">
-				<div className="flex justify-center">
+				<div className="flex justify-center-safe">
 					<ConsonantChart targetAccent={targetAccent} />
 				</div>
 				<ScrollBar orientation="horizontal" />

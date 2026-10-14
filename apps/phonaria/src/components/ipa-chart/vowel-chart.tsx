@@ -112,7 +112,7 @@ export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 			</div>
 
 			<ScrollArea className="w-full">
-				<div className="flex justify-center">
+				<div className="flex justify-center-safe">
 					<div className="w-full max-w-2xl min-w-96 shrink-0">
 						<VowelChartSurface
 							arrowMarkerId={arrowMarkerId}
