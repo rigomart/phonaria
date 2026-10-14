@@ -46,23 +46,24 @@ const ranking = observation(
 
 function readCard() {
 	const section = (heading: string) =>
-		Array.from(document.querySelectorAll("section")).find(
+		Array.from(document.querySelectorAll("[data-phoneme-details] section")).find(
 			(node) => node.querySelector("h3")?.textContent?.trim() === heading,
 		);
-	const frequency = section("Frequency");
+	const frequency = section("How common");
 	const spelling = section("Spelling");
 	const meter = frequency?.querySelector<HTMLElement>("[aria-hidden='true'] > span");
 	return {
 		openTrigger:
-			document
-				.querySelector('button[aria-expanded="true"][aria-label]')
-				?.getAttribute("aria-label") ?? null,
+			document.querySelector("[data-details-open][aria-label]")?.getAttribute("aria-label") ?? null,
 		link: frequency?.querySelector("a")?.getAttribute("href") ?? null,
-		rank: frequency?.querySelector("p")?.textContent?.trim() ?? null,
+		rank: Array.from(frequency?.querySelectorAll("p > span") ?? [])
+			.map((part) => part.textContent?.trim())
+			.join(" · "),
 		meter: meter?.style.width ?? null,
-		spelling: Array.from(spelling?.querySelectorAll("p > span") ?? []).map((part) =>
-			part.textContent?.trim(),
+		patterns: Array.from(spelling?.querySelectorAll("li") ?? []).map((item) =>
+			item.textContent?.trim(),
 		),
+		examples: spelling?.querySelector("p")?.textContent?.trim() ?? null,
 		highlighted: Array.from(spelling?.querySelectorAll("mark") ?? []).map((mark) =>
 			mark.textContent?.trim(),
 		),
@@ -75,7 +76,8 @@ const pageCard = observation(readCard, {
 	link: null,
 	rank: "Common · 11th of 40",
 	meter: "75%",
-	spelling: ["th", "this, mother"],
+	patterns: ["th"],
+	examples: "As in this, mother",
 	highlighted: ["th", "th"],
 });
 
@@ -84,7 +86,8 @@ const resultCard = observation(readCard, {
 	link: "/ipa-chart/frequency",
 	rank: "Less common · 29th of 40",
 	meter: "30%",
-	spelling: ["h", "house, hello"],
+	patterns: ["h"],
+	examples: "As in house, hello",
 	highlighted: ["h", "h"],
 });
 

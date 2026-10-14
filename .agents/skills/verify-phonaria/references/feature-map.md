@@ -40,7 +40,7 @@ The maintained [TypeScript checkpoints](../scripts/transcription.ts) pair typed,
 | Clear | `find role button ... --name "Clear text" --exact` |
 | Copy | Accessible name **Copy IPA transcription** |
 | Word labels | **Definition of hello**, **Definition of world** |
-| Sound details | **Details for /h/** |
+| Sound details | **Details for /h/**, then **More about /h/** for the full view |
 | Empty-state example | Button **Hello world** |
 
 Enter submits when the input is focused. Escape clears a nonempty focused input. Escape while a popup is focused can close the popup instead; explicitly focus the input for the clear check.
@@ -63,6 +63,7 @@ bun run verify browser "$VERIFY_RUN" snapshot -i
 bun run verify observe "$VERIFY_RUN" submitted
 
 bun run verify browser "$VERIFY_RUN" find role button click --name "Details for /h/" --exact
+bun run verify browser "$VERIFY_RUN" find role button click --name "More about /h/"
 bun run verify browser "$VERIFY_RUN" snapshot -i
 bun run verify observe "$VERIFY_RUN" details
 
@@ -83,7 +84,7 @@ bun run verify observe "$VERIFY_RUN" escape
 
 For an alternate local port or an explicit deployed run, replace the default URL in `open` with the origin recorded in `run.json`. Skip `serve` for deployed runs. Every checkpoint also asserts that the actual page origin matches the recorded target.
 
-`submitted` and `restored` require both primary IPAs, input/query `hello world`, enabled visible Copy, and no page alerts. `details` requires the /h/ popup open, **Voiceless glottal fricative**, both audio controls, and the diagram element visible. `cleared` and `escape` require empty input, absent `q`, input focus, no IPA/copy/clear controls, and restored example chips. `draft` proves Escape was tested on a nonempty focused field.
+`submitted` and `restored` require both primary IPAs, input/query `hello world`, enabled visible Copy, and no page alerts. `details` requires the /h/ trigger marked open (`data-details-open`), **Voiceless glottal fricative**, both audio controls, and the diagram element visible. The click on **Details for /h/** opens the compact card; **More about /h/** opens the side panel with the diagram. `cleared` and `escape` require empty input, absent `q`, input focus, no IPA/copy/clear controls, and restored example chips. `draft` proves Escape was tested on a nonempty focused field.
 
 Each observation saves `<checkpoint>-<unique-id>.png`, `<checkpoint>-<unique-id>.snapshot.json`, and its expected/actual values plus evidence paths in `run.json`. Repeated observations retain separate artifacts. Review those images and `diagnostics.json`, then finish with an accurate review note. Evidence is kept under ignored `test-results/verification/`; retain or copy a particular report outside that ignored folder when permanent storage is requested.
 
@@ -98,7 +99,7 @@ This journey covers desktop Chromium, client common-word lookup, shared-query re
 
 ## Sound frequency
 
-Target accent: American English (`en-us`). Expected ranks, shares, bands and card text are literal values from `docs/research/issue-287-phoneme-frequency.md`, the record of the generated `phoneme-frequency.json`. The [checkpoints](../scripts/sound-frequency.ts) read the page heading, legend, ranked rows and their bar color classes, header chart tabs, and the card's Frequency section (rank, meter, "All sounds" link) and Spelling section.
+Target accent: American English (`en-us`). Expected ranks, shares, bands and card text are literal values from `docs/research/issue-287-phoneme-frequency.md`, the record of the generated `phoneme-frequency.json`. The [checkpoints](../scripts/sound-frequency.ts) read the page heading, legend, ranked rows and their bar color classes, header chart tabs, and the side panel's "How common" section (rank, meter, "All sounds" link) and Spelling section. A click on a sound opens a compact card; **More about** opens the panel with the sections.
 
 Interact only after the page hydrates. On a cold dev server, an early click can land before React attaches handlers and nothing happens. Wait with `wait --fn` until the control has React props, as below. If port 3000 is taken by another server, initialize the run with `http://127.0.0.1:3001` and use that origin in `open`.
 
@@ -107,6 +108,7 @@ Interact only after the page hydrates. On a cold dev server, an early click can 
 | User control | CLI locator |
 | --- | --- |
 | A ranked sound | `find role button click --name "/ð/ as in this: 11th, 3.1%, common" --exact` (rank, share and band) |
+| Full details | `find role button click --name "More about /ð/"` (the compact card's row; its name continues with the section list) |
 | Card link | `find role link click --name "All sounds" --exact` |
 
 ### Executable journey
@@ -122,7 +124,8 @@ bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/freque
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify observe "$VERIFY_RUN" ranking
 bun run verify browser "$VERIFY_RUN" find role button click --name "/ð/ as in this: 11th, 3.1%, common" --exact
-bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('section h3')"
+bun run verify browser "$VERIFY_RUN" find role button click --name "More about /ð/"
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 bun run verify observe "$VERIFY_RUN" page-card
 
 bun run verify browser "$VERIFY_RUN" press Escape
@@ -133,13 +136,14 @@ bun run verify observe "$VERIFY_RUN" plain-charts
 
 bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/?q=hello"
 bun run verify browser "$VERIFY_RUN" find role button click --name "Details for /h/" --exact
-bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('section h3')"
+bun run verify browser "$VERIFY_RUN" find role button click --name "More about /h/"
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 bun run verify observe "$VERIFY_RUN" result-card
 bun run verify browser "$VERIFY_RUN" find role link click --name "All sounds" --exact
 bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname === '/ipa-chart/frequency'"
 bun run verify observe "$VERIFY_RUN" followed-link
 ```
 
-`ranking` requires the Frequency heading, no tabs or comparison chart, the four-band legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and bar colors `bg-frequency-4` to `-1` for /t/, /ð/, /h/ and /ʒ/. `page-card` requires "Common · 11th of 40", a 75% meter, spelling `th` with "this, mother" and both `th` emphasized, and no "All sounds" link on the page itself. `menu` requires the header's three IPA Chart tabs, which show on every chart page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the /h/ card from a transcription result to show "Less common · 29th of 40", a 30% meter, spelling `h` with "house, hello", and an "All sounds" link; `followed-link` requires that link to open the Frequency page.
+`ranking` requires the Frequency heading, no tabs or comparison chart, the four-band legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and bar colors `bg-frequency-4` to `-1` for /t/, /ð/, /h/ and /ʒ/. `page-card` requires the /ð/ row marked open (`data-details-open`), "Common · 11th of 40", a 75% meter, the pattern `th` with "As in this, mother" and both `th` emphasized, and no "All sounds" link on the page itself. `menu` requires the header's three IPA Chart tabs, which show on every chart page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the /h/ panel from a transcription result to show "Less common · 29th of 40", a 30% meter, the pattern `h` with "As in house, hello", and an "All sounds" link; `followed-link` requires that link to open the Frequency page.
 
-Clicking a sound whose card is already open closes it. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.
+Clicking a sound whose card or panel is already open closes it; clicking another sound while the panel is open swaps the panel to it. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.
