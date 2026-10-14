@@ -1,9 +1,10 @@
-import { ChevronRight, ChevronUp } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Button } from "@phonaria/ui/components/button";
+import { ChevronUp, PanelRightOpen } from "lucide-react";
 
 /**
- * Opens the full details. One quiet line, so the compact level keeps its room
- * for the sound itself; on phones, dragging the drawer up does the same.
+ * Opens the full details, as an icon beside the corner controls so the compact
+ * level keeps its room for the sound itself. On phones the drawer also grows
+ * when dragged up.
  */
 export function MoreButton({
 	ipa,
@@ -15,25 +16,20 @@ export function MoreButton({
 	direction: "up" | "right";
 	onClick: () => void;
 }) {
-	const Icon = direction === "up" ? ChevronUp : ChevronRight;
+	const Icon = direction === "up" ? ChevronUp : PanelRightOpen;
+	const label = `More about /${ipa}/`;
 	return (
-		<button
-			type="button"
+		<Button
+			variant="secondary"
+			size="icon"
+			aria-label={label}
+			title={label}
 			aria-haspopup={direction === "right" ? "dialog" : undefined}
 			aria-expanded={false}
 			onClick={onClick}
-			className="group/more -mx-3 flex min-h-11 cursor-pointer items-center gap-1.5 self-start rounded-full px-3 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+			className="size-11 shrink-0"
 		>
-			More about /{ipa}/
-			<Icon
-				aria-hidden="true"
-				className={cn(
-					"size-4 shrink-0 transition-transform motion-reduce:transition-none",
-					direction === "up"
-						? "group-hover/more:-translate-y-0.5"
-						: "group-hover/more:translate-x-0.5",
-				)}
-			/>
-		</button>
+			<Icon aria-hidden="true" />
+		</Button>
 	);
 }

@@ -58,6 +58,7 @@ function PanelContent({ payload }: { payload: DetailsPayload }) {
 					<SoundHeader
 						sound={describeSound(payload.options)}
 						titleId={titleId}
+						showExample={false}
 						action={
 							<DrawerClose
 								render={<Button variant="secondary" size="icon" className="size-11 shrink-0" />}

@@ -68,8 +68,11 @@ function CardContent({
 			className="w-80 gap-0 p-0 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
 		>
 			<div data-phoneme-details className="flex flex-col gap-4 p-4">
-				<SoundHeader sound={sound} titleId={titleId} />
-				<MoreButton ipa={sound.ipa} direction="right" onClick={onExpand} />
+				<SoundHeader
+					sound={sound}
+					titleId={titleId}
+					action={<MoreButton ipa={sound.ipa} direction="right" onClick={onExpand} />}
+				/>
 			</div>
 		</PopoverContent>
 	);

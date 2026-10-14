@@ -163,16 +163,21 @@ function DrawerSheet({
 						<SoundHeader
 							sound={sound}
 							titleId={titleId}
+							showExample={!expanded}
 							action={
-								<DrawerClose
-									render={<Button variant="secondary" size="icon" className="size-11 shrink-0" />}
-								>
-									<XIcon aria-hidden="true" />
-									<span className="sr-only">Close</span>
-								</DrawerClose>
+								<div className="flex shrink-0 gap-2">
+									{expanded ? null : (
+										<MoreButton ipa={sound.ipa} direction="up" onClick={onExpand} />
+									)}
+									<DrawerClose
+										render={<Button variant="secondary" size="icon" className="size-11 shrink-0" />}
+									>
+										<XIcon aria-hidden="true" />
+										<span className="sr-only">Close</span>
+									</DrawerClose>
+								</div>
 							}
 						/>
-						{expanded ? null : <MoreButton ipa={sound.ipa} direction="up" onClick={onExpand} />}
 					</div>
 					{/* Compact, the sections are clipped out of view, so they are out of reach too. */}
 					<div ref={sectionsRef} inert={!expanded} className="px-5 pb-safe-6">

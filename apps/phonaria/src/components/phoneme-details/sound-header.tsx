@@ -14,10 +14,13 @@ export function SoundHeader({
 	sound,
 	titleId,
 	action,
+	showExample = true,
 }: {
 	sound: SoundSummary;
 	titleId: string;
 	action?: ReactNode;
+	/** Off in the full view: its Spelling section pairs every example word with its spelling. */
+	showExample?: boolean;
 }) {
 	return (
 		<div className="flex flex-col gap-4">
@@ -40,7 +43,7 @@ export function SoundHeader({
 					</h2>
 					<p className="text-sm text-muted-foreground">
 						{sound.typeLabel}
-						{sound.example ? (
+						{showExample && sound.example ? (
 							<>
 								{" · as in "}
 								<SpelledWord spelled={sound.example} />
