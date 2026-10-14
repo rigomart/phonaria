@@ -5,20 +5,17 @@ test.describe("Navigation and theme", () => {
 		await page.goto("/");
 		await expect(page.getByLabel("Text to transcribe")).toBeVisible();
 
+		// The header's IPA Chart link opens the consonant chart; chart pages show section tabs.
 		await expect(async () => {
-			await page.getByRole("button", { name: "IPA Chart" }).click();
-			await expect(page.getByRole("link", { name: "Consonants" })).toBeVisible({ timeout: 1_000 });
+			await page.getByRole("link", { name: "IPA Chart", exact: true }).click();
+			await expect(page).toHaveURL(/\/ipa-chart\/consonants$/, { timeout: 1_000 });
 		}).toPass({ timeout: 10_000 });
-		await page.getByRole("link", { name: "Consonants" }).click();
-		await expect(page).toHaveURL(/\/ipa-chart\/consonants$/);
 		await expect(page.getByRole("heading", { name: "Consonants" })).toBeVisible();
 
 		await expect(async () => {
-			await page.getByRole("button", { name: "IPA Chart" }).click();
-			await expect(page.getByRole("link", { name: "Vowels" })).toBeVisible({ timeout: 1_000 });
-		}).toPass({ timeout: 10_000 });
-		await page.getByRole("link", { name: "Vowels" }).click();
-		await expect(page).toHaveURL(/\/ipa-chart\/vowels$/);
+			await page.getByRole("link", { name: "Vowels", exact: true }).click();
+			await expect(page).toHaveURL(/\/ipa-chart\/vowels$/, { timeout: 1_000 });
+		}).toPass({ timeout: 15_000 });
 
 		await page.getByRole("link", { name: "Credits" }).click();
 		await expect(page).toHaveURL(/\/credits$/);
@@ -31,11 +28,14 @@ test.describe("Navigation and theme", () => {
 
 	test("persists the dark theme across reload and navigation", async ({ page }) => {
 		await page.goto("/");
+		// The header's theme button steps System → Light → Dark; keep clicking until it reports Dark.
+		const themeButton = page.getByRole("button", { name: /^Theme: / });
 		await expect(async () => {
-			await page.getByLabel("Toggle theme").click();
-			await expect(page.getByRole("menuitem", { name: "Dark" })).toBeVisible({ timeout: 1_000 });
+			await themeButton.click();
+			await expect(page.getByRole("button", { name: /^Theme: Dark\./ })).toBeVisible({
+				timeout: 1_000,
+			});
 		}).toPass({ timeout: 10_000 });
-		await page.getByRole("menuitem", { name: "Dark" }).click();
 		await expect(page.locator("html")).toHaveClass(/dark/);
 
 		await page.reload();
