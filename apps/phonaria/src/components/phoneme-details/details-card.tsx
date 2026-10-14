@@ -66,7 +66,7 @@ function CardContent({
 			// The sound's name, like the drawer and panel announce, rather than the first link.
 			initialFocus={() => document.getElementById(titleId)}
 			finalFocus={finalFocus}
-			className="w-80 gap-0 p-0"
+			className="w-80 gap-0 p-0 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
 		>
 			<div data-phoneme-details className="flex flex-col gap-4 p-4">
 				<SoundHeader sound={sound} titleId={titleId} />
