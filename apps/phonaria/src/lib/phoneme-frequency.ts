@@ -62,8 +62,8 @@ export type PhonemeFrequencySummary = {
 	rank: number;
 	/** How many sounds are ranked. */
 	count: number;
-	/** The sound's share relative to the most common sound's, 0 to 1: the Frequency page's bar length. */
-	fill: number;
+	/** The band's strength, from 1 (rare) to the number of bands (very common): how many meter bars light up. */
+	level: number;
 };
 
 /** How common one sound is, for the details header, or null when the accent has no frequency data. */
@@ -74,12 +74,12 @@ export function summarizePhonemeFrequency(
 	const registry = getFrequencyRegistry(targetAccent);
 	const frequency = registry?.[phonemeId as LanguagePhonemeId<TargetAccent>];
 	if (!registry || !frequency) return null;
-	const shares = Object.values(registry).map(({ percentage }) => percentage);
+	const band = getFrequencyBand(frequency.percentage);
 	return {
-		band: getFrequencyBand(frequency.percentage),
+		band,
 		rank: frequency.rank,
-		count: shares.length,
-		fill: frequency.percentage / Math.max(...shares),
+		count: Object.keys(registry).length,
+		level: FREQUENCY_BANDS.length - FREQUENCY_BANDS.indexOf(band),
 	};
 }
 

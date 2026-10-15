@@ -51,10 +51,21 @@ export function SoundHeader({
 		</span>
 	);
 	const titleClass = "font-display text-lg leading-snug font-semibold tracking-tight text-balance";
+	const compact = Boolean(thumbnail);
 	const frequency = sound.frequency ? (
-		<SoundFrequency frequency={sound.frequency} showLink={sound.showFrequencyLink} />
+		<SoundFrequency
+			frequency={sound.frequency}
+			showLink={sound.showFrequencyLink}
+			stacked={compact}
+		/>
 	) : null;
-	const audio = sound.audioPath ? <AudioControls path={sound.audioPath} label={sound.ipa} /> : null;
+	const audio = sound.audioPath ? (
+		<AudioControls
+			path={sound.audioPath}
+			label={sound.ipa}
+			className={compact ? "w-full" : undefined}
+		/>
+	) : null;
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -101,18 +112,18 @@ export function SoundHeader({
 			</div>
 			{thumbnail ? (
 				<div className="flex items-stretch gap-4">
-					<div className="w-28 shrink-0">{thumbnail}</div>
+					<div className="w-44 shrink-0">{thumbnail}</div>
 					<div className="flex min-w-0 flex-1 flex-col justify-between gap-3">
 						{frequency}
 						{audio}
 					</div>
 				</div>
-			) : (
-				<>
+			) : frequency || audio ? (
+				<div className="flex flex-wrap items-center justify-between gap-4">
 					{frequency}
 					{audio}
-				</>
-			)}
+				</div>
+			) : null}
 		</div>
 	);
 }
