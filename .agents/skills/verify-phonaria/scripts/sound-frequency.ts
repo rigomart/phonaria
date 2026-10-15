@@ -50,19 +50,27 @@ function readCard() {
 		Array.from(details?.querySelectorAll("section") ?? []).find(
 			(node) => node.querySelector("h3")?.textContent?.trim() === heading,
 		);
-	// How common the sound is: one line in the header, a link where the host allows it.
+	// How common the sound is: a block in the header, a link where the host allows it. Its
+	// label reads "Common: 11th most common of 40 sounds".
 	const frequency = Array.from(details?.querySelectorAll("a, p") ?? []).find((node) =>
-		node.textContent?.includes("most common"),
+		node.getAttribute("aria-label")?.includes("most common"),
 	);
-	const bar = frequency?.querySelector<HTMLElement>("[aria-hidden='true'] > span");
+	const label = /^(.+?): (.+? most common) of (\d+) sounds/.exec(
+		frequency?.getAttribute("aria-label") ?? "",
+	);
+	const bars = Array.from(frequency?.querySelectorAll("[aria-hidden='true'] > span") ?? []);
+	const lit = bars.filter((bar) =>
+		Array.from(bar.classList).some((name) => name.startsWith("bg-frequency-")),
+	);
 	const spelling = section("Spelling");
 	return {
 		openTrigger:
 			document.querySelector("[data-details-open][aria-label]")?.getAttribute("aria-label") ?? null,
-		rank: frequency?.querySelector(".font-medium")?.textContent?.trim() ?? null,
-		of: /of (\d+) sounds/.exec(frequency?.getAttribute("aria-label") ?? "")?.[1] ?? null,
+		band: frequency?.querySelector(".font-medium")?.textContent?.trim() ?? null,
+		rank: label?.[2] ?? null,
+		of: label?.[3] ?? null,
 		link: frequency?.tagName === "A" ? frequency.getAttribute("href") : null,
-		bar: bar ? `${Math.round(Number.parseFloat(bar.style.width))}%` : null,
+		meter: bars.length ? `${lit.length} of ${bars.length}` : null,
 		spellings: Array.from(spelling?.querySelectorAll("li") ?? []).map((row) =>
 			Array.from(row.children).map((part) => part.textContent?.trim()),
 		),
@@ -72,24 +80,26 @@ function readCard() {
 	};
 }
 
-// The bar is the sound's share relative to the most common sound's (/ə/, 7.9%), as on the
-// Frequency page: /ð/ 3.1% → 39% (issue-287 record); /h/ 1.35% → 17% (phoneme-frequency.json).
+// The meter lights one bar per band step: /ð/ 3.1% is Common, 3 of 4 (issue-287 record);
+// /h/ 1.35% is Less common, 2 of 4 (phoneme-frequency.json).
 const pageCard = observation(readCard, {
 	openTrigger: "/ð/ as in this: 11th, 3.1%, common",
+	band: "Common",
 	rank: "11th most common",
 	of: "40",
 	link: null,
-	bar: "39%",
+	meter: "3 of 4",
 	spellings: [["th", "this, mother"]],
 	highlighted: ["th", "th"],
 });
 
 const resultCard = observation(readCard, {
 	openTrigger: "Details for /h/",
+	band: "Less common",
 	rank: "29th most common",
 	of: "40",
 	link: "/ipa-chart/frequency",
-	bar: "17%",
+	meter: "2 of 4",
 	spellings: [["h", "house, hello"]],
 	highlighted: ["h", "h"],
 });
@@ -132,7 +142,7 @@ export const soundFrequency = {
 		"followed-link": followedLink,
 	},
 	coverageLimits: [
-		"order and band colors read from the DOM; bar lengths, color steps and layout checked by screenshot review only",
+		"order, band colors and lit meter bars read from the DOM; bar lengths, color steps and layout checked by screenshot review only",
 		"en-us only; the unavailable-accent path is covered by unit tests, as no route renders es-419 data",
 		"desktop Chromium; mobile layout reviewed by screenshot only when captured",
 	],
