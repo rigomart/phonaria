@@ -13,20 +13,21 @@ import {
 	useState,
 } from "react";
 import { cn } from "@/lib/utils";
+import { ArticulationThumbnail } from "./articulation-thumbnail";
 import { type DetailsPayload, drawerHandle } from "./context";
-import { MoreButton } from "./more-button";
 import { DetailSections, getDetailSections } from "./sections";
 import { describeSound } from "./sound";
-import { SoundHeader } from "./sound-header";
+import { SoundHeader, soundTitleTarget } from "./sound-header";
 
 /** The full-height snap point: as tall as the content, capped by the drawer's max height. */
 const FULL = 1;
 
 /**
  * Phones and tablets: one bottom drawer with two levels. It opens at a compact
- * snap point that shows the sound header and "More about", leaving the top of
- * the page in view. Dragging it up, or tapping "More about", snaps it to full
- * height, where the sections scroll under the pinned header.
+ * snap point that shows the sound header, a preview of how it's made, and its
+ * audio, leaving the top of the page in view. Dragging it up, or tapping the
+ * sound's name, snaps it to full height, where the sections scroll under the
+ * pinned header.
  *
  * Non-modal, so tapping another sound in view swaps the drawer's content;
  * tapping anywhere else closes it. The keyboard stays inside: Tab wraps around
@@ -100,7 +101,7 @@ function DrawerSheet({
 		if (!content || !summary) return;
 		const measure = () => {
 			setHeight(content.offsetHeight);
-			// Expanded, the summary drops its "More about" row; the compact snap keeps the height it had.
+			// Expanded, the summary drops its preview; the compact snap keeps the height it had.
 			if (!expanded) onCompactHeightChange(summary.offsetHeight);
 		};
 		measure();
@@ -121,11 +122,11 @@ function DrawerSheet({
 			// Dragged down to compact: the sections went inert and took focus with them.
 			const active = document.activeElement;
 			if (collapsed && (active === document.body || sectionsRef.current?.contains(active))) {
-				document.getElementById(titleId)?.focus({ preventScroll: true });
+				soundTitleTarget(titleId)?.focus({ preventScroll: true });
 			}
 			return;
 		}
-		// The expand control just left the screen; keep focus inside the drawer.
+		// The expand button just became a heading; keep focus inside the drawer.
 		if (!root.contains(document.activeElement)) root.focus({ preventScroll: true });
 	}, [expanded, titleId]);
 
@@ -164,18 +165,22 @@ function DrawerSheet({
 							sound={sound}
 							titleId={titleId}
 							showExample={!expanded}
+							onExpand={expanded ? undefined : onExpand}
+							thumbnail={
+								expanded ? undefined : (
+									<ArticulationThumbnail
+										targetAccent={payload.options.targetAccent}
+										phonemeId={payload.options.phonemeId}
+									/>
+								)
+							}
 							action={
-								<div className="flex shrink-0 gap-2">
-									{expanded ? null : (
-										<MoreButton ipa={sound.ipa} direction="up" onClick={onExpand} />
-									)}
-									<DrawerClose
-										render={<Button variant="secondary" size="icon" className="size-11 shrink-0" />}
-									>
-										<XIcon aria-hidden="true" />
-										<span className="sr-only">Close</span>
-									</DrawerClose>
-								</div>
+								<DrawerClose
+									render={<Button variant="secondary" size="icon" className="size-11 shrink-0" />}
+								>
+									<XIcon aria-hidden="true" />
+									<span className="sr-only">Close</span>
+								</DrawerClose>
 							}
 						/>
 					</div>

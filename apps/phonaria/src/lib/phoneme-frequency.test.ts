@@ -40,10 +40,17 @@ describe("frequency bands", () => {
 });
 
 describe("frequency summary", () => {
-	it("describes /ð/ by band and rank", () => {
+	it("describes /ð/ by band, rank and its share of the most common sound's", () => {
 		const summary = summarizePhonemeFrequency("en-us", "DH");
 		expect(summary?.band.label).toBe("Common");
-		expect(summary?.ranking).toBe("11th of 40");
+		expect(summary?.rank).toBe(11);
+		expect(summary?.count).toBe(40);
+		expect(summary?.fill).toBeGreaterThan(0);
+		expect(summary?.fill).toBeLessThan(1);
+	});
+
+	it("fills the bar fully for the most common sound", () => {
+		expect(summarizePhonemeFrequency("en-us", "AX")?.fill).toBe(1);
 	});
 
 	it("formats ordinals and small shares", () => {

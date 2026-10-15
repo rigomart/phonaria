@@ -58,11 +58,15 @@ export function rankPhonemes<TLanguage extends TargetAccent>(
 
 export type PhonemeFrequencySummary = {
 	band: FrequencyBand;
-	/** "11th of 40" */
-	ranking: string;
+	/** 1 is the most common sound. */
+	rank: number;
+	/** How many sounds are ranked. */
+	count: number;
+	/** The sound's share relative to the most common sound's, 0 to 1: the Frequency page's bar length. */
+	fill: number;
 };
 
-/** The card's Frequency section, or null when the accent has no frequency data. */
+/** How common one sound is, for the details header, or null when the accent has no frequency data. */
 export function summarizePhonemeFrequency(
 	targetAccent: TargetAccent,
 	phonemeId: PhonemeSymbolId,
@@ -70,10 +74,12 @@ export function summarizePhonemeFrequency(
 	const registry = getFrequencyRegistry(targetAccent);
 	const frequency = registry?.[phonemeId as LanguagePhonemeId<TargetAccent>];
 	if (!registry || !frequency) return null;
-	const soundCount = Object.keys(registry).length;
+	const shares = Object.values(registry).map(({ percentage }) => percentage);
 	return {
 		band: getFrequencyBand(frequency.percentage),
-		ranking: `${formatOrdinal(frequency.rank)} of ${soundCount}`,
+		rank: frequency.rank,
+		count: shares.length,
+		fill: frequency.percentage / Math.max(...shares),
 	};
 }
 
