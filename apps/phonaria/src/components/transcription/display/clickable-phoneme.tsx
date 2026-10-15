@@ -6,8 +6,7 @@ import {
 	type PhonemeSymbolId,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
-import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
-import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
+import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import type { TranscribedPhoneme } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +28,7 @@ export function ClickablePhoneme({ targetAccent, phoneme }: ClickablePhonemeProp
 	}
 
 	return (
-		<PhonemePopoverButton
+		<PhonemeDetailsButton
 			targetAccent={targetAccent}
 			phonemeId={phoneme.phonemeId}
 			symbol={phoneme.symbol}
@@ -38,7 +37,7 @@ export function ClickablePhoneme({ targetAccent, phoneme }: ClickablePhonemeProp
 	);
 }
 
-export function PhonemePopoverButton({
+export function PhonemeDetailsButton({
 	targetAccent,
 	phonemeId,
 	symbol,
@@ -52,30 +51,26 @@ export function PhonemePopoverButton({
 	if (!isPhonemeInLanguage(targetAccent, phonemeId)) return null;
 
 	return (
-		<Popover>
-			<PopoverTrigger
-				render={
-					<button
-						type="button"
-						className={cn(
-							"rounded-lg px-1.5 py-1 cursor-pointer",
-							"transition-colors duration-150",
-							"hover:bg-primary/10 hover:text-primary",
-							"data-popup-open:bg-primary/10 data-popup-open:text-primary",
-							className,
-						)}
-						aria-label={`Details for /${symbol}/`}
-					/>
-				}
-			>
-				{symbol}
-			</PopoverTrigger>
-			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemePopoverContent
-					targetAccent={targetAccent}
-					phonemeId={phonemeId as LanguagePhonemeId<typeof targetAccent>}
+		<PhonemeDetailsTrigger
+			details={{
+				targetAccent,
+				phonemeId: phonemeId as LanguagePhonemeId<typeof targetAccent>,
+			}}
+			render={
+				<button
+					type="button"
+					className={cn(
+						"rounded-lg px-1.5 py-1 cursor-pointer",
+						"transition-colors duration-150",
+						"hover:bg-secondary hover:text-primary",
+						"data-details-open:bg-secondary data-details-open:text-primary",
+						className,
+					)}
+					aria-label={`Details for /${symbol}/`}
 				/>
-			</PopoverContent>
-		</Popover>
+			}
+		>
+			{symbol}
+		</PhonemeDetailsTrigger>
 	);
 }

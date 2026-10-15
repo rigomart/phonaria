@@ -1,4 +1,4 @@
-import { Button } from "@phonaria/ui/components/button";
+import { buttonVariants } from "@phonaria/ui/components/button";
 import { Home } from "lucide-react";
 import { Link } from "@/components/link";
 
@@ -18,16 +18,14 @@ export function NotFoundContent() {
 				<p className="text-sm text-muted-foreground text-pretty">
 					The address may have a typo, or the page may have moved.
 				</p>
-				<Button
-					variant="outline"
-					size="lg"
-					className="mt-2"
-					nativeButton={false}
-					render={<Link href="/" />}
+				{/* A link styled as a button: a Button rendering a link is announced as a button. */}
+				<Link
+					href="/"
+					className={buttonVariants({ variant: "outline", size: "lg", className: "mt-2" })}
 				>
 					<Home />
 					Back to Phonaria
-				</Button>
+				</Link>
 			</div>
 		</div>
 	);

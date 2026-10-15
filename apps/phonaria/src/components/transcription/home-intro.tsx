@@ -6,7 +6,7 @@ import { useCurrentTranscription } from "@/hooks/use-transcribe";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
 import { shouldShowTranscriptionEmptyState } from "@/lib/transcription/search";
 import { cn } from "@/lib/utils";
-import { PhonemePopoverButton } from "./display/clickable-phoneme";
+import { PhonemeDetailsButton } from "./display/clickable-phoneme";
 import { prefersReducedMotion } from "./display/ipa-morph";
 
 /** /fəˈnɑɹiə/, by letter group. */
@@ -240,7 +240,7 @@ function NameSegment({
 				)}
 				style={phase === "playing" ? delay(turnAt + SOUND_LAG) : undefined}
 			>
-				<PhonemePopoverButton
+				<PhonemeDetailsButton
 					targetAccent="en-us"
 					phonemeId={phonemeId}
 					symbol={symbol}
@@ -264,7 +264,7 @@ function NameSegment({
 			<span
 				aria-hidden="true"
 				className={cn(
-					"absolute top-full left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-base text-muted-foreground transition-colors group-hover:text-foreground group-has-data-popup-open:text-foreground",
+					"absolute top-full left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-base text-muted-foreground transition-colors group-hover:text-foreground group-has-data-details-open:text-foreground",
 					reveal(phase, "duration-300"),
 				)}
 				style={revealDelay(phase, turnAt + CAPTION_LAG)}

@@ -2,12 +2,11 @@
 
 import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
 import { Label } from "@phonaria/ui/components/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { ScrollArea } from "@phonaria/ui/components/scroll-area";
 import { Switch } from "@phonaria/ui/components/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { type CSSProperties, useId, useState } from "react";
-import { PhonemePopoverContent } from "@/components/phoneme-popover-content";
+import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import type {
 	StaticDiphthongVowelChartEntry,
 	StaticMonophthongVowelChartEntry,
@@ -112,7 +111,7 @@ export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 			</div>
 
 			<ScrollArea className="w-full">
-				<div className="flex justify-center">
+				<div className="flex justify-center-safe">
 					<div className="w-full max-w-2xl min-w-96 shrink-0">
 						<VowelChartSurface
 							arrowMarkerId={arrowMarkerId}
@@ -256,49 +255,45 @@ function VowelMarker({
 	const isRhotic = marker.entry.features.rhoticity === "r-colored";
 
 	return (
-		<Popover>
-			<Tooltip>
-				<TooltipTrigger
-					render={
-						<PopoverTrigger
-							render={
-								<button
-									type="button"
-									className={cn(
-										vowelMarkerButtonBaseClass,
-										"left-[calc(var(--marker-left)-0.75rem)] top-[calc(var(--marker-top)-0.75rem)]",
-										"sm:left-[calc(var(--marker-left)-1.125rem)] sm:top-[calc(var(--marker-top)-1.125rem)]",
-										"hover:z-10 motion-reduce:transition-none",
-										{
-											"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary":
-												isRounded && !isRhotic,
-											"border-primary bg-background text-foreground rounded-full size-6 sm:size-9 hover:bg-background-strong":
-												!isRounded && !isRhotic,
-											"border-dashed border-primary bg-background-strong text-foreground rounded-full size-6 sm:size-9 hover:bg-background":
-												isRhotic,
-										},
-									)}
-									style={buttonStyles as CSSProperties}
-									aria-label={ariaLabel}
-								/>
-							}
-						>
-							{marker.entry.ipa}
-						</PopoverTrigger>
-					}
-				>
-					{marker.entry.ipa}
-				</TooltipTrigger>
-				<TooltipContent side="top" align="center">
-					<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">
-						{marker.entry.label}
-					</div>
-				</TooltipContent>
-			</Tooltip>
-			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={marker.entry.id} />
-			</PopoverContent>
-		</Popover>
+		<Tooltip>
+			<TooltipTrigger
+				render={
+					<PhonemeDetailsTrigger
+						details={{ targetAccent, phonemeId: marker.entry.id }}
+						render={
+							<button
+								type="button"
+								className={cn(
+									vowelMarkerButtonBaseClass,
+									"left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2",
+									"hover:z-10 motion-reduce:transition-none",
+									"data-details-open:z-10 data-details-open:ring-2 data-details-open:ring-ring data-details-open:ring-offset-2 data-details-open:ring-offset-background",
+									{
+										"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary":
+											isRounded && !isRhotic,
+										"border-primary bg-background text-foreground rounded-full size-6 sm:size-9 hover:bg-background-strong":
+											!isRounded && !isRhotic,
+										"border-dashed border-primary bg-background-strong text-foreground rounded-full size-6 sm:size-9 hover:bg-background":
+											isRhotic,
+									},
+								)}
+								style={buttonStyles as CSSProperties}
+								aria-label={ariaLabel}
+							/>
+						}
+					>
+						{marker.entry.ipa}
+					</PhonemeDetailsTrigger>
+				}
+			>
+				{marker.entry.ipa}
+			</TooltipTrigger>
+			<TooltipContent side="top" align="center">
+				<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">
+					{marker.entry.label}
+				</div>
+			</TooltipContent>
+		</Tooltip>
 	);
 }
 
@@ -317,37 +312,33 @@ function DiphthongLabel({
 	const ariaLabel = `${glide.entry.label} (${glide.entry.ipa})`;
 
 	return (
-		<Popover>
-			<Tooltip>
-				<TooltipTrigger
-					render={
-						<PopoverTrigger
-							render={
-								<button
-									type="button"
-									data-diphthong={glide.entry.id}
-									className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg"
-									style={buttonStyles as CSSProperties}
-									aria-label={ariaLabel}
-								/>
-							}
-						>
-							{glide.entry.ipa}
-						</PopoverTrigger>
-					}
-				>
-					{glide.entry.ipa}
-				</TooltipTrigger>
-				<TooltipContent side="top" align="center">
-					<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">
-						{glide.entry.label}
-					</div>
-				</TooltipContent>
-			</Tooltip>
-			<PopoverContent sideOffset={8} className="w-auto">
-				<PhonemePopoverContent targetAccent={targetAccent} phonemeId={glide.entry.id} />
-			</PopoverContent>
-		</Popover>
+		<Tooltip>
+			<TooltipTrigger
+				render={
+					<PhonemeDetailsTrigger
+						details={{ targetAccent, phonemeId: glide.entry.id }}
+						render={
+							<button
+								type="button"
+								data-diphthong={glide.entry.id}
+								className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors hover:text-primary data-details-open:bg-secondary data-details-open:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg"
+								style={buttonStyles as CSSProperties}
+								aria-label={ariaLabel}
+							/>
+						}
+					>
+						{glide.entry.ipa}
+					</PhonemeDetailsTrigger>
+				}
+			>
+				{glide.entry.ipa}
+			</TooltipTrigger>
+			<TooltipContent side="top" align="center">
+				<div className="max-w-xs text-pretty text-xs leading-snug font-semibold">
+					{glide.entry.label}
+				</div>
+			</TooltipContent>
+		</Tooltip>
 	);
 }
 

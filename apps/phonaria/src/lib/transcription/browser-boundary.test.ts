@@ -25,7 +25,7 @@ const clientFiles = [
 	"src/components/transcription/display/index.tsx",
 	"src/components/transcription/display/word-definition-popover.tsx",
 	"src/components/transcription/display/clickable-phoneme.tsx",
-	"src/components/phoneme-popover-content.tsx",
+	"src/components/phoneme-details/phoneme-details.tsx",
 	"src/routes/index.tsx",
 ];
 
@@ -114,10 +114,13 @@ describe("browser transcription boundary", () => {
 		expect(inflight).not.toMatch(/from "\.\/normalize"/);
 	});
 
-	it("keeps phoneme popovers free of dictionary definitions", () => {
+	it("keeps phoneme details free of dictionary definitions", () => {
 		const files = [
 			"src/components/transcription/display/clickable-phoneme.tsx",
-			"src/components/phoneme-popover-content.tsx",
+			"src/components/phoneme-details/phoneme-details.tsx",
+			"src/components/phoneme-details/details-card.tsx",
+			"src/components/phoneme-details/details-drawer.tsx",
+			"src/components/phoneme-details/details-panel.tsx",
 		];
 		for (const file of files) {
 			const source = readFileSync(resolve(labRoot, file), "utf8");
@@ -127,7 +130,7 @@ describe("browser transcription boundary", () => {
 		}
 	});
 
-	it("scrolls tall definition popovers without changing phoneme popovers", () => {
+	it("scrolls tall definition popovers without changing phoneme buttons", () => {
 		const definition = readFileSync(
 			resolve(labRoot, "src/components/transcription/display/word-definition-popover.tsx"),
 			"utf8",

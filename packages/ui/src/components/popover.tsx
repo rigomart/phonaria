@@ -4,13 +4,16 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import { cn } from "@phonaria/ui/lib/utils";
 import type * as React from "react";
 
-function Popover({ ...props }: PopoverPrimitive.Root.Props) {
+function Popover<Payload>({ ...props }: PopoverPrimitive.Root.Props<Payload>) {
 	return <PopoverPrimitive.Root data-slot="popover" {...props} />;
 }
 
-function PopoverTrigger({ ...props }: PopoverPrimitive.Trigger.Props) {
+function PopoverTrigger<Payload>({ ...props }: PopoverPrimitive.Trigger.Props<Payload>) {
 	return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
 }
+
+/** Links one `Popover` to triggers rendered elsewhere, each passing its own payload. */
+const createPopoverHandle = PopoverPrimitive.createHandle;
 
 function PopoverContent({
 	className,
@@ -73,4 +76,12 @@ function PopoverDescription({ className, ...props }: PopoverPrimitive.Descriptio
 	);
 }
 
-export { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger };
+export {
+	createPopoverHandle,
+	Popover,
+	PopoverContent,
+	PopoverDescription,
+	PopoverHeader,
+	PopoverTitle,
+	PopoverTrigger,
+};

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@phonaria/ui/components/button";
-import { ButtonGroup } from "@phonaria/ui/components/button-group";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { PlayIcon, Turtle } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
@@ -19,30 +18,33 @@ function buildAudioSrc(path: string) {
 	return `${baseUrl}/${path.replace(/^\/+/, "")}`;
 }
 
+/** Play and Slow, labeled and thumb-sized: the first thing a learner reaches for. */
 export function AudioControls({ path, label }: Props) {
 	const audioSrc = buildAudioSrc(path);
 	const { play, status } = useAudioManager(audioSrc ?? "");
+	const disabled = !audioSrc || status === "loading" || status === "playing";
 
 	return (
-		<ButtonGroup>
+		<div className="grid grid-cols-2 gap-2">
 			<Button
-				size="xs"
-				variant="outline"
+				className="h-11"
 				onClick={() => audioSrc && play()}
 				aria-label={`Play ${label}`}
-				disabled={!audioSrc || status === "loading" || status === "playing"}
+				disabled={disabled}
 			>
-				{status === "loading" ? <Spinner /> : <PlayIcon />}
+				{status === "loading" ? <Spinner /> : <PlayIcon data-icon="inline-start" />}
+				Play
 			</Button>
 			<Button
-				size="xs"
-				variant="outline"
+				className="h-11"
+				variant="secondary"
 				onClick={() => audioSrc && play(0.75)}
 				aria-label={`Play slow ${label}`}
-				disabled={!audioSrc || status === "loading" || status === "playing"}
+				disabled={disabled}
 			>
-				{status === "loading" ? <Spinner /> : <Turtle />}
+				{status === "loading" ? <Spinner /> : <Turtle data-icon="inline-start" />}
+				Slow
 			</Button>
-		</ButtonGroup>
+		</div>
 	);
 }

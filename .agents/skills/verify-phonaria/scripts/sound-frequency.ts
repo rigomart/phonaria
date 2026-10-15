@@ -45,23 +45,26 @@ const ranking = observation(
 );
 
 function readCard() {
+	const details = document.querySelector("[data-phoneme-details]");
 	const section = (heading: string) =>
-		Array.from(document.querySelectorAll("section")).find(
+		Array.from(details?.querySelectorAll("section") ?? []).find(
 			(node) => node.querySelector("h3")?.textContent?.trim() === heading,
 		);
-	const frequency = section("Frequency");
+	// How common the sound is: one line in the header, a link where the host allows it.
+	const frequency = Array.from(details?.querySelectorAll("a, p") ?? []).find((node) =>
+		node.textContent?.includes("most common"),
+	);
+	const bar = frequency?.querySelector<HTMLElement>("[aria-hidden='true'] > span");
 	const spelling = section("Spelling");
-	const meter = frequency?.querySelector<HTMLElement>("[aria-hidden='true'] > span");
 	return {
 		openTrigger:
-			document
-				.querySelector('button[aria-expanded="true"][aria-label]')
-				?.getAttribute("aria-label") ?? null,
-		link: frequency?.querySelector("a")?.getAttribute("href") ?? null,
-		rank: frequency?.querySelector("p")?.textContent?.trim() ?? null,
-		meter: meter?.style.width ?? null,
-		spelling: Array.from(spelling?.querySelectorAll("p > span") ?? []).map((part) =>
-			part.textContent?.trim(),
+			document.querySelector("[data-details-open][aria-label]")?.getAttribute("aria-label") ?? null,
+		rank: frequency?.querySelector(".font-medium")?.textContent?.trim() ?? null,
+		of: /of (\d+) sounds/.exec(frequency?.getAttribute("aria-label") ?? "")?.[1] ?? null,
+		link: frequency?.tagName === "A" ? frequency.getAttribute("href") : null,
+		bar: bar ? `${Math.round(Number.parseFloat(bar.style.width))}%` : null,
+		spellings: Array.from(spelling?.querySelectorAll("li") ?? []).map((row) =>
+			Array.from(row.children).map((part) => part.textContent?.trim()),
 		),
 		highlighted: Array.from(spelling?.querySelectorAll("mark") ?? []).map((mark) =>
 			mark.textContent?.trim(),
@@ -69,22 +72,25 @@ function readCard() {
 	};
 }
 
-// Meter width is the sound's position among 40: (40 - rank + 1) / 40.
+// The bar is the sound's share relative to the most common sound's (/ə/, 7.9%), as on the
+// Frequency page: /ð/ 3.1% → 39% (issue-287 record); /h/ 1.35% → 17% (phoneme-frequency.json).
 const pageCard = observation(readCard, {
 	openTrigger: "/ð/ as in this: 11th, 3.1%, common",
+	rank: "11th most common",
+	of: "40",
 	link: null,
-	rank: "Common · 11th of 40",
-	meter: "75%",
-	spelling: ["th", "this, mother"],
+	bar: "39%",
+	spellings: [["th", "this, mother"]],
 	highlighted: ["th", "th"],
 });
 
 const resultCard = observation(readCard, {
 	openTrigger: "Details for /h/",
+	rank: "29th most common",
+	of: "40",
 	link: "/ipa-chart/frequency",
-	rank: "Less common · 29th of 40",
-	meter: "30%",
-	spelling: ["h", "house, hello"],
+	bar: "17%",
+	spellings: [["h", "house, hello"]],
 	highlighted: ["h", "h"],
 });
 

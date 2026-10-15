@@ -60,9 +60,9 @@ const details = observation(
 		const visible = (selector: string) =>
 			!!document.querySelector(selector)?.getClientRects().length;
 		return {
-			open:
-				document.querySelector('[aria-label="Details for /h/"]')?.getAttribute("aria-expanded") ===
-				"true",
+			open: !!document
+				.querySelector('[aria-label="Details for /h/"]')
+				?.hasAttribute("data-details-open"),
 			label: document.body.innerText.includes("Voiceless glottal fricative"),
 			play: visible('[aria-label="Play h"]'),
 			slow: visible('[aria-label="Play slow h"]'),
