@@ -1,15 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	addHistoryEntry,
-	filterHistory,
-	filterHistoryBySound,
-	groupHistoryByDay,
-	HISTORY_SOUND_FILTER_MIN_ENTRIES,
+	HISTORY_SUGGESTION_LIMIT,
 	parseStoredHistory,
-	rankHistorySounds,
 	removeHistoryEntry,
 	serializeHistory,
-	splitHistoryIpa,
+	suggestHistory,
 	TRANSCRIPTION_HISTORY_LIMIT,
 	TRANSCRIPTION_HISTORY_STORAGE_KEY,
 	type TranscriptionHistoryEntry,
@@ -65,148 +61,40 @@ describe("removeHistoryEntry", () => {
 	});
 });
 
-describe("filterHistory", () => {
+describe("suggestHistory", () => {
 	const entries = [
 		{ text: "Judge the rhythm", ipa: "ˈdʒʌdʒ ðə ˈɹɪ.ðəm", at: 3 },
 		{ text: "thorough", ipa: "ˈθɝ.oʊ", at: 2 },
 		{ text: "Hello world", ipa: "hə.ˈloʊ ˈwɝld", at: 1 },
 	];
 
-	it("keeps everything for a blank query", () => {
-		expect(filterHistory(entries, "  ")).toEqual(entries);
-	});
-
-	it("matches text ignoring case and spacing, in stored order", () => {
-		expect(filterHistory(entries, "  HELLO   wor").map((e) => e.text)).toEqual(["Hello world"]);
-		expect(filterHistory(entries, "th").map((e) => e.text)).toEqual([
+	it("offers the newest entries for a blank query", () => {
+		expect(suggestHistory(entries, "  ")).toEqual(entries);
+		expect(suggestHistory(entries, "", 2).map((e) => e.text)).toEqual([
 			"Judge the rhythm",
 			"thorough",
 		]);
 	});
 
-	it("matches IPA", () => {
-		expect(filterHistory(entries, "oʊ").map((e) => e.text)).toEqual(["thorough", "Hello world"]);
-	});
-});
-
-describe("splitHistoryIpa", () => {
-	it("splits ˈskwɝ.əl into s, k, w, ɝ, ə, l", () => {
-		expect(splitHistoryIpa("ˈskwɝ.əl")).toEqual(["s", "k", "w", "ɝ", "ə", "l"]);
-	});
-
-	it("splits ˈðoʊ into ð and oʊ", () => {
-		const sounds = splitHistoryIpa("ˈðoʊ");
-		expect(sounds).toEqual(["ð", "oʊ"]);
-		expect(sounds).not.toContain("ʊ");
-	});
-
-	it("keeps affricates whole and skips stress, dots, and spaces", () => {
-		expect(splitHistoryIpa("dʒ")).toEqual(["dʒ"]);
-		expect(splitHistoryIpa("hə.ˈloʊ ˈwɝld")).toEqual(["h", "ə", "l", "oʊ", "w", "ɝ", "l", "d"]);
-	});
-});
-
-describe("filterHistoryBySound", () => {
-	const entries = [
-		{ text: "though", ipa: "ˈðoʊ", at: 2 },
-		{ text: "book", ipa: "bʊk", at: 1 },
-	];
-
-	it("matches a whole symbol", () => {
-		expect(filterHistoryBySound(entries, "oʊ").map((entry) => entry.text)).toEqual(["though"]);
-		expect(filterHistoryBySound(entries, "ʊ").map((entry) => entry.text)).toEqual(["book"]);
-	});
-
-	it("keeps everything when no sound is selected", () => {
-		expect(filterHistoryBySound(entries, "")).toEqual(entries);
-	});
-});
-
-describe("rankHistorySounds", () => {
-	it("returns no chips below 10 entries", () => {
-		const entries = Array.from({ length: HISTORY_SOUND_FILTER_MIN_ENTRIES - 1 }, (_, index) => ({
-			text: `word ${index}`,
-			ipa: "pə",
-			at: index,
-		}));
-		expect(rankHistorySounds(entries)).toEqual([]);
-	});
-
-	it("counts each entry once per sound", () => {
-		const entries = [
-			{ text: "a", ipa: "ppp", at: 10 },
-			{ text: "b", ipa: "p", at: 9 },
-			{ text: "c", ipa: "b", at: 8 },
-			{ text: "d", ipa: "b", at: 7 },
-			{ text: "e", ipa: "b", at: 6 },
-			{ text: "f", ipa: "ə", at: 5 },
-			{ text: "g", ipa: "ə", at: 4 },
-			{ text: "h", ipa: "ə", at: 3 },
-			{ text: "i", ipa: "ə", at: 2 },
-			{ text: "j", ipa: "ə", at: 1 },
-		];
-		expect(rankHistorySounds(entries)).toEqual(["ə", "b", "p"]);
-	});
-
-	it("returns at most 8 sounds and breaks ties by inventory order", () => {
-		const ranked = [
-			["ə", 10],
-			["p", 9],
-			["b", 8],
-			["t", 7],
-			["d", 6],
-			["k", 5],
-			["f", 4],
-			["v", 3],
-			["θ", 3],
-			["s", 1],
-		] as const;
-		const entries = Array.from({ length: HISTORY_SOUND_FILTER_MIN_ENTRIES }, (_, index) => ({
-			text: `word ${index}`,
-			ipa: ranked
-				.filter(([, count]) => index < count)
-				.map(([symbol]) => symbol)
-				.join(""),
-			at: HISTORY_SOUND_FILTER_MIN_ENTRIES - index,
-		}));
-
-		expect(rankHistorySounds(entries)).toEqual(["ə", "p", "b", "t", "d", "k", "f", "v"]);
-	});
-});
-
-describe("groupHistoryByDay", () => {
-	const now = new Date(2026, 9, 12, 9, 30).getTime();
-	const at = (day: number, hour: number) => new Date(2026, 9, day, hour).getTime();
-
-	it("buckets by local calendar day, newest first", () => {
-		const groups = groupHistoryByDay(
-			[
-				entry("this morning", at(12, 8)),
-				entry("just after midnight", at(12, 0)),
-				entry("last night", at(11, 23)),
-				entry("two days ago", at(10, 12)),
-				entry("six days ago", at(6, 12)),
-				entry("a week ago", at(5, 12)),
-			],
-			now,
-		);
-
-		expect(groups.map((group) => [group.label, group.entries.map((e) => e.text)])).toEqual([
-			["Today", ["this morning", "just after midnight"]],
-			["Yesterday", ["last night"]],
-			["Previous 7 days", ["two days ago", "six days ago"]],
-			["Older", ["a week ago"]],
+	it("matches text ignoring case and spacing, in stored order", () => {
+		expect(suggestHistory(entries, "  HELLO   wor").map((e) => e.text)).toEqual(["Hello world"]);
+		expect(suggestHistory(entries, "th").map((e) => e.text)).toEqual([
+			"Judge the rhythm",
+			"thorough",
 		]);
 	});
 
-	it("leaves out empty buckets", () => {
-		const groups = groupHistoryByDay([entry("old", at(1, 12))], now);
-		expect(groups.map((group) => group.label)).toEqual(["Older"]);
+	it("does not match IPA", () => {
+		expect(suggestHistory(entries, "oʊ")).toEqual([]);
 	});
 
-	it("counts a timestamp ahead of the clock as today", () => {
-		const groups = groupHistoryByDay([entry("future", at(13, 12))], now);
-		expect(groups.map((group) => group.label)).toEqual(["Today"]);
+	it("leaves out the entry that equals the query", () => {
+		expect(suggestHistory(entries, "Thorough ")).toEqual([]);
+	});
+
+	it("stops at the limit", () => {
+		const many = Array.from({ length: HISTORY_SUGGESTION_LIMIT + 3 }, (_, i) => entry(`word ${i}`));
+		expect(suggestHistory(many, "word")).toHaveLength(HISTORY_SUGGESTION_LIMIT);
 	});
 });
 

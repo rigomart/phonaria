@@ -1,11 +1,13 @@
 import type { Feature } from "./feature";
 import { frequencyPage, soundFrequency } from "./sound-frequency";
 import { transcription } from "./transcription";
+import { transcriptionHistory } from "./transcription-history";
 
 export const features: Record<string, Feature> = {
 	"sound-frequency": soundFrequency,
 	"frequency-page": frequencyPage,
 	transcription,
+	"transcription-history": transcriptionHistory,
 };
 
 export function getFeature(name: string | undefined, available = features): Feature {
