@@ -12,6 +12,7 @@
   - English-specific data: `EnglishPhonemeContrasts` (minimal-pair catalog, validated against top-10k) / `EnglishContrastsByPhonemeId`, `EnglishPhonemeAllophones`, `EnglishPhonemeSpellingPatterns`, `CmuArpaMap`
   - Minimal-pair helpers: `getSinglePronunciation()`, `findSubstitution()`, `toBasePhonemeIds()`
   - `getPhonemeFrequencyRegistryForLanguage()`: each sound's share of everyday speech and its rank (en-us only, behind the `phonemeFrequency` capability)
+  - `getWordAudioPath()`: bucket-relative path of a word's recording (`audio/en-us/words/jenny/seat.ogg`), or `null` when the word has none (en-us only, behind the `wordAudio` capability)
   - Spelling examples carry a `spelled` form marking the letters that spell the sound (`"ha[pp]y"`); `splitSpelledWord()` splits it for display
   - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`, `phoneme-frequency`
 - `packages/helper-scripts`: Utilities for CMUDict processing and word-mapping reports; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`.

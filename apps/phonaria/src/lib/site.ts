@@ -67,6 +67,13 @@ export function getPublicAssetBaseUrl(): string | undefined {
 	return raw || undefined;
 }
 
+/** Public URL of an asset in the bucket, or null when no bucket origin is configured. */
+export function buildPublicAssetUrl(path: string): string | null {
+	const base = getPublicAssetBaseUrl();
+	if (!base) return null;
+	return `${base}/${path.replace(/^\/+/, "")}`;
+}
+
 /** Portable document metadata consumed by the TanStack route head helpers. */
 export function getDocumentMetadata(): DocumentMetadata {
 	return {

@@ -5,7 +5,7 @@ import { ButtonGroup } from "@phonaria/ui/components/button-group";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { PlayIcon, Turtle } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
-import { getPublicAssetBaseUrl } from "@/lib/site";
+import { buildPublicAssetUrl } from "@/lib/site";
 
 type Props = {
 	path: string;
@@ -13,16 +13,9 @@ type Props = {
 	className?: string;
 };
 
-const baseUrl = getPublicAssetBaseUrl();
-
-function buildAudioSrc(path: string) {
-	if (!baseUrl) return null;
-	return `${baseUrl}/${path.replace(/^\/+/, "")}`;
-}
-
 /** Play, labeled, and Slow as an icon beside it: one compact group. Play takes any width the group is given. */
 export function AudioControls({ path, label, className }: Props) {
-	const audioSrc = buildAudioSrc(path);
+	const audioSrc = buildPublicAssetUrl(path);
 	const { play, status } = useAudioManager(audioSrc ?? "");
 	const disabled = !audioSrc || status === "loading" || status === "playing";
 

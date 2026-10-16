@@ -79,3 +79,13 @@ export type PhonemeFrequency = {
 
 export type LanguagePhonemeFrequencyRegistry<TLanguage extends TargetAccent = TargetAccent> =
 	Readonly<Record<LanguagePhonemeId<TLanguage>, PhonemeFrequency>>;
+
+// Word audio types
+
+/** The single-word recordings uploaded for one accent: one voice, one file per word. */
+export type WordAudioManifest = {
+	/** Folder name of the voice set, e.g. "jenny". */
+	readonly voice: string;
+	/** Lowercase words that have a recording, sorted. */
+	readonly words: readonly string[];
+};

@@ -10,9 +10,11 @@ import {
 	getLanguagePhonemeCount,
 	getLanguagePhonemeIds,
 	getSpellingPatternRegistryForLanguage,
+	getWordAudioPath,
 	type LanguageDiphthongSymbolId,
 	type LanguagePhonemeId,
 	type LanguageSpellingPatternRegistry,
+	type TargetAccent,
 } from "./index";
 
 const englishIds = getLanguagePhonemeIds("en-us");
@@ -27,6 +29,9 @@ expectTypeOf(getCmuArpaRegistryForLanguage("es-419")).toEqualTypeOf<null>();
 expectTypeOf(getContrastRegistryForLanguage("es-419")).toEqualTypeOf<null>();
 expectTypeOf(getSpellingPatternRegistryForLanguage("es-419")).toEqualTypeOf<null>();
 expectTypeOf(getContrastRegistryForLanguage("en-us")).not.toBeNullable();
+expectTypeOf(getWordAudioPath).toEqualTypeOf<
+	(targetAccent: TargetAccent, word: string) => string | null
+>();
 
 // These must stay compiler errors: a broadened public API would silently let
 // consumers ask for sounds or features outside the selected accent.

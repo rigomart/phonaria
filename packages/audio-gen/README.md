@@ -105,12 +105,54 @@ Listen to every clip individually and beside its minimal-pair words. Check the
 intended sounds and stress, natural delivery, intact initial and final
 consonants, and comparable loudness. Mark acceptance only after listening.
 Original clips remain untrimmed; any editing should preserve them separately.
-The tool never uploads audio or publishes an application manifest.
+The tool never uploads audio; see Publishing recordings.
 
 Generated output is ignored by Git. When using a temporary worktree, move the
 completed output directory into the original checkout before removing the
 worktree. Keep the plan, review sheet, and recordings together so the next
 agent can verify the files and upload them without generating them again.
+
+## Publishing recordings
+
+Accepted recordings are served from the public `rigos-assets` R2 bucket
+(`https://assets.rigos.dev`) as `audio/{targetAccent}/words/{voice}/{word}.ogg`.
+The voice folder is the lowercase voice name, so Jenny's clips are
+`audio/en-us/words/jenny/seat.ogg`. A new accent or voice gets a sibling folder.
+The 400-word en-US Jenny set is uploaded.
+
+To upload a completed output directory, run from the repo root. Use the app's
+pinned Wrangler (`wrangler` is not installed globally), sign in first with
+`"$WRANGLER" login`, and keep `--remote`: without it Wrangler writes to a local
+simulated bucket and nothing is published. The voice folder in the key (`jenny`)
+must match the manifest's voice.
+
+```bash
+WRANGLER="$PWD/apps/phonaria/node_modules/.bin/wrangler"
+"$WRANGLER" login
+(
+  cd packages/audio-gen/output/azure-catalog-jenny-slower-10-ogg/audio &&
+  ls *.ogg | xargs -P 8 -I{} "$WRANGLER" r2 object put rigos-assets/audio/en-us/words/jenny/{} \
+    --file={} --content-type=audio/ogg --remote
+)
+```
+
+Object keys do not include rate or format, so a re-take of an existing voice
+set should go to a new voice folder name (for example `jenny-2`) rather than
+overwrite keys that browsers and Cloudflare may have cached.
+
+The app only offers a play button for words listed in the committed manifest,
+`packages/phonetics-data/src/languages/en/word-audio.ts`, read through
+`getWordAudioPath()`. After uploading, regenerate it from the repo root:
+
+```bash
+bun run --cwd packages/audio-gen manifest --out=output/azure-catalog-jenny-slower-10-ogg
+```
+
+The command refuses to run unless every sample in `plan.json` is generated and
+an Ogg file, and
+takes the voice folder from the plan's voice (`en-US-JennyNeural` becomes
+`jenny`). The phonetics-data tests fail when the manifest and the minimal-pair
+catalog disagree.
 
 ## Voice and speed probes
 

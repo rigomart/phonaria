@@ -19,6 +19,7 @@ import { CmuArpaMap, type CmuArpaToken, type CmuStressLevel } from "../languages
 import { EnglishContrastsByPhonemeId } from "../languages/en/contrasts";
 import { EnglishPhonemeFrequencies } from "../languages/en/frequency";
 import { EnglishPhonemeSpellingPatterns } from "../languages/en/patterns";
+import { EnglishWordAudio } from "../languages/en/word-audio";
 import {
 	SpanishConsonantArticulations,
 	SpanishDiphthongArticulations,
@@ -37,6 +38,7 @@ import type {
 	PhonemeContrastMatch,
 	PhonemeFrequency,
 	SpellingPattern,
+	WordAudioManifest,
 } from "../languages/types";
 import { deepFreeze } from "../shared/readonly";
 
@@ -172,6 +174,13 @@ export const LanguagePhonemeFrequencyDataRegistry = deepFreeze({
 	Partial<Record<PhonemeSymbolId, PhonemeFrequency>> | null
 >);
 
+export const LanguageWordAudioDataRegistry = deepFreeze({
+	"en-us": EnglishWordAudio,
+	"es-419": null,
+} as const satisfies Record<TargetAccent, WordAudioManifest | null>);
+
+const wordAudioWordSets = new Map<TargetAccent, ReadonlySet<string>>();
+
 export function getCmuArpaRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageCmuArpaDataRegistry)[TLanguage] {
@@ -200,6 +209,21 @@ export function getPhonemeFrequencyRegistryForLanguage<TLanguage extends TargetA
 	language: TLanguage,
 ): (typeof LanguagePhonemeFrequencyDataRegistry)[TLanguage] {
 	return LanguagePhonemeFrequencyDataRegistry[language];
+}
+
+/**
+ * Bucket-relative path (no leading slash) of a word's recording, e.g.
+ * "audio/en-us/words/jenny/seat.ogg", or null when the word has none.
+ * Matching ignores case and surrounding whitespace.
+ */
+export function getWordAudioPath(targetAccent: TargetAccent, word: string): string | null {
+	const manifest = LanguageWordAudioDataRegistry[targetAccent];
+	const normalized = word.toLowerCase().trim();
+	if (!manifest) return null;
+	let words = wordAudioWordSets.get(targetAccent);
+	if (!words) wordAudioWordSets.set(targetAccent, (words = new Set(manifest.words)));
+	if (!words.has(normalized)) return null;
+	return `audio/${targetAccent}/words/${manifest.voice}/${normalized}.ogg`;
 }
 
 export type { CmuArpaToken, CmuStressLevel };

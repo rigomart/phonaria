@@ -125,6 +125,7 @@ export type {
 	PhonemeContrastMatch,
 	PhonemeFrequency,
 	SpellingPattern,
+	WordAudioManifest,
 } from "./languages/types";
 export type { LanguageFeatureCapabilities, LanguageFeatureKey } from "./registries/capabilities";
 export {
@@ -153,10 +154,12 @@ export {
 	getPhonemeArticulationRegistryForLanguage,
 	getPhonemeFrequencyRegistryForLanguage,
 	getSpellingPatternRegistryForLanguage,
+	getWordAudioPath,
 	LanguageAllophoneDataRegistry,
 	LanguageArticulationRegistry,
 	LanguageCmuArpaDataRegistry,
 	LanguageContrastDataRegistry,
 	LanguagePhonemeFrequencyDataRegistry,
 	LanguageSpellingPatternDataRegistry,
+	LanguageWordAudioDataRegistry,
 } from "./registries/registries";

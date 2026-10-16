@@ -10,6 +10,7 @@ export const LANGUAGE_FEATURE_KEYS = [
 	"phonemeFrequency",
 	"curatedWordData",
 	"transcription",
+	"wordAudio",
 ] as const;
 
 export type LanguageFeatureKey = (typeof LANGUAGE_FEATURE_KEYS)[number];
@@ -26,6 +27,7 @@ export const LanguageFeatureCapabilitiesRegistry = deepFreeze({
 		phonemeFrequency: true,
 		curatedWordData: true,
 		transcription: true,
+		wordAudio: true,
 	},
 	"es-419": {
 		articulations: true,
@@ -36,6 +38,7 @@ export const LanguageFeatureCapabilitiesRegistry = deepFreeze({
 		phonemeFrequency: false,
 		curatedWordData: false,
 		transcription: true,
+		wordAudio: false,
 	},
 } as const satisfies Record<TargetAccent, LanguageFeatureCapabilities>);
 
