@@ -15,7 +15,6 @@ import { useScrolled } from "@/hooks/use-scrolled";
 import type { AppFlags } from "@/lib/flags";
 import { IPA_CHART_INDEX_PATH } from "@/lib/ipa-chart-metadata";
 import { cn } from "@/lib/utils";
-import { HeaderActionsSlot } from "./header-actions";
 import { Logo } from "./logo";
 import { chartSections, getTools, usePathname } from "./site-nav";
 import { ThemeSwitcher } from "./theme-switcher";
@@ -67,7 +66,6 @@ export function Header({ flags }: { flags: AppFlags }) {
 				</nav>
 
 				<div className="ml-auto flex items-center gap-1">
-					<HeaderActionsSlot className="flex items-center" />
 					<ThemeSwitcher />
 					<MobileMenu flags={flags} />
 				</div>
