@@ -8,6 +8,7 @@ import {
 import { Link } from "@/components/link";
 import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import { SpelledWord } from "@/components/spelled-word";
+import { enterDelay, stagger } from "@/lib/motion";
 import {
 	formatOrdinal,
 	formatPercentage,
@@ -19,17 +20,24 @@ const targetAccent = "en-us" satisfies TargetAccent;
 const ranked = rankPhonemes(targetAccent);
 const largest = ranked[0]?.percentage ?? 1;
 
+// Rows cascade in after the title, and each bar fills just behind its row. Rows past
+// the cap share its delay: they sit below the fold and should be ready when reached.
+const ROW_STAGGER = { start: 40, step: 12, cap: 10 };
+const BAR_LAG = 60;
+
 export function FrequencyContent() {
 	return (
 		<div className="flex flex-1 flex-col items-center bg-background">
-			<div className="w-full max-w-3xl space-y-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Frequency</h1>
+			<div className="w-full max-w-3xl space-y-6 p-4 sm:p-6">
+				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display enter-rise">
+					Frequency
+				</h1>
 				<ol className="flex flex-col">
-					{ranked.map((sound) => (
-						<RankingRow key={sound.phonemeId} sound={sound} />
+					{ranked.map((sound, index) => (
+						<RankingRow key={sound.phonemeId} sound={sound} index={index} />
 					))}
 				</ol>
-				<p className="text-xs text-muted-foreground">
+				<p className="text-xs text-muted-foreground enter-fade enter-delay-250">
 					Based on how often words are used in everyday English (wordfreq).{" "}
 					<Link
 						href="/credits"
@@ -43,14 +51,21 @@ export function FrequencyContent() {
 	);
 }
 
-function RankingRow({ sound }: { sound: RankedPhoneme<typeof targetAccent> }) {
+function RankingRow({
+	sound,
+	index,
+}: {
+	sound: RankedPhoneme<typeof targetAccent>;
+	index: number;
+}) {
 	const ipa = getIpaForPhonemeId(sound.phonemeId);
 	const example = EnglishPhonemeSpellingPatterns[sound.phonemeId].examples[0];
 	const share = formatPercentage(sound.percentage);
 	const relativeShare = sound.percentage / largest;
+	const rowDelay = stagger(index, ROW_STAGGER);
 
 	return (
-		<li>
+		<li className="enter-rise" style={enterDelay(rowDelay)}>
 			<PhonemeDetailsTrigger
 				details={{ targetAccent, phonemeId: sound.phonemeId, showFrequencyLink: false }}
 				render={
@@ -73,8 +88,9 @@ function RankingRow({ sound }: { sound: RankedPhoneme<typeof targetAccent> }) {
 					className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-accent"
 				>
 					<span
-						className="block h-full rounded-full"
+						className="block h-full rounded-full enter-grow-x"
 						style={{
+							...enterDelay(rowDelay + BAR_LAG),
 							width: `${relativeShare * 100}%`,
 							backgroundColor: `color-mix(in oklch, var(--frequency-high) ${relativeShare * 100}%, var(--frequency-low))`,
 						}}

@@ -37,7 +37,7 @@ export function PreSubmitCheck() {
 	}, [blanks, total]);
 
 	return (
-		<div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-5 px-4 py-8 animate-in fade-in duration-500 motion-reduce:animate-none">
+		<div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-5 px-4 py-8 enter-rise">
 			<div className="flex flex-col items-center gap-1 text-center">
 				<h1
 					className="font-bold font-display text-2xl tracking-tight outline-none"

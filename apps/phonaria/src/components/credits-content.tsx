@@ -1,5 +1,6 @@
 import { Badge } from "@phonaria/ui/components/badge";
 import { ExternalLink } from "lucide-react";
+import { enterDelay, stagger } from "@/lib/motion";
 
 type CreditCardProps = {
 	title: string;
@@ -8,9 +9,12 @@ type CreditCardProps = {
 	license?: { text: string; url: string };
 };
 
-function CreditCard({ title, content, link, license }: CreditCardProps) {
+function CreditCard({ title, content, link, license, index }: CreditCardProps & { index: number }) {
 	return (
-		<div className="flex flex-col rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 overflow-hidden h-full">
+		<div
+			className="flex flex-col rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 overflow-hidden h-full enter-rise"
+			style={enterDelay(stagger(index, { start: 80, step: 30 }))}
+		>
 			<div className="p-4">
 				<h2 className="text-base font-semibold tracking-tight font-display">{title}</h2>
 				<p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{content}</p>
@@ -130,18 +134,19 @@ export function CreditsContent() {
 		<div className="flex flex-1 flex-col bg-background">
 			<div className="container mx-auto p-4 sm:p-6 max-w-4xl space-y-6">
 				<div className="flex flex-col gap-1">
-					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">
+					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display enter-rise">
 						Credits & Sources
 					</h1>
-					<p className="text-sm text-muted-foreground">
+					<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
 						Phonaria uses open source projects, linguistic research, and freely licensed resources.
 					</p>
 				</div>
 
 				<div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-					{CREDITS.map((credit) => (
+					{CREDITS.map((credit, index) => (
 						<CreditCard
 							key={credit.key}
+							index={index}
 							title={credit.title}
 							content={credit.content}
 							link={credit.link}

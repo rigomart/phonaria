@@ -40,19 +40,25 @@ export function StartScreen({
 	else if (sessionError) failure = { message: sessionError, onRetry: onStart };
 
 	return (
-		<div className="flex flex-1 flex-col items-center justify-center bg-background p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500 motion-reduce:animate-none">
+		<div className="flex flex-1 flex-col items-center justify-center bg-background p-4 sm:p-6">
 			<div className="w-full max-w-md flex flex-col items-center gap-4 text-center">
-				<p className="text-sm text-muted-foreground font-display">{PracticeActivity.name}</p>
-				<h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-display">
+				<p className="text-sm text-muted-foreground font-display enter-rise">
+					{PracticeActivity.name}
+				</p>
+				<h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-display enter-rise enter-delay-40">
 					{topic.display.name}
 				</h1>
-				<p className="text-sm text-muted-foreground text-pretty">{topic.display.blurb}</p>
-				<p className="text-sm text-muted-foreground text-pretty">{PracticeActivity.description}</p>
+				<p className="text-sm text-muted-foreground text-pretty enter-rise enter-delay-80">
+					{topic.display.blurb}
+				</p>
+				<p className="text-sm text-muted-foreground text-pretty enter-rise enter-delay-120">
+					{PracticeActivity.description}
+				</p>
 
 				{failure ? (
 					<div
 						role="alert"
-						className="w-full flex flex-col items-center gap-3 rounded-lg border border-border bg-muted p-4"
+						className="w-full flex flex-col items-center gap-3 rounded-lg border border-border bg-muted p-4 enter-scale"
 					>
 						<p className="text-sm text-foreground">{failure.message}</p>
 						<Button variant="outline" size="lg" onClick={failure.onRetry}>
@@ -63,7 +69,7 @@ export function StartScreen({
 				) : (
 					<Button
 						size="lg"
-						className="mt-2"
+						className="mt-2 enter-rise enter-delay-160"
 						disabled={isLoading}
 						aria-busy={isLoading}
 						onClick={onStart}

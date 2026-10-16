@@ -38,33 +38,17 @@ const HEIGHT_LABELS: Record<VowelArticulatoryFeatures["height"], string> = {
 type VowelChartSurfaceProps = {
 	overlay: ReactNode;
 	svgOverlay?: ReactNode;
-	arrowMarkerId?: string;
 };
 
-export function VowelChartSurface({ overlay, svgOverlay, arrowMarkerId }: VowelChartSurfaceProps) {
+export function VowelChartSurface({ overlay, svgOverlay }: VowelChartSurfaceProps) {
 	return (
 		<div className="relative w-full" style={{ aspectRatio }}>
 			<svg
 				viewBox={`0 0 ${vowelChartLayout.viewBoxWidth} ${vowelChartLayout.viewBoxHeight}`}
-				className="h-full w-full"
+				className="h-full w-full enter-scale enter-delay-80"
 				aria-hidden
 			>
 				<title>Vowel chart grid</title>
-				{arrowMarkerId && (
-					<defs>
-						<marker
-							id={arrowMarkerId}
-							viewBox="0 0 10 10"
-							refX="5"
-							refY="5"
-							markerWidth="5"
-							markerHeight="5"
-							orient="auto-start-reverse"
-						>
-							<path d="M 0 0 L 10 5 L 0 10 z" className="fill-primary" fillOpacity={0.8} />
-						</marker>
-					</defs>
-				)}
 				<VowelGrid />
 				{svgOverlay}
 			</svg>
