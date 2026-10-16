@@ -1,10 +1,11 @@
 # Phonaria feature map
 
-This map describes how to reach features, not a claim that all features pass. The common-word transcription and sound-frequency journeys below have executable verification recipes. Other entries are navigation references awaiting dedicated journeys.
+This map describes how to reach features, not a claim that all features pass. The common-word transcription, transcription history, and sound-frequency journeys below have executable verification recipes. Other entries are navigation references awaiting dedicated journeys.
 
 | Feature | Entry point | Coverage here |
 | --- | --- | --- |
 | Common-word transcription | `/`, header **Transcription** | Executable journey below |
+| Transcription history | `/`, focus the input once this browser has a transcription | Executable journey below |
 | Other pronunciation variants | Transcribe a word, **Show other pronunciations of hello** | Not exercised |
 | Word definitions | Transcribe, **Definition of hello** | Not exercised; requires Worker/Wiktionary |
 | Spelling suggestions and server lookup | `/`, words outside the bundled lists | Not exercised; server lookup needs Turso |
@@ -43,17 +44,19 @@ The maintained [TypeScript checkpoints](../scripts/transcription.ts) pair typed,
 | Sound details | **Details for /h/**, then **More about /h/** for the full view |
 | Empty-state example | Button **Hello world** |
 
-Enter submits when the input is focused. Escape clears a nonempty focused input. Escape while a popup is focused can close the popup instead; explicitly focus the input for the clear check.
+Enter submits when the input is focused. Escape clears a nonempty focused input. When the history list under the input is open, the first Escape closes it and the second clears. Escape while a popup is focused can close the popup instead; explicitly focus the input for the clear check.
 
 ### Executable journey
 
-Start with `bun run verify init transcription` and save its returned path as `VERIFY_RUN`. Run `bun run verify serve "$VERIFY_RUN"` in a separate persistent process, retaining its handle, and wait for the ready message. This journey uses a 1280 × 720 desktop viewport. Every command below is run from the repo root. The `browser` helper forwards the remaining arguments to agent-browser in the owned session.
+Start with `bun run verify init transcription` and save its returned path as `VERIFY_RUN`. Run `bun run verify serve "$VERIFY_RUN"` in a separate persistent process, retaining its handle, and wait for the ready message. This journey uses a 1280 × 720 desktop viewport. Wait for hydration before filling: on a cold dev server, a click on **Transcribe text** can land while the server-rendered button is still `aria-disabled` and ignores pointer events. Every command below is run from the repo root. The `browser` helper forwards the remaining arguments to agent-browser in the owned session.
 
 ```bash
+HYD="Object.keys(document.querySelector('[aria-label=\"Text to transcribe\"]')||{}).some(k=>k.startsWith('__reactProps'))"
 bun run verify browser "$VERIFY_RUN" open about:blank
 bun run verify browser "$VERIFY_RUN" trace start
 bun run verify browser "$VERIFY_RUN" set viewport 1280 720
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify browser "$VERIFY_RUN" snapshot -i
 bun run verify observe "$VERIFY_RUN" empty
 
@@ -77,6 +80,8 @@ bun run verify observe "$VERIFY_RUN" cleared
 
 bun run verify browser "$VERIFY_RUN" find label "Text to transcribe" fill "hello"
 bun run verify observe "$VERIFY_RUN" draft
+# The history list shows "hello world": the first Escape closes it.
+bun run verify browser "$VERIFY_RUN" press Escape
 bun run verify browser "$VERIFY_RUN" press Escape
 bun run verify browser "$VERIFY_RUN" snapshot -i
 bun run verify observe "$VERIFY_RUN" escape
@@ -100,6 +105,82 @@ This journey covers desktop Chromium, client common-word lookup, shared-query re
 ## Frequency page without categories
 
 Use `init frequency-page` for a focused check of `/ipa-chart/frequency`. Open the page at 1280 × 900, then run `observe "$VERIFY_RUN" ranking`. Expect 40 ranked sounds, no category legend or category names in row labels, and 40 distinct shades that vary continuously with frequency. Review screenshots in both themes and at a narrow width. Sound details and audio are outside this focused journey.
+
+## Transcription history
+
+Recent transcriptions are saved in this browser's `localStorage` (`transcription-history`) and shown in a list under the input. There is no header button or panel. The list opens when the focused field is empty (newest first, at most 8) or when typed text matches saved entries. It stays closed while the field holds the text whose result is showing. Each row shows the text and its IPA. Picking a row (click, or arrows then Enter) submits it.
+
+The [checkpoints](../scripts/transcription-history.ts) read the input, URL, focus, the listbox and its option texts, the IPA under **Hello world**, whether a header **History** button exists, and the stored entry texts. Expected `hə.ˈloʊ ˈwɝld` is the stored copy format of the transcription journey's grounded **hello world** IPA (`.` for syllables). Base UI hides the rest of the page from the accessibility tree while the list is open, so close it with Escape before clicking page controls such as the example chips.
+
+### Controls
+
+| User control | CLI locator |
+| --- | --- |
+| History list | `[role="listbox"]` named **Recent transcriptions**; rows are `[role="option"]` |
+| Remove a row | Highlight it with the arrow keys, then `press Shift+Delete`; or the row's **Remove "…" from history** button (pointer only, `tabIndex=-1`) |
+| Clear all | **Clear history**, then **Clear** (or **Cancel**) in the list's footer. Tab from the input moves into the footer. |
+
+### Executable journey
+
+Desktop viewport 1280 × 720, fresh browser profile. After `init transcription-history` and `serve`:
+
+```bash
+HYD="Object.keys(document.querySelector('[aria-label=\"Text to transcribe\"]')||{}).some(k=>k.startsWith('__reactProps'))"
+DONE="document.querySelectorAll('[data-ipa-token]').length>0 && !document.querySelector('[aria-label=\"Text to transcribe\"]').disabled"
+bun run verify browser "$VERIFY_RUN" open about:blank
+bun run verify browser "$VERIFY_RUN" trace start
+bun run verify browser "$VERIFY_RUN" set viewport 1280 720
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Hello world" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "new URL(location.href).searchParams.get('q')==='Hello world' && $DONE"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Clear text" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[role=listbox]')"
+bun run verify browser "$VERIFY_RUN" press Escape
+bun run verify browser "$VERIFY_RUN" wait --fn "!document.querySelector('[role=listbox]')"
+bun run verify browser "$VERIFY_RUN" find role button click --name "She chose well" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "new URL(location.href).searchParams.get('q')==='She chose well' && $DONE"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Clear text" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "document.querySelectorAll('[role=option]').length===2"
+bun run verify observe "$VERIFY_RUN" recent
+
+bun run verify browser "$VERIFY_RUN" keyboard type "hel"
+bun run verify browser "$VERIFY_RUN" wait --fn "document.querySelectorAll('[role=option]').length===1"
+bun run verify observe "$VERIFY_RUN" filtered
+bun run verify browser "$VERIFY_RUN" press Escape
+bun run verify browser "$VERIFY_RUN" wait --fn "!document.querySelector('[role=listbox]')"
+bun run verify observe "$VERIFY_RUN" escape-closes
+bun run verify browser "$VERIFY_RUN" press Escape
+bun run verify observe "$VERIFY_RUN" escape-clears
+
+bun run verify browser "$VERIFY_RUN" press ArrowDown
+bun run verify browser "$VERIFY_RUN" press ArrowDown
+bun run verify browser "$VERIFY_RUN" press Enter
+bun run verify browser "$VERIFY_RUN" wait --fn "new URL(location.href).searchParams.get('q')==='She chose well' && $DONE"
+bun run verify observe "$VERIFY_RUN" picked
+bun run verify browser "$VERIFY_RUN" find label "Text to transcribe" click
+bun run verify browser "$VERIFY_RUN" wait 400
+bun run verify observe "$VERIFY_RUN" no-list-for-result
+
+bun run verify browser "$VERIFY_RUN" find role button click --name "Clear text" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "document.querySelectorAll('[role=option]').length===2"
+bun run verify browser "$VERIFY_RUN" press ArrowDown
+bun run verify browser "$VERIFY_RUN" press Shift+Delete
+bun run verify browser "$VERIFY_RUN" wait --fn "document.querySelectorAll('[role=option]').length===1"
+bun run verify observe "$VERIFY_RUN" removed
+bun run verify browser "$VERIFY_RUN" press Tab
+bun run verify observe "$VERIFY_RUN" footer-focus
+bun run verify browser "$VERIFY_RUN" press Enter
+bun run verify browser "$VERIFY_RUN" find role button click --name "Clear" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "!document.querySelector('[role=listbox]')"
+bun run verify observe "$VERIFY_RUN" emptied
+```
+
+The first ArrowDown opens the list on the empty field and the second highlights the newest entry. `recent` requires both entries newest first, the **Hello world** IPA, input focus, no header button, and both entries stored. `filtered` and `escape-closes` prove the list narrows to text matches and that the first Escape only closes it. `escape-clears` requires an empty, focused field with the list still closed. `picked` requires the picked text submitted to `?q=`. The field is disabled while transcribing, so it is unfocused there. `no-list-for-result` requires the list to stay closed when the field is focused again. `removed` requires the highlighted entry gone from the list and storage. `footer-focus` requires Tab to reach **Clear history** with the list open. `emptied` requires empty storage and a closed list with focus back in the field.
+
+### Limits
+
+Desktop Chromium only. It does not check the phone list height, the row × button with a pointer or touch, the rest of the footer focus order (Shift+Tab back to the field, Tab out to submit, Escape), or cross-tab sync.
 
 ## Sound frequency
 
