@@ -1,9 +1,8 @@
 "use client";
 
 import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
-import { Label } from "@phonaria/ui/components/label";
 import { ScrollArea } from "@phonaria/ui/components/scroll-area";
-import { Switch } from "@phonaria/ui/components/switch";
+import { Toggle } from "@phonaria/ui/components/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@phonaria/ui/components/tooltip";
 import { type CSSProperties, useId, useState } from "react";
 import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
@@ -14,6 +13,7 @@ import type {
 } from "@/lib/ipa-chart/vowel-chart-data";
 import { cn } from "@/lib/utils";
 import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
+import { VowelChartGuide } from "./vowel-chart-guide";
 import {
 	getMarkerPercentPosition,
 	VowelChartSurface,
@@ -97,17 +97,22 @@ export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 	return (
 		<div className="flex w-full flex-col gap-3">
 			<div className="flex flex-wrap items-center justify-between gap-3">
-				<VowelChartLegend showGlide={diphthongGlides.length > 0} />
-				{diphthongGlides.length > 0 && (
-					<Label className="cursor-pointer rounded-md border bg-background-strong px-3 py-2">
-						<span>Show diphthongs</span>
-						<Switch
-							checked={showDiphthongs}
-							onCheckedChange={setShowDiphthongs}
+				<VowelChartLegend showGlide={showDiphthongs} />
+				<div className="flex flex-wrap items-center gap-2">
+					{diphthongGlides.length > 0 && (
+						<Toggle
+							variant="outline"
+							size="sm"
+							pressed={showDiphthongs}
+							onPressedChange={setShowDiphthongs}
 							aria-describedby={statusId}
-						/>
-					</Label>
-				)}
+							className="text-muted-foreground aria-pressed:bg-accent aria-pressed:text-accent-foreground"
+						>
+							Diphthongs
+						</Toggle>
+					)}
+					<VowelChartGuide showGlide={diphthongGlides.length > 0} />
+				</div>
 			</div>
 
 			<ScrollArea className="w-full">
