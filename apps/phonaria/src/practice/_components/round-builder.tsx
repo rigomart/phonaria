@@ -43,10 +43,11 @@ export function RoundBuilder() {
 	const syllables = round.word.syllableCount;
 
 	return (
-		<div className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center gap-7 px-4 py-12 animate-in fade-in duration-500 motion-reduce:animate-none">
+		<div className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center gap-7 px-4 py-12 enter-fade">
 			<RoundDots currentIndex={currentIndex} onJump={goToRound} rounds={rounds} />
 
-			<div className="flex flex-col items-center gap-0.5">
+			{/* Keyed so each new word rises in, marking the move between rounds. */}
+			<div className="flex flex-col items-center gap-0.5 enter-rise" key={currentIndex}>
 				<h1 className="font-bold font-display text-5xl tracking-tight">{round.word.word}</h1>
 				<p className="text-muted-foreground text-sm">
 					{syllables} {syllables === 1 ? "syllable" : "syllables"}

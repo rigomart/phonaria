@@ -9,6 +9,7 @@
 import { Button } from "@phonaria/ui/components/button";
 import { Check, X } from "lucide-react";
 import type { Ref } from "react";
+import { enterDelay, stagger } from "@/lib/motion";
 import { normalizeAcceptedVariants } from "@/lib/practice/scoring";
 import type { TopicDefinition } from "@/lib/practice/topics/types";
 import {
@@ -38,21 +39,25 @@ export function Scoreboard({
 	const rows = selectReviewRows(rounds, scores);
 	const accuracy = selectSoundAccuracy(scores);
 	const tally = selectTopicSoundTally(scores, topic.topicSounds);
+	// The headline lands first, then the stats, then each word's review in order.
+	const rowStagger = { start: 160, step: 30, cap: 8 };
 	return (
-		<div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 animate-in fade-in duration-500 motion-reduce:animate-none">
+		<div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
 			<div className="flex flex-col items-center gap-1 text-center">
-				<span className="text-muted-foreground text-sm">Session complete</span>
+				<span className="text-muted-foreground text-sm enter-rise">Session complete</span>
 				<h1
-					className="font-bold font-display text-5xl tracking-tight outline-none"
+					className="font-bold font-display text-5xl tracking-tight outline-none enter-scale enter-delay-40"
 					ref={headingRef}
 					tabIndex={-1}
 				>
 					{selectWordsCorrect(scores)} of {scores.length}
 				</h1>
-				<span className="text-muted-foreground text-sm">dictionary matches</span>
+				<span className="text-muted-foreground text-sm enter-rise enter-delay-80">
+					dictionary matches
+				</span>
 			</div>
 
-			<dl className="flex justify-center gap-6 text-center text-sm">
+			<dl className="flex justify-center gap-6 text-center text-sm enter-rise enter-delay-120">
 				<div className="flex flex-col">
 					<dt className="order-last text-muted-foreground text-xs">sound accuracy</dt>
 					<dd className="font-semibold text-lg">
@@ -70,7 +75,7 @@ export function Scoreboard({
 			</dl>
 
 			<ul className="flex flex-col gap-2">
-				{rows.map(({ round, score }) => {
+				{rows.map(({ round, score }, index) => {
 					const blank = round.sequence.length === 0;
 					const accepted = blank
 						? normalizeAcceptedVariants([...round.word.variants])[0]
@@ -78,8 +83,9 @@ export function Scoreboard({
 
 					return (
 						<li
-							className="flex flex-col gap-2 rounded-xl border bg-background p-3"
+							className="flex flex-col gap-2 rounded-xl border bg-background p-3 enter-rise"
 							key={round.word.word}
+							style={enterDelay(stagger(index, rowStagger))}
 						>
 							<div className="flex items-center gap-2">
 								{score.correct ? (
@@ -116,7 +122,10 @@ export function Scoreboard({
 				})}
 			</ul>
 
-			<div className="flex justify-center">
+			<div
+				className="flex justify-center enter-fade"
+				style={enterDelay(stagger(rows.length, rowStagger))}
+			>
 				<Button onClick={onNewSession} size="lg">
 					New session
 				</Button>

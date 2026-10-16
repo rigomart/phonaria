@@ -12,10 +12,12 @@ const vowelCount = phonemeCounts.monophthongs + phonemeCounts.diphthongs;
 export function VowelsContent() {
 	return (
 		<div className="flex flex-1 flex-col items-center bg-background">
-			<div className="w-full p-4 sm:p-6 max-w-5xl space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+			<div className="w-full p-4 sm:p-6 max-w-5xl space-y-6">
 				<div className="flex flex-col gap-1">
-					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Vowels</h1>
-					<p className="text-sm text-muted-foreground">
+					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display enter-rise">
+						Vowels
+					</h1>
+					<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
 						{phonemeCounts.diphthongs > 0
 							? `${vowelCount} American English vowel sounds: ${phonemeCounts.monophthongs} monophthongs and ${phonemeCounts.diphthongs} diphthongs.`
 							: `${phonemeCounts.monophthongs} American English monophthong vowel sounds.`}{" "}

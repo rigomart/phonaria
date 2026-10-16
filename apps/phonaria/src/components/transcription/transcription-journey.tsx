@@ -30,7 +30,7 @@ export function TranscriptionJourney({
 				<div className="flex flex-1 flex-col items-center pt-[8vh]">
 					<HomeIntro query={q} />
 
-					<div className="w-full max-w-2xl px-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+					<div className="w-full max-w-2xl px-4 enter-rise enter-delay-60">
 						<G2PInputForm />
 					</div>
 

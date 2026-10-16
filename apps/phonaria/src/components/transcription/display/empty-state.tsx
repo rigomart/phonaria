@@ -3,6 +3,7 @@
 import { ArrowRightIcon } from "lucide-react";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
+import { enterDelay } from "@/lib/motion";
 
 const EXAMPLES = ["Hello world", "Judge the rhythm", "She chose well", "Through thick fog"];
 
@@ -11,7 +12,7 @@ export function EmptyState() {
 	const hydrated = useHydrated();
 
 	return (
-		<div className="flex flex-col items-center gap-6 px-4 pt-6 pb-8 animate-in fade-in duration-700 delay-200 fill-mode-both">
+		<div className="flex flex-col items-center gap-6 px-4 pt-6 pb-8 enter-fade enter-delay-120">
 			<div className="w-full max-w-md space-y-4 text-center">
 				<p className="text-sm text-muted-foreground font-display">Try an example</p>
 
@@ -22,8 +23,8 @@ export function EmptyState() {
 							key={example}
 							onClick={() => submit(example)}
 							disabled={!hydrated || isPending}
-							className="inline-flex items-center gap-1.5 rounded-lg border bg-background px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground disabled:opacity-50 animate-in fade-in slide-in-from-bottom-1 fill-mode-both duration-300"
-							style={{ animationDelay: `${300 + i * 75}ms` }}
+							className="inline-flex items-center gap-1.5 rounded-lg border bg-background px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground disabled:opacity-50 enter-rise"
+							style={enterDelay(150 + i * 50)}
 						>
 							<span>{example}</span>
 							<ArrowRightIcon className="size-3 opacity-50" />

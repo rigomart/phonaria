@@ -7,16 +7,18 @@ const phonemeCounts = getLanguagePhonemeCount(targetAccent);
 
 export function ConsonantsContent() {
 	return (
-		<div className="flex flex-1 flex-col items-center bg-background p-4 sm:p-6 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+		<div className="flex flex-1 flex-col items-center bg-background p-4 sm:p-6 space-y-6">
 			<div className="w-full max-w-5xl flex flex-col gap-1">
-				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Consonants</h1>
-				<p className="text-sm text-muted-foreground">
+				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display enter-rise">
+					Consonants
+				</h1>
+				<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
 					{phonemeCounts.consonants} American English consonant sounds. Click any sound for details
 					and audio.
 				</p>
 			</div>
 
-			<div className="w-full max-w-5xl">
+			<div className="w-full max-w-5xl enter-rise enter-delay-80">
 				<ConsonantChartLegend />
 			</div>
 

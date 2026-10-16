@@ -16,6 +16,7 @@ import { SpellingSuggestionLine } from "@/components/transcription/spelling-sugg
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import { useCurrentTranscription } from "@/hooks/use-transcribe";
 import { useTranscriptionHistory } from "@/hooks/use-transcription-history";
+import { enterDelay } from "@/lib/motion";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
 import {
 	historyEntryKey,
@@ -245,10 +246,8 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 				<div className="flex items-center gap-3">
 					{transcriptionResult ? (
 						<div
-							className="shrink-0 animate-in fade-in duration-500 fill-mode-both"
-							style={{
-								animationDelay: `${transcriptionResult.words.length * 50 + 400}ms`,
-							}}
+							className="shrink-0 enter-fade"
+							style={enterDelay(transcriptionResult.words.length * 40 + 200)}
 						>
 							<ButtonGroup>
 								<TranscriptionInfoButton />

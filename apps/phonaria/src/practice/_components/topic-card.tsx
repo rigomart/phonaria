@@ -1,12 +1,14 @@
+import type { CSSProperties } from "react";
 import { Link } from "@/components/link";
 import type { TopicDefinition } from "@/lib/practice/topics/types";
 import { summarizeTopicSounds } from "../_lib/topic-sounds";
 
-export function TopicCard({ topic }: { topic: TopicDefinition }) {
+/** `style` carries the card's place in the list's entrance. */
+export function TopicCard({ topic, style }: { topic: TopicDefinition; style?: CSSProperties }) {
 	const { ipa, examples } = summarizeTopicSounds(topic.topicSounds);
 
 	return (
-		<li>
+		<li className="enter-rise" style={style}>
 			<Link
 				className="flex flex-col gap-3 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 				href={`/practice/${topic.id}`}

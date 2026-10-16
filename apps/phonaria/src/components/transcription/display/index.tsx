@@ -7,6 +7,7 @@ import { RotateCcw } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCurrentTranscription, useTranscribe } from "@/hooks/use-transcribe";
 import { extractWordIpa } from "@/lib/ipa-copy";
+import { enterDelay } from "@/lib/motion";
 import { type LookupErrorKind, useG2PStore } from "@/lib/transcription/g2p-store";
 import { shouldShowTranscriptionEmptyState } from "@/lib/transcription/search";
 import type { TranscribedWord, TranscriptionResult } from "@/lib/types/g2p";
@@ -34,8 +35,8 @@ function WordColumn({ targetAccent, word, index }: WordColumnProps) {
 
 	return (
 		<div
-			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 has-[[data-expanded]]:z-20 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
-			style={{ animationDelay: `${index * 50}ms`, animationDuration: "300ms" }}
+			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 has-[[data-expanded]]:z-20 enter-rise"
+			style={enterDelay(index * 40)}
 		>
 			<WordDefinitionPopover word={word.word} ipa={ipa} />
 
@@ -93,8 +94,8 @@ function TranscriptionResults({
 			</div>
 
 			<div
-				className="mt-6 flex justify-center animate-in fade-in duration-500 fill-mode-both"
-				style={{ animationDelay: `${result.words.length * 50 + 400}ms` }}
+				className="mt-6 flex justify-center enter-fade"
+				style={enterDelay(result.words.length * 40 + 200)}
 			>
 				<p className="text-xs text-muted-foreground">
 					Click a word for its meaning · click a sound for how to say it

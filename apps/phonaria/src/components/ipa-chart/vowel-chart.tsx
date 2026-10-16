@@ -11,6 +11,7 @@ import type {
 	StaticMonophthongVowelChartEntry,
 	StaticVowelChartEntry,
 } from "@/lib/ipa-chart/vowel-chart-data";
+import { enterDelay } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
 import { VowelChartGuide } from "./vowel-chart-guide";
@@ -46,6 +47,7 @@ type DiphthongGlideData = {
 	target: ChartPoint;
 	label: ChartPoint;
 	path: string;
+	arrow: GlideArrow;
 	startHasMonophthong: boolean;
 	targetHasMonophthong: boolean;
 };
@@ -55,10 +57,16 @@ type MarkerOffset = {
 	y: number;
 };
 
+/** Where the glide ends and the direction it arrives from, in degrees. */
+type GlideArrow = ChartPoint & { angle: number };
+
 const BASE_MARKER_OFFSET: MarkerOffset = { x: 0, y: 0 };
 const MARKER_OFFSET_RADIUS = 14;
 const GLIDE_TARGET_GAP = 14;
 const GLIDE_LABEL_OFFSET = 10;
+// Milliseconds. Glides draw one after another, and each label lands as its glide ends.
+const GLIDE_STAGGER = 40;
+const GLIDE_DRAW_MS = 350;
 
 const MARKER_OFFSET_OVERRIDES: Record<string, MarkerOffset[]> = {
 	"open-front": [
@@ -83,7 +91,6 @@ const DIPHTHONG_BOWS = {
 export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 	const [showDiphthongs, setShowDiphthongs] = useState(false);
 	const reactId = useId();
-	const arrowMarkerId = `vowel-diphthong-arrow-${reactId.replaceAll(":", "")}`;
 	const statusId = `vowel-diphthong-status-${reactId.replaceAll(":", "")}`;
 	const markers = getVowelMarkers(entries);
 	const monophthongMarkers = markers.filter(
@@ -96,7 +103,7 @@ export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 
 	return (
 		<div className="flex w-full flex-col gap-3">
-			<div className="flex flex-wrap items-center justify-between gap-3">
+			<div className="flex flex-wrap items-center justify-between gap-3 enter-rise enter-delay-80">
 				<VowelChartLegend showGlide={showDiphthongs} />
 				<div className="flex flex-wrap items-center gap-2">
 					{diphthongGlides.length > 0 && (
@@ -119,14 +126,7 @@ export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 				<div className="flex justify-center-safe">
 					<div className="w-full max-w-2xl min-w-96 shrink-0">
 						<VowelChartSurface
-							arrowMarkerId={arrowMarkerId}
-							svgOverlay={
-								<DiphthongGlideLayer
-									glides={diphthongGlides}
-									arrowMarkerId={arrowMarkerId}
-									visible={showDiphthongs}
-								/>
-							}
+							svgOverlay={<DiphthongGlideLayer glides={diphthongGlides} visible={showDiphthongs} />}
 							overlay={
 								<>
 									{monophthongMarkers.map((marker) => (
@@ -137,11 +137,12 @@ export function VowelChart({ targetAccent, entries }: VowelChartProps) {
 										/>
 									))}
 									{showDiphthongs &&
-										diphthongGlides.map((glide) => (
+										diphthongGlides.map((glide, index) => (
 											<DiphthongLabel
 												key={glide.entry.id}
 												targetAccent={targetAccent}
 												glide={glide}
+												delay={index * GLIDE_STAGGER + GLIDE_DRAW_MS - 120}
 											/>
 										))}
 								</>
@@ -220,6 +221,7 @@ function getDiphthongGlides(
 			target,
 			label: geometry.label,
 			path: geometry.path,
+			arrow: geometry.arrow,
 			startHasMonophthong: Boolean(startMonophthong),
 			targetHasMonophthong: Boolean(targetMonophthong),
 		};
@@ -254,6 +256,8 @@ function VowelMarker({
 	const buttonStyles = {
 		"--marker-left": `${leftPercent}%`,
 		"--marker-top": `${topPercent}%`,
+		// Markers land after the chart settles, sweeping from close front to open back.
+		...enterDelay(80 + topPercent * 1.2 + leftPercent * 0.6),
 	};
 	const ariaLabel = `${marker.entry.label} (${marker.entry.ipa})`;
 	const isRounded = marker.entry.features.roundness === "rounded";
@@ -271,7 +275,7 @@ function VowelMarker({
 								className={cn(
 									vowelMarkerButtonBaseClass,
 									"left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2",
-									"hover:z-10 motion-reduce:transition-none",
+									"hover:z-10 motion-reduce:transition-none enter-pop",
 									"data-details-open:z-10 data-details-open:ring-2 data-details-open:ring-ring data-details-open:ring-offset-2 data-details-open:ring-offset-background",
 									{
 										"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary":
@@ -305,14 +309,17 @@ function VowelMarker({
 function DiphthongLabel({
 	targetAccent,
 	glide,
+	delay,
 }: {
 	targetAccent: TargetAccent;
 	glide: DiphthongGlideData;
+	delay: number;
 }) {
 	const { leftPercent, topPercent } = getMarkerPercentPosition(glide.label, vowelChartLayout);
 	const buttonStyles = {
 		"--marker-left": `${leftPercent}%`,
 		"--marker-top": `${topPercent}%`,
+		...enterDelay(delay),
 	};
 	const ariaLabel = `${glide.entry.label} (${glide.entry.ipa})`;
 
@@ -326,7 +333,7 @@ function DiphthongLabel({
 							<button
 								type="button"
 								data-diphthong={glide.entry.id}
-								className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors hover:text-primary data-details-open:bg-secondary data-details-open:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg"
+								className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors hover:text-primary data-details-open:bg-secondary data-details-open:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg enter-pop"
 								style={buttonStyles as CSSProperties}
 								aria-label={ariaLabel}
 							/>
@@ -349,34 +356,82 @@ function DiphthongLabel({
 
 function DiphthongGlideLayer({
 	glides,
-	arrowMarkerId,
 	visible,
 }: {
 	glides: DiphthongGlideData[];
-	arrowMarkerId: string;
 	visible: boolean;
 }) {
 	return (
 		<g
 			className={cn(
-				"pointer-events-none transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none",
-				visible ? "opacity-100" : "translate-y-1 opacity-0",
+				"pointer-events-none transition-opacity duration-200 ease-out motion-reduce:transition-none",
+				visible ? "opacity-100" : "opacity-0",
 			)}
 		>
-			{glides.map((glide) => (
-				<g key={glide.entry.id}>
-					<path
-						d={glide.path}
-						className="stroke-primary"
-						strokeOpacity={0.8}
-						strokeWidth={2}
-						fill="none"
-						markerEnd={`url(#${arrowMarkerId})`}
-					/>
-					{!glide.startHasMonophthong && <HollowEndpoint point={glide.start} />}
-					{!glide.targetHasMonophthong && <HollowEndpoint point={glide.target} />}
-				</g>
+			{glides.map((glide, index) => (
+				<DiphthongGlide
+					key={glide.entry.id}
+					glide={glide}
+					visible={visible}
+					delay={index * GLIDE_STAGGER}
+				/>
 			))}
+		</g>
+	);
+}
+
+/**
+ * Draws from the starting vowel to the target, and the arrowhead lands as the line
+ * arrives. Hiding waits out the layer's fade before resetting, so the next reveal
+ * draws again instead of popping in whole.
+ */
+function DiphthongGlide({
+	glide,
+	visible,
+	delay,
+}: {
+	glide: DiphthongGlideData;
+	visible: boolean;
+	delay: number;
+}) {
+	const timing = {
+		"--draw-delay": `${delay}ms`,
+		"--arrive-delay": `${delay + GLIDE_DRAW_MS - 80}ms`,
+	} as CSSProperties;
+	const { arrow } = glide;
+
+	return (
+		<g style={timing}>
+			<path
+				d={glide.path}
+				pathLength={1}
+				strokeDasharray={1}
+				className={cn(
+					"stroke-primary transition-[stroke-dashoffset] ease-emphasized motion-reduce:transition-none",
+					visible ? "duration-350 delay-(--draw-delay)" : "duration-0 delay-200",
+				)}
+				style={{ strokeDashoffset: visible ? 0 : 1 }}
+				strokeOpacity={0.8}
+				strokeWidth={2}
+				fill="none"
+			/>
+			{!glide.startHasMonophthong && <HollowEndpoint point={glide.start} />}
+			<g
+				className={cn(
+					"transition-opacity ease-out motion-reduce:transition-none",
+					visible
+						? "opacity-100 duration-150 delay-(--arrive-delay)"
+						: "opacity-0 duration-0 delay-200",
+				)}
+			>
+				<path
+					d="M -5 -5 L 5 0 L -5 5 z"
+					transform={`translate(${formatNumber(arrow.x)} ${formatNumber(arrow.y)}) rotate(${formatNumber(arrow.angle)})`}
+					className="fill-primary"
+					fillOpacity={0.8}
+				/>
+				{!glide.targetHasMonophthong && <HollowEndpoint point={glide.target} />}
+			</g>
 		</g>
 	);
 }
@@ -400,12 +455,14 @@ function getGlideGeometry(start: ChartPoint, target: ChartPoint, bow: number) {
 	const tangent = getQuadraticTangent(start, end.control, end.target, 0.5);
 	const tangentLength = Math.hypot(tangent.x, tangent.y) || 1;
 	const labelSide = Math.sign(bow) || 1;
+	const arrowAngle = Math.atan2(end.target.y - end.control.y, end.target.x - end.control.x);
 	return {
 		path: `M ${formatNumber(start.x)} ${formatNumber(start.y)} Q ${formatNumber(end.control.x)} ${formatNumber(end.control.y)} ${formatNumber(end.target.x)} ${formatNumber(end.target.y)}`,
 		label: {
 			x: midpoint.x + (-tangent.y / tangentLength) * GLIDE_LABEL_OFFSET * labelSide,
 			y: midpoint.y + (tangent.x / tangentLength) * GLIDE_LABEL_OFFSET * labelSide,
 		},
+		arrow: { ...end.target, angle: (arrowAngle * 180) / Math.PI },
 	};
 }
 
@@ -532,7 +589,7 @@ function VowelChartLegend({ showGlide }: { showGlide: boolean }) {
 				<span>R-colored</span>
 			</div>
 			{showGlide && (
-				<div className="flex items-center gap-1 sm:gap-1.5">
+				<div className="flex items-center gap-1 sm:gap-1.5 enter-fade">
 					<svg className="h-3 w-5 stroke-primary" viewBox="0 0 20 12" aria-hidden>
 						<title>Glide</title>
 						<path d="M 1 10 Q 9 1 17 5" fill="none" strokeWidth="1.5" />
