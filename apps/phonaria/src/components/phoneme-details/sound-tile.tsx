@@ -1,27 +1,18 @@
 "use client";
 
 import { Spinner } from "@phonaria/ui/components/spinner";
-import { PlayIcon, Turtle } from "lucide-react";
-import { useState } from "react";
+import { PlayIcon } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
 import { buildPublicAssetUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-const SLOW_SPEED = 0.75;
-
 const tileClass =
 	"relative flex h-16 min-w-16 shrink-0 items-center justify-center rounded-2xl bg-background px-3 font-display text-4xl leading-none text-foreground";
 
-/**
- * The sound's symbol. With a recording the whole tile plays it, and plays
- * alternate between normal and slow so a second listen is the slow one; the
- * corner badge shows which comes next.
- */
+/** The sound's symbol. With a recording the whole tile plays it. */
 export function SoundTile({ ipa, audioPath }: { ipa: string; audioPath?: string | null }) {
 	const src = audioPath ? buildPublicAssetUrl(audioPath) : null;
 	const { play, status } = useAudioManager(src ?? "");
-	// Keyed by source so moving to another sound starts again at normal speed.
-	const [slowNextFor, setSlowNextFor] = useState<string | null>(null);
 
 	if (!src) {
 		return (
@@ -31,20 +22,17 @@ export function SoundTile({ ipa, audioPath }: { ipa: string; audioPath?: string 
 		);
 	}
 
-	const slowNext = slowNextFor === src;
 	const busy = status === "loading" || status === "playing";
-	const label = slowNext ? `Play /${ipa}/ slowly` : `Play /${ipa}/`;
 
 	return (
 		<button
 			type="button"
-			aria-label={label}
-			title={slowNext ? "Play slowly" : "Play"}
+			aria-label={`Play /${ipa}/`}
+			title="Play"
 			data-status={status}
 			onClick={() => {
 				if (busy) return;
-				play(slowNext ? SLOW_SPEED : 1);
-				setSlowNextFor(slowNext ? null : src);
+				play();
 			}}
 			className={cn(
 				tileClass,
@@ -59,8 +47,6 @@ export function SoundTile({ ipa, audioPath }: { ipa: string; audioPath?: string 
 			>
 				{status === "loading" ? (
 					<Spinner className="size-3" />
-				) : slowNext ? (
-					<Turtle className="size-3" />
 				) : (
 					<PlayIcon className="size-3 fill-current" />
 				)}
