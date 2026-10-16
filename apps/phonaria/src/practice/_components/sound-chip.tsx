@@ -50,6 +50,7 @@ export function SoundChip({ sound, onRemove, className }: SoundChipProps) {
 					showComparisons: false,
 					showSpellings: false,
 					showFrequencyLink: false,
+					showChartLink: false,
 				}}
 				render={
 					<button

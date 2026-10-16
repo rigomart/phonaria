@@ -259,7 +259,7 @@ function VowelMarker({
 			<TooltipTrigger
 				render={
 					<PhonemeDetailsTrigger
-						details={{ targetAccent, phonemeId: marker.entry.id }}
+						details={{ targetAccent, phonemeId: marker.entry.id, showChartLink: false }}
 						render={
 							<button
 								type="button"
@@ -316,7 +316,7 @@ function DiphthongLabel({
 			<TooltipTrigger
 				render={
 					<PhonemeDetailsTrigger
-						details={{ targetAccent, phonemeId: glide.entry.id }}
+						details={{ targetAccent, phonemeId: glide.entry.id, showChartLink: false }}
 						render={
 							<button
 								type="button"

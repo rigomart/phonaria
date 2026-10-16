@@ -57,13 +57,14 @@ export function rankPhonemes<TLanguage extends TargetAccent>(
 }
 
 export type PhonemeFrequencySummary = {
-	band: FrequencyBand;
 	/** 1 is the most common sound. */
 	rank: number;
 	/** How many sounds are ranked. */
 	count: number;
-	/** The band's strength, from 1 (rare) to the number of bands (very common): how many meter bars light up. */
-	level: number;
+	/** Share of everyday speech, in percent. */
+	percentage: number;
+	/** `percentage` against the most common sound's, from 0 to 1: how full its bar is. */
+	relativeShare: number;
 };
 
 /** How common one sound is, for the details header, or null when the accent has no frequency data. */
@@ -74,12 +75,13 @@ export function summarizePhonemeFrequency(
 	const registry = getFrequencyRegistry(targetAccent);
 	const frequency = registry?.[phonemeId as LanguagePhonemeId<TargetAccent>];
 	if (!registry || !frequency) return null;
-	const band = getFrequencyBand(frequency.percentage);
+	const frequencies = Object.values(registry) as PhonemeFrequency[];
+	const largest = Math.max(...frequencies.map(({ percentage }) => percentage));
 	return {
-		band,
 		rank: frequency.rank,
-		count: Object.keys(registry).length,
-		level: FREQUENCY_BANDS.length - FREQUENCY_BANDS.indexOf(band),
+		count: frequencies.length,
+		percentage: frequency.percentage,
+		relativeShare: frequency.percentage / largest,
 	};
 }
 

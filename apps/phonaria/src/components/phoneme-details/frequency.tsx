@@ -1,28 +1,21 @@
-import { ChevronRight } from "lucide-react";
-import { Link } from "@/components/link";
 import { IPA_CHART_FREQUENCY_PATH } from "@/lib/ipa-chart-metadata";
 import {
-	type FREQUENCY_BANDS,
 	formatOrdinal,
+	formatPercentage,
 	type PhonemeFrequencySummary,
 } from "@/lib/phoneme-frequency";
 import { cn } from "@/lib/utils";
-
-type MeterHeights = readonly string[] & { length: typeof FREQUENCY_BANDS.length };
-
-/** One bar per band, rising like a signal meter: rare lights the first, very common all of them. */
-const METERS = {
-	inline: { heights: ["h-2", "h-3", "h-4", "h-5"], bar: "w-1", gap: "gap-0.5" },
-	stacked: { heights: ["h-3", "h-5", "h-7", "h-9"], bar: "w-1.5", gap: "gap-1" },
-} as const satisfies Record<string, { heights: MeterHeights; bar: string; gap: string }>;
+import { DetailsLink } from "./details-section";
 
 /**
- * How common the sound is: a meter lit up to its band, the band's name
- * ("Less common"), and its rank among all sounds ("34th of 40"). Where the host
- * allows it, the whole block opens the Frequency page, which ranks them all.
+ * How common the sound is, as plain numbers: its rank among all sounds
+ * ("22nd most common of 40") and its share of everyday speech, with a bar on the same
+ * scale as the Frequency page. Where the host allows it, a text link opens
+ * that page, which ranks them all. A plain link rather than a clickable block,
+ * so it reads apart from the header's expand button.
  *
- * `stacked` puts the meter above the words, for the compact level's narrow
- * column beside the diagram.
+ * `stacked` sets it as a column, for the compact level's narrow space beside
+ * the diagram.
  */
 export function SoundFrequency({
 	frequency,
@@ -33,74 +26,46 @@ export function SoundFrequency({
 	showLink: boolean;
 	stacked?: boolean;
 }) {
-	const label = `${frequency.band.label}: ${formatOrdinal(frequency.rank)} most common of ${frequency.count} sounds`;
-	const meter = METERS[stacked ? "stacked" : "inline"];
-	const chevron = showLink ? (
-		<ChevronRight
-			aria-hidden="true"
-			className="size-4 shrink-0 text-muted-foreground transition-transform group-hover/frequency:translate-x-0.5 group-hover/frequency:text-foreground motion-reduce:transition-none"
-		/>
+	const rank = formatOrdinal(frequency.rank);
+	const share = formatPercentage(frequency.percentage);
+	const link = showLink ? (
+		<DetailsLink href={IPA_CHART_FREQUENCY_PATH}>See ranking</DetailsLink>
 	) : null;
-	const bars = (
-		<span aria-hidden="true" className={cn("flex shrink-0 items-end", meter.gap)}>
-			{meter.heights.map((height, index) => (
-				<span
-					key={height}
-					className={cn(
-						"rounded-full",
-						meter.bar,
-						height,
-						index < frequency.level ? frequency.band.barClass : "bg-accent",
-					)}
-				/>
-			))}
-		</span>
-	);
-	const words = (
-		<span className="flex min-w-0 flex-col">
-			<span className={cn("font-medium text-foreground", stacked ? "text-base" : "text-sm")}>
-				{frequency.band.label}
-			</span>
-			<span className="text-xs text-muted-foreground tabular-nums">
-				{formatOrdinal(frequency.rank)} of {frequency.count} sounds
-			</span>
-		</span>
-	);
-	const content = stacked ? (
-		<>
-			<span className="flex items-start justify-between">
-				{bars}
-				{chevron}
-			</span>
-			{words}
-		</>
-	) : (
-		<>
-			{bars}
-			{words}
-			{chevron}
-		</>
-	);
-	const layout = stacked ? "flex flex-col gap-2" : "flex w-fit items-center gap-3";
 
-	if (!showLink) {
-		return (
-			<p aria-label={label} className={cn(layout, "whitespace-nowrap")}>
-				{content}
-			</p>
-		);
-	}
+	const rankNumber = (
+		<span
+			className={cn("font-display font-semibold text-foreground", stacked ? "text-2xl" : "text-lg")}
+		>
+			{rank}
+		</span>
+	);
 
 	return (
-		<Link
-			href={IPA_CHART_FREQUENCY_PATH}
-			aria-label={`${label}. See all sounds by frequency`}
-			className={cn(
-				layout,
-				"group/frequency -m-2 rounded-xl p-2 whitespace-nowrap transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
+		<div className={cn("flex flex-col gap-2", stacked && "h-full")}>
+			{stacked ? (
+				<p className="flex flex-col text-xs text-muted-foreground tabular-nums">
+					{rankNumber}
+					<span>most common of {frequency.count}</span>
+					<span className="mt-1">{share} of speech</span>
+				</p>
+			) : (
+				<div className="flex items-baseline justify-between gap-3">
+					<p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm text-muted-foreground tabular-nums">
+						<span>
+							{rankNumber} most common of {frequency.count} sounds
+						</span>
+						<span>{share} of speech</span>
+					</p>
+					{link}
+				</div>
 			)}
-		>
-			{content}
-		</Link>
+			<span aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-accent">
+				<span
+					className="block h-full rounded-full bg-primary"
+					style={{ width: `${frequency.relativeShare * 100}%` }}
+				/>
+			</span>
+			{stacked && link ? <div className="mt-auto pt-1">{link}</div> : null}
+		</div>
 	);
 }

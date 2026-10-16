@@ -1,8 +1,10 @@
+import { getIpaForPhonemeId, getPhonemeType } from "@phonaria/phonetics-data";
 import type { ReactNode } from "react";
+import { IPA_CHART_CONSONANTS_PATH, IPA_CHART_VOWELS_PATH } from "@/lib/ipa-chart-metadata";
 import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
 import { Articulation } from "./articulation";
 import { ComparisonList } from "./comparisons";
-import { DetailsSection } from "./details-section";
+import { DetailsLink, DetailsSection } from "./details-section";
 import { getSpellingPattern, type PhonemeDetailsOptions } from "./sound";
 import { SpellingPatterns } from "./spelling";
 
@@ -25,11 +27,18 @@ export function getDetailSections({
 	phonemeId,
 	showComparisons = true,
 	showSpellings = true,
+	showChartLink = true,
 }: PhonemeDetailsOptions): DetailSection[] {
+	const isConsonant = getPhonemeType(phonemeId) === "consonant";
 	const sections: DetailSection[] = [
 		{
 			id: "articulation",
 			title: "How it's made",
+			action: showChartLink ? (
+				<DetailsLink href={isConsonant ? IPA_CHART_CONSONANTS_PATH : IPA_CHART_VOWELS_PATH}>
+					{isConsonant ? "Consonant chart" : "Vowel chart"}
+				</DetailsLink>
+			) : undefined,
 			content: <Articulation targetAccent={targetAccent} phonemeId={phonemeId} />,
 		},
 	];
@@ -39,7 +48,13 @@ export function getDetailSections({
 		sections.push({
 			id: "comparisons",
 			title: "Compare with",
-			content: <ComparisonList targetAccent={targetAccent} comparisons={comparisons} />,
+			content: (
+				<ComparisonList
+					targetAccent={targetAccent}
+					ipa={getIpaForPhonemeId(phonemeId)}
+					comparisons={comparisons}
+				/>
+			),
 		});
 	}
 
@@ -48,7 +63,7 @@ export function getDetailSections({
 		sections.push({
 			id: "spelling",
 			title: "Spelling",
-			content: <SpellingPatterns spelling={spelling} />,
+			content: <SpellingPatterns targetAccent={targetAccent} spelling={spelling} />,
 		});
 	}
 
