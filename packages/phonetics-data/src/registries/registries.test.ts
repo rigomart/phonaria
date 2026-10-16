@@ -14,6 +14,7 @@ import {
 	getPhonemeArticulationRegistryForLanguage,
 	getPhonemeFrequencyRegistryForLanguage,
 	getSpellingPatternRegistryForLanguage,
+	getWordAudioPath,
 	hasLanguageFeature,
 	LANGUAGE_FEATURE_KEYS,
 	PHONEME_ARTICULATORY_FEATURE_KEYS,
@@ -105,6 +106,7 @@ describe.each(TARGET_ACCENTS)("%s feature availability", (accent) => {
 			contrasts: getContrastRegistryForLanguage(accent) !== null,
 			spellingPatterns: getSpellingPatternRegistryForLanguage(accent) !== null,
 			phonemeFrequency: getPhonemeFrequencyRegistryForLanguage(accent) !== null,
+			wordAudio: getWordAudioPath(accent, "seat") !== null,
 		};
 		const capabilities = getLanguageFeatureCapabilities(accent);
 		for (const feature of LANGUAGE_FEATURE_KEYS) {

@@ -1,0 +1,36 @@
+import { describe, expect, it } from "vitest";
+import { getWordAudioPath } from "../../registries/registries";
+import { EnglishPhonemeContrasts } from "./contrasts";
+import { EnglishWordAudio } from "./word-audio";
+
+const catalogWords = new Set(
+	EnglishPhonemeContrasts.flatMap(({ minimalPairs }) => minimalPairs.flatMap(({ words }) => words)),
+);
+
+describe("getWordAudioPath", () => {
+	it("returns the bucket-relative path of a recorded word", () => {
+		expect(getWordAudioPath("en-us", "seat")).toBe("audio/en-us/words/jenny/seat.ogg");
+	});
+
+	it("ignores case and surrounding whitespace", () => {
+		expect(getWordAudioPath("en-us", "  SeAt ")).toBe("audio/en-us/words/jenny/seat.ogg");
+	});
+
+	it("returns null for a word without a recording", () => {
+		expect(getWordAudioPath("en-us", "notaword")).toBeNull();
+		expect(getWordAudioPath("en-us", "")).toBeNull();
+	});
+
+	it("returns null for an accent without recordings", () => {
+		expect(getWordAudioPath("es-419", "seat")).toBeNull();
+	});
+});
+
+describe("EnglishWordAudio", () => {
+	it("records exactly the words of the minimal-pair catalog", () => {
+		const recorded = new Set(EnglishWordAudio.words);
+		expect(recorded.size).toBe(EnglishWordAudio.words.length);
+		expect([...recorded].filter((word) => !catalogWords.has(word))).toEqual([]);
+		expect([...catalogWords].filter((word) => !recorded.has(word))).toEqual([]);
+	});
+});

@@ -16,6 +16,7 @@
 		"check-types": "tsc --noEmit",
 		"test": "vitest run",
 		"generate": "bun src/generate.ts",
+		"manifest": "bun src/write-manifest.ts",
 		"probe": "bun src/probe.ts"
 	},
 	"dependencies": {
