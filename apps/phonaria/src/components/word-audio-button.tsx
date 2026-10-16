@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 type Props = {
 	targetAccent: TargetAccent;
 	word: string;
+	/** What the button shows; the word itself by default. */
+	children?: ReactNode;
 	/** Rendered instead of the button when the word has no recording. Nothing by default. */
 	fallback?: ReactNode;
 	className?: string;
@@ -21,7 +23,13 @@ type Props = {
  * look through `className`. Without a recording it renders `fallback`, never
  * speech synthesis.
  */
-export function WordAudioButton({ targetAccent, word, fallback = null, className }: Props) {
+export function WordAudioButton({
+	targetAccent,
+	word,
+	children = word,
+	fallback = null,
+	className,
+}: Props) {
 	const path = getWordAudioPath(targetAccent, word);
 	const src = path ? buildPublicAssetUrl(path) : null;
 	const { play, status } = useAudioManager(src ?? "");
@@ -36,7 +44,7 @@ export function WordAudioButton({ targetAccent, word, fallback = null, className
 			onClick={() => play()}
 			className={cn("cursor-pointer", className)}
 		>
-			{word}
+			{children}
 		</button>
 	);
 }

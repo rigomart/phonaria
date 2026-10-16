@@ -65,7 +65,7 @@ function ConsonantButton({
 			<TooltipTrigger
 				render={
 					<PhonemeDetailsTrigger
-						details={{ targetAccent, phonemeId: phoneme.id }}
+						details={{ targetAccent, phonemeId: phoneme.id, showChartLink: false }}
 						render={
 							<button
 								type="button"

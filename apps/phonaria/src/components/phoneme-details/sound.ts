@@ -26,6 +26,8 @@ export interface PhonemeDetailsOptions {
 	showSpellings?: boolean;
 	/** Off on the frequency page itself, and in Practice so following it doesn't end the session. */
 	showFrequencyLink?: boolean;
+	/** Off on the IPA chart pages, which already show the chart, and in Practice for the same reason as the frequency link. */
+	showChartLink?: boolean;
 }
 
 const TYPE_LABELS: Record<PhonemeType, string> = {
@@ -46,6 +48,7 @@ export function describeSound({
 	const type = getPhonemeType(phonemeId);
 	const ipa = getIpaForPhonemeId(phonemeId);
 	return {
+		targetAccent,
 		ipa,
 		// Diphthong labels run to a dozen words; where the glide starts and ends says the same plainly.
 		name:
@@ -55,11 +58,9 @@ export function describeSound({
 		typeLabel: TYPE_LABELS[type],
 		/** Diphthongs have no recordings yet. */
 		audioPath: type === "diphthong" ? null : `/audio/phonemes/${phonemeId}.ogg`,
-		/** The first spelling example, e.g. "[t]op"; spelling data, so it follows `showSpellings`. */
-		example: showSpellings
-			? getSpellingPattern(targetAccent, phonemeId)?.examples[0]?.spelled
-			: undefined,
-		/** Band and rank among all sounds, or null when the accent has no frequency data. */
+		/** The first spelling example, e.g. top as "[t]op"; spelling data, so it follows `showSpellings`. */
+		example: showSpellings ? getSpellingPattern(targetAccent, phonemeId)?.examples[0] : undefined,
+		/** Rank and share of speech among all sounds, or null when the accent has no frequency data. */
 		frequency: summarizePhonemeFrequency(targetAccent, phonemeId),
 		showFrequencyLink,
 	};

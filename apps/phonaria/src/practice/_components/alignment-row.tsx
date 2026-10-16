@@ -49,7 +49,12 @@ export function Glyph({
 
 	return (
 		<PhonemeDetailsTrigger
-			details={{ targetAccent: "en-us", phonemeId: key.id, showFrequencyLink: false }}
+			details={{
+				targetAccent: "en-us",
+				phonemeId: key.id,
+				showFrequencyLink: false,
+				showChartLink: false,
+			}}
 			render={
 				<button
 					aria-label={ariaLabel ?? describeSound(key)}
