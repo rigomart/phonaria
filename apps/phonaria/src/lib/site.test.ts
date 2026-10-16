@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+	buildPublicAssetUrl,
 	getDocumentMetadata,
 	getGoogleSiteVerification,
 	getPublicAssetBaseUrl,
@@ -82,6 +83,18 @@ describe("getPublicAssetBaseUrl", () => {
 		expect(getPublicAssetBaseUrl()).toBeUndefined();
 		process.env.PUBLIC_BUCKET_URL = "";
 		expect(getPublicAssetBaseUrl()).toBeUndefined();
+	});
+});
+
+describe("buildPublicAssetUrl", () => {
+	it("joins the bucket origin and the path, dropping leading slashes", () => {
+		process.env.PUBLIC_BUCKET_URL = "https://assets.example.test/";
+		expect(buildPublicAssetUrl("audio/a.ogg")).toBe("https://assets.example.test/audio/a.ogg");
+		expect(buildPublicAssetUrl("//audio/a.ogg")).toBe("https://assets.example.test/audio/a.ogg");
+	});
+
+	it("is null without a bucket origin", () => {
+		expect(buildPublicAssetUrl("audio/a.ogg")).toBeNull();
 	});
 });
 
