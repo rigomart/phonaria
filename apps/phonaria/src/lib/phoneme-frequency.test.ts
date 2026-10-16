@@ -1,7 +1,6 @@
 import { getLanguagePhonemeIds } from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import {
-	FREQUENCY_BANDS,
 	formatOrdinal,
 	formatPercentage,
 	hasPhonemeFrequency,
@@ -9,26 +8,13 @@ import {
 	summarizePhonemeFrequency,
 } from "./phoneme-frequency";
 
-function bandOf(id: string) {
-	return rankPhonemes("en-us").find((sound) => sound.phonemeId === id)?.band.label;
-}
-
-describe("frequency bands", () => {
-	it("puts the most and least common sounds in the outer bands", () => {
-		for (const id of ["AX", "T", "N"]) expect(bandOf(id), id).toBe("Very common");
-		for (const id of ["ZH", "OI"]) expect(bandOf(id), id).toBe("Rare");
-	});
-
-	it("ranks every English sound once and uses every band", () => {
+describe("frequency ranking", () => {
+	it("ranks every English sound once in order", () => {
 		const ranked = rankPhonemes("en-us");
 		expect(ranked.map(({ phonemeId }) => phonemeId).sort()).toEqual(
 			[...getLanguagePhonemeIds("en-us")].sort(),
 		);
 		expect(ranked.map(({ rank }) => rank)).toEqual(ranked.map((_, index) => index + 1));
-		expect(new Set(ranked.map(({ band }) => band))).toEqual(new Set(FREQUENCY_BANDS));
-		// Bands never interleave, so bar colors darken steadily down the list.
-		const bandOrder = ranked.map(({ band }) => FREQUENCY_BANDS.indexOf(band));
-		expect(bandOrder).toEqual([...bandOrder].sort((a, b) => a - b));
 	});
 
 	it("has no data for an accent without frequency data", () => {

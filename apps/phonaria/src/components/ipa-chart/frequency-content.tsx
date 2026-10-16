@@ -9,13 +9,11 @@ import { Link } from "@/components/link";
 import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import { SpelledWord } from "@/components/spelled-word";
 import {
-	FREQUENCY_BANDS,
 	formatOrdinal,
 	formatPercentage,
 	type RankedPhoneme,
 	rankPhonemes,
 } from "@/lib/phoneme-frequency";
-import { cn } from "@/lib/utils";
 
 const targetAccent = "en-us" satisfies TargetAccent;
 const ranked = rankPhonemes(targetAccent);
@@ -25,10 +23,7 @@ export function FrequencyContent() {
 	return (
 		<div className="flex flex-1 flex-col items-center bg-background">
 			<div className="w-full max-w-3xl space-y-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-				<div className="flex flex-wrap items-end justify-between gap-3">
-					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Frequency</h1>
-					<FrequencyLegend />
-				</div>
+				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display">Frequency</h1>
 				<ol className="flex flex-col">
 					{ranked.map((sound) => (
 						<RankingRow key={sound.phonemeId} sound={sound} />
@@ -48,26 +43,11 @@ export function FrequencyContent() {
 	);
 }
 
-function FrequencyLegend() {
-	return (
-		<ul
-			aria-label="Bar colors"
-			className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground"
-		>
-			{FREQUENCY_BANDS.map(({ label, barClass }) => (
-				<li key={label} className="flex items-center gap-1.5">
-					<span aria-hidden="true" className={cn("h-2 w-4 rounded-full", barClass)} />
-					{label}
-				</li>
-			))}
-		</ul>
-	);
-}
-
 function RankingRow({ sound }: { sound: RankedPhoneme<typeof targetAccent> }) {
 	const ipa = getIpaForPhonemeId(sound.phonemeId);
 	const example = EnglishPhonemeSpellingPatterns[sound.phonemeId].examples[0];
 	const share = formatPercentage(sound.percentage);
+	const relativeShare = sound.percentage / largest;
 
 	return (
 		<li>
@@ -76,7 +56,7 @@ function RankingRow({ sound }: { sound: RankedPhoneme<typeof targetAccent> }) {
 				render={
 					<button
 						type="button"
-						aria-label={`/${ipa}/ as in ${example.word}: ${formatOrdinal(sound.rank)}, ${share}, ${sound.band.label.toLowerCase()}`}
+						aria-label={`/${ipa}/ as in ${example.word}: ${formatOrdinal(sound.rank)}, ${share}`}
 						className="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-details-open:bg-accent motion-reduce:transition-none"
 					/>
 				}
@@ -93,8 +73,11 @@ function RankingRow({ sound }: { sound: RankedPhoneme<typeof targetAccent> }) {
 					className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-accent"
 				>
 					<span
-						className={cn("block h-full rounded-full", sound.band.barClass)}
-						style={{ width: `${(sound.percentage / largest) * 100}%` }}
+						className="block h-full rounded-full"
+						style={{
+							width: `${relativeShare * 100}%`,
+							backgroundColor: `color-mix(in oklch, var(--frequency-high) ${relativeShare * 100}%, var(--frequency-low))`,
+						}}
 					/>
 				</span>
 				<span className="w-14 shrink-0 text-right text-sm tabular-nums sm:w-16">{share}</span>
