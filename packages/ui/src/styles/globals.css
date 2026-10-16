@@ -48,14 +48,9 @@
 	--sidebar-accent-foreground: oklch(0.2 0.012 257);
 	--sidebar-border: oklch(0.92 0.006 257);
 	--sidebar-ring: oklch(0.372 0.039 257);
-	/*
-	 * How common a sound is, from rare (1) to very common (4): one slate hue stepping in
-	 * lightness, with the middle bands a touch bluer so a lone swatch still tells them apart.
-	 */
-	--frequency-1: oklch(0.83 0.02 257);
-	--frequency-2: oklch(0.68 0.05 257);
-	--frequency-3: oklch(0.51 0.07 257);
-	--frequency-4: oklch(0.32 0.035 257);
+	/* Endpoints for continuous frequency shading, mixed by share of speech. */
+	--frequency-low: oklch(0.83 0.02 257);
+	--frequency-high: oklch(0.32 0.035 257);
 	/* Backdrop for the light-line articulation diagrams. */
 	--diagram: oklch(0.45 0.02 257);
 	/* Voiced consonants on the chart: a light primary tint. */
@@ -116,10 +111,8 @@
 	--sidebar-accent-foreground: oklch(0.95 0.005 257);
 	--sidebar-border: oklch(0.22 0.015 257);
 	--sidebar-ring: oklch(0.76 0.025 257);
-	--frequency-1: oklch(0.42 0.02 257);
-	--frequency-2: oklch(0.56 0.045 257);
-	--frequency-3: oklch(0.7 0.06 257);
-	--frequency-4: oklch(0.88 0.03 257);
+	--frequency-low: oklch(0.42 0.02 257);
+	--frequency-high: oklch(0.88 0.03 257);
 	--diagram: oklch(0.25 0.015 257);
 	--shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
 	--shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
@@ -172,10 +165,6 @@
 	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-ring: var(--sidebar-ring);
-	--color-frequency-1: var(--frequency-1);
-	--color-frequency-2: var(--frequency-2);
-	--color-frequency-3: var(--frequency-3);
-	--color-frequency-4: var(--frequency-4);
 	--color-diagram: var(--diagram);
 	--color-voiced: var(--voiced);
 	--color-voiced-border: var(--voiced-border);

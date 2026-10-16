@@ -7,19 +7,6 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 
-/**
- * Most common first. `minPercentage` is the lowest share of speech in the band;
- * `barClass` is the band's bar color, a full string so Tailwind can find it.
- */
-export const FREQUENCY_BANDS = [
-	{ label: "Very common", minPercentage: 4, barClass: "bg-frequency-4" },
-	{ label: "Common", minPercentage: 2, barClass: "bg-frequency-3" },
-	{ label: "Less common", minPercentage: 0.5, barClass: "bg-frequency-2" },
-	{ label: "Rare", minPercentage: 0, barClass: "bg-frequency-1" },
-] as const;
-
-export type FrequencyBand = (typeof FREQUENCY_BANDS)[number];
-
 export function hasPhonemeFrequency(targetAccent: TargetAccent): boolean {
 	return hasLanguageFeature(targetAccent, "phonemeFrequency");
 }
@@ -30,15 +17,8 @@ function getFrequencyRegistry(targetAccent: TargetAccent) {
 	> | null;
 }
 
-export function getFrequencyBand(percentage: number): FrequencyBand {
-	const band = FREQUENCY_BANDS.find(({ minPercentage }) => percentage >= minPercentage);
-	if (!band) throw new Error(`No frequency band for ${percentage}%`);
-	return band;
-}
-
 export type RankedPhoneme<TLanguage extends TargetAccent = TargetAccent> = PhonemeFrequency & {
 	phonemeId: LanguagePhonemeId<TLanguage>;
-	band: FrequencyBand;
 };
 
 /** Every sound of the accent, most common first, or [] when the accent has no data. */
@@ -51,7 +31,6 @@ export function rankPhonemes<TLanguage extends TargetAccent>(
 		.map(([phonemeId, frequency]) => ({
 			phonemeId,
 			...frequency,
-			band: getFrequencyBand(frequency.percentage),
 		}))
 		.sort((a, b) => a.rank - b.rank);
 }

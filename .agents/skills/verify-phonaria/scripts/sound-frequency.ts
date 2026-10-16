@@ -2,17 +2,12 @@ import { type Feature, observation } from "./feature";
 
 // These functions run in the browser after serialization. Keep their dependencies
 // inside the function body and read only rendered DOM and browser state.
-// Expected ranks, shares and bands come from docs/research/issue-287-phoneme-frequency.md.
+// Expected ranks and shares come from docs/research/issue-287-phoneme-frequency.md.
 
 const ranking = observation(
 	() => {
 		const rows = Array.from(document.querySelectorAll("ol > li > button"));
 		const ipa = (row: Element) => row.children[1]?.textContent?.trim() ?? null;
-		const barColor = (row: Element) =>
-			Array.from(row.querySelector("[aria-hidden='true'] > span")?.classList ?? []).find((name) =>
-				name.startsWith("bg-frequency-"),
-			) ?? null;
-		const rowFor = (symbol: string) => rows.find((row) => ipa(row) === symbol);
 		return {
 			path: location.pathname,
 			heading: document.querySelector("h1")?.textContent?.trim() ?? null,
@@ -24,11 +19,15 @@ const ranking = observation(
 			rows: rows.length,
 			first: rows.slice(0, 3).map(ipa),
 			last: rows.length ? ipa(rows[rows.length - 1]) : null,
-			// One sound per band, so each color is checked against a known share.
-			colors: ["t", "ð", "h", "ʒ"].map((symbol) => {
-				const row = rowFor(symbol);
-				return row ? barColor(row) : null;
-			}),
+			categories: rows.some((row) =>
+				/very common|less common|rare|, common/i.test(row.getAttribute("aria-label") ?? ""),
+			),
+			shades: new Set(
+				rows.map((row) => {
+					const bar = row.querySelector("[aria-hidden='true'] > span");
+					return bar ? getComputedStyle(bar).backgroundColor : null;
+				}),
+			).size,
 		};
 	},
 	{
@@ -36,11 +35,12 @@ const ranking = observation(
 		heading: "Frequency",
 		tabs: 0,
 		comparisonChart: false,
-		legend: ["Very common", "Common", "Less common", "Rare"],
+		legend: [],
 		rows: 40,
 		first: ["ə", "t", "n"],
 		last: "ʒ",
-		colors: ["bg-frequency-4", "bg-frequency-3", "bg-frequency-2", "bg-frequency-1"],
+		categories: false,
+		shades: 40,
 	},
 );
 
@@ -83,7 +83,7 @@ function readCard() {
 // The meter lights one bar per band step: /ð/ 3.1% is Common, 3 of 4 (issue-287 record);
 // /h/ 1.35% is Less common, 2 of 4 (phoneme-frequency.json).
 const pageCard = observation(readCard, {
-	openTrigger: "/ð/ as in this: 11th, 3.1%, common",
+	openTrigger: "/ð/ as in this: 11th, 3.1%",
 	band: "Common",
 	rank: "11th most common",
 	of: "40",
@@ -145,5 +145,14 @@ export const soundFrequency = {
 		"order, band colors and lit meter bars read from the DOM; bar lengths, color steps and layout checked by screenshot review only",
 		"en-us only; the unavailable-accent path is covered by unit tests, as no route renders es-419 data",
 		"desktop Chromium; mobile layout reviewed by screenshot only when captured",
+	],
+} satisfies Feature;
+
+export const frequencyPage = {
+	title: "Frequency page with continuous shading",
+	checkpoints: { ranking },
+	coverageLimits: [
+		"Ranks, category absence and distinct rendered shades checked in Chromium; layout reviewed in saved screenshots",
+		"Sound details, audio playback and other routes are outside this focused journey",
 	],
 } satisfies Feature;
