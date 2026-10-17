@@ -8,7 +8,7 @@ type Plan = {
 	samples: PlanSample[];
 };
 
-export type WordAudioManifestSource = { voice: string; words: string[] };
+export type WordAudioManifestSource = { voice: string; words: readonly string[] };
 
 /** "en-US-JennyNeural" -> "jenny": the voice's name, lowercase, as its bucket folder. */
 export function voiceFolderName(voiceId: string): string {
@@ -78,11 +78,21 @@ ${words}	],
 `;
 }
 
-/** Write the committed manifest module for a completed output directory. */
-export function writeManifest(outputDir: string, phoneticsDataDir: string): string {
+/** Merge a completed batch into the existing manifest; refuse a different voice. */
+export function writeManifest(
+	outputDir: string,
+	phoneticsDataDir: string,
+	existing: WordAudioManifestSource,
+): string {
 	const plan = JSON.parse(readFileSync(path.join(outputDir, "plan.json"), "utf8")) as Plan;
 	const manifest = manifestFromPlan(plan);
+	if (existing.voice !== manifest.voice)
+		throw new Error(`Cannot merge voice ${manifest.voice} into ${existing.voice}`);
+	const merged = {
+		voice: existing.voice,
+		words: [...new Set([...existing.words, ...manifest.words])].sort(),
+	};
 	const target = path.join(phoneticsDataDir, manifestTarget(plan.targetAccent).file);
-	writeFileSync(target, renderManifestModule(plan.targetAccent, manifest));
+	writeFileSync(target, renderManifestModule(plan.targetAccent, merged));
 	return target;
 }

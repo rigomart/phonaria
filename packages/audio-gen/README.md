@@ -1,7 +1,8 @@
 # Word pronunciation audio
 
-Azure Speech is the sole generator for issue #274. It reads all 400 unique words
-in the minimal-pair catalog and the bundled curated dictionary directly. It
+Azure Speech is the sole generator for issue #274. By default it reads all 400 unique words
+in the minimal-pair catalog and the bundled curated dictionary directly. The explicit
+`--source=spelling` option selects the 88 unique spelling example words instead. It
 requests one Ogg/Opus file per word. The selected catalog configuration is Jenny
 (`en-US-JennyNeural`) at 10% slower, with default pitch and delivery. This
 configuration lives in the tracked `catalog-config.json`. Ogg/Opus balances
@@ -9,7 +10,10 @@ speech quality and file size; Azure produces it directly at 24 kHz, mono.
 Environment variables and command flags can override the catalog defaults.
 
 Every word has an explicit IPA phoneme tag. Missing, ambiguous, or unsupported
-dictionary pronunciations stop generation. The 16 multisyllabic catalog words
+dictionary pronunciations stop generation unless pinned in
+`src/reviewed-pronunciations.ts`. That table records spelling-specific choices and
+the three reviewed entries from bundled full CMU data that are absent from the
+curated dictionary. It never changes catalog pronunciations. The 34 multisyllabic words
 have checked syllable boundaries tied to their exact dictionary tokens, with
 stress preserved. New multisyllabic words require an entry in
 `src/word-inputs.ts`; changing a pronunciation requires checking its syllables
@@ -55,16 +59,19 @@ Or generate a small selection in a fresh directory:
 bun run --cwd packages/audio-gen generate --words=seat,seed,adapt,adopt
 ```
 
-Omitting selection options plans or generates the whole catalog. Options:
+Omitting selection options plans or generates the whole catalog. For the reviewed
+56-word spelling batch and every pronunciation decision, see
+[spelling-recordings-304.md](spelling-recordings-304.md). Options:
 
 - `--dry-run`: write a plan and review sheet without calling Azure.
-- `--words=seat,seed`: select catalog words.
+- `--source=catalog|spelling`: select a named word set; defaults to `catalog`.
+- `--words=seat,seed`: select words within that source; this cannot add arbitrary words.
 - `--limit=24`: limit the selection; the default catalog order is alphabetical.
   The older `WORDS_LIMIT` environment variable also works; unset it for a full run.
 - `--out=path`: choose an output directory, relative to `packages/audio-gen`.
   The default is a fresh `output/azure-<timestamp>/` directory.
 - `--resume --out=path`: use an existing plan, skipping completed recordings.
-  Omit word selection and limit options, including `WORDS_LIMIT`, on resume.
+  Omit source, word selection and limit options, including `WORDS_LIMIT`, on resume.
 - `--rpm=20`: override request pacing for this run (1–600).
 - `--rate=-10`: speak 10% slower. Integer percentages from -50 to 100 are
   supported; 0 keeps the voice's default delivery. Saved plans include any
@@ -148,11 +155,12 @@ The app only offers a play button for words listed in the committed manifest,
 bun run --cwd packages/audio-gen manifest --out=output/azure-catalog-jenny-slower-10-ogg
 ```
 
-The command refuses to run unless every sample in `plan.json` is generated and
-an Ogg file, and
+The command merges the completed batch into the existing manifest, retaining
+every previously recorded word and refusing to mix voice folders. It refuses
+to run unless every sample in `plan.json` is generated and an Ogg file, and
 takes the voice folder from the plan's voice (`en-US-JennyNeural` becomes
-`jenny`). The phonetics-data tests fail when the manifest and the minimal-pair
-catalog disagree.
+`jenny`). The phonetics-data tests require full minimal-pair catalog coverage
+and allow additional recorded spelling examples. Add new words only after upload.
 
 ## Voice and speed probes
 

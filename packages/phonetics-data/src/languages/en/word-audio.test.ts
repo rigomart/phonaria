@@ -1,11 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { getWordAudioPath } from "../../registries/registries";
 import { EnglishPhonemeContrasts } from "./contrasts";
+import { EnglishPhonemeSpellingPatterns } from "./patterns";
 import { EnglishWordAudio } from "./word-audio";
 
 const catalogWords = new Set(
 	EnglishPhonemeContrasts.flatMap(({ minimalPairs }) => minimalPairs.flatMap(({ words }) => words)),
 );
+const supportedWords = new Set([
+	...catalogWords,
+	...Object.values(EnglishPhonemeSpellingPatterns).flatMap(({ examples }) =>
+		examples.map(({ spelled }) => spelled.replace(/[[\]]/g, "")),
+	),
+]);
 
 describe("getWordAudioPath", () => {
 	it("returns the bucket-relative path of a recorded word", () => {
@@ -27,10 +34,10 @@ describe("getWordAudioPath", () => {
 });
 
 describe("EnglishWordAudio", () => {
-	it("records exactly the words of the minimal-pair catalog", () => {
+	it("keeps full catalog coverage and allows recorded spelling examples", () => {
 		const recorded = new Set(EnglishWordAudio.words);
 		expect(recorded.size).toBe(EnglishWordAudio.words.length);
-		expect([...recorded].filter((word) => !catalogWords.has(word))).toEqual([]);
+		expect([...recorded].filter((word) => !supportedWords.has(word))).toEqual([]);
 		expect([...catalogWords].filter((word) => !recorded.has(word))).toEqual([]);
 	});
 });

@@ -6,25 +6,41 @@ import {
 import type { TtsInput } from "./providers/types";
 import type { WordWithPhonemic } from "./words";
 
-// Checked syllables for every multisyllabic catalog word. Keep these tied to
-// exact dictionary tokens so a catalog change cannot silently alter stress.
-// Azure IPA stress needs every syllable marked:
+// Azure IPA requires explicit syllable boundaries for stress:
 // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-pronunciation
 const syllablesByWord: Record<string, readonly string[]> = {
 	adapt: ["AX0", "D AE1 P T"],
 	adopt: ["AX0", "D A1 P T"],
+	away: ["AX0", "W EI1"],
 	belief: ["B IX0", "L I1 F"],
 	believe: ["B IX0", "L I1 V"],
 	berry: ["B E1", "R I0"],
+	bigger: ["B IX1", "G ER0"],
 	body: ["B A1", "D I0"],
 	buddy: ["B AH1", "D I0"],
 	closing: ["K L OU1", "Z IX0 NG"],
 	clothing: ["K L OU1", "DH IX0 NG"],
+	city: ["S IX1", "T I0"],
+	coffee: ["K A1", "F I0"],
+	dinner: ["D IX1", "N ER0"],
+	father: ["F A1", "DH ER0"],
+	happy: ["H AE1", "P I0"],
+	hello: ["H AX0", "L OU1"],
+	ladder: ["L AE1", "D ER0"],
+	lemon: ["L E1", "M AX0 N"],
+	letter: ["L E1", "T ER0"],
 	liver: ["L IX1", "V ER0"],
+	measure: ["M E1", "ZH ER0"],
+	mother: ["M AH1", "DH ER0"],
+	nation: ["N EI1", "SH AX0 N"],
+	rabbit: ["R AE1", "B AX0 T"],
 	rifle: ["R AI1", "F AX0 L"],
 	rival: ["R AI1", "V AX0 L"],
 	river: ["R IX1", "V ER0"],
+	sofa: ["S OU1", "F AX0"],
+	summer: ["S AH1", "M ER0"],
 	very: ["V E1", "R I0"],
+	vision: ["V IX1", "ZH AX0 N"],
 	washing: ["W A1", "SH IX0 NG"],
 	watching: ["W A1", "CH IX0 NG"],
 };

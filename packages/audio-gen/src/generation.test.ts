@@ -24,6 +24,33 @@ afterEach(async () => {
 });
 
 describe("Azure catalog generation", () => {
+	it("saves and resumes a spelling source without widening the default catalog", async () => {
+		const outputDir = await directory();
+		await expect(
+			runGeneration({ outputDir, dryRun: true, words: ["cause"], ...settings }),
+		).rejects.toThrow(/catalog/);
+		await runGeneration({
+			outputDir,
+			dryRun: true,
+			source: "spelling",
+			words: ["cause", "jeep", "rabbit"],
+			...settings,
+		});
+		const saved = await readFile(path.join(outputDir, "plan.json"), "utf8");
+		const plan = JSON.parse(saved);
+		expect(plan.source).toBe("spelling");
+		expect(plan.samples.map(({ input }: { input: { text: string } }) => input.text)).toEqual([
+			'<phoneme alphabet="ipa" ph="kɔz">cause</phoneme>',
+			'<phoneme alphabet="ipa" ph="dʒip">jeep</phoneme>',
+			'<phoneme alphabet="ipa" ph="ˈɹæ.bət">rabbit</phoneme>',
+		]);
+		await runGeneration({ outputDir, dryRun: true, resume: true, ...settings });
+		expect(await readFile(path.join(outputDir, "plan.json"), "utf8")).toBe(saved);
+		await expect(
+			runGeneration({ outputDir, dryRun: true, resume: true, source: "catalog", ...settings }),
+		).rejects.toThrow(/source/);
+		expect(await readdir(outputDir)).toEqual(["plan.json", "review.tsv"]);
+	});
 	it("saves Ogg clips and refuses to mix formats on resume", async () => {
 		const outputDir = await directory();
 		await runGeneration({
