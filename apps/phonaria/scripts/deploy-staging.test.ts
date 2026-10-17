@@ -23,6 +23,7 @@ describe("deployStaging", () => {
 					SITE_INDEXING_ENABLED: "0",
 					CLOUDFLARE_ENV: "staging",
 					SITE_URL: siteUrl,
+					FLAG_LANGUAGE_SPREAD: "1",
 				},
 			},
 			{
@@ -32,6 +33,7 @@ describe("deployStaging", () => {
 					SITE_INDEXING_ENABLED: "0",
 					CLOUDFLARE_ENV: "staging",
 					SITE_URL: siteUrl,
+					FLAG_LANGUAGE_SPREAD: "1",
 				},
 			},
 			{
@@ -41,6 +43,7 @@ describe("deployStaging", () => {
 					SITE_INDEXING_ENABLED: "0",
 					CLOUDFLARE_ENV: "staging",
 					SITE_URL: siteUrl,
+					FLAG_LANGUAGE_SPREAD: "1",
 				},
 			},
 			{
@@ -50,6 +53,7 @@ describe("deployStaging", () => {
 					SITE_INDEXING_ENABLED: "0",
 					CLOUDFLARE_ENV: "staging",
 					SITE_URL: siteUrl,
+					FLAG_LANGUAGE_SPREAD: "1",
 				},
 			},
 		]);
