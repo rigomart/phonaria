@@ -167,8 +167,8 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 	};
 
 	return (
-		// method="get" lets Enter reach /?q= before React hydrates. aria-disabled
-		// (not disabled) keeps that key from being swallowed while the draft is empty.
+		// method="get" lets Enter and a click on the button reach /?q= before React hydrates.
+		// aria-disabled (not disabled) keeps both from being swallowed while the draft is empty.
 		<form method="get" action="/" onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
 			<div className="flex w-full flex-row gap-2">
 				<Autocomplete
@@ -235,7 +235,7 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 					size="icon-lg"
 					disabled={isPending}
 					aria-disabled={!hasText || isPending}
-					className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+					className="aria-disabled:cursor-default aria-disabled:opacity-50 aria-disabled:hover:bg-primary aria-disabled:active:translate-y-0"
 					aria-label="Transcribe text"
 				>
 					{isPending ? <Spinner /> : <SendHorizontal />}
