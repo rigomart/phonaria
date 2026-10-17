@@ -64,12 +64,13 @@ const details = observation(
 				.querySelector('[aria-label="Details for /h/"]')
 				?.hasAttribute("data-details-open"),
 			label: document.body.innerText.includes("Voiceless glottal fricative"),
-			play: visible('[aria-label="Play h"]'),
-			slow: visible('[aria-label="Play slow h"]'),
+			playControls: Array.from(document.querySelectorAll('button[aria-label^="Play"]'))
+				.filter((button) => button.getClientRects().length > 0)
+				.map((button) => button.getAttribute("aria-label")),
 			diagram: visible('img[alt="Voiceless glottal fricative articulation"]'),
 		};
 	},
-	{ open: true, label: true, play: true, slow: true, diagram: true },
+	{ open: true, label: true, playControls: ["Play /h/"], diagram: true },
 );
 
 const cleared = observation(
@@ -124,7 +125,7 @@ export const transcription = {
 	},
 	coverageLimits: [
 		"common-word client lookup only; no Turso or spelling service",
-		"audio controls and diagram presence checked; playback and media fidelity unverified",
+		"sound tile label and diagram presence checked; playback and media fidelity unverified",
 		"copy control enabled; clipboard contents unverified",
 		"desktop Chromium; no mobile or other browser coverage",
 	],
