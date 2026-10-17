@@ -180,7 +180,8 @@ function capture(dir: string, run: Run, name: string) {
 		throw new Error("Evidence names must contain lowercase letters, numbers, and hyphens.");
 	const snapshot = browser(dir, run, ["snapshot"]);
 	const evidence = saveSnapshot(dir, name, snapshot);
-	browser(dir, run, ["screenshot", evidence.screenshot, "--full"]);
+	const page = getFeature(run.feature).screenshot === "viewport" ? [] : ["--full"];
+	browser(dir, run, ["screenshot", evidence.screenshot, ...page]);
 	diagnostics(dir, run);
 	return evidence;
 }
@@ -365,7 +366,8 @@ async function main([action, path, ...args]: string[]) {
 				!existsSync(check.evidence.screenshot) ||
 				!existsSync(check.evidence.snapshot),
 		);
-		if (status === "passed" && (!traceSaved || captureErrors.length || missingEvidence))
+		const traceMissing = recipe.trace !== "skip" && !traceSaved;
+		if (status === "passed" && (traceMissing || captureErrors.length || missingEvidence))
 			status = "blocked";
 		run.finishedAt = new Date().toISOString();
 		writeJson(join(dir, "run.json"), run);

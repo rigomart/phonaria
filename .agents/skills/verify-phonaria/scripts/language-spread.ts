@@ -406,7 +406,11 @@ export const languageSpread = {
 		"phone coverage is one step at 390 x 844 and skips the menu and landscape; the desktop nav is not asserted there",
 		"reduced motion is checked through computed transition properties and a 300 ms settle, not by comparing frames",
 		"place descriptions and sources are read from the page, not checked against the cited studies",
+		"evidence screenshots show the viewport: a full-page capture stretches the pinned map to the whole document height",
+		"no DevTools trace: tracing this page stalls headless Chrome's renderer, so the recipe skips `trace start`",
 	],
+	screenshot: "viewport",
+	trace: "skip",
 } satisfies Feature;
 
 export const languageSpreadOff = {

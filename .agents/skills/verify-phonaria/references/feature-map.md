@@ -253,16 +253,15 @@ The [checkpoints](../scripts/language-spread.ts) read the era indicator (`[data-
 
 ### Executable journey (flag on)
 
-Start with `bun run verify init language-spread` and `bun run verify serve "$VERIFY_RUN"`. Set the launch args before the first browser command: on a Mac whose display sleeps, headless Chrome's frame clock stops, `requestAnimationFrame` barely runs, scroll steps never change and flights stay "moving"; these flags keep frames flowing. The scroll position, active step and camera all run on animation frames, so wait for the expected state after every scroll instead of sleeping. A flight lasts about 1.1 s; `data-camera` can still read `settled` from the previous step for a moment, so wait on the new camera center, not on `settled` alone.
+Start with `bun run verify init language-spread` and `bun run verify serve "$VERIFY_RUN"`. Keep the display awake first: on a Mac whose display sleeps, headless Chrome's frame clock stops, `requestAnimationFrame` barely runs, scroll steps never change and flights stay "moving" (see the troubleshooting note in the skill). The scroll position, active step and camera all run on animation frames, so wait for the expected state after every scroll instead of sleeping. A flight lasts about 1.1 s; `data-camera` can still read `settled` from the previous step for a moment, so wait on the new camera center, not on `settled` alone. Unlike the other journeys, these recipes do not start a DevTools trace: with tracing on, the trace buffer for this page's composited 3D frames grows until the renderer's main thread does little but record events, and browser commands time out after a few checkpoints.
 
 ```bash
-export AGENT_BROWSER_ARGS="--disable-gpu-vsync,--disable-frame-rate-limit"
+caffeinate -u -t 3600 &
 HYD="!!document.querySelector('[data-camera=settled]') && Object.keys(document.querySelector('[data-stop]')||{}).some(k=>k.startsWith('__reactProps'))"
 # cam W S E N: the camera has landed with its centre inside the step's bounds (degrees).
 cam() { echo "(()=>{const r=document.querySelector('[data-camera=settled]');if(!r||!r.dataset.cameraCenter)return false;const [lon,lat]=r.dataset.cameraCenter.split(',').map(Number);return lon>=$1&&lon<=$3&&lat>=$2&&lat<=$4})()"; }
 step() { bun run verify browser "$VERIFY_RUN" eval "document.querySelector('[data-step=$1]').scrollIntoView()"; }
 bun run verify browser "$VERIFY_RUN" open about:blank
-bun run verify browser "$VERIFY_RUN" trace start
 bun run verify browser "$VERIFY_RUN" set viewport 1280 800
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/language-spread
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
@@ -326,11 +325,10 @@ The `eval` in the last block rejects (the command fails and is logged in `comman
 The flag is read when the server starts, so this journey needs its own run and its own server. Stop the flag-on server first (or pick another port in `init`).
 
 ```bash
-export AGENT_BROWSER_ARGS="--disable-gpu-vsync,--disable-frame-rate-limit"
+caffeinate -u -t 3600 &
 bun run verify init language-spread-off
 FLAG_LANGUAGE_SPREAD=0 bun run verify serve "$VERIFY_RUN"
 bun run verify browser "$VERIFY_RUN" open about:blank
-bun run verify browser "$VERIFY_RUN" trace start
 bun run verify browser "$VERIFY_RUN" set viewport 1280 800
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/language-spread
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('h1')"
@@ -344,4 +342,4 @@ bun run verify observe "$VERIFY_RUN" nav-hidden
 
 ### Limits
 
-Chromium only, with the page flag on or off as noted. The camera is checked as a centre inside the step's bounds and a zoom above 1, not as a pixel position; pin placement, the map art, the tilt and visual quality are judged from the saved screenshots. No frame rate or flight smoothness is measured. Only intro, africa, out-of-africa, austronesian, bantu and today are visited, and place descriptions are read from the page, not checked against the cited studies. Route drawing is read from `stroke-dashoffset`, not from painted pixels. Phone coverage is one step; the mobile menu and landscape are not opened.
+Chromium only, with the page flag on or off as noted. The camera is checked as a centre inside the step's bounds and a zoom above 1, not as a pixel position; pin placement, the map art, the tilt and visual quality are judged from the saved screenshots. No frame rate or flight smoothness is measured. Only intro, africa, out-of-africa, austronesian, bantu and today are visited, and place descriptions are read from the page, not checked against the cited studies. Route drawing is read from `stroke-dashoffset`, not from painted pixels. No DevTools trace is saved (see above). Phone coverage is one step; the mobile menu and landscape are not opened.
