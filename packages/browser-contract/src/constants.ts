@@ -19,6 +19,7 @@ export interface ContractTarget {
 	baseUrl: string;
 	expectedCanonicalOrigin: string;
 	practiceEnabled: boolean;
+	languageSpreadEnabled: boolean;
 	indexingEnabled: boolean;
 	bucketAssetsAvailable: boolean;
 	requiresBaseUrlOverride?: boolean;

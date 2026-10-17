@@ -47,7 +47,7 @@ Required fields:
 
 - `baseUrl` or `requiresBaseUrlOverride`
 - `expectedCanonicalOrigin`
-- `practiceEnabled`, `indexingEnabled`, `bucketAssetsAvailable`
+- `practiceEnabled`, `languageSpreadEnabled`, `indexingEnabled`, `bucketAssetsAvailable`
 - `authentication` (`none` or `cloudflare-access`)
 - `capabilities` booleans for `controlledServiceFailure`, `controlledWordlistFailure`, and `practiceSession`
 

@@ -4,6 +4,7 @@
 	"requiresBaseUrlOverride": true,
 	"expectedCanonicalOrigin": "",
 	"practiceEnabled": true,
+	"languageSpreadEnabled": true,
 	"indexingEnabled": false,
 	"bucketAssetsAvailable": true,
 	"authentication": {

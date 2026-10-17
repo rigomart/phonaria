@@ -27,6 +27,22 @@ export function skipUnlessPracticeDisabled(): void {
 	);
 }
 
+export function skipUnlessLanguageSpreadEnabled(): void {
+	const target = getTarget();
+	test.skip(
+		!target.languageSpreadEnabled,
+		`Language Spread is disabled on ${target.name}, so enabled-route assertions do not apply.`,
+	);
+}
+
+export function skipUnlessLanguageSpreadDisabled(): void {
+	const target = getTarget();
+	test.skip(
+		target.languageSpreadEnabled,
+		`Language Spread is enabled on ${target.name}, so disabled-route assertions do not apply.`,
+	);
+}
+
 export function skipUnlessBucketAssets(): void {
 	const target = getTarget();
 	test.skip(
