@@ -36,7 +36,9 @@ These checks were made in the same headless Chrome (software rendering, Apple Si
 
 - No main-thread long tasks over 50 ms at any step change, forward or back, at 1280 × 800 or at 390 × 844.
 - With the frame rate uncapped, a camera flight cost well under 1 ms of main-thread time per frame at 1280 × 800, and about 5 ms at 390 × 844.
-- GPU raster cost of the tilted plane was not measured.
+- Emulated mid-range phone: a production build in Playwright's Chromium at 390 × 844 with 3× pixel density and the CPU throttled 4× (Lighthouse's mobile setting), flying through 9 steps forward and back. Median frame 16.6 ms (60 fps), 95th percentile 33.4 ms, 5% of frames over 33 ms, and one long task per step change, at most about 92 ms. A timeline trace of one step change put its slowest task at about 41 ms, mostly style recalculation as transitions start and the per-frame stroke scale updates the SVG. Memoizing the cards, pins and routes made no measurable difference, so it was not kept.
+- The same throttled run at 1280 × 800 had a median of 17.5 ms but a 95th percentile of about 49 ms; 19% of frames ran over 33 ms. The larger plane, and the cards' backdrop blur over a moving map, cost more there. The blur would be the first thing to try if desktops struggle.
+- No real phone has been measured, and GPU raster is software-emulated in these runs.
 
 To keep the map light, the tilted plane is sized to cover the screen exactly (`plane.ts`), pins carry no backdrop blur, and nothing animates while the page is idle.
 

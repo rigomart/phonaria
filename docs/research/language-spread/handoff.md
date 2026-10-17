@@ -46,7 +46,7 @@ The flag is set in `src/lib/flags.ts`, `vite.config.mts` (a build-time define), 
 
 - The direction change hasn't been decided.
 - The manual staging deploy (`scripts/deploy-staging.ts`) now defaults both `FLAG_PRACTICE` and `FLAG_LANGUAGE_SPREAD` to on, matching the staging Worker. Before this, a manual deploy built Practice off.
-- The tilted map hasn't been measured on a real mid-range phone. Main-thread cost is about 5 ms per flight frame at phone width on this machine; GPU cost wasn't measured.
+- The tilted map hasn't been measured on a real phone. Under emulation (production build, phone viewport, 4× CPU throttling) it holds 60 fps at the median, with about 5% of frames over 33 ms and one hitch of up to about 90 ms at each step change; see [verification.md](verification.md). The cards' backdrop blur is the likeliest cost to trim on desktop.
 
 ## How to look at it
 
