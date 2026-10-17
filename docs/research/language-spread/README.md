@@ -14,6 +14,7 @@ Research was split by region among five research agents, each working from prima
 | [americas.md](americas.md) | The peopling of the Americas, the main Indigenous families, and Inuit, Dene, Nahuatl and Quechua |
 | [modern.md](modern.md) | Colonial and modern spread, creoles, and the world's languages today |
 | [verification.md](verification.md) | Browser verification runs, performance checks and the independent code review |
+| [handoff.md](handoff.md) | Current state, file map and caveats for whoever picks the page up next |
 
 The page was written from these notes. A claim was kept only when the notes show it in a reputable source and it does not rest on a single weak one. Copy uses the widely accepted view, and where scholars are closely split, the description says so. Dates are shown as approximate, and places as general areas.
 
