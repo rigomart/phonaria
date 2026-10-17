@@ -465,4 +465,5 @@ export const languageSpreadOff = {
 		"Practice is on locally unless FLAG_PRACTICE=0, so the expected labels include it",
 		"the server must be started with FLAG_LANGUAGE_SPREAD=0; the journey cannot tell whether it was",
 	],
+	expectedResponses: [{ path: "/language-spread", status: 404 }],
 } satisfies Feature;
