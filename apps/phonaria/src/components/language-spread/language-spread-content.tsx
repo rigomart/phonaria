@@ -10,7 +10,7 @@ import { KindMark, SourceLink, SpreadMap } from "./spread-map";
 import { useActiveStep } from "./use-active-step";
 
 const DESKTOP = "(min-width: 48rem)";
-/** Room kept clear of the era indicator and the cards, in pixels. */
+/** Room kept clear of the edges and the cards, in pixels. */
 const EDGE = 24;
 
 export function LanguageSpreadContent() {
@@ -35,8 +35,9 @@ export function LanguageSpreadContent() {
 			const left = cardBounds ? cardBounds.right - bounds.left + EDGE : 0;
 			return { top: 96, right: EDGE, bottom: EDGE, left };
 		}
+		// On phones the era indicator spans the top of the map, so keep pins below it.
 		return {
-			top: 88,
+			top: 128,
 			right: EDGE / 2,
 			bottom: (cardBounds?.height ?? 0) + EDGE * 2,
 			left: EDGE / 2,
