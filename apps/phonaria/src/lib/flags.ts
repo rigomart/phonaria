@@ -16,6 +16,10 @@ export const flags = createFlags(
 			// builds until the env var opts them in.
 			enabledByDefault: process.env.NODE_ENV !== "production",
 		},
+		languageSpread: {
+			envVar: "FLAG_LANGUAGE_SPREAD",
+			enabledByDefault: process.env.NODE_ENV !== "production",
+		},
 	},
 	{
 		// Live getter so unit tests can still flip FLAG_PRACTICE. Vite replaces
@@ -24,6 +28,9 @@ export const flags = createFlags(
 		// mismatch (SSR saw Worker vars, the client hid Practice in the nav).
 		get FLAG_PRACTICE() {
 			return process.env.FLAG_PRACTICE;
+		},
+		get FLAG_LANGUAGE_SPREAD() {
+			return process.env.FLAG_LANGUAGE_SPREAD;
 		},
 	},
 );

@@ -29,6 +29,12 @@ describe("Cloudflare Practice flag", () => {
 		expect(envVarsBlock("production")).toContain('"FLAG_PRACTICE": "0"');
 	});
 
+	it("enables Language Spread on staging and preview and keeps production off", () => {
+		expect(envVarsBlock("staging")).toContain('"FLAG_LANGUAGE_SPREAD": "1"');
+		expect(envVarsBlock("preview")).toContain('"FLAG_LANGUAGE_SPREAD": "1"');
+		expect(envVarsBlock("production")).toContain('"FLAG_LANGUAGE_SPREAD": "0"');
+	});
+
 	it("sends every application and legacy document route to the Worker first", () => {
 		expect(wrangler).not.toContain('"run_worker_first": true');
 		for (const route of [
@@ -39,6 +45,7 @@ describe("Cloudflare Practice flag", () => {
 			"/ipa-chart/*",
 			"/practice",
 			"/practice/*",
+			"/language-spread",
 			"/robots.txt",
 			"/sitemap.xml",
 			"/en",
