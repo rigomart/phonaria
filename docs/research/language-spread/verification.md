@@ -8,7 +8,7 @@ The journeys, their checkpoints and their limits are described in [the feature m
 
 | Run | Journey | Revision | Result |
 | --- | --- | --- | --- |
-| `1792262893730-3216` | `language-spread` (flag on) | `2866327` | Passed: all 9 checkpoints, at 1280 × 800, at 390 × 844 and with reduced motion. This is the final commit. An earlier pass on `2b32408` is `1792262234154-90253`, and one on `52c9ad5` is `1792262804141-2352`. After that run, the phone's top inset was raised so pins clear the era indicator |
+| `1792267091900-41437` | `language-spread` (flag on) | `d3d0579` | Passed: all 9 checkpoints, at 1280 × 800, at 390 × 844 and with reduced motion. This was run on the latest commit before this record was added. An earlier pass on `2866327` is `1792262893730-3216`. An earlier pass on `2b32408` is `1792262234154-90253`, and one on `52c9ad5` is `1792262804141-2352`. After that run, the phone's top inset was raised so pins clear the era indicator |
 | `1792267042875-40964` | `language-spread-off` (`FLAG_LANGUAGE_SPREAD=0`) | `eab1521` | Passed: `/language-spread` returns 404 with the shared not-found page, and the nav has no Language Spread link. An earlier pass on `a975e12` is `1792262388621-92381` |
 
 Checkpoints in the flag-on run: `intro`, `out-of-africa`, `earlier-pin-mid-story` (opening the Sino-Tibetan pin while on the Austronesian step), `details-closed` (Escape returns focus to the pin), `chip-keyboard`, `scroll-back` (later pins hidden again, arrows undrawn, camera back on Africa), `today` (all 49 pins and 80 arrows), `mobile` and `reduced-motion` (the camera lands within 300 ms). Neither run had browser errors, console errors or unexpected failed requests.
