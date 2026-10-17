@@ -38,7 +38,7 @@ The flag is set in `src/lib/flags.ts`, `vite.config.mts` (a build-time define), 
 ## Things to know before changing it
 
 - **Data integrity tests.** `story.test.ts` requires every stop to appear in exactly one step, steps to be in time order, every stop and source to be cited and used, every id to be listed in the research index, and copy to stay within length limits. The tables in `docs/research/language-spread/README.md` were generated from `story.ts`; regenerate them whenever stops change.
-- **The 3D tilt.** Markers are HTML buttons inside the tilted plane, turned back to face the reader. The plane is sized by `tiltedPlaneOverflow`. Avoid `backdrop-filter` inside the plane: it is expensive and headless Chrome renders it see-through.
+- **The 3D tilt.** Markers are HTML buttons inside the tilted plane, turned back to face the reader. The plane is sized by `tiltedPlaneOverflow`. Avoid `backdrop-filter` on the map and on anything floating over it: inside the plane it is expensive and renders see-through in headless Chrome, and over the moving map it roughly doubled slow frames, so the cards and era dial use a mostly opaque `--glass` instead.
 - **Browser verification on this Mac.** Keep the display awake (`caffeinate -u -t 3600 &`), or headless Chrome produces no animation frames. Don't start a DevTools trace for this page, because it stalls the renderer. Use viewport screenshots, because a full-page capture stretches the pinned map. The journey already declares the trace and screenshot options, and `SKILL.md` explains why.
 - **Screenshot timing.** Screenshots taken right after a click can catch panels mid-entrance (350 ms).
 
@@ -46,7 +46,7 @@ The flag is set in `src/lib/flags.ts`, `vite.config.mts` (a build-time define), 
 
 - The direction change hasn't been decided.
 - The manual staging deploy (`scripts/deploy-staging.ts`) now defaults both `FLAG_PRACTICE` and `FLAG_LANGUAGE_SPREAD` to on, matching the staging Worker. Before this, a manual deploy built Practice off.
-- The tilted map hasn't been measured on a real phone. Under emulation (production build, phone viewport, 4× CPU throttling) it holds 60 fps at the median, with about 5% of frames over 33 ms and one hitch of up to about 90 ms at each step change; see [verification.md](verification.md). The cards' backdrop blur is the likeliest cost to trim on desktop.
+- The tilted map hasn't been measured on a real phone; device access is off in this environment. Under emulation (production build, 4× CPU throttling) it holds 60 fps at the median on a phone and a desktop viewport. About 4% of phone frames and 10% of desktop frames exceed 33 ms, with one hitch of up to about 90 ms at each step change. The details are in [verification.md](verification.md).
 
 ## How to look at it
 

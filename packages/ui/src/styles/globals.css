@@ -56,7 +56,8 @@
 	/* Voiced consonants on the chart: a light primary tint. */
 	--voiced: color-mix(in oklch, var(--primary) 15%, var(--background-strong));
 	--voiced-border: color-mix(in oklch, var(--primary) 20%, var(--background-strong));
-	/* Language spread map: a tilted atlas with lapis-ink routes, and glass panels floating over it. */
+	/* Language spread map: a tilted atlas with lapis-ink routes, and glass panels floating over it.
+	   The glass is not blurred: a backdrop blur over the moving map doubled slow frames on throttled CPUs. */
 	--map-water: oklch(0.945 0.012 245);
 	--map-land: oklch(0.885 0.014 250);
 	--map-coast: oklch(0.8 0.02 250);
@@ -64,7 +65,7 @@
 	--map-route-past: oklch(0.7 0.07 265);
 	--map-area: oklch(0.78 0.09 265);
 	--map-pin: oklch(0.3 0.03 257);
-	--glass: color-mix(in oklch, var(--card) 80%, transparent);
+	--glass: color-mix(in oklch, var(--card) 90%, transparent);
 	--glass-border: color-mix(in oklch, var(--foreground) 9%, transparent);
 	--shadow-float:
 		0 1px 2px hsl(230 30% 20% / 0.06), 0 12px 24px -6px hsl(230 30% 20% / 0.12),
@@ -134,7 +135,7 @@
 	--map-route-past: oklch(0.5 0.07 258);
 	--map-area: oklch(0.45 0.11 262);
 	--map-pin: oklch(0.92 0.01 257);
-	--glass: color-mix(in oklch, var(--card) 76%, transparent);
+	--glass: color-mix(in oklch, var(--card) 88%, transparent);
 	--glass-border: color-mix(in oklch, var(--foreground) 12%, transparent);
 	--shadow-float:
 		0 1px 2px hsl(230 40% 2% / 0.3), 0 12px 24px -6px hsl(230 40% 2% / 0.4),

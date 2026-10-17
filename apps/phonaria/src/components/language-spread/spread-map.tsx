@@ -334,7 +334,7 @@ export function KindMark({ kind, className }: { kind: StopKind; className?: stri
 /** The era in large numbers over a tick per story step: the page's clock. */
 function EraDial({ era, active, steps }: { era: string; active: number; steps: readonly Step[] }) {
 	return (
-		<div className="pointer-events-none absolute inset-x-3 top-3 z-20 rounded-2xl border border-glass-border bg-glass px-4 py-3 shadow-float backdrop-blur-md md:inset-x-auto md:top-6 md:right-6 md:min-w-64">
+		<div className="pointer-events-none absolute inset-x-3 top-3 z-20 rounded-2xl border border-glass-border bg-glass px-4 py-3 shadow-float md:inset-x-auto md:top-6 md:right-6 md:min-w-64">
 			<p
 				key={era}
 				data-era

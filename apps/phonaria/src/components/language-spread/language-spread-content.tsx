@@ -158,7 +158,7 @@ function StoryCard({
 			tabIndex={-1}
 			aria-labelledby={headingId}
 			className={cn(
-				"pointer-events-auto sticky bottom-3 w-full rounded-2xl outline-none border border-glass-border bg-glass p-5 text-card-foreground shadow-float backdrop-blur-xl md:top-[22svh] md:bottom-auto md:max-w-md md:p-6",
+				"pointer-events-auto sticky bottom-3 w-full rounded-2xl outline-none border border-glass-border bg-glass p-5 text-card-foreground shadow-float md:top-[22svh] md:bottom-auto md:max-w-md md:p-6",
 				"transition-[opacity,scale] duration-500 ease-emphasized motion-reduce:transition-none",
 				!active && "scale-97 opacity-60",
 				intro && "enter-rise",
