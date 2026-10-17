@@ -56,6 +56,19 @@
 	/* Voiced consonants on the chart: a light primary tint. */
 	--voiced: color-mix(in oklch, var(--primary) 15%, var(--background-strong));
 	--voiced-border: color-mix(in oklch, var(--primary) 20%, var(--background-strong));
+	/* Language spread map: a tilted atlas with lapis-ink routes, and glass panels floating over it. */
+	--map-water: oklch(0.945 0.012 245);
+	--map-land: oklch(0.885 0.014 250);
+	--map-coast: oklch(0.8 0.02 250);
+	--map-route: oklch(0.46 0.16 265);
+	--map-route-past: oklch(0.7 0.07 265);
+	--map-area: oklch(0.78 0.09 265);
+	--map-pin: oklch(0.3 0.03 257);
+	--glass: color-mix(in oklch, var(--card) 80%, transparent);
+	--glass-border: color-mix(in oklch, var(--foreground) 9%, transparent);
+	--shadow-float:
+		0 1px 2px hsl(230 30% 20% / 0.06), 0 12px 24px -6px hsl(230 30% 20% / 0.12),
+		0 32px 64px -16px hsl(230 30% 20% / 0.18);
 
 	--radius: 0.875rem;
 	--shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
@@ -114,6 +127,18 @@
 	--frequency-low: oklch(0.42 0.02 257);
 	--frequency-high: oklch(0.88 0.03 257);
 	--diagram: oklch(0.25 0.015 257);
+	--map-water: oklch(0.155 0.016 255);
+	--map-land: oklch(0.27 0.02 255);
+	--map-coast: oklch(0.36 0.024 255);
+	--map-route: oklch(0.76 0.13 255);
+	--map-route-past: oklch(0.5 0.07 258);
+	--map-area: oklch(0.45 0.11 262);
+	--map-pin: oklch(0.92 0.01 257);
+	--glass: color-mix(in oklch, var(--card) 76%, transparent);
+	--glass-border: color-mix(in oklch, var(--foreground) 12%, transparent);
+	--shadow-float:
+		0 1px 2px hsl(230 40% 2% / 0.3), 0 12px 24px -6px hsl(230 40% 2% / 0.4),
+		0 32px 64px -16px hsl(230 40% 2% / 0.55);
 	--shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
 	--shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
 	--shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -168,6 +193,15 @@
 	--color-diagram: var(--diagram);
 	--color-voiced: var(--voiced);
 	--color-voiced-border: var(--voiced-border);
+	--color-map-water: var(--map-water);
+	--color-map-land: var(--map-land);
+	--color-map-coast: var(--map-coast);
+	--color-map-route: var(--map-route);
+	--color-map-route-past: var(--map-route-past);
+	--color-map-area: var(--map-area);
+	--color-map-pin: var(--map-pin);
+	--color-glass: var(--glass);
+	--color-glass-border: var(--glass-border);
 
 	--font-sans: var(--font-noto-sans);
 	--font-mono: var(--font-noto-sans-mono);
@@ -189,6 +223,7 @@
 	--shadow-md: var(--shadow-md);
 	--shadow-lg: var(--shadow-lg);
 	--shadow-xl: var(--shadow-xl);
+	--shadow-float: var(--shadow-float);
 	--shadow-2xl: var(--shadow-2xl);
 }
 

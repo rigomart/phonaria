@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 - Agents can read the README for any relevant package or app to get a fast overview before making changes.
-- `apps/phonaria`: The Phonaria application, and the only one. TanStack Start on Vite, deployed to Cloudflare Workers at `phonaria.rigos.dev`. Routes live in `src/routes`, shared chrome in `src/components`, domain logic in `src/lib`, Practice in `src/practice`, and request-time Cloudflare adapters in `src/server/cloudflare`. Worker delivery is configured only in `wrangler.jsonc`. See `apps/phonaria/README.md`.
+- `apps/phonaria`: The Phonaria application, and the only one. TanStack Start on Vite, deployed to Cloudflare Workers at `phonaria.rigos.dev`. Routes live in `src/routes`, shared chrome in `src/components`, domain logic in `src/lib`, Practice in `src/practice`, the Language Spread story in `src/components/language-spread` and `src/lib/language-spread`, and request-time Cloudflare adapters in `src/server/cloudflare`. Worker delivery is configured only in `wrangler.jsonc`. See `apps/phonaria/README.md`.
 - `packages/flags`: Env-backed feature flags (`FLAG_*`) so modules can ship dark and be enabled per environment. The app supplies them as Worker `vars`.
 - `packages/browser-contract`: Browser-level contract run with Playwright against a deployed target, selected by target profile.
 - `packages/phonetics-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. See the package README for architecture details. Key API surface:

@@ -10,6 +10,11 @@ import {
 	VOWELS_PAGE_DESCRIPTION,
 	VOWELS_PAGE_TITLE,
 } from "@/lib/ipa-chart-metadata";
+import {
+	LANGUAGE_SPREAD_PAGE_DESCRIPTION,
+	LANGUAGE_SPREAD_PAGE_TITLE,
+	LANGUAGE_SPREAD_PATH,
+} from "@/lib/language-spread/metadata";
 import { PracticeActivity } from "@/lib/practice/activity";
 import {
 	type DocumentMetadata,
@@ -216,6 +221,16 @@ export function buildPracticeTopicHead(topic: PracticeTopicHeadSource | undefine
 		title: `${topic.display.name} — Practice`,
 		description: topic.display.blurb,
 		robots: PRACTICE_ROBOTS,
+	});
+}
+
+/** Flagged and unreleased, so it stays out of search indexes like Practice. */
+export function buildLanguageSpreadHead(): StartHead {
+	return buildPageHead({
+		path: LANGUAGE_SPREAD_PATH,
+		title: LANGUAGE_SPREAD_PAGE_TITLE,
+		description: LANGUAGE_SPREAD_PAGE_DESCRIPTION,
+		robots: "noindex, follow",
 	});
 }
 

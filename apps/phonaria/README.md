@@ -22,7 +22,7 @@ OPENROUTER_API_KEY="your-key"
 
 The first two keys are needed when a word misses the bundled lists and must be looked up in Turso. Without them, common words can still transcribe in the browser while server lookups fail. `.env.local` is useful for build-time settings and scripts, but its secret values are not automatically copied into `.dev.vars`. Restart the dev server after editing `.dev.vars`. Both files are ignored by Git; use `.env.example` as a reference.
 
-`scripts/write-dev-vars.ts` writes public settings and preserves existing Worker secret lines during builds. It never imports secret values from the process environment. The app uses `SITE_URL` for canonical links; production builds require it. Practice defaults on locally and is controlled by `FLAG_PRACTICE` per deployed environment.
+`scripts/write-dev-vars.ts` writes public settings and preserves existing Worker secret lines during builds. It never imports secret values from the process environment. The app uses `SITE_URL` for canonical links; production builds require it. Practice and Language Spread default on locally and are controlled per deployed environment by `FLAG_PRACTICE` and `FLAG_LANGUAGE_SPREAD`. When a flag is off, its route returns 404 and its header link is hidden.
 
 ## Commands
 
@@ -38,6 +38,16 @@ Run `bun run --cwd apps/phonaria deploy:staging` only when deploying staging. Pr
 Each deploy is recorded as a GitHub Deployment by `scripts/github-deployment.ts`: PR previews in the transient `preview` environment (marked inactive when the PR closes), `staging` from `main`, and `production`. These bookkeeping steps never block a deploy.
 
 Staging CI uses the GitHub variables `STAGING_URL` and `WORKERS_DEV_SUBDOMAIN`. `STAGING_URL` must point to `https://phonaria-staging.<subdomain>.workers.dev`; the staging origin check rejects a URL for another Worker before deployment.
+
+## Language Spread
+
+`/language-spread` tells how languages spread across the world as a scrolling story over a pinned SVG map. Story data, sources and camera framing are in `src/lib/language-spread/story.ts`, with the research notes behind every stop in [`docs/research/language-spread`](../../docs/research/language-spread/). The UI is in `src/components/language-spread`.
+
+The world outline in `src/lib/language-spread/world-land.ts` is generated from Natural Earth 1:110m land (public domain) by `scripts/generate-world-map.ts`, using the Gall stereographic projection in `projection.ts`. The projection is cylindrical, so the map repeats east and west and the camera can pan across the Pacific. Regenerate it with:
+
+```bash
+bun apps/phonaria/scripts/generate-world-map.ts [path/to/ne_110m_land.geojson]
+```
 
 ## Request-time services
 
