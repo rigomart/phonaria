@@ -13,6 +13,7 @@ Research was split by region among five research agents, each working from prima
 | [asia-pacific.md](asia-pacific.md) | Sino-Tibetan, Austronesian and the Pacific, Dravidian, Austroasiatic, Kra-Dai, Japonic, Pama-Nyungan, Trans-New Guinea |
 | [americas.md](americas.md) | The peopling of the Americas, the main Indigenous families, and Inuit, Dene, Nahuatl and Quechua |
 | [modern.md](modern.md) | Colonial and modern spread, creoles, and the world's languages today |
+| [verification.md](verification.md) | Browser verification runs, performance checks and the independent code review |
 
 The page was written from these notes. A claim was kept only when the notes show it in a reputable source and it does not rest on a single weak one. Copy uses the widely accepted view, and where scholars are closely split, the description says so. Dates are shown as approximate, and places as general areas.
 
