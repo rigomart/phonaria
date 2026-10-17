@@ -45,7 +45,7 @@ The flag is set in `src/lib/flags.ts`, `vite.config.mts` (a build-time define), 
 ## Open questions
 
 - The direction change hasn't been decided.
-- The manual staging deploy (`scripts/deploy-staging.ts`) doesn't set `FLAG_PRACTICE` for the build. This is the same gap fixed for this flag, and was left alone.
+- The manual staging deploy (`scripts/deploy-staging.ts`) now defaults both `FLAG_PRACTICE` and `FLAG_LANGUAGE_SPREAD` to on, matching the staging Worker. Before this, a manual deploy built Practice off.
 - The tilted map hasn't been measured on a real mid-range phone. Main-thread cost is about 5 ms per flight frame at phone width on this machine; GPU cost wasn't measured.
 
 ## How to look at it
