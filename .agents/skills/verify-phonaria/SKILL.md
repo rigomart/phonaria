@@ -22,6 +22,8 @@ Work from the repository root. Prerequisites: workspace dependencies, Bun, `agen
 3. Use `bun run verify browser "$VERIFY_RUN" <agent-browser command...>` to operate the session and record commands. Open `about:blank`, start `trace start`, then open the feature's entry route at the recorded origin. Set and record a viewport appropriate to the journey.
 4. Take `snapshot -i` before interacting. Use accessible labels/roles, or refs from the latest snapshot. Re-snapshot after submission, navigation, and popup changes; refs are not persistent feature identifiers. Wait for the requested UI state instead of sleeping or waiting for all network activity to stop.
 
+If frames never advance (scroll never changes the active step, a camera stays `moving`, screenshots hang), the display's vsync is stopped: set `export AGENT_BROWSER_ARGS="--disable-gpu-vsync,--disable-frame-rate-limit"` before the first browser command and relaunch the session. For a flagged page, pass the flag to `serve` (for example `FLAG_LANGUAGE_SPREAD=0 bun run verify serve "$VERIFY_RUN"`) as the journey's recipe says.
+
 The isolated browser also writes its session sockets outside the repository. If a command reports a socket-directory permission error, use the normal tool permission mechanism for browser commands and evidence helpers. Preserve the failed command in the run log and explain the permission retry in the report.
 
 An explicit origin can select a deployed target. It does not deploy, configure authentication, or verify unshipped local changes. Never print or save credentials in evidence.
