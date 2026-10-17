@@ -47,10 +47,13 @@ const viewportWidth = (container: HTMLElement) => container.getBoundingClientRec
 export function useMapCamera({
 	target,
 	getInsets,
+	layout,
 	reducedMotion,
 }: {
 	target: Bounds;
 	getInsets: (container: HTMLElement) => Insets;
+	/** Changes when the space the cards cover changes, so the camera refits. */
+	layout: number;
 	reducedMotion: boolean;
 }) {
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -59,6 +62,7 @@ export function useMapCamera({
 	const clipRef = useRef<SVGRectElement>(null);
 	const markers = useRef(new Map<string, Placed>());
 	const camera = useRef<Camera | null>(null);
+	const flight = useRef(0);
 	const viewport = useRef<Viewport | null>(null);
 	const [ready, setReady] = useState(false);
 
@@ -154,7 +158,6 @@ export function useMapCamera({
 		}
 		// Lets tests and verification wait for a flight to land instead of sleeping.
 		container?.setAttribute("data-camera", "moving");
-		let frame = 0;
 		let start: number | undefined;
 		const tick = (now: number) => {
 			start ??= now;
@@ -162,12 +165,12 @@ export function useMapCamera({
 			const current = interpolateCamera(from, to, easeCamera(t));
 			camera.current = t < 1 ? current : normalizeCamera(current);
 			apply(camera.current);
-			if (t < 1) frame = requestAnimationFrame(tick);
+			if (t < 1) flight.current = requestAnimationFrame(tick);
 			else settle(container, camera.current);
 		};
-		frame = requestAnimationFrame(tick);
-		return () => cancelAnimationFrame(frame);
-	}, [target, reducedMotion, measure, apply]);
+		flight.current = requestAnimationFrame(tick);
+		return () => cancelAnimationFrame(flight.current);
+	}, [target, layout, reducedMotion, measure, apply]);
 
 	useEffect(() => {
 		const container = containerRef.current;
@@ -175,8 +178,11 @@ export function useMapCamera({
 		const observer = new ResizeObserver(() => {
 			const size = measure();
 			if (!size) return;
+			// A flight in progress would keep easing toward a camera fitted to the old size.
+			cancelAnimationFrame(flight.current);
 			camera.current = fitCamera(targetRef.current, size);
 			apply(camera.current);
+			settle(container, camera.current);
 		});
 		observer.observe(container);
 		return () => observer.disconnect();

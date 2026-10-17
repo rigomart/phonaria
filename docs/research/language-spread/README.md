@@ -21,7 +21,7 @@ The page was written from these notes. A claim was kept only when the notes show
 - **Where language began.** The story opens with people in Africa who could already talk. It says nobody knows where or when language began. It does not reconstruct or name a first language.
 - **The Indo-European homeland.** The pin sits on the steppe north of the Black and Caspian Seas, the leading view in ancient DNA and archaeology. The card and the pin both name the Anatolian and south-of-the-Caucasus alternatives, and say recent work on both sides points toward the Caucasus.
 - **Contested groupings.** "Khoisan" is shown as click-language families, not one family. "Nilo-Saharan", "Amerind" and "Transeurasian/Altaic" are not given pins. Amerind is mentioned only as a proposal most specialists reject, and the Japonic pin says the wider link is still argued.
-- **Undated stops.** Atlantic-Congo, the click-language families, Austroasiatic, Arawakan and Basque show "No agreed date" instead of an invented year.
+- **Undated stops.** Atlantic-Congo, the click-language families, Austroasiatic, Arawakan and Basque show "no agreed date" instead of an invented year.
 - **Ranges.** Where sources give a range or competing estimates, the page shows a range, such as "~7,200–5,900 years ago" for Sino-Tibetan.
 - **Numbers.** Speaker counts are rounded ("about 500 million", "about 1.5 billion") because editions and methods differ. Disputed figures are left out: Kinshasa as the largest French-speaking city, Mozambique percentages, and Russian speaker counts.
 - **Map.** Pins mark the general area where a group or language took shape. Soft glows mark broad regions. Arrows show the direction of spread, and many follow schematic routes, not documented ones. The Polynesia and Lapita routes use longitudes past 180° so they cross the Pacific without wrapping.
@@ -77,19 +77,19 @@ Every step and stop on the page, with the notes and sources behind it. The table
 | `indo-european` | ~8,000–6,000 years ago | [western-eurasia.md](western-eurasia.md) | haak-2015, anthony-ringe-2015, bouckaert-2012, heggarty-2023, lazaridis-2025 |
 | `pama-nyungan` | ~5,700 years ago | [asia-pacific.md](asia-pacific.md) | bouckaert-2018 |
 | `trans-new-guinea` | ~10,000–6,000 years ago | [asia-pacific.md](asia-pacific.md) | greenhill-2015, mona-2007 |
-| `atlantic-congo` | No agreed date | [africa.md](africa.md) | glottolog, guldemann-2018 |
+| `atlantic-congo` | no agreed date | [africa.md](africa.md) | glottolog, guldemann-2018 |
 | `bantu` | ~5,000–4,000 years ago | [africa.md](africa.md) | koile-2022, grollemund-2015, fortes-lima-2024 |
-| `click-languages` | No agreed date | [africa.md](africa.md) | guldemann-2014, skoglund-2017 |
+| `click-languages` | no agreed date | [africa.md](africa.md) | guldemann-2014, skoglund-2017 |
 | `austronesian` | ~5,200 years ago | [asia-pacific.md](asia-pacific.md) | gray-2009, lipson-2014, ko-2014 |
 | `island-southeast-asia` | ~4,000 years ago | [asia-pacific.md](asia-pacific.md) | ko-2014, lipson-2014, pugach-2021 |
 | `dravidian` | ~4,500 years ago | [asia-pacific.md](asia-pacific.md) | kolipakam-2018 |
-| `austroasiatic` | No agreed date | [asia-pacific.md](asia-pacific.md) | sidwell-2010, lipson-2018 |
+| `austroasiatic` | no agreed date | [asia-pacific.md](asia-pacific.md) | sidwell-2010, lipson-2018 |
 | `tai-kadai` | ~4,000 years ago | [asia-pacific.md](asia-pacific.md) | tao-2023 |
 | `uralic` | ~4,500 years ago | [western-eurasia.md](western-eurasia.md) | grunthal-2022, parpola-2022, lamnidis-2018 |
 | `uto-aztecan` | ~9,000–5,000 years ago | [americas.md](americas.md) | merrill-2009, kemp-2010 |
 | `mayan` | ~2200 BCE | [americas.md](americas.md) | law-2013, kelly-2017 |
 | `tupian` | ~3,000 years ago | [americas.md](americas.md) | santos-2015, gerardi-2023, paraguay-constitution |
-| `arawakan` | No agreed date | [americas.md](americas.md) | walker-ribeiro-2011, schroeder-2018 |
+| `arawakan` | no agreed date | [americas.md](americas.md) | walker-ribeiro-2011, schroeder-2018 |
 | `hittite` | ~1900–1600 BCE | [western-eurasia.md](western-eurasia.md) | kloekhorst-2019, lazaridis-2025 |
 | `indo-iranian` | ~4,000 years ago | [western-eurasia.md](western-eurasia.md) | narasimhan-2019, shinde-2019 |
 | `sanskrit` | ~1500–1000 BCE | [western-eurasia.md](western-eurasia.md) | jamison-brereton-2020 |
@@ -98,7 +98,7 @@ Every step and stop on the page, with the notes and sources behind it. The table
 | `lapita` | ~3,000 years ago | [asia-pacific.md](asia-pacific.md) | skoglund-2016, posth-2018, almeida-2025 |
 | `latin` | ~800 BCE | [western-eurasia.md](western-eurasia.md) | coleman-2015, adams-2007 |
 | `germanic` | ~500 BCE | [western-eurasia.md](western-eurasia.md) | faarlund-2008, ringe-taylor-2014, gretzinger-2022 |
-| `basque` | No agreed date | [western-eurasia.md](western-eurasia.md) | trask-1997 |
+| `basque` | no agreed date | [western-eurasia.md](western-eurasia.md) | trask-1997 |
 | `arabic` | ~630 CE | [western-eurasia.md](western-eurasia.md) | louvre-namara, pat-el-stokes-2022, owens-2013 |
 | `swahili` | ~800 CE | [africa.md](africa.md) | brielle-2023, schadeberg-2009, unesco-kiswahili |
 | `malagasy` | ~700–800 CE | [asia-pacific.md](asia-pacific.md) | adelaar-2016, crowther-2016, kusuma-2016 |

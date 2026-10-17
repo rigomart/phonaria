@@ -1,5 +1,5 @@
 import { ArrowDown, MoveRight } from "lucide-react";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import type { Insets } from "@/lib/language-spread/camera";
 import { formatEra } from "@/lib/language-spread/era";
@@ -46,10 +46,32 @@ export function LanguageSpreadContent() {
 	const select = useCallback((stop: Stop | null, from?: HTMLElement) => {
 		if (stop && from) opener.current = from;
 		setSelected(stop);
-		if (!stop && opener.current?.isConnected && !opener.current.closest("[inert]")) {
-			opener.current.focus();
-		}
+		if (stop) return;
+		// The opener may be a pin hidden again by scrolling back; fall back to the story.
+		if (opener.current?.isConnected && !opener.current.closest("[inert]")) opener.current.focus();
+		else cards.current[activeRef.current]?.focus();
 	}, []);
+
+	// Scrolling back hides later pins; keep keyboard focus out of them.
+	useEffect(() => {
+		if (document.activeElement?.closest("[inert]")) cards.current[active]?.focus();
+	}, [active]);
+
+	// On phones the active card covers the bottom of the map, and it grows when its
+	// sources open, so the camera refits whenever its height changes.
+	const [layout, setLayout] = useState(0);
+	useEffect(() => {
+		const card = cards.current[active];
+		if (!card) return;
+		let height = card.offsetHeight;
+		const observer = new ResizeObserver(() => {
+			if (card.offsetHeight === height) return;
+			height = card.offsetHeight;
+			setLayout((version) => version + 1);
+		});
+		observer.observe(card);
+		return () => observer.disconnect();
+	}, [active]);
 
 	useEffect(() => {
 		if (!selected) return;
@@ -72,6 +94,7 @@ export function LanguageSpreadContent() {
 						selected={selected}
 						onSelect={select}
 						getInsets={getInsets}
+						layout={layout}
 						reducedMotion={reducedMotion}
 					/>
 				</div>
@@ -126,12 +149,15 @@ function StoryCard({
 }) {
 	const intro = index === 0;
 	const Heading = intro ? "h1" : "h2";
+	const headingId = useId();
 	const places = step.stops.flatMap((id) => stops.get(id) ?? []);
 	return (
 		<article
 			ref={cardRef}
+			tabIndex={-1}
+			aria-labelledby={headingId}
 			className={cn(
-				"pointer-events-auto sticky bottom-3 w-full rounded-2xl border border-glass-border bg-glass p-5 text-card-foreground shadow-float backdrop-blur-xl md:top-[22svh] md:bottom-auto md:max-w-md md:p-6",
+				"pointer-events-auto sticky bottom-3 w-full rounded-2xl outline-none border border-glass-border bg-glass p-5 text-card-foreground shadow-float backdrop-blur-xl md:top-[22svh] md:bottom-auto md:max-w-md md:p-6",
 				"transition-[opacity,scale] duration-500 ease-emphasized motion-reduce:transition-none",
 				!active && "scale-97 opacity-60",
 				intro && "enter-rise",
@@ -141,6 +167,7 @@ function StoryCard({
 				<p className="text-sm font-medium text-map-route tabular-nums">{formatEra(step.era)}</p>
 			)}
 			<Heading
+				id={headingId}
 				className={cn(
 					"font-display font-semibold tracking-tight text-balance",
 					intro ? "text-3xl md:text-4xl" : "mt-1 text-xl md:text-2xl",
@@ -200,7 +227,7 @@ function StoryCard({
 			)}
 			{intro && (
 				<p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
-					<ArrowDown className="size-4 motion-safe:animate-bounce" aria-hidden />
+					<ArrowDown className="size-4" aria-hidden />
 					Scroll to travel through time
 				</p>
 			)}

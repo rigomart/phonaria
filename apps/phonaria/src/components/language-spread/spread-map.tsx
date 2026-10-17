@@ -39,6 +39,7 @@ export function SpreadMap({
 	selected,
 	onSelect,
 	getInsets,
+	layout,
 	reducedMotion,
 }: {
 	steps: readonly Step[];
@@ -48,12 +49,14 @@ export function SpreadMap({
 	selected: Stop | null;
 	onSelect: (stop: Stop | null, opener?: HTMLElement) => void;
 	getInsets: (container: HTMLElement) => Insets;
+	layout: number;
 	reducedMotion: boolean;
 }) {
 	const step = steps[active];
 	const { containerRef, planeRef, svgRef, clipRef, registerMarker, ready } = useMapCamera({
 		target: step.camera as Bounds,
 		getInsets,
+		layout,
 		reducedMotion,
 	});
 	const ids = { land: useId(), glow: useId(), clip: useId(), details: useId() };
@@ -390,7 +393,7 @@ function StopDetails({
 		<section
 			aria-labelledby={headingId}
 			data-stop-details={stop.id}
-			className="pointer-events-auto rounded-2xl border border-glass-border bg-glass p-4 text-card-foreground shadow-float backdrop-blur-xl enter-scale"
+			className="pointer-events-auto rounded-2xl border bg-card p-4 text-card-foreground shadow-float enter-scale"
 		>
 			<div className="flex items-start gap-3">
 				<KindMark kind={stop.kind} className="mt-2" />
