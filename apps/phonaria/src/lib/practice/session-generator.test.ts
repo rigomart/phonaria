@@ -1,6 +1,9 @@
+import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { describe, expect, it } from "vitest";
-import { generateSession } from "./session-generator";
+import { generateSession, isInSyllableBand } from "./session-generator";
+import { SchwaTopic } from "./topics/schwa";
 import type { SyllableBand } from "./topics/types";
+import { loadWordPoolForTopic } from "./word-pool";
 import type { PoolWord, TopicSoundPosition } from "./word-pool";
 
 function makeWord(
@@ -131,4 +134,35 @@ describe("generateSession", () => {
 			/no eligible words/i,
 		);
 	});
+});
+
+describe("curated schwa session variety", () => {
+	it("fills 100,000 sessions from approved references with bounded repeat rates", async () => {
+		const pool = await loadWordPoolForTopic(SchwaTopic);
+		const pinned = new Map(EnglishPracticeSchwa.map(({ word, variant }) => [word, variant]));
+		const rng = seededRng(20261017);
+		const appearances = new Map<string, number>();
+		let previous = new Set<string>();
+		let adjacentOverlaps = 0;
+		let invalid = 0;
+		for (let index = 0; index < 100_000; index++) {
+			const session = generateSession(pool, SchwaTopic.slotSpec, rng);
+			const words = new Set(session.map(({ word }) => word));
+			if (session.length !== 5 || words.size !== 5) invalid++;
+			session.forEach((word, slot) => {
+				if (
+					!isInSyllableBand(word, SchwaTopic.slotSpec[slot]) ||
+					word.variants.length !== 1 ||
+					word.variants[0] !== pinned.get(word.word)
+				)
+					invalid++;
+				appearances.set(word.word, (appearances.get(word.word) ?? 0) + 1);
+			});
+			if (session.some(({ word }) => previous.has(word))) adjacentOverlaps++;
+			previous = words;
+		}
+		expect(invalid).toBe(0);
+		expect(adjacentOverlaps / 99_999).toBeLessThanOrEqual(0.12);
+		expect(Math.max(...appearances.values()) / 100_000).toBeLessThanOrEqual(0.05);
+	}, 15_000);
 });

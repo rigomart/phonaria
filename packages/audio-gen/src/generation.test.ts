@@ -1,6 +1,7 @@
 import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { runGeneration } from "./generation";
 import type { TtsProvider } from "./providers/types";
@@ -24,6 +25,27 @@ afterEach(async () => {
 });
 
 describe("Azure catalog generation", () => {
+	it("plans and resumes the 358 new Practice words with a single explicit reference", async () => {
+		const outputDir = await directory();
+		await runGeneration({ outputDir, dryRun: true, source: "practice", ...settings });
+		const saved = await readFile(path.join(outputDir, "plan.json"), "utf8");
+		const plan = JSON.parse(saved);
+		expect(plan.source).toBe("practice");
+		expect(plan.samples).toHaveLength(358);
+		expect(new Set(plan.samples.map((sample: { word: string }) => sample.word)).size).toBe(358);
+		expect(
+			plan.samples.some((sample: { word: string }) => ["adapt", "adopt"].includes(sample.word)),
+		).toBe(false);
+		const pinned = new Map(EnglishPracticeSchwa.map(({ word, variant }) => [word, variant]));
+		for (const sample of plan.samples) {
+			expect(sample.variant, sample.word).toBe(pinned.get(sample.word));
+			expect(sample.input.text.match(/<phoneme /g)).toHaveLength(1);
+			expect(sample.status).toBe("planned");
+		}
+		await runGeneration({ outputDir, dryRun: true, resume: true, ...settings });
+		expect(await readFile(path.join(outputDir, "plan.json"), "utf8")).toBe(saved);
+		expect(await readdir(outputDir)).toEqual(["plan.json", "review.tsv"]);
+	});
 	it("saves and resumes a spelling source without widening the default catalog", async () => {
 		const outputDir = await directory();
 		await expect(

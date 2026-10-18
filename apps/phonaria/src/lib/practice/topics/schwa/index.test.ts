@@ -27,9 +27,8 @@ describe("SchwaTopic", () => {
 	});
 });
 
-/** Band depth is guaranteed for every topic in `topics/pool-depth.test.ts`. */
-describe("schwa word pool over shipped top-10k data", () => {
-	const pool = deriveWordPool(EnglishCuratedTop10k, SchwaTopic);
+describe("raw and curated schwa pools over shipped top-10k data", () => {
+	const pool = deriveWordPool(EnglishCuratedTop10k, { ...SchwaTopic, curatedEntries: undefined });
 
 	it("yields the expected pool size (~3,373 words)", () => {
 		// Pins the shipped top-10k data. If the data is regenerated, update this
@@ -37,8 +36,11 @@ describe("schwa word pool over shipped top-10k data", () => {
 		expect(pool).toHaveLength(3_373);
 	});
 
-	it("loads the same pool through the tier-2 façade", async () => {
+	it("loads only the 360 approved single-form words through the tier-2 façade", async () => {
 		const loaded = await loadWordPoolForTopic(SchwaTopic);
-		expect(loaded.length).toBe(pool.length);
+		expect(loaded).toHaveLength(360);
+		expect(loaded.every(({ variants }) => variants.length === 1)).toBe(true);
+		expect(loaded.find(({ word }) => word === "about")?.rank).toBe(42);
+		expect(loaded.some(({ word }) => word === "chocolate")).toBe(false);
 	});
 });

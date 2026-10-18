@@ -120,3 +120,50 @@ describe("frequencyTierForRank", () => {
 		expect(frequencyTierForRank(5000)).toBe("top-10k");
 	});
 });
+
+describe("pinned topic entries", () => {
+	it("preserves full dictionary ranks and derives facets from the pinned form", () => {
+		const topic = {
+			...makeTopic(),
+			curatedEntries: [{ word: "banana", variant: "B AX0 N AE1 N AX0" }],
+		};
+		const pool = deriveWordPool(
+			makeData({ cat: ["K AE1 T"], about: ["AX0 B AU1 T"], banana: ["B AX0 N AE1 N AX0"] }),
+			topic,
+		);
+		expect(pool).toEqual([
+			{
+				word: "banana",
+				variants: ["B AX0 N AE1 N AX0"],
+				rank: 2,
+				frequencyTier: "top-1k",
+				syllableCount: 3,
+				topicSoundCount: 2,
+				topicSoundPositions: ["initial", "final"],
+			},
+		]);
+	});
+	it.each<Record<string, string[]>>([
+		{},
+		{ about: ["AX0 B AU2 T"] },
+		{ about: ["AX0 B AU1 T", "AX0 B AU2 T"] },
+	])("rejects missing, changed or newly ambiguous dictionary forms", (words) => {
+		const topic = { ...makeTopic(), curatedEntries: [{ word: "about", variant: "AX0 B AU1 T" }] };
+		expect(() => deriveWordPool(makeData(words), topic)).toThrow(/about/);
+	});
+	it("rejects duplicate pinned words and topic-ineligible entries", () => {
+		const entry = { word: "about", variant: "AX0 B AU1 T" };
+		expect(() =>
+			deriveWordPool(makeData({ about: [entry.variant] }), {
+				...makeTopic(),
+				curatedEntries: [entry, entry],
+			}),
+		).toThrow(/duplicate/i);
+		expect(() =>
+			deriveWordPool(makeData({ cat: ["K AE1 T"] }), {
+				...makeTopic(),
+				curatedEntries: [{ word: "cat", variant: "K AE1 T" }],
+			}),
+		).toThrow(/eligible/i);
+	});
+});

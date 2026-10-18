@@ -1,4 +1,5 @@
 import { tokenizePronunciation, tryExtractBasePhonemeId } from "@phonaria/phonetics-data";
+import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import type { TopicDefinition } from "../types";
 
 /**
@@ -17,6 +18,7 @@ export function everyVariantContainsSchwa(variants: readonly string[]): boolean 
 export const SchwaTopic: TopicDefinition = {
 	id: "schwa",
 	topicSounds: ["AX"],
+	curatedEntries: EnglishPracticeSchwa,
 	isEligibleWord: everyVariantContainsSchwa,
 	slotSpec: [
 		{ min: 2, max: 2 },

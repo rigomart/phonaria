@@ -1,8 +1,3 @@
-/**
- * Practice word pool: derived at runtime from the tier-2 phoneme-lookup
- * façade, never curated. The engine owns the shared word-suitability filter;
- * topics contribute only their own eligibility predicate (#140).
- */
 import {
 	getPhonemeCategory,
 	type PhonemeSymbolId,
@@ -10,6 +5,7 @@ import {
 	tryExtractBasePhonemeId,
 } from "@phonaria/phonetics-data";
 import type { CuratedWordData } from "@phonaria/phonetics-data/data/en/curated-1k";
+import { validatePracticeEntries } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { loadTier2 } from "../phoneme-lookup/shared";
 import type { TopicDefinition } from "./topics/types";
 
@@ -61,22 +57,30 @@ export interface PoolWord {
 }
 
 /**
- * Derives the topic's word pool from tier-2 data: shared suitability filter,
- * then the topic's own predicate, then runtime facets against its topic
- * sounds. Pure and synchronous; callers load the data via the tier-2 façade.
- *
- * Facets come from the first CMU variant (consistent with the reveal's
- * "CMU's first listing"), and topic-sound occurrences are counted among
- * vowel nuclei only — a topic teaching a consonant sound will need this
- * extended before its facets mean anything.
+ * Returns eligible words in dictionary frequency order, restricted to curated entries when supplied.
+ * Throws for duplicate, missing, changed, ambiguous or ineligible curated entries.
+ * Facets use the first pronunciation and count topic sounds among vowel nuclei only.
  */
 export function deriveWordPool(data: CuratedWordData, topic: TopicDefinition): PoolWord[] {
+	const pinned = topic.curatedEntries
+		? new Map(topic.curatedEntries.map(({ word, variant }) => [word, variant]))
+		: undefined;
+	if (topic.curatedEntries) {
+		validatePracticeEntries(topic.curatedEntries, data.words);
+		for (const { word, variant } of topic.curatedEntries) {
+			if (!isSuitableWord(word) || !topic.isEligibleWord([variant]))
+				throw new Error(`Pinned Practice word is not eligible for ${topic.id}: "${word}"`);
+		}
+	}
 	const topicSounds = new Set<PhonemeSymbolId>(topic.topicSounds);
 	const pool: PoolWord[] = [];
 
 	let rank = -1;
-	for (const [word, variants] of Object.entries(data.words)) {
+	for (const [word, dictionaryVariants] of Object.entries(data.words)) {
 		rank += 1;
+		if (pinned && !pinned.has(word)) continue;
+		const variant = pinned?.get(word);
+		const variants = variant ? [variant] : dictionaryVariants;
 		if (!isSuitableWord(word) || !topic.isEligibleWord(variants)) continue;
 
 		// Vowel nuclei of the first variant: one per syllable, in order.

@@ -3,7 +3,9 @@
 Azure Speech is the sole generator for issue #274. By default it reads all 400 unique words
 in the minimal-pair catalog and the bundled curated dictionary directly. The explicit
 `--source=spelling` option selects the 88 unique spelling example words instead. It
-requests one Ogg/Opus file per word. The selected catalog configuration is Jenny
+requests one Ogg/Opus file per word. `--source=practice` selects the 358 pinned
+Practice words outside the catalog, checking exact pronunciation matches before
+reusing the catalog’s adapt/adopt recordings. The selected catalog configuration is Jenny
 (`en-US-JennyNeural`) at 10% slower, with default pitch and delivery. This
 configuration lives in the tracked `catalog-config.json`. Ogg/Opus balances
 speech quality and file size; Azure produces it directly at 24 kHz, mono.
@@ -13,7 +15,7 @@ Every word has an explicit IPA phoneme tag. Missing, ambiguous, or unsupported
 dictionary pronunciations stop generation unless pinned in
 `src/reviewed-pronunciations.ts`. That table records spelling-specific choices and
 the three reviewed entries from bundled full CMU data that are absent from the
-curated dictionary. It never changes catalog pronunciations. The 34 multisyllabic words
+curated dictionary. It never changes catalog pronunciations. All 387 checked multisyllabic words
 have checked syllable boundaries tied to their exact dictionary tokens, with
 stress preserved. New multisyllabic words require an entry in
 `src/word-inputs.ts`; changing a pronunciation requires checking its syllables
@@ -61,10 +63,12 @@ bun run --cwd packages/audio-gen generate --words=seat,seed,adapt,adopt
 
 Omitting selection options plans or generates the whole catalog. For the reviewed
 56-word spelling batch and every pronunciation decision, see
-[issue #304 review record](../../docs/research/issue-304-spelling-recordings.md). Options:
+[issue #304 review record](../../docs/research/issue-304-spelling-recordings.md).
+The pinned 360-word Practice pool, 358-word generation batch and handoff commands
+are recorded in [issue #166](../../docs/research/issue-166-practice-pool.md). Options:
 
 - `--dry-run`: write a plan and review sheet without calling Azure.
-- `--source=catalog|spelling`: select a named word set; defaults to `catalog`.
+- `--source=catalog|spelling|practice`: select a named word set; defaults to `catalog`.
 - `--words=seat,seed`: select words within that source; this cannot add arbitrary words.
 - `--limit=24`: limit the selection; the default catalog order is alphabetical.
   The older `WORDS_LIMIT` environment variable also works; unset it for a full run.

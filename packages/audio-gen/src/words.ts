@@ -5,9 +5,13 @@ import {
 	phonemeVariantToIpa,
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
+import {
+	EnglishPracticeSchwa,
+	validatePracticeEntries,
+} from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { spellingPronunciations } from "./reviewed-pronunciations";
 
-export type WordSource = "catalog" | "spelling";
+export type WordSource = "catalog" | "spelling" | "practice";
 
 export type WordWithPhonemic = {
 	word: string;
@@ -33,8 +37,17 @@ export function getWordPronunciation(
 	};
 }
 
-/** Spelling uses reviewed choices; catalog uses the curated dictionary. */
 export function collectWordsWithPhonemic(source: WordSource = "catalog"): WordWithPhonemic[] {
+	if (source === "practice") {
+		validatePracticeEntries(EnglishPracticeSchwa, EnglishCuratedTop10k.words);
+		const catalog = new Map(collectWordsWithPhonemic().map((entry) => [entry.word, entry]));
+		return EnglishPracticeSchwa.flatMap(({ word, variant }) => {
+			const existing = catalog.get(word);
+			if (existing && existing.variant !== variant)
+				throw new Error(`Practice/catalog pronunciation conflict for "${word}"`);
+			return existing ? [] : [getWordPronunciation(word, [variant])];
+		}).sort((a, b) => a.word.localeCompare(b.word));
+	}
 	const words = new Set(
 		source === "spelling"
 			? Object.values(EnglishPhonemeSpellingPatterns).flatMap(({ examples }) =>
