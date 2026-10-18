@@ -1,5 +1,5 @@
 import type { APIRequestContext, APIResponse } from "@playwright/test";
-import { type ContractTarget, INDEXABLE_PATHS } from "./constants";
+import { type ContractTarget, INDEXABLE_PATHS, LANGUAGE_SPREAD_PATH } from "./constants";
 
 export async function fetchDocument(
 	request: APIRequestContext,
@@ -39,7 +39,10 @@ export function expectedRobots(target: ContractTarget): string {
 }
 
 export function expectedSitemapUrls(target: ContractTarget): string[] {
-	return INDEXABLE_PATHS.map((path) => expectedCanonical(target, path));
+	const paths = target.languageSpreadEnabled
+		? [...INDEXABLE_PATHS, LANGUAGE_SPREAD_PATH]
+		: [...INDEXABLE_PATHS];
+	return paths.map((path) => expectedCanonical(target, path));
 }
 
 function escapeRegExp(value: string): string {

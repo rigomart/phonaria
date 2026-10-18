@@ -11,10 +11,15 @@ import {
 	VOWELS_PAGE_TITLE,
 } from "@/lib/ipa-chart-metadata";
 import {
+	LANGUAGE_SPREAD_IMAGE,
 	LANGUAGE_SPREAD_PAGE_DESCRIPTION,
 	LANGUAGE_SPREAD_PAGE_TITLE,
 	LANGUAGE_SPREAD_PATH,
 } from "@/lib/language-spread/metadata";
+import {
+	buildLanguageSpreadStructuredData,
+	serializeJsonLd,
+} from "@/lib/language-spread/structured-data";
 import { PracticeActivity } from "@/lib/practice/activity";
 import {
 	type DocumentMetadata,
@@ -39,6 +44,16 @@ export type StartMetaTag =
 export type StartHead = {
 	meta: StartMetaTag[];
 	links?: Array<{ rel: string; href: string }>;
+	scripts?: Array<{ type: string; children: string }>;
+};
+
+type OpenGraphType = "website" | "article";
+
+type SocialImage = {
+	path: string;
+	width: number;
+	height: number;
+	alt?: string;
 };
 
 type MatchWithMeta = {
@@ -122,7 +137,10 @@ export function buildRootHead(): StartHead {
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
 			{ title: SITE_NAME },
 			{ name: "description", content: metadata?.description ?? SITE_DESCRIPTION },
-			...seoMetaTags(metadata, metadata?.siteUrl),
+			...seoMetaTags(metadata, metadata?.siteUrl, {
+				title: SITE_NAME,
+				description: metadata?.description ?? SITE_DESCRIPTION,
+			}),
 		],
 		links: [
 			{ rel: "icon", href: "/favicon.svg" },
@@ -136,9 +154,20 @@ type PageHeadInput = {
 	title: string;
 	description: string;
 	robots?: string;
+	/** Defaults to `website`. */
+	ogType?: OpenGraphType;
+	/** Defaults to the site-wide card. */
+	image?: SocialImage;
 };
 
-export function buildPageHead({ path, title, description, robots }: PageHeadInput): StartHead {
+export function buildPageHead({
+	path,
+	title,
+	description,
+	robots,
+	ogType,
+	image,
+}: PageHeadInput): StartHead {
 	const metadata = tryGetDocumentMetadata();
 	const canonical = metadata
 		? path === "/"
@@ -149,7 +178,7 @@ export function buildPageHead({ path, title, description, robots }: PageHeadInpu
 		meta: [
 			{ title: formatDocumentTitle(title) },
 			{ name: "description", content: description },
-			...seoMetaTags(metadata, canonical, robots),
+			...seoMetaTags(metadata, canonical, { title, description, robots, ogType, image }),
 		],
 		links: canonical ? [{ rel: "canonical", href: canonical }] : undefined,
 	};
@@ -162,7 +191,7 @@ export function buildHomeHead(): StartHead {
 		meta: [
 			{ title: SITE_NAME },
 			{ name: "description", content: SITE_DESCRIPTION },
-			...seoMetaTags(metadata, canonical),
+			...seoMetaTags(metadata, canonical, { title: SITE_NAME, description: SITE_DESCRIPTION }),
 		],
 		links: canonical ? [{ rel: "canonical", href: canonical }] : undefined,
 	};
@@ -224,42 +253,66 @@ export function buildPracticeTopicHead(topic: PracticeTopicHeadSource | undefine
 	});
 }
 
-/** Flagged and unreleased, so it stays out of search indexes like Practice. */
+/** Includes JSON-LD only when SITE_URL is set. */
 export function buildLanguageSpreadHead(): StartHead {
-	return buildPageHead({
+	const head = buildPageHead({
 		path: LANGUAGE_SPREAD_PATH,
 		title: LANGUAGE_SPREAD_PAGE_TITLE,
 		description: LANGUAGE_SPREAD_PAGE_DESCRIPTION,
-		robots: "noindex, follow",
+		ogType: "article",
+		image: LANGUAGE_SPREAD_IMAGE,
 	});
+	const metadata = tryGetDocumentMetadata();
+	if (!metadata) return head;
+	return {
+		...head,
+		scripts: [
+			{
+				type: "application/ld+json",
+				children: serializeJsonLd(buildLanguageSpreadStructuredData(metadata.siteUrl)),
+			},
+		],
+	};
 }
 
 /** Served from `public/`. Social cards need an absolute URL, built from SITE_URL. */
-const OPENGRAPH_IMAGE_PATH = "/opengraph-image.jpg";
+const SITE_IMAGE: SocialImage = { path: "/opengraph-image.jpg", width: 1200, height: 630 };
 const APPLE_TOUCH_ICON_PATH = "/apple-touch-icon.png";
+
+type SocialTagsInput = {
+	title: string;
+	description: string;
+	robots?: string;
+	ogType?: OpenGraphType;
+	image?: SocialImage;
+};
 
 function seoMetaTags(
 	metadata: DocumentMetadata | undefined,
 	canonical: string | undefined,
-	robots?: string,
+	{ title, description, robots, ogType = "website", image = SITE_IMAGE }: SocialTagsInput,
 ): StartMetaTag[] {
 	if (!metadata || !canonical) return [];
+	const imageUrl = `${metadata.siteUrl}${image.path}`;
 	return [
 		{
 			name: "robots",
 			content: robots ?? (metadata.indexingEnabled ? "index, follow" : "noindex, follow"),
 		},
-		{ property: "og:title", content: metadata.siteName },
-		{ property: "og:description", content: metadata.description },
+		{ property: "og:type", content: ogType },
+		{ property: "og:title", content: title },
+		{ property: "og:description", content: description },
 		{ property: "og:site_name", content: metadata.siteName },
 		{ property: "og:url", content: canonical },
-		{ property: "og:image", content: `${metadata.siteUrl}${OPENGRAPH_IMAGE_PATH}` },
-		{ property: "og:image:width", content: "1200" },
-		{ property: "og:image:height", content: "630" },
+		{ property: "og:image", content: imageUrl },
+		{ property: "og:image:width", content: String(image.width) },
+		{ property: "og:image:height", content: String(image.height) },
+		...(image.alt ? [{ property: "og:image:alt", content: image.alt }] : []),
 		{ name: "twitter:card", content: "summary_large_image" },
-		{ name: "twitter:title", content: metadata.siteName },
-		{ name: "twitter:description", content: metadata.description },
-		{ name: "twitter:image", content: `${metadata.siteUrl}${OPENGRAPH_IMAGE_PATH}` },
+		{ name: "twitter:title", content: title },
+		{ name: "twitter:description", content: description },
+		{ name: "twitter:image", content: imageUrl },
+		...(image.alt ? [{ name: "twitter:image:alt", content: image.alt }] : []),
 		...(metadata.googleSiteVerification
 			? [{ name: "google-site-verification", content: metadata.googleSiteVerification }]
 			: []),

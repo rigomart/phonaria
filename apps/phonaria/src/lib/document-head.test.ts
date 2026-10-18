@@ -10,6 +10,11 @@ import {
 	VOWELS_PAGE_DESCRIPTION,
 	VOWELS_PAGE_TITLE,
 } from "@/lib/ipa-chart-metadata";
+import {
+	LANGUAGE_SPREAD_IMAGE,
+	LANGUAGE_SPREAD_PAGE_DESCRIPTION,
+	LANGUAGE_SPREAD_PAGE_TITLE,
+} from "@/lib/language-spread/metadata";
 import { PracticeActivity } from "@/lib/practice/activity";
 import { getTopic } from "@/lib/practice/topics";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
@@ -18,6 +23,7 @@ import {
 	buildCreditsHead,
 	buildFrequencyHead,
 	buildHomeHead,
+	buildLanguageSpreadHead,
 	buildPracticeIndexHead,
 	buildPracticeTopicHead,
 	buildRootHead,
@@ -145,6 +151,20 @@ describe("buildHomeHead", () => {
 			{ rel: "canonical", href: "https://phonaria-staging.example.test" },
 		]);
 	});
+
+	it("uses the site name and description for social cards", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const { meta } = buildHomeHead();
+		expect(meta).toContainEqual({ property: "og:type", content: "website" });
+		expect(meta).toContainEqual({ property: "og:title", content: SITE_NAME });
+		expect(meta).toContainEqual({ property: "og:description", content: SITE_DESCRIPTION });
+		expect(meta).toContainEqual({ name: "twitter:title", content: SITE_NAME });
+		expect(meta).toContainEqual({ name: "twitter:description", content: SITE_DESCRIPTION });
+		expect(meta).toContainEqual({
+			property: "og:image",
+			content: "https://phonaria-staging.example.test/opengraph-image.jpg",
+		});
+	});
 });
 
 describe("buildCreditsHead", () => {
@@ -166,6 +186,27 @@ describe("buildCreditsHead", () => {
 		expect(head.links).toEqual([
 			{ rel: "canonical", href: "https://phonaria-staging.example.test/credits" },
 		]);
+	});
+
+	it("gives social cards the page's own title and description", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const { meta } = buildCreditsHead();
+		expect(meta).toContainEqual({ property: "og:type", content: "website" });
+		expect(meta).toContainEqual({ property: "og:title", content: CREDITS_PAGE_TITLE });
+		expect(meta).toContainEqual({
+			property: "og:description",
+			content: CREDITS_PAGE_DESCRIPTION,
+		});
+		expect(meta).toContainEqual({ name: "twitter:title", content: CREDITS_PAGE_TITLE });
+		expect(meta).toContainEqual({
+			name: "twitter:description",
+			content: CREDITS_PAGE_DESCRIPTION,
+		});
+		expect(meta).toContainEqual({
+			property: "og:url",
+			content: "https://phonaria-staging.example.test/credits",
+		});
+		expect(meta).not.toContainEqual(expect.objectContaining({ property: "og:image:alt" }));
 	});
 });
 
@@ -275,5 +316,70 @@ describe("buildPracticeTopicHead", () => {
 		expect(head.links).toEqual([
 			{ rel: "canonical", href: "https://phonaria-staging.example.test/practice/schwa" },
 		]);
+	});
+});
+
+describe("buildLanguageSpreadHead", () => {
+	it("keeps the title and description on the client when production SITE_URL is missing", () => {
+		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
+		const head = buildLanguageSpreadHead();
+		expect(head.meta).toEqual([
+			{ title: formatDocumentTitle(LANGUAGE_SPREAD_PAGE_TITLE) },
+			{ name: "description", content: LANGUAGE_SPREAD_PAGE_DESCRIPTION },
+		]);
+		expect(head.links).toBeUndefined();
+		expect(head.scripts).toBeUndefined();
+	});
+
+	it("keeps the document title within 60 characters", () => {
+		expect(formatDocumentTitle(LANGUAGE_SPREAD_PAGE_TITLE).length).toBeLessThanOrEqual(60);
+	});
+
+	it("follows the site-wide indexing setting", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		expect(buildLanguageSpreadHead().meta).toContainEqual({
+			name: "robots",
+			content: "noindex, follow",
+		});
+		process.env.SITE_INDEXING_ENABLED = "1";
+		expect(buildLanguageSpreadHead().meta).toContainEqual({
+			name: "robots",
+			content: "index, follow",
+		});
+	});
+
+	it("describes the page as an article with its own card image", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const { meta, links } = buildLanguageSpreadHead();
+		const imageUrl = `https://phonaria-staging.example.test${LANGUAGE_SPREAD_IMAGE.path}`;
+		expect(links).toEqual([
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/language-spread" },
+		]);
+		expect(meta).toEqual(
+			expect.arrayContaining([
+				{ property: "og:type", content: "article" },
+				{ property: "og:title", content: LANGUAGE_SPREAD_PAGE_TITLE },
+				{ property: "og:description", content: LANGUAGE_SPREAD_PAGE_DESCRIPTION },
+				{ property: "og:image", content: imageUrl },
+				{ property: "og:image:width", content: "1200" },
+				{ property: "og:image:height", content: "630" },
+				{ property: "og:image:alt", content: LANGUAGE_SPREAD_IMAGE.alt },
+				{ name: "twitter:title", content: LANGUAGE_SPREAD_PAGE_TITLE },
+				{ name: "twitter:description", content: LANGUAGE_SPREAD_PAGE_DESCRIPTION },
+				{ name: "twitter:image", content: imageUrl },
+				{ name: "twitter:image:alt", content: LANGUAGE_SPREAD_IMAGE.alt },
+			]),
+		);
+	});
+
+	it("adds JSON-LD when SITE_URL is set", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const scripts = buildLanguageSpreadHead().scripts;
+		expect(scripts).toHaveLength(1);
+		expect(scripts?.[0]?.type).toBe("application/ld+json");
+		const data = JSON.parse(scripts?.[0]?.children ?? "");
+		expect(data["@type"]).toBe("Article");
+		expect(data.url).toBe("https://phonaria-staging.example.test/language-spread");
 	});
 });

@@ -37,6 +37,9 @@ export const INDEXABLE_PATHS = [
 	"/credits",
 ] as const;
 
+/** Indexed only on targets where its flag is on, since the route 404s otherwise. */
+export const LANGUAGE_SPREAD_PATH = "/language-spread";
+
 export const SITE_NAME = "Phonaria";
 export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";
 
