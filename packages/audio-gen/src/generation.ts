@@ -71,7 +71,7 @@ function selectSamples(
 	if (words && (!words.length || new Set(words).size !== words.length)) {
 		throw new Error("Choose words from the selected source without duplicates");
 	}
-	if (source !== "catalog" && source !== "spelling")
+	if (source !== "catalog" && source !== "spelling" && source !== "practice")
 		throw new Error(`Unknown word source: ${source}`);
 	const catalog = collectWordsWithPhonemic(source);
 	const byWord = new Map(catalog.map((word) => [word.word, word]));
@@ -197,7 +197,7 @@ export async function runGeneration(options: GenerationOptions) {
 		plan = {
 			version: 1,
 			createdAt: new Date().toISOString(),
-			...(options.source === "spelling" ? { source: options.source } : {}),
+			...(options.source && options.source !== "catalog" ? { source: options.source } : {}),
 			targetAccent: "en-us",
 			settings,
 			samples: selectSamples(options.words, options.limit, audioFormat.extension, options.source),

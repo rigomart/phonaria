@@ -1,5 +1,7 @@
+import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { normalizeVariant, type WordScore } from "@/lib/practice/scoring";
+import { SchwaTopic } from "@/lib/practice/topics/schwa";
 import type { TopicDefinition } from "@/lib/practice/topics/types";
 import type { PoolWord } from "@/lib/practice/word-pool";
 import {
@@ -633,4 +635,38 @@ describe("practice review selectors", () => {
 		const scores: Pick<WordScore, "tallies">[] = [{ tallies: { IX: { matched: 1, total: 1 } } }];
 		expect(selectTopicSoundTally(scores, ["AX"])).toEqual({ matched: 0, total: 0 });
 	});
+});
+
+describe("curated Practice session references", () => {
+	it.each([false, true])(
+		"keeps pinned references through scoring (answered: %s)",
+		async (answered) => {
+			await usePracticeSessionStore.getState().prefetchPool(SchwaTopic);
+			const pool = usePracticeSessionStore.getState().pool;
+			expect(pool).toHaveLength(360);
+			usePracticeSessionStore.getState().startSession(SchwaTopic, seededRng(166));
+			const rounds = usePracticeSessionStore.getState().rounds;
+			expect(rounds).toHaveLength(5);
+			const pinned = new Map(EnglishPracticeSchwa.map(({ word, variant }) => [word, variant]));
+			for (const [index, round] of rounds.entries()) {
+				expect(round.word.variants).toEqual([pinned.get(round.word.word)]);
+				if (answered) {
+					usePracticeSessionStore.getState().goToRound(index);
+					for (const sound of normalizeVariant(round.word.variants[0]))
+						usePracticeSessionStore.getState().appendSound(sound);
+				}
+			}
+			usePracticeSessionStore.getState().openCheck();
+			usePracticeSessionStore.getState().submit();
+			const { scores, phase } = usePracticeSessionStore.getState();
+			expect(phase).toBe("review");
+			expect(scores).toHaveLength(5);
+			scores!.forEach((score, index) => {
+				expect(score.reference).toEqual(normalizeVariant(pinned.get(rounds[index].word.word)!));
+				expect(score.referenceIndex).toBe(0);
+				expect(score.hasAlternates).toBe(false);
+				expect(score.correct).toBe(answered);
+			});
+		},
+	);
 });

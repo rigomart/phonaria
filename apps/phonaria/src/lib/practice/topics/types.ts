@@ -1,4 +1,5 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
+import type { PracticeWordEntry } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 
 /**
  * Inclusive syllable-count band for one session slot.
@@ -24,6 +25,7 @@ export interface TopicDefinition {
 	 * engine-owned word-suitability filter — it never re-implements it.
 	 */
 	isEligibleWord: (variants: readonly string[]) => boolean;
+	curatedEntries?: readonly PracticeWordEntry[];
 	/** Ordered per-slot syllable bands for a session. */
 	slotSpec: readonly SyllableBand[];
 	/**

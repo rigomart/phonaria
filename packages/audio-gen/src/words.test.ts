@@ -1,4 +1,5 @@
 import { EnglishPhonemeSpellingPatterns } from "@phonaria/phonetics-data";
+import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { describe, expect, it } from "vitest";
 import { getAzureIpa } from "./word-inputs";
 import { collectWordsWithPhonemic, getWordPronunciation } from "./words";
@@ -68,5 +69,23 @@ describe("catalog pronunciation inputs", () => {
 		expect(() => getWordPronunciation("read", ["R I1 D", "R E1 D"])).toThrow(/read/);
 		expect(() => getWordPronunciation("stress", ["S I1 T", "S I0 T"])).toThrow(/stress/);
 		expect(() => getWordPronunciation("bad", ["S EE1 T"])).toThrow();
+	});
+});
+
+describe("Practice pronunciation inputs", () => {
+	it("selects exactly the pinned entries outside the catalog with matching overlap pronunciations", () => {
+		const catalog = collectWordsWithPhonemic();
+		const catalogByWord = new Map(catalog.map((entry) => [entry.word, entry]));
+		const overlaps = EnglishPracticeSchwa.filter(({ word }) => catalogByWord.has(word));
+		expect(overlaps.map(({ word }) => word).sort()).toEqual(["adapt", "adopt"]);
+		for (const entry of overlaps)
+			expect(catalogByWord.get(entry.word)?.variant).toBe(entry.variant);
+		const practice = collectWordsWithPhonemic("practice");
+		expect(practice.map(({ word, variant }) => ({ word, variant }))).toEqual(
+			EnglishPracticeSchwa.filter(({ word }) => !catalogByWord.has(word)).sort((a, b) =>
+				a.word.localeCompare(b.word),
+			),
+		);
+		expect(practice).toHaveLength(358);
 	});
 });

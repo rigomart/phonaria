@@ -20,8 +20,8 @@ export function parseArguments(args: string[]) {
 			if (!options.outputDir.trim()) throw new Error("--out needs a directory");
 		} else if (arg.startsWith("--source=")) {
 			const source = arg.slice(9);
-			if (source !== "catalog" && source !== "spelling")
-				throw new Error("--source must be catalog or spelling");
+			if (source !== "catalog" && source !== "spelling" && source !== "practice")
+				throw new Error("--source must be catalog, spelling or practice");
 			options.source = source;
 		} else if (arg.startsWith("--words=")) {
 			options.words = arg

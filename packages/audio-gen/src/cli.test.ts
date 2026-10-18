@@ -3,6 +3,7 @@ import { parseArguments } from "./cli";
 
 describe("Azure generation command", () => {
 	it("requires a named source and uses the saved source on resume", () => {
+		expect(parseArguments(["--source=practice"])).toEqual({ source: "practice" });
 		expect(parseArguments(["--source=spelling"])).toEqual({ source: "spelling" });
 		expect(parseArguments(["--source=catalog"])).toEqual({ source: "catalog" });
 		expect(() => parseArguments(["--source=unknown"])).toThrow(/source/);

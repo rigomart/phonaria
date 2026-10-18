@@ -1,25 +1,28 @@
-import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import { describe, expect, it } from "vitest";
 import { isInSyllableBand } from "../session-generator";
-import { deriveWordPool } from "../word-pool";
-import { listTopics } from "./index";
+import { loadWordPoolForTopic } from "../word-pool";
+import { SchwaTopic } from "./schwa";
 
-/**
- * A band that runs dry throws mid-session. A session draws at most 2 words per
- * band, so the margin is wide: a data regeneration cannot silently starve one.
- */
-const MIN_BAND_DEPTH = 200;
-
-describe.each(listTopics().map((topic) => [topic.id, topic] as const))(
-	"%s word pool over shipped top-10k data",
-	(_id, topic) => {
-		const pool = deriveWordPool(EnglishCuratedTop10k, topic);
-
-		it("keeps every syllable band comfortably above slot demand", () => {
-			for (const band of topic.slotSpec) {
-				const depth = pool.filter((word) => isInSyllableBand(word, band)).length;
-				expect(depth, `band ${band.min}–${band.max ?? "∞"}`).toBeGreaterThan(MIN_BAND_DEPTH);
-			}
+describe("effective curated schwa pool", () => {
+	it("meets the approved editorial floors and all five slot floors", async () => {
+		const pool = await loadWordPoolForTopic(SchwaTopic);
+		for (const [syllables, floor] of [
+			[2, 100],
+			[3, 100],
+			[4, 60],
+		]) {
+			expect(
+				pool.filter((word) => word.syllableCount === syllables).length,
+				`${syllables} syllables`,
+			).toBeGreaterThanOrEqual(floor);
+		}
+		expect(pool.filter((word) => word.syllableCount >= 4).length).toBeGreaterThanOrEqual(80);
+		const floors = [100, 200, 100, 160, 80];
+		SchwaTopic.slotSpec.forEach((band, slot) => {
+			expect(
+				pool.filter((word) => isInSyllableBand(word, band)).length,
+				`slot ${slot + 1}`,
+			).toBeGreaterThanOrEqual(floors[slot]);
 		});
-	},
-);
+	});
+});

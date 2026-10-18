@@ -69,3 +69,31 @@ describe("Azure IPA inputs", () => {
 		expect(getAzureIpa(pronunciation)).toBe(ipa);
 	});
 });
+
+describe("Practice checked syllables", () => {
+	it.each([
+		["assessment", "ə.ˈsɛs.mənt"],
+		["annual", "ˈæn.ju.əl"],
+		["familiar", "fə.ˈmɪl.jɚ"],
+		["environment", "ɪn.ˈvaɪ.ɹən.mənt"],
+		["seriously", "ˈsɪ.ɹi.əs.li"],
+		["successful", "sək.ˈsɛs.fəl"],
+		["useful", "ˈjus.fəl"],
+		["visual", "ˈvɪ.ʒə.wəl"],
+		["communication", "kə.ˌmju.nə.ˈkeɪ.ʃən"],
+		["reaction", "ɹi.ˈæk.ʃən"],
+	])("preserves reviewed Practice boundaries for %s", (word, ipa) => {
+		const entry = collectWordsWithPhonemic("practice").find((entry) => entry.word === word);
+		if (!entry) throw new Error(`Missing Practice word: ${word}`);
+		expect(getAzureIpa(entry)).toBe(ipa);
+	});
+	it("preserves every pinned token and stress across the 358 inputs", () => {
+		for (const entry of collectWordsWithPhonemic("practice")) {
+			const ipa = getAzureIpa(entry);
+			expect(ipa.split("."), entry.word).toHaveLength(entry.variant.match(/[012]/g)!.length);
+			expect(ipa.match(/ˈ/g), entry.word).toHaveLength(entry.variant.match(/1/g)!.length);
+			expect(ipa.match(/ˌ/g)?.length ?? 0, entry.word).toBe(entry.variant.match(/2/g)?.length ?? 0);
+			expect(buildAzureWordInput(entry).text.match(/<phoneme /g), entry.word).toHaveLength(1);
+		}
+	});
+});
