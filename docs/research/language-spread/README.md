@@ -1,10 +1,12 @@
 # Language spread: research behind the page
 
-Research for the flagged `/language-spread` page (`FLAG_LANGUAGE_SPREAD`), which tells how languages spread across the world as a scrolling story over a map. Researched 2026-10-17. The page copy, stops and source list are in `apps/phonaria/src/lib/language-spread/story.ts`. These notes record why each claim is there.
+Research for the flagged `/language-spread` page (`FLAG_LANGUAGE_SPREAD`). The page now tells the story of one language, English, as a scrolling story over a globe: from its Indo-European ancestor through Old English, the Vikings, the Norman Conquest, the Great Vowel Shift and printing, to the English spoken around the world today. The page copy, stops and source list are in `apps/phonaria/src/lib/language-spread/story.ts`. These notes record why each claim is there.
+
+Until commit `ceaddbc` the page told how languages spread across the whole world, in 25 steps. Following many branches at once was hard to read, so the story was narrowed to English. The world research is kept: the regional notes below and the [retired world story](#retired-the-world-story) tables still record every claim and source behind it, ready for future stories about other languages.
 
 ## How the research was done
 
-Research was split by region among five research agents, each working from primary and scholarly sources: Glottolog, Ethnologue, academic handbooks, peer-reviewed papers, and museum, government and university pages. Wikipedia was used only to find leads and is never cited. Each agent marked how it checked a source: full text, abstract, search summary, or secondhand. Weak claims were marked for removal.
+For the world story, research was split by region among five research agents, each working from primary and scholarly sources: Glottolog, Ethnologue, academic handbooks, peer-reviewed papers, and museum, government and university pages. Wikipedia was used only to find leads and is never cited. Each agent marked how it checked a source: full text, abstract, search summary, or secondhand. Weak claims were marked for removal.
 
 | Notes | Scope |
 | --- | --- |
@@ -13,12 +15,13 @@ Research was split by region among five research agents, each working from prima
 | [asia-pacific.md](asia-pacific.md) | Sino-Tibetan, Austronesian and the Pacific, Dravidian, Austroasiatic, Kra-Dai, Japonic, Pama-Nyungan, Trans-New Guinea |
 | [americas.md](americas.md) | The peopling of the Americas, the main Indigenous families, and Inuit, Dene, Nahuatl and Quechua |
 | [modern.md](modern.md) | Colonial and modern spread, creoles, and the world's languages today |
+| [english.md](english.md) | The story of English: Germanic settlers, Old Norse, the Norman Conquest, printing, the Great Vowel Shift, American and Australian English, and English today |
 | [verification.md](verification.md) | Browser verification runs, performance checks and the independent code review |
 | [handoff.md](handoff.md) | Current state, file map and caveats for whoever picks the page up next |
 
 The page was written from these notes. A claim was kept only when the notes show it in a reputable source and it does not rest on a single weak one. Copy uses the widely accepted view, and where scholars are closely split, the description says so. Dates are shown as approximate, and places as general areas.
 
-## Judgment calls
+## Judgment calls in the world story
 
 - **Where language began.** The story opens with people in Africa who could already talk. It says nobody knows where or when language began. It does not reconstruct or name a first language.
 - **The Indo-European homeland.** The pin sits on the steppe north of the Black and Caspian Seas, the leading view in ancient DNA and archaeology. The card and the pin both name the Anatolian and south-of-the-Caucasus alternatives, and say recent work on both sides points toward the Caucasus.
@@ -29,16 +32,73 @@ The page was written from these notes. A claim was kept only when the notes show
 - **Map.** Pins mark the general area where a group or language took shape. Soft glows mark broad regions. Arrows show the direction of spread, and many follow schematic routes, not documented ones. The Polynesia and Lapita routes use longitudes past 180° so they cross the Pacific without wrapping.
 - **Sources on the page.** Each pin's details list the works behind it. Cards whose own text makes claims list their sources too. The page ends with a short list of the main works.
 
-## Checked in this pass
+## Checked for the world story
 
 These were checked directly, beyond the agents' notes:
 
 - **Shang oracle bones.** The Smithsonian's National Museum of Asian Art dates inscribed oracle-bone fragments from Anyang to ca. 1250–1050 BCE (object FSC-O-1a-e, https://asia.si.edu/object/FSC-O-1a-e). With Anderson 2015, that supports "around 1250 BCE".
 - **Russia reaches the Pacific.** Dartmouth's *Encyclopedia Arctica* (https://collections.dartmouth.edu/arctica-beta/html/EA12-09.html) agrees with EBSCO that Russians reached the Pacific in 1639, less than a century after Yermak. Both are secondary sources, so the claim went to the independent review below, which found a scholarly source (Bassin) that now replaces EBSCO on the page.
 
-## Steps and stops
+## The story of English
 
-Every step and stop on the page, with the notes and sources behind it. The tables were generated from `story.ts`; the story tests check that every id appears here.
+The English story was researched on 2026-10-17 by one research agent to the same standards, reusing the Indo-European, Germanic, English and "today" findings from [western-eurasia.md](western-eurasia.md) and [modern.md](modern.md). Several sources (the OED's history-of-English overviews, Harvard's Chaucer site, the British Library's Caxton pages) block automated reading or need a login, so they were read through the Internet Archive, and the page links the exact capture that was read.
+
+Judgment calls for this story:
+
+- **The Great Vowel Shift** gets its own kind of pin, "Change in the language", since it is a change in how English sounds rather than a place it reached. The card uses plain respellings ("meen", "hoos"); the pin's details add IPA. It comes before the printing step so the steps stay in time order, and its card points ahead to printing as the reason spelling stopped following the sounds.
+- **Dating the shift.** The card gives about 1400 to 1700, the main period in Harvard's account. The pin says some scholars trace the first changes to the 1200s and see several linked changes rather than one (Stenbrenden 2015; Prichard 2014 argues for its unity).
+- **The fate of the Britons** after the Anglo-Saxon settlement is "still debated", as the OED puts it. The card doesn't pick between many migrant families and a small elite.
+- **The r after vowels.** The America card says American English kept it, as the accent Phonaria teaches does, and that southern England later dropped it. It avoids saying why, which Trudgill and Gordon (2006) dispute.
+- **"Most speakers learned it as an extra language"** rests on the British Council's report of David Crystal's estimate, one native speaker to every five non-native speakers, with Statista's 2026 total of about 1.49 billion.
+- **Names.** The research note calls the printing stop `printing`; the page uses `london-english` for the stop and `printing` for the step.
+- **Left out:** Angles, Saxons and Jutes as three named homelands, Celtic retreat details, Norse place names in -by, causes of the vowel shift, Caxton as the creator of standard spelling, and dated claims for English in India and Africa. [english.md](english.md) lists every dropped claim and why.
+
+The tables were generated from `story.ts`; the story tests check that every id appears here.
+
+| Step | Era shown | Stops | Card | Card sources |
+| --- | --- | --- | --- | --- |
+| `intro` | ~4000 BCE | none | center-left | via its stops |
+| `indo-european` | ~4000 BCE | `indo-european` | bottom-left | oed-old-english |
+| `germanic` | ~500 BCE | `germanic` | bottom-left | via its stops |
+| `old-english` | ~450 CE | `old-english` | bottom-left | via its stops |
+| `vikings` | ~800 CE | `old-norse` | bottom-right | via its stops |
+| `norman-conquest` | ~1066 CE | `norman-french` | top-right | via its stops |
+| `great-vowel-shift` | ~1400–1700 CE | `great-vowel-shift` | center-right | via its stops |
+| `printing` | ~1476 CE | `london-english` | top-left | oed-middle-english, oed-early-modern |
+| `america` | ~1607 CE | `american-english` | bottom-left | npg-webster, merriam-webster-1828 |
+| `around-the-world` | ~1788 CE | `australian-english` | top-right | ethnologue-most-spoken |
+| `today` | Today | none | center-left | statista-2026, ethnologue-most-spoken, british-council-future-english |
+
+| Stop | Kind | Date shown | Notes | Sources on the page |
+| --- | --- | --- | --- | --- |
+| `indo-european` | family | ~9,500–6,000 years ago | [western-eurasia.md](western-eurasia.md), [english.md](english.md) | haak-2015, anthony-ringe-2015, bouckaert-2012, heggarty-2023, lazaridis-2025 |
+| `germanic` | branch | ~500 BCE | [western-eurasia.md](western-eurasia.md), [english.md](english.md) | faarlund-2008, ringe-taylor-2014, oed-old-english |
+| `old-english` | language | ~450 CE | [english.md](english.md) | gretzinger-2022, oed-old-english |
+| `old-norse` | language | ~800 CE | [english.md](english.md) | oed-middle-english, nottingham-danelaw |
+| `norman-french` | language | ~1066 CE | [english.md](english.md) | english-heritage-hastings, oed-middle-english |
+| `london-english` | language | ~1476 CE | [english.md](english.md) | bl-caxton-life, bl-caxton-english, westminster-abbey-caxton, nottingham-danelaw |
+| `great-vowel-shift` | change | ~1400–1700 CE | [english.md](english.md) | harvard-gvs, oed-early-modern, stenbrenden-2015, prichard-2014 |
+| `american-english` | language | ~1607 CE | [english.md](english.md) | nps-jamestown, npg-webster, trudgill-gordon-2006, bl-sounds-familiar |
+| `australian-english` | language | ~1788 CE | [english.md](english.md) | nma-first-fleet |
+
+### Independent review of the English story
+
+On 2026-10-17 a model from another provider (Codex, GPT-6.1-Sol) checked the English story's copy against [english.md](english.md) and the sources, read-only, and opened all 27 source links. It found no wrong dates, places or broken links. All of its findings were applied:
+
+| Where | Finding | Response |
+| --- | --- | --- |
+| `america`, `american-english` | "American English kept the r" and "southern England dropped it" overgeneralise: American English is predominantly rhotic, and the West Country keeps the r | Now "Most American accents kept the r … much of southern England later lost it" |
+| `great-vowel-shift` | Only long stressed vowels shifted, and Chaucer's "meet" was a pure vowel, without the glide of modern "mate" | Card and pin now say "long stressed vowels"; the card adds "without its glide" |
+| `vikings` | "A sign of how closely the two peoples lived" states a likely explanation as fact and leaves out how similar the languages were | Now "this probably reflects close contact and the similarity of the two languages", as the OED puts it |
+| `indo-european` | ~8,000–6,000 years ago leaves out much of the Anatolian estimate (8,000–9,500 years ago, Bouckaert 2012) | Now ~9,500–6,000 years ago |
+| `germanic` | "Gothic has died out" wasn't stated by the attached sources | Sentence removed |
+| `london-english` | "egges, a Norse word" wasn't backed by the stop's sources | Added nottingham-danelaw |
+| `today` | Ethnologue's "more non-native speakers" compares English with Mandarin; it doesn't say most English speakers are non-native | Added the British Council's report of David Crystal's estimate: "one native speaker to every five non-native speakers" (read at https://web.archive.org/web/20260115214447/https://www.britishcouncil.org/voices-magazine/whats-future-english) |
+| `statista-2026` | That Statista's figure comes from Ethnologue couldn't be checked | Citation now reads "Statista, 2026" |
+
+## Retired: the world story
+
+Every step and stop of the world story as it stood at `ceaddbc`, with the notes and sources behind it.
 
 | Step | Era shown | Stops | Card sources |
 | --- | --- | --- | --- |
@@ -120,9 +180,9 @@ Every step and stop on the page, with the notes and sources behind it. The table
 | `russian` | ~1582 CE | [modern.md](modern.md) | bassin-1999, morrison-2021 |
 | `creoles` | ~1600–1800 CE | [modern.md](modern.md) | apics-haitian-creole, apics-tok-pisin |
 
-## Independent review
+## Independent review of the world story
 
-An independent reviewer checked the page copy against these notes and the sources. Findings and responses are recorded below.
+An independent reviewer checked the world story's copy against these notes and the sources. Findings and responses are recorded below.
 
 The review was done on 2026-10-17 by a model from another provider (Codex, GPT-6.1-Sol), working read-only from these notes and the live sources. It checked every stop, card and source link. All of its findings were applied:
 

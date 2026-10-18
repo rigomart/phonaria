@@ -23,9 +23,9 @@ describe("language spread story", () => {
 		expect([...revealed].sort()).toEqual([...stopIds].sort());
 	});
 
-	it("opens with the out-of-Africa story and ends today", () => {
+	it("opens on the Indo-European ancestor and ends today", () => {
 		expect(STEPS[0].stops).toEqual([]);
-		expect(STEPS[1].stops).toContain("humans-in-africa");
+		expect(STEPS[1].stops).toEqual(["indo-european"]);
 		expect(STEPS.at(-1)?.era).toBe("today");
 	});
 
@@ -69,7 +69,7 @@ describe("language spread story", () => {
 		for (const id of [...stopIds, ...STEPS.map((step) => step.id)]) {
 			expect(index, `index row for ${id}`).toContain(`\`${id}\``);
 		}
-		for (const name of ["africa", "western-eurasia", "asia-pacific", "americas", "modern"]) {
+		for (const name of ["english", "western-eurasia", "modern"]) {
 			expect(readFileSync(resolve(researchDir, `${name}.md`), "utf8").length, name).toBeGreaterThan(
 				0,
 			);
