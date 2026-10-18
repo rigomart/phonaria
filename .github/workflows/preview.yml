@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
       deployments: write
     env:
       CLOUDFLARE_ENV: preview
@@ -122,43 +121,6 @@ jobs:
           bun --cwd packages/browser-contract e2e:install
           bun --cwd packages/browser-contract e2e:smoke
           bun --cwd packages/browser-contract e2e:definitions
-
-      - name: Comment preview URL
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const url = `${{ steps.origin.outputs.url }}`;
-            const body = [
-              '## Preview',
-              '',
-              `Protected Cloudflare preview: ${url}`,
-              '',
-              'This preview runs the complete Phonaria application, with Practice enabled when FLAG_PRACTICE is on.',
-              'Cloudflare Access must remain required. Do not share an unprotected URL.',
-            ].join('\n');
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            const existing = comments.find((comment) =>
-              comment.body?.includes('## Preview') || comment.body?.includes('Lab Start preview'),
-            );
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body,
-              });
-            }
 
       - name: Upload Worker metrics
         if: always()
