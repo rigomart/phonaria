@@ -56,11 +56,15 @@
 	/* Voiced consonants on the chart: a light primary tint. */
 	--voiced: color-mix(in oklch, var(--primary) 15%, var(--background-strong));
 	--voiced-border: color-mix(in oklch, var(--primary) 20%, var(--background-strong));
-	/* Language spread map: a tilted atlas with lapis-ink routes, and glass panels floating over it.
+	/* Language spread map: a globe with lapis-ink routes, and glass panels floating over it.
 	   The glass is not blurred: a backdrop blur over the moving map doubled slow frames on throttled CPUs. */
-	--map-water: oklch(0.945 0.012 245);
-	--map-land: oklch(0.885 0.014 250);
-	--map-coast: oklch(0.8 0.02 250);
+	--map-space: oklch(0.975 0.004 250);
+	--map-water: oklch(0.925 0.022 240);
+	--map-land: oklch(0.985 0.006 95);
+	--map-coast: oklch(0.79 0.022 245);
+	--map-graticule: oklch(0.885 0.026 240);
+	--map-atmosphere: oklch(0.88 0.045 240);
+	--map-limb: oklch(0.62 0.05 245);
 	--map-route: oklch(0.46 0.16 265);
 	--map-route-past: oklch(0.7 0.07 265);
 	--map-area: oklch(0.78 0.09 265);
@@ -128,9 +132,13 @@
 	--frequency-low: oklch(0.42 0.02 257);
 	--frequency-high: oklch(0.88 0.03 257);
 	--diagram: oklch(0.25 0.015 257);
-	--map-water: oklch(0.155 0.016 255);
-	--map-land: oklch(0.27 0.02 255);
-	--map-coast: oklch(0.36 0.024 255);
+	--map-space: oklch(0.115 0.01 257);
+	--map-water: oklch(0.19 0.024 255);
+	--map-land: oklch(0.29 0.018 255);
+	--map-coast: oklch(0.4 0.026 255);
+	--map-graticule: oklch(0.24 0.026 255);
+	--map-atmosphere: oklch(0.42 0.08 255);
+	--map-limb: oklch(0.08 0.01 257);
 	--map-route: oklch(0.76 0.13 255);
 	--map-route-past: oklch(0.5 0.07 258);
 	--map-area: oklch(0.45 0.11 262);
@@ -194,6 +202,7 @@
 	--color-diagram: var(--diagram);
 	--color-voiced: var(--voiced);
 	--color-voiced-border: var(--voiced-border);
+	--color-map-space: var(--map-space);
 	--color-map-water: var(--map-water);
 	--color-map-land: var(--map-land);
 	--color-map-coast: var(--map-coast);

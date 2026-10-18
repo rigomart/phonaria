@@ -41,12 +41,12 @@ Staging CI uses the GitHub variables `STAGING_URL` and `WORKERS_DEV_SUBDOMAIN`. 
 
 ## Language Spread
 
-`/language-spread` tells how languages spread across the world as a scrolling story over a pinned SVG map. Story data, sources and camera framing are in `src/lib/language-spread/story.ts`, with the research notes behind every stop in [`docs/research/language-spread`](../../docs/research/language-spread/). The UI is in `src/components/language-spread`.
+`/language-spread` tells the story of English as a scrolling story over a globe, from its Indo-European ancestor to the English used around the world today. Story data, sources, camera framing and card placement are in `src/lib/language-spread/story.ts`, with the research notes behind every stop in [`docs/research/language-spread`](../../docs/research/language-spread/). The UI is in `src/components/language-spread`: the globe is drawn on a canvas with `d3-geo`'s orthographic projection, and pins are buttons placed over it.
 
-The world outline in `src/lib/language-spread/world-land.ts` is generated from Natural Earth 1:110m land (public domain) by `scripts/generate-world-map.ts`, using the Gall stereographic projection in `projection.ts`. The projection is cylindrical, so the map repeats east and west and the camera can pan across the Pacific. Regenerate it with:
+The land in `src/lib/language-spread/world-land.ts` is generated from Natural Earth 1:50m land (public domain) by `scripts/generate-world-map.ts`, as a coarse outline for whole-globe views and a fine one for close-ups. Regenerate it with:
 
 ```bash
-bun apps/phonaria/scripts/generate-world-map.ts [path/to/ne_110m_land.geojson]
+bun apps/phonaria/scripts/generate-world-map.ts [path/to/ne_50m_land.geojson]
 ```
 
 ## Request-time services

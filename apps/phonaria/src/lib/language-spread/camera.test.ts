@@ -1,115 +1,190 @@
 import { describe, expect, it } from "vitest";
 import {
+	type Bounds,
 	type Camera,
 	fitCamera,
-	interpolateCamera,
-	nearestCopy,
-	normalizeCamera,
-	toView,
+	flightCamera,
+	GLOBE_FIT,
+	isFarMove,
+	planFlight,
+	unitRadius,
 	type Viewport,
+	visibleRadius,
+	zoomOf,
 } from "./camera";
-import { MAP_HEIGHT, MAP_WIDTH, project } from "./projection";
+import { angularDistance, orthographic } from "./sphere";
 
-const desktop: Viewport = {
+const laptop: Viewport = {
 	width: 1280,
-	height: 720,
-	insets: { top: 0, right: 0, bottom: 0, left: 440 },
+	height: 752,
+	insets: { top: 110, right: 24, bottom: 24, left: 430 },
 };
 const phone: Viewport = {
 	width: 390,
-	height: 780,
-	insets: { top: 0, right: 0, bottom: 360, left: 0 },
+	height: 796,
+	insets: { top: 90, right: 12, bottom: 380, left: 12 },
 };
-const world = { west: -180, south: -58, east: 180, north: 84 };
 
-/** Where a map point lands on screen for a camera. */
-function onScreen(camera: Camera, viewport: Viewport, lon: number, lat: number) {
-	const view = toView(camera, viewport);
-	const point = project(lon, lat);
-	return {
-		x: (point.x - view.x) / camera.unitsPerPixel,
-		y: (point.y - view.y) / camera.unitsPerPixel,
-	};
-}
+const WORLD: Bounds = { west: -170, south: -56, east: 190, north: 78 };
+const ENGLAND: Bounds = { west: -6, south: 50, east: 2, north: 55.8 };
+const NORMANDY: Bounds = { west: -4, south: 47.5, east: 3, north: 52 };
+const VIRGINIA: Bounds = { west: -84, south: 35, east: -74, north: 40.5 };
+const SYDNEY: Bounds = { west: 148, south: -36, east: 154, north: -31 };
+const STEPPE: Bounds = { west: 30, south: 40, east: 60, north: 55 };
 
-describe("fitCamera", () => {
-	it("frames a region in the area the cards leave free", () => {
-		const bantu = { west: 5, south: -35, east: 45, north: 10 };
-		for (const viewport of [desktop, phone]) {
-			const camera = fitCamera(bantu, viewport);
-			const corners = [
-				onScreen(camera, viewport, bantu.west, bantu.north),
-				onScreen(camera, viewport, bantu.east, bantu.south),
-			];
-			for (const { x, y } of corners) {
-				expect(x).toBeGreaterThanOrEqual(viewport.insets.left - 0.5);
-				expect(x).toBeLessThanOrEqual(viewport.width - viewport.insets.right + 0.5);
-				expect(y).toBeGreaterThanOrEqual(viewport.insets.top - 0.5);
-				expect(y).toBeLessThanOrEqual(viewport.height - viewport.insets.bottom + 0.5);
+const screenPoint = (camera: Camera, lon: number, lat: number) => {
+	const { x, y } = orthographic(lon, lat, [camera.lon, camera.lat]);
+	return { x: camera.x + x * camera.radius, y: camera.y + y * camera.radius };
+};
+
+describe("fitting a region on the globe", () => {
+	it("frames the whole world as the whole globe, inside the free area with a margin", () => {
+		for (const viewport of [laptop, phone]) {
+			const camera = fitCamera(WORLD, viewport);
+			expect(zoomOf(camera, viewport)).toBeCloseTo(GLOBE_FIT);
+			const { insets, width, height } = viewport;
+			expect(camera.x - camera.radius).toBeGreaterThan(insets.left);
+			expect(camera.x + camera.radius).toBeLessThan(width - insets.right);
+			expect(camera.y - camera.radius).toBeGreaterThan(insets.top);
+			expect(camera.y + camera.radius).toBeLessThan(height - insets.bottom);
+		}
+	});
+
+	it("centres a region in the area the cards leave free", () => {
+		const camera = fitCamera(ENGLAND, laptop);
+		expect(camera.x).toBeCloseTo((430 + 1280 - 24) / 2);
+		expect(camera.y).toBeCloseTo((110 + 752 - 24) / 2);
+		expect(camera.lon).toBeCloseTo(-2, 0);
+		expect(camera.lat).toBeGreaterThan(52);
+		expect(camera.lat).toBeLessThan(54);
+	});
+
+	it("zooms in on England far enough to fill the free area", () => {
+		for (const viewport of [laptop, phone]) {
+			const camera = fitCamera(ENGLAND, viewport);
+			expect(zoomOf(camera, viewport)).toBeGreaterThan(8);
+			const { insets, width, height } = viewport;
+			for (const [lon, lat] of [
+				[-6, 50],
+				[2, 50],
+				[-6, 55.8],
+				[2, 55.8],
+			]) {
+				const { x, y } = screenPoint(camera, lon, lat);
+				expect(x).toBeGreaterThanOrEqual(insets.left - 0.5);
+				expect(x).toBeLessThanOrEqual(width - insets.right + 0.5);
+				expect(y).toBeGreaterThanOrEqual(insets.top - 0.5);
+				expect(y).toBeLessThanOrEqual(height - insets.bottom + 0.5);
 			}
 		}
 	});
 
-	it("never zooms out past the whole map or in past the zoom limit", () => {
-		const everything = fitCamera({ west: -400, south: -80, east: 400, north: 85 }, desktop);
-		const wholeMap = fitCamera(world, desktop);
-		expect(everything.unitsPerPixel).toBeCloseTo(wholeMap.unitsPerPixel);
-
-		const village = fitCamera({ west: 10, south: 10, east: 10.01, north: 10.01 }, desktop);
-		expect(village.unitsPerPixel).toBeCloseTo(wholeMap.unitsPerPixel / 8);
+	it("frames a region across the antimeridian from its middle", () => {
+		const camera = fitCamera({ west: 160, south: -48, east: 260, north: 25 }, laptop);
+		expect(camera.lon).toBeGreaterThan(-170);
+		expect(camera.lon).toBeLessThan(-130);
 	});
 
-	it("keeps the poles out of view when zoomed in", () => {
-		const arctic = fitCamera({ west: -60, south: 70, east: 0, north: 84 }, desktop);
-		expect(toView(arctic, desktop).y).toBeGreaterThanOrEqual(0);
-		const view = toView(
-			fitCamera({ west: -75, south: -58, east: -60, north: -50 }, desktop),
-			desktop,
-		);
-		expect(view.y + view.height).toBeLessThanOrEqual(MAP_HEIGHT + 0.001);
+	it("never zooms out past the whole globe, nor in without limit", () => {
+		expect(zoomOf(fitCamera(WORLD, laptop), laptop)).toBeGreaterThanOrEqual(GLOBE_FIT);
+		const spot = fitCamera({ west: 0, south: 51, east: 0.01, north: 51.01 }, laptop);
+		expect(Number.isFinite(spot.radius)).toBe(true);
+		expect(zoomOf(spot, laptop)).toBeLessThanOrEqual(32);
 	});
 
-	it("frames across the Pacific when east passes 180", () => {
-		const camera = fitCamera({ west: 160, south: -45, east: 200, north: 0 }, desktop);
-		expect(camera.x).toBeCloseTo(project(180, 0).x);
-		expect(camera.x).toBeCloseTo(MAP_WIDTH);
+	it("sees a quarter turn around its center from the whole globe, and less when zoomed in", () => {
+		expect(visibleRadius(fitCamera(WORLD, laptop), laptop)).toBeCloseTo(Math.PI / 2);
+		expect(visibleRadius(fitCamera(ENGLAND, laptop), laptop)).toBeLessThan(0.1);
 	});
 });
 
-describe("map copies", () => {
-	it("picks the copy of a point nearest the camera", () => {
-		const tonga = project(-175, -21).x;
-		expect(nearestCopy(tonga, MAP_WIDTH)).toBeCloseTo(tonga + MAP_WIDTH);
-		expect(nearestCopy(tonga, 100)).toBeCloseTo(tonga);
+describe("camera flights", () => {
+	const camera = (bounds: Bounds, viewport = laptop) => fitCamera(bounds, viewport);
+
+	it("pulls back for far moves and only pans for near ones", () => {
+		for (const viewport of [laptop, phone]) {
+			const at = (bounds: Bounds) => camera(bounds, viewport);
+			expect(isFarMove(at(WORLD), at(STEPPE), viewport)).toBe(false);
+			expect(isFarMove(at(ENGLAND), at(NORMANDY), viewport)).toBe(false);
+			expect(isFarMove(at(ENGLAND), at(WORLD), viewport)).toBe(false);
+			expect(isFarMove(at(ENGLAND), at(VIRGINIA), viewport)).toBe(true);
+			expect(isFarMove(at(ENGLAND), at(SYDNEY), viewport)).toBe(true);
+		}
 	});
 
-	it("normalizes a camera to the middle copy without moving the picture", () => {
-		const camera = { x: MAP_WIDTH * 1.8, y: 200, unitsPerPixel: 1 };
-		expect(normalizeCamera(camera).x).toBeCloseTo(MAP_WIDTH * 0.8);
-	});
-});
-
-describe("interpolateCamera", () => {
-	const from = { x: 100, y: 300, unitsPerPixel: 1 };
-	const to = { x: 450, y: 200, unitsPerPixel: 0.25 };
-
-	it("starts and ends exactly on the two cameras", () => {
-		expect(interpolateCamera(from, to, 0)).toEqual(from);
-		const end = interpolateCamera(from, to, 1);
-		expect(end.x).toBeCloseTo(to.x);
-		expect(end.y).toBeCloseTo(to.y);
-		expect(end.unitsPerPixel).toBeCloseTo(to.unitsPerPixel);
+	it("dips to about the whole globe halfway through a far flight", () => {
+		const flight = planFlight(camera(ENGLAND), camera(VIRGINIA), laptop);
+		expect(flight.far).toBe(true);
+		const middle = flightCamera(flight, 0.5);
+		expect(zoomOf(middle, laptop)).toBeLessThan(1.2);
+		expect(zoomOf(middle, laptop)).toBeGreaterThanOrEqual(GLOBE_FIT - 1e-9);
+		const sydney = flightCamera(planFlight(camera(ENGLAND), camera(SYDNEY), laptop), 0.5);
+		expect(zoomOf(sydney, laptop)).toBeCloseTo(GLOBE_FIT);
 	});
 
-	it("pulls back mid-flight on long moves", () => {
-		const middle = interpolateCamera(from, to, 0.5);
-		expect(middle.unitsPerPixel).toBeGreaterThan(Math.sqrt(from.unitsPerPixel * to.unitsPerPixel));
+	it("changes zoom geometrically and without a dip on near flights", () => {
+		const from = camera(ENGLAND);
+		const to = camera(NORMANDY);
+		const flight = planFlight(from, to, laptop);
+		expect(flight.far).toBe(false);
+		const low = Math.min(from.radius, to.radius);
+		const high = Math.max(from.radius, to.radius);
+		for (let t = 0; t <= 1; t += 0.05) {
+			const { radius } = flightCamera(flight, t);
+			expect(radius).toBeGreaterThanOrEqual(low - 1e-6);
+			expect(radius).toBeLessThanOrEqual(high + 1e-6);
+		}
+		const globe = camera(WORLD);
+		const zoomIn = planFlight(globe, from, laptop);
+		expect(
+			flightCamera(zoomIn, 0.5).radius,
+			"halfway in eased time the radius is the geometric mean",
+		).toBeCloseTo(Math.sqrt(globe.radius * from.radius), 3);
 	});
 
-	it("takes the short way around the world", () => {
-		const americas = { x: project(-150, 0).x, y: 300, unitsPerPixel: 0.5 };
-		const pacific = { x: project(170, 0).x, y: 300, unitsPerPixel: 0.5 };
-		const middle = interpolateCamera(americas, pacific, 0.5);
-		expect(middle.x).toBeLessThan(project(-150, 0).x);
+	it("turns along the great circle between the two centers", () => {
+		const from = camera(ENGLAND);
+		const to = camera(SYDNEY);
+		const flight = planFlight(from, to, laptop);
+		for (const t of [0.2, 0.5, 0.8]) {
+			const mid = flightCamera(flight, t);
+			const via =
+				angularDistance([from.lon, from.lat], [mid.lon, mid.lat]) +
+				angularDistance([mid.lon, mid.lat], [to.lon, to.lat]);
+			expect(via).toBeCloseTo(flight.distance, 6);
+		}
+	});
+
+	it("can be kept near, without the pull-back", () => {
+		const flight = planFlight(camera(ENGLAND), camera(VIRGINIA), laptop, { near: true });
+		expect(flight.far).toBe(false);
+		expect(zoomOf(flightCamera(flight, 0.5), laptop)).toBeGreaterThan(8);
+	});
+
+	it("starts and lands exactly on its cameras", () => {
+		const from = camera(ENGLAND);
+		const to = camera(VIRGINIA);
+		const flight = planFlight(from, to, laptop);
+		const start = flightCamera(flight, 0);
+		expect(start.lon).toBeCloseTo(from.lon);
+		expect(start.lat).toBeCloseTo(from.lat);
+		expect(start.radius).toBeCloseTo(from.radius);
+		expect(flightCamera(flight, 1)).toEqual(to);
+		expect(flightCamera(flight, 1.5)).toEqual(to);
+	});
+
+	it("takes longer the farther it goes, within 0.9 to 2.2 seconds", () => {
+		const near = planFlight(camera(ENGLAND), camera(NORMANDY), laptop);
+		const far = planFlight(camera(ENGLAND), camera(VIRGINIA), laptop);
+		const farthest = planFlight(camera(ENGLAND), camera(SYDNEY), laptop);
+		expect(near.duration).toBeGreaterThanOrEqual(900);
+		expect(far.duration).toBeGreaterThan(near.duration);
+		expect(farthest.duration).toBeGreaterThanOrEqual(far.duration);
+		expect(farthest.duration).toBeLessThanOrEqual(2200);
+	});
+
+	it("measures zoom against the globe that exactly fits the free area", () => {
+		expect(unitRadius(laptop)).toBe((752 - 110 - 24) / 2);
+		expect(unitRadius(phone)).toBe((796 - 90 - 380) / 2);
 	});
 });
