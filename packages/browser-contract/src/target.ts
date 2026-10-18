@@ -116,6 +116,7 @@ function parseTarget(raw: unknown, expectedName: string): ContractTarget {
 		baseUrl: optionalString(raw, "baseUrl"),
 		expectedCanonicalOrigin: optionalString(raw, "expectedCanonicalOrigin"),
 		practiceEnabled: requiredBoolean(raw, "practiceEnabled"),
+		languageSpreadEnabled: requiredBoolean(raw, "languageSpreadEnabled"),
 		indexingEnabled: requiredBoolean(raw, "indexingEnabled"),
 		bucketAssetsAvailable: requiredBoolean(raw, "bucketAssetsAvailable"),
 		requiresBaseUrlOverride: optionalBoolean(raw, "requiresBaseUrlOverride"),

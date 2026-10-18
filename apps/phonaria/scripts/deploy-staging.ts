@@ -42,6 +42,9 @@ export function deployStaging(
 		...baseEnv,
 		CLOUDFLARE_ENV: "staging",
 		SITE_URL: siteUrl,
+		// Flags are baked in at build time; Wrangler vars alone don't reach the bundle.
+		FLAG_PRACTICE: baseEnv.FLAG_PRACTICE ?? "1",
+		FLAG_LANGUAGE_SPREAD: baseEnv.FLAG_LANGUAGE_SPREAD ?? "1",
 	};
 
 	run({ command: "bun", args: ["./scripts/write-dev-vars.ts"], env });

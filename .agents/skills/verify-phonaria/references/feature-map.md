@@ -1,6 +1,6 @@
 # Phonaria feature map
 
-This map describes how to reach features, not a claim that all features pass. The common-word transcription, transcription history, and sound-frequency journeys below have executable verification recipes. Other entries are navigation references awaiting dedicated journeys.
+This map describes how to reach features, not a claim that all features pass. The common-word transcription, transcription history, sound-frequency, and Language Spread journeys below have executable verification recipes. Other entries are navigation references awaiting dedicated journeys.
 
 | Feature | Entry point | Coverage here |
 | --- | --- | --- |
@@ -13,6 +13,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Vowel chart | `/ipa-chart/vowels`, **Show diphthongs** | Not exercised |
 | Frequency | `/ipa-chart/frequency`, header **IPA Chart** → **Frequency** tab | Executable journey below |
 | Sound card "Frequency" and "Spelling" | Any sound, or **Details for /h/** after transcribing | Executable journey below |
+| Language Spread | `/language-spread`, header **Language Spread** (behind `FLAG_LANGUAGE_SPREAD`) | Executable journeys below: `language-spread` (flag on) and `language-spread-off` |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 
@@ -232,3 +233,239 @@ bun run verify observe "$VERIFY_RUN" followed-link
 `ranking` requires the Frequency heading, no tabs or comparison chart, no category legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and 40 distinct frequency shades without category labels. `page-card` requires the /ð/ row marked open (`data-details-open`), "Common", "11th most common" of 40 with 3 of 4 meter bars lit (3.1%) and no link on the Frequency page itself, and the pattern `th` paired with "this, mother", both `th` emphasized. `menu` requires the header's three IPA Chart tabs, which show on every chart page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the /h/ panel from a transcription result to show "Less common", "29th most common" of 40 with 2 of 4 meter bars lit (1.35% in `phoneme-frequency.json`), the block linking to the Frequency page, and the pattern `h` paired with "house, hello"; `followed-link` requires that link to open the Frequency page.
 
 Clicking a sound whose card or panel is already open closes it; clicking another sound while the panel is open swaps the panel to it. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.
+
+## Language Spread
+
+"The story of English" is a scroll story at `/language-spread`, behind `FLAG_LANGUAGE_SPREAD` (on locally, off in production unless set). A canvas globe (orthographic) stays pinned under the 48 px sticky header. Scrolling moves through 11 steps; each step's card fades in at the place its step gives it (`card` in the story data: top, middle or bottom, left or right, on wide screens; always at the bottom on phones), and the previous card fades out. The active step is the `<li data-step="<id>">` with `aria-current="step"`. The expected literals come from the story data in `apps/phonaria/src/lib/language-spread/story.ts` and the product requirements, not from importing the app's helpers: 11 steps (intro, indo-european, germanic, old-english, vikings, norman-conquest, great-vowel-shift, printing, america, around-the-world, today), 9 places, 8 routes, 9 main works.
+
+The [checkpoints](../scripts/language-spread.ts) read the era dial (`[data-era]`, its 11 ticks and the `Step N of 11` screen-reader text), the Previous/Next step buttons, `data-stop` pins (`data-revealed`, the pin's `<li>` `inert` until revealed, and the pin's positioned parent hidden and `inert` on the far side of the globe), the cards (computed opacity, whether their chips sit inside an `inert` element, their box against the screen edges), and the map region's box and attributes: `data-camera` (`dragging` while the reader holds the globe, `moving` during a flight or the glide after a drag, `settled` once it rests), `data-camera-center` (`lon,lat`, 1 decimal), `data-camera-zoom` (2 decimals; 1 means the whole globe exactly fits the area the card and dial leave free, the whole-globe view reads 0.88, steps on England read 4 to 16) and `data-routes-drawn` (arrows fully drawn, far side included), and `data-spinning` while the globe turns slowly eastward at `today` (about one turn per 100 s; paused by hovering the globe or a pin, focus in the map, open details or a drag, resuming about 2 s later; off with reduced motion, a hidden tab, or less than half the map on screen). Centre and zoom are written only when the camera lands. After a drag moves the step's centre more than 48 px, or behind the globe, a **Recenter on this step** button (`[data-recenter]`) appears at the bottom middle of the free area. The active card shows only once the globe reveals its step (about 60% into a flight, at most 1.6 s), so waits require it opaque. Arrows are painted on the canvas, so there are no paths to count. Also the details panel `[data-stop-details]`, the card chips and the sources section.
+
+### Controls
+
+| User control | CLI locator |
+| --- | --- |
+| Map region | `[role="region"][aria-label^="Map of where languages spread"]` (carries the camera attributes) |
+| A story step | `scrollIntoView()` on `[data-step=<id>]`, then wait for the camera |
+| Previous / Next step | `button[aria-label="Previous step"]`, `button[aria-label="Next step"]` in the era dial; they scroll the page to the step |
+| A pin | `click '[data-stop="old-norse"]'` (a button; the pin's `<li>` is `inert` until revealed) |
+| A card chip | `button[aria-label="Old Norse, show details"]` inside the card's `ul[aria-label="Places on the map"]` |
+| Close details | `press Escape`, or **Close Old Norse**; focus returns to the opener |
+| Header link | **Language Spread** in `nav[aria-label="Main"]`, `aria-current="page"` on the page |
+| Drag the globe | `mouse move X Y`, `mouse down`, `mouse move X2 Y2 --steps 10 --duration 200`, `mouse up` on empty globe (the canvas); a move under 4 px stays a click |
+| Recenter | `click '[data-recenter]'` (**Recenter on this step**) |
+| Touch spin | no native touch in desktop Chromium: `js touchSpin "DX, DY"` dispatches touch pointer events on the canvas |
+
+### Executable journey (flag on)
+
+Start with `bun run verify init language-spread` and `bun run verify serve "$VERIFY_RUN"`. Keep the display awake first: on a Mac whose display sleeps, headless Chrome's frame clock stops, `requestAnimationFrame` barely runs, scroll steps never change and flights stay `moving` (see the troubleshooting note in the skill). The active step, the camera and the arrows all run on animation frames, so wait for the expected state after every step change instead of sleeping. A flight lasts 0.9 to 2.2 s and a step's arrows draw after it lands, so wait on the step, a landed centre inside the step's bounds and the route count together; `data-camera` still reads `settled` from the previous step for a moment. These recipes do not start a DevTools trace: on the earlier version of this page, tracing stalled the renderer until browser commands timed out.
+
+The `*-flight` checkpoints need a recorder installed just before the step changes. `recordFlight` in the journey file saves, on every frame while the camera is `moving` and once after it lands, where each pin on the near side of the globe was drawn. The checkpoint then works out the globe's radius on each frame from those positions (a least-squares fit of the orthographic projection over a grid of camera centres) and turns it into the page's zoom with the radius at landing. The `rec` helper below sends the recorder with `eval -b`; `land` also waits for the recording to finish.
+
+```bash
+caffeinate -u -t 3600 & CAFFEINATE=$!
+O=http://127.0.0.1:3000
+HYD="!!document.querySelector('[data-camera=settled]') && Object.keys(document.querySelector('[data-stop]')||{}).some(k=>k.startsWith('__reactProps'))"
+# land STEP W S E N ROUTES: STEP is active and its card visible, the camera has landed inside the bounds (degrees), ROUTES arrows are drawn.
+land() { echo "(()=>{const d=document.querySelector('[data-camera]').dataset;const a=document.querySelector('[data-step][aria-current=step]');if(a?.dataset.step!=='$1'||getComputedStyle(a.querySelector('article')).opacity!=='1'||d.camera!=='settled'||d.routesDrawn!=='$6'||(window.__spreadFlight&&!window.__spreadFlight.done))return false;const [lon,lat]=d.cameraCenter.split(',').map(Number);return lon>=$2&&lon<=$4&&lat>=$3&&lat<=$5})()"; }
+step() { bun run verify browser "$VERIFY_RUN" eval "document.querySelector('[data-step=$1]').scrollIntoView()"; }
+# js NAME ARGS: runs an exported helper from the journey file in the page, e.g. js fastScroll '"today"'.
+js() { bun run verify browser "$VERIFY_RUN" eval -b "$(bun -e 'const [n, a] = process.argv.slice(-2); const j = await import("./.agents/skills/verify-phonaria/scripts/language-spread.ts"); process.stdout.write(Buffer.from(`(${j[n]})(${a})`).toString("base64"))' -- "$1" "$2")"; }
+rec() { js recordFlight ""; }
+# A mouse drag that starts at (X1, Y1), ends at (X2, Y2) and lets go at once, so the globe glides.
+from() { bun run verify browser "$VERIFY_RUN" eval "window.__dragFrom=document.querySelector('[data-camera]').dataset.cameraCenter"; }
+press() { bun run verify browser "$VERIFY_RUN" mouse move $1 $2; bun run verify browser "$VERIFY_RUN" mouse down; bun run verify browser "$VERIFY_RUN" mouse move $3 $4 --steps 10 --duration 200; }
+release() { bun run verify browser "$VERIFY_RUN" mouse up; bun run verify browser "$VERIFY_RUN" wait --fn "(()=>{const d=document.querySelector('[data-camera]').dataset;return d.camera==='settled'&&d.cameraCenter!==window.__dragFrom})()"; }
+bun run verify browser "$VERIFY_RUN" open about:blank
+bun run verify browser "$VERIFY_RUN" set viewport 1280 800
+bun run verify browser "$VERIFY_RUN" open $O/language-spread
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" intro
+
+bun run verify browser "$VERIFY_RUN" focus 'button[aria-label="Next step"]'
+bun run verify browser "$VERIFY_RUN" press Enter
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land indo-european 5 36 75 62 1)"
+bun run verify observe "$VERIFY_RUN" next-step
+bun run verify browser "$VERIFY_RUN" focus 'button[aria-label="Previous step"]'
+bun run verify browser "$VERIFY_RUN" press Enter
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land intro -180 -90 180 90 0)"
+bun run verify observe "$VERIFY_RUN" previous-step
+
+step old-english
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land old-english -14 47 14 60 3)"
+rec; step vikings
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land vikings -14 48 16 63 5)"
+bun run verify observe "$VERIFY_RUN" near-flight
+bun run verify observe "$VERIFY_RUN" near-move
+
+# Drag the globe 150 px left over open sea and land, then go on with Next.
+from; press 600 650 450 650; release
+bun run verify observe "$VERIFY_RUN" drag-mid-story
+rec
+bun run verify browser "$VERIFY_RUN" focus 'button[aria-label="Next step"]'
+bun run verify browser "$VERIFY_RUN" press Enter
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land norman-conquest -8 46 8 56 6)"
+bun run verify observe "$VERIFY_RUN" drag-flight
+bun run verify observe "$VERIFY_RUN" after-drag-next
+
+step printing
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land printing -6 49.5 4 55 6)"
+bun run verify browser "$VERIFY_RUN" click '[data-stop="old-norse"]'
+bun run verify observe "$VERIFY_RUN" earlier-pin-mid-story
+bun run verify browser "$VERIFY_RUN" press Escape
+bun run verify observe "$VERIFY_RUN" details-closed
+# Open it again and click empty globe, clear of pins and the panel.
+bun run verify browser "$VERIFY_RUN" click '[data-stop="old-norse"]'
+bun run verify browser "$VERIFY_RUN" wait '[data-stop-details]'
+from
+bun run verify browser "$VERIFY_RUN" mouse move 600 650
+bun run verify browser "$VERIFY_RUN" mouse down
+bun run verify browser "$VERIFY_RUN" mouse up
+bun run verify observe "$VERIFY_RUN" globe-click-closes-details
+bun run verify browser "$VERIFY_RUN" focus 'button[aria-label^="Theme:"]'
+bun run verify browser "$VERIFY_RUN" press Tab
+bun run verify observe "$VERIFY_RUN" off-map-pins
+# Give focus back to the Old Norse pin for the focus checks in atlantic and far-move.
+bun run verify browser "$VERIFY_RUN" focus '[data-stop="old-norse"]'
+
+rec; step america
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land america -90 25 5 58 7)"
+bun run verify observe "$VERIFY_RUN" atlantic-flight
+bun run verify observe "$VERIFY_RUN" atlantic
+
+rec; step around-the-world
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land around-the-world 10 -45 160 20 8)"
+bun run verify observe "$VERIFY_RUN" far-flight
+bun run verify observe "$VERIFY_RUN" far-move
+
+step germanic
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land germanic -12 44 30 64 1)"
+bun run verify observe "$VERIFY_RUN" scroll-back
+
+# Scroll to today over 24 frames, through 8 steps, and watch which cards show. This needs a fresh
+# page: after a synthetic key press, headless Chrome starves page tasks while a script runs every
+# frame, so React would not commit the step changes until the scroll ends.
+bun run verify browser "$VERIFY_RUN" open $O/language-spread
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+step germanic
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land germanic -12 44 30 64 1)"
+js fastScroll '"today"'
+bun run verify observe "$VERIFY_RUN" fast-scroll
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land today -180 -90 180 90 8)"
+bun run verify observe "$VERIFY_RUN" today
+
+# Today spins once landed. Keep the mouse off the globe, save a pin's place, then hover the globe.
+SPIN="(()=>document.querySelector('[data-camera]').hasAttribute('data-spinning'))()"
+bun run verify browser "$VERIFY_RUN" mouse move 1200 700
+bun run verify browser "$VERIFY_RUN" wait --fn "$SPIN"
+bun run verify browser "$VERIFY_RUN" eval "window.__pinAt=document.querySelector('[data-stop=\"indo-european\"]').closest('li').firstElementChild.style.transform"
+bun run verify observe "$VERIFY_RUN" spin-today
+bun run verify browser "$VERIFY_RUN" mouse move 838 475
+bun run verify observe "$VERIFY_RUN" spin-hover
+
+# Drag the whole globe 140 px left and 60 px up, observing while the button is held, then recenter.
+from; press 900 560 760 500
+bun run verify observe "$VERIFY_RUN" drag-held
+release
+bun run verify observe "$VERIFY_RUN" drag-released
+bun run verify browser "$VERIFY_RUN" click '[data-recenter]'
+bun run verify browser "$VERIFY_RUN" wait --fn "(()=>{const d=document.querySelector('[data-camera]').dataset;return d.camera==='settled'&&d.cameraCenter.endsWith(',11.0')&&!document.querySelector('[data-recenter]')})()"
+bun run verify observe "$VERIFY_RUN" recentered
+
+# The spin resumes off the globe, stops at the sources, and stops on leaving today.
+bun run verify browser "$VERIFY_RUN" mouse move 1200 700
+bun run verify browser "$VERIFY_RUN" wait --fn "$SPIN"
+bun run verify browser "$VERIFY_RUN" eval "document.querySelector('section[aria-labelledby=language-spread-sources]').scrollIntoView()"
+bun run verify observe "$VERIFY_RUN" spin-sources
+step today
+bun run verify browser "$VERIFY_RUN" wait --fn "$SPIN"
+step around-the-world
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land around-the-world 10 -45 160 20 8)"
+bun run verify observe "$VERIFY_RUN" left-today
+js readSitemap ""
+bun run verify observe "$VERIFY_RUN" sitemap
+
+# Phone: a fresh page at 390 x 844, scrolled to the Vikings step, then a touch swipe.
+bun run verify browser "$VERIFY_RUN" set viewport 390 844
+bun run verify browser "$VERIFY_RUN" open $O/language-spread
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+step vikings
+bun run verify browser "$VERIFY_RUN" wait --fn "$(land vikings -14 48 16 63 5)"
+bun run verify observe "$VERIFY_RUN" mobile
+js touchSpin "-120, -60"
+bun run verify observe "$VERIFY_RUN" phone-spin
+
+# Reduced motion: desktop again, then scroll and require a landed camera and a shown card within 300 ms.
+bun run verify browser "$VERIFY_RUN" set viewport 1280 800
+bun run verify browser "$VERIFY_RUN" set media light reduced-motion
+bun run verify browser "$VERIFY_RUN" open $O/language-spread
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" eval "document.querySelector('[data-step=vikings]').scrollIntoView(); new Promise((ok,fail)=>setTimeout(()=>{const d=document.querySelector('[data-camera]').dataset;const [lon,lat]=(d.cameraCenter||'').split(',').map(Number);const card=getComputedStyle(document.querySelector('[data-step=vikings] article')).opacity;d.camera==='settled'&&d.routesDrawn==='5'&&card==='1'&&lon>=-14&&lon<=16&&lat>=48&&lat<=63?ok('landed within 300 ms'):fail(new Error('not landed: '+JSON.stringify({...d,card})))},300))"
+bun run verify observe "$VERIFY_RUN" reduced-motion
+js watchSpin '"today"'
+bun run verify observe "$VERIFY_RUN" reduced-no-spin
+kill $CAFFEINATE
+```
+
+The `eval` in the last block rejects (the command fails and is logged in `commands.jsonl`) unless the camera has landed on the Vikings step, with its arrows drawn, 300 ms after the scroll; this is the only timing check, since `observe` polls. Use the same origin as `serve` (change `O` for another port or a deployed target).
+
+- `intro` requires path `/language-spread`, title **The history of English, from Old English to today - Phonaria**, h1 **The story of English**, the header link with `aria-current="page"`, `<meta name="robots" content="noindex, follow">` (robots follows `SITE_INDEXING_ENABLED`, which is `0` in the local vars of `wrangler.jsonc` and unset in `.dev.vars`; expect `index, follow` where indexing is on), share metadata (`og:type` `article`; `og:title` and `twitter:title` the document title without the site name; `og:description` starting **English from Indo-European roots**; every `og:image` and `twitter:image` ending in `/og/language-spread.jpg`, 1200 × 630; `twitter:card` `summary_large_image`; one `application/ld+json` script with `@type` `Article` and 28 `citation` entries), era `~4000 BCE`, step `intro`, **Step 1 of 11**, the 11 step ids in order, 11 ticks, 9 pins and none revealed, `data-routes-drawn` 0, a landed whole-globe view (zoom below 1; it reads 0.88), the map region within 2 px of the header (top 48, height `innerHeight - 48`), the intro card opaque, not inert and centred on the left (24 px inside the map region's left edge, centred top to bottom). Placement is measured against the map region, not the window, since the page's scrollbar narrows it, the other 10 cards transparent, Previous step disabled, and the **Sources** section with 9 `https` links.
+- `next-step` requires Enter on the focused **Next step** button to scroll the page to `indo-european` (era still `~4000 BCE`, the steppe pin revealed), the new card opaque and every other card transparent, the dial's `[role="status"]` region reading **Step 2 of 11, ~4000 BCE: One ancestor, many languages**, and focus on the new card.
+- `previous-step` requires Enter on the focused **Previous step** button to go back to `intro` (no pins revealed), the status reading **Step 1 of 11, ~4000 BCE: The story of English**, and focus on the intro card. Scrolling by hand leaves the status unchanged, so only these two steps announce.
+- `near-flight` requires, for old-english to vikings, a recorded flight whose pins fit one globe within 3 px, landing above zoom 1, and a zoom that never drops below 95% of the lower of the two ends: a near move pans and zooms without pulling back. Measured: 6.20 to 5.55, lowest 5.55.
+- `near-move` requires era `~800 CE`, revealed pins exactly `indo-european`, `germanic`, `old-english`, `old-norse`, 5 routes drawn, a landed camera inside the step bounds (-14, 48, 16, 63 as west, south, east, north) above zoom 1, the vikings card opaque at the bottom right (24 px inside the map region's right and bottom edges) with reachable chips, the old-english card transparent with its chips inside an `inert` element, and the Old Norse pin below the era dial, on screen and clear of the card.
+- `earlier-pin-mid-story` requires, at `printing`, the panel for **Old Norse** (the vikings step's place) inside the `aria-live` region: kind and date `Language, ~800 CE`, its description, **Roughly in the east and north of England. The pin marks the general area, not an exact spot.**, **Sources (2)**, a **Close Old Norse** button, the pin `aria-expanded="true"`, and the era still `~1476 CE` (opening an old pin does not move the story). The pin stands right of the top-left card and is clicked with the pointer.
+- `details-closed` requires the panel gone, the pin `aria-expanded="false"`, and focus back on the **Old Norse** pin after Escape.
+- `globe-click-closes-details` requires, after opening Old Norse again and a mouse press and release on empty globe, the panel gone, the pin `aria-expanded="false"`, the camera settled where it was (a click is not a drag), and no Recenter button.
+- `off-map-pins` requires, still at `printing`, the steppe (Indo-European) pin, far off the right edge, hidden and `inert`; Tab from the header's theme button landing on another pin whose box lies wholly inside the map region; and the map region's `scrollLeft` still 0 (the region clips, so a focused pin near the edge never scrolls it).
+- `atlantic-flight` requires, for printing to america, a recorded flight that fits within 3 px, lands above zoom 1, and does not dip: america's bounds take in both sides of the Atlantic, so the camera zooms out from England (about 15.6) to about 1.5 and never pulls back further.
+- `atlantic` requires era `~1607 CE`, 8 pins revealed including Jamestown's, 7 routes drawn, a landed camera inside america's bounds (-90, 25, 5, 58) above zoom 1, the america card opaque at the bottom left, the printing card transparent with its chips inert, the Jamestown pin below the dial, on screen and clear of the card, and focus still on the Old Norse pin from `details-closed`, which is on the near side.
+- `far-flight` requires, for america to around-the-world, a recorded flight that fits within 3 px, dips below both ends and below zoom 1 (the whole globe; measured 0.88), and lands above 1 (measured 1.06).
+- `far-move` requires era `~1788 CE`, all 9 pins revealed, 8 routes drawn, a landed camera inside the bounds (10, -45, 160, 20) above zoom 1, the card at the top right (24 px inside the region's right edge and below the header), the Sydney pin below the dial and clear of the card, the London and Jamestown pins hidden and `inert` behind the globe while the Sydney pin is not, and focus on the card: the focused Old Norse pin went behind the globe and handed it over.
+- `drag-mid-story` requires, at `vikings` after a 150 px mouse drag released at once, the camera settled on a new centre (it glides, then settles) and the **Recenter on this step** button shown.
+- `drag-flight` requires the flight that Next then starts to begin where the dragged view was (every pin within 10 px of its place before the step changed), fit within 3 px, land above zoom 1 and not dip.
+- `after-drag-next` requires `norman-conquest` (era `~1066 CE`), a landed camera inside its bounds (-8, 46, 8, 56), its card opaque, and the Recenter button gone.
+- `scroll-back` requires era `~500 BCE`, step `germanic`, revealed pins exactly `indo-european` and `germanic`, the later `old-english` and `american-english` pins' `<li>` `inert` and not revealed, 1 route drawn (down from 8), and a landed camera inside germanic's bounds (-12, 44, 30, 64) above zoom 1.
+- `fast-scroll` requires, on a fresh page, a scroll from `germanic` to `today` spread over 24 frames to pass through at least 4 active steps while only the germanic and today cards ever reach an opacity above 0.05.
+- `today` requires era `Today`, **Step 11 of 11**, all 9 pins revealed, 8 routes drawn, the whole-globe view (zoom below 1), all 11 ticks filled, and Next step disabled.
+- `spin-today` requires, with the mouse off the globe, `data-spinning` on the map at `today` while `data-camera` stays `settled` and `data-camera-center` keeps the landing `10.0,11.0`, and the steppe pin's transform different from the one saved after the spin began, so the globe really turns.
+- `spin-hover` requires, with the mouse over the globe, `data-spinning` gone (it eases out within about a second).
+- `drag-held` requires `data-camera="dragging"` at `today` while the mouse button is still down after a 140 px move.
+- `drag-released` requires, after release, the camera settled on a new centre and the Recenter button shown with its name.
+- `recentered` requires, after clicking Recenter, the camera settled at latitude `11.0` (the drag also moved it 60 px south, and the spin only turns longitude) and a longitude at or west of today's `10.0` (the spin has turned the step's view since), with the button gone.
+- `spin-sources` requires, still at `today`, the spin stopped once the page scrolls to the sources and less than half the map is on screen.
+- `left-today` requires, after the spin was running again, scrolling back to `around-the-world` to stop it, with the camera settled.
+- `sitemap` requires `/sitemap.xml`, fetched into the page by `js readSitemap`, to list exactly `/`, `/ipa-chart/consonants`, `/ipa-chart/vowels`, `/ipa-chart/frequency`, `/credits` and `/language-spread`. Opening the XML directly would request a favicon the app doesn't serve, a failed request.
+- `mobile` requires, at 390 × 844 on `vikings`, a landed camera inside the step bounds above zoom 1, the map pinned, the active card across the width and within 40 px of the bottom edge, the era dial in the top 160 px, and the Old Norse pin on screen between the dial and the card. The desktop nav is hidden at this width, so the nav is not asserted.
+- `phone-spin` requires, after `touchSpin` swipes 120 px left and 60 px up with touch pointer events, the camera settled with its longitude moved east by more than a degree and its latitude unchanged (touch only spins), and computed `touch-action: pan-y pinch-zoom` on the canvas, which leaves vertical swipes to the page.
+- `reduced-motion` requires `prefers-reduced-motion` matched, era `~800 CE`, step `vikings`, a landed camera inside the step bounds with its 5 arrows drawn, the vikings card opaque with no running animations, and computed `transition-property: none` on the Old Norse pin. The 300 ms `eval` also requires the card opaque by then.
+- `reduced-no-spin` requires, with reduced motion, that `js watchSpin '"today"'` scrolled to `today` and never saw `data-spinning` on any frame for 3.5 s.
+
+### Flag off
+
+The flag is read when the server starts, so this journey needs its own run and its own server. Stop the flag-on server first (or pick another port in `init`).
+
+```bash
+caffeinate -u -t 3600 &
+bun run verify init language-spread-off
+FLAG_LANGUAGE_SPREAD=0 bun run verify serve "$VERIFY_RUN"
+bun run verify browser "$VERIFY_RUN" open about:blank
+bun run verify browser "$VERIFY_RUN" trace start
+bun run verify browser "$VERIFY_RUN" set viewport 1280 800
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/language-spread
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('h1')"
+bun run verify observe "$VERIFY_RUN" not-found
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('nav[aria-label=Main] a')"
+bun run verify observe "$VERIFY_RUN" nav-hidden
+js() { bun run verify browser "$VERIFY_RUN" eval -b "$(bun -e 'const [n, a] = process.argv.slice(-2); const j = await import("./.agents/skills/verify-phonaria/scripts/language-spread.ts"); process.stdout.write(Buffer.from(`(${j[n]})(${a})`).toString("base64"))' -- "$1" "$2")"; }
+js readSitemap ""
+bun run verify observe "$VERIFY_RUN" sitemap-hidden
+```
+
+`not-found` requires, on `/language-spread`, HTTP status 404 (from the navigation timing entry, so the page must be opened directly, not reached by a link), the shared **This page doesn't exist** h1, no map region or pins, and main nav labels exactly **Transcription**, **IPA Chart**, **Practice**. `nav-hidden` requires the same labels on `/`, all visible, and no `a[href="/language-spread"]` anywhere in the page. Practice is on in local dev unless `FLAG_PRACTICE=0` (checked: a dev server started with only `FLAG_LANGUAGE_SPREAD=0` shows all three). The journey cannot tell whether the server really had the flag off; it only sees its effects. `sitemap-hidden` requires the fetched sitemap to list the same pages without `/language-spread`.
+
+### Limits
+
+Chromium only, with the page flag on or off as noted. The landed camera is checked as a centre inside the step's bounds and a zoom above or below 1, not as a pixel position. The land, areas and arrows are painted on a canvas, so they are judged from the saved screenshots; arrows are counted through `data-routes-drawn`, which the page keeps. Mid-flight zoom is inferred from where pins were drawn on each frame, not read from the page; frames with fewer than three separate places on the near side are skipped. No frame rate or flight smoothness is measured. Only intro, indo-european, germanic, old-english, vikings, norman-conquest, printing, america, around-the-world and today are visited, and place descriptions are read from the page, not checked against the cited studies. The step announcement is read from the status region's text, not through a screen reader. Drags use the mouse; touch is synthetic pointer events (`pointerType: "touch"`), since desktop Chromium has no native touch here, so the browser's own panning under `touch-action` is not exercised and vertical page scrolling during a swipe is inferred from the computed `touch-action` only. Pen input, pinch zoom, the ±75° latitude cap and the glide's shape are not checked. The spin is checked at 1280 × 800 by its attribute and one pin's movement: its speed, the pauses for pin hover, focus and open details, the 2 s resume and a hidden tab are not. No DevTools trace is saved (see above). Phone coverage is one step; the mobile menu and landscape are not opened.
+
+After any synthetic key press (`press`), headless Chrome here runs almost no page tasks while a script runs every animation frame, on any page including `about:blank`, until the next page load; React then cannot commit step changes during a scripted scroll. The recipe runs `fast-scroll` on a fresh page for that reason. It is a browser automation effect, not the app's.

@@ -1,9 +1,12 @@
 import type { Feature } from "./feature";
+import { languageSpread, languageSpreadOff } from "./language-spread";
 import { frequencyPage, soundFrequency } from "./sound-frequency";
 import { transcription } from "./transcription";
 import { transcriptionHistory } from "./transcription-history";
 
 export const features: Record<string, Feature> = {
+	"language-spread": languageSpread,
+	"language-spread-off": languageSpreadOff,
 	"sound-frequency": soundFrequency,
 	"frequency-page": frequencyPage,
 	transcription,

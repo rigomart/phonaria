@@ -25,6 +25,7 @@
 		"@phonaria/ui": "workspace:*",
 		"@tanstack/react-router": "1.170.36",
 		"@tanstack/react-start": "1.168.53",
+		"d3-geo": "^3.1.1",
 		"drizzle-orm": "^0.45.1",
 		"lucide-react": "^0.562.0",
 		"parse5": "^8.0.1",
@@ -36,6 +37,8 @@
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "1.54.8",
 		"@tailwindcss/postcss": "^4.1.12",
+		"@types/d3-geo": "^3.1.1",
+		"@types/geojson": "^7946.0.16",
 		"@types/node": "^20",
 		"@types/react": "^19.2.7",
 		"@types/react-dom": "^19.2.3",

@@ -13,6 +13,7 @@ import {
 	compareObservation,
 	observationExpression,
 	saveSnapshot,
+	withoutExpectedResponses,
 } from "./session";
 import { transcription } from "./transcription";
 
@@ -118,6 +119,25 @@ test("complete observations and clean diagnostics permit a pass", () => {
 
 test("missing observations cannot silently pass", () => {
 	assert.equal(assessRun("passed", passed.slice(0, 1), required, clean), "blocked");
+});
+
+test("an expected error response does not fail a run, but any other does", () => {
+	const notFound = {
+		method: "GET",
+		url: "http://127.0.0.1:3000/language-spread",
+		status: 404,
+		error: null,
+	};
+	const elsewhere = { ...notFound, url: "http://127.0.0.1:3000/ipa-chart" };
+	const expected = [{ path: "/language-spread", status: 404 }];
+	const diagnostics = { ...clean, failedRequests: [notFound] };
+	assert.equal(assessRun("passed", passed, required, diagnostics), "failed");
+	assert.equal(
+		assessRun("passed", passed, required, withoutExpectedResponses(diagnostics, expected)),
+		"passed",
+	);
+	const other = { ...clean, failedRequests: [notFound, elsewhere, { ...notFound, status: 500 }] };
+	assert.equal(withoutExpectedResponses(other, expected).failedRequests.length, 2);
 });
 
 test("a journey without any required observations cannot pass", () => {

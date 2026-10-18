@@ -5,6 +5,7 @@ import { createServer } from "node:net";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual } from "node:util";
+import type { ExpectedResponse } from "./feature";
 import { features, getFeature } from "./features";
 
 type Status = "passed" | "failed" | "blocked";
@@ -104,6 +105,26 @@ export function assessRun(
 		: "passed";
 }
 
+/**
+ * Drops failed requests a journey declares as its expected outcome, such as the
+ * 404 of a page behind a disabled flag, matched by exact path and status.
+ */
+export function withoutExpectedResponses<T extends DiagnosticsSummary>(
+	diagnostics: T,
+	expected: readonly ExpectedResponse[] = [],
+): T {
+	const isExpected = (request: unknown) => {
+		const { url, status } = request as { url?: string; status?: number | null };
+		if (!url) return false;
+		const path = new URL(url).pathname;
+		return expected.some((response) => response.path === path && response.status === status);
+	};
+	return {
+		...diagnostics,
+		failedRequests: diagnostics.failedRequests.filter((r) => !isExpected(r)),
+	};
+}
+
 function loadRun(path: string, allowCleanup = false) {
 	const dir = resolve(path);
 	const run = readJson<Run>(join(dir, "run.json"));
@@ -180,7 +201,8 @@ function capture(dir: string, run: Run, name: string) {
 		throw new Error("Evidence names must contain lowercase letters, numbers, and hyphens.");
 	const snapshot = browser(dir, run, ["snapshot"]);
 	const evidence = saveSnapshot(dir, name, snapshot);
-	browser(dir, run, ["screenshot", evidence.screenshot, "--full"]);
+	const page = getFeature(run.feature).screenshot === "viewport" ? [] : ["--full"];
+	browser(dir, run, ["screenshot", evidence.screenshot, ...page]);
 	diagnostics(dir, run);
 	return evidence;
 }
@@ -358,14 +380,20 @@ async function main([action, path, ...args]: string[]) {
 		} catch (error) {
 			captureErrors.push(errorMessage(error));
 		}
-		let status = assessRun(requested, run.checks, Object.keys(recipe.checkpoints), collected);
+		let status = assessRun(
+			requested,
+			run.checks,
+			Object.keys(recipe.checkpoints),
+			collected && withoutExpectedResponses(collected, recipe.expectedResponses),
+		);
 		const missingEvidence = run.checks.some(
 			(check) =>
 				!check.evidence ||
 				!existsSync(check.evidence.screenshot) ||
 				!existsSync(check.evidence.snapshot),
 		);
-		if (status === "passed" && (!traceSaved || captureErrors.length || missingEvidence))
+		const traceMissing = recipe.trace !== "skip" && !traceSaved;
+		if (status === "passed" && (traceMissing || captureErrors.length || missingEvidence))
 			status = "blocked";
 		run.finishedAt = new Date().toISOString();
 		writeJson(join(dir, "run.json"), run);

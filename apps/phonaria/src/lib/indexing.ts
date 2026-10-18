@@ -1,16 +1,28 @@
+import { type AppFlags, flags } from "./flags";
+import { LANGUAGE_SPREAD_PATH } from "./language-spread/metadata";
 import { getSiteUrl, isIndexingEnabled } from "./site";
 
-/**
- * Indexable application paths. `/ipa-chart` only redirects, and Practice stays out of
- * search whether or not its flag is on.
- */
-export const INDEXABLE_PATHS = [
+/** `/ipa-chart` only redirects, so it is not listed. */
+const UNFLAGGED_INDEXABLE_PATHS = [
 	"/",
 	"/ipa-chart/consonants",
 	"/ipa-chart/vowels",
 	"/ipa-chart/frequency",
 	"/credits",
 ] as const;
+
+/**
+ * Indexable application paths for a build's flags. Language Spread joins only when
+ * its flag is on, since the route 404s otherwise. Practice stays out of search
+ * whether or not its flag is on.
+ */
+export function getIndexablePaths(
+	enabled: Pick<AppFlags, "languageSpread"> = flags.snapshot(),
+): string[] {
+	return enabled.languageSpread
+		? [...UNFLAGGED_INDEXABLE_PATHS, LANGUAGE_SPREAD_PATH]
+		: [...UNFLAGGED_INDEXABLE_PATHS];
+}
 
 export type RobotsPolicy = {
 	rules: { userAgent: "*"; allow: "/" };
@@ -35,8 +47,11 @@ export function formatRobotsTxt(policy: RobotsPolicy = getRobotsPolicy()): strin
 	return `${lines.join("\n")}\n`;
 }
 
-export function getSitemapUrls(siteUrl = getSiteUrl()): string[] {
-	return INDEXABLE_PATHS.map((path) => (path === "/" ? siteUrl : `${siteUrl}${path}`));
+export function getSitemapUrls(
+	siteUrl = getSiteUrl(),
+	paths: readonly string[] = getIndexablePaths(),
+): string[] {
+	return paths.map((path) => (path === "/" ? siteUrl : `${siteUrl}${path}`));
 }
 
 export function formatSitemapXml(urls: string[] = getSitemapUrls()): string {

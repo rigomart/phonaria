@@ -1,5 +1,5 @@
 import { useLocation } from "@tanstack/react-router";
-import { AudioLines, BookOpen, Grid3x3, type LucideIcon } from "lucide-react";
+import { AudioLines, BookOpen, Globe, Grid3x3, type LucideIcon } from "lucide-react";
 import type { AppFlags } from "@/lib/flags";
 import {
 	IPA_CHART_CONSONANTS_PATH,
@@ -7,9 +7,10 @@ import {
 	IPA_CHART_INDEX_PATH,
 	IPA_CHART_VOWELS_PATH,
 } from "@/lib/ipa-chart-metadata";
+import { LANGUAGE_SPREAD_PATH } from "@/lib/language-spread/metadata";
 
 export type Tool = {
-	id: "transcription" | "ipa-chart" | "practice";
+	id: "transcription" | "ipa-chart" | "practice" | "language-spread";
 	href: string;
 	label: string;
 	icon: LucideIcon;
@@ -39,6 +40,13 @@ const tools: readonly Tool[] = [
 		icon: BookOpen,
 		match: (pathname) => pathname.startsWith("/practice"),
 	},
+	{
+		id: "language-spread",
+		href: LANGUAGE_SPREAD_PATH,
+		label: "Language Spread",
+		icon: Globe,
+		match: (pathname) => pathname === LANGUAGE_SPREAD_PATH,
+	},
 ];
 
 export const chartSections = [
@@ -48,7 +56,11 @@ export const chartSections = [
 ] as const;
 
 export function getTools(flags: AppFlags): readonly Tool[] {
-	return tools.filter((tool) => tool.id !== "practice" || flags.practice);
+	return tools.filter((tool) => {
+		if (tool.id === "practice") return flags.practice;
+		if (tool.id === "language-spread") return flags.languageSpread;
+		return true;
+	});
 }
 
 export function usePathname(): string {

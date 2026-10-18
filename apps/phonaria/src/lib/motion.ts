@@ -19,3 +19,15 @@ export function stagger(
 ): number {
 	return start + Math.min(index, cap) * step;
 }
+
+/** Curves for animations started from script. `emphasized` is motion.css's `--ease-emphasized`. */
+export const EASE = {
+	/** Decelerates into place, for things arriving. */
+	emphasized: "cubic-bezier(0.2, 0, 0, 1)",
+	/** Accelerates away, for things leaving. */
+	exit: "cubic-bezier(0.3, 0, 1, 1)",
+} as const;
+
+export function prefersReducedMotion(): boolean {
+	return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
