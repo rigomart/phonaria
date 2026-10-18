@@ -21,7 +21,7 @@ const syllablesByWord: Record<string, readonly string[]> = {
 	closing: ["K L OU1", "Z IX0 NG"],
 	clothing: ["K L OU1", "DH IX0 NG"],
 	city: ["S IX1", "T I0"],
-	coffee: ["K A1", "F I0"],
+	coffee: ["K O1", "F I0"],
 	dinner: ["D IX1", "N ER0"],
 	father: ["F A1", "DH ER0"],
 	happy: ["H AE1", "P I0"],

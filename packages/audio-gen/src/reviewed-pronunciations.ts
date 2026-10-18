@@ -17,20 +17,22 @@ export const spellingPronunciations: Readonly<Record<string, ReviewedPronunciati
 		reason: "au teaches /ɔ/; reject the merged /ɑ/ form K A1 Z.",
 	},
 	coffee: {
-		variant: "K A1 F I0",
+		variant: "K O1 F I0",
 		dictionary: "curated",
-		reason: "Both K A1 F I0 and K O1 F I0 teach ff → /f/; keep the first CMU American form.",
+		reason:
+			"Owner chose /ɔ/, listed first in standard American dictionaries, to match the app’s /ˈkɔfi/ and separate /ɔ/ phoneme.",
 	},
 	dogs: {
-		variant: "D A1 G Z",
+		variant: "D O1 G Z",
 		dictionary: "curated",
-		reason: "Both D A1 G Z and D O1 G Z teach final s → /z/; keep the first CMU American form.",
+		reason:
+			"Owner chose /ɔ/, listed first in standard American dictionaries, to match the app’s /dɔɡz/ and separate /ɔ/ phoneme.",
 	},
 	hello: {
 		variant: "H AX0 L OU1",
 		dictionary: "curated",
 		reason:
-			"Both H AX0 L OU1 and H E0 L OU1 teach h → /h/ and ll → /l/; keep the first CMU citation form, with final stress.",
+			"Reduced /həˈloʊ/ is Merriam-Webster’s first form, the first CMU form, and Phonaria Transcription’s form; preserve final stress.",
 	},
 	her: {
 		variant: "H ER1",
@@ -51,7 +53,7 @@ export const spellingPronunciations: Readonly<Record<string, ReviewedPronunciati
 		variant: "R AE1 B AX0 T",
 		dictionary: "curated",
 		reason:
-			"Both R AE1 B AX0 T and R AE1 B IX0 T teach bb → /b/; keep the first CMU citation form, with initial stress.",
+			"Reduced /ˈɹæbət/ is Merriam-Webster’s first form, the first CMU form, and Phonaria Transcription’s form; preserve initial stress.",
 	},
 	rained: {
 		variant: "R EI1 N D",

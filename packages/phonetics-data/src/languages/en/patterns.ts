@@ -20,7 +20,7 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 		patterns: ["b", "bb"],
 		examples: [
 			{ word: "bat", phonemic: "bæt", spelled: "[b]at" },
-			{ word: "rabbit", phonemic: "ˈɹæbɪt", spelled: "ra[bb]it" },
+			{ word: "rabbit", phonemic: "ˈɹæbət", spelled: "ra[bb]it" },
 		],
 	},
 	T: {
@@ -84,7 +84,7 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 		patterns: ["l", "ll"],
 		examples: [
 			{ word: "let", phonemic: "lɛt", spelled: "[l]et" },
-			{ word: "hello", phonemic: "hɛˈloʊ", spelled: "he[ll]o" },
+			{ word: "hello", phonemic: "həˈloʊ", spelled: "he[ll]o" },
 		],
 	},
 	R: {
@@ -172,7 +172,7 @@ export const EnglishPhonemeSpellingPatterns = deepFreeze({
 		patterns: ["h"],
 		examples: [
 			{ word: "house", phonemic: "haʊs", spelled: "[h]ouse" },
-			{ word: "hello", phonemic: "hɛˈloʊ", spelled: "[h]ello" },
+			{ word: "hello", phonemic: "həˈloʊ", spelled: "[h]ello" },
 		],
 	},
 

@@ -26,26 +26,26 @@ WORDS_LIMIT= AZURE_SPEECH_VOICE=en-US-JennyNeural \
   --out=output/azure-spelling-304-jenny-slower-10-ogg
 ```
 
-Listen to and accept all clips before uploading. Only after upload, merge the batch with the manifest command documented in README.md. No unrecorded words have been added to the app manifest.
+Listen to and accept all clips before uploading. Only after upload, merge the batch with the manifest command documented in [the audio-gen README](../../packages/audio-gen/README.md). No unrecorded words have been added to the app manifest.
 
 ## Every pronunciation choice — owner review
 
-**All ten words where alternatives were selected are listed here.** The spelling pattern takes priority, followed by an American citation form, then CMU order when both forms fit. The tokens below use standard CMU ARPAbet, including stress digits. The typed source table retains the equivalent Phonaria tokens and the reasons.
+**All ten words where alternatives were selected are listed here.** Owner decisions take priority and recordings match the app’s whole-word IPA. Otherwise use the spelling pattern, an American citation form, then CMU order when both forms fit. The tokens below use standard CMU ARPAbet, including stress digits. The typed source table retains the equivalent Phonaria tokens and the reasons.
 
 | Word | Selected CMU | Rejected CMU | Reason |
 | --- | --- | --- | --- |
 | be | `B IY1` | `B IY0` | Stressed citation form teaches e → /i/; reject reduced B I0. |
 | cause | `K AO1 Z` | `K AA1 Z` | au teaches /ɔ/; reject the merged /ɑ/ form K A1 Z. |
-| coffee | `K AA1 F IY0` | `K AO1 F IY0` | Both K A1 F I0 and K O1 F I0 teach ff → /f/; keep the first CMU American form. |
-| dogs | `D AA1 G Z` | `D AO1 G Z` | Both D A1 G Z and D O1 G Z teach final s → /z/; keep the first CMU American form. |
-| hello | `HH AH0 L OW1` | `HH EH0 L OW1` | Both H AX0 L OU1 and H E0 L OU1 teach h → /h/ and ll → /l/; keep the first CMU citation form, with final stress. |
+| coffee | `K AO1 F IY0` | `K AA1 F IY0` | Owner chose /ɔ/: standard American dictionaries list it first, the app displays /ˈkɔfi/, and Phonaria teaches /ɔ/ separately. |
+| dogs | `D AO1 G Z` | `D AA1 G Z` | Owner chose /ɔ/: standard American dictionaries list it first, the app displays /dɔɡz/, and Phonaria teaches /ɔ/ separately. |
+| hello | `HH AH0 L OW1` | `HH EH0 L OW1` | Reduced /həˈloʊ/ is Merriam-Webster’s first form, the first CMU form, and Phonaria Transcription’s form; update both spelling examples to match. |
 | her | `HH ER1` | `HH ER0` | Stressed citation form teaches er → /ɝ/; reject reduced H ER0 (/ɚ/). |
 | new | `N UW1` | `N Y UW1` | ew teaches /u/; first CMU American N U1 avoids the extra /j/ in N Y U1. |
-| rabbit | `R AE1 B AH0 T` | `R AE1 B IH0 T` | Both R AE1 B AX0 T and R AE1 B IX0 T teach bb → /b/; keep the first CMU citation form, with initial stress. |
+| rabbit | `R AE1 B AH0 T` | `R AE1 B IH0 T` | Reduced /ˈɹæbət/ is Merriam-Webster’s first form, the first CMU form, and Phonaria Transcription’s form; update the spelling example to match. |
 | this | `DH IH1 S` | `DH IH0 S` | Stressed citation form teaches th → /ð/; reject unstressed DH IX0 S. |
 | top | `T AA1 P` | `T AO1 P` | Both T A1 P and T O1 P teach t → /t/; keep the first CMU American form, matching the example's /ɑ/. |
 
-Coffee /ɑ/, dogs /ɑ/, hello /ə/, and rabbit /ə/ differ from the spelling table’s illustrative whole-word IPA. Both alternatives preserve the consonants being taught (`ff`, final `s`, `h`/`ll`, and `bb`); the first CMU form therefore wins under the stated rule. These are phonemic inputs: `t` and `d` remain explicit in city, letter, and ladder. The eventual voice still needs human listening review.
+Coffee and dogs retain the spelling table’s /ɔ/. Both hello entries now use /həˈloʊ/ and rabbit uses /ˈɹæbət/ in the spelling table, matching the reviewed reduced forms. All four recordings therefore match the displayed whole-word IPA (with explicit syllable boundaries added for Azure). These are phonemic inputs: `t` and `d` remain explicit in city, letter, and ladder. The eventual voice still needs human listening review.
 
 ### Reviewed full-CMU entries
 
@@ -72,10 +72,10 @@ IPA is the exact Azure `ph` value, with checked syllable boundaries and stress. 
 | bridge | /dʒ/ `bri[dge]` | bɹɪdʒ | `B R IH1 JH` | — | No |
 | cause | /ɔ/ `c[au]se` | kɔz | `K AO1 Z` | — | Yes |
 | city | /s/ `[c]ity` | ˈsɪ.ti | `S IH1 T IY0` | `S IH1` · `T IY0` | No |
-| coffee | /f/ `co[ff]ee` | ˈkɑ.fi | `K AA1 F IY0` | `K AA1` · `F IY0` | Yes |
+| coffee | /f/ `co[ff]ee` | ˈkɔ.fi | `K AO1 F IY0` | `K AO1` · `F IY0` | Yes |
 | coin | /ɔɪ/ `c[oi]n` | kɔɪn | `K OY1 N` | — | No |
 | dinner | /n/ `di[nn]er` | ˈdɪ.nɚ | `D IH1 N ER0` | `D IH1` · `N ER0` | No |
-| dogs | /z/ `dog[s]` | dɑɡz | `D AA1 G Z` | — | Yes |
+| dogs | /z/ `dog[s]` | dɔɡz | `D AO1 G Z` | — | Yes |
 | father | /ɑ/ `f[a]ther` | ˈfɑ.ðɚ | `F AA1 DH ER0` | `F AA1` · `DH ER0` | No |
 | food | /u/ `f[oo]d` | fud | `F UW1 D` | — | No |
 | happy | /p/ `ha[pp]y`; /i/ `happ[y]` | ˈhæ.pi | `HH AE1 P IY0` | `HH AE1` · `P IY0` | No |
@@ -120,7 +120,7 @@ IPA is the exact Azure `ph` value, with checked syllable boundaries and stress. 
 | yoke | /j/ `[y]oke` | joʊk | `Y OW1 K` | — | No (full CMU) |
 | you | /j/ `[y]ou` | ju | `Y UW1` | — | No |
 
-## Verification
+## Initial verification (commit 4d779f0)
 
 - Dry run: `/tmp/phonaria-304-dryrun/plan.json` and `review.tsv`: 56 unique entries, 56 single explicit phoneme tags, all planned, zero errors, zero audio files.
 - Baseline comparison: `/tmp/phonaria-304-catalog-before/plan.json` and `/tmp/phonaria-304-catalog-after/plan.json` are byte-identical after replacing only `createdAt` with the same value. Their 400 sample entries are byte-identical without normalization.
@@ -130,3 +130,34 @@ IPA is the exact Azure `ph` value, with checked syllable boundaries and stress. 
 - `bun run test`: all five workspace test tasks passed (1,679 tests, including 829 phonetics-data tests). The live Wiktionary smoke test initially failed in the network-restricted sandbox and passed on rerun with network access.
 - `bun run check-types`: all seven workspace packages passed.
 - `bun lint`: passed. An independent comment checker reviewed the diff; three comments were tightened and one kept.
+
+## Owner decisions and upload verification (round 2)
+
+- Coffee uses `K AO1 F IY0` (/ˈkɔ.fi/) and dogs uses `D AO1 G Z` (/dɔɡz/), matching the app’s existing spelling IPA and its separate /ɔ/ phoneme. Coffee’s checked syllables now use `K AO1` · `F IY0`.
+- Both hello spelling entries now use `həˈloʊ`; rabbit uses `ˈɹæbət`. Their reviewed recording inputs retain the reduced forms already selected.
+- Fresh dry run: `/tmp/phonaria-304-dryrun-r2/plan.json`, `review.tsv`, and `verification.json`. Exactly the same 56 unique words, all planned, zero recordings. No Azure calls or uploads. The CLI used `DOTENV_CONFIG_PATH=/dev/null` to avoid reading local credentials.
+- `/tmp/phonaria-304-catalog-r2/plan.json` matches the earlier 400-word catalog baseline after removing only `createdAt`; every sample and all settings remain unchanged.
+- `upload --dry-run` rejects that unfinished 56-word plan before network or Wrangler calls, as intended. A separate two-word synthetic fixture at `/tmp/phonaria-304-upload-fixture-r2/` demonstrates the mappings below. Those fixture files are not recordings and must never be uploaded.
+
+```text
+audio/en-us/words/jenny/coffee.ogg ↔ /tmp/phonaria-304-upload-fixture-r2/audio/coffee.ogg
+audio/en-us/words/jenny/dogs.ogg ↔ /tmp/phonaria-304-upload-fixture-r2/audio/dogs.ogg
+```
+
+After generating and accepting the real 56-word output directory, publish from the repo root:
+
+```bash
+bun run --cwd packages/audio-gen upload \
+  --out=output/azure-spelling-304-jenny-slower-10-ogg \
+  --accent=en-us --voice=jenny --bucket=rigos-assets --concurrency=8
+```
+
+Sign in with the pinned Wrangler first, as described in the package README. The command above has **not** been run. The app manifest remains unchanged; regenerate it only after a verified upload.
+
+- `bun run --cwd packages/audio-gen test`: 172 tests passed, including 46 upload tests with injected runner/fetch and four checks against every displayed spelling IPA for the reviewed words.
+- `bun run --cwd packages/phonetics-data test`: 829 tests passed.
+- `bun run check-types`: all seven workspace packages passed.
+- `bun lint`: passed.
+- Independent comment checker: no added or edited code comments, no findings.
+
+The uploader requires the plan-derived voice folder, matching the existing manifest command. Versioned retake folders such as `jenny-2` need explicit plan/manifest support; the new command cannot select them silently. This does not affect the 56 new Jenny words.

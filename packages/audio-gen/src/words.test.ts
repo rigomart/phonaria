@@ -1,5 +1,6 @@
 import { EnglishPhonemeSpellingPatterns } from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
+import { getAzureIpa } from "./word-inputs";
 import { collectWordsWithPhonemic, getWordPronunciation } from "./words";
 
 describe("catalog pronunciation inputs", () => {
@@ -18,8 +19,8 @@ describe("catalog pronunciation inputs", () => {
 	it.each([
 		["be", "B IY1"],
 		["cause", "K AO1 Z"],
-		["coffee", "K AA1 F IY0"],
-		["dogs", "D AA1 G Z"],
+		["coffee", "K AO1 F IY0"],
+		["dogs", "D AO1 G Z"],
 		["hello", "HH AH0 L OW1"],
 		["her", "HH ER1"],
 		["new", "N UW1"],
@@ -34,6 +35,21 @@ describe("catalog pronunciation inputs", () => {
 			cmuArpa,
 		);
 	});
+	it.each(["coffee", "dogs", "hello", "rabbit"])(
+		"matches every displayed spelling IPA for %s",
+		(word) => {
+			const pronunciation = collectWordsWithPhonemic("spelling").find(
+				(entry) => entry.word === word,
+			);
+			if (!pronunciation) throw new Error(`Missing spelling word: ${word}`);
+			const examples = Object.values(EnglishPhonemeSpellingPatterns).flatMap(({ examples }) =>
+				examples.filter((example) => example.word === word),
+			);
+			expect(examples.length).toBeGreaterThan(0);
+			for (const example of examples)
+				expect(example.phonemic).toBe(getAzureIpa(pronunciation).replaceAll(".", ""));
+		},
+	);
 	it("uses the catalog's 400 words and real ARPAbet rather than generated local mappings", () => {
 		const words = collectWordsWithPhonemic();
 		expect(words).toHaveLength(400);

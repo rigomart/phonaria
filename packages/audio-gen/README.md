@@ -61,7 +61,7 @@ bun run --cwd packages/audio-gen generate --words=seat,seed,adapt,adopt
 
 Omitting selection options plans or generates the whole catalog. For the reviewed
 56-word spelling batch and every pronunciation decision, see
-[spelling-recordings-304.md](spelling-recordings-304.md). Options:
+[issue #304 review record](../../docs/research/issue-304-spelling-recordings.md). Options:
 
 - `--dry-run`: write a plan and review sheet without calling Azure.
 - `--source=catalog|spelling`: select a named word set; defaults to `catalog`.
@@ -112,7 +112,7 @@ Listen to every clip individually and beside its minimal-pair words. Check the
 intended sounds and stress, natural delivery, intact initial and final
 consonants, and comparable loudness. Mark acceptance only after listening.
 Original clips remain untrimmed; any editing should preserve them separately.
-The tool never uploads audio; see Publishing recordings.
+Generation never uploads audio; use the separate upload command after review.
 
 Generated output is ignored by Git. When using a temporary worktree, move the
 completed output directory into the original checkout before removing the
@@ -127,25 +127,50 @@ The voice folder is the lowercase voice name, so Jenny's clips are
 `audio/en-us/words/jenny/seat.ogg`. A new accent or voice gets a sibling folder.
 The 400-word en-US Jenny set is uploaded.
 
-To upload a completed output directory, run from the repo root. Use the app's
-pinned Wrangler (`wrangler` is not installed globally), sign in first with
-`"$WRANGLER" login`, and keep `--remote`: without it Wrangler writes to a local
-simulated bucket and nothing is published. The voice folder in the key (`jenny`)
-must match the manifest's voice.
+To upload a completed, reviewed output directory, run from the repo root. Use the
+app's pinned Wrangler (`wrangler` is not installed globally) and sign in first:
 
 ```bash
 WRANGLER="$PWD/apps/phonaria/node_modules/.bin/wrangler"
 "$WRANGLER" login
-(
-  cd packages/audio-gen/output/azure-catalog-jenny-slower-10-ogg/audio &&
-  ls *.ogg | xargs -P 8 -I{} "$WRANGLER" r2 object put rigos-assets/audio/en-us/words/jenny/{} \
-    --file={} --content-type=audio/ogg --remote
-)
+bun run --cwd packages/audio-gen upload \
+  --out=output/azure-spelling-304-jenny-slower-10-ogg \
+  --accent=en-us --voice=jenny --bucket=rigos-assets --concurrency=8 --dry-run
 ```
+
+Remove `--dry-run` to publish. The command resolves the pinned Wrangler from the
+repository root and always passes `--remote`; without it Wrangler only writes to
+a local simulated bucket. `--out` is relative to `packages/audio-gen` (absolute
+paths also work). `--bucket` defaults to `rigos-assets`, and `--concurrency`
+defaults to 8 (1–32). `--accent` must equal the plan's target accent; `--voice`
+must be lowercase and match the folder derived from the plan's voice, as used by
+the manifest (`en-US-JennyNeural` → `jenny`).
+
+The entire plan must be generated, with nonempty files whose SHA-256 checksums
+match. Ogg plans publish `.ogg` with `audio/ogg`; MP3 plans publish `.mp3` with
+`audio/mpeg` (the app manifest currently accepts Ogg only). No files outside the
+plan are uploaded. Dry run prints every exact key ↔ file mapping after local
+validation, makes no network or Wrangler calls, and writes no upload record.
+A generation dry-run plan is unfinished and cannot pass this validation.
+
+Before any upload, public HEAD requests to `https://assets.rigos.dev/<key>`
+check every destination. HTTP 200 refuses the batch unless `--overwrite` is
+explicit; only HTTP 404 counts as absent, and other responses stop the batch.
+After each upload, HEAD must return 200, the expected content-type and exact
+content-length. Any upload or verification failure exits non-zero. Each run
+writes an `upload-<timestamp>-<id>.json` beside `plan.json`, including bucket,
+key, file, size, SHA-256, upload time, verification result, and any error for each
+attempt. These records are checkpoints after each attempt and never replace a
+previous run's record. An uploaded but unverified object still exists; inspect
+the record before retrying with `--overwrite`. The public hostname is fixed;
+a different bucket must also be served there for these checks to be meaningful.
 
 Object keys do not include rate or format, so a re-take of an existing voice
 set should go to a new voice folder name (for example `jenny-2`) rather than
-overwrite keys that browsers and Cloudflare may have cached.
+overwrite keys that browsers and Cloudflare may have cached. The current plan and
+manifest derive the folder directly from the Azure voice name; a versioned folder
+such as `jenny-2` needs explicit plan/manifest support before this command can use
+it. `--voice` cannot silently redirect a Jenny plan into another folder.
 
 The app only offers a play button for words listed in the committed manifest,
 `packages/phonetics-data/src/languages/en/word-audio.ts`, read through
