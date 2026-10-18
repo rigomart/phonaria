@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeStepIndex } from "./scroll-step";
+import { activeStepIndex, STEP_ANCHOR, stepScrollTop } from "./scroll-step";
 
 describe("activeStepIndex", () => {
 	const anchor = 400;
@@ -24,5 +24,24 @@ describe("activeStepIndex", () => {
 
 	it("returns 0 for an empty story", () => {
 		expect(activeStepIndex([], anchor)).toBe(0);
+	});
+});
+
+describe("stepScrollTop", () => {
+	const viewport = 800;
+	const header = 48;
+	const sectionHeight = viewport * 1.5;
+	const sectionTops = [header, header + sectionHeight, header + sectionHeight * 2];
+
+	it("makes the requested step active and no later one", () => {
+		for (const [index, top] of sectionTops.entries()) {
+			const scrollY = stepScrollTop(top, viewport);
+			const tops = sectionTops.map((sectionTop) => sectionTop - scrollY);
+			expect(activeStepIndex(tops, viewport * STEP_ANCHOR)).toBe(index);
+		}
+	});
+
+	it("never scrolls above the top of the page", () => {
+		expect(stepScrollTop(48, viewport)).toBe(0);
 	});
 });

@@ -1,66 +1,68 @@
-import { ArrowDown, MoveRight } from "lucide-react";
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import type { Insets } from "@/lib/language-spread/camera";
+import { coveredInsets } from "@/lib/language-spread/covered-insets";
 import { formatEra } from "@/lib/language-spread/era";
 import { MAIN_SOURCES, SOURCES, STEPS, STOPS } from "@/lib/language-spread/story";
-import type { Step, Stop } from "@/lib/language-spread/types";
+import type { Stop } from "@/lib/language-spread/types";
+import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { KindMark, SourceLink, SpreadMap } from "./spread-map";
+import { SpreadMap } from "./spread-map";
+import { SourceLink, StopDetails } from "./stop-details";
+import { CARD_EXIT_MS, cardSide, placementOf, StoryCard } from "./story-card";
+import { EraDial } from "./story-timeline";
 import { useActiveStep } from "./use-active-step";
 
 const DESKTOP = "(min-width: 48rem)";
-/** Room kept clear of the edges and the cards, in pixels. */
-const EDGE = 24;
+const UI_MARGIN_PX = 24;
+const REVEAL_FALLBACK_MS = 1600;
+
+/** Box from offset*, which ignores any transform playing on the element. */
+function layoutBox(element: HTMLElement) {
+	const frame = element.offsetParent?.getBoundingClientRect();
+	const left = (frame?.left ?? 0) + element.offsetLeft;
+	const top = (frame?.top ?? 0) + element.offsetTop;
+	return { left, top, right: left + element.offsetWidth, bottom: top + element.offsetHeight };
+}
+
+const sourcesById = new Map(SOURCES.map((source) => [source.id, source]));
 
 export function LanguageSpreadContent() {
 	const stops = useMemo(() => new Map(STOPS.map((stop) => [stop.id, stop])), []);
-	const { active, registerSection } = useActiveStep();
+	const { active, story, registerSection, goToStep } = useActiveStep();
+	const detailsId = useId();
 	const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 	const [selected, setSelected] = useState<Stop | null>(null);
 	const opener = useRef<HTMLElement | null>(null);
 	const cards = useRef<(HTMLElement | null)[]>([]);
+	const dial = useRef<HTMLDivElement>(null);
 	const activeRef = useRef(active);
 	useLayoutEffect(() => {
 		activeRef.current = active;
 	}, [active]);
 
-	// Cards cover the left column on wide screens and the bottom on phones, so the
-	// camera frames each region in the space that is left.
+	const placement = placementOf(STEPS[active]);
+	const side = cardSide(placement);
+
 	const getInsets = useCallback((container: HTMLElement): Insets => {
-		const bounds = container.getBoundingClientRect();
-		const card = cards.current[activeRef.current] ?? cards.current[0];
-		const cardBounds = card?.getBoundingClientRect();
-		if (window.matchMedia(DESKTOP).matches) {
-			const left = cardBounds ? cardBounds.right - bounds.left + EDGE : 0;
-			return { top: 96, right: EDGE, bottom: EDGE, left };
-		}
-		// On phones the era indicator spans the top of the map, so keep pins below it.
-		return {
-			top: 128,
-			right: EDGE / 2,
-			bottom: (cardBounds?.height ?? 0) + EDGE * 2,
-			left: EDGE / 2,
-		};
+		const desktop = window.matchMedia(DESKTOP).matches;
+		const card = cards.current[activeRef.current];
+		return coveredInsets({
+			container: container.getBoundingClientRect(),
+			card: card ? layoutBox(card) : undefined,
+			dial: dial.current?.getBoundingClientRect(),
+			margin: desktop ? UI_MARGIN_PX : UI_MARGIN_PX / 2,
+			gap: UI_MARGIN_PX,
+		});
 	}, []);
 
-	const select = useCallback((stop: Stop | null, from?: HTMLElement) => {
-		if (stop && from) opener.current = from;
-		setSelected(stop);
-		if (stop) return;
-		// The opener may be a pin hidden again by scrolling back; fall back to the story.
-		if (opener.current?.isConnected && !opener.current.closest("[inert]")) opener.current.focus();
-		else cards.current[activeRef.current]?.focus();
-	}, []);
-
-	// Scrolling back hides later pins; keep keyboard focus out of them.
-	useEffect(() => {
-		if (document.activeElement?.closest("[inert]")) cards.current[active]?.focus();
-	}, [active]);
-
-	// On phones the active card covers the bottom of the map, and it grows when its
-	// sources open, so the camera refits whenever its height changes.
+	// Bumped during render, so the step change and the new placement plan one flight.
 	const [layout, setLayout] = useState(0);
+	const [placed, setPlaced] = useState(placement);
+	if (placed !== placement) {
+		setPlaced(placement);
+		setLayout((version) => version + 1);
+	}
 	useEffect(() => {
 		const card = cards.current[active];
 		if (!card) return;
@@ -73,6 +75,138 @@ export function LanguageSpreadContent() {
 		observer.observe(card);
 		return () => observer.disconnect();
 	}, [active]);
+
+	// The card enters on the globe's reveal for its step, not on the step change.
+	const [revealed, setRevealed] = useState<{ index: number; direction: 1 | -1 } | null>({
+		index: 0,
+		direction: 1,
+	});
+	const travel = useRef({ previous: active, direction: 1 as 1 | -1, changedAt: 0 });
+	const reported = useRef<number | null>(null);
+	const revealTimer = useRef(0);
+	const fallbackTimer = useRef(0);
+	const reveal = useCallback((index: number) => {
+		reported.current = index;
+		if (index !== activeRef.current) return;
+		window.clearTimeout(revealTimer.current);
+		window.clearTimeout(fallbackTimer.current);
+		const exitRemainingMs = Math.max(
+			0,
+			CARD_EXIT_MS - (performance.now() - travel.current.changedAt),
+		);
+		const { direction } = travel.current;
+		revealTimer.current = window.setTimeout(
+			() => setRevealed({ index, direction }),
+			exitRemainingMs,
+		);
+	}, []);
+	useLayoutEffect(() => {
+		const { previous } = travel.current;
+		if (previous === active) return;
+		travel.current = {
+			previous: active,
+			direction: active > previous ? 1 : -1,
+			changedAt: performance.now(),
+		};
+		window.clearTimeout(revealTimer.current);
+		window.clearTimeout(fallbackTimer.current);
+		if (prefersReducedMotion()) {
+			setRevealed({ index: active, direction: 1 });
+			return;
+		}
+		setRevealed(null);
+		// With no flight, the globe reports the reveal during this same commit, before this runs.
+		const alreadyRevealed = reported.current === active;
+		reported.current = null;
+		if (alreadyRevealed) reveal(active);
+		else fallbackTimer.current = window.setTimeout(() => reveal(active), REVEAL_FALLBACK_MS);
+	}, [active, reveal]);
+	useEffect(
+		() => () => {
+			window.clearTimeout(revealTimer.current);
+			window.clearTimeout(fallbackTimer.current);
+		},
+		[],
+	);
+
+	const focusActiveCard = useCallback(() => {
+		cards.current[activeRef.current]?.focus({ preventScroll: true });
+	}, []);
+
+	const select = useCallback((stop: Stop | null, from?: HTMLElement) => {
+		if (stop && from) opener.current = from;
+		setSelected(stop);
+		if (stop) return;
+		const openerUsable = opener.current?.isConnected && !opener.current.closest("[inert]");
+		if (openerUsable) opener.current?.focus();
+		else cards.current[activeRef.current]?.focus();
+	}, []);
+
+	const requested = useRef<number | null>(null);
+	const [announcement, setAnnouncement] = useState("");
+	const goTo = useCallback(
+		(index: number) => {
+			requested.current = index;
+			goToStep(index, reducedMotion);
+		},
+		[goToStep, reducedMotion],
+	);
+
+	// A key press on a dial button fires keydown before click, which makes a fresh request.
+	useEffect(() => {
+		const cancel = () => {
+			requested.current = null;
+		};
+		const events = ["wheel", "touchstart", "keydown"] as const;
+		for (const event of events) window.addEventListener(event, cancel, { passive: true });
+		return () => {
+			for (const event of events) window.removeEventListener(event, cancel);
+		};
+	}, []);
+
+	// The browser drops focus from inert controls, so hand it to the visible card first.
+	useLayoutEffect(() => {
+		const card = cards.current[active];
+		const requestedAndFocusStillOnDial =
+			requested.current === active && !!dial.current?.contains(document.activeElement);
+		requested.current = null;
+		if (requestedAndFocusStillOnDial) {
+			const step = STEPS[active];
+			setAnnouncement(
+				`Step ${active + 1} of ${STEPS.length}, ${formatEra(step.era)}: ${step.title}`,
+			);
+			card?.focus({ preventScroll: true });
+			return;
+		}
+		const focused = document.activeElement;
+		const inOtherCard = cards.current.some((other) => other !== card && other?.contains(focused));
+		if (focused?.closest("[inert]") || inOtherCard) card?.focus({ preventScroll: true });
+	}, [active]);
+
+	const [leaving, setLeaving] = useState<Stop | null>(null);
+	const [lastSelected, setLastSelected] = useState(selected);
+	if (lastSelected !== selected) {
+		setLastSelected(selected);
+		setLeaving(selected ? null : lastSelected);
+	}
+	const clearLeaving = useCallback(() => setLeaving(null), []);
+	const panelStop = selected ?? leaving;
+
+	const detailsBox = useRef<HTMLDivElement>(null);
+	const detailsLeft = useRef<number | null>(null);
+	useLayoutEffect(() => {
+		const box = detailsBox.current;
+		if (!box) return;
+		const left = box.getBoundingClientRect().left;
+		const from = detailsLeft.current;
+		detailsLeft.current = left;
+		const panel = box.firstElementChild;
+		if (from === null || from === left || !panel || prefersReducedMotion()) return;
+		panel.animate([{ translate: `${from - left}px 0` }, { translate: "0 0" }], {
+			duration: 600,
+			easing: EASE.emphasized,
+		});
+	}, [side]);
 
 	useEffect(() => {
 		if (!selected) return;
@@ -90,32 +224,62 @@ export function LanguageSpreadContent() {
 					<SpreadMap
 						steps={STEPS}
 						stops={stops}
-						sources={sourcesById}
+						detailsId={detailsId}
 						active={active}
 						selected={selected}
 						onSelect={select}
 						getInsets={getInsets}
 						layout={layout}
 						reducedMotion={reducedMotion}
+						onFocusLost={focusActiveCard}
+						onReveal={reveal}
 					/>
+					<EraDial
+						era={formatEra(STEPS[active].era)}
+						active={active}
+						steps={STEPS}
+						onGoToStep={goTo}
+						announcement={announcement}
+						dialRef={dial}
+					/>
+					<div
+						ref={detailsBox}
+						id={detailsId}
+						aria-live="polite"
+						className={cn(
+							"pointer-events-none absolute inset-x-3 top-24 bottom-3 z-20 flex flex-col md:inset-x-auto md:top-28 md:bottom-6 md:w-72 md:justify-end",
+							side === "left" ? "md:right-6" : "md:left-6",
+						)}
+					>
+						{panelStop && (
+							<StopDetails
+								key={panelStop.id}
+								stop={panelStop}
+								sources={panelStop.sources.flatMap((id) => sourcesById.get(id) ?? [])}
+								onClose={() => select(null)}
+								leaving={!selected}
+								onLeft={clearLeaving}
+							/>
+						)}
+					</div>
 				</div>
-				<ol className="pointer-events-none relative z-10 mx-auto -mt-[calc(100svh-3rem)] w-full max-w-6xl px-3 sm:px-6">
+				<ol ref={story} className="pointer-events-none relative z-10 -mt-[calc(100svh-3rem)]">
 					{STEPS.map((step, index) => (
 						<li
 							key={step.id}
 							ref={registerSection(index)}
 							data-step={step.id}
 							aria-current={index === active ? "step" : undefined}
-							className={cn(
-								"flex min-h-[120svh] flex-col justify-end pt-10 pb-3 md:min-h-[150svh] md:justify-start md:pb-0",
-								index === 0 ? "md:pt-8" : "md:pt-0",
-							)}
+							className="min-h-[120svh] md:min-h-[150svh]"
 						>
 							<StoryCard
 								step={step}
 								index={index}
 								active={index === active}
+								shown={index === active && revealed?.index === index}
+								direction={revealed?.direction ?? 1}
 								stops={stops}
+								sources={sourcesById}
 								selectedId={selected?.id}
 								onSelect={select}
 								cardRef={(card) => {
@@ -131,146 +295,6 @@ export function LanguageSpreadContent() {
 	);
 }
 
-function StoryCard({
-	step,
-	index,
-	active,
-	stops,
-	selectedId,
-	onSelect,
-	cardRef,
-}: {
-	step: Step;
-	index: number;
-	active: boolean;
-	stops: ReadonlyMap<string, Stop>;
-	selectedId: string | undefined;
-	onSelect: (stop: Stop | null, from?: HTMLElement) => void;
-	cardRef: (card: HTMLElement | null) => void;
-}) {
-	const intro = index === 0;
-	const Heading = intro ? "h1" : "h2";
-	const headingId = useId();
-	const places = step.stops.flatMap((id) => stops.get(id) ?? []);
-	return (
-		<article
-			ref={cardRef}
-			tabIndex={-1}
-			aria-labelledby={headingId}
-			className={cn(
-				"pointer-events-auto sticky bottom-3 w-full rounded-2xl outline-none border border-glass-border bg-glass p-5 text-card-foreground shadow-float md:top-[22svh] md:bottom-auto md:max-w-md md:p-6",
-				"transition-[opacity,scale] duration-500 ease-emphasized motion-reduce:transition-none",
-				!active && "scale-97 opacity-60",
-				intro && "enter-rise",
-			)}
-		>
-			{!intro && (
-				<p className="text-sm font-medium text-map-route tabular-nums">{formatEra(step.era)}</p>
-			)}
-			<Heading
-				id={headingId}
-				className={cn(
-					"font-display font-semibold tracking-tight text-balance",
-					intro ? "text-3xl md:text-4xl" : "mt-1 text-xl md:text-2xl",
-				)}
-			>
-				{step.title}
-			</Heading>
-			<div className="mt-3 flex flex-col gap-3 text-sm leading-relaxed text-pretty md:text-base md:leading-relaxed">
-				{step.paragraphs.map((paragraph) => (
-					<p key={paragraph}>{paragraph}</p>
-				))}
-			</div>
-			{intro && <Legend />}
-			{places.length > 0 && (
-				<ul aria-label="Places on the map" className="mt-4 flex flex-wrap gap-1.5">
-					{places.map((stop) => {
-						const open = selectedId === stop.id;
-						return (
-							<li key={stop.id}>
-								<button
-									type="button"
-									aria-expanded={open}
-									aria-label={`${stop.name}, show details`}
-									onClick={(event) => onSelect(open ? null : stop, event.currentTarget)}
-									className={cn(
-										"inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
-										"transition-colors motion-reduce:transition-none",
-										"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-										open
-											? "border-foreground bg-foreground text-background"
-											: "border-glass-border bg-background hover:bg-muted",
-									)}
-								>
-									<KindMark kind={stop.kind} />
-									{stop.name}
-								</button>
-							</li>
-						);
-					})}
-				</ul>
-			)}
-			{step.sources && (
-				<details className="mt-4 text-xs text-muted-foreground">
-					<summary className="cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-						Sources for this card
-					</summary>
-					<ul className="mt-2 flex flex-col gap-1.5">
-						{step.sources
-							.flatMap((id) => sourcesById.get(id) ?? [])
-							.map((source) => (
-								<li key={source.id}>
-									<SourceLink source={source} />
-								</li>
-							))}
-					</ul>
-				</details>
-			)}
-			{intro && (
-				<p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
-					<ArrowDown className="size-4" aria-hidden />
-					Scroll to travel through time
-				</p>
-			)}
-		</article>
-	);
-}
-
-/** How to read the map, in the same marks the map uses. */
-function Legend() {
-	const items = [
-		{ mark: <KindMark kind="migration" />, label: "People on the move" },
-		{ mark: <KindMark kind="family" />, label: "Language family" },
-		{ mark: <KindMark kind="branch" />, label: "Branch of a family" },
-		{ mark: <KindMark kind="language" />, label: "A single language" },
-		{
-			mark: <span className="block size-3 shrink-0 rounded-full bg-map-area blur-[1.5px]" />,
-			label: "Rough area",
-		},
-		{
-			mark: <MoveRight className="size-3.5 shrink-0 text-map-route" />,
-			label: "Direction of spread",
-		},
-	];
-	return (
-		<ul
-			aria-label="How to read the map"
-			className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-glass-border pt-4 text-xs text-muted-foreground"
-		>
-			{items.map(({ mark, label }) => (
-				<li key={label} className="flex items-center gap-2">
-					<span aria-hidden className="flex w-3.5 justify-center">
-						{mark}
-					</span>
-					{label}
-				</li>
-			))}
-		</ul>
-	);
-}
-
-const sourcesById = new Map(SOURCES.map((source) => [source.id, source]));
-
 function Sources() {
 	const main = MAIN_SOURCES.flatMap((id) => sourcesById.get(id) ?? []);
 	return (
@@ -278,15 +302,15 @@ function Sources() {
 			aria-labelledby="language-spread-sources"
 			className="relative z-10 border-t bg-background"
 		>
-			<div className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
-				<h2 id="language-spread-sources" className="font-display text-xl font-semibold">
+			<div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
+				<h2 id="language-spread-sources" className="font-display text-lg font-semibold">
 					Sources
 				</h2>
-				<p className="mt-2 text-sm text-muted-foreground text-pretty">
+				<p className="mt-1.5 text-xs leading-relaxed text-muted-foreground text-pretty sm:text-sm">
 					Dates are rounded and places are general areas. Where experts disagree, the story says so.
 					Each pin lists the studies behind it; these are the main works the story draws on.
 				</p>
-				<ul className="mt-4 flex flex-col gap-2 text-sm">
+				<ul className="mt-3 flex flex-col gap-1.5 text-xs leading-relaxed sm:text-sm">
 					{main.map((source) => (
 						<li key={source.id}>
 							<SourceLink source={source} />
