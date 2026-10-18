@@ -1,9 +1,13 @@
 import {
 	EnglishPhonemeContrasts,
+	EnglishPhonemeSpellingPatterns,
 	phonemeVariantToCmuArpa,
 	phonemeVariantToIpa,
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
+import { spellingPronunciations } from "./reviewed-pronunciations";
+
+export type WordSource = "catalog" | "spelling";
 
 export type WordWithPhonemic = {
 	word: string;
@@ -29,14 +33,22 @@ export function getWordPronunciation(
 	};
 }
 
-/** Read the catalog and its validated dictionary directly, avoiding stale local mappings. */
-export function collectWordsWithPhonemic(): WordWithPhonemic[] {
+/** Spelling uses reviewed choices; catalog uses the curated dictionary. */
+export function collectWordsWithPhonemic(source: WordSource = "catalog"): WordWithPhonemic[] {
 	const words = new Set(
-		EnglishPhonemeContrasts.flatMap(({ minimalPairs }) =>
-			minimalPairs.flatMap(({ words }) => words),
-		),
+		source === "spelling"
+			? Object.values(EnglishPhonemeSpellingPatterns).flatMap(({ examples }) =>
+					examples.map(({ spelled }) => spelled.replace(/[[\]]/g, "")),
+				)
+			: EnglishPhonemeContrasts.flatMap(({ minimalPairs }) =>
+					minimalPairs.flatMap(({ words }) => words),
+				),
 	);
-	return [...words]
-		.sort()
-		.map((word) => getWordPronunciation(word, EnglishCuratedTop10k.words[word]));
+	return [...words].sort().map((word) => {
+		const reviewed = source === "spelling" ? spellingPronunciations[word] : undefined;
+		return getWordPronunciation(
+			word,
+			reviewed ? [reviewed.variant] : EnglishCuratedTop10k.words[word],
+		);
+	});
 }

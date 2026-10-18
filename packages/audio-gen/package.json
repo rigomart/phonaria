@@ -17,6 +17,7 @@
 		"test": "vitest run",
 		"generate": "bun src/generate.ts",
 		"manifest": "bun src/write-manifest.ts",
+		"upload": "bun src/upload.ts",
 		"probe": "bun src/probe.ts"
 	},
 	"dependencies": {

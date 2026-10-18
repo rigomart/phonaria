@@ -36,11 +36,36 @@ describe("Azure IPA inputs", () => {
 		expect(inputs.every(({ text }) => text.startsWith('<phoneme alphabet="ipa"'))).toBe(true);
 	});
 	it("requires checked syllables for new or changed multisyllabic pronunciations", () => {
-		expect(() => buildAzureWordInput(getWordPronunciation("hello", ["H AX0 L OU1"]))).toThrow(
+		expect(() => buildAzureWordInput(getWordPronunciation("unreviewed", ["H AX0 L OU1"]))).toThrow(
 			/syllable/i,
 		);
 		expect(() => buildAzureWordInput(getWordPronunciation("adapt", ["AX0 D A1 P T"]))).toThrow(
 			/dictionary/i,
 		);
+	});
+	it.each([
+		["away", "ə.ˈweɪ"],
+		["bigger", "ˈbɪ.ɡɚ"],
+		["city", "ˈsɪ.ti"],
+		["coffee", "ˈkɔ.fi"],
+		["dogs", "dɔɡz"],
+		["dinner", "ˈdɪ.nɚ"],
+		["father", "ˈfɑ.ðɚ"],
+		["happy", "ˈhæ.pi"],
+		["hello", "hə.ˈloʊ"],
+		["ladder", "ˈlæ.dɚ"],
+		["lemon", "ˈlɛ.mən"],
+		["letter", "ˈlɛ.tɚ"],
+		["measure", "ˈmɛ.ʒɚ"],
+		["mother", "ˈmʌ.ðɚ"],
+		["nation", "ˈneɪ.ʃən"],
+		["rabbit", "ˈɹæ.bət"],
+		["sofa", "ˈsoʊ.fə"],
+		["summer", "ˈsʌ.mɚ"],
+		["vision", "ˈvɪ.ʒən"],
+	])("preserves checked spelling syllables and stress for %s", (word, ipa) => {
+		const pronunciation = collectWordsWithPhonemic("spelling").find((entry) => entry.word === word);
+		if (!pronunciation) throw new Error(`Missing spelling word: ${word}`);
+		expect(getAzureIpa(pronunciation)).toBe(ipa);
 	});
 });

@@ -2,6 +2,14 @@ import { describe, expect, it } from "vitest";
 import { parseArguments } from "./cli";
 
 describe("Azure generation command", () => {
+	it("requires a named source and uses the saved source on resume", () => {
+		expect(parseArguments(["--source=spelling"])).toEqual({ source: "spelling" });
+		expect(parseArguments(["--source=catalog"])).toEqual({ source: "catalog" });
+		expect(() => parseArguments(["--source=unknown"])).toThrow(/source/);
+		expect(() => parseArguments(["--resume", "--out=/tmp/saved", "--source=spelling"])).toThrow(
+			/source/,
+		);
+	});
 	it("selects an audio format and rejects unsupported formats", () => {
 		expect(parseArguments(["--format=ogg"])).toEqual({ audioFormat: "ogg" });
 		expect(parseArguments(["--format=mp3"])).toEqual({ audioFormat: "mp3" });

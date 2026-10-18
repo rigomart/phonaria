@@ -1,9 +1,12 @@
+import type { WordSource } from "./words";
+
 export function parseArguments(args: string[]) {
 	const options: {
 		dryRun?: boolean;
 		resume?: boolean;
 		outputDir?: string;
 		words?: string[];
+		source?: WordSource;
 		limit?: number;
 		requestsPerMinute?: number;
 		ratePercent?: number;
@@ -15,13 +18,18 @@ export function parseArguments(args: string[]) {
 		else if (arg.startsWith("--out=")) {
 			options.outputDir = arg.slice(6);
 			if (!options.outputDir.trim()) throw new Error("--out needs a directory");
+		} else if (arg.startsWith("--source=")) {
+			const source = arg.slice(9);
+			if (source !== "catalog" && source !== "spelling")
+				throw new Error("--source must be catalog or spelling");
+			options.source = source;
 		} else if (arg.startsWith("--words=")) {
 			options.words = arg
 				.slice(8)
 				.split(",")
 				.map((word) => word.trim().toLowerCase());
 			if (options.words.some((word) => !word))
-				throw new Error("--words needs comma-separated catalog words");
+				throw new Error("--words needs comma-separated words from the selected source");
 		} else if (arg.startsWith("--format=")) {
 			const value = arg.slice(9);
 			if (value !== "mp3" && value !== "ogg") throw new Error("--format must be mp3 or ogg");
@@ -40,5 +48,7 @@ export function parseArguments(args: string[]) {
 	}
 	if (options.resume && !options.outputDir)
 		throw new Error("--resume requires --out pointing to a saved plan");
+	if (options.resume && options.source)
+		throw new Error("Resume uses the saved source; omit --source");
 	return options;
 }

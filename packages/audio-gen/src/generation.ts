@@ -11,7 +11,7 @@ import {
 } from "./providers/azure";
 import type { TtsInput, TtsProvider } from "./providers/types";
 import { buildAzureWordInput, getAzureIpa } from "./word-inputs";
-import { collectWordsWithPhonemic } from "./words";
+import { collectWordsWithPhonemic, type WordSource } from "./words";
 
 type Sample = {
 	word: string;
@@ -27,6 +27,7 @@ type Sample = {
 type Plan = {
 	version: 1;
 	createdAt: string;
+	source?: WordSource;
 	targetAccent: "en-us";
 	settings: { provider: "azure"; voiceId: string; outputFormat: string; ratePercent?: number };
 	samples: Sample[];
@@ -36,6 +37,7 @@ type GenerationOptions = {
 	dryRun?: boolean;
 	resume?: boolean;
 	words?: string[];
+	source?: WordSource;
 	limit?: number;
 	voiceId?: string;
 	ratePercent?: number;
@@ -57,19 +59,26 @@ async function exists(file: string): Promise<boolean> {
 }
 const checksum = (audio: Buffer) => createHash("sha256").update(audio).digest("hex");
 
-function selectSamples(words?: string[], limit?: number, extension = "mp3"): Sample[] {
+function selectSamples(
+	words?: string[],
+	limit?: number,
+	extension = "mp3",
+	source: WordSource = "catalog",
+): Sample[] {
 	if (limit !== undefined && (!Number.isInteger(limit) || limit < 1)) {
 		throw new Error("Word limit must be a positive integer");
 	}
 	if (words && (!words.length || new Set(words).size !== words.length)) {
-		throw new Error("Choose catalog words without duplicates");
+		throw new Error("Choose words from the selected source without duplicates");
 	}
-	const catalog = collectWordsWithPhonemic();
+	if (source !== "catalog" && source !== "spelling")
+		throw new Error(`Unknown word source: ${source}`);
+	const catalog = collectWordsWithPhonemic(source);
 	const byWord = new Map(catalog.map((word) => [word.word, word]));
 	const selection = words
 		? words.map((word) => {
 				const pronunciation = byWord.get(word);
-				if (!pronunciation) throw new Error(`Word is not in the catalog: ${word}`);
+				if (!pronunciation) throw new Error(`Word is not in the ${source} source: ${word}`);
 				return pronunciation;
 			})
 		: catalog;
@@ -145,6 +154,7 @@ export async function runGeneration(options: GenerationOptions) {
 	let plan: Plan;
 	let savedPlanText: string | undefined;
 	if (options.resume) {
+		if (options.source) throw new Error("Resume uses the saved source; omit source");
 		if (options.words || options.limit !== undefined)
 			throw new Error("Resume uses the saved word selection; omit words and limit");
 		savedPlanText = await readFile(planPath, "utf8");
@@ -163,6 +173,7 @@ export async function runGeneration(options: GenerationOptions) {
 			plan.samples.map(({ word }) => word),
 			undefined,
 			audioFormat.extension,
+			plan.source,
 		);
 		for (const [index, sample] of plan.samples.entries()) {
 			const { status, sha256, ...identity } = sample;
@@ -186,9 +197,10 @@ export async function runGeneration(options: GenerationOptions) {
 		plan = {
 			version: 1,
 			createdAt: new Date().toISOString(),
+			...(options.source === "spelling" ? { source: options.source } : {}),
 			targetAccent: "en-us",
 			settings,
-			samples: selectSamples(options.words, options.limit, audioFormat.extension),
+			samples: selectSamples(options.words, options.limit, audioFormat.extension, options.source),
 		};
 		if (await exists(planPath))
 			throw new Error("Plan already exists; use --resume or a new output directory");
