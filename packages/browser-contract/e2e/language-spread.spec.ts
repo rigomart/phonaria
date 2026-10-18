@@ -40,18 +40,18 @@ test.describe("Language Spread enabled", () => {
 		const response = await page.goto("/language-spread");
 		expect(response?.status()).toBe(200);
 		await expect(
-			page.getByRole("heading", { level: 1, name: "How languages spread" }),
+			page.getByRole("heading", { level: 1, name: "The story of English" }),
 		).toBeVisible();
 		await expect(page.getByRole("region", { name: /Map of where languages spread/ })).toBeVisible();
-		await expect(page.locator("[data-era]")).toHaveText("~70,000 years ago");
+		await expect(page.locator("[data-era]")).toHaveText("~4000 BCE");
 	});
 
 	test("advances the era as the story scrolls", async ({ page }) => {
 		await page.goto("/language-spread");
 		// The camera settles only once the page has hydrated and is listening for scrolls.
 		await expect(page.locator('[data-camera="settled"]')).toBeAttached();
-		await page.locator("[data-step=bantu]").evaluate((step) => step.scrollIntoView());
-		await expect(page.locator("[data-era]")).toHaveText("~3000 BCE");
-		await expect(page.locator('[data-stop="bantu"][data-revealed]')).toBeAttached();
+		await page.locator("[data-step=vikings]").evaluate((step) => step.scrollIntoView());
+		await expect(page.locator("[data-era]")).toHaveText("~800 CE");
+		await expect(page.locator('[data-stop="old-norse"][data-revealed]')).toBeAttached();
 	});
 });
