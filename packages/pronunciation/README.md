@@ -4,19 +4,20 @@ Hears which sound a learner said. It holds the scoring contract and the judge, a
 
 The work is split in two so a scorer can be replaced without touching the judge:
 
-- A **scorer** takes a recording and a `ScoringRequest` (target accent, word, accepted pronunciations as base phoneme IDs) and returns `WordEvidence`: for each accepted pronunciation it could line up, one entry per sound with its time span, the target's score and rival scores. A sound it couldn't line up is reported as `missing`. Audio is a 16 kHz mono 16-bit PCM WAV file as a `Uint8Array`.
-- The **judge**, `judgeWord`, is a pure function that turns evidence into a verdict for each judged sound: `match`, `swapped` with the heard phoneme ID, or `unclear`.
+- A **scorer** takes a recording and a `ScoringRequest` (the target accent and the words said, each with its accepted pronunciations as base phoneme IDs) and returns `RecordingEvidence`, one `WordEvidence` per word. For each accepted pronunciation it could line up, a word's evidence has one entry per sound with its time span, the target's score and rival scores. A sound it couldn't line up is reported as `missing`. Audio is a 16 kHz mono 16-bit PCM WAV file as a `Uint8Array`.
+- The **judge**, `judgeWord`, is a pure function that turns one word's evidence into a verdict for each judged sound: `match`, `swapped` with the heard phoneme ID, or `unclear`.
+
+Practice starts with single words, sent as a list of one. Requests and evidence are lists so phrases can follow without changing the contract; judging across words (skipped words, weak forms, sounds that change at word boundaries) comes with them.
 
 ```ts
 import { judgeWord } from "@phonaria/pronunciation";
 
-const evidence = await scorer.score(wav, {
+const recording = await scorer.score(wav, {
 	targetAccent: "en-us",
-	word: "ship",
-	acceptedPronunciations: [["SH", "IX", "P"]],
+	words: [{ text: "ship", acceptedPronunciations: [["SH", "IX", "P"]] }],
 });
 
-judgeWord({ evidence, judgedPhonemeIds: new Set(["IX", "I"]), targetAccent: "en-us" });
+judgeWord({ evidence: recording.words[0], judgedPhonemeIds: new Set(["IX", "I"]), targetAccent: "en-us" });
 // { pronunciationIndex: 0, sounds: [{ position: 1, phonemeId: "IX", verdict: { type: "swapped", heard: "I" } }] }
 ```
 

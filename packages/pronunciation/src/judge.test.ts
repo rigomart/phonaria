@@ -4,9 +4,9 @@ import type {
 	MissingSoundEvidence,
 	RivalScore,
 	Scorer,
+	RecordingEvidence,
 	ScoringRequest,
 	SoundEvidence,
-	WordEvidence,
 } from "./contract";
 import { judgeWord } from "./judge";
 
@@ -29,21 +29,25 @@ function missing(phonemeId: PhonemeSymbolId): MissingSoundEvidence {
 	return { type: "missing", phonemeId };
 }
 
-function fakeScorer(evidence: WordEvidence): Scorer {
+function fakeScorer(evidence: RecordingEvidence): Scorer {
 	return { score: async () => evidence };
 }
 
 async function judgeShip(vowel: SoundEvidence | MissingSoundEvidence) {
 	const request: ScoringRequest = {
 		targetAccent: "en-us",
-		word: "ship",
-		acceptedPronunciations: [["SH", "IX", "P"]],
+		words: [{ text: "ship", acceptedPronunciations: [["SH", "IX", "P"]] }],
 	};
-	const evidence = await fakeScorer({
-		pronunciations: [
-			{ pronunciationIndex: 0, sounds: [scored("SH", 0.9), vowel, scored("P", 0.9)] },
+	const recording = await fakeScorer({
+		words: [
+			{
+				pronunciations: [
+					{ pronunciationIndex: 0, sounds: [scored("SH", 0.9), vowel, scored("P", 0.9)] },
+				],
+			},
 		],
 	}).score(audio, request);
+	const [evidence] = recording.words;
 	return judgeWord({ evidence, judgedPhonemeIds: SHIP_SHEEP, targetAccent: "en-us" });
 }
 
