@@ -113,6 +113,18 @@ with.
 _Avoid_: Game-owned transcription, manually copied answer key, the answer, the correct
 pronunciation
 
+**Heard sound**:
+The sound a learner said in place of a target sound, as named in a `swapped` verdict. Phonaria
+only names a contrast partner of the target sound; when the evidence points anywhere else, it
+doesn't guess.
+_Avoid_: Recognized sound, detected phoneme, the learner's mistake
+
+**Verdict**:
+The judge's decision on one target sound in a spoken word: `match`, `swapped` with the heard
+sound, or `unclear` when the evidence is too weak to say. Only the judge decides verdicts; a
+scorer reports evidence and never decides one.
+_Avoid_: Score, grade, result
+
 **Word score**:
 The primary session result: the number of rounds whose complete sound sequence matches an accepted
 pronunciation.
