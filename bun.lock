@@ -107,6 +107,18 @@
         "vitest": "^3.2.4",
       },
     },
+    "packages/pronunciation": {
+      "name": "@phonaria/pronunciation",
+      "version": "0.1.0",
+      "dependencies": {
+        "@phonaria/phonetics-data": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/node": "^20",
+        "typescript": "^5",
+        "vitest": "^3.2.4",
+      },
+    },
     "packages/ui": {
       "name": "@phonaria/ui",
       "version": "0.5.0",
@@ -573,6 +585,8 @@
     "@phonaria/helper-scripts": ["@phonaria/helper-scripts@workspace:packages/helper-scripts"],
 
     "@phonaria/phonetics-data": ["@phonaria/phonetics-data@workspace:packages/phonetics-data"],
+
+    "@phonaria/pronunciation": ["@phonaria/pronunciation@workspace:packages/pronunciation"],
 
     "@phonaria/ui": ["@phonaria/ui@workspace:packages/ui"],
 

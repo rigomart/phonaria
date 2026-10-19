@@ -15,6 +15,7 @@
   - `getWordAudioPath()`: bucket-relative path of a word's recording (`audio/en-us/words/jenny/seat.ogg`), or `null` when the word has none (en-us only, behind the `wordAudio` capability)
   - Spelling examples carry a `spelled` form marking the letters that spell the sound (`"ha[pp]y"`); `splitSpelledWord()` splits it for display
   - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`, `phoneme-frequency`
+- `packages/pronunciation`: Hears which sound a learner said. Holds the scoring contract (`Scorer`, `WordEvidence`) and `judgeWord`, a pure judge that turns a scorer's evidence into a `match`, `swapped` or `unclear` verdict per judged sound, using contrast partners from `@phonaria/phonetics-data`. See the package README.
 - `packages/helper-scripts`: Utilities for CMUDict processing and word-mapping reports; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`.
 - `packages/audio-gen`: Local Azure Speech pronunciation generation from the minimal-pair catalog. Reads `.env`, writes recordings and review sheets to ignored `output/` directories, and never uploads audio automatically. See the package README.
 - `docs`: Product context and the project overview, accepted decisions in `adr/`, agent conventions in `agents/`, and migration records in `research/`.
