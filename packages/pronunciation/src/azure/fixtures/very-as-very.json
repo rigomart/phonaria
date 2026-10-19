@@ -1,0 +1,132 @@
+{
+	"RecognitionStatus": "Success",
+	"Offset": 1200000,
+	"Duration": 7300000,
+	"DisplayText": "Very.",
+	"SNR": 45.917793,
+	"NBest": [
+		{
+			"Confidence": 0.9566875,
+			"Lexical": "very",
+			"ITN": "very",
+			"MaskedITN": "very",
+			"Display": "Very.",
+			"AccuracyScore": 95.0,
+			"FluencyScore": 100.0,
+			"CompletenessScore": 100.0,
+			"PronScore": 97.0,
+			"Words": [
+				{
+					"Word": "very",
+					"Offset": 1200000,
+					"Duration": 7300000,
+					"Confidence": 0.0,
+					"AccuracyScore": 95.0,
+					"ErrorType": "None",
+					"Syllables": [
+						{
+							"Syllable": "vɛɹ",
+							"Grapheme": "ver",
+							"Offset": 1200000,
+							"Duration": 3500000,
+							"AccuracyScore": 93.0
+						},
+						{
+							"Syllable": "i",
+							"Grapheme": "y",
+							"Offset": 4800000,
+							"Duration": 3700000,
+							"AccuracyScore": 93.0
+						}
+					],
+					"Phonemes": [
+						{
+							"Phoneme": "v",
+							"Offset": 1200000,
+							"Duration": 1300000,
+							"AccuracyScore": 81.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "b",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "d",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "v",
+									"Score": 57.0
+								},
+								{
+									"Phoneme": "f",
+									"Score": 20.0
+								},
+								{
+									"Phoneme": "ɛ",
+									"Score": 15.0
+								}
+							]
+						},
+						{
+							"Phoneme": "ɛɹ",
+							"Offset": 2600000,
+							"Duration": 2100000,
+							"AccuracyScore": 100.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "ɛɹ",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "æ",
+									"Score": 51.0
+								},
+								{
+									"Phoneme": "i",
+									"Score": 9.0
+								},
+								{
+									"Phoneme": "ɝ",
+									"Score": 3.0
+								},
+								{
+									"Phoneme": "ɪ",
+									"Score": 2.0
+								}
+							]
+						},
+						{
+							"Phoneme": "i",
+							"Offset": 4800000,
+							"Duration": 3700000,
+							"AccuracyScore": 93.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "i",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "ɹ",
+									"Score": 19.0
+								},
+								{
+									"Phoneme": "oʊ",
+									"Score": 18.0
+								},
+								{
+									"Phoneme": "eɪ",
+									"Score": 17.0
+								},
+								{
+									"Phoneme": "t",
+									"Score": 10.0
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

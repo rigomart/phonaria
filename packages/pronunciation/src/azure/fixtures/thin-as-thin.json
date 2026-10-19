@@ -1,0 +1,125 @@
+{
+	"RecognitionStatus": "Success",
+	"Offset": 900000,
+	"Duration": 6300000,
+	"DisplayText": "Thin.",
+	"SNR": 38.662518,
+	"NBest": [
+		{
+			"Confidence": 0.948815,
+			"Lexical": "thin",
+			"ITN": "thin",
+			"MaskedITN": "thin",
+			"Display": "Thin.",
+			"AccuracyScore": 96.0,
+			"FluencyScore": 100.0,
+			"CompletenessScore": 100.0,
+			"PronScore": 97.6,
+			"Words": [
+				{
+					"Word": "thin",
+					"Offset": 900000,
+					"Duration": 6300000,
+					"Confidence": 0.0,
+					"AccuracyScore": 96.0,
+					"ErrorType": "None",
+					"Syllables": [
+						{
+							"Syllable": "θɪn",
+							"Grapheme": "thin",
+							"Offset": 900000,
+							"Duration": 6300000,
+							"AccuracyScore": 95.0
+						}
+					],
+					"Phonemes": [
+						{
+							"Phoneme": "θ",
+							"Offset": 900000,
+							"Duration": 1900000,
+							"AccuracyScore": 99.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "θ",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "f",
+									"Score": 94.0
+								},
+								{
+									"Phoneme": "ð",
+									"Score": 29.0
+								},
+								{
+									"Phoneme": "v",
+									"Score": 19.0
+								},
+								{
+									"Phoneme": "s",
+									"Score": 11.0
+								}
+							]
+						},
+						{
+							"Phoneme": "ɪ",
+							"Offset": 2900000,
+							"Duration": 1100000,
+							"AccuracyScore": 95.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "ɛ",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "ɪ",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "n",
+									"Score": 32.0
+								},
+								{
+									"Phoneme": "ə",
+									"Score": 29.0
+								},
+								{
+									"Phoneme": "æ",
+									"Score": 13.0
+								}
+							]
+						},
+						{
+							"Phoneme": "n",
+							"Offset": 4100000,
+							"Duration": 3100000,
+							"AccuracyScore": 93.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "n",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "d",
+									"Score": 29.0
+								},
+								{
+									"Phoneme": "m",
+									"Score": 9.0
+								},
+								{
+									"Phoneme": "ɪ",
+									"Score": 7.0
+								},
+								{
+									"Phoneme": "ɛ",
+									"Score": 6.0
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

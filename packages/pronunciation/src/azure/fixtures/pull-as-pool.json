@@ -1,0 +1,185 @@
+{
+	"RecognitionStatus": "Success",
+	"Offset": 1100000,
+	"Duration": 6700000,
+	"DisplayText": "Pool.",
+	"SNR": 40.685112,
+	"NBest": [
+		{
+			"Confidence": 0.95084906,
+			"Lexical": "pool",
+			"ITN": "pool",
+			"MaskedITN": "pool",
+			"Display": "Pool.",
+			"AccuracyScore": 96,
+			"FluencyScore": 100,
+			"CompletenessScore": 100,
+			"PronScore": 97.6,
+			"Words": [
+				{
+					"Word": "pool",
+					"Offset": 1100000,
+					"Duration": 6700000,
+					"Confidence": 0,
+					"AccuracyScore": 96,
+					"ErrorType": "None",
+					"Syllables": [
+						{
+							"Syllable": "pul",
+							"Grapheme": "pool",
+							"Offset": 1100000,
+							"Duration": 6700000,
+							"AccuracyScore": 94
+						}
+					],
+					"Phonemes": [
+						{
+							"Phoneme": "p",
+							"Offset": 1100000,
+							"Duration": 1700000,
+							"AccuracyScore": 100,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "p",
+									"Score": 100
+								},
+								{
+									"Phoneme": "ʊ",
+									"Score": 18
+								},
+								{
+									"Phoneme": "t",
+									"Score": 16
+								},
+								{
+									"Phoneme": "u",
+									"Score": 9
+								},
+								{
+									"Phoneme": "k",
+									"Score": 5
+								},
+								{
+									"Phoneme": "b",
+									"Score": 5
+								},
+								{
+									"Phoneme": "oʊ",
+									"Score": 3
+								},
+								{
+									"Phoneme": "ɔ",
+									"Score": 3
+								},
+								{
+									"Phoneme": "f",
+									"Score": 3
+								},
+								{
+									"Phoneme": "ɹ",
+									"Score": 2
+								}
+							]
+						},
+						{
+							"Phoneme": "u",
+							"Offset": 2900000,
+							"Duration": 1100000,
+							"AccuracyScore": 99,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "ʊ",
+									"Score": 100
+								},
+								{
+									"Phoneme": "ɔ",
+									"Score": 55
+								},
+								{
+									"Phoneme": "u",
+									"Score": 46
+								},
+								{
+									"Phoneme": "oʊ",
+									"Score": 32
+								},
+								{
+									"Phoneme": "ʌ",
+									"Score": 15
+								},
+								{
+									"Phoneme": "l",
+									"Score": 13
+								},
+								{
+									"Phoneme": "p",
+									"Score": 11
+								},
+								{
+									"Phoneme": "ə",
+									"Score": 7
+								},
+								{
+									"Phoneme": "ɑ",
+									"Score": 4
+								},
+								{
+									"Phoneme": "ɹ",
+									"Score": 1
+								}
+							]
+						},
+						{
+							"Phoneme": "l",
+							"Offset": 4100000,
+							"Duration": 3700000,
+							"AccuracyScore": 90,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "l",
+									"Score": 100
+								},
+								{
+									"Phoneme": "oʊ",
+									"Score": 32
+								},
+								{
+									"Phoneme": "ʊ",
+									"Score": 25
+								},
+								{
+									"Phoneme": "ɹ",
+									"Score": 19
+								},
+								{
+									"Phoneme": "ɔ",
+									"Score": 14
+								},
+								{
+									"Phoneme": "n",
+									"Score": 11
+								},
+								{
+									"Phoneme": "ə",
+									"Score": 8
+								},
+								{
+									"Phoneme": "d",
+									"Score": 7
+								},
+								{
+									"Phoneme": "t",
+									"Score": 6
+								},
+								{
+									"Phoneme": "u",
+									"Score": 4
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
