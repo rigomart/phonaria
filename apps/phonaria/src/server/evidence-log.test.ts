@@ -4,7 +4,7 @@ import { createClient as createLocalClient } from "@libsql/client";
 import { azureEvidenceFromResponse, gateWord, judgeWord } from "@phonaria/pronunciation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CatalogWordPronunciations } from "@/lib/speech/catalog-pronunciations";
-import type { EvidenceLogPayload } from "@/lib/speech/evidence-log";
+import { EVIDENCE_LOG_OTHER_WORD, type EvidenceLogPayload } from "@/lib/speech/evidence-log";
 import { MISCUE_FIXTURES } from "../../../../packages/pronunciation/src/azure/fixtures/miscue";
 import {
 	EVIDENCE_LOG_COLUMNS,
@@ -252,6 +252,74 @@ describe("logEvidenceOnWorker", () => {
 		expect(database.execute).not.toHaveBeenCalled();
 	});
 
+	/** A 364-byte WAV as base64, cut into chunks that each look like a word. */
+	const SPLIT_WAV = Buffer.concat([Buffer.from("RIFF"), Buffer.alloc(360)])
+		.toString("base64")
+		.match(/.{1,40}/g) as string[];
+	const transcriptOf = (words: string[]) => ({
+		evidence: { ...SHIP_EVIDENCE, transcript: { words, confidence: 0.9 } },
+	});
+	const shownAsSwapped = (heardWord: string) => ({
+		verdicts: {
+			judgedPhonemeIds: ["IX", "I"],
+			gate: { type: "judged" },
+			judgement: {
+				pronunciationIndex: 0,
+				sounds: [
+					{ position: 1, phonemeId: "IX", verdict: { type: "swapped", heard: "I", heardWord } },
+				],
+			},
+		},
+	});
+
+	it.each([
+		["a name in the transcript", transcriptOf(["alice", "smith"])],
+		["a capitalised name", transcriptOf(["Alice"])],
+		["a phone number in the transcript", transcriptOf(["2125550199"])],
+		["a number as an inserted word", { evidence: { ...SHIP_EVIDENCE, insertedWords: ["4111"] } }],
+		[
+			"a name the word gate heard",
+			{
+				verdicts: {
+					judgedPhonemeIds: ["IX", "I"],
+					gate: { type: "different-word", heard: ["alice"] },
+					judgement: null,
+				},
+			},
+		],
+		["a name as a swap's heard word", shownAsSwapped("alice")],
+		["base64 audio split into word-sized chunks", transcriptOf(SPLIT_WAV)],
+	])(
+		"rejects %s, since only catalog words and the placeholder are stored",
+		async (_name, overrides) => {
+			const { response, database } = await send(logRequest(payload(overrides)));
+
+			expect(response.status).toBe(400);
+			expect(database.execute).not.toHaveBeenCalled();
+		},
+	);
+
+	it("stores catalog words and the placeholder as sent", async () => {
+		const attempt = payload({
+			evidence: {
+				...SHIP_EVIDENCE,
+				transcript: { words: [EVIDENCE_LOG_OTHER_WORD, "ship"], confidence: 0.4 },
+				insertedWords: [EVIDENCE_LOG_OTHER_WORD],
+			},
+			...shownAsSwapped("sheep"),
+		});
+
+		const { response, database } = await send(logRequest(attempt));
+
+		expect(response.status).toBe(204);
+		const [{ args }] = database.execute.mock.calls[0];
+		expect(JSON.parse(String(args[4]))).toMatchObject({
+			transcript: { words: ["<other>", "ship"], confidence: 0.4 },
+			insertedWords: ["<other>"],
+		});
+		expect(JSON.parse(String(args[5])).judgement.sounds[0].verdict.heardWord).toBe("sheep");
+	});
+
 	it("rejects a body that isn't JSON with 400", async () => {
 		const { response } = await send(logRequest("{not json"));
 		expect(response.status).toBe(400);
@@ -266,22 +334,43 @@ describe("logEvidenceOnWorker", () => {
 		expect(database.execute).not.toHaveBeenCalled();
 	});
 
-	it("rejects a body over the size limit with 413, declared or not", async () => {
-		const oversized = JSON.stringify({ ...payload(), padding: "x".repeat(MAX_EVIDENCE_LOG_BYTES) });
-		const declared = await send(logRequest(oversized));
-		const streamed = new Request("https://phonaria.test/api/speech/evidence-log", {
+	const OVERSIZED = JSON.stringify({ ...payload(), padding: "x".repeat(MAX_EVIDENCE_LOG_BYTES) });
+
+	function streamedRequest(body: string, headers: Record<string, string> = {}): Request {
+		return new Request("https://phonaria.test/api/speech/evidence-log", {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: new Blob([oversized]).stream(),
+			headers: { "Content-Type": "application/json", ...headers },
+			body: new Blob([body]).stream(),
 			duplex: "half",
 		} as RequestInit);
-		const undeclared = await send(streamed);
+	}
 
-		for (const { response, database } of [declared, undeclared]) {
-			expect(response.status).toBe(413);
-			expect(await errorCode(response)).toBe("payload_too_large");
-			expect(database.execute).not.toHaveBeenCalled();
-		}
+	/** The status, the error code and whether anything was written. */
+	async function outcome({ response, database }: Awaited<ReturnType<typeof send>>) {
+		return {
+			status: response.status,
+			code: await errorCode(response),
+			wrote: database.execute.mock.calls.length > 0,
+		};
+	}
+	const TOO_LARGE = { status: 413, code: "payload_too_large", wrote: false };
+
+	it("rejects an oversized body with no declared length with 413", async () => {
+		expect(await outcome(await send(streamedRequest(OVERSIZED)))).toEqual(TOO_LARGE);
+	});
+
+	it("rejects a declared Content-Length over the limit with 413 without reading the body", async () => {
+		const request = logRequest(payload(), {
+			headers: { "Content-Length": String(MAX_EVIDENCE_LOG_BYTES + 1) },
+		});
+
+		expect(await outcome(await send(request))).toEqual(TOO_LARGE);
+		expect(request.bodyUsed).toBe(false);
+	});
+
+	it("rejects an oversized stream whose Content-Length understates it with 413", async () => {
+		const request = streamedRequest(OVERSIZED, { "Content-Length": "100" });
+		expect(await outcome(await send(request))).toEqual(TOO_LARGE);
 	});
 
 	it("answers 502 when the database write fails", async () => {

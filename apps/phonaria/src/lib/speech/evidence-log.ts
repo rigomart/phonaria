@@ -6,6 +6,7 @@
  */
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type { RecordingEvidence, WordGate, WordJudgement } from "@phonaria/pronunciation";
+import { CatalogWordPronunciations } from "@/lib/speech/catalog-pronunciations";
 
 export const EVIDENCE_LOG_PATH = "/api/speech/evidence-log";
 export const EVIDENCE_LOG_SCHEMA_VERSION = 1;
@@ -17,6 +18,56 @@ export const EvidenceLogNotice = {
 	description:
 		"Helps make the checks fairer. Phonaria keeps the word, the scores and whether you tried again, for 90 days. Never your recording, and nothing that identifies you.",
 } as const;
+
+/**
+ * Stands in for any heard word outside the minimal-pair catalog, so a name or a
+ * number a learner says is never stored. The angle brackets keep it from ever
+ * being a word.
+ */
+export const EVIDENCE_LOG_OTHER_WORD = "<other>";
+
+/** The only words the log holds: catalog words and the placeholder. */
+export function isLoggableWord(word: string): boolean {
+	return word === EVIDENCE_LOG_OTHER_WORD || CatalogWordPronunciations.has(word);
+}
+
+const loggedWord = (word: string) =>
+	CatalogWordPronunciations.has(word) ? word : EVIDENCE_LOG_OTHER_WORD;
+
+/**
+ * Replaces every heard word outside the catalog with `EVIDENCE_LOG_OTHER_WORD`: the
+ * transcript, the inserted words, what the word gate heard and a swap's `heardWord`.
+ * Word counts and confidence stay, since re-judging needs them.
+ */
+export function withCatalogWordsOnly(payload: EvidenceLogPayload): EvidenceLogPayload {
+	const { evidence, verdicts } = payload;
+	const { gate, judgement } = verdicts;
+	return {
+		...payload,
+		evidence: {
+			...evidence,
+			...(evidence.transcript && {
+				transcript: { ...evidence.transcript, words: evidence.transcript.words.map(loggedWord) },
+			}),
+			...(evidence.insertedWords && { insertedWords: evidence.insertedWords.map(loggedWord) }),
+		},
+		verdicts: {
+			...verdicts,
+			gate: gate.type === "different-word" ? { ...gate, heard: gate.heard.map(loggedWord) } : gate,
+			judgement: judgement && {
+				...judgement,
+				sounds: judgement.sounds.map((sound) =>
+					sound.verdict.type === "swapped" && sound.verdict.heardWord !== undefined
+						? {
+								...sound,
+								verdict: { ...sound.verdict, heardWord: loggedWord(sound.verdict.heardWord) },
+							}
+						: sound,
+				),
+			},
+		},
+	};
+}
 
 /** What the learner did after seeing the result. */
 export type EvidenceLogNext = "retried" | "moved-on";
@@ -46,7 +97,8 @@ export type EvidenceLogFetch = (input: string, init: RequestInit) => Promise<Res
 export type EvidenceLogResult = "sent" | "rejected" | "rate_limited" | "unavailable" | "failed";
 
 /**
- * Posts one attempt. Never throws: logging is best effort, so the page can fire and
+ * Posts one attempt, with every word outside the catalog replaced by the
+ * placeholder first. Never throws: logging is best effort, so the page can fire and
  * forget it. `keepalive` lets the request finish when moving on leaves the page.
  * Call it only when the learner has turned sharing on.
  */
@@ -58,7 +110,7 @@ export async function sendEvidenceLog(
 		const response = await fetch(EVIDENCE_LOG_PATH, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(payload),
+			body: JSON.stringify(withCatalogWordsOnly(payload)),
 			keepalive: true,
 		});
 		if (response.ok) return "sent";

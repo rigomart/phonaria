@@ -6,6 +6,7 @@ import {
 	EVIDENCE_LOG_RETENTION_DAYS,
 	EVIDENCE_LOG_SCHEMA_VERSION,
 	type EvidenceLogPayload,
+	isLoggableWord,
 } from "@/lib/speech/evidence-log";
 import type { WorkerRateLimit } from "@/server/cloudflare/env";
 import { logWorkerEvent } from "@/server/cloudflare/log";
@@ -33,7 +34,8 @@ const phonemeId = z.enum(Object.keys(PhonemeIpaMap) as [PhonemeSymbolId, ...Phon
 const unit = z.number().min(0).max(1);
 const seconds = z.number().min(0).max(60);
 const index = z.int().min(0).max(15);
-const spokenWord = z.string().regex(/^[\p{L}\p{N}']{1,40}$/u);
+/** A heard word: a catalog word or the placeholder, never free text such as a name. */
+const spokenWord = z.string().max(32).refine(isLoggableWord);
 const spokenWords = z.array(spokenWord).max(16);
 
 const soundEvidence = z.discriminatedUnion("type", [

@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	attemptFromRow,
+	EVIDENCE_LOG_OTHER_WORD,
 	type EvidenceLogFetch,
 	fetchEvidenceLog,
 	importEvidenceLogCommand,
@@ -155,6 +156,22 @@ describe("an evidence log export", () => {
 
 		expect(summarizeEvidenceLog([ship]).changed).toBe(0);
 		expect(summarizeEvidenceLog([shownAsUnclear]).changed).toBe(1);
+	});
+
+	it("re-judges a placeholder transcript word as an unknown other word", async () => {
+		const [ship] = await fetchEvidenceLog({ ...SOURCE, fetch: turso() });
+		const heard = (words: string[]) =>
+			rejudgeAttempt({
+				...ship,
+				evidence: { ...ship.evidence, transcript: { words, confidence: 0.9 } },
+			}).gate;
+
+		// One unknown word: only the scoring can call it off, and this scoring is clean.
+		expect(heard([EVIDENCE_LOG_OTHER_WORD])).toEqual({ type: "judged" });
+		expect(heard([EVIDENCE_LOG_OTHER_WORD, "ship"])).toEqual({
+			type: "different-word",
+			heard: [EVIDENCE_LOG_OTHER_WORD, "ship"],
+		});
 	});
 
 	it("refuses a file that isn't an export", async () => {

@@ -13,7 +13,7 @@ import { isDeepStrictEqual } from "node:util";
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type { RecordingEvidence, SoundVerdict } from "../contract";
 import { judgeWord, type JudgeMargins, type WordJudgement } from "../judge";
-import { gateWord, type WordGate } from "../word-gate";
+import { gateWord, type PronunciationLookup, type WordGate } from "../word-gate";
 import { curatedPronunciations } from "./cases";
 
 export type EvidenceLogNext = "retried" | "moved-on";
@@ -39,6 +39,17 @@ export type LoggedAttempt = {
 };
 
 export const EVIDENCE_LOG_EXPORT_FORMAT = "phonaria-evidence-log";
+
+/**
+ * The app stores only minimal-pair catalog words. Any other heard word, in the
+ * transcript, the inserted words, the gate's `heard` or a swap's `heardWord`, is
+ * this placeholder, as `EVIDENCE_LOG_OTHER_WORD` in the app.
+ */
+export const EVIDENCE_LOG_OTHER_WORD = "<other>";
+
+/** The placeholder has no pronunciation, so the gate takes it as an unknown other word. */
+const loggedPronunciations: PronunciationLookup = (word) =>
+	word === EVIDENCE_LOG_OTHER_WORD ? undefined : curatedPronunciations(word);
 
 export type EvidenceLogExport = {
 	readonly format: typeof EVIDENCE_LOG_EXPORT_FORMAT;
@@ -202,7 +213,12 @@ export async function loadEvidenceLog(file: string): Promise<LoggedAttempt[]> {
 
 export type Rejudged = { readonly gate: WordGate; readonly judgement: WordJudgement | null };
 
-/** The word gate, then the judge, on a logged attempt, as the app runs them. */
+/**
+ * The word gate, then the judge, on a logged attempt, as the app runs them. A
+ * placeholder transcript word counts as an unknown other word, so a homophone or a
+ * one-swap word outside the catalog (*by* for *buy*) re-judges as another word that
+ * only the scoring can let through, where the app could compare its pronunciation.
+ */
 export function rejudgeAttempt(attempt: LoggedAttempt, margins?: JudgeMargins): Rejudged {
 	const [evidence] = attempt.evidence.words;
 	const judgedPhonemeIds =
@@ -218,7 +234,7 @@ export function rejudgeAttempt(attempt: LoggedAttempt, margins?: JudgeMargins): 
 		transcript: attempt.evidence.transcript,
 		judgedPhonemeIds,
 		targetAccent: attempt.targetAccent,
-		pronunciationsOf: curatedPronunciations,
+		pronunciationsOf: loggedPronunciations,
 	});
 	if (gate.type !== "judged") return { gate, judgement: null };
 	return {

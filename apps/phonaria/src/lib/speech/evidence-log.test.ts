@@ -1,9 +1,12 @@
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 import {
+	EVIDENCE_LOG_OTHER_WORD,
 	EVIDENCE_LOG_PATH,
 	type EvidenceLogFetch,
 	type EvidenceLogPayload,
+	isLoggableWord,
 	sendEvidenceLog,
+	withCatalogWordsOnly,
 } from "./evidence-log";
 
 const PAYLOAD: EvidenceLogPayload = {
@@ -78,5 +81,73 @@ describe("sendEvidenceLog", () => {
 			throw new TypeError("offline");
 		});
 		expect(await sendEvidenceLog(PAYLOAD, fetch)).toBe("failed");
+	});
+});
+
+const HEARD_A_NAME: EvidenceLogPayload = {
+	...PAYLOAD,
+	evidence: {
+		words: [{ pronunciations: [] }],
+		transcript: { words: ["alice", "ship", "2125550199"], confidence: 0.7 },
+		insertedWords: ["alice", "sheep"],
+	},
+	verdicts: {
+		judgedPhonemeIds: ["IX", "I"],
+		gate: { type: "different-word", heard: ["alice", "ship", "2125550199"] },
+		judgement: {
+			pronunciationIndex: 0,
+			sounds: [
+				{
+					position: 0,
+					phonemeId: "SH",
+					verdict: { type: "swapped", heard: "CH", heardWord: "chip" },
+				},
+				{
+					position: 1,
+					phonemeId: "IX",
+					verdict: { type: "swapped", heard: "I", heardWord: "smith" },
+				},
+			],
+		},
+	},
+};
+
+describe("withCatalogWordsOnly", () => {
+	it("turns every heard word outside the catalog into the placeholder, keeping counts and confidence", () => {
+		const logged = withCatalogWordsOnly(HEARD_A_NAME);
+
+		expect(logged.evidence.transcript).toEqual({
+			words: [EVIDENCE_LOG_OTHER_WORD, "ship", EVIDENCE_LOG_OTHER_WORD],
+			confidence: 0.7,
+		});
+		expect(logged.evidence.insertedWords).toEqual([EVIDENCE_LOG_OTHER_WORD, "sheep"]);
+		expect(logged.verdicts.gate).toEqual({
+			type: "different-word",
+			heard: [EVIDENCE_LOG_OTHER_WORD, "ship", EVIDENCE_LOG_OTHER_WORD],
+		});
+		expect(logged.verdicts.judgement?.sounds.map(({ verdict }) => verdict)).toEqual([
+			{ type: "swapped", heard: "CH", heardWord: "chip" },
+			{ type: "swapped", heard: "I", heardWord: EVIDENCE_LOG_OTHER_WORD },
+		]);
+		expect(JSON.stringify(logged)).not.toMatch(/alice|smith|2125550199/);
+	});
+
+	it("leaves a payload with no transcript, gate words or swaps as it was", () => {
+		expect(withCatalogWordsOnly(PAYLOAD)).toEqual(PAYLOAD);
+	});
+
+	it("accepts only catalog words and the placeholder", () => {
+		expect(["ship", "chip", EVIDENCE_LOG_OTHER_WORD].every(isLoggableWord)).toBe(true);
+		expect(["alice", "Ship", "2125550199", "other", ""].some(isLoggableWord)).toBe(false);
+	});
+
+	it("is applied before sending, so a name never leaves the browser", async () => {
+		const fetch = vi.fn<EvidenceLogFetch>(async () => new Response(null, { status: 204 }));
+
+		await sendEvidenceLog(HEARD_A_NAME, fetch);
+
+		const body = String(fetch.mock.calls[0][1].body);
+		expect(JSON.parse(body)).toEqual(withCatalogWordsOnly(HEARD_A_NAME));
+		expect(body).not.toMatch(/alice|smith|2125550199/);
 	});
 });
