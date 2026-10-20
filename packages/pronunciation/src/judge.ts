@@ -4,6 +4,7 @@ import {
 	type PhonemeSymbolId,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
+import { allowedVariants } from "./allowed-variants";
 import type {
 	MissingSoundEvidence,
 	PronunciationEvidence,
@@ -31,10 +32,32 @@ export const LENIENT_MARGINS: JudgeMargins = {
 
 export type JudgeInput = {
 	readonly evidence: WordEvidence;
-	readonly judgedPhonemeIds: ReadonlySet<PhonemeSymbolId>;
+	/** Judge only these sounds. Omitted, every sound in the word is judged. */
+	readonly judgedPhonemeIds?: ReadonlySet<PhonemeSymbolId>;
 	readonly targetAccent: TargetAccent;
 	readonly margins?: JudgeMargins;
+	/** The dictionary word a pronunciation spells, if any. Lets a `swapped` verdict carry `heardWord`. */
+	readonly findWord?: WordFinder;
 };
+
+export type WordFinder = (phonemeIds: readonly PhonemeSymbolId[]) => string | undefined;
+
+/**
+ * A `WordFinder` over words and their pronunciations. The first word listed wins
+ * a homophone, so list the words to prefer first, such as a minimal pair's partner.
+ */
+export function createWordFinder(
+	words: Iterable<readonly [string, readonly (readonly PhonemeSymbolId[])[]]>,
+): WordFinder {
+	const byPronunciation = new Map<string, string>();
+	for (const [word, pronunciations] of words) {
+		for (const pronunciation of pronunciations) {
+			const key = pronunciation.join(" ");
+			if (!byPronunciation.has(key)) byPronunciation.set(key, word);
+		}
+	}
+	return (phonemeIds) => byPronunciation.get(phonemeIds.join(" "));
+}
 
 export type SoundJudgement = {
 	/** Position of the sound in the judged pronunciation. */
@@ -46,7 +69,7 @@ export type SoundJudgement = {
 export type WordJudgement = {
 	/** The accepted pronunciation the verdicts were judged against. */
 	readonly pronunciationIndex: number;
-	/** Only sounds in the judged set, one per occurrence. */
+	/** Sounds in the judged set, or every sound when none was given, one per occurrence. */
 	readonly sounds: readonly SoundJudgement[];
 };
 
@@ -56,21 +79,45 @@ export function judgeWord({
 	judgedPhonemeIds,
 	targetAccent,
 	margins = LENIENT_MARGINS,
+	findWord,
 }: JudgeInput): WordJudgement | null {
 	const pronunciation = bestFittingPronunciation(evidence.pronunciations);
 	if (!pronunciation) return null;
+	const phonemeIds = pronunciation.sounds.map((sound) => sound.phonemeId);
 
 	const sounds: SoundJudgement[] = [];
 	pronunciation.sounds.forEach((sound, position) => {
-		if (!judgedPhonemeIds.has(sound.phonemeId)) return;
+		if (judgedPhonemeIds && !judgedPhonemeIds.has(sound.phonemeId)) return;
+		const verdict = judgeSound(
+			sound.type === "scored"
+				? scoreVariantsAsTarget(sound, allowedVariants(targetAccent, phonemeIds, position))
+				: sound,
+			contrastPartners(targetAccent, sound.phonemeId),
+			margins,
+		);
 		sounds.push({
 			position,
 			phonemeId: sound.phonemeId,
-			verdict: judgeSound(sound, contrastPartners(targetAccent, sound.phonemeId), margins),
+			verdict:
+				verdict.type === "swapped" && findWord
+					? withHeardWord(verdict, phonemeIds, position, findWord)
+					: verdict,
 		});
 	});
 
 	return { pronunciationIndex: pronunciation.pronunciationIndex, sounds };
+}
+
+function withHeardWord(
+	verdict: Extract<SoundVerdict, { type: "swapped" }>,
+	phonemeIds: readonly PhonemeSymbolId[],
+	position: number,
+	findWord: WordFinder,
+): SoundVerdict {
+	const heardWord = findWord(
+		phonemeIds.map((id, index) => (index === position ? verdict.heard : id)),
+	);
+	return heardWord === undefined ? verdict : { ...verdict, heardWord };
 }
 
 /** The sounds the contrast catalog pairs with `phonemeId`. */
@@ -109,6 +156,21 @@ function meanTargetScore({ sounds }: PronunciationEvidence): number {
 	return total / sounds.length;
 }
 
+/** Allowed variants are never rivals. */
+function scoreVariantsAsTarget(
+	sound: SoundEvidence,
+	variants: ReadonlySet<PhonemeSymbolId>,
+): SoundEvidence {
+	if (variants.size === 0) return sound;
+	let { targetScore } = sound;
+	const rivals = sound.rivals.filter((rival) => {
+		if (!variants.has(rival.phonemeId)) return true;
+		targetScore = Math.max(targetScore, rival.score);
+		return false;
+	});
+	return { ...sound, targetScore, rivals };
+}
+
 function judgeSound(
 	sound: SoundEvidence | MissingSoundEvidence,
 	partners: ReadonlySet<PhonemeSymbolId>,
@@ -140,11 +202,12 @@ function judgeSound(
 // just below it.
 const SCORE_TOLERANCE = 1e-9;
 
-function reaches(value: number, threshold: number): boolean {
+export function reaches(value: number, threshold: number): boolean {
 	return value >= threshold - SCORE_TOLERANCE;
 }
 
-function topRivals(rivals: readonly RivalScore[]): RivalScore[] {
+/** The rivals tied for the best score, within float tolerance. */
+export function topRivals(rivals: readonly RivalScore[]): RivalScore[] {
 	let bestScore = Number.NEGATIVE_INFINITY;
 	for (const rival of rivals) bestScore = Math.max(bestScore, rival.score);
 	return rivals.filter((rival) => Math.abs(rival.score - bestScore) <= SCORE_TOLERANCE);

@@ -6,23 +6,30 @@ The work is split in two so a scorer can be replaced without touching the judge:
 
 - A **scorer** takes a recording and a `ScoringRequest` (the target accent and the words said, each with its accepted pronunciations as base phoneme IDs) and returns `RecordingEvidence`, one `WordEvidence` per word. For each accepted pronunciation it could line up, a word's evidence has one entry per sound with its time span, the target's score and rival scores. A sound it couldn't line up is reported as `missing`. Audio is a 16 kHz mono 16-bit PCM WAV file as a `Uint8Array`.
 - The **word gate**, `gateWord`, first checks that the recording holds the target word at all. A scorer told to expect *ship* scores whatever was said as *ship*, so without it *kid*, *ships* or "a ship" would get a sound verdict.
-- The **judge**, `judgeWord`, is a pure function that turns one word's evidence into a verdict for each judged sound: `match`, `swapped` with the heard phoneme ID, or `unclear` with the reason it couldn't decide.
+- The **judge**, `judgeWord`, is a pure function that turns one word's evidence into a verdict for each sound: `match`, `swapped` with the heard phoneme ID and the word that makes, or `unclear` with the reason it couldn't decide.
 
 Practice starts with single words, sent as a list of one. Requests and evidence are lists so phrases can follow without changing the contract; judging across words (skipped words, weak forms, sounds that change at word boundaries) comes with them.
 
 ```ts
-import { gateWord, judgeWord } from "@phonaria/pronunciation";
+import { createWordFinder, gateWord, judgeWord } from "@phonaria/pronunciation";
 
 const ship = { text: "ship", acceptedPronunciations: [["SH", "IX", "P"]] };
 const recording = await scorer.score(wav, { targetAccent: "en-us", words: [ship] });
-const judged = { judgedPhonemeIds: new Set(["IX", "I"]), targetAccent: "en-us" } as const;
+const [evidence] = recording.words;
 
-gateWord({ target: ship, evidence: recording.words[0], transcript: recording.transcript, pronunciationsOf, ...judged });
+gateWord({ target: ship, evidence, transcript: recording.transcript, pronunciationsOf, targetAccent: "en-us" });
 // { type: "judged" }, or { type: "different-word", heard: ["a", "ship"] }, or { type: "not-heard" }
 
-judgeWord({ evidence: recording.words[0], ...judged });
-// { pronunciationIndex: 0, sounds: [{ position: 1, phonemeId: "IX", verdict: { type: "swapped", heard: "I" } }] }
+const findWord = createWordFinder([["sheep", [["SH", "I", "P"]]], ...dictionary]);
+judgeWord({ evidence, targetAccent: "en-us", findWord });
+// { pronunciationIndex: 0, sounds: [
+//   { position: 0, phonemeId: "SH", verdict: { type: "match" } },
+//   { position: 1, phonemeId: "IX", verdict: { type: "swapped", heard: "I", heardWord: "sheep" } },
+//   { position: 2, phonemeId: "P", verdict: { type: "match" } },
+// ] }
 ```
+
+Both take an optional `judgedPhonemeIds` to judge only some sounds, such as a contrast's two; by default they judge every sound in the word.
 
 Besides the sounds, evidence can carry what the gate needs. Every field is optional, so a scorer that can't tell leaves it out:
 
@@ -39,7 +46,7 @@ Every scorer normalizes its scores to 0..1, higher meaning the audio fits that p
 ## Judge rules
 
 - `match` when the target beats the best rival by the match margin, or, when the scorer reported no rivals, when the target score reaches the match floor.
-- `swapped` only when the winning rival is a contrast partner of the target sound (from the contrast catalog in `@phonaria/phonetics-data`) and beats the target by the swap margin.
+- `swapped` only when the winning rival is a contrast partner of the target sound (from the contrast catalog in `@phonaria/phonetics-data`) and beats the target by the swap margin. A sound with no contrast partners, such as /h/, is only ever `match` or `unclear`.
 - `unclear` otherwise, with a `reason` the UI can explain:
   - `no-evidence`: the scorer couldn't line the sound up (`missing`).
   - `close-call`: the best rival is a contrast partner, but neither it nor the target wins by its margin.
@@ -47,7 +54,22 @@ Every scorer normalizes its scores to 0..1, higher meaning the audio fits that p
 
 A `null` judgement (below) means the same as `no-evidence` for every sound.
 
-Only sounds in `judgedPhonemeIds` get a verdict, one per occurrence. With several accepted pronunciations, the judge uses the one with the highest mean target score, counting missing sounds as zero. `judgeWord` returns `null` when the scorer lined up none of them.
+Every sound gets a verdict, one per occurrence, or only the sounds in `judgedPhonemeIds` when it is given. With several accepted pronunciations, the judge uses the one with the highest mean target score, counting missing sounds as zero. `judgeWord` returns `null` when the scorer lined up none of them.
+
+### Heard word
+
+A `swapped` verdict carries `heardWord` when the judged pronunciation, with only that sound swapped for the heard one, is a word: *ship* with /i/ for /ɪ/ makes *sheep*. The judge stays pure and loads no dictionary; the caller passes `findWord`, a lookup from phoneme IDs to a word. `createWordFinder` builds one from a list of words and their pronunciations, the first word listed winning a homophone, so list the words to prefer first: from the curated top-10k alone, *pin* with /b/ makes *been*, not *bin*. Without `findWord`, or when the swap makes no word, `heardWord` is absent.
+
+### Allowed variants
+
+A normal en-us variant of a sound, from `EnglishPhonemeAllophones`, is not a mistake. Most come back from a scorer as the phoneme itself: aspirated /p t k/, longer and shorter /i/ and /æ/, dark /l/. A scorer whose alphabet writes a variant apart folds it into the phoneme in its adapter, as the Azure one maps both `ɝ` and `ɚ` to `ER`.
+
+Two kinds of variant sound like another phoneme, so the judge maps them itself, from the sounds around them in the judged pronunciation:
+
+- **The flap**, between vowels: the /t/ of *water* and the /d/ of *ladder*. Heard as RX (ɾ, for a scorer that has it), or as /d/ for /t/ and /t/ for /d/.
+- **Unaspirated /p/ and /k/** after a word-initial /s/: the /p/ of *spin* heard as /b/, the /k/ of *skate* as /ɡ/. No English word starts with /sb/ or /sɡ/, but inside a word voicing after /s/ is a contrast (*discussed* and *disgust*, *disperse* and *disburse*), so there /b/ for /p/ is a swap. Of the curated top-10k, 152 words start with s+p or s+k and 199 have one inside the word, where the variant isn't allowed. None of its pairs differ only by p-b or k-g after /s/, so an exception list drawn from it would be empty, but 8 of its words, such as *disgusting* and *baseball*, have /sb/ or /sɡ/ inside the word.
+
+A heard variant counts as the target: its score can win for the target, and it is never a rival, so a flapped *water* is `match`. Both variants equal a contrast partner (t-d, p-b, k-g), but only where English doesn't contrast them; a test checks that no minimal pair in the catalog differs on a sound where its partner is allowed. Pronunciations carry no stress, so the flap is also allowed before a stressed vowel, as in *adopt*, where speakers don't flap. The glottal /t/ of *button* has no phoneme to be heard as, and isn't mapped; that /t/ is between vowels, so the flap's are allowed there.
 
 `LENIENT_MARGINS` is the default. It starts lenient because marking a correct sound wrong costs more trust than missing a mistake.
 
@@ -65,7 +87,9 @@ The rule, in order:
 2. The scorer marked the target word omitted: `different-word`.
 3. The transcript holds more than one word: `different-word`.
 4. The transcript is one word that sounds like the target, or like the target with one judged sound swapped for a contrast partner (*sheep* for *ship*): `judged`. Naming that swap is the judge's job.
-5. The transcript is one other word: `different-word` only if the scoring agrees the word was off. That's a word accuracy under 0.3, or a transcript confidence of at least 0.5 with some sound outside the judged ones under 0.6 accuracy.
+5. The transcript is one other word: `different-word` only if the scoring agrees the word was off. That's a word accuracy under 0.3, or a transcript confidence of at least 0.5 with some sound the judge can't call under 0.6 accuracy.
+
+With `judgedPhonemeIds` given, the judge can call the sounds in it. With every sound judged, it can call a sound where a contrast partner or an allowed variant is among the top-scoring sounds, at or above the target, since that's a swap it can name or a variant it accepts. A low /p/ in *ships* said for *ship*, where /s/ won, still says the word was off, even when /b/ scored a little above /p/.
 
 Without a transcript, steps 3 to 5 become one check: a word accuracy under 0.3.
 
@@ -152,10 +176,12 @@ To turn a catalog recording into a WAV: `ffmpeg -i ship.ogg -ar 16000 -ac 1 -c:a
 
 `src/harness` runs a scorer and the judge over labelled recordings of the minimal-pair catalog and reports how often the judge gets each kind of case right. See [#328](https://github.com/rigomart/phonaria/issues/328).
 
-For every minimal pair (A, B), both ways round, it judges only the sound where the pair differs, with the contrast's two sounds as `judgedPhonemeIds`:
+For every minimal pair (A, B), both ways round, it judges every sound in the word, as practice does:
 
-- **Correct**: a recording of A against target A should be `match`.
-- **Swap**: a recording of B against target A should be `swapped` with B's sound.
+- **Correct**: a recording of A against target A should be `match` on every sound.
+- **Swap**: a recording of B against target A should be `swapped` with B's sound where the pair differs, and `match` elsewhere.
+
+`--judged=contrast` judges only the contrast's two sounds instead, through `judgedPhonemeIds` in both the gate and the judge, as the [#328 baseline](../../docs/research/issue-328-azure-pronunciation-baseline.md) did.
 
 Every case goes through the word gate first. A **wrong-word** case, from a clips manifest (below), holds something other than A or B judged against A, and the gate should stop it: an unrelated word, the word with sounds added, a phrase, a nonword, or silence or noise.
 
@@ -168,6 +194,15 @@ bun run --cwd packages/pronunciation harness run --catalog --tts-dir=output/tts/
 bun run --cwd packages/pronunciation harness run --catalog --offline
 ```
 
+The full run on three voices, every sound judged, and the same run judging the contrast sounds only for comparison. They send the same requests, so whichever runs second costs no calls:
+
+```bash
+bun run --cwd packages/pronunciation harness run --catalog \
+  --tts-dir=output/tts/guy --tts-dir=output/tts/aria --report=every-sound
+bun run --cwd packages/pronunciation harness run --catalog \
+  --tts-dir=output/tts/guy --tts-dir=output/tts/aria --judged=contrast --report=contrast-only
+```
+
 `words` prints the list to record with real voices for [#327](https://github.com/rigomart/phonaria/issues/327): one pair per contrast, 54 words, no word twice.
 
 `run` takes any mix of sources (paths are relative to the package):
@@ -178,20 +213,21 @@ bun run --cwd packages/pronunciation harness run --catalog --offline
 - `--clips=<manifest.json>`, repeatable: recordings labelled one by one, for cases a folder of words can't express. See `loadClips` in `sources.ts` for the format. Each clip names its source, target, partner, what was said and its kind: `correct`, `swap`, `unrelated`, `added-sounds`, `phrase`, `nonword` or `silence`.
 - `--voices-dir=<dir>`: real recordings as `<speaker>/<word>.wav`, one source per speaker. An optional `<speaker>/labels.json` maps a word to what it came out as: `{ "ship": "sheep", "thin": "neither" }`. A recording labelled as another word is scored as that word; one labelled `neither` is left out. Unlisted recordings count as said as intended. Words from the `words` list with no recording are listed as missing.
 
-Other options: `--offline` never calls the scorer, `--contrasts=i-ix,th-s` limits the catalog, `--concurrency=4` sets how many live calls run at once, `--report=<name>` names the output files, and `--max-throttled=100` stops calling Azure after that many HTTP 429s.
+Other options: `--offline` never calls the scorer, `--judged=every|contrast` picks the sounds judged (default `every`), `--contrasts=i-ix,th-s` limits the catalog, `--concurrency=4` sets how many live calls run at once, `--report=<name>` names the output files, and `--max-throttled=100` stops calling Azure after that many HTTP 429s.
 
 Every recording is converted with `ffmpeg` to 16 kHz mono 16-bit PCM WAV, stored by the original file's hash in `output/wav`. Azure's raw answers, the assessment and the recognition together, are cached in `output/cache`, keyed by a hash of the WAV bytes, the request and the scorer settings, never the key. A rerun, or a change to the adapter or the judge, costs no calls. Without `AZURE_SPEECH_KEY` the run is offline. Live calls retry HTTP 429 and 5xx with backoff, honouring `Retry-After` in seconds or as a date, up to a minute.
 
 The report goes to `output/<name>.json` and `output/<name>.md`, overall, per source kind (`tts`, `real`), per source and per contrast:
 
-- **False flag**: correct recordings judged `swapped`.
+- **False flag**: correct recordings with a sound judged `swapped`, per case. **Recordings flagged** counts each take once, though a word in several contrasts is several cases, and two takes of a word are two recordings: this is the rate the #328 target is about.
+- **Other sound flagged**: correct and pair recordings with a sound besides the contrast one judged `swapped`. Always zero with `--judged=contrast`.
 - **Swap named**: swap recordings judged `swapped` with the partner's sound. **Misnamed**: `swapped` with another sound. **Missed**: judged `match`.
 - **Unclear**: judged `unclear` with scored evidence.
 - **No evidence**: the judge returned null or the sound was `missing`. Cases with no scorer result at all are left out and counted.
 - **False reject**: correct and swap recordings the word gate stopped.
 - **Wrong word accepted**: wrong-word recordings the gate let through, per kind, and overall leaving out nonwords, which are fair to judge.
 
-It also lists the worst contrasts by false flags with the rivals that tied or beat the target, how the judged sound's evidence looked before margins (no rivals, partner listed, who scored highest), and the same evidence judged under a few other margins, for information. `output/` is ignored by Git.
+It also lists the falsely flagged sounds, as target and heard, the worst contrasts by false flags with the rivals that tied or beat the target, how the judged sound's evidence looked before margins (no rivals, partner listed, who scored highest), and the same evidence judged under a few other margins, for information. `output/` is ignored by Git.
 
 `bun run harness import-investigation <dir>` turns the wrong-word investigation's folder (its `wav/` and `responses/`) into `output/investigation/clips.json` and seeds the cache with its saved Azure answers, so `bun run harness run --clips=output/investigation/clips.json` makes no calls.
 

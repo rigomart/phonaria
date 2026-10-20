@@ -8,6 +8,7 @@ import {
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import type { TargetWord } from "../contract";
+import { createWordFinder, type WordFinder } from "../judge";
 import type { PronunciationLookup } from "../word-gate";
 
 /**
@@ -69,6 +70,12 @@ export function pronunciationOf(
 /** Every pronunciation the curated top-10k dictionary lists, for the word gate. */
 export const curatedPronunciations: PronunciationLookup = (word) =>
 	EnglishCuratedTop10k.words[word]?.map((variant) => toBasePhonemeIds(variant));
+
+export const curatedWordFinder: WordFinder = createWordFinder(
+	Object.entries(EnglishCuratedTop10k.words).map(
+		([word, variants]) => [word, variants.map(toBasePhonemeIds)] as const,
+	),
+);
 
 export function targetWordFor(word: string, dictionary?: Dictionary): TargetWord {
 	return { text: word, acceptedPronunciations: [pronunciationOf(word, dictionary)] };

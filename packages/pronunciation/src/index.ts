@@ -14,11 +14,13 @@ export type {
 	WordEvidence,
 } from "./contract";
 export {
+	createWordFinder,
 	judgeWord,
 	LENIENT_MARGINS,
 	type JudgeInput,
 	type JudgeMargins,
 	type SoundJudgement,
+	type WordFinder,
 	type WordJudgement,
 } from "./judge";
 export {

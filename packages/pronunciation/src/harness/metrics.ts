@@ -1,8 +1,9 @@
 import type { SoundEvidence, SoundVerdict, Transcript, WordEvidence } from "../contract";
-import { judgeWord, type JudgeMargins } from "../judge";
+import { judgeWord, type JudgeMargins, type SoundJudgement } from "../judge";
 import { gateWord, type WordGate } from "../word-gate";
 import {
 	curatedPronunciations,
+	curatedWordFinder,
 	type HarnessCase,
 	targetWordFor,
 	type WrongWordKind,
@@ -10,8 +11,16 @@ import {
 
 export type SourceKind = "tts" | "real";
 
+/**
+ * `every`: the judge and the word gate judge every sound in the word, as
+ * practice does. `contrast`: only the contrast's two sounds, as in the #328 baseline.
+ */
+export type JudgedSounds = "every" | "contrast";
+
 export type ScoredCase = {
 	readonly case: HarnessCase;
+	/** One take, the same for every contrast it is judged in, such as its file path. */
+	readonly recordingId: string;
 	readonly sourceId: string;
 	readonly sourceKind: SourceKind;
 	readonly evidence: WordEvidence;
@@ -19,10 +28,23 @@ export type ScoredCase = {
 	readonly transcript?: Transcript | null;
 };
 
+/**
+ * `otherFlags`: sounds besides the case's judged `swapped`, which are said as the
+ * target in every case. Always empty when judging the contrast sounds only.
+ */
 export type CaseOutcome =
 	| { readonly type: "rejected"; readonly gate: Exclude<WordGate, { type: "judged" }> }
-	| { readonly type: "judged"; readonly verdict: SoundVerdict; readonly sound: SoundEvidence }
-	| { readonly type: "no-evidence"; readonly reason: "no-pronunciation" | "missing-sound" };
+	| {
+			readonly type: "judged";
+			readonly verdict: SoundVerdict;
+			readonly sound: SoundEvidence;
+			readonly otherFlags: readonly SoundJudgement[];
+	  }
+	| {
+			readonly type: "no-evidence";
+			readonly reason: "no-pronunciation" | "missing-sound";
+			readonly otherFlags: readonly SoundJudgement[];
+	  };
 
 /** `rejected`: the word gate stopped the recording before any sound was judged. */
 export type CorrectCategory = "match" | "false-flag" | "unclear" | "no-evidence" | "rejected";
@@ -35,13 +57,15 @@ export type CaseResult = Omit<ScoredCase, "evidence" | "transcript"> & {
 	readonly category: CorrectCategory | SwapCategory | WrongWordCategory;
 };
 
-/** The word gate, then the judge on the case's sound. */
+/** The word gate, then the judge on the case's sound and, judging every sound, the others. */
 export function evaluateCase(
 	harnessCase: HarnessCase,
 	{ evidence, transcript }: Pick<ScoredCase, "evidence" | "transcript">,
 	margins?: JudgeMargins,
+	judged: JudgedSounds = "every",
 ): CaseOutcome {
-	const judgedPhonemeIds = new Set(harnessCase.judgedPhonemeIds);
+	const judgedPhonemeIds =
+		judged === "contrast" ? new Set(harnessCase.judgedPhonemeIds) : undefined;
 	const gate = gateWord({
 		target: targetWordFor(harnessCase.targetWord),
 		evidence,
@@ -52,15 +76,30 @@ export function evaluateCase(
 	});
 	if (gate.type !== "judged") return { type: "rejected", gate };
 
-	const judgement = judgeWord({ evidence, judgedPhonemeIds, targetAccent: "en-us", margins });
-	if (!judgement) return { type: "no-evidence", reason: "no-pronunciation" };
+	const judgement = judgeWord({
+		evidence,
+		judgedPhonemeIds,
+		targetAccent: "en-us",
+		margins,
+		findWord: curatedWordFinder,
+	});
+	if (!judgement) return { type: "no-evidence", reason: "no-pronunciation", otherFlags: [] };
 	const pronunciation = evidence.pronunciations.find(
 		(candidate) => candidate.pronunciationIndex === judgement.pronunciationIndex,
 	);
 	const sound = pronunciation?.sounds[harnessCase.position];
-	const judged = judgement.sounds.find((candidate) => candidate.position === harnessCase.position);
-	if (sound?.type !== "scored" || !judged) return { type: "no-evidence", reason: "missing-sound" };
-	return { type: "judged", verdict: judged.verdict, sound };
+	const own = judgement.sounds.find((candidate) => candidate.position === harnessCase.position);
+	const otherFlags =
+		judged === "every"
+			? judgement.sounds.filter(
+					(candidate) =>
+						candidate.position !== harnessCase.position && candidate.verdict.type === "swapped",
+				)
+			: [];
+	if (sound?.type !== "scored" || !own) {
+		return { type: "no-evidence", reason: "missing-sound", otherFlags };
+	}
+	return { type: "judged", verdict: own.verdict, sound, otherFlags };
 }
 
 export function categorize(
@@ -69,7 +108,9 @@ export function categorize(
 ): CorrectCategory | SwapCategory | WrongWordCategory {
 	if (harnessCase.kind === "wrong-word")
 		return outcome.type === "rejected" ? "rejected" : "accepted";
-	if (outcome.type === "rejected" || outcome.type === "no-evidence") return outcome.type;
+	if (outcome.type === "rejected") return outcome.type;
+	if (harnessCase.kind === "correct" && outcome.otherFlags.length > 0) return "false-flag";
+	if (outcome.type === "no-evidence") return outcome.type;
 	const { verdict } = outcome;
 	if (harnessCase.kind === "correct") {
 		if (verdict.type === "swapped") return "false-flag";
@@ -81,9 +122,13 @@ export function categorize(
 	return verdict.type === "match" ? "missed" : "unclear";
 }
 
-export function evaluateCases(scored: readonly ScoredCase[], margins?: JudgeMargins): CaseResult[] {
+export function evaluateCases(
+	scored: readonly ScoredCase[],
+	margins?: JudgeMargins,
+	judged?: JudgedSounds,
+): CaseResult[] {
 	return scored.map(({ evidence, transcript, ...rest }) => {
-		const outcome = evaluateCase(rest.case, { evidence, transcript }, margins);
+		const outcome = evaluateCase(rest.case, { evidence, transcript }, margins, judged);
 		return { ...rest, outcome, category: categorize(rest.case, outcome) };
 	});
 }
@@ -97,8 +142,16 @@ export type WrongWordCounts = Record<WrongWordCategory, number> & {
 
 /** Null when there were no cases of that kind. */
 export type Rates = {
-	/** Correct recordings judged `swapped`. */
+	/** Correct recordings with a sound judged `swapped`. */
 	readonly falseFlag: number | null;
+	/**
+	 * Distinct correct recordings, each take judged against its word once, with a
+	 * sound judged `swapped`. A take of a word in several contrasts is one recording
+	 * but several correct cases; two takes of a word are two recordings.
+	 */
+	readonly falseFlagRecordings: number | null;
+	/** Correct and pair recordings with a sound besides the case's judged `swapped`. */
+	readonly otherSoundFlagged: number | null;
 	readonly correctUnclear: number | null;
 	/** Pair recordings judged `swapped` with the partner's sound. */
 	readonly swapNamed: number | null;
@@ -139,6 +192,12 @@ export type Metrics = {
 	readonly correct: CorrectCounts;
 	readonly swap: SwapCounts;
 	readonly wrongWord: WrongWordCounts;
+	/** Distinct correct recordings, and how many of them had a sound judged `swapped`. */
+	readonly correctRecordings: { readonly total: number; readonly flagged: number };
+	/** Correct and pair recordings with a sound besides the case's judged `swapped`. */
+	readonly otherSoundFlagged: number;
+	/** Sounds judged `swapped` that were said as the target, as `target as heard`, by count. */
+	readonly falselyFlagged: Readonly<Record<string, number>>;
 	readonly rates: Rates;
 	readonly shape: EvidenceShape;
 };
@@ -175,6 +234,14 @@ export function summarize(results: readonly CaseResult[]): Metrics {
 		otherTop: 0,
 	};
 	const beatenBy: Record<string, number> = {};
+	const correctRecordings = new Map<string, boolean>();
+	let otherSoundFlagged = 0;
+	const falselyFlagged: Record<string, number> = {};
+	const countFlag = ({ phonemeId, verdict }: SoundJudgement) => {
+		if (verdict.type !== "swapped") return;
+		const key = `${phonemeId} as ${verdict.heard}`;
+		falselyFlagged[key] = (falselyFlagged[key] ?? 0) + 1;
+	};
 
 	for (const result of results) {
 		const { wrongWord: kind } = result.case;
@@ -187,16 +254,30 @@ export function summarize(results: readonly CaseResult[]): Metrics {
 			if (accepted) counts.accepted++;
 			continue;
 		}
+		const { outcome } = result;
 		if (result.case.kind === "correct") {
 			correct.total++;
 			correct[result.category as CorrectCategory]++;
+			const recording = `${result.recordingId}\0${result.case.targetWord}`;
+			const flagged = result.category === "false-flag";
+			correctRecordings.set(recording, (correctRecordings.get(recording) ?? false) || flagged);
 		} else {
 			swap.total++;
 			swap[result.category as SwapCategory]++;
 		}
-		if (result.outcome.type !== "judged") continue;
+		if (outcome.type === "rejected") continue;
+		if (outcome.otherFlags.length > 0) otherSoundFlagged++;
+		for (const flag of outcome.otherFlags) countFlag(flag);
+		if (outcome.type !== "judged") continue;
+		if (result.case.kind === "correct") {
+			countFlag({
+				position: result.case.position,
+				phonemeId: result.case.targetPhonemeId,
+				verdict: outcome.verdict,
+			});
+		}
 
-		const { sound } = result.outcome;
+		const { sound } = outcome;
 		shape.scored++;
 		if (sound.rivals.length === 0) {
 			shape.targetOnly++;
@@ -217,6 +298,10 @@ export function summarize(results: readonly CaseResult[]): Metrics {
 	}
 
 	const all = correct.total + swap.total;
+	const recordings = {
+		total: correctRecordings.size,
+		flagged: [...correctRecordings.values()].filter(Boolean).length,
+	};
 	const realWords = Object.entries(byKind)
 		.filter(([kind]) => kind !== "nonword")
 		.map(([, counts]) => counts);
@@ -224,8 +309,13 @@ export function summarize(results: readonly CaseResult[]): Metrics {
 		correct,
 		swap,
 		wrongWord: { ...wrongWord, byKind },
+		correctRecordings: recordings,
+		otherSoundFlagged,
+		falselyFlagged: sortedCounts(falselyFlagged),
 		rates: {
 			falseFlag: rate(correct["false-flag"], correct.total),
+			falseFlagRecordings: rate(recordings.flagged, recordings.total),
+			otherSoundFlagged: rate(otherSoundFlagged, all),
 			correctUnclear: rate(correct.unclear, correct.total),
 			swapNamed: rate(swap.named, swap.total),
 			swapMisnamed: rate(swap.misnamed, swap.total),
@@ -318,11 +408,12 @@ export type SweepRow = {
 export function sweepMargins(
 	scored: readonly ScoredCase[],
 	settings: readonly JudgeMargins[],
+	judged?: JudgedSounds,
 ): SweepRow[] {
 	return settings.map((margins) => ({
 		margins,
 		groups: Object.fromEntries(
-			[...resultsByGroup(evaluateCases(scored, margins))].map(([id, group]) => [
+			[...resultsByGroup(evaluateCases(scored, margins, judged))].map(([id, group]) => [
 				id,
 				summarize(group).rates,
 			]),

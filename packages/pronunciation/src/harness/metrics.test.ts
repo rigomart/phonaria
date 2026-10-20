@@ -101,7 +101,13 @@ async function scoreCatalog(sourceId: string, sourceKind: SourceKind): Promise<S
 	);
 	return results.map((result, index) => {
 		if (result.type !== "scored") throw new Error("Fake scorer failed");
-		return { case: cases[index], sourceId, sourceKind, evidence: result.evidence.words[0] };
+		return {
+			case: cases[index],
+			recordingId: `${sourceId}/${cases[index].recordingWord}`,
+			sourceId,
+			sourceKind,
+			evidence: result.evidence.words[0],
+		};
 	});
 }
 
@@ -144,6 +150,8 @@ describe("harness metrics", () => {
 		});
 		expect(metrics.rates).toEqual({
 			falseFlag: 0.25,
+			falseFlagRecordings: 0.25,
+			otherSoundFlagged: 0,
 			correctUnclear: 0,
 			swapNamed: 0.25,
 			swapMisnamed: 0.25,
@@ -213,6 +221,7 @@ describe("harness metrics with the word gate", () => {
 		transcript: Transcript | null,
 	): ScoredCase => ({
 		case: caseForClip({ target: "seat", partner: "sit", kind, said }, CONTRASTS),
+		recordingId: `${kind}/${said}/${transcript?.words.join(" ")}`,
 		sourceId: "tts:fake",
 		sourceKind: "tts",
 		evidence,
@@ -269,5 +278,91 @@ describe("harness metrics with the word gate", () => {
 		});
 		expect(metrics.rates.wrongWordAccepted, "nonwords left out").toBe(1 / 4);
 		expect(metrics.shape.scored, "wrong words stay out of the evidence shape").toBe(2);
+	});
+});
+
+describe("harness metrics with every sound judged", () => {
+	const contrasts: readonly PhonemeContrast<"en-us">[] = [
+		{ id: "i-ix", phonemeIds: ["I", "IX"], minimalPairs: [{ words: ["seat", "sit"] }] },
+		{ id: "t-d", phonemeIds: ["T", "D"], minimalPairs: [{ words: ["seat", "seed"] }] },
+	];
+	const seatCases = buildCatalogCases(contrasts).filter((c) => c.targetWord === "seat");
+
+	function scoredWithSAsSh(harnessCase: HarnessCase): ScoredCase {
+		const { position, partnerPhonemeId, kind } = harnessCase;
+		const sounds = pronunciationOf(harnessCase.targetWord).map((id, index) => {
+			if (id === "S") return sound("S", 0.1, [{ phonemeId: "SH", score: 1 }]);
+			if (index !== position) return sound(id, 0.9);
+			return kind === "correct"
+				? sound(id, 0.9, [{ phonemeId: partnerPhonemeId, score: 0.1 }])
+				: sound(id, 0.1, [{ phonemeId: partnerPhonemeId, score: 0.9 }]);
+		});
+		return {
+			case: harnessCase,
+			recordingId: `take-1/${harnessCase.recordingWord}`,
+			sourceId: "tts:fake",
+			sourceKind: "tts",
+			evidence: { pronunciations: [{ pronunciationIndex: 0, sounds }] },
+		};
+	}
+	const scored = seatCases.map(scoredWithSAsSh);
+
+	it("flags a correct recording on any sound, and counts a take in two contrasts once", () => {
+		const results = evaluateCases(scored, LENIENT_MARGINS, "every");
+		expect(results.map((r) => `${r.case.recordingWord} as seat: ${r.category}`)).toEqual([
+			"seat as seat: false-flag",
+			"sit as seat: named",
+			"seat as seat: false-flag",
+			"seed as seat: named",
+		]);
+		const metrics = summarize(results);
+		expect(metrics.correctRecordings).toEqual({ total: 1, flagged: 1 });
+		expect(metrics.rates.falseFlag).toBe(1);
+		expect(metrics.rates.otherSoundFlagged).toBe(1);
+		expect(metrics.falselyFlagged).toEqual({ "S as SH": 4 });
+	});
+
+	it("counts each take of a word as its own recording", () => {
+		const takes = seatCases
+			.filter((c) => c.kind === "correct")
+			.flatMap((harnessCase) => {
+				const flagged = scoredWithSAsSh(harnessCase);
+				const clean: ScoredCase = {
+					...flagged,
+					recordingId: `take-2/${harnessCase.recordingWord}`,
+					evidence: {
+						pronunciations: [
+							{
+								pronunciationIndex: 0,
+								sounds: pronunciationOf("seat").map((id) => sound(id, 0.9)),
+							},
+						],
+					},
+				};
+				return [flagged, clean];
+			});
+		const metrics = summarize(evaluateCases(takes, LENIENT_MARGINS, "every"));
+		expect(metrics.correct.total, "two takes in two contrasts").toBe(4);
+		expect(metrics.correctRecordings).toEqual({ total: 2, flagged: 1 });
+		expect(metrics.rates.falseFlagRecordings).toBe(1 / 2);
+	});
+
+	it("names the word a flagged sound makes", () => {
+		const [outcome] = evaluateCases(scored, LENIENT_MARGINS, "every").map((r) => r.outcome);
+		expect(outcome.type !== "rejected" && outcome.otherFlags).toEqual([
+			{
+				position: 0,
+				phonemeId: "S",
+				verdict: { type: "swapped", heard: "SH", heardWord: "sheet" },
+			},
+		]);
+	});
+
+	it("judges only the contrast sound in contrast mode, as the baseline did", () => {
+		const metrics = summarize(evaluateCases(scored, LENIENT_MARGINS, "contrast"));
+		expect(metrics.rates.falseFlag).toBe(0);
+		expect(metrics.rates.swapNamed).toBe(1);
+		expect(metrics.otherSoundFlagged).toBe(0);
+		expect(metrics.falselyFlagged).toEqual({});
 	});
 });

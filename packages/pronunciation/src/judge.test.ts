@@ -1,5 +1,14 @@
-import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
+import {
+	EnglishPhonemeAllophones,
+	EnglishPhonemeContrasts,
+	findSubstitution,
+	getSinglePronunciation,
+	type PhonemeSymbolId,
+	toBasePhonemeIds,
+} from "@phonaria/phonetics-data";
+import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import { describe, expect, it } from "vitest";
+import { allowedVariants } from "./allowed-variants";
 import type {
 	MissingSoundEvidence,
 	RivalScore,
@@ -8,7 +17,7 @@ import type {
 	ScoringRequest,
 	SoundEvidence,
 } from "./contract";
-import { judgeWord } from "./judge";
+import { contrastPartners, createWordFinder, judgeWord } from "./judge";
 
 // The i-ix contrast: IX is /ɪ/ as in "ship", I is /i/ as in "sheep".
 const SHIP_SHEEP = new Set<PhonemeSymbolId>(["IX", "I"]);
@@ -185,5 +194,259 @@ describe("judgeWord", () => {
 				targetAccent: "en-us",
 			}),
 		).toBeNull();
+	});
+});
+
+function judgeEvery(sounds: (SoundEvidence | MissingSoundEvidence)[], findWord = curatedWords) {
+	return judgeWord({
+		evidence: { pronunciations: [{ pronunciationIndex: 0, sounds }] },
+		targetAccent: "en-us",
+		findWord,
+	});
+}
+
+const curatedWords = createWordFinder(
+	Object.entries(EnglishCuratedTop10k.words).map(
+		([word, variants]) => [word, variants.map(toBasePhonemeIds)] as const,
+	),
+);
+
+describe("judgeWord with every sound judged", () => {
+	it("gives every sound in the word its own verdict", () => {
+		const judgement = judgeEvery([
+			scored("SH", 0.1, [{ phonemeId: "CH", score: 1 }]),
+			scored("IX", 1, [{ phonemeId: "I", score: 0.2 }]),
+			scored("P", 0.6, [{ phonemeId: "B", score: 0.7 }]),
+		]);
+		expect(judgement?.sounds).toEqual([
+			{
+				position: 0,
+				phonemeId: "SH",
+				verdict: { type: "swapped", heard: "CH", heardWord: "chip" },
+			},
+			{ position: 1, phonemeId: "IX", verdict: { type: "match" } },
+			{ position: 2, phonemeId: "P", verdict: { type: "unclear", reason: "close-call" } },
+		]);
+	});
+
+	it("only matches or is unclear on a sound with no contrast partners", () => {
+		expect(contrastPartners("en-us", "H").size).toBe(0);
+		const hat = (h: SoundEvidence) =>
+			judgeEvery([h, scored("AE", 1), scored("T", 1)])?.sounds[0]?.verdict;
+		expect(hat(scored("H", 0.9, [{ phonemeId: "F", score: 0.1 }]))).toEqual({ type: "match" });
+		expect(hat(scored("H", 0, [{ phonemeId: "F", score: 1 }]))).toEqual({
+			type: "unclear",
+			reason: "other-sound",
+		});
+		expect(hat(scored("H", 0.2))).toEqual({ type: "unclear", reason: "other-sound" });
+	});
+
+	it("names the word a swap makes when the dictionary has it", () => {
+		const judgement = judgeEvery([
+			scored("SH", 1),
+			scored("IX", 0, [{ phonemeId: "I", score: 1 }]),
+			scored("P", 1),
+		]);
+		expect(judgement?.sounds[1]?.verdict).toEqual({
+			type: "swapped",
+			heard: "I",
+			heardWord: "sheep",
+		});
+	});
+
+	it("names no word when the swap makes none", () => {
+		const shib = judgeEvery([
+			scored("SH", 1),
+			scored("IX", 1),
+			scored("P", 0, [{ phonemeId: "B", score: 1 }]),
+		]);
+		expect(shib?.sounds[2]?.verdict).toEqual({ type: "swapped", heard: "B" });
+	});
+
+	it("names no word without a word finder", () => {
+		const judgement = judgeWord({
+			evidence: {
+				pronunciations: [
+					{
+						pronunciationIndex: 0,
+						sounds: [
+							scored("SH", 1),
+							scored("IX", 0, [{ phonemeId: "I", score: 1 }]),
+							scored("P", 1),
+						],
+					},
+				],
+			},
+			targetAccent: "en-us",
+		});
+		expect(judgement?.sounds[1]?.verdict).toEqual({ type: "swapped", heard: "I" });
+	});
+});
+
+describe("judgeWord on allowed en-us variants", () => {
+	const heardAs = (target: PhonemeSymbolId, variant: PhonemeSymbolId) =>
+		scored(target, 0.1, [{ phonemeId: variant, score: 1 }]);
+	const verdictAt = (position: number, sounds: (SoundEvidence | MissingSoundEvidence)[]) =>
+		judgeEvery(sounds)?.sounds[position]?.verdict;
+
+	it("matches the flapped /t/ of water heard as /d/", () => {
+		expect(
+			verdictAt(2, [scored("W", 1), scored("O", 1), heardAs("T", "D"), scored("ER", 1)]),
+		).toEqual({ type: "match" });
+	});
+
+	it("matches the flapped /t/ of water heard as the flap itself", () => {
+		expect(
+			verdictAt(2, [scored("W", 1), scored("O", 1), heardAs("T", "RX"), scored("ER", 1)]),
+		).toEqual({ type: "match" });
+	});
+
+	it("matches the flapped /d/ of ladder heard as /t/ or as the flap", () => {
+		for (const variant of ["T", "RX"] as const) {
+			expect(
+				verdictAt(2, [scored("L", 1), scored("AE", 1), heardAs("D", variant), scored("ER", 1)]),
+			).toEqual({ type: "match" });
+		}
+	});
+
+	it("matches the unaspirated /p/ of spin heard as /b/", () => {
+		expect(
+			verdictAt(1, [scored("S", 1), heardAs("P", "B"), scored("IX", 1), scored("N", 1)]),
+		).toEqual({ type: "match" });
+	});
+
+	it("matches the unaspirated /k/ of skate heard as /ɡ/", () => {
+		expect(
+			verdictAt(1, [scored("S", 1), heardAs("K", "G"), scored("EI", 1), scored("T", 1)]),
+		).toEqual({ type: "match" });
+	});
+
+	it("matches /p/ and /k/ heard as /b/ and /ɡ/ after a word-initial /s/", () => {
+		const words: Record<string, readonly PhonemeSymbolId[]> = {
+			spin: ["S", "P", "IX", "N"],
+			skate: ["S", "K", "EI", "T"],
+			school: ["S", "K", "U", "L"],
+			sky: ["S", "K", "AI"],
+		};
+		for (const [word, pronunciation] of Object.entries(words)) {
+			const sounds = pronunciation.map((id, index) =>
+				index === 1 ? heardAs(id, id === "P" ? "B" : "G") : scored(id, 1),
+			);
+			expect(verdictAt(1, sounds), word).toEqual({ type: "match" });
+		}
+	});
+
+	it("names /ɡ/ and /b/ after an /s/ inside a word, where voicing is a contrast", () => {
+		const swappedAt = (pronunciation: readonly PhonemeSymbolId[], heard: PhonemeSymbolId) => {
+			const position = pronunciation.findIndex(
+				(id, index) => index > 1 && pronunciation[index - 1] === "S",
+			);
+			const sounds = pronunciation.map((id, index) =>
+				index === position ? heardAs(id, heard) : scored(id, 1),
+			);
+			return verdictAt(position, sounds);
+		};
+		// discussed said as disgust
+		expect(swappedAt(["D", "IX", "S", "K", "AH", "S", "T"], "G")).toEqual({
+			type: "swapped",
+			heard: "G",
+		});
+		// disperse said as disburse
+		expect(swappedAt(["D", "IX", "S", "P", "ER", "S"], "B")).toEqual({
+			type: "swapped",
+			heard: "B",
+		});
+	});
+
+	it("still names the partner outside the variant's context", () => {
+		expect(verdictAt(0, [heardAs("T", "D"), scored("AI", 1)])).toEqual({
+			type: "swapped",
+			heard: "D",
+			heardWord: "die",
+		});
+		expect(verdictAt(0, [heardAs("P", "B"), scored("IX", 1), scored("G", 1)])).toEqual({
+			type: "swapped",
+			heard: "B",
+			heardWord: "big",
+		});
+	});
+
+	it("still weighs other rivals against a variant", () => {
+		expect(
+			verdictAt(2, [
+				scored("W", 1),
+				scored("O", 1),
+				scored("T", 0.1, [
+					{ phonemeId: "D", score: 1 },
+					{ phonemeId: "TH", score: 1 },
+				]),
+				scored("ER", 1),
+			]),
+		).toEqual({ type: "unclear", reason: "close-call" });
+	});
+
+	it("handles every en-us allophone: by a variant rule, or as the phoneme itself", () => {
+		const reportedAs: Record<string, readonly PhonemeSymbolId[]> = {
+			"T vowel-to-vowel-flap": ["RX", "D"],
+			"D vowel-to-vowel-flap": ["RX", "T"],
+			"P after-s-onset-unaspirated": ["B"],
+			"K after-s-onset-unaspirated": ["G"],
+			// The glottal stop has no phoneme to be heard as, but button's /t/ is between vowels too.
+			"T t-before-syllabic-n-glottal": ["RX", "D"],
+		};
+		const examples: Record<string, readonly PhonemeSymbolId[]> = {
+			pin: ["P", "IX", "N"],
+			spin: ["S", "P", "IX", "N"],
+			top: ["T", "A", "P"],
+			time: ["T", "AI", "M"],
+			water: ["W", "O", "T", "ER"],
+			button: ["B", "AH", "T", "AX", "N"],
+			cat: ["K", "AE", "T"],
+			skate: ["S", "K", "EI", "T"],
+			ladder: ["L", "AE", "D", "ER"],
+			ball: ["B", "O", "L"],
+			seed: ["S", "I", "D"],
+			seat: ["S", "I", "T"],
+			bad: ["B", "AE", "D"],
+			bat: ["B", "AE", "T"],
+			bird: ["B", "ER", "D"],
+		};
+		for (const [phonemeId, allophones] of Object.entries(EnglishPhonemeAllophones)) {
+			for (const {
+				contextKey,
+				examples: [{ word }],
+			} of allophones ?? []) {
+				const pronunciation = examples[word];
+				expect(pronunciation, word).toBeDefined();
+				const position = pronunciation.indexOf(phonemeId as PhonemeSymbolId);
+				const variants = [...allowedVariants("en-us", pronunciation, position)];
+				expect(variants, `${phonemeId} ${contextKey} in ${word}`).toEqual(
+					reportedAs[`${phonemeId} ${contextKey}`] ?? [],
+				);
+			}
+		}
+		// /p/ and /k/ after /s/ only start a word: inside one, voicing is a contrast.
+		const discussed: PhonemeSymbolId[] = ["D", "IX", "S", "K", "AH", "S", "T"];
+		const disperse: PhonemeSymbolId[] = ["D", "IX", "S", "P", "ER", "S"];
+		expect([...allowedVariants("en-us", discussed, 3)], "K in discussed").toEqual([]);
+		expect([...allowedVariants("en-us", disperse, 3)], "P in disperse").toEqual([]);
+	});
+
+	it("hides no minimal pair in the contrast catalog", () => {
+		const pronunciationOf = (word: string) =>
+			getSinglePronunciation(EnglishCuratedTop10k.words[word] ?? []) ?? [];
+		for (const { id, minimalPairs } of EnglishPhonemeContrasts) {
+			for (const { words } of minimalPairs) {
+				const [first, second] = words.map(pronunciationOf);
+				const swap = findSubstitution(first, second);
+				if (!swap) throw new Error(`${id}: ${words.join("/")} differ by more than one sound`);
+				expect(allowedVariants("en-us", first, swap.index).has(swap.to), words.join("/")).toBe(
+					false,
+				);
+				expect(allowedVariants("en-us", second, swap.index).has(swap.from), words.join("/")).toBe(
+					false,
+				);
+			}
+		}
 	});
 });
