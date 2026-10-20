@@ -104,3 +104,45 @@ Target words are matched to Azure's words ignoring case, punctuation and surroun
 `bun run --cwd packages/pronunciation probe <file.wav> <word> [--save=response.json]` scores one 16 kHz mono WAV of one word against the live API (paths are relative to the package) and prints the evidence and the judge's verdicts for every sound. It reads `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` from `packages/pronunciation/.env` and takes the word's accepted pronunciations from the curated top-10k dictionary. `--save` writes Azure's raw response, which has no credentials in it, for use as a fixture.
 
 To turn a catalog recording into a WAV: `ffmpeg -i ship.ogg -ar 16000 -ac 1 -c:a pcm_s16le ship.wav`.
+
+## Eval harness
+
+`src/harness` runs a scorer and the judge over labelled recordings of the minimal-pair catalog and reports how often the judge gets each kind of case right. See [#328](https://github.com/rigomart/phonaria/issues/328).
+
+For every minimal pair (A, B), both ways round, it judges only the sound where the pair differs, with the contrast's two sounds as `judgedPhonemeIds`:
+
+- **Correct**: a recording of A against target A should be `match`.
+- **Swap**: a recording of B against target A should be `swapped` with B's sound.
+
+Accepted pronunciations come from the curated top-10k dictionary the catalog is validated against.
+
+```bash
+bun run --cwd packages/pronunciation harness words
+bun run --cwd packages/pronunciation harness run --catalog
+bun run --cwd packages/pronunciation harness run --catalog --tts-dir=output/tts/guy --tts-dir=output/tts/aria --voices-dir=<dir>
+bun run --cwd packages/pronunciation harness run --catalog --offline
+```
+
+`words` prints the list to record with real voices for [#327](https://github.com/rigomart/phonaria/issues/327): one pair per contrast, 54 words, no word twice.
+
+`run` takes any mix of sources (paths are relative to the package):
+
+- `--catalog`: the Jenny recordings, fetched once from `https://assets.rigos.dev` through `getWordAudioPath()` into `output/audio/jenny`. The default when no source is given.
+- `--audio-dir=<dir>`: the Jenny recordings from a local folder of `<word>.ogg` instead.
+- `--tts-dir=[name=]<dir>`, repeatable: a folder of `<word>.<ext>`, or an `audio-gen` output folder with them under `audio/`. The source is named `tts:<name>`, or after the nearest folder that isn't `audio`. Two sources with the same name stop the run.
+- `--voices-dir=<dir>`: real recordings as `<speaker>/<word>.wav`, one source per speaker. An optional `<speaker>/labels.json` maps a word to what it came out as: `{ "ship": "sheep", "thin": "neither" }`. A recording labelled as another word is scored as that word; one labelled `neither` is left out. Unlisted recordings count as said as intended. Words from the `words` list with no recording are listed as missing.
+
+Other options: `--offline` never calls the scorer, `--contrasts=i-ix,th-s` limits the catalog, `--concurrency=4` sets how many live calls run at once, `--report=<name>` names the output files, and `--max-throttled=100` stops calling Azure after that many HTTP 429s.
+
+Every recording is converted with `ffmpeg` to 16 kHz mono 16-bit PCM WAV, stored by the original file's hash in `output/wav`. Azure's raw responses are cached in `output/cache`, keyed by a hash of the WAV bytes, the request and the scorer settings, never the key. A rerun, or a change to the adapter or the judge, costs no calls. Without `AZURE_SPEECH_KEY` the run is offline. Live calls retry HTTP 429 and 5xx with backoff, honouring `Retry-After` in seconds or as a date, up to a minute.
+
+The report goes to `output/<name>.json` and `output/<name>.md`, overall, per source kind (`tts`, `real`), per source and per contrast:
+
+- **False flag**: correct recordings judged `swapped`.
+- **Swap named**: swap recordings judged `swapped` with the partner's sound. **Misnamed**: `swapped` with another sound. **Missed**: judged `match`.
+- **Unclear**: judged `unclear` with scored evidence.
+- **No evidence**: the judge returned null or the sound was `missing`. Cases with no scorer result at all are left out and counted.
+
+It also lists the worst contrasts by false flags with the rivals that tied or beat the target, how the judged sound's evidence looked before margins (no rivals, partner listed, who scored highest), and the same evidence judged under a few other margins, for information. `output/` is ignored by Git.
+
+The metric arithmetic in `metrics.ts` is pure and tested with a fake scorer. Any `Scorer` can run through `harnessScorerFrom`; the Azure one caches the raw response instead of evidence.
