@@ -1,5 +1,6 @@
 import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
-import type { TargetWord, Transcript, WordEvidence } from "./contract";
+import { allowedVariants } from "./allowed-variants";
+import type { SoundEvidence, TargetWord, Transcript, WordEvidence } from "./contract";
 import { bestFittingPronunciation, contrastPartners } from "./judge";
 
 /**
@@ -20,7 +21,7 @@ export type WordGate =
 export type WordGateMargins = {
 	/** A whole-word accuracy under this says the word was off. */
 	readonly wordAccuracy: number;
-	/** A sound outside the judged ones scoring under this says the word was off... */
+	/** A sound the judge can't call scoring under this says the word was off... */
 	readonly soundAccuracy: number;
 	/** ...but only when the transcript is at least this confident. */
 	readonly transcriptConfidence: number;
@@ -46,7 +47,8 @@ export type WordGateInput = {
 	readonly evidence: WordEvidence;
 	/** The recording's transcript: null for no speech, undefined when the scorer gave none. */
 	readonly transcript: Transcript | null | undefined;
-	readonly judgedPhonemeIds: ReadonlySet<PhonemeSymbolId>;
+	/** The sounds the judge will judge, as in `JudgeInput`. Omitted, every sound in the word. */
+	readonly judgedPhonemeIds?: ReadonlySet<PhonemeSymbolId>;
 	readonly targetAccent: TargetAccent;
 	/** Pronounces transcript words, so a homophone of the target counts as the target. */
 	readonly pronunciationsOf: PronunciationLookup;
@@ -68,8 +70,13 @@ const differentWord = (heard: readonly string[]): WordGate => ({ type: "differen
  *    `judged`, since naming that swap is the judge's job.
  * 5. The transcript is one other word: `different-word` only if the scoring agrees
  *    the word was off, with a low word accuracy, or a confident transcript and a
- *    low sound outside the judged ones. The transcript alone is never enough:
- *    Azure transcribed a clear *pool* as "pull" and a clear *bat* as "that".
+ *    low sound the judge can't call. The transcript alone is never enough: Azure
+ *    transcribed a clear *pool* as "pull" and a clear *bat* as "that".
+ *
+ * A low sound is the judge's to call when it is in the judged set, or, with every
+ * sound judged, when a contrast partner or an allowed variant scored at least as
+ * well as the target there. A low /p/ in *ships* said for *ship*, where /s/ won,
+ * still says the word was off.
  *
  * Without a transcript, steps 3 to 5 become one check: a low word accuracy.
  */
@@ -98,15 +105,15 @@ export function gateWord({
 	if (!isOneOtherWord) return JUDGED;
 
 	const isConfident = transcript.confidence >= margins.transcriptConfidence;
-	const otherSoundIsOff =
-		lowestOtherSoundAccuracy(evidence, judgedPhonemeIds) < margins.soundAccuracy;
-	return wordIsOff || (isConfident && otherSoundIsOff) ? differentWord(heard) : JUDGED;
+	const uncalledSoundIsOff =
+		lowestUncalledSoundAccuracy(evidence, judgedPhonemeIds, targetAccent) < margins.soundAccuracy;
+	return wordIsOff || (isConfident && uncalledSoundIsOff) ? differentWord(heard) : JUDGED;
 }
 
 function soundsLikeTarget(
 	word: string,
 	target: TargetWord,
-	judgedPhonemeIds: ReadonlySet<PhonemeSymbolId>,
+	judgedPhonemeIds: ReadonlySet<PhonemeSymbolId> | undefined,
 	targetAccent: TargetAccent,
 	pronunciationsOf: PronunciationLookup,
 ): boolean {
@@ -122,7 +129,7 @@ function soundsLikeTarget(
 function isSameOrOneJudgedSwap(
 	expected: readonly PhonemeSymbolId[],
 	heard: readonly PhonemeSymbolId[],
-	judgedPhonemeIds: ReadonlySet<PhonemeSymbolId>,
+	judgedPhonemeIds: ReadonlySet<PhonemeSymbolId> | undefined,
 	targetAccent: TargetAccent,
 ): boolean {
 	if (expected.length !== heard.length) return false;
@@ -131,21 +138,41 @@ function isSameOrOneJudgedSwap(
 	if (differences.length > 1) return false;
 	const [at] = differences;
 	return (
-		judgedPhonemeIds.has(expected[at]) &&
+		(judgedPhonemeIds?.has(expected[at]) ?? true) &&
 		contrastPartners(targetAccent, expected[at]).has(heard[at])
 	);
 }
 
-/** Over the sounds the judge won't judge, scored against the target itself. */
-function lowestOtherSoundAccuracy(
+/** Over the sounds the judge can't call, scored against the target itself. */
+function lowestUncalledSoundAccuracy(
 	evidence: WordEvidence,
-	judgedPhonemeIds: ReadonlySet<PhonemeSymbolId>,
+	judgedPhonemeIds: ReadonlySet<PhonemeSymbolId> | undefined,
+	targetAccent: TargetAccent,
 ): number {
+	const sounds = bestFittingPronunciation(evidence.pronunciations)?.sounds ?? [];
+	const phonemeIds = sounds.map((sound) => sound.phonemeId);
 	let lowest = Number.POSITIVE_INFINITY;
-	for (const sound of bestFittingPronunciation(evidence.pronunciations)?.sounds ?? []) {
-		if (sound.type !== "scored" || sound.accuracy === undefined) continue;
-		if (judgedPhonemeIds.has(sound.phonemeId)) continue;
-		lowest = Math.min(lowest, sound.accuracy);
-	}
+	sounds.forEach((sound, position) => {
+		if (sound.type !== "scored" || sound.accuracy === undefined) return;
+		const isCalled = judgedPhonemeIds
+			? judgedPhonemeIds.has(sound.phonemeId)
+			: heardAsPartnerOrVariant(sound, phonemeIds, position, targetAccent);
+		if (!isCalled) lowest = Math.min(lowest, sound.accuracy);
+	});
 	return lowest;
+}
+
+function heardAsPartnerOrVariant(
+	sound: SoundEvidence,
+	phonemeIds: readonly PhonemeSymbolId[],
+	position: number,
+	targetAccent: TargetAccent,
+): boolean {
+	const partners = contrastPartners(targetAccent, sound.phonemeId);
+	const variants = allowedVariants(targetAccent, phonemeIds, position);
+	return sound.rivals.some(
+		(rival) =>
+			(partners.has(rival.phonemeId) || variants.has(rival.phonemeId)) &&
+			rival.score >= sound.targetScore,
+	);
 }

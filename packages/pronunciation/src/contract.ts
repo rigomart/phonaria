@@ -88,7 +88,15 @@ export interface Scorer {
 
 export type SoundVerdict =
 	| { readonly type: "match" }
-	| { readonly type: "swapped"; readonly heard: PhonemeSymbolId }
+	| {
+			readonly type: "swapped";
+			readonly heard: PhonemeSymbolId;
+			/**
+			 * The dictionary word the target word becomes with only this sound swapped
+			 * for `heard`. Absent when that makes no word the judge was told about.
+			 */
+			readonly heardWord?: string;
+	  }
 	| { readonly type: "unclear"; readonly reason: UnclearReason };
 
 /**

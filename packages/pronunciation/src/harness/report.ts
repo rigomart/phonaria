@@ -1,10 +1,12 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
+import type { SoundVerdict } from "../contract";
 import type { JudgeMargins } from "../judge";
 import { WRONG_WORD_KINDS, type WrongWordKind } from "./cases";
 import {
 	type CaseResult,
 	evaluateCases,
 	type GroupMetrics,
+	type JudgedSounds,
 	type Metrics,
 	metricsByGroup,
 	type Rates,
@@ -45,6 +47,8 @@ export type CaseRow = {
 	readonly expectedHeard: PhonemeSymbolId;
 	readonly category: CaseResult["category"];
 	readonly verdict: string;
+	/** Other sounds judged `swapped`, as `ID as heard (word)`. */
+	readonly otherFlags: readonly string[];
 	readonly targetScore: number | null;
 	/** The three best rivals, as `ID score`. */
 	readonly rivals: readonly string[];
@@ -54,6 +58,7 @@ export type HarnessReport = {
 	readonly generatedAt: string;
 	readonly scorer: { readonly id: string; readonly settings: unknown };
 	readonly margins: JudgeMargins;
+	readonly judged: JudgedSounds;
 	readonly sources: readonly SourceSummary[];
 	readonly scoring: ScoringSummary;
 	/** Cases with no scorer result (offline cache misses or failed calls), left out of every metric. */
@@ -67,25 +72,28 @@ export function buildReport({
 	scored,
 	unscoredCases,
 	margins,
+	judged,
 	sweep,
 	...rest
 }: {
 	readonly generatedAt: string;
 	readonly scorer: HarnessReport["scorer"];
 	readonly margins: JudgeMargins;
+	readonly judged: JudgedSounds;
 	readonly sweep: readonly JudgeMargins[];
 	readonly sources: readonly SourceSummary[];
 	readonly scoring: ScoringSummary;
 	readonly scored: readonly ScoredCase[];
 	readonly unscoredCases: number;
 }): HarnessReport {
-	const results = evaluateCases(scored, margins);
+	const results = evaluateCases(scored, margins, judged);
 	return {
 		...rest,
 		margins,
+		judged,
 		unscoredCases,
 		groups: metricsByGroup(results),
-		sweep: sweepMargins(scored, sweep),
+		sweep: sweepMargins(scored, sweep, judged),
 		cases: results.map(caseRow),
 	};
 }
@@ -100,9 +108,13 @@ function verdictLabel(outcome: CaseResult["outcome"]): string {
 			return outcome.reason;
 		case "judged":
 			return outcome.verdict.type === "swapped"
-				? `swapped ${outcome.verdict.heard}`
+				? `swapped ${heardLabel(outcome.verdict)}`
 				: outcome.verdict.type;
 	}
+}
+
+function heardLabel({ heard, heardWord }: Extract<SoundVerdict, { type: "swapped" }>): string {
+	return heardWord ? `${heard} (${heardWord})` : heard;
 }
 
 function caseRow({ case: harnessCase, sourceId, outcome, category }: CaseResult): CaseRow {
@@ -120,6 +132,12 @@ function caseRow({ case: harnessCase, sourceId, outcome, category }: CaseResult)
 		expectedHeard: harnessCase.expectedHeard,
 		category,
 		verdict,
+		otherFlags:
+			outcome.type === "rejected"
+				? []
+				: outcome.otherFlags.flatMap(({ phonemeId, verdict: other }) =>
+						other.type === "swapped" ? [`${phonemeId} as ${heardLabel(other)}`] : [],
+					),
 		targetScore: sound ? round(sound.targetScore) : null,
 		rivals: sound
 			? [...sound.rivals]
@@ -149,6 +167,8 @@ function table(header: readonly string[], rows: readonly (readonly string[])[]):
 const RATE_HEADER = [
 	"Correct",
 	"False flag",
+	"Recordings flagged",
+	"Other sound flagged",
 	"Correct unclear",
 	"Pairs",
 	"Swap named",
@@ -159,10 +179,18 @@ const RATE_HEADER = [
 	"False reject",
 ];
 
-function rateCells({ correct, swap, rates }: Metrics): string[] {
+function rateCells({
+	correct,
+	swap,
+	correctRecordings,
+	otherSoundFlagged,
+	rates,
+}: Metrics): string[] {
 	return [
 		String(correct.total),
 		`${percent(rates.falseFlag)} (${correct["false-flag"]})`,
+		`${percent(rates.falseFlagRecordings)} (${correctRecordings.flagged} of ${correctRecordings.total})`,
+		`${percent(rates.otherSoundFlagged)} (${otherSoundFlagged})`,
 		percent(rates.correctUnclear),
 		String(swap.total),
 		`${percent(rates.swapNamed)} (${swap.named})`,
@@ -202,6 +230,11 @@ function topCounts(counts: Readonly<Record<string, number>>, limit = 3): string 
 	return entries.length === 0 ? "–" : entries.map(([id, count]) => `${id} ${count}`).join(", ");
 }
 
+const JUDGED_LABEL: Record<JudgedSounds, string> = {
+	every: "every sound in the word judged",
+	contrast: "only the contrast's two sounds judged",
+};
+
 function marginsLabel({ match, swap, matchFloor }: JudgeMargins): string {
 	return `match ${match}, swap ${swap}, floor ${matchFloor}`;
 }
@@ -224,11 +257,11 @@ export function renderMarkdown(report: HarnessReport): string {
 	lines.push(
 		"# Pronunciation eval report",
 		"",
-		`Generated ${report.generatedAt} with scorer \`${report.scorer.id}\` (${JSON.stringify(report.scorer.settings)}) and judge margins ${marginsLabel(report.margins)}.`,
+		`Generated ${report.generatedAt} with scorer \`${report.scorer.id}\` (${JSON.stringify(report.scorer.settings)}), judge margins ${marginsLabel(report.margins)}, and ${JUDGED_LABEL[report.judged]}.`,
 		"",
 		`Scoring: ${scoring.uniqueRequests} unique requests, ${scoring.cacheHits} from cache, ${scoring.liveCalls} live calls (${scoring.attempts} attempts, ${scoring.throttled} throttled), ${scoring.uncached} uncached, ${scoring.failed} failed. ${report.unscoredCases} cases had no scorer result and are left out.`,
 		"",
-		"Correct: a recording judged against its own word; false flag means judged `swapped`. Pairs: the partner word's recording judged against the target; swap named means `swapped` with the partner's sound. False reject: correct or pair recordings the word gate stopped before judging.",
+		"Correct: a recording judged against its own word; false flag means a sound judged `swapped`, counted per case, and recordings flagged counts each source's word once though it is in several contrasts. Pairs: the partner word's recording judged against the target; swap named means `swapped` with the partner's sound. Other sound flagged: correct or pair recordings with a sound besides the contrast one judged `swapped`. False reject: correct or pair recordings the word gate stopped before judging.",
 		"",
 		"## Headline",
 		"",
@@ -253,6 +286,19 @@ export function renderMarkdown(report: HarnessReport): string {
 		);
 	}
 	lines.push(
+		"## Falsely flagged sounds",
+		"",
+		"Sounds said as the target but judged `swapped`, as target as heard: every sound of a correct recording, and every sound but the contrast one of a pair recording.",
+		"",
+		table(
+			["Group", "Flags", "Most often"],
+			groups.map((id) => {
+				const { falselyFlagged } = report.groups[id].overall;
+				const total = Object.values(falselyFlagged).reduce((sum, count) => sum + count, 0);
+				return [id, String(total), topCounts(falselyFlagged, 8)];
+			}),
+		),
+		"",
 		"## Evidence for the judged sound",
 		"",
 		"Share of scored judged sounds, before margins: no rivals at all, partner listed among the rivals, and who scored highest.",

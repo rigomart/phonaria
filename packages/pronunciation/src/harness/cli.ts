@@ -13,7 +13,7 @@ import {
 	targetWordFor,
 } from "./cases";
 import { importInvestigation } from "./investigation";
-import type { ScoredCase } from "./metrics";
+import type { JudgedSounds, ScoredCase } from "./metrics";
 import { buildReport, renderMarkdown, type SourceSummary } from "./report";
 import { mapWithConcurrency, type ScoringJob, scoreJobs } from "./scoring";
 import {
@@ -34,7 +34,8 @@ const USAGE = `Usage:
   bun run harness words [--json]
   bun run harness run [--catalog] [--audio-dir=<dir>] [--tts-dir=[name=]<dir>]... [--voices-dir=<dir>]
                       [--clips=<manifest.json>]... [--offline] [--concurrency=4]
-                      [--contrasts=i-ix,th-s] [--report=report] [--max-throttled=100]
+                      [--contrasts=i-ix,th-s] [--judged=every|contrast] [--report=report]
+                      [--max-throttled=100]
   bun run harness import-investigation <dir>
 
 Paths are relative to packages/pronunciation. With no source given, run uses --catalog.`;
@@ -55,6 +56,7 @@ type RunOptions = {
 	offline: boolean;
 	concurrency: number;
 	contrasts?: string[];
+	judged: JudgedSounds;
 	report: string;
 	maxThrottled: number;
 };
@@ -66,6 +68,7 @@ function parseRunOptions(args: readonly string[]): RunOptions {
 		clips: [],
 		offline: false,
 		concurrency: 4,
+		judged: "every",
 		report: "report",
 		maxThrottled: 100,
 	};
@@ -79,7 +82,9 @@ function parseRunOptions(args: readonly string[]): RunOptions {
 		else if (flag === "--clips" && value) options.clips.push(value);
 		else if (flag === "--report" && /^[\w.-]+$/.test(value)) options.report = value;
 		else if (flag === "--contrasts" && value) options.contrasts = value.split(",");
-		else if ((flag === "--concurrency" || flag === "--max-throttled") && /^\d+$/.test(value)) {
+		else if (flag === "--judged" && (value === "every" || value === "contrast")) {
+			options.judged = value;
+		} else if ((flag === "--concurrency" || flag === "--max-throttled") && /^\d+$/.test(value)) {
 			if (flag === "--concurrency") options.concurrency = Math.max(1, Number(value));
 			else options.maxThrottled = Number(value);
 		} else throw new Error(`Unknown or incomplete argument: ${arg}\n\n${USAGE}`);
@@ -196,7 +201,7 @@ async function runHarness(options: RunOptions) {
 	});
 	const offline = options.offline || !process.env.AZURE_SPEECH_KEY;
 	console.error(
-		`${recordings.length} recordings, ${jobs.length} cases${offline ? ", offline (cache only)" : ""}.`,
+		`${recordings.length} recordings, ${jobs.length} cases, ${options.judged === "every" ? "every sound" : "contrast sounds only"} judged${offline ? ", offline (cache only)" : ""}.`,
 	);
 	const { results, stats } = await scoreJobs(scorer, jobs, {
 		cacheDir: path.join(OUTPUT_DIR, "cache"),
@@ -259,6 +264,7 @@ async function runHarness(options: RunOptions) {
 		generatedAt: new Date().toISOString(),
 		scorer: { id: scorer.id, settings: scorer.settings },
 		margins: LENIENT_MARGINS,
+		judged: options.judged,
 		sweep: SWEEP,
 		sources,
 		scoring: {
@@ -284,7 +290,7 @@ async function runHarness(options: RunOptions) {
 		const { rates } = group.overall;
 		const pct = (value: number | null) => (value === null ? "–" : `${(value * 100).toFixed(1)}%`);
 		console.log(
-			`${id.padEnd(14)} false flag ${pct(rates.falseFlag)}, swap named ${pct(rates.swapNamed)}, unclear ${pct(rates.unclear)}, no evidence ${pct(rates.noEvidence)}`,
+			`${id.padEnd(14)} false flag ${pct(rates.falseFlag)} (recordings ${pct(rates.falseFlagRecordings)}), swap named ${pct(rates.swapNamed)}, unclear ${pct(rates.unclear)}, no evidence ${pct(rates.noEvidence)}`,
 		);
 	}
 	for (const [id, load] of loads) {

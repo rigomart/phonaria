@@ -3,7 +3,7 @@ import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-1
 import { describe, expect, it } from "vitest";
 import { azureEvidenceFromResponse } from "./azure/evidence";
 import { MISCUE_FIXTURES } from "./azure/fixtures/miscue";
-import type { ScoringRequest, Transcript, WordEvidence } from "./contract";
+import type { RivalScore, ScoringRequest, Transcript, WordEvidence } from "./contract";
 import { gateWord, type PronunciationLookup, type WordGateInput } from "./word-gate";
 
 const SHIP: ScoringRequest = {
@@ -25,21 +25,27 @@ function gate(overrides: Partial<WordGateInput> & Pick<WordGateInput, "evidence"
 	});
 }
 
-function gateFixture(said: keyof typeof MISCUE_FIXTURES) {
+function gateFixture(said: keyof typeof MISCUE_FIXTURES, judgedPhonemeIds = JUDGED) {
 	const { assessment, recognition } = MISCUE_FIXTURES[said];
 	const recording = azureEvidenceFromResponse(assessment, SHIP, recognition);
-	return gate({ evidence: recording.words[0], transcript: recording.transcript });
+	return gate({ evidence: recording.words[0], transcript: recording.transcript, judgedPhonemeIds });
 }
 
-/** Ship's evidence with the given accuracies for the word and for SH, IX and P. */
-function shipEvidence(word: number, [sh, ix, p]: readonly [number, number, number]): WordEvidence {
-	const sound = (phonemeId: PhonemeSymbolId, accuracy: number) => ({
+/**
+ * Ship's evidence with the given accuracies for the word and for SH, IX and P.
+ */
+function shipEvidence(
+	word: number,
+	[sh, ix, p]: readonly [number, number, number],
+	rivals: Partial<Record<"SH" | "IX" | "P", RivalScore[]>> = {},
+): WordEvidence {
+	const sound = (phonemeId: "SH" | "IX" | "P", accuracy: number) => ({
 		type: "scored" as const,
 		phonemeId,
 		startSeconds: 0,
 		endSeconds: 0.1,
 		targetScore: 1,
-		rivals: [],
+		rivals: rivals[phonemeId] ?? [],
 		accuracy,
 	});
 	return {
@@ -75,6 +81,89 @@ describe("gateWord on saved Azure responses", () => {
 
 	it("hears nothing in silence", () => {
 		expect(gateFixture("silence")).toEqual({ type: "not-heard" });
+	});
+});
+
+describe("gateWord on saved Azure responses, with every sound judged", () => {
+	const every = (said: keyof typeof MISCUE_FIXTURES) => gateFixture(said, undefined);
+
+	it("decides as it does with the contrast sounds judged", () => {
+		expect(every("ship")).toEqual({ type: "judged" });
+		expect(every("sheep")).toEqual({ type: "judged" });
+		expect(every("kid")).toEqual({ type: "different-word", heard: ["kid"] });
+		expect(every("ships")).toEqual({ type: "different-word", heard: ["ships"] });
+		expect(every("a ship")).toEqual({ type: "different-word", heard: ["a", "ship"] });
+		expect(every("silence")).toEqual({ type: "not-heard" });
+	});
+});
+
+describe("gateWord with every sound judged", () => {
+	const every = (overrides: Pick<WordGateInput, "evidence" | "transcript">) =>
+		gate({ ...overrides, judgedPhonemeIds: undefined });
+
+	it("judges a word one contrast swap away on any sound, for the judge to name", () => {
+		expect(
+			every({ evidence: shipEvidence(0.9, [0.4, 0.9, 0.5]), transcript: heard(0.9, "chip") }),
+		).toEqual({ type: "judged" });
+	});
+
+	it("rejects another word with a low sound where no partner or variant scored as well", () => {
+		const lowP = shipEvidence(0.8, [0.9, 0.9, 0.5], { P: [{ phonemeId: "S", score: 1 }] });
+		expect(every({ evidence: lowP, transcript: heard(0.9, "shift") })).toEqual({
+			type: "different-word",
+			heard: ["shift"],
+		});
+		const lowIX = shipEvidence(0.8, [0.9, 0.1, 0.9]);
+		expect(every({ evidence: lowIX, transcript: heard(0.9, "shop") })).toEqual({
+			type: "different-word",
+			heard: ["shop"],
+		});
+	});
+
+	it("leaves a low sound to the judge when a contrast partner scored at least as well", () => {
+		const partnerTop = shipEvidence(0.8, [0.9, 0.3, 0.9], {
+			IX: [
+				{ phonemeId: "E", score: 1 },
+				{ phonemeId: "I", score: 1 },
+			],
+		});
+		expect(every({ evidence: partnerTop, transcript: heard(0.9, "shep") })).toEqual({
+			type: "judged",
+		});
+	});
+
+	it("leaves a low sound to the judge when an allowed variant scored at least as well", () => {
+		const sound = (phonemeId: PhonemeSymbolId, accuracy: number, rivals: RivalScore[] = []) => ({
+			type: "scored" as const,
+			phonemeId,
+			startSeconds: 0,
+			endSeconds: 0.1,
+			targetScore: rivals.length > 0 ? 0.2 : 1,
+			rivals,
+			accuracy,
+		});
+		const water = (t: ReturnType<typeof sound>): WordEvidence => ({
+			accuracy: 0.8,
+			pronunciations: [
+				{
+					pronunciationIndex: 0,
+					sounds: [sound("W", 0.9), sound("O", 0.9), t, sound("ER", 0.9)],
+				},
+			],
+		});
+		const target = {
+			text: "water",
+			acceptedPronunciations: [["W", "O", "T", "ER"]] as PhonemeSymbolId[][],
+		};
+		const gateWater = (evidence: WordEvidence) =>
+			gate({ target, evidence, transcript: heard(0.9, "wanna"), judgedPhonemeIds: undefined });
+		expect(gateWater(water(sound("T", 0.3, [{ phonemeId: "RX", score: 1 }])))).toEqual({
+			type: "judged",
+		});
+		expect(gateWater(water(sound("T", 0.3, [{ phonemeId: "N", score: 1 }])))).toEqual({
+			type: "different-word",
+			heard: ["wanna"],
+		});
 	});
 });
 

@@ -164,3 +164,41 @@ The run made 2,724 assessment requests (about 83 minutes of audio) four at a tim
 re-sent by hand. Azure returned no throttling and no errors. The two extra voices took 800
 synthesis requests. Reports and the response cache are in the ignored
 `packages/pronunciation/output/`, so a rerun or a judge change costs no calls.
+
+## Every sound judged (#333)
+
+Run on 2026-10-20, offline from a fresh cache, with the same margins. Since #345 the scorer sends
+`EnableMiscue` and a plain recognition with each assessment, so the cache was rebuilt with 2,724
+live requests (30 failed and were re-sent). Judged the old way, on the contrast sound only, the new
+answers barely move: false flag 0.9%, swap named 89.8%. No evidence rose from 0.2% to 0.5%
+(Aria 1.1%): more words came back with no phonemes.
+
+The judge now rates every sound in the word against its own contrast partners. The en-us variants
+in `EnglishPhonemeAllophones` count as `match`: the flap for /t/ and /d/ between vowels, and /p/ and
+/k/ after /s/ heard as /b/ and /ɡ/. A recording counts as flagged when any of its sounds is judged
+`swapped`, once per word and voice:
+
+| Voice | Recordings flagged, contrast sound | Recordings flagged, every sound | Swap named, every sound |
+| --- | --- | --- | --- |
+| Jenny | 0.8% (3 of 400) | 1.0% (4) | 88.4% |
+| Guy | 2.3% (9) | **4.0% (16)** | 87.0% |
+| Aria | 0.3% (1) | 0.3% (1) | 94.7% |
+
+**Guy misses the 2% target with the single margins.** Of the 41 falsely flagged sounds across the
+three voices, 34 are Guy's, and they are the vowel blur described above, now on sounds outside the
+contrast: /ɛ/ heard as /æ/ 16 times (*bet*, *pet*, *met*, *vet*), /æ/ as /ɑ/ 4 and as /ʌ/ 3, /i/
+as /ɪ/ 4. A single swap margin of 0.5 brings Guy to 1.4% but swap named down to 80.7%. Margins per
+sound are #335's job.
+
+Two choices to know about:
+
+- **Accepted variants that equal a contrast partner.** The flap is heard as /d/ for /t/ (and as
+  /t/ for /d/), and /p k/ after /s/ as /b ɡ/. Those are partners in t-d, p-b and k-g. English
+  doesn't contrast them in those positions, and a test checks that no catalog pair differs on such
+  a sound.
+- **The flap is accepted before a stressed vowel too** (*adopt*), where speakers don't flap,
+  because the judged pronunciations carry no stress. This can only miss a mistake, never invent one.
+
+The word gate now lets a single partner swap through on any sound, so *chip* for *ship* reaches
+the judge. False rejects on the catalog went from 22 to 16, with one new one: Guy's *sit*,
+transcribed "set".
