@@ -1,0 +1,240 @@
+{
+	"RecognitionStatus": "Success",
+	"Offset": 1000000,
+	"Duration": 7300000,
+	"DisplayText": "Water.",
+	"SNR": 44.85486,
+	"NBest": [
+		{
+			"Confidence": 0.9726317,
+			"Lexical": "water",
+			"ITN": "water",
+			"MaskedITN": "water",
+			"Display": "Water.",
+			"AccuracyScore": 97.0,
+			"FluencyScore": 100.0,
+			"CompletenessScore": 100.0,
+			"PronScore": 98.2,
+			"Words": [
+				{
+					"Word": "water",
+					"Offset": 1000000,
+					"Duration": 7300000,
+					"Confidence": 0.0,
+					"AccuracyScore": 97.0,
+					"ErrorType": "None",
+					"Syllables": [
+						{
+							"Syllable": "wɔ",
+							"Grapheme": "wa",
+							"Offset": 1000000,
+							"Duration": 2700000,
+							"AccuracyScore": 100.0
+						},
+						{
+							"Syllable": "tɚ",
+							"Grapheme": "ter",
+							"Offset": 3800000,
+							"Duration": 4500000,
+							"AccuracyScore": 93.0
+						}
+					],
+					"Phonemes": [
+						{
+							"Phoneme": "w",
+							"Offset": 1000000,
+							"Duration": 1900000,
+							"AccuracyScore": 100.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "w",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "g",
+									"Score": 10.0
+								},
+								{
+									"Phoneme": "ɔ",
+									"Score": 7.0
+								},
+								{
+									"Phoneme": "oʊ",
+									"Score": 3.0
+								},
+								{
+									"Phoneme": "ɹ",
+									"Score": 2.0
+								},
+								{
+									"Phoneme": "l",
+									"Score": 2.0
+								},
+								{
+									"Phoneme": "æ",
+									"Score": 2.0
+								},
+								{
+									"Phoneme": "b",
+									"Score": 2.0
+								},
+								{
+									"Phoneme": "k",
+									"Score": 2.0
+								},
+								{
+									"Phoneme": "d",
+									"Score": 2.0
+								}
+							]
+						},
+						{
+							"Phoneme": "ɔ",
+							"Offset": 3000000,
+							"Duration": 700000,
+							"AccuracyScore": 100.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "ɔ",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "ɑ",
+									"Score": 65.0
+								},
+								{
+									"Phoneme": "æ",
+									"Score": 21.0
+								},
+								{
+									"Phoneme": "w",
+									"Score": 12.0
+								},
+								{
+									"Phoneme": "t",
+									"Score": 2.0
+								},
+								{
+									"Phoneme": "ɹ",
+									"Score": 0.0
+								},
+								{
+									"Phoneme": "l",
+									"Score": 0.0
+								},
+								{
+									"Phoneme": "ʌ",
+									"Score": 0.0
+								},
+								{
+									"Phoneme": "aɪ",
+									"Score": 0.0
+								},
+								{
+									"Phoneme": "ʊ",
+									"Score": 0.0
+								}
+							]
+						},
+						{
+							"Phoneme": "t",
+							"Offset": 3800000,
+							"Duration": 1100000,
+							"AccuracyScore": 100.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "t",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "ɑ",
+									"Score": 16.0
+								},
+								{
+									"Phoneme": "ɔ",
+									"Score": 7.0
+								},
+								{
+									"Phoneme": "d",
+									"Score": 6.0
+								},
+								{
+									"Phoneme": "æ",
+									"Score": 1.0
+								},
+								{
+									"Phoneme": "ʌ",
+									"Score": 0.0
+								},
+								{
+									"Phoneme": "ɹ",
+									"Score": 0.0
+								},
+								{
+									"Phoneme": "l",
+									"Score": 0.0
+								},
+								{
+									"Phoneme": "ə",
+									"Score": 0.0
+								},
+								{
+									"Phoneme": "aɪ",
+									"Score": 0.0
+								}
+							]
+						},
+						{
+							"Phoneme": "ɚ",
+							"Offset": 5000000,
+							"Duration": 3300000,
+							"AccuracyScore": 91.0,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "ɚ",
+									"Score": 100.0
+								},
+								{
+									"Phoneme": "ɝ",
+									"Score": 28.0
+								},
+								{
+									"Phoneme": "t",
+									"Score": 5.0
+								},
+								{
+									"Phoneme": "oʊ",
+									"Score": 4.0
+								},
+								{
+									"Phoneme": "n",
+									"Score": 4.0
+								},
+								{
+									"Phoneme": "d",
+									"Score": 3.0
+								},
+								{
+									"Phoneme": "l",
+									"Score": 2.0
+								},
+								{
+									"Phoneme": "i",
+									"Score": 2.0
+								},
+								{
+									"Phoneme": "m",
+									"Score": 2.0
+								},
+								{
+									"Phoneme": "k",
+									"Score": 1.0
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

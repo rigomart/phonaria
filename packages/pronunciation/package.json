@@ -2,7 +2,7 @@
 	"name": "@phonaria/pronunciation",
 	"version": "0.1.0",
 	"private": true,
-	"description": "Scoring contract and judge for spoken pronunciation (source-imported, no build step).",
+	"description": "Scoring contract, judge and scorers for spoken pronunciation (source-imported, no build step).",
 	"sideEffects": false,
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",
@@ -13,7 +13,8 @@
 	"scripts": {
 		"lint": "oxlint --fix && oxfmt",
 		"check-types": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run",
+		"probe": "bun --env-file=.env src/azure/probe.ts"
 	},
 	"dependencies": {
 		"@phonaria/phonetics-data": "workspace:*"
