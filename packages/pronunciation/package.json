@@ -14,7 +14,8 @@
 		"lint": "oxlint --fix && oxfmt",
 		"check-types": "tsc --noEmit",
 		"test": "vitest run",
-		"probe": "bun --env-file=.env src/azure/probe.ts"
+		"probe": "bun --env-file=.env src/azure/probe.ts",
+		"harness": "bun --env-file=.env src/harness/cli.ts"
 	},
 	"dependencies": {
 		"@phonaria/phonetics-data": "workspace:*"
