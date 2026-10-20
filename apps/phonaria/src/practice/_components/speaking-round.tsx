@@ -73,6 +73,13 @@ function useAttemptLogger(word: string): AttemptLogger {
 			next: (action) => current.current?.next(action),
 			leave: () => current.current?.leave(),
 			drop: () => current.current?.drop(),
+			reporter: () => {
+				const started = current.current;
+				const report = started?.reporter();
+				return (log) => {
+					if (started && started === current.current) report?.(log);
+				};
+			},
 		}),
 		[],
 	);
@@ -99,10 +106,11 @@ export function SpeakingRound({
 		const id = attemptCount.current;
 		dispatch({ type: "submitted", id });
 		cancel();
+		const report = logger.reporter();
 		void scoreAttempt(prompt, recording.audio, (input, init) => fetch(input, init)).then(
 			(result) => {
 				dispatch({ type: "scored", id, result });
-				if (result.type === "outcome" && id === attemptCount.current) logger.scored(result.log);
+				if (result.type === "outcome" && id === attemptCount.current) report(result.log);
 			},
 		);
 	}, [recording, prompt, cancel, logger]);

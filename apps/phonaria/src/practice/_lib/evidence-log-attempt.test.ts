@@ -213,6 +213,36 @@ describe("pageAttemptLogger", () => {
 		expect(send).toHaveBeenCalledTimes(1);
 	});
 
+	it("drops a result that started before the page was hidden and restored", async () => {
+		const { logger: attempts, send, fire } = page();
+		let finishScoring = (_log: AttemptLog) => {};
+		const report = attempts.reporter();
+		const scoring = new Promise<AttemptLog>((resolve) => {
+			finishScoring = resolve;
+		}).then(report);
+
+		fire("pagehide");
+		fire("pageshow", true);
+		finishScoring(LOG);
+		await scoring;
+		attempts.next("retried");
+		attempts.next("moved-on");
+		expect(send).not.toHaveBeenCalled();
+
+		attempts.reporter()(LOG);
+		attempts.next("moved-on");
+		expect(send).toHaveBeenCalledTimes(1);
+	});
+
+	it("reports to the logger that was current, while it still is", () => {
+		const { logger: attempts, send } = page();
+
+		attempts.reporter()(LOG);
+		attempts.next("retried");
+
+		expect(send).toHaveBeenCalledTimes(1);
+	});
+
 	it("keeps its logger through a first page load's pageshow, and stops on close", () => {
 		const { logger: attempts, send, opened, fire, close } = page();
 

@@ -23,6 +23,12 @@ export type AttemptLogger = {
 	leave(): void;
 	/** Sharing was turned off: forgets the waiting attempt. */
 	drop(): void;
+	/**
+	 * Where to report a scoring request's result, taken when the request starts. It
+	 * reaches only the logger current then, so a result that outlives that logger
+	 * (the page was hidden, restored or unmounted) is dropped.
+	 */
+	reporter(): (log: AttemptLog | null) => void;
 };
 
 export function createAttemptLogger({
@@ -55,12 +61,14 @@ export function createAttemptLogger({
 		});
 	}
 
+	function scored(log: AttemptLog | null) {
+		next("retried");
+		const grant = currentGrant();
+		if (log && !left && grant) pending = { ...log, attemptedAt: now(), grant };
+	}
+
 	return {
-		scored(log) {
-			next("retried");
-			const grant = currentGrant();
-			if (log && !left && grant) pending = { ...log, attemptedAt: now(), grant };
-		},
+		scored,
 		next,
 		leave() {
 			next("moved-on");
@@ -69,6 +77,7 @@ export function createAttemptLogger({
 		drop() {
 			pending = null;
 		},
+		reporter: () => scored,
 	};
 }
 
@@ -100,6 +109,13 @@ export function pageAttemptLogger(
 			next: (action) => current?.next(action),
 			leave: () => current?.leave(),
 			drop: () => current?.drop(),
+			reporter: () => {
+				const started = current;
+				const report = started?.reporter();
+				return (log) => {
+					if (started && started === current) report?.(log);
+				};
+			},
 		},
 		close() {
 			page.removeEventListener("pagehide", hidden);
