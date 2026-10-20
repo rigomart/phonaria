@@ -48,7 +48,6 @@ export function createAttemptLogger({
 
 	return {
 		scored(log) {
-			// Scoring again settles the attempt before it as a retry.
 			next("retried");
 			if (log && isEnabled()) pending = { ...log, attemptedAt: now() };
 		},

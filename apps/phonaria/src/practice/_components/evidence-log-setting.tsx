@@ -1,10 +1,6 @@
 "use client";
 
-/**
- * The opt-in for sharing scoring evidence (#336), off until the learner turns it
- * on, and remembered in this browser. It sits under the recording notice so it's
- * seen before the first recording, and can be changed at any time.
- */
+/** The opt-in for sharing scoring evidence (#336), off until the learner turns it on and remembered in this browser. */
 import { Switch } from "@phonaria/ui/components/switch";
 import { useEffect, useId } from "react";
 import { EvidenceLogNotice } from "@/lib/speech/evidence-log";

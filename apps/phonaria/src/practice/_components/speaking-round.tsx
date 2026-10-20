@@ -40,11 +40,7 @@ function useWordSyllables(word: string): TranscribedSyllable[] | null | undefine
 	return loaded?.word === word ? loaded.syllables : undefined;
 }
 
-/**
- * Sends each scored attempt to the evidence log, when sharing is on, once the
- * learner tries again or moves on. Moving on is the next word or the list of pairs,
- * both of which unmount the round, or leaving the page.
- */
+/** Moving on unmounts the round; closing the page fires pagehide instead. */
 function useAttemptLogger(word: string): AttemptLogger {
 	const [logger] = useState(() =>
 		createAttemptLogger({

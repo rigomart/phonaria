@@ -95,7 +95,6 @@ function shipSounds(vowel: SoundResult["verdict"]): SoundResult[] {
 	];
 }
 
-/** The result without its evidence log record, which has tests of its own. */
 function withoutLog(result: AttemptResult) {
 	return result.type === "outcome" ? { type: result.type, outcome: result.outcome } : result;
 }
@@ -362,10 +361,10 @@ describe("scoreAttempt's word gate", () => {
 				judgement: expect.objectContaining({ pronunciationIndex: 0 }),
 			},
 		});
-		// Every sound is judged, so the log names no judged subset.
-		expect(result.type === "outcome" && result.log?.verdicts).not.toHaveProperty(
-			"judgedPhonemeIds",
-		);
+		expect(
+			result.type === "outcome" && result.log?.verdicts,
+			"every sound is judged, so the log names no judged subset",
+		).not.toHaveProperty("judgedPhonemeIds");
 	});
 
 	it("logs a recording of another word with the gate's outcome and no judgement", async () => {

@@ -68,8 +68,8 @@ export type SpeakingFailure =
 	| "scoring_failed";
 
 /**
- * What the opt-in evidence log needs from an attempt: the evidence, gate and
- * judgement this attempt was shown from. Null when the scorer returned no word.
+ * The evidence, gate and judgement an attempt was shown from, for the opt-in
+ * evidence log. `AttemptResult.log` is null when the scorer returned no word.
  */
 export type AttemptLog = Pick<EvidenceLogPayload, "evidence" | "verdicts">;
 

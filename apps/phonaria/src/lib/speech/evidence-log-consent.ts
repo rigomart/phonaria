@@ -1,9 +1,6 @@
 import { create } from "zustand";
 
-/**
- * Whether the learner chose to share scoring evidence (#336), kept in this browser
- * only. Off until they turn it on, and off whenever storage can't say otherwise.
- */
+/** The localStorage key for the evidence log opt-in (#336). */
 export const EVIDENCE_LOG_CONSENT_STORAGE_KEY = "evidence-log-consent";
 const GIVEN = "on";
 
@@ -24,7 +21,6 @@ function writeStoredConsent(enabled: boolean) {
 		if (enabled) globalThis.localStorage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, GIVEN);
 		else globalThis.localStorage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY);
 	} catch (error) {
-		// Blocked storage: the choice still holds for this page view.
 		console.warn("evidence log consent: could not save", error);
 	}
 }
