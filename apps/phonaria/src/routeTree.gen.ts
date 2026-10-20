@@ -23,6 +23,7 @@ import { Route as IpaChartVowelsRouteImport } from './routes/ipa-chart/vowels'
 import { Route as PracticeIndexRouteImport } from './routes/practice.index'
 import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
 import { Route as PracticeMinimalPairsRouteImport } from './routes/practice_.minimal-pairs'
+import { Route as ApiSpeechEvidenceLogRouteImport } from './routes/api.speech.evidence-log'
 import { Route as ApiSpeechScoreRouteImport } from './routes/api.speech.score'
 
 const IndexRoute = IndexRouteImport.update({
@@ -95,6 +96,11 @@ const PracticeMinimalPairsRoute = PracticeMinimalPairsRouteImport.update({
   path: '/practice/minimal-pairs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSpeechEvidenceLogRoute = ApiSpeechEvidenceLogRouteImport.update({
+  id: '/api/speech/evidence-log',
+  path: '/api/speech/evidence-log',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSpeechScoreRoute = ApiSpeechScoreRouteImport.update({
   id: '/api/speech/score',
   path: '/api/speech/score',
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/': typeof PracticeIndexRoute
+  '/api/speech/evidence-log': typeof ApiSpeechEvidenceLogRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
 }
 export interface FileRoutesByTo {
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/ipa-chart': typeof IpaChartIndexRoute
   '/practice': typeof PracticeIndexRoute
+  '/api/speech/evidence-log': typeof ApiSpeechEvidenceLogRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
 }
 export interface FileRoutesById {
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/practice_/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/': typeof PracticeIndexRoute
+  '/api/speech/evidence-log': typeof ApiSpeechEvidenceLogRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
 }
 export interface FileRouteTypes {
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/practice/minimal-pairs'
     | '/ipa-chart/'
     | '/practice/'
+    | '/api/speech/evidence-log'
     | '/api/speech/score'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/practice/minimal-pairs'
     | '/ipa-chart'
     | '/practice'
+    | '/api/speech/evidence-log'
     | '/api/speech/score'
   id:
     | '__root__'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/practice_/minimal-pairs'
     | '/ipa-chart/'
     | '/practice/'
+    | '/api/speech/evidence-log'
     | '/api/speech/score'
   fileRoutesById: FileRoutesById
 }
@@ -218,6 +230,7 @@ export interface RootRouteChildren {
   IpaChartVowelsRoute: typeof IpaChartVowelsRoute
   PracticeMinimalPairsRoute: typeof PracticeMinimalPairsRoute
   IpaChartIndexRoute: typeof IpaChartIndexRoute
+  ApiSpeechEvidenceLogRoute: typeof ApiSpeechEvidenceLogRoute
   ApiSpeechScoreRoute: typeof ApiSpeechScoreRoute
 }
 
@@ -321,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticeMinimalPairsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/speech/evidence-log': {
+      id: '/api/speech/evidence-log'
+      path: '/api/speech/evidence-log'
+      fullPath: '/api/speech/evidence-log'
+      preLoaderRoute: typeof ApiSpeechEvidenceLogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/speech/score': {
       id: '/api/speech/score'
       path: '/api/speech/score'
@@ -358,6 +378,7 @@ const rootRouteChildren: RootRouteChildren = {
   IpaChartVowelsRoute: IpaChartVowelsRoute,
   PracticeMinimalPairsRoute: PracticeMinimalPairsRoute,
   IpaChartIndexRoute: IpaChartIndexRoute,
+  ApiSpeechEvidenceLogRoute: ApiSpeechEvidenceLogRoute,
   ApiSpeechScoreRoute: ApiSpeechScoreRoute,
 }
 export const routeTree = rootRouteImport

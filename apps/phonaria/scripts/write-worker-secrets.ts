@@ -23,6 +23,8 @@ export const WORKER_SECRET_KEYS = [
 	"OPENROUTER_API_KEY",
 	"AZURE_SPEECH_KEY",
 	"AZURE_SPEECH_REGION",
+	"EVIDENCE_LOG_DATABASE_URL",
+	"EVIDENCE_LOG_AUTH_TOKEN",
 ] as const;
 
 export const WORKER_SECRETS_FILE = ".wrangler/worker-secrets.json";

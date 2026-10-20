@@ -51,7 +51,7 @@ describe("Cloudflare speech scoring rate limit", () => {
 		);
 
 		expect(environments.map(speechLimiter)).not.toContain(undefined);
-		expect(namespaces).toHaveLength(16);
+		expect(namespaces).toHaveLength(20);
 		expect(new Set(namespaces).size).toBe(namespaces.length);
 	});
 });

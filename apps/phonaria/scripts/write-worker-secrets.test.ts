@@ -10,6 +10,7 @@ describe("write-worker-secrets", () => {
 			OPENROUTER_API_KEY: "  ",
 			AZURE_SPEECH_KEY: "speech-key",
 			AZURE_SPEECH_REGION: "eastus",
+			EVIDENCE_LOG_DATABASE_URL: "libsql://evidence.example",
 			CLOUDFLARE_API_TOKEN: "never-a-worker-secret",
 			SITE_URL: "https://phonaria.example",
 		});
@@ -19,8 +20,9 @@ describe("write-worker-secrets", () => {
 			TURSO_AUTH_TOKEN: "token",
 			AZURE_SPEECH_KEY: "speech-key",
 			AZURE_SPEECH_REGION: "eastus",
+			EVIDENCE_LOG_DATABASE_URL: "libsql://evidence.example",
 		});
-		expect(skipped).toEqual(["OPENROUTER_API_KEY"]);
+		expect(skipped).toEqual(["OPENROUTER_API_KEY", "EVIDENCE_LOG_AUTH_TOKEN"]);
 	});
 
 	it("produces an empty set when nothing is configured, so the deploy still runs", () => {

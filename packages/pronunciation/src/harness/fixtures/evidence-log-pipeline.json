@@ -1,0 +1,196 @@
+{
+	"baton": null,
+	"base_url": null,
+	"results": [
+		{
+			"type": "ok",
+			"response": {
+				"type": "execute",
+				"result": {
+					"cols": [
+						{
+							"name": "id",
+							"decltype": "INTEGER"
+						},
+						{
+							"name": "schema_version",
+							"decltype": "INTEGER"
+						},
+						{
+							"name": "attempted_at",
+							"decltype": "INTEGER"
+						},
+						{
+							"name": "word",
+							"decltype": "TEXT"
+						},
+						{
+							"name": "target_accent",
+							"decltype": "TEXT"
+						},
+						{
+							"name": "evidence",
+							"decltype": "TEXT"
+						},
+						{
+							"name": "verdicts",
+							"decltype": "TEXT"
+						},
+						{
+							"name": "next_action",
+							"decltype": "TEXT"
+						}
+					],
+					"rows": [
+						[
+							{
+								"type": "integer",
+								"value": "1"
+							},
+							{
+								"type": "integer",
+								"value": "1"
+							},
+							{
+								"type": "integer",
+								"value": "1790845200000"
+							},
+							{
+								"type": "text",
+								"value": "ship"
+							},
+							{
+								"type": "text",
+								"value": "en-us"
+							},
+							{
+								"type": "text",
+								"value": "{\"words\":[{\"pronunciations\":[{\"pronunciationIndex\":0,\"sounds\":[{\"type\":\"scored\",\"phonemeId\":\"SH\",\"startSeconds\":0.09,\"endSeconds\":0.32,\"targetScore\":1,\"rivals\":[{\"phonemeId\":\"CH\",\"score\":0.57},{\"phonemeId\":\"T\",\"score\":0.06},{\"phonemeId\":\"S\",\"score\":0.06},{\"phonemeId\":\"J\",\"score\":0.05},{\"phonemeId\":\"K\",\"score\":0.05},{\"phonemeId\":\"IX\",\"score\":0.04},{\"phonemeId\":\"OU\",\"score\":0.04},{\"phonemeId\":\"R\",\"score\":0.03},{\"phonemeId\":\"I\",\"score\":0.02}],\"accuracy\":1},{\"type\":\"scored\",\"phonemeId\":\"IX\",\"startSeconds\":0.33,\"endSeconds\":0.46,\"targetScore\":1,\"rivals\":[{\"phonemeId\":\"P\",\"score\":0.39},{\"phonemeId\":\"E\",\"score\":0.08},{\"phonemeId\":\"AX\",\"score\":0.03},{\"phonemeId\":\"SH\",\"score\":0.03},{\"phonemeId\":\"M\",\"score\":0.03},{\"phonemeId\":\"I\",\"score\":0.02},{\"phonemeId\":\"AE\",\"score\":0.02},{\"phonemeId\":\"EI\",\"score\":0.01},{\"phonemeId\":\"R\",\"score\":0.01}],\"accuracy\":1},{\"type\":\"scored\",\"phonemeId\":\"P\",\"startSeconds\":0.47,\"endSeconds\":0.82,\"targetScore\":1,\"rivals\":[{\"phonemeId\":\"T\",\"score\":0.19},{\"phonemeId\":\"B\",\"score\":0.12},{\"phonemeId\":\"OU\",\"score\":0.07},{\"phonemeId\":\"D\",\"score\":0.05},{\"phonemeId\":\"F\",\"score\":0.04},{\"phonemeId\":\"S\",\"score\":0.03},{\"phonemeId\":\"K\",\"score\":0.03},{\"phonemeId\":\"M\",\"score\":0.03},{\"phonemeId\":\"IX\",\"score\":0.03}],\"accuracy\":1}]}],\"accuracy\":1}],\"insertedWords\":[],\"transcript\":{\"words\":[\"ship\"],\"confidence\":0.5588007}}"
+							},
+							{
+								"type": "text",
+								"value": "{\"judgedPhonemeIds\":[\"IX\",\"I\"],\"gate\":{\"type\":\"judged\"},\"judgement\":{\"pronunciationIndex\":0,\"sounds\":[{\"position\":1,\"phonemeId\":\"IX\",\"verdict\":{\"type\":\"match\"}}]}}"
+							},
+							{
+								"type": "text",
+								"value": "moved-on"
+							}
+						],
+						[
+							{
+								"type": "integer",
+								"value": "2"
+							},
+							{
+								"type": "integer",
+								"value": "1"
+							},
+							{
+								"type": "integer",
+								"value": "1790845260000"
+							},
+							{
+								"type": "text",
+								"value": "ship"
+							},
+							{
+								"type": "text",
+								"value": "en-us"
+							},
+							{
+								"type": "text",
+								"value": "{\"words\":[{\"pronunciations\":[{\"pronunciationIndex\":0,\"sounds\":[{\"type\":\"scored\",\"phonemeId\":\"SH\",\"startSeconds\":0.1,\"endSeconds\":0.33,\"targetScore\":1,\"rivals\":[{\"phonemeId\":\"CH\",\"score\":0.21},{\"phonemeId\":\"S\",\"score\":0.04},{\"phonemeId\":\"ZH\",\"score\":0.03},{\"phonemeId\":\"J\",\"score\":0.03},{\"phonemeId\":\"K\",\"score\":0.03},{\"phonemeId\":\"R\",\"score\":0.02},{\"phonemeId\":\"OU\",\"score\":0.02},{\"phonemeId\":\"I\",\"score\":0.02},{\"phonemeId\":\"T\",\"score\":0.02}],\"accuracy\":0.85},{\"type\":\"scored\",\"phonemeId\":\"IX\",\"startSeconds\":0.34,\"endSeconds\":0.47,\"targetScore\":0.02,\"rivals\":[{\"phonemeId\":\"I\",\"score\":1},{\"phonemeId\":\"SH\",\"score\":0.71},{\"phonemeId\":\"CH\",\"score\":0.04},{\"phonemeId\":\"EI\",\"score\":0.02},{\"phonemeId\":\"E\",\"score\":0},{\"phonemeId\":\"J\",\"score\":0},{\"phonemeId\":\"U\",\"score\":0},{\"phonemeId\":\"B\",\"score\":0},{\"phonemeId\":\"P\",\"score\":0}],\"accuracy\":0.35},{\"type\":\"scored\",\"phonemeId\":\"P\",\"startSeconds\":0.48,\"endSeconds\":0.75,\"targetScore\":1,\"rivals\":[{\"phonemeId\":\"I\",\"score\":0.47},{\"phonemeId\":\"B\",\"score\":0.1},{\"phonemeId\":\"T\",\"score\":0.05},{\"phonemeId\":\"D\",\"score\":0.04},{\"phonemeId\":\"V\",\"score\":0.01},{\"phonemeId\":\"K\",\"score\":0.01},{\"phonemeId\":\"TH\",\"score\":0.01},{\"phonemeId\":\"OU\",\"score\":0.01},{\"phonemeId\":\"F\",\"score\":0.01}],\"accuracy\":0.56}]}],\"accuracy\":0.72}],\"insertedWords\":[],\"transcript\":{\"words\":[\"sheep\"],\"confidence\":0.5874869}}"
+							},
+							{
+								"type": "text",
+								"value": "{\"judgedPhonemeIds\":[\"IX\",\"I\"],\"gate\":{\"type\":\"judged\"},\"judgement\":{\"pronunciationIndex\":0,\"sounds\":[{\"position\":1,\"phonemeId\":\"IX\",\"verdict\":{\"type\":\"swapped\",\"heard\":\"I\"}}]}}"
+							},
+							{
+								"type": "text",
+								"value": "retried"
+							}
+						],
+						[
+							{
+								"type": "integer",
+								"value": "3"
+							},
+							{
+								"type": "integer",
+								"value": "1"
+							},
+							{
+								"type": "integer",
+								"value": "1790845320000"
+							},
+							{
+								"type": "text",
+								"value": "ship"
+							},
+							{
+								"type": "text",
+								"value": "en-us"
+							},
+							{
+								"type": "text",
+								"value": "{\"words\":[{\"pronunciations\":[],\"omitted\":true}],\"insertedWords\":[],\"transcript\":{\"words\":[\"kid\"],\"confidence\":0.7678353}}"
+							},
+							{
+								"type": "text",
+								"value": "{\"judgedPhonemeIds\":[\"IX\",\"I\"],\"gate\":{\"type\":\"different-word\",\"heard\":[\"kid\"]},\"judgement\":null}"
+							},
+							{
+								"type": "text",
+								"value": "retried"
+							}
+						],
+						[
+							{
+								"type": "integer",
+								"value": "4"
+							},
+							{
+								"type": "integer",
+								"value": "1"
+							},
+							{
+								"type": "integer",
+								"value": "1790845380000"
+							},
+							{
+								"type": "text",
+								"value": "ship"
+							},
+							{
+								"type": "text",
+								"value": "en-us"
+							},
+							{
+								"type": "text",
+								"value": "{\"words\":[{\"pronunciations\":[{\"pronunciationIndex\":0,\"sounds\":[{\"type\":\"scored\",\"phonemeId\":\"SH\",\"startSeconds\":0.09,\"endSeconds\":0.32,\"targetScore\":1,\"rivals\":[{\"phonemeId\":\"CH\",\"score\":0.57},{\"phonemeId\":\"T\",\"score\":0.06},{\"phonemeId\":\"S\",\"score\":0.06},{\"phonemeId\":\"J\",\"score\":0.05},{\"phonemeId\":\"K\",\"score\":0.05},{\"phonemeId\":\"IX\",\"score\":0.04},{\"phonemeId\":\"OU\",\"score\":0.04},{\"phonemeId\":\"R\",\"score\":0.03},{\"phonemeId\":\"I\",\"score\":0.02}],\"accuracy\":1},{\"type\":\"scored\",\"phonemeId\":\"IX\",\"startSeconds\":0.33,\"endSeconds\":0.46,\"targetScore\":1,\"rivals\":[{\"phonemeId\":\"P\",\"score\":0.39},{\"phonemeId\":\"E\",\"score\":0.08},{\"phonemeId\":\"AX\",\"score\":0.03},{\"phonemeId\":\"SH\",\"score\":0.03},{\"phonemeId\":\"M\",\"score\":0.03},{\"phonemeId\":\"I\",\"score\":0.02},{\"phonemeId\":\"AE\",\"score\":0.02},{\"phonemeId\":\"EI\",\"score\":0.01},{\"phonemeId\":\"R\",\"score\":0.01}],\"accuracy\":1},{\"type\":\"scored\",\"phonemeId\":\"P\",\"startSeconds\":0.47,\"endSeconds\":0.82,\"targetScore\":1,\"rivals\":[{\"phonemeId\":\"T\",\"score\":0.19},{\"phonemeId\":\"B\",\"score\":0.12},{\"phonemeId\":\"OU\",\"score\":0.07},{\"phonemeId\":\"D\",\"score\":0.05},{\"phonemeId\":\"F\",\"score\":0.04},{\"phonemeId\":\"S\",\"score\":0.03},{\"phonemeId\":\"K\",\"score\":0.03},{\"phonemeId\":\"M\",\"score\":0.03},{\"phonemeId\":\"IX\",\"score\":0.03}],\"accuracy\":1}]}],\"accuracy\":1}],\"insertedWords\":[],\"transcript\":{\"words\":[\"ship\"],\"confidence\":0.5588007}}"
+							},
+							{
+								"type": "text",
+								"value": "{\"gate\":{\"type\":\"judged\"},\"judgement\":{\"pronunciationIndex\":0,\"sounds\":[{\"position\":0,\"phonemeId\":\"SH\",\"verdict\":{\"type\":\"match\"}},{\"position\":1,\"phonemeId\":\"IX\",\"verdict\":{\"type\":\"match\"}},{\"position\":2,\"phonemeId\":\"P\",\"verdict\":{\"type\":\"match\"}}]}}"
+							},
+							{
+								"type": "text",
+								"value": "moved-on"
+							}
+						]
+					],
+					"affected_row_count": 0,
+					"last_insert_rowid": null,
+					"rows_read": 4,
+					"rows_written": 0
+				}
+			}
+		},
+		{
+			"type": "ok",
+			"response": {
+				"type": "close"
+			}
+		}
+	]
+}

@@ -15,6 +15,7 @@ import { readWavFormat } from "@/lib/recording/wav";
 import { CatalogWordPronunciations } from "@/lib/speech/catalog-pronunciations";
 import type { WorkerRateLimit } from "@/server/cloudflare/env";
 import { logWorkerEvent } from "@/server/cloudflare/log";
+import { readBody } from "@/server/read-body";
 
 const BYTES_PER_SECOND = SCORER_SAMPLE_RATE * 2;
 /** Room for the RIFF header and small metadata chunks such as ffmpeg's `LIST`. */
@@ -175,6 +176,7 @@ async function score(
 		);
 	}
 	const audio = await readBody(request, MAX_SPEECH_BYTES);
+	if (!audio) throw tooLong();
 	const format = readWavFormat(audio);
 	if (!format) {
 		throw new SpeechRequestError(400, "invalid_audio", "The recording isn't a complete WAV file.");
@@ -233,31 +235,4 @@ function tooLong(): SpeechRequestError {
 		"audio_too_long",
 		`The recording must be at most ${MAX_RECORDING_SECONDS} seconds.`,
 	);
-}
-
-async function readBody(request: Request, maxBytes: number): Promise<Uint8Array<ArrayBuffer>> {
-	const declared = Number(request.headers.get("content-length"));
-	if (declared > maxBytes) throw tooLong();
-	if (!request.body) return new Uint8Array(0);
-
-	const reader = request.body.getReader();
-	const chunks: Uint8Array[] = [];
-	let total = 0;
-	for (;;) {
-		const { done, value } = await reader.read();
-		if (done) break;
-		total += value.byteLength;
-		if (total > maxBytes) {
-			await reader.cancel();
-			throw tooLong();
-		}
-		chunks.push(value);
-	}
-	const body = new Uint8Array(total);
-	let offset = 0;
-	for (const chunk of chunks) {
-		body.set(chunk, offset);
-		offset += chunk.byteLength;
-	}
-	return body;
 }

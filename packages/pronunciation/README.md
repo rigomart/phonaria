@@ -232,3 +232,18 @@ It also lists the falsely flagged sounds, as target and heard, the worst contras
 `bun run harness import-investigation <dir>` turns the wrong-word investigation's folder (its `wav/` and `responses/`) into `output/investigation/clips.json` and seeds the cache with its saved Azure answers, so `bun run harness run --clips=output/investigation/clips.json` makes no calls.
 
 The metric arithmetic in `metrics.ts` is pure and tested with a fake scorer. Any `Scorer` can run through `harnessScorerFrom`; the Azure one caches the raw response instead of evidence.
+
+## Evidence log
+
+Learners in minimal-pair practice can opt in to sharing each attempt's evidence and verdicts, never audio (see [#336](https://github.com/rigomart/phonaria/issues/336) and the app README). `src/harness/evidence-log.ts` brings those attempts into the harness:
+
+```bash
+bun run --cwd packages/pronunciation harness import-evidence-log [--out=attempts]
+bun run --cwd packages/pronunciation harness judge-evidence-log output/evidence-log/attempts.json
+```
+
+`import-evidence-log` reads every row through Turso's HTTP API with `EVIDENCE_LOG_DATABASE_URL` and a read-only `EVIDENCE_LOG_READ_TOKEN` from `.env`, writes `output/evidence-log/<name>.json`, and prints a summary. `judge-evidence-log` prints the summary for an existing export, offline. The summary re-runs the word gate and the judge on every attempt, counts gate outcomes and sound verdicts with how often each was followed by a retry, and counts attempts judged differently from what the learner was shown.
+
+An export is `{ format: "phonaria-evidence-log", version: 1, exportedAt, attempts }`, each attempt a `LoggedAttempt`: the row's `id`, `attemptedAt`, `word`, `targetAccent`, the `RecordingEvidence`, the `verdicts` shown (`judgedPhonemeIds`, absent when every sound was judged, plus `gate` and `judgement`), and `next`, `retried` or `moved-on`. `loadEvidenceLog(file)` loads one, and `rejudgeAttempt(attempt, margins)` runs the gate and the judge on it, for the threshold script ([#335](https://github.com/rigomart/phonaria/issues/335)). The rows say nothing about what the learner really said, so they show how margins would judge real attempts, not how accurate they are.
+
+The log keeps a real word only in a one-word transcript, a one-word gate `heard` and a swap's `heardWord`, and only if it is a minimal-pair catalog word. Every other heard word, including every word of a longer transcript and every inserted word, is the placeholder `<other>` (`EVIDENCE_LOG_OTHER_WORD`). Re-judging treats it as an unknown word with no pronunciation, which loses two things the app had. A one-word transcript outside the catalog that sounds like the target (a homophone such as *by* for *buy*) or like the target with one judged sound swapped can no longer pass the gate's pronunciation check, so only the scoring can let it through; and a non-catalog `heardWord` can't be shown. Multi-word transcripts lose nothing, since the gate reads only their length, and the gate never reads inserted words.
