@@ -14,5 +14,11 @@ export function useWavRecorder() {
 
 	useEffect(() => recorder.cancel, [recorder]);
 
-	return { state, start: recorder.start, stop: recorder.stop, cancel: recorder.cancel };
+	return {
+		state,
+		start: recorder.start,
+		stop: recorder.stop,
+		cancel: recorder.cancel,
+		getMeter: recorder.getMeter,
+	};
 }

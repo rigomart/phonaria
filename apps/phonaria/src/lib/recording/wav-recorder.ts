@@ -6,6 +6,7 @@ import captureWorkletUrl from "./capture-worklet?worker&url";
 import { mixToMono, resampleTo16k, SCORER_SAMPLE_RATE } from "./resample";
 import {
 	MAX_RECORDING_SECONDS,
+	rootMeanSquare,
 	SILENT_START,
 	shouldStopRecording,
 	trackVoiceActivity,
@@ -30,7 +31,20 @@ export type WavRecorder = {
 	stop(): void;
 	/** Releases the microphone, discards any recording and returns to idle. */
 	cancel(): void;
+	/**
+	 * How far the current recording has got, read on demand (e.g. once per frame)
+	 * so audio chunks don't notify subscribers. Zero when not recording.
+	 */
+	getMeter(): RecordingMeter;
 };
+
+export type RecordingMeter = {
+	readonly elapsedSeconds: number;
+	/** Root-mean-square level of the latest audio chunk, on a -1..1 signal. */
+	readonly level: number;
+};
+
+const SILENT_METER: RecordingMeter = { elapsedSeconds: 0, level: 0 };
 
 type Session = {
 	readonly context: AudioContext;
@@ -39,6 +53,7 @@ type Session = {
 	node: AudioWorkletNode | null;
 	chunks: Float32Array[];
 	activity: VoiceActivity;
+	level: number;
 	closed: boolean;
 	timer: ReturnType<typeof setTimeout> | null;
 };
@@ -80,6 +95,7 @@ export function createWavRecorder(): WavRecorder {
 			node: null,
 			chunks: [],
 			activity: SILENT_START,
+			level: 0,
 			closed: false,
 			timer: null,
 		};
@@ -105,6 +121,7 @@ export function createWavRecorder(): WavRecorder {
 				if (session !== current) return;
 				const samples = mixToMono(event.data);
 				current.chunks.push(samples);
+				current.level = rootMeanSquare(samples);
 				current.activity = trackVoiceActivity(
 					current.activity,
 					samples,
@@ -179,6 +196,10 @@ export function createWavRecorder(): WavRecorder {
 			else cancel();
 		},
 		cancel,
+		getMeter() {
+			if (!session || state.status !== "recording") return SILENT_METER;
+			return { elapsedSeconds: session.activity.elapsedSeconds, level: session.level };
+		},
 	};
 }
 

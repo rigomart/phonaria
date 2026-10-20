@@ -1,9 +1,10 @@
 import { azureEvidenceFromResponse } from "../azure/evidence";
-import type { AzureAssessmentResponse } from "../azure/response";
+import type { AzureAssessmentResponse, AzureRecognitionResponse } from "../azure/response";
 import {
 	AZURE_DEFAULT_N_BEST_PHONEME_COUNT,
 	type AzureScorerOptions,
 	requestAzureAssessment,
+	requestAzureRecognition,
 } from "../azure/scorer";
 import type { HarnessScorer } from "./scoring";
 
@@ -73,27 +74,42 @@ export type AzureHarnessOptions = {
 	readonly fetch?: Fetch;
 };
 
-/** The key and region stay out of `settings`, so they never reach the cache. */
+/** Both of Azure's answers for one recording, cached together. */
+export type AzureHarnessRaw = {
+	readonly assessment: AzureAssessmentResponse;
+	readonly recognition: AzureRecognitionResponse;
+};
+
+/**
+ * The key and region stay out of `settings`, so they never reach the cache.
+ * Unlike the app's scorer, a failed recognition fails the case, so the cache
+ * never holds an answer without its transcript.
+ */
 export function createAzureHarnessScorer({
 	key,
 	region,
 	nBestPhonemeCount = AZURE_DEFAULT_N_BEST_PHONEME_COUNT,
 	fetch: fetcher,
-}: AzureHarnessOptions): HarnessScorer<AzureAssessmentResponse> {
+}: AzureHarnessOptions): HarnessScorer<AzureHarnessRaw> {
 	return {
 		id: "azure",
-		settings: { endpoint: "short-audio-rest", nBestPhonemeCount },
+		settings: {
+			endpoint: "short-audio-rest",
+			nBestPhonemeCount,
+			miscue: true,
+			recognition: "plain",
+		},
 		request: async (audio, request) => {
 			if (!key || !region) {
 				throw new Error("Set AZURE_SPEECH_KEY and AZURE_SPEECH_REGION to score uncached audio");
 			}
-			return requestAzureAssessment(audio, request, {
-				key,
-				region,
-				nBestPhonemeCount,
-				fetch: fetcher,
-			});
+			const options = { key, region, nBestPhonemeCount, fetch: fetcher };
+			const [assessment, recognition] = await Promise.all([
+				requestAzureAssessment(audio, request, options),
+				requestAzureRecognition(audio, request.targetAccent, options),
+			]);
+			return { assessment, recognition };
 		},
-		evidence: azureEvidenceFromResponse,
+		evidence: (raw, request) => azureEvidenceFromResponse(raw.assessment, request, raw.recognition),
 	};
 }

@@ -60,25 +60,32 @@ export function judgeWord({
 	const pronunciation = bestFittingPronunciation(evidence.pronunciations);
 	if (!pronunciation) return null;
 
-	const registry = getContrastRegistryForLanguage(targetAccent) as Partial<
-		Record<PhonemeSymbolId, readonly PhonemeContrastMatch[]>
-	> | null;
-
 	const sounds: SoundJudgement[] = [];
 	pronunciation.sounds.forEach((sound, position) => {
 		if (!judgedPhonemeIds.has(sound.phonemeId)) return;
-		const partners = new Set(registry?.[sound.phonemeId]?.map((match) => match.partnerId));
 		sounds.push({
 			position,
 			phonemeId: sound.phonemeId,
-			verdict: judgeSound(sound, partners, margins),
+			verdict: judgeSound(sound, contrastPartners(targetAccent, sound.phonemeId), margins),
 		});
 	});
 
 	return { pronunciationIndex: pronunciation.pronunciationIndex, sounds };
 }
 
-function bestFittingPronunciation(
+/** The sounds the contrast catalog pairs with `phonemeId`. */
+export function contrastPartners(
+	targetAccent: TargetAccent,
+	phonemeId: PhonemeSymbolId,
+): ReadonlySet<PhonemeSymbolId> {
+	const registry = getContrastRegistryForLanguage(targetAccent) as Partial<
+		Record<PhonemeSymbolId, readonly PhonemeContrastMatch[]>
+	> | null;
+	return new Set(registry?.[phonemeId]?.map((match) => match.partnerId));
+}
+
+/** The pronunciation the judge uses: the highest mean target score, missing sounds counting as zero. */
+export function bestFittingPronunciation(
 	pronunciations: readonly PronunciationEvidence[],
 ): PronunciationEvidence | undefined {
 	let best: PronunciationEvidence | undefined;
@@ -107,26 +114,26 @@ function judgeSound(
 	partners: ReadonlySet<PhonemeSymbolId>,
 	margins: JudgeMargins,
 ): SoundVerdict {
-	if (sound.type === "missing") return { type: "unclear" };
+	if (sound.type === "missing") return { type: "unclear", reason: "no-evidence" };
 
 	const bestRivals = topRivals(sound.rivals);
 
 	if (bestRivals.length === 0) {
-		return reaches(sound.targetScore, margins.matchFloor) ? { type: "match" } : { type: "unclear" };
+		return reaches(sound.targetScore, margins.matchFloor)
+			? { type: "match" }
+			: { type: "unclear", reason: "other-sound" };
 	}
 
 	const [winner] = bestRivals;
 	if (reaches(sound.targetScore - winner.score, margins.match)) return { type: "match" };
 
-	if (
-		bestRivals.length === 1 &&
-		partners.has(winner.phonemeId) &&
-		reaches(winner.score - sound.targetScore, margins.swap)
-	) {
+	if (bestRivals.length > 1 || !partners.has(winner.phonemeId)) {
+		return { type: "unclear", reason: "other-sound" };
+	}
+	if (reaches(winner.score - sound.targetScore, margins.swap)) {
 		return { type: "swapped", heard: winner.phonemeId };
 	}
-
-	return { type: "unclear" };
+	return { type: "unclear", reason: "close-call" };
 }
 
 // Scores are floats, so a difference that lands exactly on a margin can round

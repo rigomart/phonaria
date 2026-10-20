@@ -5,6 +5,7 @@ import {
 	azureEvidenceFromResponse,
 	type RecordingEvidence,
 	requestAzureAssessment,
+	requestAzureRecognition,
 	type ScoringRequest,
 } from "@phonaria/pronunciation";
 import { flags } from "@/lib/flags";
@@ -60,8 +61,9 @@ class SpeechRequestError extends Error {
 
 /**
  * Framework-neutral Worker handler for `POST /api/speech/score?word=&targetAccent=` with a
- * 16 kHz mono 16-bit PCM WAV body. Returns the scorer's `RecordingEvidence`; the browser
- * judges it. The audio is passed to the scorer only, never stored or logged.
+ * 16 kHz mono 16-bit PCM WAV body. Returns the scorer's `RecordingEvidence`, transcript
+ * included; the browser gates and judges it. Each attempt makes two Azure calls, and counts
+ * once against the rate limit. The audio is passed to Azure only, never stored or logged.
  */
 export async function scoreSpeechOnWorker(
 	request: Request,
@@ -81,12 +83,14 @@ export async function scoreSpeechOnWorker(
 	const pronunciations = CatalogWordPronunciations.get(word);
 
 	let response: Response;
+	let transcribed: boolean | undefined;
 	try {
 		const evidence = await score(request, env, dependencies, {
 			word,
 			pronunciations,
 			targetAccent: url.searchParams.get("targetAccent"),
 		});
+		transcribed = "transcript" in evidence;
 		response = Response.json(evidence, { headers: NO_STORE });
 	} catch (error) {
 		const failure =
@@ -108,6 +112,7 @@ export async function scoreSpeechOnWorker(
 			word: catalogWord,
 			status: response.status,
 			ms: now() - started,
+			...(transcribed === false && { transcript: "failed" }),
 		},
 	});
 	return response;
@@ -198,12 +203,21 @@ async function score(
 		words: [{ text: query.word, acceptedPronunciations: query.pronunciations }],
 	};
 	const options = { key, region, fetch: dependencies.fetch };
-	let response = await requestAzureAssessment(audio, scoringRequest, options);
-	// About 0.2% of Azure answers are a transient Success with no assessment in it.
-	if (isEmptySuccess(response)) {
-		response = await requestAzureAssessment(audio, scoringRequest, options);
-	}
-	return azureEvidenceFromResponse(response, scoringRequest);
+	const assess = async () => {
+		const response = await requestAzureAssessment(audio, scoringRequest, options);
+		// About 0.2% of Azure answers are a transient Success with no assessment in it.
+		return isEmptySuccess(response)
+			? requestAzureAssessment(audio, scoringRequest, options)
+			: response;
+	};
+	// Without a transcript the word gate falls back on the assessment alone, which lets
+	// phrases and added sounds through but rejected no correct word in #344's test set.
+	// That's the page before the gate existed, so a failed transcript isn't worth a 502.
+	const [assessment, recognition] = await Promise.all([
+		assess(),
+		requestAzureRecognition(audio, "en-us", options).catch(() => undefined),
+	]);
+	return azureEvidenceFromResponse(assessment, scoringRequest, recognition);
 }
 
 function isEmptySuccess(response: AzureAssessmentResponse): boolean {

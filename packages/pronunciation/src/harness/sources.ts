@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { getWordAudioPath } from "@phonaria/phonetics-data";
 import type { WavAudio } from "../contract";
+import { type ClipLabel, WRONG_WORD_KINDS } from "./cases";
 import type { SourceKind } from "./metrics";
 import { mapWithConcurrency, sha256, writeAtomically } from "./scoring";
 
@@ -209,6 +210,53 @@ async function audioFilesByWord(dir: string): Promise<Map<string, string>> {
 		if (!files.has(word) || isWav) files.set(word, path.join(dir, entry.name));
 	}
 	return files;
+}
+
+/** A labelled recording from a clips manifest. */
+export type Clip = ClipLabel & {
+	readonly sourceId: string;
+	readonly sourceKind: SourceKind;
+	readonly file: string;
+};
+
+const CLIP_KINDS = new Set<string>(["correct", "swap", ...WRONG_WORD_KINDS]);
+
+/**
+ * A clips manifest labels recordings one by one, for cases a folder of words
+ * can't express, such as a phrase judged against *ship*:
+ * `{ "clips": [{ "file": "a-ship.wav", "source": "tts:jenny", "target": "ship",
+ * "partner": "sheep", "kind": "phrase", "said": "a ship" }] }`. `kind` is
+ * `correct`, `swap`, or a wrong-word kind; `source` is `tts:<name>` or
+ * `real:<name>`; `file` is relative to the manifest.
+ */
+export async function loadClips(manifestFile: string): Promise<Clip[]> {
+	const manifest = JSON.parse(await readFile(manifestFile, "utf8")) as { clips?: unknown };
+	if (!Array.isArray(manifest.clips)) throw new Error(`${manifestFile} needs a "clips" list`);
+	const dir = path.dirname(manifestFile);
+	return manifest.clips.map((entry: Record<string, unknown>, index): Clip => {
+		const { file, source, target, partner, kind, said } = entry;
+		const where = `${manifestFile} clip ${index}`;
+		if (![file, source, target, partner, said].every((field) => typeof field === "string")) {
+			throw new Error(`${where} needs file, source, target, partner and said`);
+		}
+		if (typeof kind !== "string" || !CLIP_KINDS.has(kind)) {
+			throw new Error(`${where} has an unknown kind: ${String(kind)}`);
+		}
+		const sourceId = source as string;
+		const sourceKind = sourceId.startsWith("real:") ? "real" : "tts";
+		if (!/^(tts|real):[\w.-]+$/.test(sourceId)) {
+			throw new Error(`${where}: source must be tts:<name> or real:<name>`);
+		}
+		return {
+			sourceId,
+			sourceKind,
+			file: path.resolve(dir, file as string),
+			target: target as string,
+			partner: partner as string,
+			kind: kind as Clip["kind"],
+			said: said as string,
+		};
+	});
 }
 
 export async function assertFfmpeg(): Promise<void> {

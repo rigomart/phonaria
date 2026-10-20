@@ -8,28 +8,64 @@ import type {
 	ScoringRequest,
 	SoundEvidence,
 	TargetWord,
+	Transcript,
 	WordEvidence,
 } from "../contract";
-import type { AzureAssessmentResponse, AzurePhoneme, AzureWord } from "./response";
+import type {
+	AzureAssessmentResponse,
+	AzurePhoneme,
+	AzureRecognitionResponse,
+	AzureWord,
+} from "./response";
 import { phonemeIdsForAzureSymbol } from "./symbols";
 
 const TICKS_PER_SECOND = 10_000_000;
 const MIN_AGREEING_SHARE = 0.5;
 
-/** Turns a Pronunciation Assessment response into evidence for the request's words. */
+/**
+ * Turns a Pronunciation Assessment response into evidence for the request's words.
+ * With a plain recognition response of the same audio, the evidence also carries
+ * its transcript; without one, it has none.
+ */
 export function azureEvidenceFromResponse(
 	response: AzureAssessmentResponse,
 	request: ScoringRequest,
+	recognition?: AzureRecognitionResponse,
 ): RecordingEvidence {
-	const recognized =
-		response.RecognitionStatus === "Success" ? (response.NBest?.[0]?.Words ?? []) : [];
+	const succeeded = response.RecognitionStatus === "Success";
+	const recognized = succeeded ? (response.NBest?.[0]?.Words ?? []) : [];
 	const heardWords = matchWords(request.words, recognized);
-	return {
+	const evidence: RecordingEvidence = {
 		words: request.words.map((word, index) => {
 			const heard = heardWords[index];
-			return heard ? wordEvidence(word, heard) : { pronunciations: [] };
+			if (!heard) return { pronunciations: [] };
+			if (heard.ErrorType === "Omission") return { pronunciations: [], omitted: true };
+			return wordEvidence(word, heard);
+		}),
+		...(succeeded && {
+			insertedWords: recognized
+				.filter((word) => word.ErrorType === "Insertion")
+				.map((word) => normalizeWord(word.Word)),
 		}),
 	};
+	if (!recognition) return evidence;
+	const transcript = azureTranscript(recognition);
+	return transcript === undefined ? evidence : { ...evidence, transcript };
+}
+
+const NO_SPEECH_STATUSES = new Set(["NoMatch", "InitialSilenceTimeout", "BabbleTimeout"]);
+
+/**
+ * The transcript of a plain recognition response: null when Azure heard no speech,
+ * undefined when the response says nothing either way (an `Error` status).
+ */
+export function azureTranscript(response: AzureRecognitionResponse): Transcript | null | undefined {
+	if (NO_SPEECH_STATUSES.has(response.RecognitionStatus)) return null;
+	if (response.RecognitionStatus !== "Success") return undefined;
+	const best = response.NBest?.[0];
+	const words = (best?.Lexical ?? "").split(/\s+/).map(normalizeWord).filter(Boolean);
+	if (words.length === 0) return null;
+	return { words, confidence: Math.min(1, Math.max(0, best?.Confidence ?? 0)) };
 }
 
 function normalizeWord(text: string): string {
@@ -54,7 +90,7 @@ function matchWords(
 		);
 		if (found === -1) return null;
 		next = found + 1;
-		return recognized[found].ErrorType === "Omission" ? null : recognized[found];
+		return recognized[found];
 	});
 }
 
@@ -88,7 +124,9 @@ function wordEvidence(word: TargetWord, heard: AzureWord): WordEvidence {
 			}),
 		});
 	});
-	return { pronunciations };
+	return heard.AccuracyScore === undefined
+		? { pronunciations }
+		: { pronunciations, accuracy: normalize(heard.AccuracyScore) };
 }
 
 function missing(phonemeId: PhonemeSymbolId): MissingSoundEvidence {
@@ -100,6 +138,8 @@ function soundEvidence(
 	heard: HeardSound,
 ): SoundEvidence | MissingSoundEvidence {
 	const { phoneme } = heard;
+	// AccuracyScore rates Azure's expected phoneme, so it only stands for the target when they agree.
+	const isTarget = heard.phonemeId === target;
 	const scored = (targetScore: number, rivals: RivalScore[]): SoundEvidence => ({
 		type: "scored",
 		phonemeId: target,
@@ -107,10 +147,9 @@ function soundEvidence(
 		endSeconds: (phoneme.Offset + phoneme.Duration) / TICKS_PER_SECOND,
 		targetScore: normalize(targetScore),
 		rivals,
+		...(isTarget && { accuracy: normalize(phoneme.AccuracyScore) }),
 	});
-	// AccuracyScore rates Azure's expected phoneme, so it only stands for the target when they agree.
-	const targetOnly = () =>
-		heard.phonemeId === target ? scored(phoneme.AccuracyScore, []) : missing(target);
+	const targetOnly = () => (isTarget ? scored(phoneme.AccuracyScore, []) : missing(target));
 
 	// Azure's n-best for a two-sound unit rates the whole unit, which can't be split between its sounds.
 	if (heard.isPartOfUnit) return targetOnly();

@@ -64,9 +64,13 @@ describe("judgeWord", () => {
 		expect(judgement?.sounds[0]?.verdict).toEqual({ type: "swapped", heard: "I" });
 	});
 
-	it("is unclear on a near tie", async () => {
-		const judgement = await judgeShip(scored("IX", 0.6, [{ phonemeId: "I", score: 0.62 }]));
-		expect(judgement?.sounds[0]?.verdict).toEqual({ type: "unclear" });
+	it("is a close call when the target and its partner are within the margins", async () => {
+		for (const partnerScore of [0.62, 0.58, 0.79]) {
+			const judgement = await judgeShip(
+				scored("IX", 0.6, [{ phonemeId: "I", score: partnerScore }]),
+			);
+			expect(judgement?.sounds[0]?.verdict).toEqual({ type: "unclear", reason: "close-call" });
+		}
 	});
 
 	it("is unclear when a rival that is not a contrast partner wins", async () => {
@@ -76,7 +80,12 @@ describe("judgeWord", () => {
 				{ phonemeId: "E", score: 0.9 },
 			]),
 		);
-		expect(judgement?.sounds[0]?.verdict).toEqual({ type: "unclear" });
+		expect(judgement?.sounds[0]?.verdict).toEqual({ type: "unclear", reason: "other-sound" });
+	});
+
+	it("is another sound when a rival that is not a partner is close behind the target", async () => {
+		const judgement = await judgeShip(scored("IX", 0.6, [{ phonemeId: "E", score: 0.58 }]));
+		expect(judgement?.sounds[0]?.verdict).toEqual({ type: "unclear", reason: "other-sound" });
 	});
 
 	it("is unclear when a partner ties for the win with a rival that is not a partner", async () => {
@@ -91,7 +100,7 @@ describe("judgeWord", () => {
 			],
 		] satisfies RivalScore[][]) {
 			const judgement = await judgeShip(scored("IX", 0.2, rivals));
-			expect(judgement?.sounds[0]?.verdict).toEqual({ type: "unclear" });
+			expect(judgement?.sounds[0]?.verdict).toEqual({ type: "unclear", reason: "other-sound" });
 		}
 	});
 
@@ -104,12 +113,15 @@ describe("judgeWord", () => {
 
 	it("is unclear when a judged sound has no evidence", async () => {
 		const judgement = await judgeShip(missing("IX"));
-		expect(judgement?.sounds[0]?.verdict).toEqual({ type: "unclear" });
+		expect(judgement?.sounds[0]?.verdict).toEqual({ type: "unclear", reason: "no-evidence" });
 	});
 
 	it("matches on the target score alone when there are no rivals", async () => {
 		expect((await judgeShip(scored("IX", 0.8)))?.sounds[0]?.verdict).toEqual({ type: "match" });
-		expect((await judgeShip(scored("IX", 0.3)))?.sounds[0]?.verdict).toEqual({ type: "unclear" });
+		expect((await judgeShip(scored("IX", 0.3)))?.sounds[0]?.verdict).toEqual({
+			type: "unclear",
+			reason: "other-sound",
+		});
 	});
 
 	it("judges against the accepted pronunciation the evidence fits best", () => {

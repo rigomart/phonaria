@@ -1,11 +1,7 @@
-import {
-	type AzureAssessmentResponse,
-	azureEvidenceFromResponse,
-	type RecordingEvidence,
-} from "@phonaria/pronunciation";
+import { azureEvidenceFromResponse, type RecordingEvidence } from "@phonaria/pronunciation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { encodeWav } from "@/lib/recording/wav";
-import shipAsShip from "../../../../packages/pronunciation/src/azure/fixtures/ship-as-ship.json";
+import { MISCUE_FIXTURES } from "../../../../packages/pronunciation/src/azure/fixtures/miscue";
 import silenceAsShip from "../../../../packages/pronunciation/src/azure/fixtures/silence-as-ship.json";
 import {
 	MAX_SPEECH_BYTES,
@@ -50,27 +46,54 @@ function scoreRequest({
 	});
 }
 
+const shipAsShip = MISCUE_FIXTURES.ship.assessment;
+const shipHeard = MISCUE_FIXTURES.ship.recognition;
+
 function azureReturning(response: unknown, status = 200) {
 	return azureAnswering([response], status);
 }
 
-function azureAnswering(responses: readonly unknown[], status = 200) {
+function isAssessment(init: RequestInit | undefined): boolean {
+	return "Pronunciation-Assessment" in ((init?.headers ?? {}) as Record<string, string>);
+}
+
+/**
+ * Answers assessments with `assessments` in turn, and plain recognition with
+ * `recognition`, both with `status` unless `recognitionStatus` is set.
+ */
+function azureAnswering(
+	assessments: readonly unknown[],
+	status = 200,
+	{
+		recognition = shipHeard as unknown,
+		recognitionStatus = status,
+	}: { recognition?: unknown; recognitionStatus?: number } = {},
+) {
 	let call = 0;
-	const azure = vi.fn(async (_url: RequestInfo | URL, _init?: RequestInit) =>
-		Response.json(responses[Math.min(call++, responses.length - 1)], { status }),
+	const azure = vi.fn(async (_url: RequestInfo | URL, init?: RequestInit) =>
+		isAssessment(init)
+			? Response.json(assessments[Math.min(call++, assessments.length - 1)], { status })
+			: Response.json(recognition, { status: recognitionStatus }),
 	);
 	// Bun's `typeof fetch` adds `preconnect`, which the scorer never calls.
 	return azure as typeof azure & typeof fetch;
 }
 
+function assessmentCalls(azure: ReturnType<typeof azureAnswering>): number {
+	return azure.mock.calls.filter(([, init]) => isAssessment(init)).length;
+}
+
 const EMPTY_SUCCESS = { RecognitionStatus: "Success", NBest: [{ Words: [{ Word: "ship" }] }] };
 
+const SHIP_REQUEST = {
+	targetAccent: "en-us",
+	words: [{ text: "ship", acceptedPronunciations: [["SH", "IX", "P"]] }],
+} as const;
+
 const SHIP_EVIDENCE: RecordingEvidence = azureEvidenceFromResponse(
-	shipAsShip as AzureAssessmentResponse,
-	{
-		targetAccent: "en-us",
-		words: [{ text: "ship", acceptedPronunciations: [["SH", "IX", "P"]] }],
-	},
+	shipAsShip,
+	SHIP_REQUEST,
+	shipHeard,
 );
 
 async function errorCode(response: Response): Promise<string> {
@@ -117,7 +140,7 @@ describe("scoreSpeechOnWorker", () => {
 		expect(fetch).not.toHaveBeenCalled();
 	});
 
-	it("passes Azure's evidence for a catalog word through as JSON", async () => {
+	it("passes Azure's evidence and transcript for a catalog word through as JSON", async () => {
 		const fetch = azureReturning(shipAsShip);
 		const log = vi.fn();
 		const audio = wav(1);
@@ -132,12 +155,15 @@ describe("scoreSpeechOnWorker", () => {
 		expect(response.status).toBe(200);
 		expect(response.headers.get("Cache-Control")).toBe("no-store");
 		expect(SHIP_EVIDENCE.words[0]?.pronunciations).toHaveLength(1);
+		expect(SHIP_EVIDENCE.transcript?.words).toEqual(["ship"]);
 		expect(await response.json()).toEqual(SHIP_EVIDENCE);
 
-		expect(fetch).toHaveBeenCalledTimes(1);
-		const [url, init] = fetch.mock.calls[0] ?? [];
-		expect(String(url)).toMatch(/^https:\/\/eastus\.stt\.speech\.microsoft\.com\//);
-		expect(init?.body).toEqual(audio);
+		expect(fetch, "one assessment and one plain recognition").toHaveBeenCalledTimes(2);
+		expect(assessmentCalls(fetch)).toBe(1);
+		for (const [url, init] of fetch.mock.calls) {
+			expect(String(url)).toMatch(/^https:\/\/eastus\.stt\.speech\.microsoft\.com\//);
+			expect(init?.body).toEqual(audio);
+		}
 		expect(log).toHaveBeenCalledWith({
 			level: "info",
 			message: "speech_scoring",
@@ -145,7 +171,20 @@ describe("scoreSpeechOnWorker", () => {
 		});
 	});
 
-	it("retries once when Azure answers Success with no assessment", async () => {
+	it("counts both Azure calls as one attempt against the rate limit", async () => {
+		const limit = vi.fn(async () => ({ success: true }));
+		const fetch = azureReturning(shipAsShip);
+
+		await scoreSpeechOnWorker(scoreRequest(), allowingEnv({ SPEECH_RATE_LIMIT: { limit } }), {
+			fetch,
+			log: vi.fn(),
+		});
+
+		expect(fetch).toHaveBeenCalledTimes(2);
+		expect(limit).toHaveBeenCalledTimes(1);
+	});
+
+	it("retries the assessment once when Azure answers Success with no assessment", async () => {
 		const fetch = azureAnswering([EMPTY_SUCCESS, shipAsShip]);
 
 		const response = await scoreSpeechOnWorker(scoreRequest(), allowingEnv(), {
@@ -153,7 +192,8 @@ describe("scoreSpeechOnWorker", () => {
 			log: vi.fn(),
 		});
 
-		expect(fetch).toHaveBeenCalledTimes(2);
+		expect(assessmentCalls(fetch)).toBe(2);
+		expect(fetch).toHaveBeenCalledTimes(3);
 		expect(await response.json()).toEqual(SHIP_EVIDENCE);
 	});
 
@@ -165,21 +205,60 @@ describe("scoreSpeechOnWorker", () => {
 			log: vi.fn(),
 		});
 
-		expect(fetch).toHaveBeenCalledTimes(2);
+		expect(assessmentCalls(fetch)).toBe(2);
 		expect(response.status).toBe(200);
-		expect(await response.json()).toEqual({ words: [{ pronunciations: [] }] });
+		expect(await response.json()).toEqual({
+			words: [{ pronunciations: [] }],
+			insertedWords: [],
+			transcript: SHIP_EVIDENCE.transcript,
+		});
 	});
 
 	it("doesn't retry a recording Azure heard no speech in", async () => {
-		const fetch = azureReturning(silenceAsShip);
+		const fetch = azureAnswering([silenceAsShip], 200, {
+			recognition: { RecognitionStatus: "InitialSilenceTimeout" },
+		});
 
 		const response = await scoreSpeechOnWorker(scoreRequest(), allowingEnv(), {
 			fetch,
 			log: vi.fn(),
 		});
 
-		expect(fetch).toHaveBeenCalledTimes(1);
-		expect(await response.json()).toEqual({ words: [{ pronunciations: [] }] });
+		expect(assessmentCalls(fetch)).toBe(1);
+		expect(await response.json()).toEqual({ words: [{ pronunciations: [] }], transcript: null });
+	});
+
+	it("tells silence from a word Azure didn't hear under miscue", async () => {
+		const { assessment, recognition } = MISCUE_FIXTURES.silence;
+		const response = await scoreSpeechOnWorker(scoreRequest(), allowingEnv(), {
+			fetch: azureAnswering([assessment], 200, { recognition }),
+			log: vi.fn(),
+		});
+
+		expect(await response.json()).toEqual({
+			words: [{ pronunciations: [], omitted: true }],
+			insertedWords: [],
+			transcript: null,
+		});
+	});
+
+	it("returns the evidence without a transcript when only the recognition fails, and logs it", async () => {
+		const log = vi.fn();
+		const response = await scoreSpeechOnWorker(scoreRequest(), allowingEnv(), {
+			fetch: azureAnswering([shipAsShip], 200, { recognitionStatus: 500 }),
+			log,
+		});
+
+		expect(response.status).toBe(200);
+		const evidence = (await response.json()) as RecordingEvidence;
+		expect(evidence).not.toHaveProperty("transcript");
+		expect(evidence.words).toEqual(azureEvidenceFromResponse(shipAsShip, SHIP_REQUEST).words);
+		expect(log).toHaveBeenCalledWith(
+			expect.objectContaining({
+				level: "info",
+				details: expect.objectContaining({ status: 200, transcript: "failed" }),
+			}),
+		);
 	});
 
 	it("matches the word case-insensitively", async () => {
@@ -373,6 +452,14 @@ describe("scoreSpeechOnWorker", () => {
 			expect(await errorCode(response)).toBe("audio_too_long");
 			expect(fetch).not.toHaveBeenCalled();
 		}
+	});
+
+	it("answers 502 when the assessment fails, even with a transcript", async () => {
+		const response = await scoreSpeechOnWorker(scoreRequest(), allowingEnv(), {
+			fetch: azureAnswering([{}], 500, { recognitionStatus: 200 }),
+			log: vi.fn(),
+		});
+		expect(response.status).toBe(502);
 	});
 
 	it("answers 502 when Azure fails, and never logs the key", async () => {

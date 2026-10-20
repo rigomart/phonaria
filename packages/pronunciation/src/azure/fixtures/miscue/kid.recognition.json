@@ -1,0 +1,15 @@
+{
+	"RecognitionStatus": "Success",
+	"Offset": 1100000,
+	"Duration": 6000000,
+	"DisplayText": "Kid.",
+	"NBest": [
+		{
+			"Confidence": 0.7678353,
+			"Lexical": "kid",
+			"ITN": "kid",
+			"MaskedITN": "kid",
+			"Display": "Kid."
+		}
+	]
+}

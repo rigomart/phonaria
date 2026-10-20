@@ -6,13 +6,20 @@ interface IpaSequenceProps {
 	targetAccent: TargetAccent;
 	syllables: TranscribedSyllable[];
 	wordIndex: number;
+	/** Word-level index of a sound to mark, such as the target sound in minimal-pair practice. */
+	markedPhonemeIndex?: number;
 }
 
 /**
  * Stress marks, phonemes, and syllable dots carry `data-ipa-token` so a
  * variant switch can morph one rendered sequence into the next.
  */
-export function IpaSequence({ targetAccent, syllables, wordIndex }: IpaSequenceProps) {
+export function IpaSequence({
+	targetAccent,
+	syllables,
+	wordIndex,
+	markedPhonemeIndex,
+}: IpaSequenceProps) {
 	return (
 		<div className="leading-normal whitespace-nowrap flex items-center">
 			{syllables.map((syllable, syllableIndex) => {
@@ -41,7 +48,11 @@ export function IpaSequence({ targetAccent, syllables, wordIndex }: IpaSequenceP
 								data-ipa-token="phoneme"
 								className="flex"
 							>
-								<ClickablePhoneme targetAccent={targetAccent} phoneme={phoneme} />
+								<ClickablePhoneme
+									targetAccent={targetAccent}
+									phoneme={phoneme}
+									marked={phoneme.phonemeIndex === markedPhonemeIndex}
+								/>
 							</span>
 						))}
 						{syllableIndex < syllables.length - 1 && (

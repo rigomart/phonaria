@@ -21,6 +21,7 @@ import {
 	serializeJsonLd,
 } from "@/lib/language-spread/structured-data";
 import { PracticeActivity } from "@/lib/practice/activity";
+import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import {
 	type DocumentMetadata,
 	getDocumentMetadata,
@@ -249,6 +250,15 @@ export function buildPracticeTopicHead(topic: PracticeTopicHeadSource | undefine
 		path: `/practice/${topic.id}`,
 		title: `${topic.display.name} — Practice`,
 		description: topic.display.blurb,
+		robots: PRACTICE_ROBOTS,
+	});
+}
+
+export function buildMinimalPairPracticeHead(): StartHead {
+	return buildPageHead({
+		path: MinimalPairActivity.path,
+		title: `${MinimalPairActivity.name} — Practice`,
+		description: MinimalPairActivity.description,
 		robots: PRACTICE_ROBOTS,
 	});
 }

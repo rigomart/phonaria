@@ -13,9 +13,11 @@ import { cn } from "@/lib/utils";
 interface ClickablePhonemeProps {
 	targetAccent: TargetAccent;
 	phoneme: TranscribedPhoneme;
+	/** Underlined and named in the label, so the mark doesn't rely on color. */
+	marked?: boolean;
 }
 
-export function ClickablePhoneme({ targetAccent, phoneme }: ClickablePhonemeProps) {
+export function ClickablePhoneme({ targetAccent, phoneme, marked = false }: ClickablePhonemeProps) {
 	if (!phoneme.phonemeId) {
 		return (
 			<span
@@ -33,6 +35,7 @@ export function ClickablePhoneme({ targetAccent, phoneme }: ClickablePhonemeProp
 			phonemeId={phoneme.phonemeId}
 			symbol={phoneme.symbol}
 			className="text-2xl md:text-4xl"
+			marked={marked}
 		/>
 	);
 }
@@ -42,11 +45,13 @@ export function PhonemeDetailsButton({
 	phonemeId,
 	symbol,
 	className,
+	marked = false,
 }: {
 	targetAccent: TargetAccent;
 	phonemeId: PhonemeSymbolId;
 	symbol: string;
 	className?: string;
+	marked?: boolean;
 }) {
 	if (!isPhonemeInLanguage(targetAccent, phonemeId)) return null;
 
@@ -66,11 +71,21 @@ export function PhonemeDetailsButton({
 						"data-details-open:bg-secondary data-details-open:text-primary",
 						className,
 					)}
-					aria-label={`Details for /${symbol}/`}
+					aria-label={
+						marked ? `Details for /${symbol}/, the marked sound` : `Details for /${symbol}/`
+					}
 				/>
 			}
 		>
-			{symbol}
+			{marked ? (
+				// A bar under the glyph alone: a text underline breaks around descenders
+				// like p and ʃ, and a border on the button would run into the stress mark.
+				<span className="border-foreground border-b-2" data-marked-sound="">
+					{symbol}
+				</span>
+			) : (
+				symbol
+			)}
 		</PhonemeDetailsTrigger>
 	);
 }

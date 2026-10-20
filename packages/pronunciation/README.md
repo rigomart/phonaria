@@ -5,21 +5,32 @@ Hears which sound a learner said. It holds the scoring contract, the judge and t
 The work is split in two so a scorer can be replaced without touching the judge:
 
 - A **scorer** takes a recording and a `ScoringRequest` (the target accent and the words said, each with its accepted pronunciations as base phoneme IDs) and returns `RecordingEvidence`, one `WordEvidence` per word. For each accepted pronunciation it could line up, a word's evidence has one entry per sound with its time span, the target's score and rival scores. A sound it couldn't line up is reported as `missing`. Audio is a 16 kHz mono 16-bit PCM WAV file as a `Uint8Array`.
-- The **judge**, `judgeWord`, is a pure function that turns one word's evidence into a verdict for each judged sound: `match`, `swapped` with the heard phoneme ID, or `unclear`.
+- The **word gate**, `gateWord`, first checks that the recording holds the target word at all. A scorer told to expect *ship* scores whatever was said as *ship*, so without it *kid*, *ships* or "a ship" would get a sound verdict.
+- The **judge**, `judgeWord`, is a pure function that turns one word's evidence into a verdict for each judged sound: `match`, `swapped` with the heard phoneme ID, or `unclear` with the reason it couldn't decide.
 
 Practice starts with single words, sent as a list of one. Requests and evidence are lists so phrases can follow without changing the contract; judging across words (skipped words, weak forms, sounds that change at word boundaries) comes with them.
 
 ```ts
-import { judgeWord } from "@phonaria/pronunciation";
+import { gateWord, judgeWord } from "@phonaria/pronunciation";
 
-const recording = await scorer.score(wav, {
-	targetAccent: "en-us",
-	words: [{ text: "ship", acceptedPronunciations: [["SH", "IX", "P"]] }],
-});
+const ship = { text: "ship", acceptedPronunciations: [["SH", "IX", "P"]] };
+const recording = await scorer.score(wav, { targetAccent: "en-us", words: [ship] });
+const judged = { judgedPhonemeIds: new Set(["IX", "I"]), targetAccent: "en-us" } as const;
 
-judgeWord({ evidence: recording.words[0], judgedPhonemeIds: new Set(["IX", "I"]), targetAccent: "en-us" });
+gateWord({ target: ship, evidence: recording.words[0], transcript: recording.transcript, pronunciationsOf, ...judged });
+// { type: "judged" }, or { type: "different-word", heard: ["a", "ship"] }, or { type: "not-heard" }
+
+judgeWord({ evidence: recording.words[0], ...judged });
 // { pronunciationIndex: 0, sounds: [{ position: 1, phonemeId: "IX", verdict: { type: "swapped", heard: "I" } }] }
 ```
+
+Besides the sounds, evidence can carry what the gate needs. Every field is optional, so a scorer that can't tell leaves it out:
+
+- `RecordingEvidence.transcript`: what a recognizer heard with no target words to steer it, as lowercase words and a 0..1 confidence. `null` means no speech.
+- `RecordingEvidence.insertedWords`: words heard besides the target words.
+- `WordEvidence.accuracy`: how well the audio fits the whole word, 0..1.
+- `WordEvidence.omitted`: the scorer found the word isn't in the recording, which is not the same as having no evidence for it.
+- `SoundEvidence.accuracy`: how well the audio fits the target sound on its own, 0..1, where `targetScore` only ranks it against rivals.
 
 ## Scores
 
@@ -29,11 +40,38 @@ Every scorer normalizes its scores to 0..1, higher meaning the audio fits that p
 
 - `match` when the target beats the best rival by the match margin, or, when the scorer reported no rivals, when the target score reaches the match floor.
 - `swapped` only when the winning rival is a contrast partner of the target sound (from the contrast catalog in `@phonaria/phonetics-data`) and beats the target by the swap margin.
-- `unclear` otherwise: a near tie, a winner that isn't a contrast partner, or a sound the scorer couldn't line up.
+- `unclear` otherwise, with a `reason` the UI can explain:
+  - `no-evidence`: the scorer couldn't line the sound up (`missing`).
+  - `close-call`: the best rival is a contrast partner, but neither it nor the target wins by its margin.
+  - `other-sound`: the best rival isn't a contrast partner, the top rivals tie, or the scorer reported no rivals and the target is under the match floor.
+
+A `null` judgement (below) means the same as `no-evidence` for every sound.
 
 Only sounds in `judgedPhonemeIds` get a verdict, one per occurrence. With several accepted pronunciations, the judge uses the one with the highest mean target score, counting missing sounds as zero. `judgeWord` returns `null` when the scorer lined up none of them.
 
 `LENIENT_MARGINS` is the default. It starts lenient because marking a correct sound wrong costs more trust than missing a mistake.
+
+## Word gate
+
+`gateWord` runs before the judge and returns one of three outcomes:
+
+- `judged`: judge the sounds.
+- `different-word` with `heard`: something else was said. `heard` is the transcript's words, or empty when there's nothing to name (the scorer found the word missing but the transcript says it was there, or there is no transcript).
+- `not-heard`: no speech at all.
+
+The rule, in order:
+
+1. No speech heard: `not-heard`.
+2. The scorer marked the target word omitted: `different-word`.
+3. The transcript holds more than one word: `different-word`.
+4. The transcript is one word that sounds like the target, or like the target with one judged sound swapped for a contrast partner (*sheep* for *ship*): `judged`. Naming that swap is the judge's job.
+5. The transcript is one other word: `different-word` only if the scoring agrees the word was off. That's a word accuracy under 0.3, or a transcript confidence of at least 0.5 with some sound outside the judged ones under 0.6 accuracy.
+
+Without a transcript, steps 3 to 5 become one check: a word accuracy under 0.3.
+
+Transcript words are compared by pronunciation through `pronunciationsOf`, which the caller supplies, so a homophone such as *by* for *buy* counts as the target. The transcript alone never rejects a word, and never names a swap: Azure transcribed a clear *pool* as "pull" and a clear *bat* as "that", and the judge reads both correctly from the scoring.
+
+The thresholds are `WORD_GATE_MARGINS`, to be tuned in [#335](https://github.com/rigomart/phonaria/issues/335). They come from the wrong-word investigation in [#344](https://github.com/rigomart/phonaria/issues/344), on 124 TTS clips: 1 of 48 target or partner recordings rejected (Guy's *sit* transcribed as "set", with a low /s/), and none of 60 unrelated words, words with added sounds, phrases or silences let through. A nonword one sound off the target, such as *shap* for *ship*, mostly gets through and is judged; that is fair, since it is a mispronounced target.
 
 ## Alignment
 
@@ -41,7 +79,7 @@ Only sounds in `judgedPhonemeIds` get a verdict, one per occurrence. With severa
 
 ## Azure scorer
 
-`createAzureScorer({ key, region })` returns a `Scorer` backed by Azure Pronunciation Assessment. It uses `fetch` only, with no Speech SDK and no Node APIs, so a Worker and a Bun script can share it. The caller passes the key and region; the scorer never reads the environment. It supports `en-us` only and throws for other accents.
+`createAzureScorer({ key, region })` returns a `Scorer` backed by Azure Pronunciation Assessment and plain speech recognition. It uses `fetch` only, with no Speech SDK and no Node APIs, so a Worker and a Bun script can share it. The caller passes the key and region; the scorer never reads the environment. It supports `en-us` only and throws for other accents.
 
 ```ts
 import { createAzureScorer } from "@phonaria/pronunciation";
@@ -50,7 +88,7 @@ const scorer = createAzureScorer({ key: env.AZURE_SPEECH_KEY, region: env.AZURE_
 const recording = await scorer.score(wav, request);
 ```
 
-It is two steps, both exported: `requestAzureAssessment` posts the WAV and returns Azure's raw response, and `azureEvidenceFromResponse` turns a response into evidence. Tests run the second on saved responses in `src/azure/fixtures`, with no key or network.
+It sends each recording twice, in parallel: `requestAzureAssessment` for Pronunciation Assessment and `requestAzureRecognition` for plain recognition, each returning Azure's raw response. `azureEvidenceFromResponse(assessment, request, recognition?)` turns them into evidence, with the transcript taken from the recognition. If only the recognition fails, the scorer returns evidence without a transcript. Each attempt is two billable calls, and the audio goes to Microsoft twice. Tests run on saved responses in `src/azure/fixtures`, with no key or network; `fixtures/miscue` holds both answers for *ship*, *sheep*, *kid*, *ships*, "a ship" and silence scored against *ship*.
 
 ### The request
 
@@ -63,11 +101,14 @@ It posts the WAV to `https://{region}.stt.speech.microsoft.com/speech/recognitio
 	"Granularity": "Phoneme",
 	"Dimension": "Comprehensive",
 	"PhonemeAlphabet": "IPA",
-	"NBestPhonemeCount": 10
+	"NBestPhonemeCount": 10,
+	"EnableMiscue": true
 }
 ```
 
-The reference text is the target words joined by spaces. Miscue detection is left off, so Azure returns exactly the reference words.
+The reference text is the target words joined by spaces. With miscue detection on, Azure marks a reference word it didn't hear as `Omission` and an extra word as `Insertion`, where without it every reference word comes back scored. It doesn't change the scores of a word it did hear: the investigation's swaps were judged the same either way, and scores moved by two points at most, except on recordings of another word, such as *seats*, which miscue scores lower. It catches most unrelated words but not phrases or added sounds, and it marks silence as `Success` with the word omitted, so the gate needs the transcript too.
+
+Plain recognition is the same request with no `Pronunciation-Assessment` header. Its best result's `Lexical` and `Confidence` are the transcript; a status of `NoMatch`, `InitialSilenceTimeout` or `BabbleTimeout`, or an empty `Lexical`, means no speech.
 
 ### What the live API returns
 
@@ -97,7 +138,9 @@ Azure's phonemes, with the two-sound units split, are lined up against each acce
 - **Lined up with a sound that has n-best**: the target score is the target's n-best score; the rivals are the other n-best phonemes, one per ID at its best score, never the target. This also holds where Azure expected a different phoneme, since n-best rates the audio, not the lexicon. A target missing from the list gets the lowest listed score, which is its upper bound.
 - **Target-only evidence**: Azure's `AccuracyScore` for the sound with no rivals, so the judge can only say `match` or `unclear`. Used for either sound of a two-sound unit, whose n-best rates the unit as a whole; when Azure returned no n-best; and when an n-best phoneme with no single ID scores at least as high as every named rival, because leaving it out would hand the win to the wrong rival. Where Azure's phoneme isn't the target, its accuracy says nothing about the target, so the sound is `missing` instead.
 
-Target words are matched to Azure's words ignoring case, punctuation and surrounding quotes, with curly apostrophes read as straight ones. A target word Azure didn't return or marked `Omission`, or a recording Azure didn't recognize, gets empty evidence. Scores are divided by 100.
+Each scored sound also gets Azure's `AccuracyScore` as `accuracy` where Azure's phoneme is the target, and each word gets the word's `AccuracyScore`.
+
+Target words are matched to Azure's words ignoring case, punctuation and surrounding quotes, with curly apostrophes read as straight ones. A target word Azure marked `Omission` gets empty evidence marked `omitted`; one Azure didn't return, or a recording Azure didn't recognize, gets empty evidence. Words marked `Insertion` are listed in `insertedWords`. Scores are divided by 100.
 
 ### Probe
 
@@ -113,6 +156,8 @@ For every minimal pair (A, B), both ways round, it judges only the sound where t
 
 - **Correct**: a recording of A against target A should be `match`.
 - **Swap**: a recording of B against target A should be `swapped` with B's sound.
+
+Every case goes through the word gate first. A **wrong-word** case, from a clips manifest (below), holds something other than A or B judged against A, and the gate should stop it: an unrelated word, the word with sounds added, a phrase, a nonword, or silence or noise.
 
 Accepted pronunciations come from the curated top-10k dictionary the catalog is validated against.
 
@@ -130,11 +175,12 @@ bun run --cwd packages/pronunciation harness run --catalog --offline
 - `--catalog`: the Jenny recordings, fetched once from `https://assets.rigos.dev` through `getWordAudioPath()` into `output/audio/jenny`. The default when no source is given.
 - `--audio-dir=<dir>`: the Jenny recordings from a local folder of `<word>.ogg` instead.
 - `--tts-dir=[name=]<dir>`, repeatable: a folder of `<word>.<ext>`, or an `audio-gen` output folder with them under `audio/`. The source is named `tts:<name>`, or after the nearest folder that isn't `audio`. Two sources with the same name stop the run.
+- `--clips=<manifest.json>`, repeatable: recordings labelled one by one, for cases a folder of words can't express. See `loadClips` in `sources.ts` for the format. Each clip names its source, target, partner, what was said and its kind: `correct`, `swap`, `unrelated`, `added-sounds`, `phrase`, `nonword` or `silence`.
 - `--voices-dir=<dir>`: real recordings as `<speaker>/<word>.wav`, one source per speaker. An optional `<speaker>/labels.json` maps a word to what it came out as: `{ "ship": "sheep", "thin": "neither" }`. A recording labelled as another word is scored as that word; one labelled `neither` is left out. Unlisted recordings count as said as intended. Words from the `words` list with no recording are listed as missing.
 
 Other options: `--offline` never calls the scorer, `--contrasts=i-ix,th-s` limits the catalog, `--concurrency=4` sets how many live calls run at once, `--report=<name>` names the output files, and `--max-throttled=100` stops calling Azure after that many HTTP 429s.
 
-Every recording is converted with `ffmpeg` to 16 kHz mono 16-bit PCM WAV, stored by the original file's hash in `output/wav`. Azure's raw responses are cached in `output/cache`, keyed by a hash of the WAV bytes, the request and the scorer settings, never the key. A rerun, or a change to the adapter or the judge, costs no calls. Without `AZURE_SPEECH_KEY` the run is offline. Live calls retry HTTP 429 and 5xx with backoff, honouring `Retry-After` in seconds or as a date, up to a minute.
+Every recording is converted with `ffmpeg` to 16 kHz mono 16-bit PCM WAV, stored by the original file's hash in `output/wav`. Azure's raw answers, the assessment and the recognition together, are cached in `output/cache`, keyed by a hash of the WAV bytes, the request and the scorer settings, never the key. A rerun, or a change to the adapter or the judge, costs no calls. Without `AZURE_SPEECH_KEY` the run is offline. Live calls retry HTTP 429 and 5xx with backoff, honouring `Retry-After` in seconds or as a date, up to a minute.
 
 The report goes to `output/<name>.json` and `output/<name>.md`, overall, per source kind (`tts`, `real`), per source and per contrast:
 
@@ -142,7 +188,11 @@ The report goes to `output/<name>.json` and `output/<name>.md`, overall, per sou
 - **Swap named**: swap recordings judged `swapped` with the partner's sound. **Misnamed**: `swapped` with another sound. **Missed**: judged `match`.
 - **Unclear**: judged `unclear` with scored evidence.
 - **No evidence**: the judge returned null or the sound was `missing`. Cases with no scorer result at all are left out and counted.
+- **False reject**: correct and swap recordings the word gate stopped.
+- **Wrong word accepted**: wrong-word recordings the gate let through, per kind, and overall leaving out nonwords, which are fair to judge.
 
 It also lists the worst contrasts by false flags with the rivals that tied or beat the target, how the judged sound's evidence looked before margins (no rivals, partner listed, who scored highest), and the same evidence judged under a few other margins, for information. `output/` is ignored by Git.
+
+`bun run harness import-investigation <dir>` turns the wrong-word investigation's folder (its `wav/` and `responses/`) into `output/investigation/clips.json` and seeds the cache with its saved Azure answers, so `bun run harness run --clips=output/investigation/clips.json` makes no calls.
 
 The metric arithmetic in `metrics.ts` is pure and tested with a fake scorer. Any `Scorer` can run through `harnessScorerFrom`; the Azure one caches the raw response instead of evidence.

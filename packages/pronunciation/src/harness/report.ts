@@ -1,5 +1,6 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type { JudgeMargins } from "../judge";
+import { WRONG_WORD_KINDS, type WrongWordKind } from "./cases";
 import {
 	type CaseResult,
 	evaluateCases,
@@ -35,7 +36,8 @@ export type ScoringSummary = {
 export type CaseRow = {
 	readonly source: string;
 	readonly contrast: string;
-	readonly kind: "correct" | "swap";
+	readonly kind: "correct" | "swap" | "wrong-word";
+	readonly wrongWord?: WrongWordKind;
 	readonly target: string;
 	readonly recording: string;
 	readonly position: number;
@@ -88,18 +90,29 @@ export function buildReport({
 	};
 }
 
-function caseRow({ case: harnessCase, sourceId, outcome, category }: CaseResult): CaseRow {
-	const sound = outcome.type === "judged" ? outcome.sound : null;
-	const verdict =
-		outcome.type === "no-evidence"
-			? outcome.reason
-			: outcome.verdict.type === "swapped"
+function verdictLabel(outcome: CaseResult["outcome"]): string {
+	switch (outcome.type) {
+		case "rejected":
+			return outcome.gate.type === "different-word"
+				? `different word "${outcome.gate.heard.join(" ")}"`
+				: "not heard";
+		case "no-evidence":
+			return outcome.reason;
+		case "judged":
+			return outcome.verdict.type === "swapped"
 				? `swapped ${outcome.verdict.heard}`
 				: outcome.verdict.type;
+	}
+}
+
+function caseRow({ case: harnessCase, sourceId, outcome, category }: CaseResult): CaseRow {
+	const sound = outcome.type === "judged" ? outcome.sound : null;
+	const verdict = verdictLabel(outcome);
 	return {
 		source: sourceId,
 		contrast: harnessCase.contrastId,
 		kind: harnessCase.kind,
+		...(harnessCase.wrongWord && { wrongWord: harnessCase.wrongWord }),
 		target: harnessCase.targetWord,
 		recording: harnessCase.recordingWord,
 		position: harnessCase.position,
@@ -143,6 +156,7 @@ const RATE_HEADER = [
 	"Missed",
 	"Swap unclear",
 	"No evidence",
+	"False reject",
 ];
 
 function rateCells({ correct, swap, rates }: Metrics): string[] {
@@ -156,6 +170,17 @@ function rateCells({ correct, swap, rates }: Metrics): string[] {
 		percent(rates.swapMissed),
 		percent(rates.swapUnclear),
 		percent(rates.noEvidence),
+		`${percent(rates.falseReject)} (${correct.rejected + swap.rejected})`,
+	];
+}
+
+function wrongWordCells({ wrongWord, rates }: Metrics): string[] {
+	return [
+		...WRONG_WORD_KINDS.map((kind) => {
+			const counts = wrongWord.byKind[kind];
+			return counts ? `${counts.accepted}/${counts.total}` : "–";
+		}),
+		`${percent(rates.wrongWordAccepted)}`,
 	];
 }
 
@@ -203,7 +228,7 @@ export function renderMarkdown(report: HarnessReport): string {
 		"",
 		`Scoring: ${scoring.uniqueRequests} unique requests, ${scoring.cacheHits} from cache, ${scoring.liveCalls} live calls (${scoring.attempts} attempts, ${scoring.throttled} throttled), ${scoring.uncached} uncached, ${scoring.failed} failed. ${report.unscoredCases} cases had no scorer result and are left out.`,
 		"",
-		"Correct: a recording judged against its own word; false flag means judged `swapped`. Pairs: the partner word's recording judged against the target; swap named means `swapped` with the partner's sound.",
+		"Correct: a recording judged against its own word; false flag means judged `swapped`. Pairs: the partner word's recording judged against the target; swap named means `swapped` with the partner's sound. False reject: correct or pair recordings the word gate stopped before judging.",
 		"",
 		"## Headline",
 		"",
@@ -212,6 +237,22 @@ export function renderMarkdown(report: HarnessReport): string {
 			groups.map((id) => [id, ...rateCells(report.groups[id].overall)]),
 		),
 		"",
+	);
+	const wrongWordGroups = groups.filter((id) => report.groups[id].overall.wrongWord.total > 0);
+	if (wrongWordGroups.length > 0) {
+		lines.push(
+			"## Wrong words",
+			"",
+			"Recordings of something other than the target or its partner, accepted by the word gate out of all. Wrong word accepted leaves out nonwords, which are fair to judge.",
+			"",
+			table(
+				["Group", ...WRONG_WORD_KINDS, "Wrong word accepted"],
+				wrongWordGroups.map((id) => [id, ...wrongWordCells(report.groups[id].overall)]),
+			),
+			"",
+		);
+	}
+	lines.push(
 		"## Evidence for the judged sound",
 		"",
 		"Share of scored judged sounds, before margins: no rivals at all, partner listed among the rivals, and who scored highest.",

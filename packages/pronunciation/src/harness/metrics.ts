@@ -1,6 +1,12 @@
-import type { SoundEvidence, SoundVerdict, WordEvidence } from "../contract";
+import type { SoundEvidence, SoundVerdict, Transcript, WordEvidence } from "../contract";
 import { judgeWord, type JudgeMargins } from "../judge";
-import type { HarnessCase } from "./cases";
+import { gateWord, type WordGate } from "../word-gate";
+import {
+	curatedPronunciations,
+	type HarnessCase,
+	targetWordFor,
+	type WrongWordKind,
+} from "./cases";
 
 export type SourceKind = "tts" | "real";
 
@@ -9,31 +15,44 @@ export type ScoredCase = {
 	readonly sourceId: string;
 	readonly sourceKind: SourceKind;
 	readonly evidence: WordEvidence;
+	/** The recording's transcript: null for no speech, absent when the scorer gave none. */
+	readonly transcript?: Transcript | null;
 };
 
 export type CaseOutcome =
+	| { readonly type: "rejected"; readonly gate: Exclude<WordGate, { type: "judged" }> }
 	| { readonly type: "judged"; readonly verdict: SoundVerdict; readonly sound: SoundEvidence }
 	| { readonly type: "no-evidence"; readonly reason: "no-pronunciation" | "missing-sound" };
 
-export type CorrectCategory = "match" | "false-flag" | "unclear" | "no-evidence";
-export type SwapCategory = "named" | "misnamed" | "missed" | "unclear" | "no-evidence";
+/** `rejected`: the word gate stopped the recording before any sound was judged. */
+export type CorrectCategory = "match" | "false-flag" | "unclear" | "no-evidence" | "rejected";
+export type SwapCategory = "named" | "misnamed" | "missed" | "unclear" | "no-evidence" | "rejected";
+/** `accepted`: the word gate let a recording of another word through to the judge. */
+export type WrongWordCategory = "rejected" | "accepted";
 
-export type CaseResult = Omit<ScoredCase, "evidence"> & {
+export type CaseResult = Omit<ScoredCase, "evidence" | "transcript"> & {
 	readonly outcome: CaseOutcome;
-	readonly category: CorrectCategory | SwapCategory;
+	readonly category: CorrectCategory | SwapCategory | WrongWordCategory;
 };
 
+/** The word gate, then the judge on the case's sound. */
 export function evaluateCase(
 	harnessCase: HarnessCase,
-	evidence: WordEvidence,
+	{ evidence, transcript }: Pick<ScoredCase, "evidence" | "transcript">,
 	margins?: JudgeMargins,
 ): CaseOutcome {
-	const judgement = judgeWord({
+	const judgedPhonemeIds = new Set(harnessCase.judgedPhonemeIds);
+	const gate = gateWord({
+		target: targetWordFor(harnessCase.targetWord),
 		evidence,
-		judgedPhonemeIds: new Set(harnessCase.judgedPhonemeIds),
+		transcript,
+		judgedPhonemeIds,
 		targetAccent: "en-us",
-		margins,
+		pronunciationsOf: curatedPronunciations,
 	});
+	if (gate.type !== "judged") return { type: "rejected", gate };
+
+	const judgement = judgeWord({ evidence, judgedPhonemeIds, targetAccent: "en-us", margins });
 	if (!judgement) return { type: "no-evidence", reason: "no-pronunciation" };
 	const pronunciation = evidence.pronunciations.find(
 		(candidate) => candidate.pronunciationIndex === judgement.pronunciationIndex,
@@ -47,8 +66,10 @@ export function evaluateCase(
 export function categorize(
 	harnessCase: HarnessCase,
 	outcome: CaseOutcome,
-): CorrectCategory | SwapCategory {
-	if (outcome.type === "no-evidence") return "no-evidence";
+): CorrectCategory | SwapCategory | WrongWordCategory {
+	if (harnessCase.kind === "wrong-word")
+		return outcome.type === "rejected" ? "rejected" : "accepted";
+	if (outcome.type === "rejected" || outcome.type === "no-evidence") return outcome.type;
 	const { verdict } = outcome;
 	if (harnessCase.kind === "correct") {
 		if (verdict.type === "swapped") return "false-flag";
@@ -61,14 +82,18 @@ export function categorize(
 }
 
 export function evaluateCases(scored: readonly ScoredCase[], margins?: JudgeMargins): CaseResult[] {
-	return scored.map(({ evidence, ...rest }) => {
-		const outcome = evaluateCase(rest.case, evidence, margins);
+	return scored.map(({ evidence, transcript, ...rest }) => {
+		const outcome = evaluateCase(rest.case, { evidence, transcript }, margins);
 		return { ...rest, outcome, category: categorize(rest.case, outcome) };
 	});
 }
 
 export type CorrectCounts = Record<CorrectCategory, number> & { readonly total: number };
 export type SwapCounts = Record<SwapCategory, number> & { readonly total: number };
+export type WrongWordCounts = Record<WrongWordCategory, number> & {
+	readonly total: number;
+	readonly byKind: Readonly<Partial<Record<WrongWordKind, { total: number; accepted: number }>>>;
+};
 
 /** Null when there were no cases of that kind. */
 export type Rates = {
@@ -84,6 +109,13 @@ export type Rates = {
 	/** Unclear over every case of both kinds. */
 	readonly unclear: number | null;
 	readonly noEvidence: number | null;
+	/** Correct and pair recordings the word gate stopped. */
+	readonly falseReject: number | null;
+	/**
+	 * Wrong-word recordings the word gate let through, leaving out nonwords: one
+	 * sound off the target, a nonword is a fair thing to judge.
+	 */
+	readonly wrongWordAccepted: number | null;
 };
 
 /** How the judged sound's evidence looked, before any margin is applied. */
@@ -106,6 +138,7 @@ export type EvidenceShape = {
 export type Metrics = {
 	readonly correct: CorrectCounts;
 	readonly swap: SwapCounts;
+	readonly wrongWord: WrongWordCounts;
 	readonly rates: Rates;
 	readonly shape: EvidenceShape;
 };
@@ -113,8 +146,25 @@ export type Metrics = {
 const SCORE_TOLERANCE = 1e-9;
 
 export function summarize(results: readonly CaseResult[]): Metrics {
-	const correct = { total: 0, match: 0, "false-flag": 0, unclear: 0, "no-evidence": 0 };
-	const swap = { total: 0, named: 0, misnamed: 0, missed: 0, unclear: 0, "no-evidence": 0 };
+	const correct = {
+		total: 0,
+		match: 0,
+		"false-flag": 0,
+		unclear: 0,
+		"no-evidence": 0,
+		rejected: 0,
+	};
+	const swap = {
+		total: 0,
+		named: 0,
+		misnamed: 0,
+		missed: 0,
+		unclear: 0,
+		"no-evidence": 0,
+		rejected: 0,
+	};
+	const wrongWord = { total: 0, rejected: 0, accepted: 0 };
+	const byKind: Partial<Record<WrongWordKind, { total: number; accepted: number }>> = {};
 	const shape = {
 		scored: 0,
 		targetOnly: 0,
@@ -127,6 +177,16 @@ export function summarize(results: readonly CaseResult[]): Metrics {
 	const beatenBy: Record<string, number> = {};
 
 	for (const result of results) {
+		const { wrongWord: kind } = result.case;
+		if (kind) {
+			const accepted = result.category === "accepted";
+			wrongWord.total++;
+			wrongWord[accepted ? "accepted" : "rejected"]++;
+			const counts = (byKind[kind] ??= { total: 0, accepted: 0 });
+			counts.total++;
+			if (accepted) counts.accepted++;
+			continue;
+		}
 		if (result.case.kind === "correct") {
 			correct.total++;
 			correct[result.category as CorrectCategory]++;
@@ -157,9 +217,13 @@ export function summarize(results: readonly CaseResult[]): Metrics {
 	}
 
 	const all = correct.total + swap.total;
+	const realWords = Object.entries(byKind)
+		.filter(([kind]) => kind !== "nonword")
+		.map(([, counts]) => counts);
 	return {
 		correct,
 		swap,
+		wrongWord: { ...wrongWord, byKind },
 		rates: {
 			falseFlag: rate(correct["false-flag"], correct.total),
 			correctUnclear: rate(correct.unclear, correct.total),
@@ -169,6 +233,11 @@ export function summarize(results: readonly CaseResult[]): Metrics {
 			swapUnclear: rate(swap.unclear, swap.total),
 			unclear: rate(correct.unclear + swap.unclear, all),
 			noEvidence: rate(correct["no-evidence"] + swap["no-evidence"], all),
+			falseReject: rate(correct.rejected + swap.rejected, all),
+			wrongWordAccepted: rate(
+				realWords.reduce((sum, counts) => sum + counts.accepted, 0),
+				realWords.reduce((sum, counts) => sum + counts.total, 0),
+			),
 		},
 		shape: { ...shape, beatenBy: sortedCounts(beatenBy) },
 	};

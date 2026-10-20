@@ -186,6 +186,24 @@ describe("createWavRecorder", () => {
 		expect(node().disconnect).toHaveBeenCalled();
 	});
 
+	it("reports elapsed time and the latest level while recording, and zero otherwise", async () => {
+		const recorder = createWavRecorder();
+		expect(recorder.getMeter()).toEqual({ elapsedSeconds: 0, level: 0 });
+
+		getUserMedia.mockResolvedValueOnce(new FakeStream());
+		await recorder.start();
+		node().send(0.5, 0.25);
+		const meter = recorder.getMeter();
+		expect(meter.elapsedSeconds).toBeCloseTo(0.5, 2);
+		expect(meter.level).toBeCloseTo(0.25, 5);
+
+		node().send(0.2, 0);
+		expect(recorder.getMeter().level).toBe(0);
+
+		recorder.stop();
+		expect(recorder.getMeter()).toEqual({ elapsedSeconds: 0, level: 0 });
+	});
+
 	it("stops at the time limit", async () => {
 		const { recorder, stream } = await startRecording();
 		node().send(MAX_RECORDING_SECONDS + 1, 0.3);
