@@ -1,7 +1,7 @@
 import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
 import { allowedVariants } from "./allowed-variants";
 import type { SoundEvidence, TargetWord, Transcript, WordEvidence } from "./contract";
-import { bestFittingPronunciation, contrastPartners } from "./judge";
+import { bestFittingPronunciation, contrastPartners, reaches, topRivals } from "./judge";
 
 /**
  * Whether a recording holds the target word at all, decided before any sound is
@@ -74,9 +74,9 @@ const differentWord = (heard: readonly string[]): WordGate => ({ type: "differen
  *    transcribed a clear *pool* as "pull" and a clear *bat* as "that".
  *
  * A low sound is the judge's to call when it is in the judged set, or, with every
- * sound judged, when a contrast partner or an allowed variant scored at least as
- * well as the target there. A low /p/ in *ships* said for *ship*, where /s/ won,
- * still says the word was off.
+ * sound judged, when a contrast partner or an allowed variant is among the
+ * top-scoring sounds there, at or above the target. A low /p/ in *ships* said for
+ * *ship*, where /s/ won, still says the word was off, even with /b/ above /p/.
  *
  * Without a transcript, steps 3 to 5 become one check: a low word accuracy.
  */
@@ -168,11 +168,9 @@ function heardAsPartnerOrVariant(
 	position: number,
 	targetAccent: TargetAccent,
 ): boolean {
+	const leaders = topRivals(sound.rivals);
+	if (leaders.length === 0 || !reaches(leaders[0].score, sound.targetScore)) return false;
 	const partners = contrastPartners(targetAccent, sound.phonemeId);
 	const variants = allowedVariants(targetAccent, phonemeIds, position);
-	return sound.rivals.some(
-		(rival) =>
-			(partners.has(rival.phonemeId) || variants.has(rival.phonemeId)) &&
-			rival.score >= sound.targetScore,
-	);
+	return leaders.some((rival) => partners.has(rival.phonemeId) || variants.has(rival.phonemeId));
 }

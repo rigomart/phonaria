@@ -67,7 +67,7 @@ A normal en-us variant of a sound, from `EnglishPhonemeAllophones`, is not a mis
 Two kinds of variant sound like another phoneme, so the judge maps them itself, from the sounds around them in the judged pronunciation:
 
 - **The flap**, between vowels: the /t/ of *water* and the /d/ of *ladder*. Heard as RX (ɾ, for a scorer that has it), or as /d/ for /t/ and /t/ for /d/.
-- **Unaspirated /p/ and /k/** after /s/: the /p/ of *spin* heard as /b/, the /k/ of *skate* as /ɡ/.
+- **Unaspirated /p/ and /k/** after a word-initial /s/: the /p/ of *spin* heard as /b/, the /k/ of *skate* as /ɡ/. No English word starts with /sb/ or /sɡ/, but inside a word voicing after /s/ is a contrast (*discussed* and *disgust*, *disperse* and *disburse*), so there /b/ for /p/ is a swap. Of the curated top-10k, 152 words start with s+p or s+k and 199 have one inside the word, where the variant isn't allowed. None of its pairs differ only by p-b or k-g after /s/, so an exception list drawn from it would be empty, but 8 of its words, such as *disgusting* and *baseball*, have /sb/ or /sɡ/ inside the word.
 
 A heard variant counts as the target: its score can win for the target, and it is never a rival, so a flapped *water* is `match`. Both variants equal a contrast partner (t-d, p-b, k-g), but only where English doesn't contrast them; a test checks that no minimal pair in the catalog differs on a sound where its partner is allowed. Pronunciations carry no stress, so the flap is also allowed before a stressed vowel, as in *adopt*, where speakers don't flap. The glottal /t/ of *button* has no phoneme to be heard as, and isn't mapped; that /t/ is between vowels, so the flap's are allowed there.
 
@@ -89,7 +89,7 @@ The rule, in order:
 4. The transcript is one word that sounds like the target, or like the target with one judged sound swapped for a contrast partner (*sheep* for *ship*): `judged`. Naming that swap is the judge's job.
 5. The transcript is one other word: `different-word` only if the scoring agrees the word was off. That's a word accuracy under 0.3, or a transcript confidence of at least 0.5 with some sound the judge can't call under 0.6 accuracy.
 
-With `judgedPhonemeIds` given, the judge can call the sounds in it. With every sound judged, it can call a sound where a contrast partner or an allowed variant scored at least as well as the target, since that's a swap it can name or a variant it accepts. A low /p/ in *ships* said for *ship*, where /s/ won, still says the word was off.
+With `judgedPhonemeIds` given, the judge can call the sounds in it. With every sound judged, it can call a sound where a contrast partner or an allowed variant is among the top-scoring sounds, at or above the target, since that's a swap it can name or a variant it accepts. A low /p/ in *ships* said for *ship*, where /s/ won, still says the word was off, even when /b/ scored a little above /p/.
 
 Without a transcript, steps 3 to 5 become one check: a word accuracy under 0.3.
 
@@ -219,7 +219,7 @@ Every recording is converted with `ffmpeg` to 16 kHz mono 16-bit PCM WAV, stored
 
 The report goes to `output/<name>.json` and `output/<name>.md`, overall, per source kind (`tts`, `real`), per source and per contrast:
 
-- **False flag**: correct recordings with a sound judged `swapped`, per case. **Recordings flagged** counts each source's word once, though a word in several contrasts is several cases: this is the rate the #328 target is about.
+- **False flag**: correct recordings with a sound judged `swapped`, per case. **Recordings flagged** counts each take once, though a word in several contrasts is several cases, and two takes of a word are two recordings: this is the rate the #328 target is about.
 - **Other sound flagged**: correct and pair recordings with a sound besides the contrast one judged `swapped`. Always zero with `--judged=contrast`.
 - **Swap named**: swap recordings judged `swapped` with the partner's sound. **Misnamed**: `swapped` with another sound. **Missed**: judged `match`.
 - **Unclear**: judged `unclear` with scored evidence.

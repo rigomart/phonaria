@@ -227,6 +227,7 @@ async function runHarness(options: RunOptions) {
 		if (result.type === "scored") {
 			scored.push({
 				case: harnessCase,
+				recordingId: recording.file,
 				sourceId: recording.sourceId,
 				sourceKind: recording.sourceKind,
 				evidence: result.evidence.words[0],

@@ -19,6 +19,8 @@ export type JudgedSounds = "every" | "contrast";
 
 export type ScoredCase = {
 	readonly case: HarnessCase;
+	/** One take, the same for every contrast it is judged in, such as its file path. */
+	readonly recordingId: string;
 	readonly sourceId: string;
 	readonly sourceKind: SourceKind;
 	readonly evidence: WordEvidence;
@@ -143,9 +145,9 @@ export type Rates = {
 	/** Correct recordings with a sound judged `swapped`. */
 	readonly falseFlag: number | null;
 	/**
-	 * Distinct correct recordings, each source's word judged against itself once,
-	 * with a sound judged `swapped`. A word in several contrasts is one recording
-	 * but several correct cases.
+	 * Distinct correct recordings, each take judged against its word once, with a
+	 * sound judged `swapped`. A take of a word in several contrasts is one recording
+	 * but several correct cases; two takes of a word are two recordings.
 	 */
 	readonly falseFlagRecordings: number | null;
 	/** Correct and pair recordings with a sound besides the case's judged `swapped`. */
@@ -256,7 +258,7 @@ export function summarize(results: readonly CaseResult[]): Metrics {
 		if (result.case.kind === "correct") {
 			correct.total++;
 			correct[result.category as CorrectCategory]++;
-			const recording = `${result.sourceId}\0${result.case.targetWord}`;
+			const recording = `${result.recordingId}\0${result.case.targetWord}`;
 			const flagged = result.category === "false-flag";
 			correctRecordings.set(recording, (correctRecordings.get(recording) ?? false) || flagged);
 		} else {

@@ -7,13 +7,8 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 
-type Neighbours = {
-	readonly previous: PhonemeSymbolId | undefined;
-	readonly next: PhonemeSymbolId | undefined;
-};
-
 type VariantRule = {
-	readonly appliesBetween: (neighbours: Neighbours) => boolean;
+	readonly appliesAt: (phonemeIds: readonly PhonemeSymbolId[], position: number) => boolean;
 	readonly heardAs: Partial<Record<PhonemeSymbolId, readonly PhonemeSymbolId[]>>;
 };
 
@@ -26,12 +21,15 @@ type VariantRule = {
 const VARIANT_RULES: Partial<Record<PhonemeAllophoneContextKey, VariantRule>> = {
 	// Scorers report the flap as RX (ɾ), or as /d/ or /t/ when they have no flap symbol.
 	"vowel-to-vowel-flap": {
-		appliesBetween: ({ previous, next }) => isVowel(previous) && isVowel(next),
+		appliesAt: (phonemeIds, position) =>
+			isVowel(phonemeIds[position - 1]) && isVowel(phonemeIds[position + 1]),
 		heardAs: { T: ["RX", "D"], D: ["RX", "T"] },
 	},
 	// Unaspirated after /s/, the /p/ of *spin* and the /k/ of *skate* sound like /b/ and /ɡ/.
+	// Word-initial only: no English word starts with /sb/ or /sɡ/, but inside a word
+	// voicing after /s/ is a contrast (*discussed* and *disgust*).
 	"after-s-onset-unaspirated": {
-		appliesBetween: ({ previous }) => previous === "S",
+		appliesAt: (phonemeIds, position) => position === 1 && phonemeIds[0] === "S",
 		heardAs: { P: ["B"], K: ["G"] },
 	},
 };
@@ -54,11 +52,10 @@ export function allowedVariants(
 	const registry = getAllophoneRegistryForLanguage(targetAccent) as Partial<
 		Record<PhonemeSymbolId, readonly PhonemeAllophone[]>
 	> | null;
-	const neighbours = { previous: phonemeIds[position - 1], next: phonemeIds[position + 1] };
 	const variants = new Set<PhonemeSymbolId>();
 	for (const { contextKey } of registry?.[phonemeId] ?? []) {
 		const rule = VARIANT_RULES[contextKey];
-		if (!rule?.appliesBetween(neighbours)) continue;
+		if (!rule?.appliesAt(phonemeIds, position)) continue;
 		for (const heard of rule.heardAs[phonemeId] ?? []) variants.add(heard);
 	}
 	return variants;

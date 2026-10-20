@@ -261,7 +261,7 @@ export function renderMarkdown(report: HarnessReport): string {
 		"",
 		`Scoring: ${scoring.uniqueRequests} unique requests, ${scoring.cacheHits} from cache, ${scoring.liveCalls} live calls (${scoring.attempts} attempts, ${scoring.throttled} throttled), ${scoring.uncached} uncached, ${scoring.failed} failed. ${report.unscoredCases} cases had no scorer result and are left out.`,
 		"",
-		"Correct: a recording judged against its own word; false flag means a sound judged `swapped`, counted per case, and recordings flagged counts each source's word once though it is in several contrasts. Pairs: the partner word's recording judged against the target; swap named means `swapped` with the partner's sound. Other sound flagged: correct or pair recordings with a sound besides the contrast one judged `swapped`. False reject: correct or pair recordings the word gate stopped before judging.",
+		"Correct: a recording judged against its own word; false flag means a sound judged `swapped`, counted per case, and recordings flagged counts each take once though it is in several contrasts. Pairs: the partner word's recording judged against the target; swap named means `swapped` with the partner's sound. Other sound flagged: correct or pair recordings with a sound besides the contrast one judged `swapped`. False reject: correct or pair recordings the word gate stopped before judging.",
 		"",
 		"## Headline",
 		"",

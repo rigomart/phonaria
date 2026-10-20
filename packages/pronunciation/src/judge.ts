@@ -202,11 +202,12 @@ function judgeSound(
 // just below it.
 const SCORE_TOLERANCE = 1e-9;
 
-function reaches(value: number, threshold: number): boolean {
+export function reaches(value: number, threshold: number): boolean {
 	return value >= threshold - SCORE_TOLERANCE;
 }
 
-function topRivals(rivals: readonly RivalScore[]): RivalScore[] {
+/** The rivals tied for the best score, within float tolerance. */
+export function topRivals(rivals: readonly RivalScore[]): RivalScore[] {
 	let bestScore = Number.NEGATIVE_INFINITY;
 	for (const rival of rivals) bestScore = Math.max(bestScore, rival.score);
 	return rivals.filter((rival) => Math.abs(rival.score - bestScore) <= SCORE_TOLERANCE);

@@ -175,19 +175,19 @@ answers barely move: false flag 0.9%, swap named 89.8%. No evidence rose from 0.
 
 The judge now rates every sound in the word against its own contrast partners. The en-us variants
 in `EnglishPhonemeAllophones` count as `match`: the flap for /t/ and /d/ between vowels, and /p/ and
-/k/ after /s/ heard as /b/ and /ɡ/. A recording counts as flagged when any of its sounds is judged
-`swapped`, once per word and voice:
+/k/ after a word-initial /s/ heard as /b/ and /ɡ/. A recording counts as flagged when any of its
+sounds is judged `swapped`, once per take:
 
 | Voice | Recordings flagged, contrast sound | Recordings flagged, every sound | Swap named, every sound |
 | --- | --- | --- | --- |
 | Jenny | 0.8% (3 of 400) | 1.0% (4) | 88.4% |
-| Guy | 2.3% (9) | **4.0% (16)** | 87.0% |
+| Guy | 2.3% (9) | **4.0% (16)** | 86.6% |
 | Aria | 0.3% (1) | 0.3% (1) | 94.7% |
 
 **Guy misses the 2% target with the single margins.** Of the 41 falsely flagged sounds across the
 three voices, 34 are Guy's, and they are the vowel blur described above, now on sounds outside the
 contrast: /ɛ/ heard as /æ/ 16 times (*bet*, *pet*, *met*, *vet*), /æ/ as /ɑ/ 4 and as /ʌ/ 3, /i/
-as /ɪ/ 4. A single swap margin of 0.5 brings Guy to 1.4% but swap named down to 80.7%. Margins per
+as /ɪ/ 4. A single swap margin of 0.5 brings Guy to 1.4% but swap named down to 80.3%. Margins per
 sound are #335's job.
 
 Two choices to know about:
@@ -196,9 +196,22 @@ Two choices to know about:
   /t/ for /d/), and /p k/ after /s/ as /b ɡ/. Those are partners in t-d, p-b and k-g. English
   doesn't contrast them in those positions, and a test checks that no catalog pair differs on such
   a sound.
+- **/p k/ after /s/ only at the start of a word.** No English word starts with /sb/ or /sɡ/, but
+  inside a word they occur: *discussed* and *disgust*, *disperse* and *disburse*. In the curated
+  top-10k, 152 words start with s+p or s+k and 199 have one inside the word; 8 words have /sb/ or
+  /sɡ/ inside (*disgusting*, *baseball*, *thanksgiving*), and no pair differs only by p-b or k-g
+  after /s/, so a dictionary exception list would be empty and still miss *disgust*. Without
+  syllables or stress there is no finer context to use. Narrowing the rule changed no verdict on
+  the catalog.
 - **The flap is accepted before a stressed vowel too** (*adopt*), where speakers don't flap,
   because the judged pronunciations carry no stress. This can only miss a mistake, never invent one.
 
 The word gate now lets a single partner swap through on any sound, so *chip* for *ship* reaches
-the judge. False rejects on the catalog went from 22 to 16, with one new one: Guy's *sit*,
-transcribed "set".
+the judge. A low sound leaves the word to the judge only when a
+contrast partner or an allowed variant scores highest there; a partner that merely beats the target
+while another sound wins doesn't count, or *ships* for *ship* would pass on a /b/ just above the
+/p/. False rejects on the catalog went from 22 cases to 23. Two are gone, Guy's *met* against *net*
+("matt") and *pet* against *bet* ("pat"), where /æ/ tops the vowel. Three recordings are new, each
+transcribed as another word with a vowel that isn't a partner on top: Guy's *sit* ("set") and
+*boat* ("but", /ʌ/ top, already rejected in contrasts that don't judge the vowel), and Jenny's
+*chick* against *cheek* ("check", /ɛ/ top).

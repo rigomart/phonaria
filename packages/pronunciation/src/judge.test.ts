@@ -321,6 +321,43 @@ describe("judgeWord on allowed en-us variants", () => {
 		).toEqual({ type: "match" });
 	});
 
+	it("matches /p/ and /k/ heard as /b/ and /ɡ/ after a word-initial /s/", () => {
+		const words: Record<string, readonly PhonemeSymbolId[]> = {
+			spin: ["S", "P", "IX", "N"],
+			skate: ["S", "K", "EI", "T"],
+			school: ["S", "K", "U", "L"],
+			sky: ["S", "K", "AI"],
+		};
+		for (const [word, pronunciation] of Object.entries(words)) {
+			const sounds = pronunciation.map((id, index) =>
+				index === 1 ? heardAs(id, id === "P" ? "B" : "G") : scored(id, 1),
+			);
+			expect(verdictAt(1, sounds), word).toEqual({ type: "match" });
+		}
+	});
+
+	it("names /ɡ/ and /b/ after an /s/ inside a word, where voicing is a contrast", () => {
+		const swappedAt = (pronunciation: readonly PhonemeSymbolId[], heard: PhonemeSymbolId) => {
+			const position = pronunciation.findIndex(
+				(id, index) => index > 1 && pronunciation[index - 1] === "S",
+			);
+			const sounds = pronunciation.map((id, index) =>
+				index === position ? heardAs(id, heard) : scored(id, 1),
+			);
+			return verdictAt(position, sounds);
+		};
+		// discussed said as disgust
+		expect(swappedAt(["D", "IX", "S", "K", "AH", "S", "T"], "G")).toEqual({
+			type: "swapped",
+			heard: "G",
+		});
+		// disperse said as disburse
+		expect(swappedAt(["D", "IX", "S", "P", "ER", "S"], "B")).toEqual({
+			type: "swapped",
+			heard: "B",
+		});
+	});
+
 	it("still names the partner outside the variant's context", () => {
 		expect(verdictAt(0, [heardAs("T", "D"), scored("AI", 1)])).toEqual({
 			type: "swapped",
@@ -388,6 +425,11 @@ describe("judgeWord on allowed en-us variants", () => {
 				);
 			}
 		}
+		// /p/ and /k/ after /s/ only start a word: inside one, voicing is a contrast.
+		const discussed: PhonemeSymbolId[] = ["D", "IX", "S", "K", "AH", "S", "T"];
+		const disperse: PhonemeSymbolId[] = ["D", "IX", "S", "P", "ER", "S"];
+		expect([...allowedVariants("en-us", discussed, 3)], "K in discussed").toEqual([]);
+		expect([...allowedVariants("en-us", disperse, 3)], "P in disperse").toEqual([]);
 	});
 
 	it("hides no minimal pair in the contrast catalog", () => {

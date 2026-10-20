@@ -101,7 +101,13 @@ async function scoreCatalog(sourceId: string, sourceKind: SourceKind): Promise<S
 	);
 	return results.map((result, index) => {
 		if (result.type !== "scored") throw new Error("Fake scorer failed");
-		return { case: cases[index], sourceId, sourceKind, evidence: result.evidence.words[0] };
+		return {
+			case: cases[index],
+			recordingId: `${sourceId}/${cases[index].recordingWord}`,
+			sourceId,
+			sourceKind,
+			evidence: result.evidence.words[0],
+		};
 	});
 }
 
@@ -215,6 +221,7 @@ describe("harness metrics with the word gate", () => {
 		transcript: Transcript | null,
 	): ScoredCase => ({
 		case: caseForClip({ target: "seat", partner: "sit", kind, said }, CONTRASTS),
+		recordingId: `${kind}/${said}/${transcript?.words.join(" ")}`,
 		sourceId: "tts:fake",
 		sourceKind: "tts",
 		evidence,
@@ -292,6 +299,7 @@ describe("harness metrics with every sound judged", () => {
 		});
 		return {
 			case: harnessCase,
+			recordingId: `take-1/${harnessCase.recordingWord}`,
 			sourceId: "tts:fake",
 			sourceKind: "tts",
 			evidence: { pronunciations: [{ pronunciationIndex: 0, sounds }] },
@@ -299,7 +307,7 @@ describe("harness metrics with every sound judged", () => {
 	}
 	const scored = seatCases.map(scoredWithSAsSh);
 
-	it("flags a correct recording on any sound, and counts each recording once", () => {
+	it("flags a correct recording on any sound, and counts a take in two contrasts once", () => {
 		const results = evaluateCases(scored, LENIENT_MARGINS, "every");
 		expect(results.map((r) => `${r.case.recordingWord} as seat: ${r.category}`)).toEqual([
 			"seat as seat: false-flag",
@@ -312,6 +320,31 @@ describe("harness metrics with every sound judged", () => {
 		expect(metrics.rates.falseFlag).toBe(1);
 		expect(metrics.rates.otherSoundFlagged).toBe(1);
 		expect(metrics.falselyFlagged).toEqual({ "S as SH": 4 });
+	});
+
+	it("counts each take of a word as its own recording", () => {
+		const takes = seatCases
+			.filter((c) => c.kind === "correct")
+			.flatMap((harnessCase) => {
+				const flagged = scoredWithSAsSh(harnessCase);
+				const clean: ScoredCase = {
+					...flagged,
+					recordingId: `take-2/${harnessCase.recordingWord}`,
+					evidence: {
+						pronunciations: [
+							{
+								pronunciationIndex: 0,
+								sounds: pronunciationOf("seat").map((id) => sound(id, 0.9)),
+							},
+						],
+					},
+				};
+				return [flagged, clean];
+			});
+		const metrics = summarize(evaluateCases(takes, LENIENT_MARGINS, "every"));
+		expect(metrics.correct.total, "two takes in two contrasts").toBe(4);
+		expect(metrics.correctRecordings).toEqual({ total: 2, flagged: 1 });
+		expect(metrics.rates.falseFlagRecordings).toBe(1 / 2);
 	});
 
 	it("names the word a flagged sound makes", () => {
