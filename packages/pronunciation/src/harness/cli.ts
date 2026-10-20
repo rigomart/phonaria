@@ -1,7 +1,8 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
+import { AZURE_JUDGE_THRESHOLDS } from "../azure/judge-thresholds";
 import type { ScoringRequest, TargetWord } from "../contract";
 import { type JudgeMargins, LENIENT_MARGINS } from "../judge";
 import { createAzureHarnessScorer, type FetchStats, retryingFetch } from "./azure";
@@ -28,22 +29,40 @@ import {
 	type SourceLoad,
 	toScorerWav,
 } from "./sources";
+import { soundOccurrences, tuneThresholds } from "./tune";
+import {
+	leaveOneSourceOut,
+	ratesBySource,
+	renderTuneReport,
+	serializeThresholds,
+	thresholdsFile,
+} from "./tune-report";
 
 const OUTPUT_DIR = fileURLToPath(new URL("../../output", import.meta.url));
+const THRESHOLDS_FILE = fileURLToPath(new URL("../azure/judge-thresholds.json", import.meta.url));
+
+const TUNE_SOURCES = [
+	"--catalog",
+	`--tts-dir=${path.join(OUTPUT_DIR, "tts", "guy")}`,
+	`--tts-dir=${path.join(OUTPUT_DIR, "tts", "aria")}`,
+];
 
 const USAGE = `Usage:
   bun run harness words [--json]
   bun run harness run [--catalog] [--audio-dir=<dir>] [--tts-dir=[name=]<dir>]... [--voices-dir=<dir>]
                       [--clips=<manifest.json>]... [--offline] [--concurrency=4]
-                      [--contrasts=i-ix,th-s] [--judged=every|contrast] [--report=report]
-                      [--max-throttled=100]
+                      [--contrasts=i-ix,th-s] [--judged=every|contrast] [--margins=tuned|lenient]
+                      [--report=report] [--max-throttled=100]
+  bun run harness tune [--check] [sources as for run]
   bun run harness import-investigation <dir>
   bun run harness import-evidence-log [--out=attempts]
   bun run harness judge-evidence-log <export.json>
 
-Paths are relative to packages/pronunciation. With no source given, run uses --catalog.`;
+Paths are relative to packages/pronunciation. With no source given, run uses --catalog
+and tune uses the catalog recordings in Jenny, Guy and Aria.`;
 
 const SWEEP: readonly JudgeMargins[] = [
+	LENIENT_MARGINS,
 	{ ...LENIENT_MARGINS, swap: 0.1 },
 	{ ...LENIENT_MARGINS, swap: 0.35 },
 	{ ...LENIENT_MARGINS, swap: 0.5 },
@@ -60,6 +79,7 @@ type RunOptions = {
 	concurrency: number;
 	contrasts?: string[];
 	judged: JudgedSounds;
+	margins: "tuned" | "lenient";
 	report: string;
 	maxThrottled: number;
 };
@@ -72,6 +92,7 @@ function parseRunOptions(args: readonly string[]): RunOptions {
 		offline: false,
 		concurrency: 4,
 		judged: "every",
+		margins: "tuned",
 		report: "report",
 		maxThrottled: 100,
 	};
@@ -87,6 +108,8 @@ function parseRunOptions(args: readonly string[]): RunOptions {
 		else if (flag === "--contrasts" && value) options.contrasts = value.split(",");
 		else if (flag === "--judged" && (value === "every" || value === "contrast")) {
 			options.judged = value;
+		} else if (flag === "--margins" && (value === "tuned" || value === "lenient")) {
+			options.margins = value;
 		} else if ((flag === "--concurrency" || flag === "--max-throttled") && /^\d+$/.test(value)) {
 			if (flag === "--concurrency") options.concurrency = Math.max(1, Number(value));
 			else options.maxThrottled = Number(value);
@@ -114,7 +137,7 @@ function printWords(json: boolean) {
 	console.log(`\n${list.length} contrasts, ${list.flatMap((pair) => pair.words).length} words.`);
 }
 
-async function runHarness(options: RunOptions) {
+async function scoreSources(options: RunOptions) {
 	await assertFfmpeg();
 	const contrasts = options.contrasts
 		? EnglishPhonemeContrasts.filter((contrast) => options.contrasts?.includes(contrast.id))
@@ -245,6 +268,12 @@ async function runHarness(options: RunOptions) {
 	if (fetchStats.throttled > options.maxThrottled) {
 		failures.add(`Stopped calling Azure after ${fetchStats.throttled} throttled responses`);
 	}
+	return { loads, clipSources, scorer, stats, fetchStats, failures, scored, cases: jobs.length };
+}
+
+async function runHarness(options: RunOptions) {
+	const { loads, clipSources, scorer, stats, fetchStats, failures, scored, cases } =
+		await scoreSources(options);
 
 	const sources: SourceSummary[] = [
 		...[...loads].map(([id, load]): SourceSummary => ({
@@ -267,7 +296,7 @@ async function runHarness(options: RunOptions) {
 	const report = buildReport({
 		generatedAt: new Date().toISOString(),
 		scorer: { id: scorer.id, settings: scorer.settings },
-		margins: LENIENT_MARGINS,
+		margins: options.margins === "tuned" ? AZURE_JUDGE_THRESHOLDS : LENIENT_MARGINS,
 		judged: options.judged,
 		sweep: SWEEP,
 		sources,
@@ -282,7 +311,7 @@ async function runHarness(options: RunOptions) {
 			failures: [...failures],
 		},
 		scored,
-		unscoredCases: jobs.length - scored.length,
+		unscoredCases: cases - scored.length,
 	});
 
 	await mkdir(OUTPUT_DIR, { recursive: true });
@@ -308,10 +337,66 @@ async function runHarness(options: RunOptions) {
 	if (stats.uncached > 0 || stats.failed > 0) process.exitCode = 1;
 }
 
+async function tuneCommand(args: readonly string[]) {
+	const check = args.includes("--check");
+	const sourceArgs = args.filter((arg) => arg !== "--check");
+	const options = parseRunOptions(sourceArgs.length > 0 ? sourceArgs : TUNE_SOURCES);
+	const { scored, stats, scorer } = await scoreSources({
+		...options,
+		offline: true,
+		judged: "every",
+	});
+	if (scorer.id !== "azure") throw new Error(`No thresholds file for scorer ${scorer.id}`);
+	if (stats.uncached > 0 || stats.failed > 0) {
+		throw new Error(
+			`${stats.uncached + stats.failed} requests aren't cached; run the harness first`,
+		);
+	}
+
+	const occurrences = soundOccurrences(scored, LENIENT_MARGINS);
+	const tuning = tuneThresholds(occurrences, { base: LENIENT_MARGINS });
+	const before = ratesBySource(scored, LENIENT_MARGINS);
+	const contents = serializeThresholds(
+		thresholdsFile(tuning, { id: scorer.id, settings: scorer.settings }, before),
+	);
+	const after = ratesBySource(scored, tuning.thresholds);
+	const report = renderTuneReport({
+		tuning,
+		before,
+		after,
+		heldOut: leaveOneSourceOut(scored, occurrences, LENIENT_MARGINS),
+	});
+	await mkdir(OUTPUT_DIR, { recursive: true });
+	await writeFile(path.join(OUTPUT_DIR, "tune.md"), report);
+
+	for (const [id, rates] of after) {
+		const was = before.get(id);
+		console.log(
+			`${id.padEnd(14)} recordings flagged ${was?.flagged} -> ${rates.flagged} of ${rates.recordings}, swaps named ${was?.named} -> ${rates.named} of ${rates.swaps}`,
+		);
+	}
+	const relative = path.relative(process.cwd(), THRESHOLDS_FILE);
+	if (check) {
+		const committed = await readFile(THRESHOLDS_FILE, "utf8").catch(() => "");
+		if (committed !== contents) {
+			console.error(`${relative} is out of date: run bun run harness tune`);
+			process.exitCode = 1;
+			return;
+		}
+		console.log(`${relative} matches the cached results.`);
+		return;
+	}
+	await writeFile(THRESHOLDS_FILE, contents);
+	console.log(
+		`Wrote ${relative}. Report: ${path.relative(process.cwd(), path.join(OUTPUT_DIR, "tune.md"))}`,
+	);
+}
+
 async function main() {
 	const [command, ...args] = process.argv.slice(2);
 	if (command === "words") return printWords(args.includes("--json"));
 	if (command === "run") return runHarness(parseRunOptions(args));
+	if (command === "tune") return tuneCommand(args);
 	if (command === "import-evidence-log") return importEvidenceLogCommand(args, OUTPUT_DIR);
 	if (command === "judge-evidence-log" && args[0]) {
 		return judgeEvidenceLogCommand(path.resolve(args[0]));

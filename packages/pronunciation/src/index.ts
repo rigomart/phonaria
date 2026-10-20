@@ -19,6 +19,7 @@ export {
 	LENIENT_MARGINS,
 	type JudgeInput,
 	type JudgeMargins,
+	type JudgeThresholds,
 	type SoundJudgement,
 	type WordFinder,
 	type WordJudgement,
@@ -40,6 +41,7 @@ export {
 	type AzureScorerOptions,
 } from "./azure/scorer";
 export { azureEvidenceFromResponse, azureTranscript } from "./azure/evidence";
+export { AZURE_JUDGE_THRESHOLDS } from "./azure/judge-thresholds";
 export type {
 	AzureAssessmentResponse,
 	AzureNBestPhoneme,

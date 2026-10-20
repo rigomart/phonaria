@@ -1,0 +1,40 @@
+{
+	"scorer": {
+		"id": "azure",
+		"settings": {
+			"endpoint": "short-audio-rest",
+			"nBestPhonemeCount": 10,
+			"miscue": true,
+			"recognition": "plain"
+		}
+	},
+	"tunedOn": {
+		"sources": {
+			"tts:aria": 400,
+			"tts:guy": 400,
+			"tts:jenny": 400
+		},
+		"falseFlagTarget": 0.02,
+		"minCorrectSounds": 50,
+		"tooFewCases": ["AU", "AX", "DH", "H", "J", "UX", "Y"]
+	},
+	"default": {
+		"match": 0.05,
+		"swap": 0.2,
+		"matchFloor": 0.5
+	},
+	"bySound": {
+		"AE": {
+			"swap": 0.45
+		},
+		"AI": {
+			"swap": 0.45
+		},
+		"E": {
+			"swap": 0.55
+		},
+		"I": {
+			"swap": 0.7
+		}
+	}
+}

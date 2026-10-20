@@ -5,6 +5,7 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { allowedVariants } from "./allowed-variants";
+import { AZURE_JUDGE_THRESHOLDS } from "./azure/judge-thresholds";
 import type {
 	MissingSoundEvidence,
 	PronunciationEvidence,
@@ -23,19 +24,35 @@ export type JudgeMargins = {
 	readonly matchFloor: number;
 };
 
-/** Lenient: favors missing a mistake over marking a correct sound wrong. Tuned per scorer in #335. */
+/** Lenient: favors missing a mistake over marking a correct sound wrong. */
 export const LENIENT_MARGINS: JudgeMargins = {
 	match: 0.05,
 	swap: 0.2,
 	matchFloor: 0.5,
 };
 
+/** Margins for one scorer, keyed by the judged target sound. A sound not listed uses `default`. */
+export type JudgeThresholds = {
+	readonly default: JudgeMargins;
+	readonly bySound: Readonly<Partial<Record<PhonemeSymbolId, Partial<JudgeMargins>>>>;
+};
+
+export function marginsFor(
+	margins: JudgeMargins | JudgeThresholds,
+	phonemeId: PhonemeSymbolId,
+): JudgeMargins {
+	if (!("bySound" in margins)) return margins;
+	const own = margins.bySound[phonemeId];
+	return own ? { ...margins.default, ...own } : margins.default;
+}
+
 export type JudgeInput = {
 	readonly evidence: WordEvidence;
 	/** Judge only these sounds. Omitted, every sound in the word is judged. */
 	readonly judgedPhonemeIds?: ReadonlySet<PhonemeSymbolId>;
 	readonly targetAccent: TargetAccent;
-	readonly margins?: JudgeMargins;
+	/** Defaults to the thresholds tuned for Azure. */
+	readonly margins?: JudgeMargins | JudgeThresholds;
 	/** The dictionary word a pronunciation spells, if any. Lets a `swapped` verdict carry `heardWord`. */
 	readonly findWord?: WordFinder;
 };
@@ -78,7 +95,7 @@ export function judgeWord({
 	evidence,
 	judgedPhonemeIds,
 	targetAccent,
-	margins = LENIENT_MARGINS,
+	margins = AZURE_JUDGE_THRESHOLDS,
 	findWord,
 }: JudgeInput): WordJudgement | null {
 	const pronunciation = bestFittingPronunciation(evidence.pronunciations);
@@ -93,7 +110,7 @@ export function judgeWord({
 				? scoreVariantsAsTarget(sound, allowedVariants(targetAccent, phonemeIds, position))
 				: sound,
 			contrastPartners(targetAccent, sound.phonemeId),
-			margins,
+			marginsFor(margins, sound.phonemeId),
 		);
 		sounds.push({
 			position,

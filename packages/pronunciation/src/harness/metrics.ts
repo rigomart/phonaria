@@ -1,5 +1,5 @@
 import type { SoundEvidence, SoundVerdict, Transcript, WordEvidence } from "../contract";
-import { judgeWord, type JudgeMargins, type SoundJudgement } from "../judge";
+import { type JudgeMargins, type JudgeThresholds, judgeWord, type SoundJudgement } from "../judge";
 import { gateWord, type WordGate } from "../word-gate";
 import {
 	curatedPronunciations,
@@ -61,7 +61,7 @@ export type CaseResult = Omit<ScoredCase, "evidence" | "transcript"> & {
 export function evaluateCase(
 	harnessCase: HarnessCase,
 	{ evidence, transcript }: Pick<ScoredCase, "evidence" | "transcript">,
-	margins?: JudgeMargins,
+	margins?: JudgeMargins | JudgeThresholds,
 	judged: JudgedSounds = "every",
 ): CaseOutcome {
 	const judgedPhonemeIds =
@@ -124,7 +124,7 @@ export function categorize(
 
 export function evaluateCases(
 	scored: readonly ScoredCase[],
-	margins?: JudgeMargins,
+	margins?: JudgeMargins | JudgeThresholds,
 	judged?: JudgedSounds,
 ): CaseResult[] {
 	return scored.map(({ evidence, transcript, ...rest }) => {
