@@ -24,6 +24,7 @@
         "@libsql/client": "0.18.0",
         "@phonaria/flags": "workspace:*",
         "@phonaria/phonetics-data": "workspace:*",
+        "@phonaria/pronunciation": "workspace:*",
         "@phonaria/ui": "workspace:*",
         "@tanstack/react-router": "1.170.36",
         "@tanstack/react-start": "1.168.53",
