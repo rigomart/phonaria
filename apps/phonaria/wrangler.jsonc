@@ -45,6 +45,11 @@
 			"name": "SPELLING_CONTEXT_RATE_LIMIT",
 			"namespace_id": "175201",
 			"simple": { "limit": 60, "period": 60 }
+		},
+		{
+			"name": "SPEECH_RATE_LIMIT",
+			"namespace_id": "175301",
+			"simple": { "limit": 20, "period": 60 }
 		}
 	],
 	"vars": {
@@ -71,13 +76,19 @@
 					"name": "SPELLING_CONTEXT_RATE_LIMIT",
 					"namespace_id": "175202",
 					"simple": { "limit": 60, "period": 60 }
+				},
+				{
+					"name": "SPEECH_RATE_LIMIT",
+					"namespace_id": "175302",
+					"simple": { "limit": 20, "period": 60 }
 				}
 			],
 			"vars": {
 				"SITE_URL": "https://phonaria-staging.workers.dev",
 				"SITE_INDEXING_ENABLED": "0",
 				"FLAG_PRACTICE": "1",
-				"FLAG_LANGUAGE_SPREAD": "1"
+				"FLAG_LANGUAGE_SPREAD": "1",
+				"FLAG_SPEECH": "1"
 			}
 		},
 		"preview": {
@@ -97,13 +108,19 @@
 					"name": "SPELLING_CONTEXT_RATE_LIMIT",
 					"namespace_id": "175203",
 					"simple": { "limit": 60, "period": 60 }
+				},
+				{
+					"name": "SPEECH_RATE_LIMIT",
+					"namespace_id": "175303",
+					"simple": { "limit": 20, "period": 60 }
 				}
 			],
 			"vars": {
 				"SITE_URL": "https://phonaria-preview.workers.dev",
 				"SITE_INDEXING_ENABLED": "0",
 				"FLAG_PRACTICE": "1",
-				"FLAG_LANGUAGE_SPREAD": "1"
+				"FLAG_LANGUAGE_SPREAD": "1",
+				"FLAG_SPEECH": "1"
 			}
 		},
 		"production": {
@@ -127,13 +144,19 @@
 					"name": "SPELLING_CONTEXT_RATE_LIMIT",
 					"namespace_id": "175204",
 					"simple": { "limit": 60, "period": 60 }
+				},
+				{
+					"name": "SPEECH_RATE_LIMIT",
+					"namespace_id": "175304",
+					"simple": { "limit": 20, "period": 60 }
 				}
 			],
 			"vars": {
 				"SITE_URL": "https://phonaria.rigos.dev",
 				"SITE_INDEXING_ENABLED": "1",
 				"FLAG_PRACTICE": "0",
-				"FLAG_LANGUAGE_SPREAD": "0"
+				"FLAG_LANGUAGE_SPREAD": "0",
+				"FLAG_SPEECH": "0"
 			}
 		}
 	}

@@ -22,6 +22,7 @@ import { Route as IpaChartFrequencyRouteImport } from './routes/ipa-chart/freque
 import { Route as IpaChartVowelsRouteImport } from './routes/ipa-chart/vowels'
 import { Route as PracticeIndexRouteImport } from './routes/practice.index'
 import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
+import { Route as ApiSpeechScoreRouteImport } from './routes/api.speech.score'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -88,6 +89,11 @@ const PracticeTopicRoute = PracticeTopicRouteImport.update({
   path: '/$topic',
   getParentRoute: () => PracticeRoute,
 } as any)
+const ApiSpeechScoreRoute = ApiSpeechScoreRouteImport.update({
+  id: '/api/speech/score',
+  path: '/api/speech/score',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/practice/$topic': typeof PracticeTopicRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/': typeof PracticeIndexRoute
+  '/api/speech/score': typeof ApiSpeechScoreRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/practice/$topic': typeof PracticeTopicRoute
   '/ipa-chart': typeof IpaChartIndexRoute
   '/practice': typeof PracticeIndexRoute
+  '/api/speech/score': typeof ApiSpeechScoreRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/practice/$topic': typeof PracticeTopicRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/': typeof PracticeIndexRoute
+  '/api/speech/score': typeof ApiSpeechScoreRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/practice/$topic'
     | '/ipa-chart/'
     | '/practice/'
+    | '/api/speech/score'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/practice/$topic'
     | '/ipa-chart'
     | '/practice'
+    | '/api/speech/score'
   id:
     | '__root__'
     | '/'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/practice/$topic'
     | '/ipa-chart/'
     | '/practice/'
+    | '/api/speech/score'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   IpaChartFrequencyRoute: typeof IpaChartFrequencyRoute
   IpaChartVowelsRoute: typeof IpaChartVowelsRoute
   IpaChartIndexRoute: typeof IpaChartIndexRoute
+  ApiSpeechScoreRoute: typeof ApiSpeechScoreRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -288,6 +301,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticeTopicRouteImport
       parentRoute: typeof PracticeRoute
     }
+    '/api/speech/score': {
+      id: '/api/speech/score'
+      path: '/api/speech/score'
+      fullPath: '/api/speech/score'
+      preLoaderRoute: typeof ApiSpeechScoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -317,6 +337,7 @@ const rootRouteChildren: RootRouteChildren = {
   IpaChartFrequencyRoute: IpaChartFrequencyRoute,
   IpaChartVowelsRoute: IpaChartVowelsRoute,
   IpaChartIndexRoute: IpaChartIndexRoute,
+  ApiSpeechScoreRoute: ApiSpeechScoreRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

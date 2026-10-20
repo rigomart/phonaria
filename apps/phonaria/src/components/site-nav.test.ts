@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getTools } from "./site-nav";
 
 const ids = (practice: boolean, languageSpread: boolean) =>
-	getTools({ practice, languageSpread }).map((tool) => tool.id);
+	getTools({ practice, languageSpread, speech: true }).map((tool) => tool.id);
 
 describe("getTools", () => {
 	it("shows Language Spread only when its flag is on", () => {

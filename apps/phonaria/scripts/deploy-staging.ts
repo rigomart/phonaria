@@ -45,6 +45,7 @@ export function deployStaging(
 		// Flags are baked in at build time; Wrangler vars alone don't reach the bundle.
 		FLAG_PRACTICE: baseEnv.FLAG_PRACTICE ?? "1",
 		FLAG_LANGUAGE_SPREAD: baseEnv.FLAG_LANGUAGE_SPREAD ?? "1",
+		FLAG_SPEECH: baseEnv.FLAG_SPEECH ?? "1",
 	};
 
 	run({ command: "bun", args: ["./scripts/write-dev-vars.ts"], env });

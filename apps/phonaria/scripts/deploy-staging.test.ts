@@ -25,6 +25,7 @@ describe("deployStaging", () => {
 					SITE_URL: siteUrl,
 					FLAG_PRACTICE: "1",
 					FLAG_LANGUAGE_SPREAD: "1",
+					FLAG_SPEECH: "1",
 				},
 			},
 			{
@@ -36,6 +37,7 @@ describe("deployStaging", () => {
 					SITE_URL: siteUrl,
 					FLAG_PRACTICE: "1",
 					FLAG_LANGUAGE_SPREAD: "1",
+					FLAG_SPEECH: "1",
 				},
 			},
 			{
@@ -47,6 +49,7 @@ describe("deployStaging", () => {
 					SITE_URL: siteUrl,
 					FLAG_PRACTICE: "1",
 					FLAG_LANGUAGE_SPREAD: "1",
+					FLAG_SPEECH: "1",
 				},
 			},
 			{
@@ -58,6 +61,7 @@ describe("deployStaging", () => {
 					SITE_URL: siteUrl,
 					FLAG_PRACTICE: "1",
 					FLAG_LANGUAGE_SPREAD: "1",
+					FLAG_SPEECH: "1",
 				},
 			},
 		]);

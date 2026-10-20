@@ -21,6 +21,8 @@ export const WORKER_SECRET_KEYS = [
 	"TURSO_DATABASE_URL",
 	"TURSO_AUTH_TOKEN",
 	"OPENROUTER_API_KEY",
+	"AZURE_SPEECH_KEY",
+	"AZURE_SPEECH_REGION",
 ] as const;
 
 export const WORKER_SECRETS_FILE = ".wrangler/worker-secrets.json";

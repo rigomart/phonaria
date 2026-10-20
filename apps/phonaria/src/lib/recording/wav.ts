@@ -38,3 +38,73 @@ export function encodeWav(samples: Float32Array): WavAudio {
 function writeAscii(view: DataView, offset: number, text: string) {
 	for (let i = 0; i < text.length; i++) view.setUint8(offset + i, text.charCodeAt(i));
 }
+
+export type WavFormat = {
+	/** 1 is integer PCM. */
+	readonly audioFormat: number;
+	readonly channels: number;
+	readonly sampleRate: number;
+	readonly bitsPerSample: number;
+	readonly dataBytes: number;
+};
+
+/**
+ * Reads the format and data size of a RIFF WAVE file. Returns null unless the whole
+ * file is well formed: the RIFF size matches the bytes, every chunk fits with its
+ * padding, one `fmt ` comes before one `data`, and the data is whole sample frames.
+ * So `dataBytes` is always the audio actually present, never a size the header claims.
+ */
+export function readWavFormat(bytes: Uint8Array): WavFormat | null {
+	if (bytes.length < 12 || readAscii(bytes, 0) !== "RIFF" || readAscii(bytes, 8) !== "WAVE") {
+		return null;
+	}
+	const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+	if (view.getUint32(4, true) !== bytes.length - 8) return null;
+
+	let format: Omit<WavFormat, "dataBytes"> | null = null;
+	let dataBytes: number | null = null;
+	let offset = 12;
+	while (offset < bytes.length) {
+		if (offset + 8 > bytes.length) return null;
+		const id = readAscii(bytes, offset);
+		if (!CHUNK_ID.test(id)) return null;
+		const size = view.getUint32(offset + 4, true);
+		const body = offset + 8;
+		// Chunks are padded to an even length.
+		const next = body + size + (size % 2);
+		if (next > bytes.length) return null;
+		if (id === "fmt ") {
+			if (format || dataBytes !== null || size < 16) return null;
+			format = readFmt(view, body);
+			if (!format) return null;
+		} else if (id === "data") {
+			if (!format || dataBytes !== null) return null;
+			dataBytes = size;
+		}
+		offset = next;
+	}
+	if (!format || dataBytes === null) return null;
+	if (dataBytes % ((format.channels * format.bitsPerSample) / 8) !== 0) return null;
+	return { ...format, dataBytes };
+}
+
+const CHUNK_ID = /^[ -~]{4}$/;
+
+function readFmt(view: DataView, body: number): Omit<WavFormat, "dataBytes"> | null {
+	const channels = view.getUint16(body + 2, true);
+	const sampleRate = view.getUint32(body + 4, true);
+	const byteRate = view.getUint32(body + 8, true);
+	const blockAlign = view.getUint16(body + 12, true);
+	const bitsPerSample = view.getUint16(body + 14, true);
+	if (channels === 0 || sampleRate === 0 || bitsPerSample === 0 || bitsPerSample % 8 !== 0) {
+		return null;
+	}
+	if (blockAlign !== (channels * bitsPerSample) / 8 || byteRate !== sampleRate * blockAlign) {
+		return null;
+	}
+	return { audioFormat: view.getUint16(body, true), channels, sampleRate, bitsPerSample };
+}
+
+function readAscii(bytes: Uint8Array, offset: number): string {
+	return String.fromCharCode(...bytes.subarray(offset, offset + 4));
+}

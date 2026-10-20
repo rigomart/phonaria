@@ -15,13 +15,17 @@ export type WorkerEnv = {
 	SITE_INDEXING_ENABLED?: string;
 	FLAG_PRACTICE?: string;
 	FLAG_LANGUAGE_SPREAD?: string;
+	FLAG_SPEECH?: string;
 	PUBLIC_BUCKET_URL?: string;
 	TURSO_DATABASE_URL?: string;
 	TURSO_AUTH_TOKEN?: string;
 	OPENROUTER_API_KEY?: string;
+	AZURE_SPEECH_KEY?: string;
+	AZURE_SPEECH_REGION?: string;
 	TRANSCRIPTION_RATE_LIMIT: WorkerRateLimit;
 	DEFINITION_RATE_LIMIT: WorkerRateLimit;
 	SPELLING_CONTEXT_RATE_LIMIT: WorkerRateLimit;
+	SPEECH_RATE_LIMIT: WorkerRateLimit;
 };
 
 export function getWorkerEnv(): WorkerEnv {
