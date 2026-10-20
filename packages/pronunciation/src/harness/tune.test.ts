@@ -1,11 +1,19 @@
 import { readFile } from "node:fs/promises";
-import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
+import type { PhonemeContrast, PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import { AZURE_JUDGE_THRESHOLDS } from "../azure/judge-thresholds";
-import type { SoundVerdict } from "../contract";
+import type { SoundEvidence, SoundVerdict, WordEvidence } from "../contract";
 import { LENIENT_MARGINS } from "../judge";
-import { type SoundOccurrence, SWAP_MARGINS, tuneThresholds } from "./tune";
-import { serializeThresholds, type ThresholdsFile } from "./tune-report";
+import { buildCatalogCases, pronunciationOf } from "./cases";
+import type { ScoredCase } from "./metrics";
+import { type SoundOccurrence, SWAP_MARGINS, soundOccurrences, tuneThresholds } from "./tune";
+import {
+	renderTuneReport,
+	serializeThresholds,
+	type ThresholdsFile,
+	thresholdsFile,
+	withDefaultSources,
+} from "./tune-report";
 
 /** Judged `swapped` up to `swappedUpTo`, `match` above it, or `match` at every margin. */
 function occurrence(
@@ -98,6 +106,120 @@ describe("tuneThresholds", () => {
 			tuneThresholds(occurrences).thresholds.bySound,
 			"each sound is at 2%, but 4 of 100 recordings are flagged; raising N loses no swaps",
 		).toEqual({ N: { swap: 0.35 } });
+	});
+});
+
+describe("tuneThresholds when single raises stall", () => {
+	// 100 recordings of AE, I and N; three are flagged, each on two of the sounds.
+	const flaggedPairs: readonly (readonly PhonemeSymbolId[])[] = [
+		["AE", "N"],
+		["AE", "I"],
+		["I", "N"],
+	];
+	const recordingsWith = (extra: readonly PhonemeSymbolId[] = []) =>
+		times(100, (index) =>
+			(["AE", "I", "N", ...extra] as const).map((id) =>
+				occurrence(id, {
+					recording: `tts:a\0take${index}`,
+					swappedUpTo: flaggedPairs[index]?.includes(id) ? 0.3 : 0,
+				}),
+			),
+		).flat();
+
+	it("raises two sounds together when no single raise clears a recording", () => {
+		// Each sound is at 2 of 100, and raising any one alone still leaves all three flagged.
+		const tuning = tuneThresholds(recordingsWith());
+		expect(tuning.thresholds.bySound).toEqual({ AE: { swap: 0.35 }, I: { swap: 0.35 } });
+		expect(tuning.overTarget).toEqual([]);
+	});
+
+	it("says which sources are still over the target when no raise reaches it", () => {
+		// A sound said too few times to tune flags 3 recordings by itself.
+		const occurrences = [
+			...times(100, (index) => occurrence("AE", { recording: `tts:a\0take${index}` })),
+			...times(3, (index) =>
+				occurrence("UX", { recording: `tts:a\0take${index}`, swappedUpTo: 0.3 }),
+			),
+		];
+		const tuning = tuneThresholds(occurrences);
+		expect(tuning.overTarget).toEqual([{ sourceId: "tts:a", flagged: 3, recordings: 100 }]);
+		const file = thresholdsFile(tuning, { id: "azure", settings: {} }, new Map());
+		expect(file.tunedOn.overTarget).toEqual(tuning.overTarget);
+		expect(
+			renderTuneReport({ tuning, before: new Map(), after: new Map(), heldOut: [] }),
+		).toContain("**Target not met.** Still over the target after tuning:\n\n- tts:a: 3 of 100");
+	});
+
+	it("leaves overTarget out of the file when every source meets the target", () => {
+		const tuning = tuneThresholds(recordingsWith());
+		const file = thresholdsFile(tuning, { id: "azure", settings: {} }, new Map());
+		expect(file.tunedOn).not.toHaveProperty("overTarget");
+	});
+});
+
+describe("soundOccurrences", () => {
+	const contrasts: readonly PhonemeContrast<"en-us">[] = [
+		{ id: "i-ix", phonemeIds: ["I", "IX"], minimalPairs: [{ words: ["seat", "sit"] }] },
+	];
+	const [seatCorrect] = buildCatalogCases(contrasts).filter(
+		(candidate) => candidate.kind === "correct" && candidate.targetWord === "seat",
+	);
+	const clear = (id: PhonemeSymbolId): SoundEvidence => ({
+		type: "scored",
+		phonemeId: id,
+		startSeconds: 0,
+		endSeconds: 0.1,
+		targetScore: 0.9,
+		rivals: [],
+	});
+	const evidence: WordEvidence = {
+		pronunciations: [{ pronunciationIndex: 0, sounds: pronunciationOf("seat").map(clear) }],
+	};
+	const take = (recordingId: string, contrastId = "i-ix"): ScoredCase => ({
+		case: { ...seatCorrect, contrastId },
+		recordingId,
+		sourceId: "real:ana",
+		sourceKind: "real",
+		evidence,
+	});
+	const recordingsOf = (scored: readonly ScoredCase[]) =>
+		new Set(soundOccurrences(scored).map((occurrence) => occurrence.recording));
+
+	it("counts separate takes of a word apart", () => {
+		const occurrences = soundOccurrences([take("ana/seat-1.wav"), take("ana/seat-2.wav")]);
+		expect(occurrences.filter((occurrence) => occurrence.phonemeId === "S")).toHaveLength(2);
+		expect(recordingsOf([take("ana/seat-1.wav"), take("ana/seat-2.wav")]).size).toBe(2);
+	});
+
+	it("counts one take judged in several contrasts once", () => {
+		const scored = [take("ana/seat-1.wav"), take("ana/seat-1.wav", "i-e")];
+		expect(soundOccurrences(scored)).toHaveLength(pronunciationOf("seat").length);
+		expect(recordingsOf(scored).size).toBe(1);
+	});
+});
+
+describe("withDefaultSources", () => {
+	const defaults = ["--catalog", "--tts-dir=guy", "--tts-dir=aria"];
+
+	it("adds the default sources when only other options are given", () => {
+		expect(withDefaultSources([], defaults)).toEqual(defaults);
+		expect(withDefaultSources(["--offline", "--concurrency=1"], defaults)).toEqual([
+			...defaults,
+			"--offline",
+			"--concurrency=1",
+		]);
+	});
+
+	it("keeps the sources given instead", () => {
+		for (const source of [
+			"--catalog",
+			"--audio-dir=a",
+			"--tts-dir=b",
+			"--voices-dir=c",
+			"--clips=d.json",
+		]) {
+			expect(withDefaultSources([source, "--offline"], defaults)).toEqual([source, "--offline"]);
+		}
 	});
 });
 

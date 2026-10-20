@@ -233,7 +233,8 @@ The rule:
   Said correctly means every sound of a correct recording and every sound but the contrast one of
   a pair recording.
 - **Then each voice**: while one has more than 2% of its recordings flagged, the sound that clears
-  the most of them for each swap it stops naming moves up to the first margin that clears any.
+  the most of them for each swap it stops naming moves up to the first margin that clears any. If
+  no single sound clears one, two sounds move together. That never happened on this run.
 
 | Voice | Recordings flagged before | After | Swap named before | After |
 | --- | --- | --- | --- | --- |

@@ -19,7 +19,7 @@ export const SWAP_MARGINS: readonly number[] = Array.from(
 /**
  * One sound of one judged recording. `expectedHeard` marks the contrast sound of
  * a pair recording, the one sound not said as the target. `recording` names the
- * correct recording a sound is in, once per source and word.
+ * correct recording a sound is in: one take of one word.
  */
 export type SoundOccurrence = {
 	readonly sourceId: string;
@@ -32,7 +32,8 @@ export type SoundOccurrence = {
 
 /**
  * Every sound the judge sees in the harness with every sound judged, once per
- * source, recording and target word. Recordings the word gate stops are left out.
+ * take and target word: a take judged in several contrasts counts once, and
+ * separate takes of a word count apart. Recordings the word gate stops are left out.
  */
 export function soundOccurrences(
 	scored: readonly ScoredCase[],
@@ -40,9 +41,9 @@ export function soundOccurrences(
 ): SoundOccurrence[] {
 	const seen = new Set<string>();
 	const occurrences: SoundOccurrence[] = [];
-	for (const { case: harnessCase, sourceId, evidence, transcript } of scored) {
+	for (const { case: harnessCase, sourceId, recordingId, evidence, transcript } of scored) {
 		if (harnessCase.kind === "wrong-word") continue;
-		const key = [sourceId, harnessCase.recordingWord, harnessCase.targetWord].join("\0");
+		const key = [sourceId, recordingId, harnessCase.targetWord].join("\0");
 		if (seen.has(key)) continue;
 		seen.add(key);
 		const gate = gateWord({
@@ -62,9 +63,7 @@ export function soundOccurrences(
 				phonemeId: sound.phonemeId,
 				...(harnessCase.kind === "swap" &&
 					sound.position === harnessCase.position && { expectedHeard: harnessCase.expectedHeard }),
-				...(harnessCase.kind === "correct" && {
-					recording: `${sourceId}\0${harnessCase.targetWord}`,
-				}),
+				...(harnessCase.kind === "correct" && { recording: key }),
 				verdicts: judgements.map((judgement) => judgement?.sounds[index].verdict ?? sound.verdict),
 			});
 		});
@@ -114,9 +113,18 @@ export type SoundTuning = {
 	>;
 };
 
+/** A source still over the target after tuning, with its correct recordings flagged. */
+export type OverTarget = {
+	readonly sourceId: string;
+	readonly flagged: number;
+	readonly recordings: number;
+};
+
 export type Tuning = {
 	readonly thresholds: JudgeThresholds;
 	readonly sounds: readonly SoundTuning[];
+	/** Sources the rule couldn't bring to the target. Empty when every source meets it. */
+	readonly overTarget: readonly OverTarget[];
 };
 
 export type TuneOptions = {
@@ -134,7 +142,9 @@ export type TuneOptions = {
  *    it was said correctly at least `minCorrect` times.
  * 2. While a source has more than the target share of its correct recordings with
  *    a sound judged `swapped`, the sound that clears the most of them for each swap
- *    it stops naming moves up to the first margin that clears any.
+ *    it stops naming moves up to the first margin that clears any. When no single
+ *    sound clears one, as when each flagged recording has two flagged sounds, two
+ *    sounds move together. Sources still over the target are in `overTarget`.
  *
  * Margins only move up, so no sound is judged less leniently than the base. The
  * match margin and floor stay at the base: with a swap margin above zero they
@@ -175,26 +185,63 @@ export function tuneThresholds(
 
 	const recordings = correctRecordings(occurrences);
 	const stepFor = (id: PhonemeSymbolId) => steps.get(id) ?? baseStep;
+	const lostBy = (id: PhonemeSymbolId, next: number) =>
+		countAt(soundsOf(id), stepFor(id)).named - countAt(soundsOf(id), next).named;
 	for (;;) {
 		const over = sourcesOverTarget(recordings, steps, baseStep, target);
 		if (over.size === 0) break;
 		const flaggedNow = countFlagged(recordings, steps, baseStep, over);
-		let best: RaiseStep | null = null;
+		const clearedBy = (raise: ReadonlyMap<PhonemeSymbolId, number>) =>
+			flaggedNow - countFlagged(recordings, new Map([...steps, ...raise]), baseStep, over);
+
+		const raises: Raise[] = [];
+		const consider = (raise: Map<PhonemeSymbolId, number>) => {
+			const cleared = clearedBy(raise);
+			if (cleared <= 0) return false;
+			let lost = 0;
+			for (const [id, next] of raise) lost += lostBy(id, next);
+			raises.push({ steps: raise, cleared, lost });
+			return true;
+		};
 		for (const id of ids) {
 			if (!tunable.has(id)) continue;
 			for (let next = stepFor(id) + 1; next <= last; next++) {
-				const raised = new Map(steps).set(id, next);
-				const cleared = flaggedNow - countFlagged(recordings, raised, baseStep, over);
-				if (cleared <= 0) continue;
-				const lost = countAt(soundsOf(id), stepFor(id)).named - countAt(soundsOf(id), next).named;
-				const candidate = { id, step: next, cleared, lost };
-				if (!best || clearsMorePerLostSwap(candidate, best)) best = candidate;
-				break;
+				if (consider(new Map([[id, next]]))) break;
 			}
 		}
+		if (raises.length === 0) {
+			const clearing = new Map(
+				ids
+					.filter((id) => tunable.has(id))
+					.map(
+						(id) => [id, flagClearingSteps(recordings, id, stepFor(id), baseStep, over)] as const,
+					)
+					.filter(([, candidates]) => candidates.length > 0),
+			);
+			const flagging = [...clearing.keys()];
+			for (const [index, first] of flagging.entries()) {
+				for (const second of flagging.slice(index + 1)) {
+					for (const firstStep of clearing.get(first) ?? []) {
+						for (const secondStep of clearing.get(second) ?? []) {
+							consider(
+								new Map([
+									[first, firstStep],
+									[second, secondStep],
+								]),
+							);
+						}
+					}
+				}
+			}
+		}
+		const best = raises.reduce<Raise | null>(
+			(kept, raise) => (!kept || clearsMorePerLostSwap(raise, kept) ? raise : kept),
+			null,
+		);
 		if (!best) break;
-		steps.set(best.id, best.step);
+		for (const [id, next] of best.steps) steps.set(id, next);
 	}
+	const overTarget = overTargetSources(recordings, steps, baseStep, target);
 
 	const sounds = ids.map((id): SoundTuning => {
 		const list = soundsOf(id);
@@ -225,25 +272,26 @@ export function tuneThresholds(
 			),
 		},
 		sounds,
+		overTarget,
 	};
 }
 
-type RaiseStep = {
-	readonly id: PhonemeSymbolId;
-	readonly step: number;
+/** Sounds moved together to new steps, the recordings that clears and the named swaps it loses. */
+type Raise = {
+	readonly steps: ReadonlyMap<PhonemeSymbolId, number>;
 	readonly cleared: number;
 	readonly lost: number;
 };
 
-const isFree = (raise: RaiseStep) => raise.lost === 0;
+const isFree = (raise: Raise) => raise.lost === 0;
 
-function clearsMorePerLostSwap(candidate: RaiseStep, best: RaiseStep): boolean {
+function clearsMorePerLostSwap(candidate: Raise, best: Raise): boolean {
 	if (isFree(candidate) || isFree(best)) {
 		return isFree(candidate) === isFree(best)
 			? candidate.cleared > best.cleared
 			: isFree(candidate);
 	}
-	// Cross-multiplied to compare cleared/lost ratios; a tie keeps the earlier sound.
+	// Cross-multiplied to compare cleared/lost ratios; a tie keeps the earlier raise.
 	return candidate.cleared * best.lost > best.cleared * candidate.lost;
 }
 
@@ -284,6 +332,45 @@ function countFlagged(
 	return recordings.filter(
 		(recording) => sources.has(recording.sourceId) && isFlagged(recording, steps, baseStep),
 	).length;
+}
+
+/** The steps above `step` at which one more of the sound's flags in `sources` stops being `swapped`. */
+function flagClearingSteps(
+	recordings: readonly CorrectRecording[],
+	phonemeId: PhonemeSymbolId,
+	step: number,
+	baseStep: number,
+	sources: ReadonlySet<string>,
+): number[] {
+	const flags = recordings
+		.filter((recording) => sources.has(recording.sourceId))
+		.flatMap((recording) => recording.sounds)
+		.filter((sound) => sound.phonemeId === phonemeId && sound.verdicts[step]?.type === "swapped");
+	const steps = new Set<number>();
+	for (const sound of flags) {
+		const cleared = sound.verdicts.findIndex(
+			(verdict, at) => at > step && at >= baseStep && verdict.type !== "swapped",
+		);
+		if (cleared >= 0) steps.add(cleared);
+	}
+	return [...steps].sort((a, b) => a - b);
+}
+
+function overTargetSources(
+	recordings: readonly CorrectRecording[],
+	steps: ReadonlyMap<PhonemeSymbolId, number>,
+	baseStep: number,
+	target: number,
+): OverTarget[] {
+	const over = sourcesOverTarget(recordings, steps, baseStep, target);
+	return [...groupBy(recordings, (recording) => recording.sourceId)]
+		.filter(([sourceId]) => over.has(sourceId))
+		.sort(([a], [b]) => a.localeCompare(b))
+		.map(([sourceId, group]) => ({
+			sourceId,
+			flagged: group.filter((recording) => isFlagged(recording, steps, baseStep)).length,
+			recordings: group.length,
+		}));
 }
 
 function sourcesOverTarget(

@@ -32,10 +32,12 @@ import {
 import { soundOccurrences, tuneThresholds } from "./tune";
 import {
 	leaveOneSourceOut,
+	overTargetLabel,
 	ratesBySource,
 	renderTuneReport,
 	serializeThresholds,
 	thresholdsFile,
+	withDefaultSources,
 } from "./tune-report";
 
 const OUTPUT_DIR = fileURLToPath(new URL("../../output", import.meta.url));
@@ -339,8 +341,12 @@ async function runHarness(options: RunOptions) {
 
 async function tuneCommand(args: readonly string[]) {
 	const check = args.includes("--check");
-	const sourceArgs = args.filter((arg) => arg !== "--check");
-	const options = parseRunOptions(sourceArgs.length > 0 ? sourceArgs : TUNE_SOURCES);
+	const options = parseRunOptions(
+		withDefaultSources(
+			args.filter((arg) => arg !== "--check"),
+			TUNE_SOURCES,
+		),
+	);
 	const { scored, stats, scorer } = await scoreSources({
 		...options,
 		offline: true,
@@ -374,6 +380,10 @@ async function tuneCommand(args: readonly string[]) {
 		console.log(
 			`${id.padEnd(14)} recordings flagged ${was?.flagged} -> ${rates.flagged} of ${rates.recordings}, swaps named ${was?.named} -> ${rates.named} of ${rates.swaps}`,
 		);
+	}
+	for (const source of tuning.overTarget) {
+		console.error(`Target not met: ${overTargetLabel(source)}`);
+		process.exitCode = 1;
 	}
 	const relative = path.relative(process.cwd(), THRESHOLDS_FILE);
 	if (check) {

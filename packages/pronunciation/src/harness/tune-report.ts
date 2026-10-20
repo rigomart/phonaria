@@ -4,6 +4,7 @@ import {
 	FALSE_FLAG_TARGET,
 	MIN_CORRECT_SOUNDS,
 	type SoundCounts,
+	type OverTarget,
 	type SoundOccurrence,
 	SWAP_MARGINS,
 	type Tuning,
@@ -19,6 +20,8 @@ export type ThresholdsFile = JudgeThresholds & {
 		readonly minCorrectSounds: number;
 		/** Sounds said correctly too few times to tune, kept at the default. */
 		readonly tooFewCases: readonly string[];
+		/** Present only when some source is still over the target after tuning. */
+		readonly overTarget?: readonly OverTarget[];
 	};
 };
 
@@ -36,6 +39,7 @@ export function thresholdsFile(
 			tooFewCases: tuning.sounds
 				.filter((sound) => sound.status === "too-few")
 				.map((sound) => sound.phonemeId),
+			...(tuning.overTarget.length > 0 && { overTarget: tuning.overTarget }),
 		},
 		default: tuning.thresholds.default,
 		bySound: tuning.thresholds.bySound,
@@ -142,6 +146,10 @@ function totals(rates: Iterable<SourceRates>): SourceRates {
 	return { recordings, flagged, swaps, named, unclear: null };
 }
 
+export function overTargetLabel({ sourceId, flagged, recordings }: OverTarget): string {
+	return `${sourceId}: ${flagged} of ${recordings} recordings flagged (${percent(flagged, recordings)})`;
+}
+
 export function renderTuneReport({
 	tuning,
 	before,
@@ -178,6 +186,14 @@ export function renderTuneReport({
 		"",
 		`Every sound judged. Target: at most ${FALSE_FLAG_TARGET * 100}% of correct recordings with a sound judged \`swapped\` on each source, and at most ${FALSE_FLAG_TARGET * 100}% of each sound's correct occurrences judged \`swapped\`. Default margins: match ${base.match}, swap ${base.swap}, floor ${base.matchFloor}. Swap margins tried: ${SWAP_MARGINS[0]} to ${SWAP_MARGINS[SWAP_MARGINS.length - 1]} in steps of 0.05. A sound said correctly fewer than ${MIN_CORRECT_SOUNDS} times keeps the default.`,
 		"",
+		...(tuning.overTarget.length > 0
+			? [
+					"**Target not met.** Still over the target after tuning:",
+					"",
+					...tuning.overTarget.map((source) => `- ${overTargetLabel(source)}`),
+					"",
+				]
+			: []),
 		"## Per source",
 		"",
 		table(
@@ -258,4 +274,15 @@ export function renderTuneReport({
 		),
 		"",
 	].join("\n");
+}
+
+const SOURCE_FLAGS = new Set(["--catalog", "--audio-dir", "--tts-dir", "--voices-dir", "--clips"]);
+
+/** `args` with `defaults` added when they name no source, so other options keep the default sources. */
+export function withDefaultSources(
+	args: readonly string[],
+	defaults: readonly string[],
+): readonly string[] {
+	const namesSource = args.some((arg) => SOURCE_FLAGS.has(arg.split("=", 1)[0]));
+	return namesSource ? args : [...defaults, ...args];
 }

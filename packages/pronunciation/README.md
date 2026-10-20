@@ -235,13 +235,15 @@ It also lists the falsely flagged sounds, as target and heard, the worst contras
 
 ### Tuning the judge's margins
 
-`bun run --cwd packages/pronunciation harness tune` picks each sound's swap margin from the cached results of the three-voice catalog run (Jenny, Guy and Aria; give sources as for `run` to tune on others) and writes `src/azure/judge-thresholds.json`, with a report in `output/tune.md`. It never calls Azure and stops if a request isn't cached. The same cache gives the same file byte for byte; `harness tune --check` compares instead of writing and fails when the committed file is out of date. See [#335](https://github.com/rigomart/phonaria/issues/335) and the [research note](../../docs/research/issue-328-azure-pronunciation-baseline.md) for the numbers.
+`bun run --cwd packages/pronunciation harness tune` picks each sound's swap margin from the cached results of the three-voice catalog run (Jenny, Guy and Aria) and writes `src/azure/judge-thresholds.json`, with a report in `output/tune.md`. It never calls Azure and stops if a request isn't cached. The same cache gives the same file byte for byte; `harness tune --check` compares instead of writing and fails when the committed file is out of date. See [#335](https://github.com/rigomart/phonaria/issues/335) and the [research note](../../docs/research/issue-328-azure-pronunciation-baseline.md) for the numbers.
 
 The target is the #328 one: at most 2% of correct recordings with a sound judged `swapped` on each voice, every sound judged. The rule, in `src/harness/tune.ts`:
 
 1. Only swap margins move, from 0.2 up in steps of 0.05, never down, so no sound is judged less leniently than `LENIENT_MARGINS`. With a swap margin above zero, the match margin and floor only decide between `match` and `unclear`, so they stay put.
 2. A sound said correctly at least 50 times (every sound of a correct recording, and every sound but the contrast one of a pair recording) gets the smallest swap margin that keeps its false flags at or under 2%, over all voices and on each voice where it was said 50 times. With fewer, one flag is more than the target, so the sound keeps the default and the report lists it.
-3. While a voice has more than 2% of its correct recordings flagged, the sound that clears the most of them for each swap it stops naming moves up to the first margin that clears any.
+3. While a voice has more than 2% of its correct recordings flagged, the sound that clears the most of them for each swap it stops naming moves up to the first margin that clears any. When no single sound clears one, because each flagged recording has two flagged sounds, two sounds move together. A voice still over the target is named in the report, the command's output (which then exits with an error) and the file's `tunedOn.overTarget`.
+
+Sounds are counted once per take and target word: a take judged in several contrasts counts once, and separate takes of a word count apart. Sources are given as for `run`; with none (`--offline`, `--check` and the like don't count), it uses the three voices.
 
 The report shows each voice before and after, the sounds that moved, the sounds still flagged, the sounds kept at the default, and a leave-one-voice-out check: tuned on two voices, measured on the third.
 
