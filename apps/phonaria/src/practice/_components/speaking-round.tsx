@@ -20,7 +20,11 @@ import {
 } from "@/lib/speech/evidence-log-consent";
 import type { TranscribedSyllable } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
-import { type AttemptLogger, createAttemptLogger } from "../_lib/evidence-log-attempt";
+import {
+	type AttemptLogger,
+	createAttemptLogger,
+	pageAttemptLogger,
+} from "../_lib/evidence-log-attempt";
 import type { MinimalPairPrompt } from "../_lib/minimal-pair-prompt";
 import { attemptReducer, deriveSpeakingView, READY, scoreAttempt } from "../_lib/speaking-attempt";
 import { loadWordSyllables } from "../_lib/word-syllables";
@@ -48,19 +52,18 @@ function useAttemptLogger(word: string): AttemptLogger {
 	// Made in the effect, so a result that resolves after unmount finds no logger.
 	const current = useRef<AttemptLogger | null>(null);
 	useEffect(() => {
-		const logger = createAttemptLogger({
-			word,
-			currentGrant: currentConsentGrant,
-			send: (payload) => void sendEvidenceLog(payload, (input, init) => fetch(input, init)),
-		});
-		current.current = logger;
-		const pageHidden = () => logger.next("moved-on");
-		window.addEventListener("pagehide", pageHidden);
-		const unsubscribe = onEvidenceLogConsentRevoked(() => logger.drop());
+		const page = pageAttemptLogger(() =>
+			createAttemptLogger({
+				word,
+				currentGrant: currentConsentGrant,
+				send: (payload) => void sendEvidenceLog(payload, (input, init) => fetch(input, init)),
+			}),
+		);
+		current.current = page.logger;
+		const unsubscribe = onEvidenceLogConsentRevoked(() => page.logger.drop());
 		return () => {
 			unsubscribe();
-			window.removeEventListener("pagehide", pageHidden);
-			logger.leave();
+			page.close();
 			current.current = null;
 		};
 	}, [word]);

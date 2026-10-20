@@ -2,25 +2,35 @@ import { create } from "zustand";
 
 /** The localStorage key for the evidence log opt-in (#336). */
 export const EVIDENCE_LOG_CONSENT_STORAGE_KEY = "evidence-log-consent";
-const LEGACY_GRANT = "on";
 const GRANT = /^on:[\w-]{1,64}$/;
 
 /**
- * The stored opt-in, or null for off. Each opt-in stores a fresh grant, so an
- * attempt queued under one grant isn't sent under a later one after a revocation.
- * The bare `on` of the first release is a grant of its own.
+ * The stored opt-in, `on:<id>`, or null for off. Each opt-in stores a fresh grant,
+ * so an attempt queued under one grant isn't sent under a later one after a
+ * revocation.
  */
 export function parseConsentGrant(raw: string | null): string | null {
-	return raw === LEGACY_GRANT || (raw !== null && GRANT.test(raw)) ? raw : null;
+	return raw !== null && GRANT.test(raw) ? raw : null;
 }
 
-/** The grant in storage right now, so a choice made in another tab counts at once. Blocked storage reads as off. */
-export function currentConsentGrant(): string | null {
+/** The grant this tab turned off; it stays off here even if removing it from storage failed. */
+let revokedGrant: string | null = null;
+
+function storedGrant(): string | null {
 	try {
 		return parseConsentGrant(globalThis.localStorage.getItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY));
 	} catch {
 		return null;
 	}
+}
+
+/**
+ * The grant in force right now, read from storage so a choice made in another tab
+ * counts at once. Blocked storage, and a grant this tab turned off, read as off.
+ */
+export function currentConsentGrant(): string | null {
+	const grant = storedGrant();
+	return grant === revokedGrant ? null : grant;
 }
 
 function newGrant(): string {
@@ -30,13 +40,29 @@ function newGrant(): string {
 	return `on:${id}`;
 }
 
-function writeStoredConsent(enabled: boolean) {
+function grantConsent() {
 	try {
-		if (enabled) globalThis.localStorage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, newGrant());
-		else globalThis.localStorage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY);
+		globalThis.localStorage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, newGrant());
 	} catch (error) {
 		console.warn("evidence log consent: could not save", error);
 	}
+}
+
+/** Off in this tab at once, whether or not storage can forget the grant. */
+function revokeConsent() {
+	revokedGrant = storedGrant();
+	try {
+		globalThis.localStorage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY);
+	} catch (error) {
+		console.warn("evidence log consent: could not save", error);
+	}
+	notifyRevoked();
+}
+
+const revocationListeners = new Set<() => void>();
+
+function notifyRevoked() {
+	for (const listener of revocationListeners) listener();
 }
 
 const isGranted = () => currentConsentGrant() !== null;
@@ -48,12 +74,18 @@ interface EvidenceLogConsentStore {
 	setEnabled: (enabled: boolean) => void;
 }
 
-export const useEvidenceLogConsent = create<EvidenceLogConsentStore>()((set) => ({
+export const useEvidenceLogConsent = create<EvidenceLogConsentStore>()((set, get) => ({
 	enabled: false,
-	load: () => set({ enabled: isGranted() }),
+	load: () => {
+		const enabled = isGranted();
+		const wasEnabled = get().enabled;
+		set({ enabled });
+		if (wasEnabled && !enabled) notifyRevoked();
+	},
 	setEnabled: (enabled) => {
-		writeStoredConsent(enabled);
-		// What was stored, so a blocked write leaves the switch off rather than lying.
+		if (enabled) grantConsent();
+		else revokeConsent();
+		// What is in force, so a failed write leaves the switch off rather than lying.
 		set({ enabled: isGranted() });
 	},
 }));
@@ -75,9 +107,11 @@ export function watchEvidenceLogConsent(target: StorageEvents = window): () => v
 	return () => target.removeEventListener("storage", onStorage);
 }
 
-/** Calls `listener` whenever this tab sees sharing go from on to off. Returns the unsubscribe. */
+/**
+ * Calls `listener` whenever sharing is turned off in this tab, or this tab sees it
+ * go from on to off in another. Returns the unsubscribe.
+ */
 export function onEvidenceLogConsentRevoked(listener: () => void): () => void {
-	return useEvidenceLogConsent.subscribe((state, previous) => {
-		if (previous.enabled && !state.enabled) listener();
-	});
+	revocationListeners.add(listener);
+	return () => revocationListeners.delete(listener);
 }

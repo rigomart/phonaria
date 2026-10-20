@@ -96,8 +96,7 @@ describe("useEvidenceLogConsent", () => {
 		expect(currentConsentGrant()).not.toBe(first);
 	});
 
-	it("reads a grant, or the first release's bare on, and anything else as off", () => {
-		expect(parseConsentGrant("on")).toBe("on");
+	it("reads only an on:<id> grant as on", () => {
 		expect(parseConsentGrant("on:3f2a-b1")).toBe("on:3f2a-b1");
 		for (const raw of [
 			null,
@@ -114,22 +113,74 @@ describe("useEvidenceLogConsent", () => {
 		}
 	});
 
-	it("takes the first release's bare on as sharing on", () => {
+	it("reads a bare on, with no grant id, as off", () => {
 		storage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, "on");
 		useEvidenceLogConsent.getState().load();
-		expect(useEvidenceLogConsent.getState().enabled).toBe(true);
+		expect(useEvidenceLogConsent.getState().enabled).toBe(false);
+		expect(currentConsentGrant()).toBeNull();
 	});
 
-	it("tells the round when this tab sees sharing turned off", () => {
+	it("tells the round each time sharing is turned off here, and when another tab turns it off", () => {
 		const revoked = vi.fn();
 		const unsubscribe = onEvidenceLogConsentRevoked(revoked);
 
 		useEvidenceLogConsent.getState().setEnabled(true);
 		useEvidenceLogConsent.getState().setEnabled(false);
 		useEvidenceLogConsent.getState().setEnabled(false);
+		expect(revoked).toHaveBeenCalledTimes(2);
+
+		useEvidenceLogConsent.getState().setEnabled(true);
+		storage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY);
+		useEvidenceLogConsent.getState().load();
+		useEvidenceLogConsent.getState().load();
+		unsubscribe();
+		useEvidenceLogConsent.getState().setEnabled(false);
+
+		expect(revoked).toHaveBeenCalledTimes(3);
+	});
+
+	it("turns off in this tab at once when storage can't forget the grant", () => {
+		const failing = {
+			...memoryStorage(),
+			removeItem: () => {
+				throw new Error("blocked");
+			},
+		};
+		vi.stubGlobal("localStorage", failing);
+		vi.spyOn(console, "warn").mockImplementation(() => {});
+		const revoked = vi.fn();
+		const unsubscribe = onEvidenceLogConsentRevoked(revoked);
+		const send = vi.fn<(payload: EvidenceLogPayload) => void>();
+		const attempts = createAttemptLogger({
+			word: "ship",
+			currentGrant: currentConsentGrant,
+			send,
+		});
+		const LOG: AttemptLog = {
+			evidence: { words: [{ pronunciations: [] }], transcript: null },
+			verdicts: { gate: { type: "not-heard" }, judgement: null },
+		};
+
+		useEvidenceLogConsent.getState().setEnabled(true);
+		attempts.scored(LOG);
+		useEvidenceLogConsent.getState().setEnabled(false);
+
+		expect(failing.values.get(EVIDENCE_LOG_CONSENT_STORAGE_KEY)).toMatch(/^on:/);
+		expect(useEvidenceLogConsent.getState().enabled).toBe(false);
+		expect(currentConsentGrant()).toBeNull();
+		expect(revoked).toHaveBeenCalledTimes(1);
+		attempts.next("retried");
+		attempts.scored(LOG);
+		attempts.next("moved-on");
+		expect(send).not.toHaveBeenCalled();
+
+		useEvidenceLogConsent.getState().setEnabled(true);
+		attempts.scored(LOG);
+		attempts.next("moved-on");
 		unsubscribe();
 
-		expect(revoked).toHaveBeenCalledTimes(1);
+		expect(useEvidenceLogConsent.getState().enabled).toBe(true);
+		expect(send).toHaveBeenCalledTimes(1);
 	});
 
 	it("stays off when storage is blocked", () => {
@@ -241,7 +292,7 @@ describe("evidence log consent across tabs", () => {
 		useEvidenceLogConsent.getState().load();
 		const { attempts, send } = tabLogger();
 
-		otherTab(() => storage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, "on"));
+		otherTab(() => storage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, "on:regranted-elsewhere"));
 		attempts.scored(LOG);
 		attempts.next("moved-on");
 

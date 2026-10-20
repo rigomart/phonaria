@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { type EvidenceLogPayload, withCatalogWordsOnly } from "@/lib/speech/evidence-log";
 import { evidenceLogPayloadSchema } from "@/server/evidence-log";
 import { MISCUE_FIXTURES } from "../../../../../packages/pronunciation/src/azure/fixtures/miscue";
-import { createAttemptLogger } from "./evidence-log-attempt";
+import { createAttemptLogger, pageAttemptLogger } from "./evidence-log-attempt";
 import { promptFor } from "./minimal-pair-prompt";
 import { type AttemptLog, scoreAttempt } from "./speaking-attempt";
 
@@ -160,6 +160,71 @@ describe("createAttemptLogger once the learner has left", () => {
 		attempts.next("moved-on");
 
 		expect(send).not.toHaveBeenCalled();
+	});
+});
+
+describe("pageAttemptLogger", () => {
+	function page() {
+		const events = new EventTarget();
+		const { send, consent } = logger();
+		const opened = vi.fn(() =>
+			createAttemptLogger({ word: "ship", currentGrant: () => consent.grant, send }),
+		);
+		const connection = pageAttemptLogger(opened, events);
+		const fire = (type: string, persisted = false) =>
+			events.dispatchEvent(Object.assign(new Event(type), { persisted }));
+		return { ...connection, send, opened, fire };
+	}
+
+	it("sends the waiting attempt as moved on when the page is hidden", () => {
+		const { logger: attempts, send, fire } = page();
+
+		attempts.scored(LOG);
+		fire("pagehide");
+
+		expect(send).toHaveBeenCalledTimes(1);
+		expect(send.mock.calls[0][0].next).toBe("moved-on");
+	});
+
+	it("sends nothing for a result that resolves after the page was hidden", () => {
+		const { logger: attempts, send, fire } = page();
+
+		fire("pagehide");
+		attempts.scored(LOG);
+		attempts.next("moved-on");
+
+		expect(send).not.toHaveBeenCalled();
+	});
+
+	it("logs new attempts once after a back/forward cache restore, and nothing from before", () => {
+		const { logger: attempts, send, opened, fire } = page();
+
+		fire("pagehide");
+		attempts.scored(LOG);
+		fire("pageshow", true);
+		attempts.next("moved-on");
+		expect(send).not.toHaveBeenCalled();
+
+		attempts.scored(LOG);
+		attempts.next("retried");
+		attempts.next("retried");
+
+		expect(opened).toHaveBeenCalledTimes(2);
+		expect(send).toHaveBeenCalledTimes(1);
+	});
+
+	it("keeps its logger through a first page load's pageshow, and stops on close", () => {
+		const { logger: attempts, send, opened, fire, close } = page();
+
+		fire("pageshow");
+		attempts.scored(LOG);
+		close();
+		fire("pageshow", true);
+		attempts.scored(LOG);
+		attempts.next("moved-on");
+
+		expect(opened).toHaveBeenCalledTimes(1);
+		expect(send).toHaveBeenCalledTimes(1);
 	});
 });
 

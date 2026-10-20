@@ -71,3 +71,40 @@ export function createAttemptLogger({
 		},
 	};
 }
+
+type PageEvents = Pick<EventTarget, "addEventListener" | "removeEventListener">;
+
+/**
+ * An attempt logger for the life of the page. Hiding the page closes it like
+ * leaving the round: the waiting attempt goes as moved on and later results are
+ * dropped. A back/forward cache restore opens a fresh one, so new attempts are
+ * logged and nothing from before the page was hidden is.
+ */
+export function pageAttemptLogger(
+	open: () => AttemptLogger,
+	page: PageEvents = window,
+): { logger: AttemptLogger; close(): void } {
+	let current: AttemptLogger | null = open();
+	const hidden = () => {
+		current?.leave();
+		current = null;
+	};
+	const shown = (event: Event) => {
+		if ((event as PageTransitionEvent).persisted && !current) current = open();
+	};
+	page.addEventListener("pagehide", hidden);
+	page.addEventListener("pageshow", shown);
+	return {
+		logger: {
+			scored: (log) => current?.scored(log),
+			next: (action) => current?.next(action),
+			leave: () => current?.leave(),
+			drop: () => current?.drop(),
+		},
+		close() {
+			page.removeEventListener("pagehide", hidden);
+			page.removeEventListener("pageshow", shown);
+			hidden();
+		},
+	};
+}
