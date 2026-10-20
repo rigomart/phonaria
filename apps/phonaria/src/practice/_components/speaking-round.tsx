@@ -13,11 +13,15 @@ import { IpaSequence } from "@/components/transcription/display/ipa-sequence";
 import { WordAudioButton } from "@/components/word-audio-button";
 import { useWavRecorder } from "@/hooks/use-wav-recorder";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
+import { sendEvidenceLog } from "@/lib/speech/evidence-log";
+import { useEvidenceLogConsent } from "@/lib/speech/evidence-log-consent";
 import type { TranscribedSyllable } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
+import { type AttemptLogger, createAttemptLogger } from "../_lib/evidence-log-attempt";
 import type { MinimalPairPrompt } from "../_lib/minimal-pair-prompt";
 import { attemptReducer, deriveSpeakingView, READY, scoreAttempt } from "../_lib/speaking-attempt";
 import { loadWordSyllables } from "../_lib/word-syllables";
+import { EvidenceLogSetting } from "./evidence-log-setting";
 import { RecordButton } from "./record-button";
 import { SoundResults } from "./sound-results";
 import { SpeakingStatus } from "./speaking-result";
@@ -36,6 +40,30 @@ function useWordSyllables(word: string): TranscribedSyllable[] | null | undefine
 	return loaded?.word === word ? loaded.syllables : undefined;
 }
 
+/**
+ * Sends each scored attempt to the evidence log, when sharing is on, once the
+ * learner tries again or moves on. Moving on is the next word or the list of pairs,
+ * both of which unmount the round, or leaving the page.
+ */
+function useAttemptLogger(word: string): AttemptLogger {
+	const [logger] = useState(() =>
+		createAttemptLogger({
+			word,
+			isEnabled: () => useEvidenceLogConsent.getState().enabled,
+			send: (payload) => void sendEvidenceLog(payload, (input, init) => fetch(input, init)),
+		}),
+	);
+	useEffect(() => {
+		const leave = () => logger.next("moved-on");
+		window.addEventListener("pagehide", leave);
+		return () => {
+			window.removeEventListener("pagehide", leave);
+			leave();
+		};
+	}, [logger]);
+	return logger;
+}
+
 export function SpeakingRound({
 	prompt,
 	onNextWord,
@@ -47,6 +75,7 @@ export function SpeakingRound({
 	const [attempt, dispatch] = useReducer(attemptReducer, READY);
 	const attemptCount = useRef(0);
 	const syllables = useWordSyllables(prompt.word);
+	const logger = useAttemptLogger(prompt.word);
 
 	const recording = recorder.state;
 	const { cancel } = recorder;
@@ -56,14 +85,18 @@ export function SpeakingRound({
 		const id = attemptCount.current;
 		dispatch({ type: "submitted", id });
 		cancel();
-		void scoreAttempt(prompt, recording.audio, (input, init) => fetch(input, init)).then((result) =>
-			dispatch({ type: "scored", id, result }),
+		void scoreAttempt(prompt, recording.audio, (input, init) => fetch(input, init)).then(
+			(result) => {
+				dispatch({ type: "scored", id, result });
+				if (result.type === "outcome" && id === attemptCount.current) logger.scored(result.log);
+			},
 		);
-	}, [recording, prompt, cancel]);
+	}, [recording, prompt, cancel, logger]);
 
 	const view = deriveSpeakingView(recording, attempt);
 
 	function record() {
+		logger.next("retried");
 		dispatch({ type: "reset" });
 		void recorder.start();
 	}
@@ -112,6 +145,7 @@ export function SpeakingRound({
 				<p className="mt-3 text-center text-muted-foreground text-xs">
 					{MinimalPairActivity.privacyNotice}
 				</p>
+				<EvidenceLogSetting />
 				<div aria-atomic="true" aria-live="polite" className="w-full">
 					<SpeakingStatus prompt={prompt} view={view} />
 				</div>
