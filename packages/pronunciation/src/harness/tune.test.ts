@@ -126,10 +126,36 @@ describe("tuneThresholds when single raises stall", () => {
 			),
 		).flat();
 
-	it("raises two sounds together when no single raise clears a recording", () => {
+	it("raises a recording's two flagged sounds together when no single raise clears it", () => {
 		// Each sound is at 2 of 100, and raising any one alone still leaves all three flagged.
 		const tuning = tuneThresholds(recordingsWith());
-		expect(tuning.thresholds.bySound).toEqual({ AE: { swap: 0.35 }, I: { swap: 0.35 } });
+		expect(tuning.thresholds.bySound).toEqual({ AE: { swap: 0.35 }, N: { swap: 0.35 } });
+		expect(tuning.overTarget).toEqual([]);
+	});
+
+	it("raises every flagged sound of a recording together when no pair clears one", () => {
+		// 150 recordings of AE, I, N and T; four are flagged, each on three of the sounds.
+		const flaggedTriples: readonly (readonly PhonemeSymbolId[])[] = [
+			["AE", "I", "N"],
+			["AE", "I", "T"],
+			["AE", "N", "T"],
+			["I", "N", "T"],
+		];
+		const occurrences = times(150, (index) =>
+			(["AE", "I", "N", "T"] as const).map((id) =>
+				occurrence(id, {
+					recording: `tts:a\0take${index}`,
+					swappedUpTo: flaggedTriples[index]?.includes(id) ? 0.3 : 0,
+				}),
+			),
+		).flat();
+		// Each sound is at 3 of 150 (2%); any one or two raised still leave all four flagged.
+		const tuning = tuneThresholds(occurrences);
+		expect(tuning.thresholds.bySound).toEqual({
+			AE: { swap: 0.35 },
+			I: { swap: 0.35 },
+			N: { swap: 0.35 },
+		});
 		expect(tuning.overTarget).toEqual([]);
 	});
 

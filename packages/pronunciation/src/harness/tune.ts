@@ -143,8 +143,10 @@ export type TuneOptions = {
  * 2. While a source has more than the target share of its correct recordings with
  *    a sound judged `swapped`, the sound that clears the most of them for each swap
  *    it stops naming moves up to the first margin that clears any. When no single
- *    sound clears one, as when each flagged recording has two flagged sounds, two
- *    sounds move together. Sources still over the target are in `overTarget`.
+ *    sound clears one, because flagged recordings have several flagged sounds, each
+ *    flagged recording is a candidate instead: all its flagged sounds move up to
+ *    the margins that clear them there, under the same cost rule. Sources still
+ *    over the target are in `overTarget`.
  *
  * Margins only move up, so no sound is judged less leniently than the base. The
  * match margin and floor stay at the base: with a swap margin above zero they
@@ -210,28 +212,10 @@ export function tuneThresholds(
 			}
 		}
 		if (raises.length === 0) {
-			const clearing = new Map(
-				ids
-					.filter((id) => tunable.has(id))
-					.map(
-						(id) => [id, flagClearingSteps(recordings, id, stepFor(id), baseStep, over)] as const,
-					)
-					.filter(([, candidates]) => candidates.length > 0),
-			);
-			const flagging = [...clearing.keys()];
-			for (const [index, first] of flagging.entries()) {
-				for (const second of flagging.slice(index + 1)) {
-					for (const firstStep of clearing.get(first) ?? []) {
-						for (const secondStep of clearing.get(second) ?? []) {
-							consider(
-								new Map([
-									[first, firstStep],
-									[second, secondStep],
-								]),
-							);
-						}
-					}
-				}
+			for (const recording of recordings) {
+				if (!over.has(recording.sourceId)) continue;
+				const raise = clearingRaise(recording, steps, baseStep, tunable);
+				if (raise) consider(raise);
 			}
 		}
 		const best = raises.reduce<Raise | null>(
@@ -334,26 +318,29 @@ function countFlagged(
 	).length;
 }
 
-/** The steps above `step` at which one more of the sound's flags in `sources` stops being `swapped`. */
-function flagClearingSteps(
-	recordings: readonly CorrectRecording[],
-	phonemeId: PhonemeSymbolId,
-	step: number,
+/**
+ * Every flagged sound of a flagged recording raised to the first margin that clears
+ * it there. Null when the recording isn't flagged or a flagged sound can't be raised:
+ * one too rare to tune, or still `swapped` at the last margin.
+ */
+function clearingRaise(
+	recording: CorrectRecording,
+	steps: ReadonlyMap<PhonemeSymbolId, number>,
 	baseStep: number,
-	sources: ReadonlySet<string>,
-): number[] {
-	const flags = recordings
-		.filter((recording) => sources.has(recording.sourceId))
-		.flatMap((recording) => recording.sounds)
-		.filter((sound) => sound.phonemeId === phonemeId && sound.verdicts[step]?.type === "swapped");
-	const steps = new Set<number>();
-	for (const sound of flags) {
+	tunable: ReadonlySet<PhonemeSymbolId>,
+): Map<PhonemeSymbolId, number> | null {
+	const raise = new Map<PhonemeSymbolId, number>();
+	for (const sound of recording.sounds) {
+		const step = steps.get(sound.phonemeId) ?? baseStep;
+		if (sound.verdicts[step].type !== "swapped") continue;
+		if (!tunable.has(sound.phonemeId)) return null;
 		const cleared = sound.verdicts.findIndex(
-			(verdict, at) => at > step && at >= baseStep && verdict.type !== "swapped",
+			(verdict, at) => at > step && verdict.type !== "swapped",
 		);
-		if (cleared >= 0) steps.add(cleared);
+		if (cleared < 0) return null;
+		raise.set(sound.phonemeId, Math.max(raise.get(sound.phonemeId) ?? 0, cleared));
 	}
-	return [...steps].sort((a, b) => a - b);
+	return raise.size > 0 ? raise : null;
 }
 
 function overTargetSources(
