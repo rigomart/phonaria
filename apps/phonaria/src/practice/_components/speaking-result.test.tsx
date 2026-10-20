@@ -38,15 +38,43 @@ afterEach(() => {
 
 describe("SpeakingStatus", () => {
 	it("confirms a match", () => {
-		const html = render({ phase: "outcome", outcome: { verdict: "match" } });
+		const html = render({ phase: "outcome", outcome: { verdict: "match", sounds: [] } });
 		expect(text(html)).toBe("Your /ɪ/ sounded right. That's ship.");
 		expect(html).not.toContain("<button");
+	});
+
+	it("doesn't call it the word when another sound came through as a different one", () => {
+		const html = render({
+			phase: "outcome",
+			outcome: {
+				verdict: "match",
+				sounds: [
+					{
+						position: 0,
+						sound: { id: "SH", ipa: "ʃ" },
+						verdict: { type: "swapped", heard: { id: "S", ipa: "s" }, heardWord: "sip" },
+					},
+					{ position: 1, sound: { id: "IX", ipa: "ɪ" }, verdict: { type: "match" } },
+					{
+						position: 2,
+						sound: { id: "P", ipa: "p" },
+						verdict: { type: "unclear", reason: "close-call" },
+					},
+				],
+			},
+		});
+		expect(text(html)).toBe("Your /ɪ/ sounded right.");
 	});
 
 	it("names the heard sound and the word it makes, with a button to hear it", () => {
 		const html = render({
 			phase: "outcome",
-			outcome: { verdict: "swapped", heard: { id: "I", ipa: "i" }, heardWord: "sheep" },
+			outcome: {
+				verdict: "swapped",
+				heard: { id: "I", ipa: "i" },
+				heardWord: "sheep",
+				sounds: [],
+			},
 		});
 		expect(text(html)).toContain("Your /ɪ/ sounded like /i/, which makes sheep.");
 		expect(html).toContain('aria-label="Hear sheep"');
@@ -55,7 +83,7 @@ describe("SpeakingStatus", () => {
 	it("names only the heard sound when it makes no pair word", () => {
 		const html = render({
 			phase: "outcome",
-			outcome: { verdict: "swapped", heard: { id: "E", ipa: "ɛ" }, heardWord: null },
+			outcome: { verdict: "swapped", heard: { id: "E", ipa: "ɛ" }, heardWord: null, sounds: [] },
 		});
 		expect(text(html)).toBe("Your /ɪ/ sounded like /ɛ/.");
 		expect(html).not.toContain("<button");
@@ -67,7 +95,10 @@ describe("SpeakingStatus", () => {
 			["close-call", "Somewhere between /ɪ/ and /i/. Try again and make it a clear /ɪ/."],
 			["other-sound", "That didn't sound clearly like /ɪ/ or /i/. Try again."],
 		] as const) {
-			const html = render({ phase: "outcome", outcome: { verdict: "unclear", reason } });
+			const html = render({
+				phase: "outcome",
+				outcome: { verdict: "unclear", reason, sounds: [] },
+			});
 			expect(text(html)).toBe(message);
 			expect(text(html)).not.toMatch(/wrong|mistake|incorrect/i);
 		}
@@ -95,7 +126,7 @@ describe("SpeakingStatus", () => {
 	it("never names a third sound when another sound won", () => {
 		const html = render({
 			phase: "outcome",
-			outcome: { verdict: "unclear", reason: "other-sound" },
+			outcome: { verdict: "unclear", reason: "other-sound", sounds: [] },
 		});
 		expect(text(html).match(/\/[^/ ]+\//g)).toEqual(["/ɪ/", "/i/"]);
 	});

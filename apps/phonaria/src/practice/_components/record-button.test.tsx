@@ -40,7 +40,7 @@ describe("RecordButton", () => {
 	});
 
 	it("offers another recording after a result", () => {
-		const html = render({ phase: "outcome", outcome: { verdict: "match" } });
+		const html = render({ phase: "outcome", outcome: { verdict: "match", sounds: [] } });
 		expect(text(html)).toBe("Try again");
 		expect(html).toContain("bg-record");
 	});

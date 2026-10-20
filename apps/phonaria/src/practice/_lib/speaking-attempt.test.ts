@@ -1,21 +1,37 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import {
 	azureEvidenceFromResponse,
+	gateWord,
+	judgeWord,
 	type MissingSoundEvidence,
 	type RecordingEvidence,
 	type SoundEvidence,
+	type SoundJudgement,
 	type WavAudio,
 } from "@phonaria/pronunciation";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { MISCUE_FIXTURES } from "../../../../../packages/pronunciation/src/azure/fixtures/miscue";
 import { type MinimalPairPrompt, promptFor } from "./minimal-pair-prompt";
 import {
 	type AttemptResult,
 	attemptReducer,
 	deriveSpeakingView,
+	outcomeFromJudgement,
 	READY,
+	type SoundResult,
 	scoreAttempt,
+	wordFinder,
 } from "./speaking-attempt";
+
+vi.mock("@phonaria/pronunciation", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@phonaria/pronunciation")>();
+	return { ...actual, gateWord: vi.fn(actual.gateWord), judgeWord: vi.fn(actual.judgeWord) };
+});
+
+afterEach(() => {
+	vi.mocked(gateWord).mockClear();
+	vi.mocked(judgeWord).mockClear();
+});
 
 const AUDIO = new Uint8Array([82, 73, 70, 70]) as WavAudio;
 
@@ -65,6 +81,20 @@ function routeReturning(status: number, body: unknown) {
 const SHIP = prompt("i-ix", "ship");
 const SHIP_IDS = ["SH", "IX", "P"] as const;
 
+const IPA = { SH: "ʃ", I: "i", P: "p", S: "s" } as const;
+
+function matched(position: number, id: keyof typeof IPA): SoundResult {
+	return { position, sound: { id, ipa: IPA[id] }, verdict: { type: "match" } };
+}
+
+function shipSounds(vowel: SoundResult["verdict"]): SoundResult[] {
+	return [
+		matched(0, "SH"),
+		{ position: 1, sound: { id: "IX", ipa: "ɪ" }, verdict: vowel },
+		matched(2, "P"),
+	];
+}
+
 describe("scoreAttempt", () => {
 	it("posts the WAV to the scoring route for the prompt's word", async () => {
 		const fetch = routeReturning(200, evidenceFor(SHIP_IDS, 1, scored("IX")));
@@ -85,8 +115,19 @@ describe("scoreAttempt", () => {
 		);
 		expect(await scoreAttempt(SHIP, AUDIO, fetch)).toEqual({
 			type: "outcome",
-			outcome: { verdict: "match" },
+			outcome: { verdict: "match", sounds: shipSounds({ type: "match" }) },
 		});
+	});
+
+	it("judges every sound of the word, naming words from the data at hand", async () => {
+		const fetch = routeReturning(200, evidenceFor(SHIP_IDS, 1, scored("IX")));
+		await scoreAttempt(SHIP, AUDIO, fetch);
+
+		expect(vi.mocked(gateWord).mock.calls[0][0].judgedPhonemeIds).toBeUndefined();
+		expect(judgeWord).toHaveBeenCalledTimes(1);
+		const [input] = vi.mocked(judgeWord).mock.calls[0];
+		expect(input.judgedPhonemeIds).toBeUndefined();
+		expect(input.findWord?.(["SH", "I", "P"])).toBe("sheep");
 	});
 
 	it("names the heard sound and the pair word it makes", async () => {
@@ -94,21 +135,40 @@ describe("scoreAttempt", () => {
 			200,
 			evidenceFor(SHIP_IDS, 1, scored("IX", 0.02, [{ phonemeId: "I", score: 1 }])),
 		);
+		const heard = { id: "I", ipa: "i" } as const;
 		expect(await scoreAttempt(SHIP, AUDIO, fetch)).toEqual({
 			type: "outcome",
-			outcome: { verdict: "swapped", heard: { id: "I", ipa: "i" }, heardWord: "sheep" },
+			outcome: {
+				verdict: "swapped",
+				heard,
+				heardWord: "sheep",
+				sounds: shipSounds({ type: "swapped", heard, heardWord: "sheep" }),
+			},
 		});
 	});
 
-	it("names no word when the heard sound is another contrast's partner", async () => {
+	it("names the word the judge found when the heard sound is another contrast's partner", async () => {
 		const bat = prompt("e-ae", "bat");
+		const heard = { id: "AH", ipa: "ʌ" } as const;
+		vi.mocked(judgeWord).mockReturnValueOnce({
+			pronunciationIndex: 0,
+			sounds: [
+				{ position: 0, phonemeId: "B", verdict: { type: "match" } },
+				{
+					position: 1,
+					phonemeId: "AE",
+					verdict: { type: "swapped", heard: "AH", heardWord: "but" },
+				},
+				{ position: 2, phonemeId: "T", verdict: { type: "match" } },
+			],
+		});
 		const fetch = routeReturning(
 			200,
 			evidenceFor(["B", "AE", "T"], 1, scored("AE", 0.02, [{ phonemeId: "AH", score: 1 }])),
 		);
-		expect(await scoreAttempt(bat, AUDIO, fetch)).toEqual({
+		expect(await scoreAttempt(bat, AUDIO, fetch)).toMatchObject({
 			type: "outcome",
-			outcome: { verdict: "swapped", heard: { id: "AH", ipa: "ʌ" }, heardWord: null },
+			outcome: { verdict: "swapped", heard, heardWord: "but" },
 		});
 	});
 
@@ -119,7 +179,11 @@ describe("scoreAttempt", () => {
 		);
 		expect(await scoreAttempt(SHIP, AUDIO, fetch)).toEqual({
 			type: "outcome",
-			outcome: { verdict: "unclear", reason: "close-call" },
+			outcome: {
+				verdict: "unclear",
+				reason: "close-call",
+				sounds: shipSounds({ type: "unclear", reason: "close-call" }),
+			},
 		});
 	});
 
@@ -130,7 +194,11 @@ describe("scoreAttempt", () => {
 		);
 		expect(await scoreAttempt(SHIP, AUDIO, fetch)).toEqual({
 			type: "outcome",
-			outcome: { verdict: "unclear", reason: "other-sound" },
+			outcome: {
+				verdict: "unclear",
+				reason: "other-sound",
+				sounds: shipSounds({ type: "unclear", reason: "other-sound" }),
+			},
 		});
 	});
 
@@ -138,13 +206,13 @@ describe("scoreAttempt", () => {
 		const silence = routeReturning(200, { words: [{ pronunciations: [] }] });
 		expect(await scoreAttempt(SHIP, AUDIO, silence)).toEqual({
 			type: "outcome",
-			outcome: { verdict: "unclear", reason: "no-evidence" },
+			outcome: { verdict: "unclear", reason: "no-evidence", sounds: [] },
 		});
 
 		const noWords = routeReturning(200, { words: [] });
 		expect(await scoreAttempt(SHIP, AUDIO, noWords)).toEqual({
 			type: "outcome",
-			outcome: { verdict: "unclear", reason: "no-evidence" },
+			outcome: { verdict: "unclear", reason: "no-evidence", sounds: [] },
 		});
 
 		const missing = routeReturning(
@@ -153,7 +221,11 @@ describe("scoreAttempt", () => {
 		);
 		expect(await scoreAttempt(SHIP, AUDIO, missing)).toEqual({
 			type: "outcome",
-			outcome: { verdict: "unclear", reason: "no-evidence" },
+			outcome: {
+				verdict: "unclear",
+				reason: "no-evidence",
+				sounds: shipSounds({ type: "unclear", reason: "no-evidence" }),
+			},
 		});
 	});
 
@@ -211,15 +283,29 @@ describe("scoreAttempt's word gate", () => {
 	it.each([
 		["ship", { verdict: "match" }],
 		["sheep", { verdict: "swapped", heard: { id: "I", ipa: "i" }, heardWord: "sheep" }],
+	] as const)("judges %s said for ship as %j", async (said, outcome) => {
+		const result = await scoreAttempt(SHIP, AUDIO, routeFor(said), noDictionary);
+		expect(result).toMatchObject({ type: "outcome", outcome });
+		expect(
+			result.type === "outcome" && "sounds" in result.outcome && result.outcome.sounds,
+		).toEqual([
+			expect.objectContaining({ position: 0, sound: { id: "SH", ipa: "ʃ" } }),
+			expect.objectContaining({ position: 1, sound: { id: "IX", ipa: "ɪ" } }),
+			expect.objectContaining({ position: 2, sound: { id: "P", ipa: "p" } }),
+		]);
+	});
+
+	it.each([
 		["kid", { verdict: "different-word", heard: ["kid"] }],
 		["ships", { verdict: "different-word", heard: ["ships"] }],
 		["a ship", { verdict: "different-word", heard: ["a", "ship"] }],
 		["silence", { verdict: "not-heard" }],
-	] as const)("turns %s said for ship into %j", async (said, outcome) => {
+	] as const)("turns %s said for ship into %j, judging no sound", async (said, outcome) => {
 		expect(await scoreAttempt(SHIP, AUDIO, routeFor(said), noDictionary)).toEqual({
 			type: "outcome",
 			outcome,
 		});
+		expect(judgeWord).not.toHaveBeenCalled();
 	});
 
 	it("doesn't load the dictionary for catalog words or several words", async () => {
@@ -249,7 +335,7 @@ describe("scoreAttempt's word gate", () => {
 	it("counts a homophone of the word from the curated dictionary as the word", async () => {
 		const buy = prompt("ai-ei", "buy");
 		const load = vi.fn(async () => ({ words: { by: ["B AI1"] } }));
-		expect(await scoreAttempt(buy, AUDIO, buyHeardAs("by"), load)).toEqual({
+		expect(await scoreAttempt(buy, AUDIO, buyHeardAs("by"), load)).toMatchObject({
 			type: "outcome",
 			outcome: { verdict: "match" },
 		});
@@ -265,8 +351,131 @@ describe("scoreAttempt's word gate", () => {
 	});
 });
 
+describe("outcomeFromJudgement", () => {
+	const SLEEP = prompt("i-ix", "sleep");
+
+	function judgement(sounds: SoundJudgement[]) {
+		return { pronunciationIndex: 0, sounds };
+	}
+
+	it("keeps every sound's verdict, in word order, and leads with the contrast sound", () => {
+		const outcome = outcomeFromJudgement(
+			SLEEP,
+			judgement([
+				{ position: 0, phonemeId: "S", verdict: { type: "match" } },
+				{ position: 1, phonemeId: "L", verdict: { type: "unclear", reason: "close-call" } },
+				{ position: 2, phonemeId: "I", verdict: { type: "match" } },
+				{ position: 3, phonemeId: "P", verdict: { type: "swapped", heard: "B" } },
+			]),
+		);
+		expect(outcome).toEqual({
+			verdict: "match",
+			sounds: [
+				matched(0, "S"),
+				{
+					position: 1,
+					sound: { id: "L", ipa: "l" },
+					verdict: { type: "unclear", reason: "close-call" },
+				},
+				matched(2, "I"),
+				{
+					position: 3,
+					sound: { id: "P", ipa: "p" },
+					verdict: { type: "swapped", heard: { id: "B", ipa: "b" }, heardWord: null },
+				},
+			],
+		});
+	});
+
+	it("keeps the word the judge found for any swapped sound", () => {
+		const outcome = outcomeFromJudgement(
+			SHIP,
+			judgement([
+				{
+					position: 0,
+					phonemeId: "SH",
+					verdict: { type: "swapped", heard: "S", heardWord: "sip" },
+				},
+				{ position: 1, phonemeId: "IX", verdict: { type: "match" } },
+				{ position: 2, phonemeId: "P", verdict: { type: "match" } },
+			]),
+		);
+		expect(outcome).toMatchObject({
+			verdict: "match",
+			sounds: [
+				{ verdict: { type: "swapped", heard: { id: "S", ipa: "s" }, heardWord: "sip" } },
+				{},
+				{},
+			],
+		});
+	});
+
+	it("leads with the contrast sound's swap and the word the judge found for it", () => {
+		const outcome = outcomeFromJudgement(
+			SLEEP,
+			judgement([
+				{
+					position: 2,
+					phonemeId: "I",
+					verdict: { type: "swapped", heard: "IX", heardWord: "slip" },
+				},
+			]),
+		);
+		expect(outcome).toMatchObject({
+			verdict: "swapped",
+			heard: { id: "IX", ipa: "ɪ" },
+			heardWord: "slip",
+			sounds: [{ verdict: { heardWord: "slip" } }],
+		});
+	});
+
+	it("has no evidence for the contrast sound when the judge didn't reach it, keeping the rest", () => {
+		const outcome = outcomeFromJudgement(
+			SHIP,
+			judgement([
+				{ position: 0, phonemeId: "SH", verdict: { type: "match" } },
+				{ position: 2, phonemeId: "P", verdict: { type: "match" } },
+			]),
+		);
+		expect(outcome).toEqual({
+			verdict: "unclear",
+			reason: "no-evidence",
+			sounds: [matched(0, "SH"), matched(2, "P")],
+		});
+		expect(outcomeFromJudgement(SHIP, null)).toEqual({
+			verdict: "unclear",
+			reason: "no-evidence",
+			sounds: [],
+		});
+	});
+});
+
+describe("wordFinder", () => {
+	it("names the pair partner before any homophone", () => {
+		expect(wordFinder(prompt("m-n", "sum"))(["S", "AH", "N"])).toBe("sun");
+		expect(wordFinder(SHIP)(["S", "AH", "N"])).toBe("son");
+		const pin = prompt("p-b", "pin");
+		expect(wordFinder(pin, { words: { been: ["B IX1 N"] } })(["B", "IX", "N"])).toBe("bin");
+	});
+
+	it("names catalog words, then common words, then words in a loaded dictionary", () => {
+		const findWord = wordFinder(SHIP, { words: { knight: ["N AI1 T"], sheen: ["SH I1 N"] } });
+		expect(findWord(["SH", "I", "P"])).toBe("sheep");
+		expect(findWord(["B", "AH", "T"])).toBe("but");
+		expect(findWord(["SH", "I", "N"])).toBe("sheen");
+		expect(findWord(["N", "AI", "T"]), "the catalog's spelling comes first").toBe("night");
+		expect(findWord(["SH", "IX", "B"])).toBeUndefined();
+	});
+
+	it("names only catalog and common words without a loaded dictionary", () => {
+		const findWord = wordFinder(SHIP);
+		expect(findWord(["B", "AH", "T"])).toBe("but");
+		expect(findWord(["SH", "I", "N"])).toBeUndefined();
+	});
+});
+
 describe("attemptReducer", () => {
-	const result: AttemptResult = { type: "outcome", outcome: { verdict: "match" } };
+	const result: AttemptResult = { type: "outcome", outcome: { verdict: "match", sounds: [] } };
 
 	it("keeps the result of the attempt being scored", () => {
 		const scoring = attemptReducer(READY, { type: "submitted", id: 1 });
@@ -317,9 +526,15 @@ describe("deriveSpeakingView", () => {
 		expect(
 			deriveSpeakingView(idle, {
 				status: "scored",
-				result: { type: "outcome", outcome: { verdict: "unclear", reason: "close-call" } },
+				result: {
+					type: "outcome",
+					outcome: { verdict: "unclear", reason: "close-call", sounds: [] },
+				},
 			}),
-		).toEqual({ phase: "outcome", outcome: { verdict: "unclear", reason: "close-call" } });
+		).toEqual({
+			phase: "outcome",
+			outcome: { verdict: "unclear", reason: "close-call", sounds: [] },
+		});
 		expect(
 			deriveSpeakingView(idle, {
 				status: "scored",

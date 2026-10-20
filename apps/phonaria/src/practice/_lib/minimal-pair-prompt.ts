@@ -44,7 +44,7 @@ export interface MinimalPairSearch {
 	word?: string;
 }
 
-function sound(id: PhonemeSymbolId): ContrastSound {
+export function contrastSound(id: PhonemeSymbolId): ContrastSound {
 	return { id, ipa: getIpaForPhonemeId(id) };
 }
 
@@ -59,7 +59,7 @@ export function listContrastOptions(): ContrastOption[] {
 		return {
 			id: contrast.id,
 			category: getPhonemeCategory(first),
-			sounds: [sound(first), sound(second)],
+			sounds: [contrastSound(first), contrastSound(second)],
 			example: contrast.minimalPairs[0].words,
 		};
 	});
@@ -84,8 +84,8 @@ export function promptFor(contrastId: string, word: string): MinimalPairPrompt |
 			contrastId,
 			word,
 			partnerWord,
-			target: sound(substitution.from),
-			partner: sound(substitution.to),
+			target: contrastSound(substitution.from),
+			partner: contrastSound(substitution.to),
 			position: substitution.index,
 		};
 	}
