@@ -3,7 +3,7 @@
 	"name": "phonaria",
 	"compatibility_date": "2026-09-12",
 	"compatibility_flags": ["nodejs_compat"],
-	"main": "@tanstack/react-start/server-entry",
+	"main": "./src/server.ts",
 	"assets": {
 		"html_handling": "drop-trailing-slash",
 		"run_worker_first": [
@@ -50,6 +50,11 @@
 			"name": "SPEECH_RATE_LIMIT",
 			"namespace_id": "175301",
 			"simple": { "limit": 20, "period": 60 }
+		},
+		{
+			"name": "EVIDENCE_LOG_RATE_LIMIT",
+			"namespace_id": "175401",
+			"simple": { "limit": 20, "period": 60 }
 		}
 	],
 	"vars": {
@@ -61,6 +66,8 @@
 	"env": {
 		"staging": {
 			"name": "phonaria-staging",
+			// Daily evidence log pruning (src/server.ts). Preview and PR Workers get no secrets, so no trigger.
+			"triggers": { "crons": ["17 3 * * *"] },
 			"ratelimits": [
 				{
 					"name": "TRANSCRIPTION_RATE_LIMIT",
@@ -80,6 +87,11 @@
 				{
 					"name": "SPEECH_RATE_LIMIT",
 					"namespace_id": "175302",
+					"simple": { "limit": 20, "period": 60 }
+				},
+				{
+					"name": "EVIDENCE_LOG_RATE_LIMIT",
+					"namespace_id": "175402",
 					"simple": { "limit": 20, "period": 60 }
 				}
 			],
@@ -113,6 +125,11 @@
 					"name": "SPEECH_RATE_LIMIT",
 					"namespace_id": "175303",
 					"simple": { "limit": 20, "period": 60 }
+				},
+				{
+					"name": "EVIDENCE_LOG_RATE_LIMIT",
+					"namespace_id": "175403",
+					"simple": { "limit": 20, "period": 60 }
 				}
 			],
 			"vars": {
@@ -125,6 +142,7 @@
 		},
 		"production": {
 			"name": "phonaria",
+			"triggers": { "crons": ["17 3 * * *"] },
 			"routes": [
 				{ "pattern": "phonaria.rigos.dev", "custom_domain": true },
 				{ "pattern": "phonaria-lab.rigos.dev", "custom_domain": true }
@@ -148,6 +166,11 @@
 				{
 					"name": "SPEECH_RATE_LIMIT",
 					"namespace_id": "175304",
+					"simple": { "limit": 20, "period": 60 }
+				},
+				{
+					"name": "EVIDENCE_LOG_RATE_LIMIT",
+					"namespace_id": "175404",
 					"simple": { "limit": 20, "period": 60 }
 				}
 			],

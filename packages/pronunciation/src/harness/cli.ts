@@ -12,6 +12,7 @@ import {
 	recordingWordList,
 	targetWordFor,
 } from "./cases";
+import { importEvidenceLogCommand, judgeEvidenceLogCommand } from "./evidence-log";
 import { importInvestigation } from "./investigation";
 import type { JudgedSounds, ScoredCase } from "./metrics";
 import { buildReport, renderMarkdown, type SourceSummary } from "./report";
@@ -37,6 +38,8 @@ const USAGE = `Usage:
                       [--contrasts=i-ix,th-s] [--judged=every|contrast] [--report=report]
                       [--max-throttled=100]
   bun run harness import-investigation <dir>
+  bun run harness import-evidence-log [--out=attempts]
+  bun run harness judge-evidence-log <export.json>
 
 Paths are relative to packages/pronunciation. With no source given, run uses --catalog.`;
 
@@ -309,6 +312,10 @@ async function main() {
 	const [command, ...args] = process.argv.slice(2);
 	if (command === "words") return printWords(args.includes("--json"));
 	if (command === "run") return runHarness(parseRunOptions(args));
+	if (command === "import-evidence-log") return importEvidenceLogCommand(args, OUTPUT_DIR);
+	if (command === "judge-evidence-log" && args[0]) {
+		return judgeEvidenceLogCommand(path.resolve(args[0]));
+	}
 	if (command === "import-investigation" && args[0]) {
 		const { manifest, clips, seeded } = await importInvestigation({
 			dir: path.resolve(args[0]),
