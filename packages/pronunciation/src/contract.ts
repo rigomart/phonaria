@@ -1,7 +1,7 @@
 import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
 
 /** The bytes of a 16 kHz, mono, 16-bit PCM WAV file, header included. */
-export type WavAudio = Uint8Array;
+export type WavAudio = Uint8Array<ArrayBuffer>;
 
 export type TargetWord = {
 	readonly text: string;
