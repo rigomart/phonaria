@@ -14,7 +14,10 @@ import { WordAudioButton } from "@/components/word-audio-button";
 import { useWavRecorder } from "@/hooks/use-wav-recorder";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { sendEvidenceLog } from "@/lib/speech/evidence-log";
-import { hasEvidenceLogConsent } from "@/lib/speech/evidence-log-consent";
+import {
+	currentConsentGrant,
+	onEvidenceLogConsentRevoked,
+} from "@/lib/speech/evidence-log-consent";
 import type { TranscribedSyllable } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
 import { type AttemptLogger, createAttemptLogger } from "../_lib/evidence-log-attempt";
@@ -47,13 +50,15 @@ function useAttemptLogger(word: string): AttemptLogger {
 	useEffect(() => {
 		const logger = createAttemptLogger({
 			word,
-			isEnabled: hasEvidenceLogConsent,
+			currentGrant: currentConsentGrant,
 			send: (payload) => void sendEvidenceLog(payload, (input, init) => fetch(input, init)),
 		});
 		current.current = logger;
 		const pageHidden = () => logger.next("moved-on");
 		window.addEventListener("pagehide", pageHidden);
+		const unsubscribe = onEvidenceLogConsentRevoked(() => logger.drop());
 		return () => {
+			unsubscribe();
 			window.removeEventListener("pagehide", pageHidden);
 			logger.leave();
 			current.current = null;
@@ -64,6 +69,7 @@ function useAttemptLogger(word: string): AttemptLogger {
 			scored: (log) => current.current?.scored(log),
 			next: (action) => current.current?.next(action),
 			leave: () => current.current?.leave(),
+			drop: () => current.current?.drop(),
 		}),
 		[],
 	);

@@ -4,8 +4,9 @@ import { EvidenceLogNotice } from "@/lib/speech/evidence-log";
 import type { EvidenceLogPayload } from "@/lib/speech/evidence-log";
 import {
 	EVIDENCE_LOG_CONSENT_STORAGE_KEY,
-	hasEvidenceLogConsent,
-	parseStoredConsent,
+	currentConsentGrant,
+	onEvidenceLogConsentRevoked,
+	parseConsentGrant,
 	useEvidenceLogConsent,
 	watchEvidenceLogConsent,
 } from "@/lib/speech/evidence-log-consent";
@@ -75,7 +76,7 @@ describe("useEvidenceLogConsent", () => {
 
 	it("remembers the choice in this browser, and forgets it when turned off", () => {
 		useEvidenceLogConsent.getState().setEnabled(true);
-		expect(storage.values.get(EVIDENCE_LOG_CONSENT_STORAGE_KEY)).toBe("on");
+		expect(storage.values.get(EVIDENCE_LOG_CONSENT_STORAGE_KEY)).toMatch(/^on:[\w-]+$/);
 
 		useEvidenceLogConsent.setState({ enabled: false });
 		useEvidenceLogConsent.getState().load();
@@ -85,9 +86,50 @@ describe("useEvidenceLogConsent", () => {
 		expect(storage.values.has(EVIDENCE_LOG_CONSENT_STORAGE_KEY)).toBe(false);
 	});
 
-	it("reads anything but the stored opt-in as off", () => {
-		expect(parseStoredConsent("on")).toBe(true);
-		for (const raw of [null, "", "true", "1", "off"]) expect(parseStoredConsent(raw)).toBe(false);
+	it("stores a fresh grant each time sharing is turned on", () => {
+		useEvidenceLogConsent.getState().setEnabled(true);
+		const first = currentConsentGrant();
+		useEvidenceLogConsent.getState().setEnabled(false);
+		useEvidenceLogConsent.getState().setEnabled(true);
+
+		expect(first).not.toBeNull();
+		expect(currentConsentGrant()).not.toBe(first);
+	});
+
+	it("reads a grant, or the first release's bare on, and anything else as off", () => {
+		expect(parseConsentGrant("on")).toBe("on");
+		expect(parseConsentGrant("on:3f2a-b1")).toBe("on:3f2a-b1");
+		for (const raw of [
+			null,
+			"",
+			"true",
+			"1",
+			"off",
+			"on:",
+			"onx",
+			"on:a b",
+			`on:${"a".repeat(65)}`,
+		]) {
+			expect(parseConsentGrant(raw)).toBeNull();
+		}
+	});
+
+	it("takes the first release's bare on as sharing on", () => {
+		storage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, "on");
+		useEvidenceLogConsent.getState().load();
+		expect(useEvidenceLogConsent.getState().enabled).toBe(true);
+	});
+
+	it("tells the round when this tab sees sharing turned off", () => {
+		const revoked = vi.fn();
+		const unsubscribe = onEvidenceLogConsentRevoked(revoked);
+
+		useEvidenceLogConsent.getState().setEnabled(true);
+		useEvidenceLogConsent.getState().setEnabled(false);
+		useEvidenceLogConsent.getState().setEnabled(false);
+		unsubscribe();
+
+		expect(revoked).toHaveBeenCalledTimes(1);
 	});
 
 	it("stays off when storage is blocked", () => {
@@ -118,7 +160,11 @@ describe("evidence log consent across tabs", () => {
 
 	function tabLogger() {
 		const send = vi.fn<(payload: EvidenceLogPayload) => void>();
-		const attempts = createAttemptLogger({ word: "ship", isEnabled: hasEvidenceLogConsent, send });
+		const attempts = createAttemptLogger({
+			word: "ship",
+			currentGrant: currentConsentGrant,
+			send,
+		});
 		return { attempts, send };
 	}
 
@@ -154,6 +200,30 @@ describe("evidence log consent across tabs", () => {
 		attempts.scored(LOG);
 
 		storage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY);
+		attempts.next("moved-on");
+
+		expect(send).not.toHaveBeenCalled();
+	});
+
+	it("sends nothing when sharing is turned off and on again in this tab", () => {
+		useEvidenceLogConsent.getState().setEnabled(true);
+		const { attempts, send } = tabLogger();
+		attempts.scored(LOG);
+
+		useEvidenceLogConsent.getState().setEnabled(false);
+		useEvidenceLogConsent.getState().setEnabled(true);
+		attempts.next("moved-on");
+
+		expect(send).not.toHaveBeenCalled();
+	});
+
+	it("sends nothing when another tab turns sharing off and on again, with no event heard", () => {
+		useEvidenceLogConsent.getState().setEnabled(true);
+		const { attempts, send } = tabLogger();
+		attempts.scored(LOG);
+
+		storage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY);
+		storage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, "on:other-tab");
 		attempts.next("moved-on");
 
 		expect(send).not.toHaveBeenCalled();

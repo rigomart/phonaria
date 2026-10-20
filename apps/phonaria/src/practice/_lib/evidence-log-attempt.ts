@@ -1,8 +1,8 @@
 /**
  * Holds a scored attempt until the learner's next action says whether they retried
- * or moved on, then sends it to the opt-in evidence log once. Sends nothing while
- * sharing is off, whether it was off when the attempt was scored or when it would
- * be sent.
+ * or moved on, then sends it to the opt-in evidence log once. It sends only if
+ * sharing stayed on throughout: the consent grant when the attempt was scored must
+ * still be the current one, so turning sharing off and on again drops it.
  */
 import {
 	EVIDENCE_LOG_SCHEMA_VERSION,
@@ -21,26 +21,29 @@ export type AttemptLogger = {
 	 * that arrives later, so nothing is sent after the learner has left.
 	 */
 	leave(): void;
+	/** Sharing was turned off: forgets the waiting attempt. */
+	drop(): void;
 };
 
 export function createAttemptLogger({
 	word,
-	isEnabled,
+	currentGrant,
 	send,
 	now = Date.now,
 }: {
 	word: string;
-	isEnabled: () => boolean;
+	/** The consent grant in force now, or null when sharing is off. */
+	currentGrant: () => string | null;
 	send: (payload: EvidenceLogPayload) => void;
 	now?: () => number;
 }): AttemptLogger {
-	let pending: (AttemptLog & { attemptedAt: number }) | null = null;
+	let pending: (AttemptLog & { attemptedAt: number; grant: string }) | null = null;
 	let left = false;
 
 	function next(action: EvidenceLogNext) {
 		const attempt = pending;
 		pending = null;
-		if (!attempt || !isEnabled()) return;
+		if (!attempt || currentGrant() !== attempt.grant) return;
 		send({
 			schemaVersion: EVIDENCE_LOG_SCHEMA_VERSION,
 			attemptedAt: attempt.attemptedAt,
@@ -55,12 +58,16 @@ export function createAttemptLogger({
 	return {
 		scored(log) {
 			next("retried");
-			if (log && !left && isEnabled()) pending = { ...log, attemptedAt: now() };
+			const grant = currentGrant();
+			if (log && !left && grant) pending = { ...log, attemptedAt: now(), grant };
 		},
 		next,
 		leave() {
 			next("moved-on");
 			left = true;
+		},
+		drop() {
+			pending = null;
 		},
 	};
 }

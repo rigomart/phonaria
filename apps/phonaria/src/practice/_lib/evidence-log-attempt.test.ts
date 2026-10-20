@@ -17,11 +17,11 @@ const LOG: AttemptLog = {
 
 function logger({ enabled = true }: { enabled?: boolean } = {}) {
 	const send = vi.fn<(payload: EvidenceLogPayload) => void>();
-	const consent = { enabled };
+	const consent: { grant: string | null } = { grant: enabled ? "on:first" : null };
 	let clock = 1_000;
 	const attempts = createAttemptLogger({
 		word: "ship",
-		isEnabled: () => consent.enabled,
+		currentGrant: () => consent.grant,
 		send,
 		now: () => clock++,
 	});
@@ -98,7 +98,28 @@ describe("createAttemptLogger", () => {
 		const { attempts, send, consent } = logger();
 
 		attempts.scored(LOG);
-		consent.enabled = false;
+		consent.grant = null;
+		attempts.next("moved-on");
+
+		expect(send).not.toHaveBeenCalled();
+	});
+
+	it("sends nothing when sharing was turned off and on again before the next action", () => {
+		const { attempts, send, consent } = logger();
+
+		attempts.scored(LOG);
+		consent.grant = null;
+		consent.grant = "on:second";
+		attempts.next("moved-on");
+
+		expect(send).not.toHaveBeenCalled();
+	});
+
+	it("forgets the waiting attempt when told sharing was turned off", () => {
+		const { attempts, send } = logger();
+
+		attempts.scored(LOG);
+		attempts.drop();
 		attempts.next("moved-on");
 
 		expect(send).not.toHaveBeenCalled();
@@ -108,7 +129,7 @@ describe("createAttemptLogger", () => {
 		const { attempts, send, consent } = logger({ enabled: false });
 
 		attempts.scored(LOG);
-		consent.enabled = true;
+		consent.grant = "on:first";
 		attempts.next("moved-on");
 
 		expect(send).not.toHaveBeenCalled();

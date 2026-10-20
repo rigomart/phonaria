@@ -2,32 +2,44 @@ import { create } from "zustand";
 
 /** The localStorage key for the evidence log opt-in (#336). */
 export const EVIDENCE_LOG_CONSENT_STORAGE_KEY = "evidence-log-consent";
-const GIVEN = "on";
-
-export function parseStoredConsent(raw: string | null): boolean {
-	return raw === GIVEN;
-}
+const LEGACY_GRANT = "on";
+const GRANT = /^on:[\w-]{1,64}$/;
 
 /**
- * Whether sharing is on right now. Storage is the source of truth, so a choice made
- * in another tab counts at once; blocked storage reads as off.
+ * The stored opt-in, or null for off. Each opt-in stores a fresh grant, so an
+ * attempt queued under one grant isn't sent under a later one after a revocation.
+ * The bare `on` of the first release is a grant of its own.
  */
-export function hasEvidenceLogConsent(): boolean {
+export function parseConsentGrant(raw: string | null): string | null {
+	return raw === LEGACY_GRANT || (raw !== null && GRANT.test(raw)) ? raw : null;
+}
+
+/** The grant in storage right now, so a choice made in another tab counts at once. Blocked storage reads as off. */
+export function currentConsentGrant(): string | null {
 	try {
-		return parseStoredConsent(globalThis.localStorage.getItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY));
+		return parseConsentGrant(globalThis.localStorage.getItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY));
 	} catch {
-		return false;
+		return null;
 	}
+}
+
+function newGrant(): string {
+	const id =
+		globalThis.crypto?.randomUUID?.() ??
+		`${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+	return `on:${id}`;
 }
 
 function writeStoredConsent(enabled: boolean) {
 	try {
-		if (enabled) globalThis.localStorage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, GIVEN);
+		if (enabled) globalThis.localStorage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, newGrant());
 		else globalThis.localStorage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY);
 	} catch (error) {
 		console.warn("evidence log consent: could not save", error);
 	}
 }
+
+const isGranted = () => currentConsentGrant() !== null;
 
 interface EvidenceLogConsentStore {
 	enabled: boolean;
@@ -38,11 +50,11 @@ interface EvidenceLogConsentStore {
 
 export const useEvidenceLogConsent = create<EvidenceLogConsentStore>()((set) => ({
 	enabled: false,
-	load: () => set({ enabled: hasEvidenceLogConsent() }),
+	load: () => set({ enabled: isGranted() }),
 	setEnabled: (enabled) => {
 		writeStoredConsent(enabled);
 		// What was stored, so a blocked write leaves the switch off rather than lying.
-		set({ enabled: hasEvidenceLogConsent() });
+		set({ enabled: isGranted() });
 	},
 }));
 
@@ -61,4 +73,11 @@ export function watchEvidenceLogConsent(target: StorageEvents = window): () => v
 	};
 	target.addEventListener("storage", onStorage);
 	return () => target.removeEventListener("storage", onStorage);
+}
+
+/** Calls `listener` whenever this tab sees sharing go from on to off. Returns the unsubscribe. */
+export function onEvidenceLogConsentRevoked(listener: () => void): () => void {
+	return useEvidenceLogConsent.subscribe((state, previous) => {
+		if (previous.enabled && !state.enabled) listener();
+	});
 }
