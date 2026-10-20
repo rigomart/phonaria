@@ -1,11 +1,16 @@
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { EvidenceLogNotice } from "@/lib/speech/evidence-log";
+import type { EvidenceLogPayload } from "@/lib/speech/evidence-log";
 import {
 	EVIDENCE_LOG_CONSENT_STORAGE_KEY,
+	hasEvidenceLogConsent,
 	parseStoredConsent,
 	useEvidenceLogConsent,
+	watchEvidenceLogConsent,
 } from "@/lib/speech/evidence-log-consent";
+import { createAttemptLogger } from "../_lib/evidence-log-attempt";
+import type { AttemptLog } from "../_lib/speaking-attempt";
 import { EvidenceLogSetting, EvidenceLogSwitch } from "./evidence-log-setting";
 
 function memoryStorage(initial: Record<string, string> = {}) {
@@ -92,6 +97,112 @@ describe("useEvidenceLogConsent", () => {
 			},
 		});
 		useEvidenceLogConsent.getState().load();
+		expect(useEvidenceLogConsent.getState().enabled).toBe(false);
+	});
+});
+
+describe("evidence log consent across tabs", () => {
+	const LOG: AttemptLog = {
+		evidence: { words: [{ pronunciations: [] }], transcript: null },
+		verdicts: { gate: { type: "not-heard" }, judgement: null },
+	};
+	let storage: ReturnType<typeof memoryStorage>;
+	let otherTabs: EventTarget;
+	let unwatch: () => void;
+
+	/** Another tab changes storage, then this tab hears about it; Node has no StorageEvent. */
+	function otherTab(change: () => void, key: string | null = EVIDENCE_LOG_CONSENT_STORAGE_KEY) {
+		change();
+		otherTabs.dispatchEvent(Object.assign(new Event("storage"), { key }));
+	}
+
+	function tabLogger() {
+		const send = vi.fn<(payload: EvidenceLogPayload) => void>();
+		const attempts = createAttemptLogger({ word: "ship", isEnabled: hasEvidenceLogConsent, send });
+		return { attempts, send };
+	}
+
+	beforeEach(() => {
+		storage = memoryStorage();
+		vi.stubGlobal("localStorage", storage);
+		otherTabs = new EventTarget();
+		unwatch = watchEvidenceLogConsent(otherTabs);
+	});
+	afterEach(() => {
+		unwatch();
+		vi.unstubAllGlobals();
+		useEvidenceLogConsent.setState({ enabled: false });
+	});
+
+	it("stops sending, the waiting attempt and later ones, once another tab turns sharing off", () => {
+		useEvidenceLogConsent.getState().setEnabled(true);
+		const { attempts, send } = tabLogger();
+		attempts.scored(LOG);
+
+		otherTab(() => storage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY));
+		attempts.next("retried");
+		attempts.scored(LOG);
+		attempts.next("moved-on");
+
+		expect(useEvidenceLogConsent.getState().enabled).toBe(false);
+		expect(send).not.toHaveBeenCalled();
+	});
+
+	it("reads storage when sending, even before the other tab's event arrives", () => {
+		useEvidenceLogConsent.getState().setEnabled(true);
+		const { attempts, send } = tabLogger();
+		attempts.scored(LOG);
+
+		storage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY);
+		attempts.next("moved-on");
+
+		expect(send).not.toHaveBeenCalled();
+	});
+
+	it("turns off when another tab clears storage", () => {
+		useEvidenceLogConsent.getState().setEnabled(true);
+
+		otherTab(() => storage.values.clear(), null);
+
+		expect(useEvidenceLogConsent.getState().enabled).toBe(false);
+	});
+
+	it("follows another tab turning sharing back on, and sends later attempts", () => {
+		useEvidenceLogConsent.getState().load();
+		const { attempts, send } = tabLogger();
+
+		otherTab(() => storage.setItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY, "on"));
+		attempts.scored(LOG);
+		attempts.next("moved-on");
+
+		expect(useEvidenceLogConsent.getState().enabled).toBe(true);
+		expect(send).toHaveBeenCalledTimes(1);
+	});
+
+	it("ignores other keys, and stops listening once unwatched", () => {
+		useEvidenceLogConsent.getState().setEnabled(true);
+		storage.removeItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY);
+
+		otherTab(() => {}, "theme");
+		expect(useEvidenceLogConsent.getState().enabled).toBe(true);
+
+		unwatch();
+		otherTab(() => {});
+		expect(useEvidenceLogConsent.getState().enabled).toBe(true);
+	});
+
+	it("leaves the switch off when the opt-in can't be stored", () => {
+		vi.stubGlobal("localStorage", {
+			getItem: () => null,
+			setItem: () => {
+				throw new Error("quota");
+			},
+			removeItem: () => {},
+		});
+		vi.spyOn(console, "warn").mockImplementation(() => {});
+
+		useEvidenceLogConsent.getState().setEnabled(true);
+
 		expect(useEvidenceLogConsent.getState().enabled).toBe(false);
 	});
 });

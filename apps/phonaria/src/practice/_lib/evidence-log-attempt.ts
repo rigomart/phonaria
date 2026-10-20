@@ -16,6 +16,11 @@ export type AttemptLogger = {
 	scored(log: AttemptLog | null): void;
 	/** The learner's next action: sends the attempt waiting for it, if any. */
 	next(action: EvidenceLogNext): void;
+	/**
+	 * The round is gone: sends the waiting attempt as moved on, and drops any result
+	 * that arrives later, so nothing is sent after the learner has left.
+	 */
+	leave(): void;
 };
 
 export function createAttemptLogger({
@@ -30,6 +35,7 @@ export function createAttemptLogger({
 	now?: () => number;
 }): AttemptLogger {
 	let pending: (AttemptLog & { attemptedAt: number }) | null = null;
+	let left = false;
 
 	function next(action: EvidenceLogNext) {
 		const attempt = pending;
@@ -49,8 +55,12 @@ export function createAttemptLogger({
 	return {
 		scored(log) {
 			next("retried");
-			if (log && isEnabled()) pending = { ...log, attemptedAt: now() };
+			if (log && !left && isEnabled()) pending = { ...log, attemptedAt: now() };
 		},
 		next,
+		leave() {
+			next("moved-on");
+			left = true;
+		},
 	};
 }

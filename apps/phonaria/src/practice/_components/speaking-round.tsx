@@ -8,13 +8,13 @@
 import { Button, buttonVariants } from "@phonaria/ui/components/button";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { IpaSequence } from "@/components/transcription/display/ipa-sequence";
 import { WordAudioButton } from "@/components/word-audio-button";
 import { useWavRecorder } from "@/hooks/use-wav-recorder";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { sendEvidenceLog } from "@/lib/speech/evidence-log";
-import { useEvidenceLogConsent } from "@/lib/speech/evidence-log-consent";
+import { hasEvidenceLogConsent } from "@/lib/speech/evidence-log-consent";
 import type { TranscribedSyllable } from "@/lib/types/g2p";
 import { cn } from "@/lib/utils";
 import { type AttemptLogger, createAttemptLogger } from "../_lib/evidence-log-attempt";
@@ -42,22 +42,31 @@ function useWordSyllables(word: string): TranscribedSyllable[] | null | undefine
 
 /** Moving on unmounts the round; closing the page fires pagehide instead. */
 function useAttemptLogger(word: string): AttemptLogger {
-	const [logger] = useState(() =>
-		createAttemptLogger({
-			word,
-			isEnabled: () => useEvidenceLogConsent.getState().enabled,
-			send: (payload) => void sendEvidenceLog(payload, (input, init) => fetch(input, init)),
-		}),
-	);
+	// Made in the effect, so a result that resolves after unmount finds no logger.
+	const current = useRef<AttemptLogger | null>(null);
 	useEffect(() => {
-		const leave = () => logger.next("moved-on");
-		window.addEventListener("pagehide", leave);
+		const logger = createAttemptLogger({
+			word,
+			isEnabled: hasEvidenceLogConsent,
+			send: (payload) => void sendEvidenceLog(payload, (input, init) => fetch(input, init)),
+		});
+		current.current = logger;
+		const pageHidden = () => logger.next("moved-on");
+		window.addEventListener("pagehide", pageHidden);
 		return () => {
-			window.removeEventListener("pagehide", leave);
-			leave();
+			window.removeEventListener("pagehide", pageHidden);
+			logger.leave();
+			current.current = null;
 		};
-	}, [logger]);
-	return logger;
+	}, [word]);
+	return useMemo(
+		() => ({
+			scored: (log) => current.current?.scored(log),
+			next: (action) => current.current?.next(action),
+			leave: () => current.current?.leave(),
+		}),
+		[],
+	);
 }
 
 export function SpeakingRound({

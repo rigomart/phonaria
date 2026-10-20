@@ -4,14 +4,17 @@
 import { Switch } from "@phonaria/ui/components/switch";
 import { useEffect, useId } from "react";
 import { EvidenceLogNotice } from "@/lib/speech/evidence-log";
-import { useEvidenceLogConsent } from "@/lib/speech/evidence-log-consent";
+import { useEvidenceLogConsent, watchEvidenceLogConsent } from "@/lib/speech/evidence-log-consent";
 
 export function EvidenceLogSetting() {
 	const enabled = useEvidenceLogConsent((state) => state.enabled);
 	const setEnabled = useEvidenceLogConsent((state) => state.setEnabled);
 	const load = useEvidenceLogConsent((state) => state.load);
 
-	useEffect(() => load(), [load]);
+	useEffect(() => {
+		load();
+		return watchEvidenceLogConsent();
+	}, [load]);
 
 	return <EvidenceLogSwitch enabled={enabled} onChange={setEnabled} />;
 }

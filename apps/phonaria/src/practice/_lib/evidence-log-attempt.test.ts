@@ -115,6 +115,33 @@ describe("createAttemptLogger", () => {
 	});
 });
 
+describe("createAttemptLogger once the learner has left", () => {
+	it("sends the waiting attempt as moved on", () => {
+		const { attempts, send } = logger();
+
+		attempts.scored(LOG);
+		attempts.leave();
+
+		expect(send).toHaveBeenCalledTimes(1);
+		expect(send.mock.calls[0][0].next).toBe("moved-on");
+	});
+
+	it("sends nothing for a scoring result that resolves after the learner left mid-check", async () => {
+		const { attempts, send } = logger();
+		let finishScoring = (_log: AttemptLog) => {};
+		const scoring = new Promise<AttemptLog>((resolve) => {
+			finishScoring = resolve;
+		}).then((log) => attempts.scored(log));
+
+		attempts.leave();
+		finishScoring(LOG);
+		await scoring;
+		attempts.next("moved-on");
+
+		expect(send).not.toHaveBeenCalled();
+	});
+});
+
 describe("an attempt from the page", () => {
 	const SHIP = promptFor("i-ix", "ship");
 	const REQUEST = {

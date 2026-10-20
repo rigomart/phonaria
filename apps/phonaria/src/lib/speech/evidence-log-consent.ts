@@ -8,7 +8,11 @@ export function parseStoredConsent(raw: string | null): boolean {
 	return raw === GIVEN;
 }
 
-function readStoredConsent(): boolean {
+/**
+ * Whether sharing is on right now. Storage is the source of truth, so a choice made
+ * in another tab counts at once; blocked storage reads as off.
+ */
+export function hasEvidenceLogConsent(): boolean {
 	try {
 		return parseStoredConsent(globalThis.localStorage.getItem(EVIDENCE_LOG_CONSENT_STORAGE_KEY));
 	} catch {
@@ -34,9 +38,27 @@ interface EvidenceLogConsentStore {
 
 export const useEvidenceLogConsent = create<EvidenceLogConsentStore>()((set) => ({
 	enabled: false,
-	load: () => set({ enabled: readStoredConsent() }),
+	load: () => set({ enabled: hasEvidenceLogConsent() }),
 	setEnabled: (enabled) => {
 		writeStoredConsent(enabled);
-		set({ enabled });
+		// What was stored, so a blocked write leaves the switch off rather than lying.
+		set({ enabled: hasEvidenceLogConsent() });
 	},
 }));
+
+type StorageEvents = Pick<EventTarget, "addEventListener" | "removeEventListener">;
+
+/**
+ * Keeps the store in step with other tabs. `key` is null when another tab clears
+ * storage. Returns the unsubscribe.
+ */
+export function watchEvidenceLogConsent(target: StorageEvents = window): () => void {
+	const onStorage = (event: Event) => {
+		const { key } = event as StorageEvent;
+		if (key === null || key === EVIDENCE_LOG_CONSENT_STORAGE_KEY) {
+			useEvidenceLogConsent.getState().load();
+		}
+	};
+	target.addEventListener("storage", onStorage);
+	return () => target.removeEventListener("storage", onStorage);
+}
