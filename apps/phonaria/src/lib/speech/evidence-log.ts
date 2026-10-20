@@ -31,13 +31,29 @@ export function isLoggableWord(word: string): boolean {
 	return word === EVIDENCE_LOG_OTHER_WORD || CatalogWordPronunciations.has(word);
 }
 
+/**
+ * The only word lists the log holds: one loggable word, or placeholders only. Several
+ * catalog words can still spell a name ("Sue Park"), and the gate reads only the
+ * length of a transcript longer than one word, so those words are never kept.
+ */
+export function isLoggableWordList(words: readonly string[]): boolean {
+	return words.length === 1
+		? isLoggableWord(words[0])
+		: words.every((word) => word === EVIDENCE_LOG_OTHER_WORD);
+}
+
 const loggedWord = (word: string) =>
 	CatalogWordPronunciations.has(word) ? word : EVIDENCE_LOG_OTHER_WORD;
 
+const loggedWords = (words: readonly string[]) =>
+	words.length === 1 ? [loggedWord(words[0])] : words.map(() => EVIDENCE_LOG_OTHER_WORD);
+
 /**
- * Replaces every heard word outside the catalog with `EVIDENCE_LOG_OTHER_WORD`: the
- * transcript, the inserted words, what the word gate heard and a swap's `heardWord`.
- * Word counts and confidence stay, since re-judging needs them.
+ * Keeps a real word only where re-judging needs it: a one-word transcript, a
+ * one-word `heard` from the word gate, and a swap's `heardWord`, and only when it
+ * is a catalog word. Every other heard word becomes `EVIDENCE_LOG_OTHER_WORD`,
+ * including every word of a longer transcript or `heard` and every inserted word,
+ * which the gate never reads. Word counts and confidence stay.
  */
 export function withCatalogWordsOnly(payload: EvidenceLogPayload): EvidenceLogPayload {
 	const { evidence, verdicts } = payload;
@@ -47,13 +63,15 @@ export function withCatalogWordsOnly(payload: EvidenceLogPayload): EvidenceLogPa
 		evidence: {
 			...evidence,
 			...(evidence.transcript && {
-				transcript: { ...evidence.transcript, words: evidence.transcript.words.map(loggedWord) },
+				transcript: { ...evidence.transcript, words: loggedWords(evidence.transcript.words) },
 			}),
-			...(evidence.insertedWords && { insertedWords: evidence.insertedWords.map(loggedWord) }),
+			...(evidence.insertedWords && {
+				insertedWords: evidence.insertedWords.map(() => EVIDENCE_LOG_OTHER_WORD),
+			}),
 		},
 		verdicts: {
 			...verdicts,
-			gate: gate.type === "different-word" ? { ...gate, heard: gate.heard.map(loggedWord) } : gate,
+			gate: gate.type === "different-word" ? { ...gate, heard: loggedWords(gate.heard) } : gate,
 			judgement: judgement && {
 				...judgement,
 				sounds: judgement.sounds.map((sound) =>

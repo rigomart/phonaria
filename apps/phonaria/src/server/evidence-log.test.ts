@@ -289,6 +289,23 @@ describe("logEvidenceOnWorker", () => {
 		],
 		["a name as a swap's heard word", shownAsSwapped("alice")],
 		["base64 audio split into word-sized chunks", transcriptOf(SPLIT_WAV)],
+		["Sue Park, a name spelled with catalog words", transcriptOf(["sue", "park"])],
+		["Pat Lane, a name spelled with catalog words", transcriptOf(["pat", "lane"])],
+		[
+			"a name in catalog words the word gate heard",
+			{
+				verdicts: {
+					judgedPhonemeIds: ["IX", "I"],
+					gate: { type: "different-word", heard: ["sue", "park"] },
+					judgement: null,
+				},
+			},
+		],
+		["a real word beside placeholders", transcriptOf([EVIDENCE_LOG_OTHER_WORD, "ship"])],
+		[
+			"a catalog word as an inserted word",
+			{ evidence: { ...SHIP_EVIDENCE, insertedWords: ["sheep"] } },
+		],
 	])(
 		"rejects %s, since only catalog words and the placeholder are stored",
 		async (_name, overrides) => {
@@ -299,11 +316,19 @@ describe("logEvidenceOnWorker", () => {
 		},
 	);
 
-	it("stores catalog words and the placeholder as sent", async () => {
+	it("stores a one-word catalog transcript as sent", async () => {
+		const { response, database } = await send(logRequest(payload(transcriptOf(["sheep"]))));
+
+		expect(response.status).toBe(204);
+		const [{ args }] = database.execute.mock.calls[0];
+		expect(JSON.parse(String(args[4])).transcript.words).toEqual(["sheep"]);
+	});
+
+	it("stores placeholders and a catalog heard word as sent", async () => {
 		const attempt = payload({
 			evidence: {
 				...SHIP_EVIDENCE,
-				transcript: { words: [EVIDENCE_LOG_OTHER_WORD, "ship"], confidence: 0.4 },
+				transcript: { words: [EVIDENCE_LOG_OTHER_WORD, EVIDENCE_LOG_OTHER_WORD], confidence: 0.4 },
 				insertedWords: [EVIDENCE_LOG_OTHER_WORD],
 			},
 			...shownAsSwapped("sheep"),
@@ -314,7 +339,7 @@ describe("logEvidenceOnWorker", () => {
 		expect(response.status).toBe(204);
 		const [{ args }] = database.execute.mock.calls[0];
 		expect(JSON.parse(String(args[4]))).toMatchObject({
-			transcript: { words: ["<other>", "ship"], confidence: 0.4 },
+			transcript: { words: ["<other>", "<other>"], confidence: 0.4 },
 			insertedWords: ["<other>"],
 		});
 		expect(JSON.parse(String(args[5])).judgement.sounds[0].verdict.heardWord).toBe("sheep");

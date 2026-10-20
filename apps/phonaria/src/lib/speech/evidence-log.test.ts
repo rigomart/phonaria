@@ -5,6 +5,7 @@ import {
 	type EvidenceLogFetch,
 	type EvidenceLogPayload,
 	isLoggableWord,
+	isLoggableWordList,
 	sendEvidenceLog,
 	withCatalogWordsOnly,
 } from "./evidence-log";
@@ -113,23 +114,67 @@ const HEARD_A_NAME: EvidenceLogPayload = {
 };
 
 describe("withCatalogWordsOnly", () => {
-	it("turns every heard word outside the catalog into the placeholder, keeping counts and confidence", () => {
+	const OTHER_3 = [EVIDENCE_LOG_OTHER_WORD, EVIDENCE_LOG_OTHER_WORD, EVIDENCE_LOG_OTHER_WORD];
+
+	it("turns every word of a longer transcript and every inserted word into the placeholder, keeping counts and confidence", () => {
 		const logged = withCatalogWordsOnly(HEARD_A_NAME);
 
-		expect(logged.evidence.transcript).toEqual({
-			words: [EVIDENCE_LOG_OTHER_WORD, "ship", EVIDENCE_LOG_OTHER_WORD],
-			confidence: 0.7,
-		});
-		expect(logged.evidence.insertedWords).toEqual([EVIDENCE_LOG_OTHER_WORD, "sheep"]);
-		expect(logged.verdicts.gate).toEqual({
-			type: "different-word",
-			heard: [EVIDENCE_LOG_OTHER_WORD, "ship", EVIDENCE_LOG_OTHER_WORD],
-		});
+		expect(logged.evidence.transcript).toEqual({ words: OTHER_3, confidence: 0.7 });
+		expect(logged.evidence.insertedWords).toEqual([
+			EVIDENCE_LOG_OTHER_WORD,
+			EVIDENCE_LOG_OTHER_WORD,
+		]);
+		expect(logged.verdicts.gate).toEqual({ type: "different-word", heard: OTHER_3 });
 		expect(logged.verdicts.judgement?.sounds.map(({ verdict }) => verdict)).toEqual([
 			{ type: "swapped", heard: "CH", heardWord: "chip" },
 			{ type: "swapped", heard: "I", heardWord: EVIDENCE_LOG_OTHER_WORD },
 		]);
 		expect(JSON.stringify(logged)).not.toMatch(/alice|smith|2125550199/);
+	});
+
+	it.each([
+		["Sue Park", ["sue", "park"]],
+		["Pat Lane", ["pat", "lane"]],
+	])("never keeps a name spelled with catalog words, such as %s", (_name, words) => {
+		const logged = withCatalogWordsOnly({
+			...HEARD_A_NAME,
+			evidence: { words: [{ pronunciations: [] }], transcript: { words, confidence: 0.9 } },
+			verdicts: { gate: { type: "different-word", heard: words }, judgement: null },
+		});
+
+		expect(logged.evidence.transcript?.words).toEqual([
+			EVIDENCE_LOG_OTHER_WORD,
+			EVIDENCE_LOG_OTHER_WORD,
+		]);
+		expect(logged.verdicts.gate).toEqual({
+			type: "different-word",
+			heard: [EVIDENCE_LOG_OTHER_WORD, EVIDENCE_LOG_OTHER_WORD],
+		});
+	});
+
+	it("keeps a one-word transcript that is a catalog word, which re-judging needs", () => {
+		const oneWord = (word: string) =>
+			withCatalogWordsOnly({
+				...PAYLOAD,
+				evidence: {
+					words: [{ pronunciations: [] }],
+					transcript: { words: [word], confidence: 0.8 },
+				},
+				verdicts: { gate: { type: "different-word", heard: [word] }, judgement: null },
+			});
+
+		expect(oneWord("sheep").evidence.transcript?.words).toEqual(["sheep"]);
+		expect(oneWord("sheep").verdicts.gate).toEqual({ type: "different-word", heard: ["sheep"] });
+		expect(oneWord("alice").evidence.transcript?.words).toEqual([EVIDENCE_LOG_OTHER_WORD]);
+	});
+
+	it("accepts a word list only as one loggable word or placeholders only", () => {
+		expect(isLoggableWordList(["sheep"])).toBe(true);
+		expect(isLoggableWordList([EVIDENCE_LOG_OTHER_WORD, EVIDENCE_LOG_OTHER_WORD])).toBe(true);
+		expect(isLoggableWordList([])).toBe(true);
+		expect(isLoggableWordList(["sue", "park"])).toBe(false);
+		expect(isLoggableWordList([EVIDENCE_LOG_OTHER_WORD, "ship"])).toBe(false);
+		expect(isLoggableWordList(["alice"])).toBe(false);
 	});
 
 	it("leaves a payload with no transcript, gate words or swaps as it was", () => {

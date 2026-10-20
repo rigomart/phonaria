@@ -41,9 +41,10 @@ export type LoggedAttempt = {
 export const EVIDENCE_LOG_EXPORT_FORMAT = "phonaria-evidence-log";
 
 /**
- * The app stores only minimal-pair catalog words. Any other heard word, in the
- * transcript, the inserted words, the gate's `heard` or a swap's `heardWord`, is
- * this placeholder, as `EVIDENCE_LOG_OTHER_WORD` in the app.
+ * The app keeps a real word only in a one-word transcript, a one-word gate `heard`
+ * and a swap's `heardWord`, and only a catalog word. Every other heard word,
+ * including every word of a longer transcript and every inserted word, is this
+ * placeholder, as `EVIDENCE_LOG_OTHER_WORD` in the app.
  */
 export const EVIDENCE_LOG_OTHER_WORD = "<other>";
 

@@ -168,9 +168,10 @@ describe("an evidence log export", () => {
 
 		// One unknown word: only the scoring can call it off, and this scoring is clean.
 		expect(heard([EVIDENCE_LOG_OTHER_WORD])).toEqual({ type: "judged" });
-		expect(heard([EVIDENCE_LOG_OTHER_WORD, "ship"])).toEqual({
+		// Longer transcripts are logged as placeholders only, and only their length counts.
+		expect(heard([EVIDENCE_LOG_OTHER_WORD, EVIDENCE_LOG_OTHER_WORD])).toEqual({
 			type: "different-word",
-			heard: [EVIDENCE_LOG_OTHER_WORD, "ship"],
+			heard: [EVIDENCE_LOG_OTHER_WORD, EVIDENCE_LOG_OTHER_WORD],
 		});
 	});
 

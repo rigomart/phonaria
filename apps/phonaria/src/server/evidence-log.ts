@@ -3,10 +3,12 @@ import { z } from "zod";
 import { flags } from "@/lib/flags";
 import { CatalogWordPronunciations } from "@/lib/speech/catalog-pronunciations";
 import {
+	EVIDENCE_LOG_OTHER_WORD,
 	EVIDENCE_LOG_RETENTION_DAYS,
 	EVIDENCE_LOG_SCHEMA_VERSION,
 	type EvidenceLogPayload,
 	isLoggableWord,
+	isLoggableWordList,
 } from "@/lib/speech/evidence-log";
 import type { WorkerRateLimit } from "@/server/cloudflare/env";
 import { logWorkerEvent } from "@/server/cloudflare/log";
@@ -36,7 +38,8 @@ const seconds = z.number().min(0).max(60);
 const index = z.int().min(0).max(15);
 /** A heard word: a catalog word or the placeholder, never free text such as a name. */
 const spokenWord = z.string().max(32).refine(isLoggableWord);
-const spokenWords = z.array(spokenWord).max(16);
+/** One loggable word, or placeholders only: several catalog words can spell a name. */
+const spokenWords = z.array(spokenWord).max(16).refine(isLoggableWordList);
 
 const soundEvidence = z.discriminatedUnion("type", [
 	z.strictObject({
@@ -72,7 +75,7 @@ const recordingEvidence = z.strictObject({
 		.strictObject({ words: spokenWords.min(1), confidence: unit })
 		.nullable()
 		.optional(),
-	insertedWords: spokenWords.optional(),
+	insertedWords: z.array(z.literal(EVIDENCE_LOG_OTHER_WORD)).max(16).optional(),
 });
 
 const soundVerdict = z.discriminatedUnion("type", [
