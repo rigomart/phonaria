@@ -90,7 +90,7 @@ describe("SoundResults", () => {
 		}
 	});
 
-	it("gives a swapped sound the heard sound next to it, and opens a sound card from either", () => {
+	it("gives a swapped sound the heard sound next to it, each with its own sound card trigger", () => {
 		const html = render(mixedView);
 		const labels = [...html.matchAll(/aria-label="([^"]+)"/g)].map(([, label]) => label);
 		expect(labels).toEqual([
