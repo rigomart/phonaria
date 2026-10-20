@@ -4,10 +4,13 @@ declare module "cloudflare:workers" {
 		SITE_INDEXING_ENABLED?: string;
 		FLAG_PRACTICE?: string;
 		FLAG_LANGUAGE_SPREAD?: string;
+		FLAG_SPEECH?: string;
 		PUBLIC_BUCKET_URL?: string;
 		TURSO_DATABASE_URL?: string;
 		TURSO_AUTH_TOKEN?: string;
 		OPENROUTER_API_KEY?: string;
+		AZURE_SPEECH_KEY?: string;
+		AZURE_SPEECH_REGION?: string;
 		TRANSCRIPTION_RATE_LIMIT: {
 			limit(options: { key: string }): Promise<{ success: boolean }>;
 		};
@@ -15,6 +18,9 @@ declare module "cloudflare:workers" {
 			limit(options: { key: string }): Promise<{ success: boolean }>;
 		};
 		SPELLING_CONTEXT_RATE_LIMIT: {
+			limit(options: { key: string }): Promise<{ success: boolean }>;
+		};
+		SPEECH_RATE_LIMIT: {
 			limit(options: { key: string }): Promise<{ success: boolean }>;
 		};
 	};

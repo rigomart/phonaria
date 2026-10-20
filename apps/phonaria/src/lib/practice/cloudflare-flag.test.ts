@@ -35,6 +35,12 @@ describe("Cloudflare Practice flag", () => {
 		expect(envVarsBlock("production")).toContain('"FLAG_LANGUAGE_SPREAD": "0"');
 	});
 
+	it("enables speech scoring on staging and preview and keeps production off", () => {
+		expect(envVarsBlock("staging")).toContain('"FLAG_SPEECH": "1"');
+		expect(envVarsBlock("preview")).toContain('"FLAG_SPEECH": "1"');
+		expect(envVarsBlock("production")).toContain('"FLAG_SPEECH": "0"');
+	});
+
 	it("sends every application and legacy document route to the Worker first", () => {
 		expect(wrangler).not.toContain('"run_worker_first": true');
 		for (const route of [

@@ -8,6 +8,8 @@ describe("write-worker-secrets", () => {
 			TURSO_DATABASE_URL: "libsql://db.example",
 			TURSO_AUTH_TOKEN: "token",
 			OPENROUTER_API_KEY: "  ",
+			AZURE_SPEECH_KEY: "speech-key",
+			AZURE_SPEECH_REGION: "eastus",
 			CLOUDFLARE_API_TOKEN: "never-a-worker-secret",
 			SITE_URL: "https://phonaria.example",
 		});
@@ -15,6 +17,8 @@ describe("write-worker-secrets", () => {
 		expect(secrets).toEqual({
 			TURSO_DATABASE_URL: "libsql://db.example",
 			TURSO_AUTH_TOKEN: "token",
+			AZURE_SPEECH_KEY: "speech-key",
+			AZURE_SPEECH_REGION: "eastus",
 		});
 		expect(skipped).toEqual(["OPENROUTER_API_KEY"]);
 	});
