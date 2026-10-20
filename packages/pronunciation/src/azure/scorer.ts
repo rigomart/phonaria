@@ -10,7 +10,7 @@ export type AzureScorerOptions = {
 	/** How many best-fitting phonemes Azure lists for each sound. */
 	readonly nBestPhonemeCount?: number;
 	readonly timeoutMs?: number;
-	readonly fetch?: typeof fetch;
+	readonly fetch?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 };
 
 export const AZURE_DEFAULT_N_BEST_PHONEME_COUNT = 10;
