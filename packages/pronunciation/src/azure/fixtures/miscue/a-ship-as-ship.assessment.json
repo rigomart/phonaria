@@ -1,0 +1,185 @@
+{
+	"RecognitionStatus": "Success",
+	"Offset": 1800000,
+	"Duration": 7200000,
+	"DisplayText": "Ship.",
+	"SNR": 49.12176,
+	"NBest": [
+		{
+			"Confidence": 0.9428819,
+			"Lexical": "ship",
+			"ITN": "ship",
+			"MaskedITN": "ship",
+			"Display": "Ship.",
+			"AccuracyScore": 79,
+			"FluencyScore": 100,
+			"CompletenessScore": 100,
+			"PronScore": 87.4,
+			"Words": [
+				{
+					"Word": "ship",
+					"Offset": 1800000,
+					"Duration": 7200000,
+					"Confidence": 0,
+					"AccuracyScore": 79,
+					"ErrorType": "None",
+					"Syllables": [
+						{
+							"Syllable": "ʃɪp",
+							"Grapheme": "ship",
+							"Offset": 1800000,
+							"Duration": 7200000,
+							"AccuracyScore": 72
+						}
+					],
+					"Phonemes": [
+						{
+							"Phoneme": "ʃ",
+							"Offset": 1800000,
+							"Duration": 2500000,
+							"AccuracyScore": 20,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "ʃ",
+									"Score": 100
+								},
+								{
+									"Phoneme": "ə",
+									"Score": 100
+								},
+								{
+									"Phoneme": "tʃ",
+									"Score": 2
+								},
+								{
+									"Phoneme": "ʌ",
+									"Score": 1
+								},
+								{
+									"Phoneme": "z",
+									"Score": 1
+								},
+								{
+									"Phoneme": "s",
+									"Score": 1
+								},
+								{
+									"Phoneme": "æ",
+									"Score": 1
+								},
+								{
+									"Phoneme": "t",
+									"Score": 0
+								},
+								{
+									"Phoneme": "ɪ",
+									"Score": 0
+								},
+								{
+									"Phoneme": "eɪ",
+									"Score": 0
+								}
+							]
+						},
+						{
+							"Phoneme": "ɪ",
+							"Offset": 4400000,
+							"Duration": 1700000,
+							"AccuracyScore": 100,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "ɪ",
+									"Score": 100
+								},
+								{
+									"Phoneme": "ʃ",
+									"Score": 54
+								},
+								{
+									"Phoneme": "ɛ",
+									"Score": 43
+								},
+								{
+									"Phoneme": "p",
+									"Score": 20
+								},
+								{
+									"Phoneme": "ə",
+									"Score": 6
+								},
+								{
+									"Phoneme": "æ",
+									"Score": 3
+								},
+								{
+									"Phoneme": "i",
+									"Score": 2
+								},
+								{
+									"Phoneme": "eɪ",
+									"Score": 1
+								},
+								{
+									"Phoneme": "ɹ",
+									"Score": 1
+								},
+								{
+									"Phoneme": "tʃ",
+									"Score": 1
+								}
+							]
+						},
+						{
+							"Phoneme": "p",
+							"Offset": 6200000,
+							"Duration": 2800000,
+							"AccuracyScore": 100,
+							"NBestPhonemes": [
+								{
+									"Phoneme": "p",
+									"Score": 100
+								},
+								{
+									"Phoneme": "t",
+									"Score": 11
+								},
+								{
+									"Phoneme": "b",
+									"Score": 9
+								},
+								{
+									"Phoneme": "ɪ",
+									"Score": 5
+								},
+								{
+									"Phoneme": "d",
+									"Score": 3
+								},
+								{
+									"Phoneme": "ɛ",
+									"Score": 3
+								},
+								{
+									"Phoneme": "oʊ",
+									"Score": 3
+								},
+								{
+									"Phoneme": "ɹ",
+									"Score": 2
+								},
+								{
+									"Phoneme": "f",
+									"Score": 2
+								},
+								{
+									"Phoneme": "k",
+									"Score": 2
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

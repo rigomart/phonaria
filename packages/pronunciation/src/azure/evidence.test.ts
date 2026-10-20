@@ -2,7 +2,8 @@ import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import type { ScoringRequest, SoundEvidence, WordEvidence } from "../contract";
 import { judgeWord } from "../judge";
-import { azureEvidenceFromResponse } from "./evidence";
+import { azureEvidenceFromResponse, azureTranscript } from "./evidence";
+import { MISCUE_FIXTURES } from "./fixtures/miscue";
 import poorAsPoor from "./fixtures/poor-as-poor.json";
 import pullAsPool from "./fixtures/pull-as-pool.json";
 import sheepAsShip from "./fixtures/sheep-as-ship.json";
@@ -86,7 +87,9 @@ describe("azureEvidenceFromResponse", () => {
 				{ phonemeId: "EI", score: 0.01 },
 				{ phonemeId: "R", score: 0.01 },
 			],
+			accuracy: 1,
 		});
+		expect(evidence.accuracy).toBe(1);
 		expect(verdicts(evidence, ["IX", "I"])).toEqual([{ type: "match" }]);
 	});
 
@@ -115,7 +118,7 @@ describe("azureEvidenceFromResponse", () => {
 		const vowel = scoredAt(evidence, 1);
 		expect(vowel.targetScore).toBe(1);
 		expect(vowel.rivals).toContainEqual({ phonemeId: "E", score: 1 });
-		expect(verdicts(evidence, ["IX"])).toEqual([{ type: "unclear" }]);
+		expect(verdicts(evidence, ["IX"])).toEqual([{ type: "unclear", reason: "other-sound" }]);
 	});
 
 	it("never lists the target among its rivals", () => {
@@ -151,6 +154,7 @@ describe("azureEvidenceFromResponse", () => {
 			endSeconds: 0.71,
 			targetScore: 0.96,
 			rivals: [],
+			accuracy: 0.96,
 		});
 	});
 
@@ -226,10 +230,12 @@ describe("azureEvidenceFromResponse", () => {
 		});
 	});
 
-	it("returns empty evidence for a word Azure says was left out", () => {
+	it("marks a word Azure says was left out as omitted, unlike one it had no evidence for", () => {
 		const copy = structuredClone(shipAsShip);
 		copy.NBest[0].Words[0].ErrorType = "Omission";
-		expect(azureEvidenceFromResponse(copy, SHIP).words).toEqual([{ pronunciations: [] }]);
+		expect(azureEvidenceFromResponse(copy, SHIP).words).toEqual([
+			{ pronunciations: [], omitted: true },
+		]);
 	});
 
 	it("returns empty evidence for a target word Azure didn't return", () => {
@@ -295,11 +301,98 @@ describe("azureEvidenceFromResponse", () => {
 			"scored",
 			"scored",
 		]);
-		expect(verdicts(evidence, ["B"])).toEqual([{ type: "unclear" }, { type: "unclear" }]);
+		expect(verdicts(evidence, ["B"])).toEqual([
+			{ type: "unclear", reason: "no-evidence" },
+			{ type: "unclear", reason: "no-evidence" },
+		]);
 	});
 
 	it("matches target words to Azure's words regardless of case and punctuation", () => {
 		const evidence = evidenceFor(shipAsShip, request("Ship!", "SH IX P"));
 		expect(evidence.pronunciations).toHaveLength(1);
+	});
+});
+
+describe("azureEvidenceFromResponse with miscue and plain recognition", () => {
+	const recordingFor = (said: keyof typeof MISCUE_FIXTURES) => {
+		const { assessment, recognition } = MISCUE_FIXTURES[said];
+		return azureEvidenceFromResponse(assessment, SHIP, recognition);
+	};
+
+	it("adds the transcript and its confidence", () => {
+		expect(recordingFor("ship").transcript).toEqual({ words: ["ship"], confidence: 0.5588007 });
+		expect(recordingFor("a ship").transcript).toEqual({
+			words: ["a", "ship"],
+			confidence: 0.7885341,
+		});
+	});
+
+	it("has no transcript without a recognition response", () => {
+		expect(azureEvidenceFromResponse(MISCUE_FIXTURES.ship.assessment, SHIP)).not.toHaveProperty(
+			"transcript",
+		);
+	});
+
+	it("tells silence, which Azure marks as an omitted target, by its null transcript", () => {
+		expect(recordingFor("silence")).toEqual({
+			words: [{ pronunciations: [], omitted: true }],
+			insertedWords: [],
+			transcript: null,
+		});
+	});
+
+	it("marks an unrelated word's target as omitted, with what was said in the transcript", () => {
+		const recording = recordingFor("kid");
+		expect(recording.words).toEqual([{ pronunciations: [], omitted: true }]);
+		expect(recording.transcript?.words).toEqual(["kid"]);
+	});
+
+	it("still scores ships as ship, with a low word and final sound accuracy", () => {
+		const recording = recordingFor("ships");
+		const [word] = recording.words;
+		expect(word.accuracy).toBe(0.7);
+		expect(
+			word.pronunciations[0].sounds.map((sound) => sound.type === "scored" && sound.accuracy),
+		).toEqual([1, 1, 0.16]);
+		expect(recording.transcript?.words).toEqual(["ships"]);
+	});
+
+	it("keeps the swap in a partner word's evidence", () => {
+		const evidence = recordingFor("sheep").words[0];
+		expect(verdicts(evidence, ["IX", "I"])).toEqual([{ type: "swapped", heard: "I" }]);
+	});
+
+	it("lists words Azure marked as inserted", () => {
+		const copy = structuredClone(MISCUE_FIXTURES.ship.assessment) as unknown as {
+			NBest: { Words: { Word: string; ErrorType: string }[] }[];
+		};
+		copy.NBest[0].Words.push({ Word: "Ship", ErrorType: "Insertion" });
+		const recording = azureEvidenceFromResponse(copy as unknown as AzureAssessmentResponse, SHIP);
+		expect(recording.insertedWords).toEqual(["ship"]);
+		expect(recording.words[0].pronunciations).toHaveLength(1);
+	});
+});
+
+describe("azureTranscript", () => {
+	it("is null when Azure heard no speech", () => {
+		for (const RecognitionStatus of ["NoMatch", "InitialSilenceTimeout", "BabbleTimeout"]) {
+			expect(azureTranscript({ RecognitionStatus })).toBeNull();
+		}
+		expect(
+			azureTranscript({ RecognitionStatus: "Success", NBest: [{ Lexical: "", Confidence: 0 }] }),
+		).toBeNull();
+	});
+
+	it("is undefined when the response says nothing either way", () => {
+		expect(azureTranscript({ RecognitionStatus: "Error" })).toBeUndefined();
+	});
+
+	it("splits the lexical form into plain lowercase words", () => {
+		expect(
+			azureTranscript({
+				RecognitionStatus: "Success",
+				NBest: [{ Lexical: "The  ship's ok.", Confidence: 0.9 }],
+			}),
+		).toEqual({ words: ["the", "ship's", "ok"], confidence: 0.9 });
 	});
 });

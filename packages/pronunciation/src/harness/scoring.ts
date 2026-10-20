@@ -127,20 +127,50 @@ export async function scoreJobs<Raw>(
 		try {
 			stats.liveCalls++;
 			const raw = await scorer.request(audio, request);
-			const entry: CacheEntry = {
-				scorer: scorer.id,
-				settings: scorer.settings,
-				request,
-				audioSha256,
-				raw,
-			};
-			await writeAtomically(file, `${JSON.stringify(entry)}\n`);
+			await writeCacheEntry(file, scorer, request, audioSha256, raw);
 			return { type: "scored", evidence: scorer.evidence(raw, request), cached: false };
 		} catch (error) {
 			stats.failed++;
 			return { type: "failed", error: error instanceof Error ? error.message : String(error) };
 		}
 	}
+}
+
+async function writeCacheEntry(
+	file: string,
+	scorer: Pick<HarnessScorer, "id" | "settings">,
+	request: ScoringRequest,
+	audioSha256: string,
+	raw: unknown,
+): Promise<void> {
+	const entry: CacheEntry = {
+		scorer: scorer.id,
+		settings: scorer.settings,
+		request,
+		audioSha256,
+		raw,
+	};
+	await writeAtomically(file, `${JSON.stringify(entry)}\n`);
+}
+
+/**
+ * Stores a raw response for a job as if the scorer had returned it, so responses
+ * saved elsewhere for the same audio and request cost no calls. True when written,
+ * false when the cache already had one.
+ */
+export async function seedCache<Raw>(
+	scorer: HarnessScorer<Raw>,
+	{ audio, request }: ScoringJob,
+	raw: Raw,
+	cacheDir: string,
+): Promise<boolean> {
+	const folder = path.join(cacheDir, scorer.id);
+	await mkdir(folder, { recursive: true });
+	const audioSha256 = sha256(audio);
+	const file = path.join(folder, `${cacheKey(scorer, audioSha256, request)}.json`);
+	if (await readCache(file)) return false;
+	await writeCacheEntry(file, scorer, request, audioSha256, raw);
+	return true;
 }
 
 async function readCache(file: string): Promise<CacheEntry | null> {

@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ScoringRequest } from "../contract";
+import { MISCUE_FIXTURES } from "./fixtures/miscue";
 import sheepAsShip from "./fixtures/sheep-as-ship.json";
-import { createAzureScorer, requestAzureAssessment } from "./scorer";
+import { createAzureScorer, requestAzureAssessment, requestAzureRecognition } from "./scorer";
 
 const audio = new Uint8Array([82, 73, 70, 70]);
 const SHIP: ScoringRequest = {
@@ -47,6 +48,7 @@ describe("requestAzureAssessment", () => {
 			Dimension: "Comprehensive",
 			PhonemeAlphabet: "IPA",
 			NBestPhonemeCount: 10,
+			EnableMiscue: true,
 		});
 	});
 
@@ -108,14 +110,64 @@ describe("requestAzureAssessment", () => {
 	});
 });
 
+describe("requestAzureRecognition", () => {
+	it("posts the WAV to the same endpoint with no assessment header", async () => {
+		const fetch = jsonFetch(MISCUE_FIXTURES.ships.recognition);
+		const response = await requestAzureRecognition(audio, "en-us", {
+			key: "test-key",
+			region: "eastus",
+			fetch,
+		});
+
+		const [url, init] = fetch.mock.calls[0];
+		expect(url).toBe(
+			"https://eastus.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US&format=detailed",
+		);
+		expect(init?.body).toBe(audio);
+		expect(init?.headers).not.toHaveProperty("Pronunciation-Assessment");
+		expect(response.NBest?.[0]?.Lexical).toBe("ships");
+	});
+});
+
+/** Answers the assessment and the plain recognition by whether the assessment header is set. */
+function azureFetch(said: keyof typeof MISCUE_FIXTURES, recognitionStatus = 200) {
+	const { assessment, recognition } = MISCUE_FIXTURES[said];
+	return vi.fn(async (_input: string | URL | Request, init?: RequestInit) => {
+		const assessing = "Pronunciation-Assessment" in ((init?.headers ?? {}) as object);
+		return assessing
+			? Response.json(assessment)
+			: Response.json(recognition, { status: recognitionStatus });
+	});
+}
+
 describe("createAzureScorer", () => {
-	it("returns one word's evidence per target word", async () => {
-		const scorer = createAzureScorer({ key: "k", region: "eastus", fetch: jsonFetch(sheepAsShip) });
+	it("returns one word's evidence per target word, with the transcript", async () => {
+		const fetch = azureFetch("sheep");
+		const scorer = createAzureScorer({ key: "k", region: "eastus", fetch });
 		const recording = await scorer.score(audio, SHIP);
+
+		expect(fetch).toHaveBeenCalledTimes(2);
 		expect(recording.words).toHaveLength(1);
 		expect(recording.words[0].pronunciations[0].sounds[1]).toMatchObject({
 			phonemeId: "IX",
 			targetScore: 0.02,
 		});
+		expect(recording.transcript?.words).toEqual(["sheep"]);
+	});
+
+	it("leaves the transcript out when only the recognition fails", async () => {
+		const scorer = createAzureScorer({
+			key: "k",
+			region: "eastus",
+			fetch: azureFetch("ship", 500),
+		});
+		const recording = await scorer.score(audio, SHIP);
+		expect(recording).not.toHaveProperty("transcript");
+		expect(recording.words[0].pronunciations).toHaveLength(1);
+	});
+
+	it("fails when the assessment fails", async () => {
+		const scorer = createAzureScorer({ key: "k", region: "eastus", fetch: jsonFetch({}, 401) });
+		await expect(scorer.score(audio, SHIP)).rejects.toThrow("HTTP 401");
 	});
 });

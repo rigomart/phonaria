@@ -22,6 +22,7 @@ import { Route as IpaChartFrequencyRouteImport } from './routes/ipa-chart/freque
 import { Route as IpaChartVowelsRouteImport } from './routes/ipa-chart/vowels'
 import { Route as PracticeIndexRouteImport } from './routes/practice.index'
 import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
+import { Route as PracticeMinimalPairsRouteImport } from './routes/practice_.minimal-pairs'
 import { Route as ApiSpeechScoreRouteImport } from './routes/api.speech.score'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +90,11 @@ const PracticeTopicRoute = PracticeTopicRouteImport.update({
   path: '/$topic',
   getParentRoute: () => PracticeRoute,
 } as any)
+const PracticeMinimalPairsRoute = PracticeMinimalPairsRouteImport.update({
+  id: '/practice_/minimal-pairs',
+  path: '/practice/minimal-pairs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSpeechScoreRoute = ApiSpeechScoreRouteImport.update({
   id: '/api/speech/score',
   path: '/api/speech/score',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/ipa-chart/frequency': typeof IpaChartFrequencyRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
   '/practice/$topic': typeof PracticeTopicRoute
+  '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/': typeof PracticeIndexRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/ipa-chart/frequency': typeof IpaChartFrequencyRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
   '/practice/$topic': typeof PracticeTopicRoute
+  '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/ipa-chart': typeof IpaChartIndexRoute
   '/practice': typeof PracticeIndexRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/ipa-chart/frequency': typeof IpaChartFrequencyRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
   '/practice/$topic': typeof PracticeTopicRoute
+  '/practice_/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/practice/': typeof PracticeIndexRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/ipa-chart/frequency'
     | '/ipa-chart/vowels'
     | '/practice/$topic'
+    | '/practice/minimal-pairs'
     | '/ipa-chart/'
     | '/practice/'
     | '/api/speech/score'
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/ipa-chart/frequency'
     | '/ipa-chart/vowels'
     | '/practice/$topic'
+    | '/practice/minimal-pairs'
     | '/ipa-chart'
     | '/practice'
     | '/api/speech/score'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/ipa-chart/frequency'
     | '/ipa-chart/vowels'
     | '/practice/$topic'
+    | '/practice_/minimal-pairs'
     | '/ipa-chart/'
     | '/practice/'
     | '/api/speech/score'
@@ -204,6 +216,7 @@ export interface RootRouteChildren {
   IpaChartConsonantsRoute: typeof IpaChartConsonantsRoute
   IpaChartFrequencyRoute: typeof IpaChartFrequencyRoute
   IpaChartVowelsRoute: typeof IpaChartVowelsRoute
+  PracticeMinimalPairsRoute: typeof PracticeMinimalPairsRoute
   IpaChartIndexRoute: typeof IpaChartIndexRoute
   ApiSpeechScoreRoute: typeof ApiSpeechScoreRoute
 }
@@ -301,6 +314,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticeTopicRouteImport
       parentRoute: typeof PracticeRoute
     }
+    '/practice_/minimal-pairs': {
+      id: '/practice_/minimal-pairs'
+      path: '/practice/minimal-pairs'
+      fullPath: '/practice/minimal-pairs'
+      preLoaderRoute: typeof PracticeMinimalPairsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/speech/score': {
       id: '/api/speech/score'
       path: '/api/speech/score'
@@ -336,6 +356,7 @@ const rootRouteChildren: RootRouteChildren = {
   IpaChartConsonantsRoute: IpaChartConsonantsRoute,
   IpaChartFrequencyRoute: IpaChartFrequencyRoute,
   IpaChartVowelsRoute: IpaChartVowelsRoute,
+  PracticeMinimalPairsRoute: PracticeMinimalPairsRoute,
   IpaChartIndexRoute: IpaChartIndexRoute,
   ApiSpeechScoreRoute: ApiSpeechScoreRoute,
 }

@@ -3,9 +3,16 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import type { PhonemeContrast, PhonemeSymbolId } from "@phonaria/phonetics-data";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { RivalScore, Scorer, SoundEvidence, WordEvidence } from "../contract";
+import type { RivalScore, Scorer, SoundEvidence, Transcript, WordEvidence } from "../contract";
 import { LENIENT_MARGINS } from "../judge";
-import { buildCatalogCases, pronunciationOf, targetWordFor, type HarnessCase } from "./cases";
+import {
+	buildCatalogCases,
+	caseForClip,
+	type ClipLabel,
+	type HarnessCase,
+	pronunciationOf,
+	targetWordFor,
+} from "./cases";
 import {
 	evaluateCases,
 	groupMetrics,
@@ -124,6 +131,7 @@ describe("harness metrics", () => {
 			"false-flag": 1,
 			unclear: 0,
 			"no-evidence": 2,
+			rejected: 0,
 		});
 		expect(metrics.swap).toEqual({
 			total: 4,
@@ -132,6 +140,7 @@ describe("harness metrics", () => {
 			missed: 1,
 			unclear: 1,
 			"no-evidence": 0,
+			rejected: 0,
 		});
 		expect(metrics.rates).toEqual({
 			falseFlag: 0.25,
@@ -142,6 +151,8 @@ describe("harness metrics", () => {
 			swapUnclear: 0.25,
 			unclear: 1 / 8,
 			noEvidence: 2 / 8,
+			falseReject: 0,
+			wrongWordAccepted: null,
 		});
 	});
 
@@ -178,5 +189,85 @@ describe("harness metrics", () => {
 		const [strict] = sweepMargins(scored, [{ ...LENIENT_MARGINS, swap: 0.5 }]);
 		expect(strict.groups.all.falseFlag, "sit as sit, 0.4 behind, is no longer flagged").toBe(0);
 		expect(strict.groups.all.swapNamed, "sit as seat, 0.8 behind, is still named").toBe(0.25);
+	});
+});
+
+describe("harness metrics with the word gate", () => {
+	const seatEvidence = (accuracy: number): WordEvidence => ({
+		accuracy,
+		pronunciations: [
+			{
+				pronunciationIndex: 0,
+				sounds: [
+					{ ...sound("S", 0.9), accuracy },
+					sound("I", 0.9, [{ phonemeId: "IX", score: 0.1 }]),
+					{ ...sound("T", 0.9), accuracy },
+				],
+			},
+		],
+	});
+	const clip = (
+		kind: ClipLabel["kind"],
+		said: string,
+		evidence: WordEvidence,
+		transcript: Transcript | null,
+	): ScoredCase => ({
+		case: caseForClip({ target: "seat", partner: "sit", kind, said }, CONTRASTS),
+		sourceId: "tts:fake",
+		sourceKind: "tts",
+		evidence,
+		transcript,
+	});
+
+	it("counts gated recordings as false rejects or wrong words stopped", () => {
+		const results = evaluateCases([
+			clip("correct", "seat", seatEvidence(0.9), { words: ["seat"], confidence: 0.9 }),
+			clip("swap", "sit", seatEvidence(0.9), { words: ["set"], confidence: 0.9 }),
+			clip("swap", "sit", seatEvidence(0.2), { words: ["set"], confidence: 0.9 }),
+			clip(
+				"unrelated",
+				"phone",
+				{ pronunciations: [], omitted: true },
+				{
+					words: ["phone"],
+					confidence: 0.7,
+				},
+			),
+			clip("phrase", "a seat", seatEvidence(0.8), { words: ["a", "seat"], confidence: 0.8 }),
+			clip("added-sounds", "seats", seatEvidence(0.8), { words: ["seats"], confidence: 0.1 }),
+			clip("silence", "silence", { pronunciations: [], omitted: true }, null),
+			clip("nonword", "/siθ/", seatEvidence(0.8), { words: ["seeth"], confidence: 0.1 }),
+		]);
+		expect(results.map((result) => result.category)).toEqual([
+			"match",
+			"missed",
+			"rejected",
+			"rejected",
+			"rejected",
+			"accepted",
+			"rejected",
+			"accepted",
+		]);
+		expect(results[2].outcome).toEqual({
+			type: "rejected",
+			gate: { type: "different-word", heard: ["set"] },
+		});
+
+		const metrics = summarize(results);
+		expect(metrics.rates.falseReject).toBe(1 / 3);
+		expect(metrics.wrongWord).toEqual({
+			total: 5,
+			rejected: 3,
+			accepted: 2,
+			byKind: {
+				unrelated: { total: 1, accepted: 0 },
+				phrase: { total: 1, accepted: 0 },
+				"added-sounds": { total: 1, accepted: 1 },
+				silence: { total: 1, accepted: 0 },
+				nonword: { total: 1, accepted: 1 },
+			},
+		});
+		expect(metrics.rates.wrongWordAccepted, "nonwords left out").toBe(1 / 4);
+		expect(metrics.shape.scored, "wrong words stay out of the evidence shape").toBe(2);
 	});
 });

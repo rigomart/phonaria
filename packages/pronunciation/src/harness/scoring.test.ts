@@ -4,7 +4,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ScoringRequest } from "../contract";
 import { MAX_RETRY_AFTER_MS, retryAfterMs, retryingFetch } from "./azure";
-import { type HarnessScorer, type ScoringJob, scoreJobs } from "./scoring";
+import { type HarnessScorer, type ScoringJob, scoreJobs, seedCache } from "./scoring";
 
 const request = (word: string): ScoringRequest => ({
 	targetAccent: "en-us",
@@ -42,6 +42,18 @@ beforeEach(async () => {
 });
 afterEach(async () => {
 	await rm(cacheDir, { recursive: true, force: true });
+});
+
+describe("seedCache", () => {
+	it("answers a job from a response saved elsewhere, without calling the scorer", async () => {
+		const { scorer, calls } = countingScorer();
+		expect(await seedCache(scorer, jobs[0], { word: "saved" }, cacheDir)).toBe(true);
+		expect(await seedCache(scorer, jobs[0], { word: "again" }, cacheDir)).toBe(false);
+
+		const run = await scoreJobs(scorer, [jobs[0]], { cacheDir, offline: true });
+		expect(calls).toEqual([]);
+		expect(run.stats.cacheHits).toBe(1);
+	});
 });
 
 describe("scoreJobs", () => {

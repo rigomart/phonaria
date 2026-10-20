@@ -1,0 +1,15 @@
+{
+	"RecognitionStatus": "Success",
+	"Offset": 1100000,
+	"Duration": 6000000,
+	"DisplayText": "Sheep.",
+	"NBest": [
+		{
+			"Confidence": 0.5874869,
+			"Lexical": "sheep",
+			"ITN": "sheep",
+			"MaskedITN": "sheep",
+			"Display": "Sheep."
+		}
+	]
+}

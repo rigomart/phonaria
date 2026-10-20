@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { folderSources, loadVoicesSource, parseLabels } from "./sources";
+import { folderSources, loadClips, loadVoicesSource, parseLabels } from "./sources";
 
 describe("parseLabels", () => {
 	it("reads the word each recording came out as", () => {
@@ -77,5 +77,52 @@ describe("folderSources", () => {
 	it("fails on two sources with one name", () => {
 		expect(() => folderSources(["a/guy/audio", "b/guy"], "tts")).toThrow(/tts:guy/);
 		expect(() => folderSources(["x/jenny"], "tts", new Set(["tts:jenny"]))).toThrow(/tts:jenny/);
+	});
+});
+
+describe("loadClips", () => {
+	let dir: string;
+	beforeEach(async () => {
+		dir = await mkdtemp(path.join(tmpdir(), "harness-clips-"));
+	});
+	afterEach(async () => {
+		await rm(dir, { recursive: true, force: true });
+	});
+
+	const write = (clips: unknown[]) =>
+		writeFile(path.join(dir, "clips.json"), JSON.stringify({ clips }));
+	const clip = {
+		file: "wav/a-ship.wav",
+		source: "tts:jenny",
+		target: "ship",
+		partner: "sheep",
+		kind: "phrase",
+		said: "a ship",
+	};
+
+	it("reads labelled clips with files relative to the manifest", async () => {
+		await write([clip, { ...clip, source: "real:ana", kind: "correct", said: "ship" }]);
+		const clips = await loadClips(path.join(dir, "clips.json"));
+		expect(clips[0]).toEqual({
+			sourceId: "tts:jenny",
+			sourceKind: "tts",
+			file: path.join(dir, "wav", "a-ship.wav"),
+			target: "ship",
+			partner: "sheep",
+			kind: "phrase",
+			said: "a ship",
+		});
+		expect(clips[1].sourceKind).toBe("real");
+	});
+
+	it("rejects an unknown kind, a bad source or a missing field", async () => {
+		for (const bad of [
+			{ ...clip, kind: "mumble" },
+			{ ...clip, source: "jenny" },
+			{ ...clip, said: undefined },
+		]) {
+			await write([bad]);
+			await expect(loadClips(path.join(dir, "clips.json"))).rejects.toThrow();
+		}
 	});
 });

@@ -1,6 +1,6 @@
 # Phonaria feature map
 
-This map describes how to reach features, not a claim that all features pass. The common-word transcription, transcription history, sound-frequency, and Language Spread journeys below have executable verification recipes. Other entries are navigation references awaiting dedicated journeys.
+This map describes how to reach features, not a claim that all features pass. The common-word transcription, transcription history, sound-frequency, minimal-pair speaking, and Language Spread journeys below have executable verification recipes. Other entries are navigation references awaiting dedicated journeys.
 
 | Feature | Entry point | Coverage here |
 | --- | --- | --- |
@@ -15,6 +15,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Sound card "Frequency" and "Spelling" | Any sound, or **Details for /h/** after transcribing | Executable journey below |
 | Language Spread | `/language-spread`, header **Language Spread** (behind `FLAG_LANGUAGE_SPREAD`) | Executable journeys below: `language-spread` (flag on) and `language-spread-off` |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
+| Minimal-pair speaking practice | `/practice/minimal-pairs`, Practice index **Minimal pairs** (behind `FLAG_SPEECH`, independent of `FLAG_PRACTICE`) | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 
 ## Adding a journey
@@ -233,6 +234,78 @@ bun run verify observe "$VERIFY_RUN" followed-link
 `ranking` requires the Frequency heading, no tabs or comparison chart, no category legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and 40 distinct frequency shades without category labels. `page-card` requires the /ð/ row marked open (`data-details-open`), "Common", "11th most common" of 40 with 3 of 4 meter bars lit (3.1%) and no link on the Frequency page itself, and the pattern `th` paired with "this, mother", both `th` emphasized. `menu` requires the header's three IPA Chart tabs, which show on every chart page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the /h/ panel from a transcription result to show "Less common", "29th most common" of 40 with 2 of 4 meter bars lit (1.35% in `phoneme-frequency.json`), the block linking to the Frequency page, and the pattern `h` paired with "house, hello"; `followed-link` requires that link to open the Frequency page.
 
 Clicking a sound whose card or panel is already open closes it; clicking another sound while the panel is open swaps the panel to it. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.
+
+## Minimal-pair speaking practice
+
+Target accent: American English (`en-us`). The learner picks a contrast, gets a word from one of its pairs, records it, and the page checks that the recording holds the word with `gateWord`, then judges the contrast sound with `judgeWord`, on the evidence from `POST /api/speech/score`. Expected copy comes from [#332](https://github.com/rigomart/phonaria/issues/332) and [#344](https://github.com/rigomart/phonaria/issues/344); the IPA for *ship* (`SH IX1 P`) is `ˈʃɪp` from the curated dictionary. The [checkpoints](../scripts/minimal-pairs.ts) read the page heading, the IPA tokens, the marked sound's label, the visible buttons and the sentence in the result live region.
+
+Live scoring needs `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` in `apps/phonaria/.dev.vars`; without them the route answers 503 and `match`, `swapped`, `not-heard`, `random-word`, `added-sounds` and `phrase` are **blocked**. Never print the key. Each recorded attempt is two live Azure calls (assessment and plain recognition), so the journey costs twelve.
+
+Headless Chromium has no microphone. The journey's `fakeMic` helper replaces `navigator.mediaDevices.getUserMedia` with a stream that plays a catalog recording passed in as base64 (the asset bucket sends no CORS headers, so the page can't fetch it), or silence for `null`. Download the recordings first: `https://assets.rigos.dev/audio/en-us/words/jenny/ship.ogg` and `sheep.ogg`. The wrong-word attempts need Azure TTS of *kid*, *ships* and "a ship" in any voice; the wrong-word investigation's `audio-src/jenny-kid.wav`, `jenny-ships.wav` and `jenny-a_ship.wav` (Jenny at -10% rate, 24 kHz) are what the expectations were checked with. `failMic` makes `getUserMedia` reject with a given `DOMException` name, `failRoute` answers the scoring route from the page with a given status, and `stubVowel` answers it with evidence for the vowel of *ship* so the browser judge decides the verdict.
+
+### Controls
+
+| User control | CLI locator |
+| --- | --- |
+| Practice index link | `find role link click --name "Minimal pairs Say a word like ship or sheep and find out which sound came through. Pick a pair of sounds to start."` |
+| A contrast | `find label "seat and sit" click` (named by its first pair) |
+| Record, Stop, Try again, Next word | `find role button click --name "Record"` (and so on) |
+| Play the word, play the heard word | `find role button click --name "Hear ship"`, `"Hear sheep"` |
+
+### Executable journey (flag on)
+
+```bash
+caffeinate -u -t 3600 &
+bun run verify init minimal-pairs
+bun run verify serve "$VERIFY_RUN"
+js() { bun run verify browser "$VERIFY_RUN" eval -b "$(bun -e 'const [n, a] = process.argv.slice(-2); const j = await import("./.agents/skills/verify-phonaria/scripts/minimal-pairs.ts"); const v = a.startsWith("@") ? JSON.stringify(Buffer.from(await Bun.file(a.slice(1)).arrayBuffer()).toString("base64")) : a; process.stdout.write(Buffer.from(`(${j[n]})(${v})`).toString("base64"))' -- "$1" "$2")"; }
+settled="!!document.querySelector('[aria-live=polite][aria-atomic=true] p') && !/^(Listening|Checking|Waiting)/.test(document.querySelector('[aria-live=polite][aria-atomic=true]').textContent)"
+bun run verify browser "$VERIFY_RUN" open about:blank
+bun run verify browser "$VERIFY_RUN" trace start
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/practice
+bun run verify observe "$VERIFY_RUN" index-link
+# Click the Practice index link, wait for the list, then:
+bun run verify observe "$VERIFY_RUN" picker
+bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/practice/minimal-pairs?contrast=i-ix&word=ship"
+bun run verify observe "$VERIFY_RUN" word
+# For each attempt: set up, click, wait for "$settled", observe.
+js fakeMic @/path/to/ship.ogg;   # click Record     -> observe match
+js fakeMic @/path/to/sheep.ogg;  # click Try again  -> observe swapped
+js fakeMic null;                 # click Try again  -> observe not-heard (5 s of silence)
+js fakeMic @/path/to/kid.wav;    # click Try again  -> observe random-word
+js fakeMic @/path/to/ships.wav;  # click Try again  -> observe added-sounds
+js fakeMic @/path/to/a-ship.wav; # click Try again  -> observe phrase
+js fakeMic @/path/to/ship.ogg; js stubVowel '{ "targetScore": 0.6, "rival": "I", "rivalScore": 0.62 }'  # Try again -> observe close-call
+js stubVowel '{ "targetScore": 0.2, "rival": "E", "rivalScore": 0.9 }'  # click Try again -> observe other-sound
+js failMic '"NotAllowedError"';  # click Try again  -> observe denied
+js failMic '"NotFoundError"';    # click Try again  -> observe unsupported
+js fakeMic @/path/to/ship.ogg; js failRoute 429  # Try again -> observe rate-limited
+js failRoute 503                 # click Try again  -> observe unavailable
+js failRoute 502                 # click Try again  -> observe scoring-failed
+# Click Next word, wait for a new h1, then:
+bun run verify observe "$VERIFY_RUN" next-word
+```
+
+`index-link` requires the Practice index to list Schwa and a link to `/practice/minimal-pairs`. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 contrast links, the first named **pat and bat**. `word` requires `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound**, **Hear ship** and **Record** buttons, the privacy line and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences (`swapped` also a **Hear sheep** button; the wrong-word ones no sound named); each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, with no result showing.
+
+### Flag off
+
+```bash
+bun run verify init minimal-pairs-off
+FLAG_SPEECH=0 bun run verify serve "$VERIFY_RUN"
+# open about:blank, trace start, set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/practice/minimal-pairs
+bun run verify observe "$VERIFY_RUN" not-found
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/practice
+bun run verify observe "$VERIFY_RUN" index-hidden
+```
+
+`not-found` requires HTTP 404 with the shared **This page doesn't exist** h1 and no **Record** button; `index-hidden` requires the Practice index to list Schwa without the minimal-pairs link.
+
+### Limits
+
+Chromium only, with the microphone replaced by a stream playing Azure Jenny TTS, so real voices and real microphones are not exercised. Close-call, other-sound, denied, unsupported and the route failures are simulated in the page, so they check the page and the browser judge, not the route or Azure. The wrong words are TTS, not learners. Only i-ix and *ship* are recorded; the no-evidence sentence is covered by unit tests only. The live region is read from the DOM, not through a screen reader.
 
 ## Language Spread
 

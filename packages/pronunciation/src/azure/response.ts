@@ -7,7 +7,21 @@ export type AzureAssessmentResponse = {
 	readonly NBest?: readonly AzureRecognition[];
 };
 
+/**
+ * A plain recognition response: the same endpoint with no assessment header.
+ * `RecognitionStatus` is `Success`, or `NoMatch`, `InitialSilenceTimeout` or
+ * `BabbleTimeout` when Azure heard no speech it could transcribe.
+ */
+export type AzureRecognitionResponse = AzureAssessmentResponse;
+
 export type AzureRecognition = {
+	/**
+	 * The words recognized, lowercase and spelled out, e.g. `the ship is`. Read from
+	 * plain recognition only: an assessment steers it towards the reference text.
+	 */
+	readonly Lexical?: string;
+	/** 0..1, for `Lexical`. */
+	readonly Confidence?: number;
 	readonly Words?: readonly AzureWord[];
 };
 
@@ -15,6 +29,8 @@ export type AzureWord = {
 	readonly Word: string;
 	/** `None`, `Mispronunciation`, `Omission` or `Insertion`. */
 	readonly ErrorType?: string;
+	/** How well the audio fits the word, absolute. */
+	readonly AccuracyScore?: number;
 	readonly Phonemes?: readonly AzurePhoneme[];
 };
 

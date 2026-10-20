@@ -1,0 +1,15 @@
+{
+	"RecognitionStatus": "Success",
+	"Offset": 1500000,
+	"Duration": 6800000,
+	"DisplayText": "A ship.",
+	"NBest": [
+		{
+			"Confidence": 0.7885341,
+			"Lexical": "a ship",
+			"ITN": "a ship",
+			"MaskedITN": "a ship",
+			"Display": "A ship."
+		}
+	]
+}

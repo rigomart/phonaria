@@ -5,7 +5,14 @@ import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
 import type { ScoringRequest, TargetWord } from "../contract";
 import { type JudgeMargins, LENIENT_MARGINS } from "../judge";
 import { createAzureHarnessScorer, type FetchStats, retryingFetch } from "./azure";
-import { buildCatalogCases, type HarnessCase, recordingWordList, targetWordFor } from "./cases";
+import {
+	buildCatalogCases,
+	caseForClip,
+	type HarnessCase,
+	recordingWordList,
+	targetWordFor,
+} from "./cases";
+import { importInvestigation } from "./investigation";
 import type { ScoredCase } from "./metrics";
 import { buildReport, renderMarkdown, type SourceSummary } from "./report";
 import { mapWithConcurrency, type ScoringJob, scoreJobs } from "./scoring";
@@ -13,6 +20,7 @@ import {
 	assertFfmpeg,
 	folderSources,
 	loadCatalogSource,
+	loadClips,
 	loadFolderSource,
 	loadVoicesSource,
 	type Recording,
@@ -25,8 +33,9 @@ const OUTPUT_DIR = fileURLToPath(new URL("../../output", import.meta.url));
 const USAGE = `Usage:
   bun run harness words [--json]
   bun run harness run [--catalog] [--audio-dir=<dir>] [--tts-dir=[name=]<dir>]... [--voices-dir=<dir>]
-                      [--offline] [--concurrency=4] [--contrasts=i-ix,th-s] [--report=report]
-                      [--max-throttled=100]
+                      [--clips=<manifest.json>]... [--offline] [--concurrency=4]
+                      [--contrasts=i-ix,th-s] [--report=report] [--max-throttled=100]
+  bun run harness import-investigation <dir>
 
 Paths are relative to packages/pronunciation. With no source given, run uses --catalog.`;
 
@@ -42,6 +51,7 @@ type RunOptions = {
 	audioDir?: string;
 	ttsDirs: string[];
 	voicesDir?: string;
+	clips: string[];
 	offline: boolean;
 	concurrency: number;
 	contrasts?: string[];
@@ -53,6 +63,7 @@ function parseRunOptions(args: readonly string[]): RunOptions {
 	const options: RunOptions = {
 		catalog: false,
 		ttsDirs: [],
+		clips: [],
 		offline: false,
 		concurrency: 4,
 		report: "report",
@@ -65,6 +76,7 @@ function parseRunOptions(args: readonly string[]): RunOptions {
 		else if (flag === "--audio-dir" && value) options.audioDir = value;
 		else if (flag === "--tts-dir" && value) options.ttsDirs.push(value);
 		else if (flag === "--voices-dir" && value) options.voicesDir = value;
+		else if (flag === "--clips" && value) options.clips.push(value);
 		else if (flag === "--report" && /^[\w.-]+$/.test(value)) options.report = value;
 		else if (flag === "--contrasts" && value) options.contrasts = value.split(",");
 		else if ((flag === "--concurrency" || flag === "--max-throttled") && /^\d+$/.test(value)) {
@@ -72,7 +84,12 @@ function parseRunOptions(args: readonly string[]): RunOptions {
 			else options.maxThrottled = Number(value);
 		} else throw new Error(`Unknown or incomplete argument: ${arg}\n\n${USAGE}`);
 	}
-	if (!options.audioDir && options.ttsDirs.length === 0 && !options.voicesDir) {
+	if (
+		!options.audioDir &&
+		options.ttsDirs.length === 0 &&
+		!options.voicesDir &&
+		options.clips.length === 0
+	) {
 		options.catalog = true;
 	}
 	return options;
@@ -95,6 +112,7 @@ async function runHarness(options: RunOptions) {
 		? EnglishPhonemeContrasts.filter((contrast) => options.contrasts?.includes(contrast.id))
 		: EnglishPhonemeContrasts;
 	if (contrasts.length === 0) throw new Error("No contrast matches --contrasts");
+	const inContrasts = new Set(contrasts.map((contrast) => contrast.id));
 	const cases = buildCatalogCases(contrasts);
 	const casesByRecording = new Map<string, HarnessCase[]>();
 	for (const harnessCase of cases) {
@@ -131,11 +149,25 @@ async function runHarness(options: RunOptions) {
 		}
 	}
 
+	const clips = (
+		await Promise.all(options.clips.map((manifest) => loadClips(path.resolve(manifest))))
+	)
+		.flat()
+		.map((clip) => ({ clip, harnessCase: caseForClip(clip) }))
+		.filter(({ harnessCase }) => inContrasts.has(harnessCase.contrastId));
+	const clipSources = new Map<string, number>();
+	for (const { clip } of clips) {
+		if (loads.has(clip.sourceId)) throw new Error(`Two sources are named ${clip.sourceId}`);
+		clipSources.set(clip.sourceId, (clipSources.get(clip.sourceId) ?? 0) + 1);
+	}
+
 	const recordings = [...loads.values()].flatMap((load) => load.recordings);
 	const wavDir = path.join(OUTPUT_DIR, "wav");
-	const audio = await mapWithConcurrency(recordings, 8, (recording) =>
-		toScorerWav(recording.file, wavDir),
-	);
+	const files = [
+		...recordings.map((recording) => recording.file),
+		...clips.map(({ clip }) => clip.file),
+	];
+	const audio = await mapWithConcurrency(files, 8, (file) => toScorerWav(file, wavDir));
 
 	const targets = new Map<string, TargetWord>();
 	const requestFor = (word: string): ScoringRequest => {
@@ -150,6 +182,10 @@ async function runHarness(options: RunOptions) {
 			pending.push({ recording, harnessCase });
 			jobs.push({ audio: audio[index], request: requestFor(harnessCase.targetWord) });
 		}
+	});
+	clips.forEach(({ clip, harnessCase }, index) => {
+		pending.push({ recording: { ...clip, word: clip.said }, harnessCase });
+		jobs.push({ audio: audio[recordings.length + index], request: requestFor(clip.target) });
 	});
 
 	const fetchStats: FetchStats = { attempts: 0, throttled: 0, retried: 0 };
@@ -189,6 +225,7 @@ async function runHarness(options: RunOptions) {
 				sourceId: recording.sourceId,
 				sourceKind: recording.sourceKind,
 				evidence: result.evidence.words[0],
+				transcript: result.evidence.transcript,
 			});
 		} else if (result.type === "failed") {
 			failures.add(
@@ -200,14 +237,24 @@ async function runHarness(options: RunOptions) {
 		failures.add(`Stopped calling Azure after ${fetchStats.throttled} throttled responses`);
 	}
 
-	const sources: SourceSummary[] = [...loads].map(([id, load]) => ({
-		id,
-		kind: id.startsWith("real:") ? "real" : "tts",
-		recordings: load.recordings.length,
-		missing: load.missing,
-		neither: load.neither,
-		relabelled: load.relabelled,
-	}));
+	const sources: SourceSummary[] = [
+		...[...loads].map(([id, load]): SourceSummary => ({
+			id,
+			kind: id.startsWith("real:") ? "real" : "tts",
+			recordings: load.recordings.length,
+			missing: load.missing,
+			neither: load.neither,
+			relabelled: load.relabelled,
+		})),
+		...[...clipSources].map(([id, recordings]): SourceSummary => ({
+			id,
+			kind: id.startsWith("real:") ? "real" : "tts",
+			recordings,
+			missing: [],
+			neither: [],
+			relabelled: [],
+		})),
+	];
 	const report = buildReport({
 		generatedAt: new Date().toISOString(),
 		scorer: { id: scorer.id, settings: scorer.settings },
@@ -255,6 +302,16 @@ async function main() {
 	const [command, ...args] = process.argv.slice(2);
 	if (command === "words") return printWords(args.includes("--json"));
 	if (command === "run") return runHarness(parseRunOptions(args));
+	if (command === "import-investigation" && args[0]) {
+		const { manifest, clips, seeded } = await importInvestigation({
+			dir: path.resolve(args[0]),
+			outputDir: OUTPUT_DIR,
+		});
+		console.log(
+			`${clips} clips, ${seeded} responses newly cached. Run: bun run harness run --clips=${path.relative(process.cwd(), manifest)}`,
+		);
+		return;
+	}
 	throw new Error(USAGE);
 }
 

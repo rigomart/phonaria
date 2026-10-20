@@ -4,26 +4,48 @@ import {
 	getSinglePronunciation,
 	type PhonemeContrast,
 	type PhonemeSymbolId,
+	toBasePhonemeIds,
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import type { TargetWord } from "../contract";
+import type { PronunciationLookup } from "../word-gate";
+
+/**
+ * What a `wrong-word` recording holds instead of the target or its partner:
+ * an unrelated word (*kid* for *ship*), the word with sounds added (*ships*), a
+ * phrase ("a ship"), a made-up word (*shap*), or silence or noise.
+ */
+export type WrongWordKind = "unrelated" | "added-sounds" | "phrase" | "nonword" | "silence";
+
+export const WRONG_WORD_KINDS: readonly WrongWordKind[] = [
+	"unrelated",
+	"added-sounds",
+	"phrase",
+	"nonword",
+	"silence",
+];
 
 /**
  * One recording judged against one target word, on the sound where the pair differs.
  * `correct`: the recording is the target word, so the sound should match.
  * `swap`: the recording is the pair partner, so the judge should name the partner's sound.
+ * `wrong-word`: the recording is neither, so the word gate should stop it before
+ * any sound is judged.
  */
 export type HarnessCase = {
 	readonly contrastId: string;
 	readonly pair: readonly [string, string];
-	readonly kind: "correct" | "swap";
+	readonly kind: "correct" | "swap" | "wrong-word";
+	/** Set for `wrong-word` cases only. */
+	readonly wrongWord?: WrongWordKind;
 	readonly targetWord: string;
+	/** The word or words said; for silence, what it was. */
 	readonly recordingWord: string;
 	/** Position of the judged sound in the target word's pronunciation. */
 	readonly position: number;
 	readonly targetPhonemeId: PhonemeSymbolId;
 	readonly partnerPhonemeId: PhonemeSymbolId;
-	/** The sound a recording of `recordingWord` holds at `position`. */
+	/** The sound a recording of `recordingWord` holds at `position`; the target's for `wrong-word`. */
 	readonly expectedHeard: PhonemeSymbolId;
 	readonly judgedPhonemeIds: readonly PhonemeSymbolId[];
 };
@@ -43,6 +65,10 @@ export function pronunciationOf(
 	if (!pronunciation) throw new Error(`"${word}" has competing pronunciations`);
 	return pronunciation;
 }
+
+/** Every pronunciation the curated top-10k dictionary lists, for the word gate. */
+export const curatedPronunciations: PronunciationLookup = (word) =>
+	EnglishCuratedTop10k.words[word]?.map((variant) => toBasePhonemeIds(variant));
 
 export function targetWordFor(word: string, dictionary?: Dictionary): TargetWord {
 	return { text: word, acceptedPronunciations: [pronunciationOf(word, dictionary)] };
@@ -106,4 +132,34 @@ export function recordingWordList(contrasts: Catalog = EnglishPhonemeContrasts):
 		for (const word of pair.words) used.add(word);
 		return { contrastId: contrast.id, words: pair.words };
 	});
+}
+
+/** A labelled recording judged against `target`, whose pair partner is `partner`. */
+export type ClipLabel = {
+	readonly target: string;
+	readonly partner: string;
+	readonly kind: "correct" | "swap" | WrongWordKind;
+	/** What the recording holds. */
+	readonly said: string;
+};
+
+/** The case for one labelled clip, from the catalog pair of its target and partner. */
+export function caseForClip(
+	{ target, partner, kind, said }: ClipLabel,
+	contrasts: Catalog = EnglishPhonemeContrasts,
+	dictionary?: Dictionary,
+): HarnessCase {
+	const contrast = contrasts.find((candidate) =>
+		candidate.minimalPairs.some(({ words }) => words.includes(target) && words.includes(partner)),
+	);
+	if (!contrast) throw new Error(`"${target}" and "${partner}" aren't a minimal pair`);
+	const pairCases = buildCatalogCases([contrast], dictionary).filter(
+		(candidate) => candidate.targetWord === target && candidate.pair.includes(partner),
+	);
+	const correct = pairCases.find((candidate) => candidate.kind === "correct");
+	const swap = pairCases.find((candidate) => candidate.kind === "swap");
+	if (!correct || !swap) throw new Error(`No case for "${target}" against "${partner}"`);
+	if (kind === "correct") return correct;
+	if (kind === "swap") return swap;
+	return { ...correct, kind: "wrong-word", wrongWord: kind, recordingWord: said };
 }
