@@ -9,6 +9,7 @@ import {
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import { describe, expect, it } from "vitest";
 import { allowedVariants } from "./allowed-variants";
+import { AZURE_JUDGE_THRESHOLDS } from "./azure/judge-thresholds";
 import type {
 	MissingSoundEvidence,
 	RivalScore,
@@ -17,7 +18,14 @@ import type {
 	ScoringRequest,
 	SoundEvidence,
 } from "./contract";
-import { contrastPartners, createWordFinder, judgeWord } from "./judge";
+import {
+	contrastPartners,
+	createWordFinder,
+	judgeWord,
+	type JudgeThresholds,
+	LENIENT_MARGINS,
+	marginsFor,
+} from "./judge";
 
 // The i-ix contrast: IX is /ɪ/ as in "ship", I is /i/ as in "sheep".
 const SHIP_SHEEP = new Set<PhonemeSymbolId>(["IX", "I"]);
@@ -448,5 +456,54 @@ describe("judgeWord on allowed en-us variants", () => {
 				);
 			}
 		}
+	});
+});
+
+describe("judgeWord with per-sound thresholds", () => {
+	const evidence = {
+		pronunciations: [
+			{
+				pronunciationIndex: 0,
+				sounds: [
+					scored("B", 0.9),
+					scored("IX", 0.5, [{ phonemeId: "I", score: 0.8 }]),
+					scored("T", 0.5, [{ phonemeId: "D", score: 0.8 }]),
+				],
+			},
+		],
+	};
+	const verdicts = (margins?: Parameters<typeof judgeWord>[0]["margins"]) =>
+		judgeWord({ evidence, targetAccent: "en-us", margins })?.sounds.map(
+			({ verdict }) => verdict.type,
+		);
+
+	it("applies a sound's own margins and the default to the rest", () => {
+		const thresholds: JudgeThresholds = {
+			default: LENIENT_MARGINS,
+			bySound: { IX: { swap: 0.35 } },
+		};
+		expect(verdicts(LENIENT_MARGINS)).toEqual(["match", "swapped", "swapped"]);
+		expect(verdicts(thresholds)).toEqual(["match", "unclear", "swapped"]);
+		expect(marginsFor(thresholds, "IX")).toEqual({ ...LENIENT_MARGINS, swap: 0.35 });
+		expect(marginsFor(thresholds, "T")).toBe(LENIENT_MARGINS);
+	});
+
+	it("uses the thresholds tuned for Azure when none are given", () => {
+		const [phonemeId, own] = Object.entries(AZURE_JUDGE_THRESHOLDS.bySound)[0] as [
+			PhonemeSymbolId,
+			{ swap: number },
+		];
+		const [partner] = contrastPartners("en-us", phonemeId);
+		const gap = (AZURE_JUDGE_THRESHOLDS.default.swap + own.swap) / 2;
+		const sound = scored(phonemeId, 0.2, [{ phonemeId: partner, score: 0.2 + gap }]);
+		const judge = (margins?: JudgeThresholds) =>
+			judgeWord({
+				evidence: { pronunciations: [{ pronunciationIndex: 0, sounds: [sound] }] },
+				targetAccent: "en-us",
+				margins,
+			})?.sounds[0]?.verdict;
+		expect(judge(AZURE_JUDGE_THRESHOLDS)).toEqual({ type: "unclear", reason: "close-call" });
+		expect(judge()).toEqual(judge(AZURE_JUDGE_THRESHOLDS));
+		expect(judge({ ...AZURE_JUDGE_THRESHOLDS, bySound: {} })?.type).toBe("swapped");
 	});
 });

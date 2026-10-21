@@ -71,7 +71,11 @@ Two kinds of variant sound like another phoneme, so the judge maps them itself, 
 
 A heard variant counts as the target: its score can win for the target, and it is never a rival, so a flapped *water* is `match`. Both variants equal a contrast partner (t-d, p-b, k-g), but only where English doesn't contrast them; a test checks that no minimal pair in the catalog differs on a sound where its partner is allowed. Pronunciations carry no stress, so the flap is also allowed before a stressed vowel, as in *adopt*, where speakers don't flap. The glottal /t/ of *button* has no phoneme to be heard as, and isn't mapped; that /t/ is between vowels, so the flap's are allowed there.
 
-`LENIENT_MARGINS` is the default. It starts lenient because marking a correct sound wrong costs more trust than missing a mistake.
+### Margins
+
+`margins` takes one `JudgeMargins` for every sound, or `JudgeThresholds`: a `default` and margins per target sound in `bySound`. A sound not listed uses the default. `LENIENT_MARGINS` (match 0.05, swap 0.2, floor 0.5) is the base. It is lenient because marking a correct sound wrong costs more trust than missing a mistake.
+
+With no `margins`, the judge uses `AZURE_JUDGE_THRESHOLDS`, tuned on the harness for Azure's scores, the only scorer so far. They live in `src/azure/judge-thresholds.json`, written by `harness tune` (below), and only raise some sounds' swap margins above `LENIENT_MARGINS`: a sound Azure blurs with its partner needs a bigger win to be named. A new scorer's scores aren't comparable, so it passes `LENIENT_MARGINS` or its own tuned thresholds.
 
 ## Word gate
 
@@ -95,7 +99,7 @@ Without a transcript, steps 3 to 5 become one check: a word accuracy under 0.3.
 
 Transcript words are compared by pronunciation through `pronunciationsOf`, which the caller supplies, so a homophone such as *by* for *buy* counts as the target. The transcript alone never rejects a word, and never names a swap: Azure transcribed a clear *pool* as "pull" and a clear *bat* as "that", and the judge reads both correctly from the scoring.
 
-The thresholds are `WORD_GATE_MARGINS`, to be tuned in [#335](https://github.com/rigomart/phonaria/issues/335). They come from the wrong-word investigation in [#344](https://github.com/rigomart/phonaria/issues/344), on 124 TTS clips: 1 of 48 target or partner recordings rejected (Guy's *sit* transcribed as "set", with a low /s/), and none of 60 unrelated words, words with added sounds, phrases or silences let through. A nonword one sound off the target, such as *shap* for *ship*, mostly gets through and is judged; that is fair, since it is a mispronounced target.
+The thresholds are `WORD_GATE_MARGINS`, not tuned on the harness yet. They come from the wrong-word investigation in [#344](https://github.com/rigomart/phonaria/issues/344), on 124 TTS clips: 1 of 48 target or partner recordings rejected (Guy's *sit* transcribed as "set", with a low /s/), and none of 60 unrelated words, words with added sounds, phrases or silences let through. A nonword one sound off the target, such as *shap* for *ship*, mostly gets through and is judged; that is fair, since it is a mispronounced target.
 
 ## Alignment
 
@@ -213,7 +217,7 @@ bun run --cwd packages/pronunciation harness run --catalog \
 - `--clips=<manifest.json>`, repeatable: recordings labelled one by one, for cases a folder of words can't express. See `loadClips` in `sources.ts` for the format. Each clip names its source, target, partner, what was said and its kind: `correct`, `swap`, `unrelated`, `added-sounds`, `phrase`, `nonword` or `silence`.
 - `--voices-dir=<dir>`: real recordings as `<speaker>/<word>.wav`, one source per speaker. An optional `<speaker>/labels.json` maps a word to what it came out as: `{ "ship": "sheep", "thin": "neither" }`. A recording labelled as another word is scored as that word; one labelled `neither` is left out. Unlisted recordings count as said as intended. Words from the `words` list with no recording are listed as missing.
 
-Other options: `--offline` never calls the scorer, `--judged=every|contrast` picks the sounds judged (default `every`), `--contrasts=i-ix,th-s` limits the catalog, `--concurrency=4` sets how many live calls run at once, `--report=<name>` names the output files, and `--max-throttled=100` stops calling Azure after that many HTTP 429s.
+Other options: `--offline` never calls the scorer, `--judged=every|contrast` picks the sounds judged (default `every`), `--margins=tuned|lenient` judges with `AZURE_JUDGE_THRESHOLDS` (the default) or `LENIENT_MARGINS` for every sound, `--contrasts=i-ix,th-s` limits the catalog, `--concurrency=4` sets how many live calls run at once, `--report=<name>` names the output files, and `--max-throttled=100` stops calling Azure after that many HTTP 429s.
 
 Every recording is converted with `ffmpeg` to 16 kHz mono 16-bit PCM WAV, stored by the original file's hash in `output/wav`. Azure's raw answers, the assessment and the recognition together, are cached in `output/cache`, keyed by a hash of the WAV bytes, the request and the scorer settings, never the key. A rerun, or a change to the adapter or the judge, costs no calls. Without `AZURE_SPEECH_KEY` the run is offline. Live calls retry HTTP 429 and 5xx with backoff, honouring `Retry-After` in seconds or as a date, up to a minute.
 
@@ -228,6 +232,20 @@ The report goes to `output/<name>.json` and `output/<name>.md`, overall, per sou
 - **Wrong word accepted**: wrong-word recordings the gate let through, per kind, and overall leaving out nonwords, which are fair to judge.
 
 It also lists the falsely flagged sounds, as target and heard, the worst contrasts by false flags with the rivals that tied or beat the target, how the judged sound's evidence looked before margins (no rivals, partner listed, who scored highest), and the same evidence judged under a few other margins, for information. `output/` is ignored by Git.
+
+### Tuning the judge's margins
+
+`bun run --cwd packages/pronunciation harness tune` picks each sound's swap margin from the cached results of the three-voice catalog run (Jenny, Guy and Aria) and writes `src/azure/judge-thresholds.json`, with a report in `output/tune.md`. It never calls Azure and stops if a request isn't cached. The same cache gives the same file byte for byte; `harness tune --check` compares instead of writing and fails when the committed file is out of date. See [#335](https://github.com/rigomart/phonaria/issues/335) and the [research note](../../docs/research/issue-328-azure-pronunciation-baseline.md) for the numbers.
+
+The target is the #328 one: at most 2% of correct recordings with a sound judged `swapped` on each voice, every sound judged. The rule, in `src/harness/tune.ts`:
+
+1. Only swap margins move, from 0.2 up in steps of 0.05, never down, so no sound is judged less leniently than `LENIENT_MARGINS`. With a swap margin above zero, the match margin and floor only decide between `match` and `unclear`, so they stay put.
+2. A sound said correctly at least 50 times (every sound of a correct recording, and every sound but the contrast one of a pair recording) gets the smallest swap margin that keeps its false flags at or under 2%, over all voices and on each voice where it was said 50 times. With fewer, one flag is more than the target, so the sound keeps the default and the report lists it.
+3. While a voice has more than 2% of its correct recordings flagged, the sound that clears the most of them for each swap it stops naming moves up to the first margin that clears any. When no single sound clears one, because flagged recordings have several flagged sounds, each flagged recording is a candidate instead: every sound flagged in it moves up to the first margin that clears it there, under the same cost rule. A recording flagged on a sound too rare to tune can't be cleared and is skipped. The rule stops when every voice meets the target or nothing clears a recording. A voice still over the target is named in the report, in the command's output and in the file's `tunedOn.overTarget`, and the command exits with an error, `--check` included, even when the file matches.
+
+Sounds are counted once per take and target word: a take judged in several contrasts counts once, and separate takes of a word count apart. Sources are given as for `run`; with none (`--offline`, `--check` and the like don't count), it uses the three voices.
+
+The report shows each voice before and after, the sounds that moved, the sounds still flagged, the sounds kept at the default, and a leave-one-voice-out check: tuned on two voices, measured on the third.
 
 `bun run harness import-investigation <dir>` turns the wrong-word investigation's folder (its `wav/` and `responses/`) into `output/investigation/clips.json` and seeds the cache with its saved Azure answers, so `bun run harness run --clips=output/investigation/clips.json` makes no calls.
 

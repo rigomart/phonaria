@@ -215,3 +215,82 @@ while another sound wins doesn't count, or *ships* for *ship* would pass on a /b
 transcribed as another word with a vowel that isn't a partner on top: Guy's *sit* ("set") and
 *boat* ("but", /ʌ/ top, already rejected in contrasts that don't judge the vowel), and Jenny's
 *chick* against *cheek* ("check", /ɛ/ top).
+
+## Margins per sound (#335)
+
+Run on 2026-10-20, offline from the #333 cache, every sound judged, on the judge with the review fixes above. `harness tune` picks a swap
+margin for each target sound and writes `packages/pronunciation/src/azure/judge-thresholds.json`,
+which the judge uses when it is given no margins. The same cache gives the same file byte for
+byte, and `harness tune --check` fails when the committed file is out of date.
+
+The rule:
+
+- **Only swap margins move, and only up**, from 0.2 in steps of 0.05. No sound is judged less
+  leniently than before. The match margin and floor stay at 0.05 and 0.5: with a swap margin above
+  zero they only decide between `match` and `unclear`, never a flag or a named swap.
+- **Each sound** said correctly at least 50 times gets the smallest swap margin that keeps its
+  false flags at or under 2%, over the three voices and on each voice where it was said 50 times.
+  Said correctly means every sound of a correct recording and every sound but the contrast one of
+  a pair recording.
+- **Then each voice**: while one has more than 2% of its recordings flagged, the sound that clears
+  the most of them for each swap it stops naming moves up to the first margin that clears any. If
+  no single sound clears one, every flagged sound of one flagged recording moves together. That
+  never happened on this run.
+
+| Voice | Recordings flagged before | After | Swap named before | After |
+| --- | --- | --- | --- | --- |
+| Jenny | 1.0% (4 of 400) | 0.5% (2) | 88.4% | 87.6% |
+| Guy | 4.0% (16) | **1.8% (7)** | 86.6% | 86.2% |
+| Aria | 0.3% (1) | 0.3% (1) | 94.7% | 94.1% |
+| All three | 1.8% (21 of 1,200) | 0.8% (10) | 89.9% (1,370 of 1,524) | 89.3% (1,361) |
+
+**Every voice now meets the target with every sound judged.** It costs 9 named swaps out of
+1,524; they become close calls, and unclear goes from 6.5% to 7.2%. On the contrast sound alone
+the tuned judge gives Jenny 0.5%, Guy 1.3% and Aria 0.3% recordings flagged, swap named 89.2%.
+
+Four sounds moved, all vowels:
+
+| Sound | Swap margin | False flags before | After | Swaps named |
+| --- | --- | --- | --- | --- |
+| /ɛ/ (E) | 0.55 | 12 of 250 (Guy 11) | 0 | 32 to 29 of 33 |
+| /æ/ (AE) | 0.45 | 7 of 313 (all Guy) | 2 (Guy) | 79 to 73 of 102 |
+| /aɪ/ (AI) | 0.45 | 2 of 163 (both Jenny) | 0 | 51 of 51, unchanged |
+| /i/ (I) | 0.7 | 3 of 267 (all Guy) | 0 | 28 of 42, unchanged |
+
+The /i/ margin looks large, but every swap it names (*sit* said for *seat*) wins by at least 0.7,
+so the step cost nothing here. Still flagged: Guy's /æ/ as /ɑ/, /n/ as /ŋ/ and /s/ as /z/ twice
+each and /ʌ/, /oʊ/ and /aʊ/ once, Jenny's /ɑ/ once, and /u/ once each on Jenny and Aria. Each of
+those sounds is at or under 2% over the three voices, and on each voice that said it 50 times,
+except /aʊ/.
+
+Kept at the default, said correctly fewer than 50 times: /aʊ/ (47, with Guy's one flag, 2.1%),
+/ə/ (24), /ð/ (15), /h/ (39), /dʒ/ (15), /ʊ/ (21) and /j/ (18). At 50, a single flag is the
+whole 2% target, so fewer cases can't tell a margin from one odd recording. A minimum of 40 shows
+what happens otherwise: /aʊ/ goes to 1.0 and /oʊ/ to 0.95 to clear one Guy flag each, and 17 more
+swaps go unnamed.
+
+### Leave one voice out
+
+Tuned on two voices, measured on the third:
+
+| Left out | Moved on the other two | Recordings flagged before | After | Swap named before | After |
+| --- | --- | --- | --- | --- | --- |
+| Jenny | /æ/ 0.45, /ɛ/ 0.55, /i/ 0.7 | 1.0% (4) | 0.8% (3) | 88.4% | 87.6% |
+| Guy | /aɪ/ 0.45 | 4.0% (16) | **4.0% (16)** | 86.6% | 86.6% |
+| Aria | all four | 0.3% (1) | 0.3% (1) | 94.7% | 94.1% |
+
+**The margins that matter come from Guy alone.** Jenny and Aria barely flag, so tuned on them the
+script moves only /aɪ/, and Guy stays at 4.0%. The in-sample 1.8% shows the margins fit Guy's
+vowel blur; it doesn't show they hold for a voice that blurs other sounds. The real-voice run
+(#327) is the test that counts, and the script should be rerun with those recordings added
+(`harness tune` takes sources as `harness run` does).
+
+To reproduce, from the repo root:
+
+```bash
+bun run --cwd packages/pronunciation harness tune --check
+bun run --cwd packages/pronunciation harness run --catalog \
+  --tts-dir=output/tts/guy --tts-dir=output/tts/aria --offline --report=tuned
+bun run --cwd packages/pronunciation harness run --catalog \
+  --tts-dir=output/tts/guy --tts-dir=output/tts/aria --offline --margins=lenient --report=lenient
+```

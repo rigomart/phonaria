@@ -1,6 +1,6 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type { SoundVerdict } from "../contract";
-import type { JudgeMargins } from "../judge";
+import type { JudgeMargins, JudgeThresholds } from "../judge";
 import { WRONG_WORD_KINDS, type WrongWordKind } from "./cases";
 import {
 	type CaseResult,
@@ -57,7 +57,7 @@ export type CaseRow = {
 export type HarnessReport = {
 	readonly generatedAt: string;
 	readonly scorer: { readonly id: string; readonly settings: unknown };
-	readonly margins: JudgeMargins;
+	readonly margins: JudgeMargins | JudgeThresholds;
 	readonly judged: JudgedSounds;
 	readonly sources: readonly SourceSummary[];
 	readonly scoring: ScoringSummary;
@@ -78,7 +78,7 @@ export function buildReport({
 }: {
 	readonly generatedAt: string;
 	readonly scorer: HarnessReport["scorer"];
-	readonly margins: JudgeMargins;
+	readonly margins: JudgeMargins | JudgeThresholds;
 	readonly judged: JudgedSounds;
 	readonly sweep: readonly JudgeMargins[];
 	readonly sources: readonly SourceSummary[];
@@ -235,7 +235,17 @@ const JUDGED_LABEL: Record<JudgedSounds, string> = {
 	contrast: "only the contrast's two sounds judged",
 };
 
-function marginsLabel({ match, swap, matchFloor }: JudgeMargins): string {
+function marginsLabel(margins: JudgeMargins | JudgeThresholds): string {
+	if ("bySound" in margins) {
+		const own = Object.entries(margins.bySound).map(
+			([id, sound]) =>
+				`${id} ${Object.entries(sound ?? {})
+					.map(([name, value]) => `${name} ${value}`)
+					.join(" ")}`,
+		);
+		return `${marginsLabel(margins.default)}${own.length > 0 ? `; per sound ${own.join(", ")}` : ""}`;
+	}
+	const { match, swap, matchFloor } = margins;
 	return `match ${match}, swap ${swap}, floor ${matchFloor}`;
 }
 
