@@ -35,7 +35,7 @@ export const FAILURE_MESSAGES: Record<SpeakingFailure, string> = {
 	scoring_failed: "Your recording couldn't be checked. Try again.",
 };
 
-const TONES = {
+export const TONES = {
 	success: { panel: "border-success bg-background-strong", icon: "text-success-foreground" },
 	info: { panel: "border-info bg-background-strong", icon: "text-info-foreground" },
 	neutral: { panel: "border-border bg-muted", icon: "text-muted-foreground" },
@@ -68,11 +68,11 @@ function Panel({
 	);
 }
 
-function Word({ children }: { children: ReactNode }) {
+export function Word({ children }: { children: ReactNode }) {
 	return <em className="font-display font-semibold not-italic">{children}</em>;
 }
 
-function Sound({ ipa }: { ipa: string }) {
+export function Sound({ ipa }: { ipa: string }) {
 	return <span className="font-display">/{ipa}/</span>;
 }
 
@@ -86,12 +86,20 @@ function OutcomePanel({
 	const target = <Sound ipa={prompt.target.ipa} />;
 
 	switch (outcome.verdict) {
-		case "match":
+		case "match": {
+			const isWord = outcome.sounds.every((sound) => sound.verdict.type !== "swapped");
 			return (
 				<Panel icon={Check} tone="success">
-					Your {target} sounded right. That's <Word>{prompt.word}</Word>.
+					Your {target} sounded right.
+					{isWord ? (
+						<>
+							{" "}
+							That's <Word>{prompt.word}</Word>.
+						</>
+					) : null}
 				</Panel>
 			);
+		}
 		case "swapped": {
 			const { heard, heardWord } = outcome;
 			return (

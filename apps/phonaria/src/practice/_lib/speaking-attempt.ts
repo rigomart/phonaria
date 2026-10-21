@@ -1,36 +1,56 @@
 /**
  * One spoken attempt at a prompt: send the recording to the scoring route,
- * check in the browser that it holds the word, judge the contrast sound, and
- * say what happened in plain words.
+ * check in the browser that it holds the word, judge every sound, and say what
+ * happened in plain words, leading with the contrast sound.
  */
-import { getIpaForPhonemeId, toBasePhonemeIds } from "@phonaria/phonetics-data";
-import type { CuratedWordData } from "@phonaria/phonetics-data/data/en/curated-1k";
+import { toBasePhonemeIds } from "@phonaria/phonetics-data";
 import {
+	type CuratedWordData,
+	EnglishCuratedTop1k,
+} from "@phonaria/phonetics-data/data/en/curated-1k";
+import {
+	createWordFinder,
 	gateWord,
 	judgeWord,
 	type PronunciationLookup,
 	type RecordingEvidence,
+	type SoundJudgement,
 	type Transcript,
 	type UnclearReason,
 	type WavAudio,
+	type WordFinder,
 	type WordJudgement,
 } from "@phonaria/pronunciation";
 import type { WavRecorderState } from "@/lib/recording/wav-recorder";
 import { createRetryableLoader } from "@/lib/retryable-loader";
 import { CatalogWordPronunciations } from "@/lib/speech/catalog-pronunciations";
-import type { ContrastSound, MinimalPairPrompt } from "./minimal-pair-prompt";
+import { type ContrastSound, contrastSound, type MinimalPairPrompt } from "./minimal-pair-prompt";
 
 const SPEECH_SCORE_PATH = "/api/speech/score";
 
-export type SpeakingOutcome =
+export type SoundResult = {
+	position: number;
+	sound: ContrastSound;
+	verdict:
+		| { type: "match" }
+		| {
+				type: "swapped";
+				heard: ContrastSound;
+				/** The word the heard sound makes here, or null when Phonaria knows none. */
+				heardWord: string | null;
+		  }
+		| { type: "unclear"; reason: UnclearReason };
+};
+
+/** The verdict on the contrast sound, which the result leads with. */
+export type ContrastOutcome =
 	| { verdict: "match" }
-	| {
-			verdict: "swapped";
-			heard: ContrastSound;
-			/** The pair word the heard sound makes, or null when the heard sound isn't the pair partner. */
-			heardWord: string | null;
-	  }
-	| { verdict: "unclear"; reason: UnclearReason }
+	| { verdict: "swapped"; heard: ContrastSound; heardWord: string | null }
+	| { verdict: "unclear"; reason: UnclearReason };
+
+export type SpeakingOutcome =
+	/** `sounds` holds every judged sound in word order, the contrast sound included; empty when none was. */
+	| (ContrastOutcome & { sounds: readonly SoundResult[] })
 	/**
 	 * The recording isn't the word, so no sound is judged. `heard` is what was said
 	 * instead, one word or several, or empty when there's nothing to name.
@@ -52,24 +72,30 @@ export type AttemptResult =
 
 export type FetchLike = (input: string, init: RequestInit) => Promise<Response>;
 
-/** The verdict on the target sound only; any other judged sound is ignored. */
-function outcomeFromJudgement(
+function isContrastSound(prompt: MinimalPairPrompt, judged: SoundJudgement): boolean {
+	return judged.position === prompt.position && judged.phonemeId === prompt.target.id;
+}
+
+function soundResult({ position, phonemeId, verdict }: SoundJudgement): SoundResult {
+	const result = { position, sound: contrastSound(phonemeId) };
+	if (verdict.type !== "swapped") return { ...result, verdict };
+	const heard = contrastSound(verdict.heard);
+	return { ...result, verdict: { type: "swapped", heard, heardWord: verdict.heardWord ?? null } };
+}
+
+export function outcomeFromJudgement(
 	prompt: MinimalPairPrompt,
 	judgement: WordJudgement | null,
 ): SpeakingOutcome {
-	const judged = judgement?.sounds.find((sound) => sound.position === prompt.position);
-	if (!judged || judged.phonemeId !== prompt.target.id) {
-		return { verdict: "unclear", reason: "no-evidence" };
-	}
+	const judged = judgement?.sounds ?? [];
+	const sounds = judged.map(soundResult);
+	const contrast = judged.find((sound) => isContrastSound(prompt, sound));
+	if (!contrast) return { verdict: "unclear", reason: "no-evidence", sounds };
 
-	const { verdict } = judged;
-	if (verdict.type === "match") return { verdict: "match" };
-	if (verdict.type === "unclear") return { verdict: "unclear", reason: verdict.reason };
-	return {
-		verdict: "swapped",
-		heard: { id: verdict.heard, ipa: getIpaForPhonemeId(verdict.heard) },
-		heardWord: verdict.heard === prompt.partner.id ? prompt.partnerWord : null,
-	};
+	const { verdict } = soundResult(contrast);
+	if (verdict.type === "match") return { verdict: "match", sounds };
+	if (verdict.type === "unclear") return { verdict: "unclear", reason: verdict.reason, sounds };
+	return { verdict: "swapped", heard: verdict.heard, heardWord: verdict.heardWord, sounds };
 }
 
 function failureFromStatus(status: number): SpeakingFailure {
@@ -102,25 +128,64 @@ const loadCuratedDictionary: LoadDictionary = createRetryableLoader(() =>
 	),
 );
 
-/**
- * Pronounces transcript words for the word gate. Catalog words are at hand; the
- * curated dictionary is loaded only for a one-word transcript outside the catalog,
- * the one case where a homophone such as "by" for *buy* changes the outcome.
- */
-async function pronunciationLookup(
+type Dictionary = Pick<CuratedWordData, "words">;
+
+async function homophoneDictionary(
 	transcript: Transcript | null | undefined,
 	loadDictionary: LoadDictionary,
-): Promise<PronunciationLookup> {
-	const fromCatalog: PronunciationLookup = (word) => CatalogWordPronunciations.get(word);
+): Promise<Dictionary | undefined> {
 	const words = transcript?.words ?? [];
-	if (words.length !== 1 || CatalogWordPronunciations.has(words[0])) return fromCatalog;
-	try {
-		const dictionary = await loadDictionary();
-		return (word) =>
-			fromCatalog(word) ?? dictionary.words[word]?.map((variant) => toBasePhonemeIds(variant));
-	} catch {
-		return fromCatalog;
+	if (words.length !== 1 || CatalogWordPronunciations.has(words[0])) return undefined;
+	return loadDictionary().catch(() => undefined);
+}
+
+function pronunciationLookup(dictionary: Dictionary | undefined): PronunciationLookup {
+	return (word) =>
+		CatalogWordPronunciations.get(word) ??
+		dictionary?.words[word]?.map((variant) => toBasePhonemeIds(variant));
+}
+
+const dictionaryFinders = new WeakMap<Dictionary, WordFinder>();
+
+function dictionaryFinder(dictionary: Dictionary): WordFinder {
+	let finder = dictionaryFinders.get(dictionary);
+	if (!finder) {
+		finder = createWordFinder(
+			Object.entries(dictionary.words).map(
+				([word, variants]) => [word, variants.map((variant) => toBasePhonemeIds(variant))] as const,
+			),
+		);
+		dictionaryFinders.set(dictionary, finder);
 	}
+	return finder;
+}
+
+let catalogFinder: WordFinder | undefined;
+
+/**
+ * Names the word a pronunciation spells, for a swapped sound, from the data the
+ * page already holds. The first source that knows the pronunciation wins, so a
+ * homophone resolves to the word the learner is practising against: the pair
+ * partner, then catalog words, the bundled top-1k list, and the curated
+ * dictionary when this attempt loaded it.
+ */
+export function wordFinder(prompt: MinimalPairPrompt, dictionary?: Dictionary): WordFinder {
+	catalogFinder ??= createWordFinder(CatalogWordPronunciations);
+	const finders = [
+		createWordFinder([
+			[prompt.partnerWord, CatalogWordPronunciations.get(prompt.partnerWord) ?? []],
+		]),
+		catalogFinder,
+		dictionaryFinder(EnglishCuratedTop1k),
+	];
+	if (dictionary) finders.push(dictionaryFinder(dictionary));
+	return (phonemeIds) => {
+		for (const find of finders) {
+			const word = find(phonemeIds);
+			if (word) return word;
+		}
+		return undefined;
+	};
 }
 
 export async function scoreAttempt(
@@ -148,10 +213,7 @@ export async function scoreAttempt(
 	const [wordEvidence] = evidence.words;
 	if (!wordEvidence) return { type: "outcome", outcome: outcomeFromJudgement(prompt, null) };
 
-	const judged = {
-		judgedPhonemeIds: new Set([prompt.target.id, prompt.partner.id]),
-		targetAccent: "en-us",
-	} as const;
+	const dictionary = await homophoneDictionary(evidence.transcript, loadDictionary);
 	const gate = gateWord({
 		target: {
 			text: prompt.word,
@@ -159,15 +221,19 @@ export async function scoreAttempt(
 		},
 		evidence: wordEvidence,
 		transcript: evidence.transcript,
-		pronunciationsOf: await pronunciationLookup(evidence.transcript, loadDictionary),
-		...judged,
+		targetAccent: "en-us",
+		pronunciationsOf: pronunciationLookup(dictionary),
 	});
 	if (gate.type === "not-heard") return { type: "outcome", outcome: { verdict: "not-heard" } };
 	if (gate.type === "different-word") {
 		return { type: "outcome", outcome: { verdict: "different-word", heard: gate.heard } };
 	}
 
-	const judgement = judgeWord({ evidence: wordEvidence, ...judged });
+	const judgement = judgeWord({
+		evidence: wordEvidence,
+		targetAccent: "en-us",
+		findWord: wordFinder(prompt, dictionary),
+	});
 	return { type: "outcome", outcome: outcomeFromJudgement(prompt, judgement) };
 }
 

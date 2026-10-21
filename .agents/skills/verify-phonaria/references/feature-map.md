@@ -237,11 +237,11 @@ Clicking a sound whose card or panel is already open closes it; clicking another
 
 ## Minimal-pair speaking practice
 
-Target accent: American English (`en-us`). The learner picks a contrast, gets a word from one of its pairs, records it, and the page checks that the recording holds the word with `gateWord`, then judges the contrast sound with `judgeWord`, on the evidence from `POST /api/speech/score`. Expected copy comes from [#332](https://github.com/rigomart/phonaria/issues/332) and [#344](https://github.com/rigomart/phonaria/issues/344); the IPA for *ship* (`SH IX1 P`) is `ˈʃɪp` from the curated dictionary. The [checkpoints](../scripts/minimal-pairs.ts) read the page heading, the IPA tokens, the marked sound's label, the visible buttons and the sentence in the result live region.
+Target accent: American English (`en-us`). The learner picks a contrast, gets a word from one of its pairs, records it, and the page checks that the recording holds the word with `gateWord`, then judges every sound with `judgeWord`, on the evidence from `POST /api/speech/score`. The result leads with the contrast sound's sentence in the live region; under it, outside the live region, a **Sound by sound** row has one tile per sound (`[data-sound-result="match|swapped|unclear"]`) with the sound's glyph, the heard sound beside it for a swap, an icon and a sentence such as "/ɪ/ sounded like /i/" (the sound's name is screen-reader text). Every glyph opens the sound card. Expected copy comes from [#332](https://github.com/rigomart/phonaria/issues/332), [#334](https://github.com/rigomart/phonaria/issues/334) and [#344](https://github.com/rigomart/phonaria/issues/344); the IPA for *ship* (`SH IX1 P`) is `ˈʃɪp` from the curated dictionary. The [checkpoints](../scripts/minimal-pairs.ts) read the page heading, the IPA tokens, the marked sound's label, the visible buttons, the sentence in the result live region and the sound-by-sound tiles.
 
 Live scoring needs `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` in `apps/phonaria/.dev.vars`; without them the route answers 503 and `match`, `swapped`, `not-heard`, `random-word`, `added-sounds` and `phrase` are **blocked**. Never print the key. Each recorded attempt is two live Azure calls (assessment and plain recognition), so the journey costs twelve.
 
-Headless Chromium has no microphone. The journey's `fakeMic` helper replaces `navigator.mediaDevices.getUserMedia` with a stream that plays a catalog recording passed in as base64 (the asset bucket sends no CORS headers, so the page can't fetch it), or silence for `null`. Download the recordings first: `https://assets.rigos.dev/audio/en-us/words/jenny/ship.ogg` and `sheep.ogg`. The wrong-word attempts need Azure TTS of *kid*, *ships* and "a ship" in any voice; the wrong-word investigation's `audio-src/jenny-kid.wav`, `jenny-ships.wav` and `jenny-a_ship.wav` (Jenny at -10% rate, 24 kHz) are what the expectations were checked with. `failMic` makes `getUserMedia` reject with a given `DOMException` name, `failRoute` answers the scoring route from the page with a given status, and `stubVowel` answers it with evidence for the vowel of *ship* so the browser judge decides the verdict.
+Headless Chromium has no microphone. The journey's `fakeMic` helper replaces `navigator.mediaDevices.getUserMedia` with a stream that plays a catalog recording passed in as base64 (the asset bucket sends no CORS headers, so the page can't fetch it), or silence for `null`. Download the recordings first: `https://assets.rigos.dev/audio/en-us/words/jenny/ship.ogg` and `sheep.ogg`. The wrong-word attempts need Azure TTS of *kid*, *ships* and "a ship" in any voice; the wrong-word investigation's `audio-src/jenny-kid.wav`, `jenny-ships.wav` and `jenny-a_ship.wav` (Jenny at -10% rate, 24 kHz) are what the expectations were checked with. `failMic` makes `getUserMedia` reject with a given `DOMException` name, `failRoute` answers the scoring route from the page with a given status, `stubVowel` answers it with evidence for the vowel of *ship* so the browser judge decides the verdict, and `stubSounds` answers it with evidence for each sound of *ship*.
 
 ### Controls
 
@@ -251,6 +251,7 @@ Headless Chromium has no microphone. The journey's `fakeMic` helper replaces `na
 | A contrast | `find label "seat and sit" click` (named by its first pair) |
 | Record, Stop, Try again, Next word | `find role button click --name "Record"` (and so on) |
 | Play the word, play the heard word | `find role button click --name "Hear ship"`, `"Hear sheep"` |
+| A sound in the sound-by-sound row | `find role button click --name "Details for /i/"` (a heard sound; the IPA display above has its own **Details for** buttons, so scope to `[data-sound-result]` when the label repeats) |
 
 ### Executable journey (flag on)
 
@@ -278,6 +279,8 @@ js fakeMic @/path/to/ships.wav;  # click Try again  -> observe added-sounds
 js fakeMic @/path/to/a-ship.wav; # click Try again  -> observe phrase
 js fakeMic @/path/to/ship.ogg; js stubVowel '{ "targetScore": 0.6, "rival": "I", "rivalScore": 0.62 }'  # Try again -> observe close-call
 js stubVowel '{ "targetScore": 0.2, "rival": "E", "rivalScore": 0.9 }'  # click Try again -> observe other-sound
+js stubSounds '[{ "phonemeId": "SH", "targetScore": 0.9 }, { "phonemeId": "IX", "targetScore": 0.02, "rival": "I", "rivalScore": 1 }, { "phonemeId": "P", "targetScore": 0.2 }]'  # Try again -> observe every-sound
+# Click the heard /i/ in the row (Details for /i/) -> observe heard-card, then press Escape
 js failMic '"NotAllowedError"';  # click Try again  -> observe denied
 js failMic '"NotFoundError"';    # click Try again  -> observe unsupported
 js fakeMic @/path/to/ship.ogg; js failRoute 429  # Try again -> observe rate-limited
@@ -287,7 +290,7 @@ js failRoute 502                 # click Try again  -> observe scoring-failed
 bun run verify observe "$VERIFY_RUN" next-word
 ```
 
-`index-link` requires the Practice index to list Schwa and a link to `/practice/minimal-pairs`. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 contrast links, the first named **pat and bat**. `word` requires `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound**, **Hear ship** and **Record** buttons, the privacy line and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences (`swapped` also a **Hear sheep** button; the wrong-word ones no sound named); each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, with no result showing.
+`index-link` requires the Practice index to list Schwa and a link to `/practice/minimal-pairs`. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 contrast links, the first named **pat and bat**. `word` requires `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound**, **Hear ship** and **Record** buttons, the privacy line and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences (`swapped` also a **Hear sheep** button; the wrong-word ones no sound named); `every-sound` requires the swapped sentence above a **Sound by sound** row of three tiles: /ʃ/ `match` "/ʃ/ sounded right", /ɪ/ `swapped` with the marked /ɪ/ and the heard /i/ as buttons and "/ɪ/ sounded like /i/", and /p/ `unclear` "/p/ wasn't clear". `heard-card` requires the heard /i/ tile button to be the open trigger and the card to be titled **More about /i/**. Each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, with no result showing.
 
 ### Flag off
 
@@ -305,7 +308,7 @@ bun run verify observe "$VERIFY_RUN" index-hidden
 
 ### Limits
 
-Chromium only, with the microphone replaced by a stream playing Azure Jenny TTS, so real voices and real microphones are not exercised. Close-call, other-sound, denied, unsupported and the route failures are simulated in the page, so they check the page and the browser judge, not the route or Azure. The wrong words are TTS, not learners. Only i-ix and *ship* are recorded; the no-evidence sentence is covered by unit tests only. The live region is read from the DOM, not through a screen reader.
+Chromium only, with the microphone replaced by a stream playing Azure Jenny TTS, so real voices and real microphones are not exercised. Close-call, other-sound, every-sound, heard-card, denied, unsupported and the route failures are simulated in the page, so they check the page and the browser judge, not the route or Azure. The wrong words are TTS, not learners. Only i-ix and *ship* are recorded; the no-evidence sentence and the word named for a swapped sound outside the contrast are covered by unit tests only. The live region is read from the DOM, not through a screen reader.
 
 ## Language Spread
 

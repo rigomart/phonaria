@@ -2,7 +2,7 @@ import { type Feature, observation } from "./feature";
 
 // These functions run in the browser after serialization. Keep their dependencies
 // inside the function body and read only rendered DOM and browser state.
-// Expected copy comes from issues #332 and #344; the IPA for ship (SH IX1 P) from the curated dictionary.
+// Expected copy comes from issues #332, #334 and #344; the IPA for ship (SH IX1 P) from the curated dictionary.
 
 const statusIs = (expected: string) =>
 	observation(
@@ -23,6 +23,20 @@ const readAttempt = () => ({
 		.filter((button) => button.getClientRects().length > 0)
 		.map((button) => button.getAttribute("aria-label") ?? button.textContent?.trim())
 		.filter((label) => label && !label.startsWith("Details for")),
+});
+
+const readSounds = () => ({
+	status:
+		document.querySelector('[aria-live="polite"][aria-atomic="true"] p')?.textContent?.trim() ??
+		null,
+	heading: document.querySelector("main section h2")?.textContent?.trim() ?? null,
+	sounds: Array.from(document.querySelectorAll("[data-sound-result]")).map((tile) => ({
+		verdict: tile.getAttribute("data-sound-result"),
+		buttons: Array.from(tile.querySelectorAll("button")).map((button) =>
+			button.getAttribute("aria-label"),
+		),
+		sentence: tile.lastElementChild?.textContent?.trim() ?? null,
+	})),
 });
 
 const notFound = observation(
@@ -157,6 +171,33 @@ export const minimalPairs = {
 			status: "That didn't sound clearly like /ɪ/ or /i/. Try again.",
 			buttons: ["Hear ship", "Try again", "Next word"],
 		}),
+		"every-sound": observation(readSounds, {
+			status: "Your /ɪ/ sounded like /i/, which makes sheep.",
+			heading: "Sound by sound",
+			sounds: [
+				{ verdict: "match", buttons: ["Details for /ʃ/"], sentence: "/ʃ/ sounded right" },
+				{
+					verdict: "swapped",
+					buttons: ["Details for /ɪ/, the marked sound", "Details for /i/"],
+					sentence: "/ɪ/ sounded like /i/",
+				},
+				{ verdict: "unclear", buttons: ["Details for /p/"], sentence: "/p/ wasn't clear" },
+			],
+		}),
+		"heard-card": observation(
+			() => ({
+				open:
+					document
+						.querySelector("[data-sound-result] button[data-details-open]")
+						?.getAttribute("aria-label") ?? null,
+				cardIpa:
+					document
+						.querySelector('[data-phoneme-details] button[aria-label^="More about"]')
+						?.getAttribute("aria-label")
+						?.split(":")[0] ?? null,
+			}),
+			{ open: "Details for /i/", cardIpa: "More about /i/" },
+		),
 		denied: statusIs(
 			"Phonaria can't use your microphone. Allow microphone access for this site, then try again.",
 		),
@@ -194,6 +235,7 @@ export const minimalPairs = {
 		"Chromium only, with the microphone replaced by a MediaStream that plays a catalog recording (Azure Jenny TTS), so real voices and real microphones are not exercised.",
 		"Match, swapped, not-heard (silence), random-word, added-sounds and phrase go through the local route to live Azure, two calls each. The wrong-word recordings are Azure Jenny TTS of kid, ships and \"a ship\", so real learners saying them are not exercised. Close-call and other-sound answer the scoring route from the page with set evidence, and the rate-limited, unavailable and scoring-failed messages replace the page's fetch for it; denied and unsupported replace getUserMedia. Those paths check the page's handling and the browser judge, not the route or Azure.",
 		"Only the i-ix contrast and the word ship are recorded. The no-evidence sentence, for evidence with the sound missing, is covered by unit tests only. The live region is read from the DOM, not through a screen reader.",
+		"The sound-by-sound row (every-sound, heard-card) answers the scoring route from the page with set evidence for every sound of ship, so it checks the browser judge and the row, not Azure. The word named for a swapped sound outside the contrast is covered by unit tests only.",
 	],
 } satisfies Feature;
 
@@ -274,6 +316,42 @@ export function stubVowel(scores: { targetScore: number; rival: string; rivalSco
 		return original(input, init);
 	};
 	return `scoring route answers IX ${scores.targetScore} against ${scores.rival} ${scores.rivalScore}`;
+}
+
+/**
+ * Answers the scoring route from the page with evidence for every sound of ship
+ * (SH IX P), each with `targetScore` and at most one rival, so the browser judge
+ * decides every verdict.
+ */
+export function stubSounds(
+	sounds: { phonemeId: string; targetScore: number; rival?: string; rivalScore?: number }[],
+) {
+	const evidence = {
+		words: [
+			{
+				pronunciations: [
+					{
+						pronunciationIndex: 0,
+						sounds: sounds.map(({ phonemeId, targetScore, rival, rivalScore }) => ({
+							type: "scored",
+							phonemeId,
+							startSeconds: 0,
+							endSeconds: 0.1,
+							targetScore,
+							rivals: rival ? [{ phonemeId: rival, score: rivalScore ?? 0 }] : [],
+						})),
+					},
+				],
+			},
+		],
+	};
+	const original = window.fetch.bind(window);
+	window.fetch = async (input, init) => {
+		const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+		if (url.includes("/api/speech/score")) return Response.json(evidence);
+		return original(input, init);
+	};
+	return `scoring route answers ${sounds.map((sound) => `${sound.phonemeId} ${sound.targetScore}`).join(", ")}`;
 }
 
 /** Answers the scoring route with `status` from the page, without calling the Worker. */

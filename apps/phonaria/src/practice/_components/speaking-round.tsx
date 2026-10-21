@@ -19,6 +19,7 @@ import type { MinimalPairPrompt } from "../_lib/minimal-pair-prompt";
 import { attemptReducer, deriveSpeakingView, READY, scoreAttempt } from "../_lib/speaking-attempt";
 import { loadWordSyllables } from "../_lib/word-syllables";
 import { RecordButton } from "./record-button";
+import { SoundResults } from "./sound-results";
 import { SpeakingStatus } from "./speaking-result";
 
 function useWordSyllables(word: string): TranscribedSyllable[] | null | undefined {
@@ -114,6 +115,7 @@ export function SpeakingRound({
 				<div aria-atomic="true" aria-live="polite" className="w-full">
 					<SpeakingStatus prompt={prompt} view={view} />
 				</div>
+				<SoundResults prompt={prompt} view={view} />
 			</div>
 
 			<div className="flex w-full items-center justify-between">
