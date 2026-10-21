@@ -24,6 +24,7 @@ import {
 import type { WavRecorderState } from "@/lib/recording/wav-recorder";
 import { createRetryableLoader } from "@/lib/retryable-loader";
 import { CatalogWordPronunciations } from "@/lib/speech/catalog-pronunciations";
+import type { EvidenceLogPayload } from "@/lib/speech/evidence-log";
 import { type ContrastSound, contrastSound, type MinimalPairPrompt } from "./minimal-pair-prompt";
 
 const SPEECH_SCORE_PATH = "/api/speech/score";
@@ -66,8 +67,14 @@ export type SpeakingFailure =
 	| "unavailable"
 	| "scoring_failed";
 
+/**
+ * The evidence, gate and judgement an attempt was shown from, for the opt-in
+ * evidence log. `AttemptResult.log` is null when the scorer returned no word.
+ */
+export type AttemptLog = Pick<EvidenceLogPayload, "evidence" | "verdicts">;
+
 export type AttemptResult =
-	| { type: "outcome"; outcome: SpeakingOutcome }
+	| { type: "outcome"; outcome: SpeakingOutcome; log: AttemptLog | null }
 	| { type: "failure"; failure: SpeakingFailure };
 
 export type FetchLike = (input: string, init: RequestInit) => Promise<Response>;
@@ -211,7 +218,9 @@ export async function scoreAttempt(
 	if (!isRecordingEvidence(evidence)) return { type: "failure", failure: "scoring_failed" };
 
 	const [wordEvidence] = evidence.words;
-	if (!wordEvidence) return { type: "outcome", outcome: outcomeFromJudgement(prompt, null) };
+	if (!wordEvidence) {
+		return { type: "outcome", outcome: outcomeFromJudgement(prompt, null), log: null };
+	}
 
 	const dictionary = await homophoneDictionary(evidence.transcript, loadDictionary);
 	const gate = gateWord({
@@ -224,9 +233,16 @@ export async function scoreAttempt(
 		targetAccent: "en-us",
 		pronunciationsOf: pronunciationLookup(dictionary),
 	});
-	if (gate.type === "not-heard") return { type: "outcome", outcome: { verdict: "not-heard" } };
+	const unjudged: AttemptLog = { evidence, verdicts: { gate, judgement: null } };
+	if (gate.type === "not-heard") {
+		return { type: "outcome", outcome: { verdict: "not-heard" }, log: unjudged };
+	}
 	if (gate.type === "different-word") {
-		return { type: "outcome", outcome: { verdict: "different-word", heard: gate.heard } };
+		return {
+			type: "outcome",
+			outcome: { verdict: "different-word", heard: gate.heard },
+			log: unjudged,
+		};
 	}
 
 	const judgement = judgeWord({
@@ -234,7 +250,11 @@ export async function scoreAttempt(
 		targetAccent: "en-us",
 		findWord: wordFinder(prompt, dictionary),
 	});
-	return { type: "outcome", outcome: outcomeFromJudgement(prompt, judgement) };
+	return {
+		type: "outcome",
+		outcome: outcomeFromJudgement(prompt, judgement),
+		log: { evidence, verdicts: { gate, judgement } },
+	};
 }
 
 /** Scoring progress for the current word. Recording progress lives in the recorder. */

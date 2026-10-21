@@ -14,9 +14,9 @@ export const EVIDENCE_LOG_RETENTION_DAYS = 90;
 
 /** Copy for the consent setting and anywhere the app describes its data use. */
 export const EvidenceLogNotice = {
-	label: "Share scoring results",
+	label: "Share results to improve the checks",
 	description:
-		"Helps make the checks fairer. Phonaria keeps the word, the scores and whether you tried again, for 90 days. Never your recording, and nothing that identifies you.",
+		"Phonaria keeps the word, its scores and whether you tried again, for 90 days. Never your recording, and no words outside the practice list.",
 } as const;
 
 /**

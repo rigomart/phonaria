@@ -95,6 +95,10 @@ function shipSounds(vowel: SoundResult["verdict"]): SoundResult[] {
 	];
 }
 
+function withoutLog(result: AttemptResult) {
+	return result.type === "outcome" ? { type: result.type, outcome: result.outcome } : result;
+}
+
 describe("scoreAttempt", () => {
 	it("posts the WAV to the scoring route for the prompt's word", async () => {
 		const fetch = routeReturning(200, evidenceFor(SHIP_IDS, 1, scored("IX")));
@@ -113,7 +117,7 @@ describe("scoreAttempt", () => {
 			200,
 			evidenceFor(SHIP_IDS, 1, scored("IX", 1, [{ phonemeId: "I", score: 0.1 }])),
 		);
-		expect(await scoreAttempt(SHIP, AUDIO, fetch)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, fetch))).toEqual({
 			type: "outcome",
 			outcome: { verdict: "match", sounds: shipSounds({ type: "match" }) },
 		});
@@ -136,7 +140,7 @@ describe("scoreAttempt", () => {
 			evidenceFor(SHIP_IDS, 1, scored("IX", 0.02, [{ phonemeId: "I", score: 1 }])),
 		);
 		const heard = { id: "I", ipa: "i" } as const;
-		expect(await scoreAttempt(SHIP, AUDIO, fetch)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, fetch))).toEqual({
 			type: "outcome",
 			outcome: {
 				verdict: "swapped",
@@ -177,7 +181,7 @@ describe("scoreAttempt", () => {
 			200,
 			evidenceFor(SHIP_IDS, 1, scored("IX", 0.9, [{ phonemeId: "I", score: 0.9 }])),
 		);
-		expect(await scoreAttempt(SHIP, AUDIO, fetch)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, fetch))).toEqual({
 			type: "outcome",
 			outcome: {
 				verdict: "unclear",
@@ -192,7 +196,7 @@ describe("scoreAttempt", () => {
 			200,
 			evidenceFor(SHIP_IDS, 1, scored("IX", 0.2, [{ phonemeId: "E", score: 1 }])),
 		);
-		expect(await scoreAttempt(SHIP, AUDIO, fetch)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, fetch))).toEqual({
 			type: "outcome",
 			outcome: {
 				verdict: "unclear",
@@ -204,13 +208,13 @@ describe("scoreAttempt", () => {
 
 	it("has no evidence when the judge has nothing to judge", async () => {
 		const silence = routeReturning(200, { words: [{ pronunciations: [] }] });
-		expect(await scoreAttempt(SHIP, AUDIO, silence)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, silence))).toEqual({
 			type: "outcome",
 			outcome: { verdict: "unclear", reason: "no-evidence", sounds: [] },
 		});
 
 		const noWords = routeReturning(200, { words: [] });
-		expect(await scoreAttempt(SHIP, AUDIO, noWords)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, noWords))).toEqual({
 			type: "outcome",
 			outcome: { verdict: "unclear", reason: "no-evidence", sounds: [] },
 		});
@@ -219,7 +223,7 @@ describe("scoreAttempt", () => {
 			200,
 			evidenceFor(SHIP_IDS, 1, { type: "missing", phonemeId: "IX" }),
 		);
-		expect(await scoreAttempt(SHIP, AUDIO, missing)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, missing))).toEqual({
 			type: "outcome",
 			outcome: {
 				verdict: "unclear",
@@ -238,26 +242,29 @@ describe("scoreAttempt", () => {
 		[404, "scoring_failed"],
 	] as const)("turns status %i into %s", async (status, failure) => {
 		const fetch = routeReturning(status, { error: { code: "x", message: "x" } });
-		expect(await scoreAttempt(SHIP, AUDIO, fetch)).toEqual({ type: "failure", failure });
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, fetch))).toEqual({
+			type: "failure",
+			failure,
+		});
 	});
 
 	it("fails cleanly when the request throws or the body isn't evidence", async () => {
 		const offline = vi.fn(async () => {
 			throw new TypeError("Failed to fetch");
 		});
-		expect(await scoreAttempt(SHIP, AUDIO, offline)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, offline))).toEqual({
 			type: "failure",
 			failure: "scoring_failed",
 		});
 
 		const html = vi.fn(async () => new Response("<html>", { status: 200 }));
-		expect(await scoreAttempt(SHIP, AUDIO, html)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, html))).toEqual({
 			type: "failure",
 			failure: "scoring_failed",
 		});
 
 		const wrongShape = routeReturning(200, { ok: true });
-		expect(await scoreAttempt(SHIP, AUDIO, wrongShape)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, wrongShape))).toEqual({
 			type: "failure",
 			failure: "scoring_failed",
 		});
@@ -301,7 +308,7 @@ describe("scoreAttempt's word gate", () => {
 		["a ship", { verdict: "different-word", heard: ["a", "ship"] }],
 		["silence", { verdict: "not-heard" }],
 	] as const)("turns %s said for ship into %j, judging no sound", async (said, outcome) => {
-		expect(await scoreAttempt(SHIP, AUDIO, routeFor(said), noDictionary)).toEqual({
+		expect(withoutLog(await scoreAttempt(SHIP, AUDIO, routeFor(said), noDictionary))).toEqual({
 			type: "outcome",
 			outcome,
 		});
@@ -342,9 +349,44 @@ describe("scoreAttempt's word gate", () => {
 		expect(load).toHaveBeenCalledTimes(1);
 	});
 
+	it("keeps the evidence, gate and judgement it was shown from, for the evidence log", async () => {
+		const route = routeFor("sheep");
+		const evidence = (await (await route("", {})).json()) as RecordingEvidence;
+		const result = await scoreAttempt(SHIP, AUDIO, routeFor("sheep"), noDictionary);
+
+		expect(result.type === "outcome" && result.log).toEqual({
+			evidence,
+			verdicts: {
+				gate: { type: "judged" },
+				judgement: expect.objectContaining({ pronunciationIndex: 0 }),
+			},
+		});
+		expect(
+			result.type === "outcome" && result.log?.verdicts,
+			"every sound is judged, so the log names no judged subset",
+		).not.toHaveProperty("judgedPhonemeIds");
+	});
+
+	it("logs a recording of another word with the gate's outcome and no judgement", async () => {
+		const result = await scoreAttempt(SHIP, AUDIO, routeFor("kid"), noDictionary);
+
+		expect(result.type === "outcome" && result.log?.verdicts).toEqual({
+			gate: { type: "different-word", heard: ["kid"] },
+			judgement: null,
+		});
+	});
+
+	it("has nothing to log when the scorer returned no word or scoring failed", async () => {
+		const noWords = await scoreAttempt(SHIP, AUDIO, routeReturning(200, { words: [] }));
+		const failed = await scoreAttempt(SHIP, AUDIO, routeReturning(502, {}));
+
+		expect(noWords).toMatchObject({ type: "outcome", log: null });
+		expect(failed).toEqual({ type: "failure", failure: "scoring_failed" });
+	});
+
 	it("falls back on catalog words when the dictionary doesn't load", async () => {
 		const buy = prompt("ai-ei", "buy");
-		expect(await scoreAttempt(buy, AUDIO, buyHeardAs("by"), noDictionary)).toEqual({
+		expect(withoutLog(await scoreAttempt(buy, AUDIO, buyHeardAs("by"), noDictionary))).toEqual({
 			type: "outcome",
 			outcome: { verdict: "different-word", heard: ["by"] },
 		});
@@ -475,7 +517,11 @@ describe("wordFinder", () => {
 });
 
 describe("attemptReducer", () => {
-	const result: AttemptResult = { type: "outcome", outcome: { verdict: "match", sounds: [] } };
+	const result: AttemptResult = {
+		type: "outcome",
+		outcome: { verdict: "match", sounds: [] },
+		log: null,
+	};
 
 	it("keeps the result of the attempt being scored", () => {
 		const scoring = attemptReducer(READY, { type: "submitted", id: 1 });
@@ -529,6 +575,7 @@ describe("deriveSpeakingView", () => {
 				result: {
 					type: "outcome",
 					outcome: { verdict: "unclear", reason: "close-call", sounds: [] },
+					log: null,
 				},
 			}),
 		).toEqual({
