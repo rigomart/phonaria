@@ -3,6 +3,7 @@ import { access, mkdir, readFile, rename, unlink, writeFile } from "node:fs/prom
 import path from "node:path";
 import { setTimeout } from "node:timers/promises";
 import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
+import type { PronunciationChoice } from "./curated-words";
 import {
 	createAzureProvider,
 	getAzureAudioFormat,
@@ -10,15 +11,25 @@ import {
 	getAzureVoice,
 } from "./providers/azure";
 import type { TtsInput, TtsProvider } from "./providers/types";
-import { buildAzureWordInput, getAzureIpa } from "./word-inputs";
-import { collectWordsWithPhonemic, type WordSource } from "./words";
+import { formSlug, isFormSlug, wordForms } from "./word-forms";
+import { buildAzureWordInput, getAzureIpa, getSyllables, type SyllableSource } from "./word-inputs";
+import {
+	collectWordsWithPhonemic,
+	getWordPronunciation,
+	isCuratedTier,
+	type WordSource,
+	wordSources,
+} from "./words";
 
 type Sample = {
 	word: string;
+	form?: { n?: number; label: string };
 	variant: string;
 	cmuArpa: string;
 	ipa: string;
 	pairs: { contrast: string; words: readonly string[] }[];
+	pronunciationChoice?: PronunciationChoice;
+	syllables?: SyllableSource;
 	input: TtsInput;
 	file: string;
 	status: "planned" | "generated" | "failed";
@@ -71,8 +82,8 @@ function selectSamples(
 	if (words && (!words.length || new Set(words).size !== words.length)) {
 		throw new Error("Choose words from the selected source without duplicates");
 	}
-	if (source !== "catalog" && source !== "spelling" && source !== "practice")
-		throw new Error(`Unknown word source: ${source}`);
+	if (!wordSources.includes(source)) throw new Error(`Unknown word source: ${source}`);
+	const curated = isCuratedTier(source);
 	const catalog = collectWordsWithPhonemic(source);
 	const byWord = new Map(catalog.map((word) => [word.word, word]));
 	const selection = words
@@ -82,22 +93,41 @@ function selectSamples(
 				return pronunciation;
 			})
 		: catalog;
-	return selection.slice(0, limit).map((word) => {
-		if (!/^[a-z]+$/.test(word.word)) throw new Error(`Unsafe word filename: ${word.word}`);
-		return {
-			word: word.word,
-			variant: word.variant,
-			cmuArpa: word.cmuArpa,
-			ipa: getAzureIpa(word),
-			pairs: EnglishPhonemeContrasts.flatMap(({ id, minimalPairs }) =>
-				minimalPairs
-					.filter(({ words }) => words.includes(word.word))
-					.map(({ words }) => ({ contrast: id, words })),
-			),
-			input: buildAzureWordInput(word),
-			file: `audio/${word.word}.${extension}`,
-			status: "planned",
-		};
+	return selection.slice(0, limit).flatMap((word) => {
+		const options = { allowRuleSyllables: curated };
+		const forms = curated ? wordForms[word.word] : undefined;
+		const versions = [
+			{ pronunciation: word, form: forms?.primary && { label: forms.primary.label } },
+			...(forms?.extra ?? []).map(({ variant, label, n }) => ({
+				pronunciation: getWordPronunciation(word.word, [variant]),
+				form: { n, label },
+			})),
+		];
+		return versions.map(({ pronunciation, form }): Sample => {
+			const slug = formSlug(word.word, form && "n" in form ? form.n : undefined);
+			if (!isFormSlug(slug)) throw new Error(`Unsafe word filename: ${slug}`);
+			return {
+				word: word.word,
+				...(form ? { form } : {}),
+				variant: pronunciation.variant,
+				cmuArpa: pronunciation.cmuArpa,
+				ipa: getAzureIpa(pronunciation, options),
+				pairs: EnglishPhonemeContrasts.flatMap(({ id, minimalPairs }) =>
+					minimalPairs
+						.filter(({ words }) => words.includes(word.word))
+						.map(({ words }) => ({ contrast: id, words })),
+				),
+				...(curated
+					? {
+							pronunciationChoice: form && "n" in form ? undefined : word.pronunciationChoice,
+							syllables: getSyllables(pronunciation, { allowRule: true }).source,
+						}
+					: {}),
+				input: { ...buildAzureWordInput(pronunciation, options), id: slug },
+				file: `audio/${slug}.${extension}`,
+				status: "planned",
+			};
+		});
 	});
 }
 
@@ -105,6 +135,7 @@ function reviewSheet(samples: Sample[]): string {
 	const columns = [
 		"file",
 		"word",
+		"form",
 		"pairs",
 		"contrasts",
 		"cmu_arpabet",
@@ -120,6 +151,7 @@ function reviewSheet(samples: Sample[]): string {
 		[
 			sample.file,
 			sample.word,
+			sample.form?.label ?? "",
 			sample.pairs.map(({ words }) => words.join("/")).join(";"),
 			sample.pairs.map(({ contrast }) => contrast).join(";"),
 			sample.cmuArpa,
@@ -170,7 +202,7 @@ export async function runGeneration(options: GenerationOptions) {
 		}
 		if (!Array.isArray(plan.samples)) throw new Error("Invalid saved samples");
 		const expected = selectSamples(
-			plan.samples.map(({ word }) => word),
+			[...new Set(plan.samples.map(({ word }) => word))],
 			undefined,
 			audioFormat.extension,
 			plan.source,
@@ -258,8 +290,8 @@ export async function runGeneration(options: GenerationOptions) {
 			try {
 				const results = await provider.synthesize([sample.input]);
 				const result = results[0];
-				if (results.length !== 1 || result?.id !== sample.word || !result.audio.length) {
-					throw new Error(`Missing or mismatched audio for ${sample.word}`);
+				if (results.length !== 1 || result?.id !== sample.input.id || !result.audio.length) {
+					throw new Error(`Missing or mismatched audio for ${sample.input.id}`);
 				}
 				await mkdir(path.join(options.outputDir, "audio"), { recursive: true });
 				await writeFile(path.join(options.outputDir, sample.file), result.audio, { flag: "wx" });

@@ -78,3 +78,60 @@ export const spellingPronunciations: Readonly<Record<string, ReviewedPronunciati
 		reason: "Bundled full CMU YOKE has only Y OU1 K; y teaches /j/. Missing from curated top-10k.",
 	},
 };
+
+/** Reviewed choices for curated top-10k words; they win over the pronunciation rule. */
+export const curatedPronunciations: Readonly<Record<string, { variant: string; reason: string }>> =
+	{
+		costume: {
+			variant: "K A1 S T U0 M",
+			reason:
+				"Dictionaries stress the first syllable, /ˈkɑstum/; the first CMU form stresses the second.",
+		},
+		costumes: {
+			variant: "K A1 S T U0 M Z",
+			reason: "As costume.",
+		},
+		decade: {
+			variant: "D E1 K EI0 D",
+			reason:
+				"Dictionaries stress the first syllable, /ˈdɛkeɪd/; the first CMU form stresses the second.",
+		},
+		decades: {
+			variant: "D E1 K EI0 D Z",
+			reason: "As decade.",
+		},
+		essay: {
+			variant: "E1 S EI2",
+			reason: "The noun stresses the first syllable, /ˈɛseɪ/; the first CMU form is the rare verb.",
+		},
+		essays: {
+			variant: "E1 S EI2 Z",
+			reason: "As essay.",
+		},
+		forbidden: {
+			variant: "F ER0 B IX1 D AX0 N",
+			reason:
+				"/fɚˈbɪdən/, written by hand: one CMU form stresses for-, the other has an extra /ɹ/.",
+		},
+		kilometers: {
+			variant: "K AX0 L A1 M AX0 T ER0 Z",
+			reason: "/kəˈlɑmətɚz/, written by hand: the CMU form gives the third syllable a full /ʌ/.",
+		},
+		legit: {
+			variant: "L AX0 J IX1 T",
+			reason: "Stress on the second syllable, /ləˈdʒɪt/; the first CMU form stresses the first.",
+		},
+		outta: {
+			variant: "AU1 T AX0",
+			reason: "/ˈaʊtə/ as in out of; the first CMU form is /ˈutə/.",
+		},
+		presenter: {
+			variant: "P R IX0 Z E1 N T ER0",
+			reason: "Stress on the second syllable, /pɹɪˈzɛntɚ/; the first CMU form stresses the first.",
+		},
+		sometimes: {
+			variant: "S AH1 M T AI2 M Z",
+			reason:
+				"Standard dictionaries stress the first syllable, /ˈsʌmˌtaɪmz/; the first CMU form S AX0 M T AI1 M Z reduces it.",
+		},
+	};

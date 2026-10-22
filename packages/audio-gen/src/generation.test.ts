@@ -73,6 +73,109 @@ describe("Azure catalog generation", () => {
 		).rejects.toThrow(/source/);
 		expect(await readdir(outputDir)).toEqual(["plan.json", "review.tsv"]);
 	});
+	it("plans a curated tier with rule inputs and records where each came from", async () => {
+		const outputDir = await directory();
+		await runGeneration({
+			outputDir,
+			dryRun: true,
+			source: "top-1k",
+			words: ["the", "people", "sometimes", "english"],
+			...settings,
+		});
+		const saved = await readFile(path.join(outputDir, "plan.json"), "utf8");
+		const plan = JSON.parse(saved);
+		expect(plan.source).toBe("top-1k");
+		expect(
+			plan.samples.map(
+				({ word, ipa, pronunciationChoice, syllables }: Record<string, unknown>) => ({
+					word,
+					ipa,
+					pronunciation: (pronunciationChoice as { source: string }).source,
+					syllables,
+				}),
+			),
+		).toEqual([
+			{ word: "the", ipa: "ðʌ", pronunciation: "rule", syllables: "one syllable" },
+			{ word: "people", ipa: "ˈpi.pəl", pronunciation: "only", syllables: "rule" },
+			{ word: "sometimes", ipa: "ˈsʌm.ˌtaɪmz", pronunciation: "reviewed", syllables: "rule" },
+			{ word: "english", ipa: "ˈɪŋ.ɡlɪʃ", pronunciation: "rule", syllables: "rule" },
+		]);
+		await runGeneration({ outputDir, dryRun: true, resume: true, ...settings });
+		expect(await readFile(path.join(outputDir, "plan.json"), "utf8")).toBe(saved);
+	});
+	it("plans every labelled form of a word under its own file name", async () => {
+		const outputDir = await directory();
+		await runGeneration({
+			outputDir,
+			dryRun: true,
+			source: "top-10k",
+			words: ["read", "data"],
+			audioFormat: "ogg",
+			...settings,
+		});
+		const saved = await readFile(path.join(outputDir, "plan.json"), "utf8");
+		const plan = JSON.parse(saved);
+		expect(
+			plan.samples.map(({ form, ipa, file, input }: Record<string, any>) => ({
+				form,
+				ipa,
+				file,
+				id: input.id,
+			})),
+		).toEqual([
+			{ form: { label: "present tense" }, ipa: "ɹid", file: "audio/read.ogg", id: "read" },
+			{ form: { n: 2, label: "past tense" }, ipa: "ɹɛd", file: "audio/read--2.ogg", id: "read--2" },
+			{ form: undefined, ipa: "ˈdeɪ.tə", file: "audio/data.ogg", id: "data" },
+			{
+				form: { n: 2, label: "also said" },
+				ipa: "ˈdæ.tə",
+				file: "audio/data--2.ogg",
+				id: "data--2",
+			},
+		]);
+		expect(await readFile(path.join(outputDir, "review.tsv"), "utf8")).toContain(
+			"audio/read--2.ogg\tread\tpast tense\t",
+		);
+		await runGeneration({ outputDir, dryRun: true, resume: true, audioFormat: "ogg", ...settings });
+		expect(await readFile(path.join(outputDir, "plan.json"), "utf8")).toBe(saved);
+	});
+	it("saves each form's clip under its file name", async () => {
+		const outputDir = await directory();
+		await runGeneration({
+			outputDir,
+			source: "top-10k",
+			words: ["read"],
+			audioFormat: "ogg",
+			provider,
+			wait: noWait,
+			...settings,
+		});
+		expect((await readdir(path.join(outputDir, "audio"))).sort()).toEqual([
+			"read--2.ogg",
+			"read.ogg",
+		]);
+		expect(await readFile(path.join(outputDir, "audio", "read--2.ogg"), "utf8")).toBe(
+			"audio:read--2",
+		);
+	});
+	it("refuses a recorded word in a curated tier", async () => {
+		await expect(
+			runGeneration({
+				outputDir: await directory(),
+				dryRun: true,
+				source: "top-10k",
+				words: ["seat"],
+				...settings,
+			}),
+		).rejects.toThrow(/top-10k/);
+	});
+	it("keeps hand-checked sources free of rule provenance", async () => {
+		const outputDir = await directory();
+		await runGeneration({ outputDir, dryRun: true, words: ["seat"], ...settings });
+		const [sample] = JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8")).samples;
+		expect(sample).not.toHaveProperty("pronunciationChoice");
+		expect(sample).not.toHaveProperty("syllables");
+	});
 	it("saves Ogg clips and refuses to mix formats on resume", async () => {
 		const outputDir = await directory();
 		await runGeneration({

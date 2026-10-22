@@ -7,7 +7,7 @@ import { runGeneration } from "./generation";
 async function main() {
 	if (process.argv.slice(2).includes("--help")) {
 		console.log(
-			"Azure word audio: --dry-run --source=catalog|spelling|practice --words=seat,seed --limit=24 --out=path --resume --rpm=20 --rate=-10 --format=ogg|mp3",
+			"Azure word audio: --dry-run --source=catalog|spelling|practice|top-1k|top-10k --words=seat,seed --limit=24 --out=path --resume --rpm=20 --rate=-10 --format=ogg|mp3",
 		);
 		return;
 	}
@@ -32,7 +32,7 @@ async function main() {
 				: undefined),
 	});
 	console.log(
-		`${result.planned} words planned; ${result.generated} new recordings. Output: ${outputDir}`,
+		`${result.planned} recordings planned; ${result.generated} new. Output: ${outputDir}`,
 	);
 	console.log("Listen to each word and its pairs, then fill review.tsv.");
 }

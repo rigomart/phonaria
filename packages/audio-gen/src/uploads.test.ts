@@ -26,12 +26,14 @@ async function fixture(extension = "ogg") {
 			const audio = Buffer.from(`fixture audio for ${word}`);
 			const file = `audio/${word}.${extension}`;
 			await writeFile(path.join(outputDir, file), audio);
-			return {
-				word,
-				file,
-				status: "generated",
-				sha256: createHash("sha256").update(audio).digest("hex"),
-			};
+			const sample: { word: string; form?: object; file: string; status: string; sha256: string } =
+				{
+					word,
+					file,
+					status: "generated",
+					sha256: createHash("sha256").update(audio).digest("hex"),
+				};
+			return sample;
 		}),
 	);
 	const plan = {
@@ -85,12 +87,16 @@ describe("upload keys and arguments", () => {
 			"audio/en-us/words/jenny/coffee.ogg",
 		);
 		expect(buildUploadKey("en-us", "aria", "dogs", "mp3")).toBe("audio/en-us/words/aria/dogs.mp3");
+		expect(buildUploadKey("en-us", "jenny", "read--2", "ogg")).toBe(
+			"audio/en-us/words/jenny/read--2.ogg",
+		);
 	});
 	it.each([
 		["../en-us", "jenny", "coffee", "ogg"],
 		["en-us", "Jenny", "coffee", "ogg"],
 		["en-us", "jenny", "../coffee", "ogg"],
 		["en-us", "jenny", "coffee", "wav"],
+		["en-us", "jenny", "coffee-2", "ogg"],
 	])("rejects unsafe or unsupported key parts: %s %s %s %s", (...parts) => {
 		expect(() => buildUploadKey(...(parts as [string, string, string, string]))).toThrow();
 	});
@@ -171,6 +177,24 @@ describe("upload plan validation", () => {
 			sha256: f.plan.samples[0].sha256,
 			contentType: "audio/ogg",
 		});
+	});
+	it("uploads an extra form under its numbered key, after checking its path", async () => {
+		const f = await fixture();
+		const audio = Buffer.from("fixture audio for coffee--2");
+		await writeFile(path.join(f.options.outputDir, "audio/coffee--2.ogg"), audio);
+		f.plan.samples.push({
+			...f.plan.samples[0],
+			form: { n: 2, label: "also said" },
+			file: "audio/coffee--2.ogg",
+			sha256: createHash("sha256").update(audio).digest("hex"),
+		});
+		await f.save();
+		expect((await prepareUploads(f.options)).map(({ key }) => key)).toContain(
+			"audio/en-us/words/jenny/coffee--2.ogg",
+		);
+		f.plan.samples[2].file = "audio/coffee.ogg";
+		await f.save();
+		await expect(prepareUploads(f.options)).rejects.toThrow(/path/);
 	});
 	it.each(["planned", "failed"])("refuses the entire batch if one sample is %s", async (status) => {
 		const f = await fixture();

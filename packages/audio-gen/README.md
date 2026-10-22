@@ -22,6 +22,55 @@ stress preserved. New multisyllabic words require an entry in
 again. Unstressed `ER0` is spoken as /ɚ/. The CMU ARPAbet form is retained as a
 pronunciation reference in the plan.
 
+### Curated top-10k words (issue #353)
+
+`--source=top-1k` and `--source=top-10k` select curated words that have no
+recording yet, most frequent first. They replace hand input with rules, and the
+plan records where each input came from:
+
+- **Pronunciation** (`pronunciationChoice`): a choice reviewed in
+  `curatedPronunciations` comes first (`reviewed`). A word with one dictionary
+  form uses it (`only`). Otherwise the rule keeps the first form's syllable
+  count, gives a one-syllable word its first stressed form (*the* → /ðʌ/, not
+  /ðə/), and keeps the first dictionary form of longer words (`rule`). The
+  reason names the forms it passed over.
+- **Syllables** (`syllables`): checked splits come first (`checked`). Otherwise
+  each vowel takes the longest onset English allows (`rule`). Before an
+  unstressed vowel, /s/ + nasal or /l/ splits (*assess.ment*), and /tw/, /dw/ split
+  unless primary stress follows (*net.work*, *be.tween*). The rule reproduces
+  every checked split.
+- **Left out**: heteronyms listed in `src/curated-words.ts` (*read*, *record*,
+  *live*), contractions and possessives, abbreviations without a vowel letter,
+  and single letters other than *a* and *i*.
+
+When a probe or listening sample shows a wrong pick, add the word to
+`curatedPronunciations`. A wrong split goes in the checked syllables in
+`src/word-inputs.ts`.
+
+### More than one form of a word
+
+Some words get more than one recording, listed in `src/word-forms.ts`:
+
+- **Heteronyms** (*read*, *record*, *minute*): one recording per meaning, each
+  with a label such as *past tense* or *noun*. The more common meaning gets the
+  plain file name.
+- **"Also said" forms** (*either* /ˈaɪðɚ/, *data* /ˈdætə/): forms US speakers
+  really use, recorded beside the chosen one.
+
+The first form keeps the plain file name (`minute.ogg`), and each extra form adds
+its number (`minute--2.ogg`). A number is assigned once and never reused,
+because published keys must keep their sound. The manifest refuses labelled forms
+until it can list them (#322).
+
+`src/form-candidates.ts` finds the dictionary forms worth reviewing: the main
+stress moves, or a stressed vowel changes beyond a common US merger (cot–caught,
+marry–merry, pin–pen and others). Elisions, weak forms, consonant changes and
+unstressed vowels never qualify. A test fails until every candidate is either
+listed in `word-forms.ts` or rejected with a reason in `rejectedForms`.
+
+Azure pads every Ogg clip to the same length (1.8265 s), so a duration check has
+to measure the speech, not the file.
+
 ## Setup
 
 Run `bun install` at the repository root. Set environment variables in your
@@ -68,9 +117,10 @@ The pinned 360-word Practice pool, 358-word generation batch and handoff command
 are recorded in [issue #166](../../docs/research/issue-166-practice-pool.md). Options:
 
 - `--dry-run`: write a plan and review sheet without calling Azure.
-- `--source=catalog|spelling|practice`: select a named word set; defaults to `catalog`.
+- `--source=catalog|spelling|practice|top-1k|top-10k`: select a named word set; defaults to `catalog`.
 - `--words=seat,seed`: select words within that source; this cannot add arbitrary words.
-- `--limit=24`: limit the selection; the default catalog order is alphabetical.
+- `--limit=24`: limit the selection; the default catalog order is alphabetical, and
+  curated tiers are in frequency order.
   The older `WORDS_LIMIT` environment variable also works; unset it for a full run.
 - `--out=path`: choose an output directory, relative to `packages/audio-gen`.
   The default is a fresh `output/azure-<timestamp>/` directory.
