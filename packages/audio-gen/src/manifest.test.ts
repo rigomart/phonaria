@@ -65,6 +65,15 @@ describe("word audio manifest", () => {
 		expect(() => manifestFromPlan(plan([sample("seat", "generated", "mp3")]))).toThrow(/Ogg/);
 	});
 
+	it("refuses labelled forms until the manifest can list them", () => {
+		const extra = {
+			...sample("read"),
+			form: { n: 2, label: "past tense" },
+			file: "audio/read--2.ogg",
+		};
+		expect(() => manifestFromPlan(plan([sample("seat"), extra]))).toThrow(/labelled forms/);
+	});
+
 	it("refuses words that are not lowercase letters or repeat", () => {
 		expect(() => manifestFromPlan(plan([sample("Seat")]))).toThrow(/lowercase/);
 		expect(() => manifestFromPlan(plan([sample("seat"), sample("seat")]))).toThrow(/twice/);

@@ -4,6 +4,7 @@ import { readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { voiceFolderName } from "./manifest";
 import { getAzureAudioFormat } from "./providers/azure";
+import { formSlug, isFormSlug } from "./word-forms";
 
 export type UploadOptions = {
 	outputDir: string;
@@ -80,11 +81,12 @@ export function parseUploadArguments(args: string[]): UploadOptions {
 	return options;
 }
 
-export function buildUploadKey(accent: string, voice: string, word: string, extension: string) {
+/** `slug` is the word, or word--n for an extra form of it. */
+export function buildUploadKey(accent: string, voice: string, slug: string, extension: string) {
 	validateOptions({ outputDir: ".", accent, voice });
-	if (!/^[a-z]+$/.test(word) || !["ogg", "mp3"].includes(extension))
+	if (!isFormSlug(slug) || !["ogg", "mp3"].includes(extension))
 		throw new Error("Invalid recording word or extension");
-	return `audio/${accent}/words/${voice}/${word}.${extension}`;
+	return `audio/${accent}/words/${voice}/${slug}.${extension}`;
 }
 
 export async function prepareUploads(options: UploadOptions): Promise<UploadClip[]> {
@@ -103,7 +105,7 @@ export async function prepareUploads(options: UploadOptions): Promise<UploadClip
 	if (!format) throw new Error("Unsupported plan audio format");
 	if (!Array.isArray(plan.samples) || !plan.samples.length)
 		throw new Error("Plan needs at least one generated sample");
-	const words = new Set<string>();
+	const slugs = new Set<string>();
 	const clips: UploadClip[] = [];
 	for (const value of plan.samples) {
 		const sample = object(value);
@@ -114,10 +116,14 @@ export async function prepareUploads(options: UploadOptions): Promise<UploadClip
 			!/^[a-f0-9]{64}$/.test(sample.sha256)
 		)
 			throw new Error(`Sample must be generated with a SHA-256 checksum: ${sample.word}`);
-		const key = buildUploadKey(options.accent, options.voice, sample.word, format.extension);
-		if (words.has(sample.word)) throw new Error(`Duplicate plan word: ${sample.word}`);
-		words.add(sample.word);
-		if (sample.file !== `audio/${sample.word}.${format.extension}`)
+		const n = sample.form === undefined ? undefined : object(sample.form).n;
+		if (n !== undefined && (typeof n !== "number" || !Number.isInteger(n)))
+			throw new Error(`Invalid form number for ${sample.word}`);
+		const slug = formSlug(sample.word, n);
+		const key = buildUploadKey(options.accent, options.voice, slug, format.extension);
+		if (slugs.has(slug)) throw new Error(`Duplicate plan recording: ${slug}`);
+		slugs.add(slug);
+		if (sample.file !== `audio/${slug}.${format.extension}`)
 			throw new Error(`Unexpected recording path: ${sample.file}`);
 		const file = path.resolve(options.outputDir, sample.file);
 		const audio = await readFile(file);

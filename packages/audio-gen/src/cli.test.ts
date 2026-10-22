@@ -6,6 +6,8 @@ describe("Azure generation command", () => {
 		expect(parseArguments(["--source=practice"])).toEqual({ source: "practice" });
 		expect(parseArguments(["--source=spelling"])).toEqual({ source: "spelling" });
 		expect(parseArguments(["--source=catalog"])).toEqual({ source: "catalog" });
+		expect(parseArguments(["--source=top-1k"])).toEqual({ source: "top-1k" });
+		expect(parseArguments(["--source=top-10k"])).toEqual({ source: "top-10k" });
 		expect(() => parseArguments(["--source=unknown"])).toThrow(/source/);
 		expect(() => parseArguments(["--resume", "--out=/tmp/saved", "--source=spelling"])).toThrow(
 			/source/,

@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-type PlanSample = { word: string; file: string; status: string; sha256?: string };
+type PlanSample = { word: string; form?: unknown; file: string; status: string; sha256?: string };
 type Plan = {
 	targetAccent: string;
 	settings: { voiceId: string };
@@ -29,6 +29,15 @@ export function manifestFromPlan(plan: Plan): WordAudioManifestSource {
 			`${unfinished.length} samples are not generated: ${unfinished
 				.slice(0, 5)
 				.map(({ word }) => word)
+				.join(", ")}`,
+		);
+	}
+	const labelled = plan.samples.filter(({ form }) => form !== undefined);
+	if (labelled.length) {
+		throw new Error(
+			`The manifest lists one recording per word, so labelled forms would play without their meaning (#322): ${labelled
+				.slice(0, 5)
+				.map(({ file }) => file)
 				.join(", ")}`,
 		);
 	}

@@ -9,15 +9,21 @@ import {
 	EnglishPracticeSchwa,
 	validatePracticeEntries,
 } from "@phonaria/phonetics-data/languages/en/practice-schwa";
+import { collectCuratedWords, pickPronunciation, type PronunciationChoice } from "./curated-words";
 import { spellingPronunciations } from "./reviewed-pronunciations";
 
-export type WordSource = "catalog" | "spelling" | "practice";
+export const wordSources = ["catalog", "spelling", "practice", "top-1k", "top-10k"] as const;
+export type WordSource = (typeof wordSources)[number];
+
+export const isCuratedTier = (source: WordSource) => source === "top-1k" || source === "top-10k";
 
 export type WordWithPhonemic = {
 	word: string;
 	variant: string;
 	phonemic: string;
 	cmuArpa: string;
+	/** Set only for curated-tier words. */
+	pronunciationChoice?: PronunciationChoice;
 };
 
 export function getWordPronunciation(
@@ -38,6 +44,12 @@ export function getWordPronunciation(
 }
 
 export function collectWordsWithPhonemic(source: WordSource = "catalog"): WordWithPhonemic[] {
+	if (source === "top-1k" || source === "top-10k") {
+		return collectCuratedWords(source).words.map(({ word, variants }) => {
+			const { variant, choice } = pickPronunciation(word, variants);
+			return { ...getWordPronunciation(word, [variant]), pronunciationChoice: choice };
+		});
+	}
 	if (source === "practice") {
 		validatePracticeEntries(EnglishPracticeSchwa, EnglishCuratedTop10k.words);
 		const catalog = new Map(collectWordsWithPhonemic().map((entry) => [entry.word, entry]));

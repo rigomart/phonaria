@@ -8,7 +8,7 @@ import type { WordWithPhonemic } from "./words";
 
 // Azure IPA requires explicit syllable boundaries for stress:
 // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-pronunciation
-const syllablesByWord: Record<string, readonly string[]> = {
+export const checkedSyllables: Readonly<Record<string, readonly string[]>> = {
 	ability: ["AX0", "B IX1", "L AX0", "T I2"],
 	able: ["EI1", "B AX0 L"],
 	about: ["AX0", "B AU1 T"],
@@ -411,15 +411,75 @@ export function escapeXml(value: string): string {
 	});
 }
 
-export function getAzureIpa(word: WordWithPhonemic): string {
+// Coronal + /j/ is left out: US English drops that /j/ (news /nuz/).
+const clusterOnsets = new Set([
+	...["P", "B", "F"].flatMap((first) => [`${first} R`, `${first} L`, `${first} Y`]),
+	...["K", "G"].flatMap((first) => [`${first} R`, `${first} L`, `${first} W`, `${first} Y`]),
+	"T R",
+	"T W",
+	"D R",
+	"D W",
+	"TH R",
+	"TH W",
+	"SH R",
+	"V Y",
+	"M Y",
+	"H Y",
+	"H W",
+	...["P", "T", "K", "M", "N", "L", "W"].map((second) => `S ${second}`),
+	...["P R", "P L", "P Y", "T R", "K R", "K L", "K W", "K Y"].map((rest) => `S ${rest}`),
+]);
+
+function canStartSyllable(consonants: readonly string[], nextVowel: string): boolean {
+	if (consonants.length === 0) return true;
+	if (consonants.length === 1) return consonants[0] !== "NG";
+	const cluster = consonants.join(" ");
+	// Before an unstressed vowel, /s/ + nasal or /l/ usually spans a suffix: assess.ment, serious.ly.
+	if (/^S [MNL]$/.test(cluster) && nextVowel.endsWith("0")) return false;
+	// Inside a word, /tw/, /dw/ and /θw/ mostly span a compound (net.work, ed.ward) unless primary stress follows (be.tween).
+	if (/^(T|D|TH) W$/.test(cluster) && !nextVowel.endsWith("1")) return false;
+	return clusterOnsets.has(cluster);
+}
+
+/** Split a pronunciation into syllables, giving each vowel the longest onset English allows. */
+export function splitSyllablesByRule(variant: string): string[] {
+	const tokens = tokenizePronunciation(variant);
+	const vowels = tokens.flatMap((token, index) => (/[012]$/.test(token) ? [index] : []));
+	const starts = [0];
+	for (let index = 1; index < vowels.length; index++) {
+		let start = vowels[index - 1] + 1;
+		while (!canStartSyllable(tokens.slice(start, vowels[index]), tokens[vowels[index]])) start++;
+		starts.push(start);
+	}
+	return starts.map((start, index) => tokens.slice(start, starts[index + 1]).join(" "));
+}
+
+export type SyllableSource = "one syllable" | "checked" | "rule";
+
+/** Checked boundaries first; the rule only when the caller allows unchecked words. */
+export function getSyllables(
+	word: WordWithPhonemic,
+	{ allowRule = false }: { allowRule?: boolean } = {},
+): { syllables: readonly string[]; source: SyllableSource } {
 	phonemeVariantToCmuArpa(word.variant); // Reject invalid sounds or stress.
 	const variant = tokenizePronunciation(word.variant).join(" ");
 	const vowelCount = variant.match(/[012]/g)?.length ?? 0;
-	const syllables = vowelCount === 1 ? [variant] : syllablesByWord[word.word];
-	if (!syllables) throw new Error(`Checked syllable boundaries required for "${word.word}"`);
-	if (syllables.join(" ") !== variant) {
-		throw new Error(`Syllables no longer match the dictionary for "${word.word}"`);
+	if (vowelCount === 1) return { syllables: [variant], source: "one syllable" };
+	const checked = checkedSyllables[word.word];
+	if (checked) {
+		if (checked.join(" ") !== variant)
+			throw new Error(`Syllables no longer match the dictionary for "${word.word}"`);
+		return { syllables: checked, source: "checked" };
 	}
+	if (!allowRule) throw new Error(`Checked syllable boundaries required for "${word.word}"`);
+	return { syllables: splitSyllablesByRule(variant), source: "rule" };
+}
+
+export function getAzureIpa(
+	word: WordWithPhonemic,
+	options?: { allowRuleSyllables?: boolean },
+): string {
+	const { syllables } = getSyllables(word, { allowRule: options?.allowRuleSyllables });
 	return syllables
 		.map((syllable) => {
 			const stresses = syllable.match(/[012]/g) ?? [];
@@ -436,9 +496,12 @@ export function getAzureIpa(word: WordWithPhonemic): string {
 		.join(".");
 }
 
-export function buildAzureWordInput(word: WordWithPhonemic): TtsInput {
+export function buildAzureWordInput(
+	word: WordWithPhonemic,
+	options?: { allowRuleSyllables?: boolean },
+): TtsInput {
 	return {
 		id: word.word,
-		text: `<phoneme alphabet="ipa" ph="${escapeXml(getAzureIpa(word))}">${escapeXml(word.word)}</phoneme>`,
+		text: `<phoneme alphabet="ipa" ph="${escapeXml(getAzureIpa(word, options))}">${escapeXml(word.word)}</phoneme>`,
 	};
 }

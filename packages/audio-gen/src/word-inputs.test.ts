@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { buildAzureWordInput, getAzureIpa } from "./word-inputs";
+import {
+	buildAzureWordInput,
+	checkedSyllables,
+	getAzureIpa,
+	getSyllables,
+	splitSyllablesByRule,
+} from "./word-inputs";
 import { collectWordsWithPhonemic, getWordPronunciation } from "./words";
 
 describe("Azure IPA inputs", () => {
@@ -31,7 +37,7 @@ describe("Azure IPA inputs", () => {
 		);
 	});
 	it("can build explicit pronunciation requests for the full catalog", () => {
-		const inputs = collectWordsWithPhonemic().map(buildAzureWordInput);
+		const inputs = collectWordsWithPhonemic().map((word) => buildAzureWordInput(word));
 		expect(inputs).toHaveLength(400);
 		expect(inputs.every(({ text }) => text.startsWith('<phoneme alphabet="ipa"'))).toBe(true);
 	});
@@ -95,5 +101,37 @@ describe("Practice checked syllables", () => {
 			expect(ipa.match(/ˌ/g)?.length ?? 0, entry.word).toBe(entry.variant.match(/2/g)?.length ?? 0);
 			expect(buildAzureWordInput(entry).text.match(/<phoneme /g), entry.word).toHaveLength(1);
 		}
+	});
+});
+
+describe("syllable rule", () => {
+	it("reproduces every checked split", () => {
+		const mismatches = Object.entries(checkedSyllables).filter(
+			([, syllables]) =>
+				splitSyllablesByRule(syllables.join(" ")).join(".") !== syllables.join("."),
+		);
+		expect(mismatches).toEqual([]);
+		expect(Object.keys(checkedSyllables)).toHaveLength(387);
+	});
+	it.each([
+		["IX1 NG G L IX0 SH", "IX1 NG.G L IX0 SH"],
+		["B IX0 T W I1 N", "B IX0.T W I1 N"],
+		["N E1 T W ER2 K", "N E1 T.W ER2 K"],
+		["E1 D W ER0 D", "E1 D.W ER0 D"],
+		["IX0 K S P E1 K T", "IX0 K.S P E1 K T"],
+		["T R AE0 N S F ER1 D", "T R AE0 N S.F ER1 D"],
+		["K R I0 EI1 T IX0 D", "K R I0.EI1.T IX0 D"],
+	])("splits %s as %s", (variant, expected) => {
+		expect(splitSyllablesByRule(variant).join(".")).toBe(expected);
+	});
+	it("applies only when the caller allows it, after checked splits", () => {
+		const english = getWordPronunciation("english", ["IX1 NG G L IX0 SH"]);
+		expect(() => getSyllables(english)).toThrow(/checked/i);
+		expect(getSyllables(english, { allowRule: true }).source).toBe("rule");
+		expect(getAzureIpa(english, { allowRuleSyllables: true })).toBe("ˈɪŋ.ɡlɪʃ");
+		const happy = getWordPronunciation("happy", ["H AE1 P I0"]);
+		expect(getSyllables(happy, { allowRule: true }).source).toBe("checked");
+		const seat = getWordPronunciation("seat", ["S I1 T"]);
+		expect(getSyllables(seat).source).toBe("one syllable");
 	});
 });

@@ -1,4 +1,4 @@
-import type { WordSource } from "./words";
+import { type WordSource, wordSources } from "./words";
 
 export function parseArguments(args: string[]) {
 	const options: {
@@ -19,9 +19,8 @@ export function parseArguments(args: string[]) {
 			options.outputDir = arg.slice(6);
 			if (!options.outputDir.trim()) throw new Error("--out needs a directory");
 		} else if (arg.startsWith("--source=")) {
-			const source = arg.slice(9);
-			if (source !== "catalog" && source !== "spelling" && source !== "practice")
-				throw new Error("--source must be catalog, spelling or practice");
+			const source = wordSources.find((name) => name === arg.slice(9));
+			if (!source) throw new Error(`--source must be one of ${wordSources.join(", ")}`);
 			options.source = source;
 		} else if (arg.startsWith("--words=")) {
 			options.words = arg
