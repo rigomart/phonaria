@@ -8,6 +8,7 @@ export function parseArguments(args: string[]) {
 		words?: string[];
 		source?: WordSource;
 		limit?: number;
+		skipGenerated?: string[];
 		requestsPerMinute?: number;
 		ratePercent?: number;
 		audioFormat?: string;
@@ -18,6 +19,10 @@ export function parseArguments(args: string[]) {
 		else if (arg.startsWith("--out=")) {
 			options.outputDir = arg.slice(6);
 			if (!options.outputDir.trim()) throw new Error("--out needs a directory");
+		} else if (arg.startsWith("--skip-generated=")) {
+			const dir = arg.slice(17);
+			if (!dir.trim()) throw new Error("--skip-generated needs a plan directory");
+			options.skipGenerated = [...(options.skipGenerated ?? []), dir];
 		} else if (arg.startsWith("--source=")) {
 			const source = wordSources.find((name) => name === arg.slice(9));
 			if (!source) throw new Error(`--source must be one of ${wordSources.join(", ")}`);
@@ -49,5 +54,7 @@ export function parseArguments(args: string[]) {
 		throw new Error("--resume requires --out pointing to a saved plan");
 	if (options.resume && options.source)
 		throw new Error("Resume uses the saved source; omit --source");
+	if (options.resume && options.skipGenerated)
+		throw new Error("Resume uses the saved word selection; omit --skip-generated");
 	return options;
 }

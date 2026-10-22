@@ -1,6 +1,11 @@
 import { escapeXml } from "../word-inputs";
 import type { TtsInput, TtsOutput, TtsProvider } from "./types";
 
+/** The request never got a full answer: fetch rejected, timed out, or the body broke off. */
+export class AzureNetworkError extends Error {
+	override name = "AzureNetworkError";
+}
+
 export const AZURE_OUTPUT_FORMAT = "audio-24khz-160kbitrate-mono-mp3";
 
 export function getAzureAudioFormat(audioFormat = "mp3") {
@@ -74,7 +79,9 @@ export function createAzureProvider(
 						},
 					);
 				} catch {
-					throw new Error(`Azure request failed for ${id}; check connectivity or timeout`);
+					throw new AzureNetworkError(
+						`Azure request failed for ${id}; check connectivity or timeout`,
+					);
 				}
 				if (!response.ok) {
 					throw new Error(`Azure synthesis failed for ${id} (HTTP ${response.status})`);
@@ -90,7 +97,7 @@ export function createAzureProvider(
 				try {
 					audio = Buffer.from(await response.arrayBuffer());
 				} catch {
-					throw new Error(`Azure audio download failed for ${id}`);
+					throw new AzureNetworkError(`Azure audio download failed for ${id}`);
 				}
 				if (!audio.length) throw new Error(`Azure returned empty audio for ${id}`);
 				results.push({ id, audio });

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createAzureProvider } from "./azure";
+import { AzureNetworkError, createAzureProvider } from "./azure";
 
 describe("Azure pronunciation generation", () => {
 	it("requests Ogg/Opus and accepts its audio response", async () => {
@@ -119,8 +119,42 @@ describe("Azure pronunciation generation", () => {
 			region: "eastus",
 			fetcher: vi.fn().mockRejectedValue(new Error("secret-key")),
 		});
-		await expect(provider.synthesize([{ id: "seat", text: "seat" }])).rejects.toThrow(
+		const failure = provider.synthesize([{ id: "seat", text: "seat" }]);
+		await expect(failure).rejects.toThrow(
 			"Azure request failed for seat; check connectivity or timeout",
+		);
+		await expect(failure).rejects.toBeInstanceOf(AzureNetworkError);
+	});
+	it("marks a broken audio download as a network error", async () => {
+		const body = new ReadableStream({
+			start(controller) {
+				controller.error(new Error("connection reset"));
+			},
+		});
+		const provider = createAzureProvider({
+			apiKey: "key",
+			region: "eastus",
+			fetcher: vi
+				.fn()
+				.mockResolvedValue(new Response(body, { headers: { "Content-Type": "audio/mpeg" } })),
+		});
+		const failure = provider.synthesize([{ id: "seat", text: "seat" }]);
+		await expect(failure).rejects.toThrow("Azure audio download failed for seat");
+		await expect(failure).rejects.toBeInstanceOf(AzureNetworkError);
+	});
+	it.each([
+		new Response("", { status: 429 }),
+		new Response("", { status: 503 }),
+		new Response("{}", { headers: { "Content-Type": "application/json" } }),
+		new Response(null, { headers: { "Content-Type": "audio/mpeg" } }),
+	])("keeps answers Azure gave apart from network errors", async (response) => {
+		const provider = createAzureProvider({
+			apiKey: "key",
+			region: "eastus",
+			fetcher: vi.fn().mockResolvedValue(response),
+		});
+		await expect(provider.synthesize([{ id: "seat", text: "seat" }])).rejects.not.toBeInstanceOf(
+			AzureNetworkError,
 		);
 	});
 });

@@ -38,10 +38,27 @@ describe("Azure generation command", () => {
 			outputDir: "output/preview",
 		});
 	});
-	it.each(["--out=", "--limit=", "--rpm=", "--limit=2.5", "--words=", "--takes=2"])(
-		"rejects malformed or obsolete options %s",
-		(argument) => {
-			expect(() => parseArguments([argument])).toThrow();
-		},
-	);
+	it("collects every plan to skip, only for a new plan", () => {
+		expect(
+			parseArguments([
+				"--source=top-10k",
+				"--skip-generated=output/top-1k",
+				"--skip-generated=output/extra",
+			]),
+		).toEqual({ source: "top-10k", skipGenerated: ["output/top-1k", "output/extra"] });
+		expect(() =>
+			parseArguments(["--resume", "--out=output/top-10k", "--skip-generated=output/top-1k"]),
+		).toThrow(/skip-generated/);
+	});
+	it.each([
+		"--out=",
+		"--skip-generated=",
+		"--limit=",
+		"--rpm=",
+		"--limit=2.5",
+		"--words=",
+		"--takes=2",
+	])("rejects malformed or obsolete options %s", (argument) => {
+		expect(() => parseArguments([argument])).toThrow();
+	});
 });

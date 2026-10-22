@@ -34,11 +34,12 @@ async function main() {
 	if (
 		options.words ||
 		options.limit !== undefined ||
+		options.skipGenerated ||
 		options.ratePercent !== undefined ||
 		options.audioFormat !== undefined
 	)
 		throw new Error(
-			"Probe stages define their six words, speeds and MP3 format; omit words, limit, rate and format",
+			"Probe stages define their six words, speeds and MP3 format; omit words, limit, skipped plans, rate and format",
 		);
 	const outputDir = path.resolve(options.outputDir ?? `output/probes-${stage}-${Date.now()}`);
 	const result = await runProbes({
