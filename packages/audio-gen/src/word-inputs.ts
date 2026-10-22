@@ -454,6 +454,40 @@ export function splitSyllablesByRule(variant: string): string[] {
 	return starts.map((start, index) => tokens.slice(start, starts[index + 1]).join(" "));
 }
 
+/**
+ * Compounds split after the first word's final stop, which the rule would put in the next
+ * stressed syllable and aspirate: /ˌwʌt.ˈɛ.vɚ/, not /ˌwʌ.ˈtɛ.vɚ/.
+ */
+export const compoundSyllables: Readonly<Record<string, readonly string[]>> = {
+	backup: ["B AE1 K", "AH2 P"],
+	makeup: ["M EI1 K", "AH2 P"],
+	pickup: ["P IX1 K", "AH2 P"],
+	setup: ["S E1 T", "AH2 P"],
+	startup: ["S T A1 R T", "AH2 P"],
+	weekend: ["W I1 K", "E2 N D"],
+	weekends: ["W I1 K", "E2 N D Z"],
+	whatever: ["W AH2 T", "E1", "V ER0"],
+	workout: ["W ER1 K", "AU2 T"],
+};
+
+/**
+ * Moves a /t/ that starts an unstressed syllable after a stressed vowel to the end of the
+ * stressed one: /ˈdæt.ə/, not /ˈdæ.tə/, because Azure sometimes says the second as a full /t/.
+ */
+export function closeTapSyllables(syllables: readonly string[]): string[] {
+	const result = syllables.map((syllable) => syllable.split(" "));
+	for (let index = 1; index < result.length; index++) {
+		const [previous, current] = [result[index - 1], result[index]];
+		const stressedEnd = /[12]$/.test(previous[previous.length - 1]);
+		// Before syllabic /n/ the /t/ is glottal (button), which the split already gets right.
+		const syllabicN = current[1] === "AX0" && current[2] === "N";
+		if (stressedEnd && current[0] === "T" && (current[1] ?? "").endsWith("0") && !syllabicN) {
+			previous.push(current.shift() as string);
+		}
+	}
+	return result.map((tokens) => tokens.join(" "));
+}
+
 export type SyllableSource = "one syllable" | "checked" | "rule";
 
 /** Checked boundaries first; the rule only when the caller allows unchecked words. */
@@ -465,14 +499,14 @@ export function getSyllables(
 	const variant = tokenizePronunciation(word.variant).join(" ");
 	const vowelCount = variant.match(/[012]/g)?.length ?? 0;
 	if (vowelCount === 1) return { syllables: [variant], source: "one syllable" };
-	const checked = checkedSyllables[word.word];
+	const checked = checkedSyllables[word.word] ?? compoundSyllables[word.word];
 	if (checked) {
 		if (checked.join(" ") !== variant)
 			throw new Error(`Syllables no longer match the dictionary for "${word.word}"`);
 		return { syllables: checked, source: "checked" };
 	}
 	if (!allowRule) throw new Error(`Checked syllable boundaries required for "${word.word}"`);
-	return { syllables: splitSyllablesByRule(variant), source: "rule" };
+	return { syllables: closeTapSyllables(splitSyllablesByRule(variant)), source: "rule" };
 }
 
 export function getAzureIpa(

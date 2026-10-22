@@ -58,6 +58,7 @@
       "version": "1.0.0",
       "dependencies": {
         "@phonaria/phonetics-data": "workspace:*",
+        "@phonaria/pronunciation": "workspace:*",
         "dotenv": "^17.2.0",
       },
       "devDependencies": {

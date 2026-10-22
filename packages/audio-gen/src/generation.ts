@@ -11,6 +11,7 @@ import {
 	getAzureVoice,
 } from "./providers/azure";
 import type { TtsInput, TtsProvider } from "./providers/types";
+import { probeReasons } from "./top-10k-probes";
 import { formSlug, isFormSlug, wordForms } from "./word-forms";
 import { buildAzureWordInput, getAzureIpa, getSyllables, type SyllableSource } from "./word-inputs";
 import {
@@ -30,6 +31,7 @@ type Sample = {
 	pairs: { contrast: string; words: readonly string[] }[];
 	pronunciationChoice?: PronunciationChoice;
 	syllables?: SyllableSource;
+	pickedFor?: readonly string[];
 	input: TtsInput;
 	file: string;
 	status: "planned" | "generated" | "failed";
@@ -85,6 +87,7 @@ function selectSamples(
 	if (!wordSources.includes(source)) throw new Error(`Unknown word source: ${source}`);
 	const curated = isCuratedTier(source);
 	const catalog = collectWordsWithPhonemic(source);
+	const probes = source === "top-10k-probes" ? probeReasons() : undefined;
 	const byWord = new Map(catalog.map((word) => [word.word, word]));
 	const selection = words
 		? words.map((word) => {
@@ -123,6 +126,7 @@ function selectSamples(
 							syllables: getSyllables(pronunciation, { allowRule: true }).source,
 						}
 					: {}),
+				...(probes ? { pickedFor: probes.get(word.word) } : {}),
 				input: { ...buildAzureWordInput(pronunciation, options), id: slug },
 				file: `audio/${slug}.${extension}`,
 				status: "planned",

@@ -38,7 +38,14 @@ plan records where each input came from:
   each vowel takes the longest onset English allows (`rule`). Before an
   unstressed vowel, /s/ + nasal or /l/ splits (*assess.ment*), and /tw/, /dw/ split
   unless primary stress follows (*net.work*, *be.tween*). The rule reproduces
-  every checked split.
+  every checked split. Two adjustments come from the #353 probes, because Azure
+  says a /t/ that starts a syllable as a full /t/ more often:
+  - A /t/ between a stressed vowel and an unstressed one ends the stressed
+    syllable (/ˈdæt.ə/, not /ˈdæ.tə/), so it taps. Before syllabic /n/
+    (*button*) it stays put, where Azure already gives the glottal /t/.
+  - Compounds whose first word ends in /p t k/ before a stressed vowel get a
+    hand-checked split at the word boundary in `compoundSyllables`
+    (/ˌwʌt.ˈɛ.vɚ/, not /ˌwʌ.ˈtɛ.vɚ/), so the stop isn't aspirated.
 - **Left out**: heteronyms listed in `src/curated-words.ts` (*read*, *record*,
   *live*), contractions and possessives, abbreviations without a vowel letter,
   and single letters other than *a* and *i*.
@@ -68,8 +75,62 @@ marry–merry, pin–pen and others). Elisions, weak forms, consonant changes an
 unstressed vowels never qualify. A test fails until every candidate is either
 listed in `word-forms.ts` or rejected with a reason in `rejectedForms`.
 
-Azure pads every Ogg clip to the same length (1.8265 s), so a duration check has
+Azure pads short Ogg clips to 1.8265 s (15,042 bytes), so a duration check has
 to measure the speech, not the file.
+
+### Probes and automatic checks
+
+Before the top-10k is generated, the dev listens to a probe set and the automatic
+checks run on the same clips (#353). `src/top-10k-probes.ts` lists about 100 words,
+each with the risk it covers: rule splits from 2 to 7 syllables, compounds split at
+one consonant, rule pronunciation picks (function words, odd first forms, syllable
+counts), r-coloured vowels, syllabic consonants, /ʒ/ and /ɔɪ/, the vowel pairs Azure
+blurs, and second forms. Each sample's `pickedFor` records why.
+
+```bash
+bun run --cwd packages/audio-gen generate --source=top-10k-probes --out=output/top-10k-probes-1
+bun run --cwd packages/audio-gen listen --out=output/top-10k-probes-1
+bun run --cwd packages/audio-gen check --out=output/top-10k-probes-1 \
+  --known-good=output/published/catalog --known-good=output/published/practice-166 \
+  --known-good=output/published/spelling-304
+```
+
+`listen` writes `listen.html`: play each clip, mark it yes or no with a note, and
+download the filled `review.tsv` over the old one. It shows why each word was picked,
+never the check results, so the marks stay blind to them.
+
+`check` runs every check on each generated clip and writes `checks.json`, `checks.tsv`
+(each check's numbers) and `checks.md`. A clip that fails a check goes to listening:
+
+- **word-heard**: Azure's plain recognition hears the word, or words that sound like
+  the clip's own pronunciation (*red* for *read--2*). Between vowels /t/ and /d/ count
+  as one sound, since both tap (*riding* for *writing*).
+- **no-swapped-sound**: the speaking-feedback judge, with its tuned thresholds and every
+  sound judged against the clip's own pronunciation, finds no sound `swapped`.
+- **word-accuracy**: Azure's whole-word accuracy is at least the cutoff.
+- **duration**: the speech, measured from the waveform, is 0.65–1.5× the 279 ms + 60 ms
+  per sound that the published clips average.
+- **edges**: at least 100 ms of silence before the word and 300 ms after, so neither
+  end is cut off.
+- **loudness**: the speech level is within 5 dB of the batch's median.
+- **clipping**: fewer than 5 samples at full scale.
+
+The limits live in `CLIP_CHECK_LIMITS` in `src/clip-checks.ts`. The audio ones come from
+the 809 published clips, which were all reviewed by ear and pass every audio check. The
+word accuracy cutoff is set from the probes.
+
+Once `review.tsv` is marked, `checks.md` compares the checks with the marks: rejected
+clips each check caught, rejected clips that passed everything (misses), and accepted
+clips flagged (false alarms). `--known-good` folders are only read, to count false
+alarms on clips already accepted by ear. A missing tap passes every check, since
+the judge accepts a tap and a full /t/ alike; it is prevented in the input instead. Copy the published output folders there
+(`plan.json` and `audio/`) rather than pointing at the originals.
+
+Scoring reuses the pronunciation harness: the same Azure scorer, two calls per clip,
+with raw answers cached in `output/cache` by WAV bytes and request. A rerun costs no
+calls, and copying the harness's `output/cache/azure` folder in makes the catalog clips
+free. `--offline` uses only the cache. The clips and scores are never used to train
+anything (Microsoft's terms).
 
 ## Setup
 
@@ -117,7 +178,7 @@ The pinned 360-word Practice pool, 358-word generation batch and handoff command
 are recorded in [issue #166](../../docs/research/issue-166-practice-pool.md). Options:
 
 - `--dry-run`: write a plan and review sheet without calling Azure.
-- `--source=catalog|spelling|practice|top-1k|top-10k`: select a named word set; defaults to `catalog`.
+- `--source=catalog|spelling|practice|top-1k|top-10k|top-10k-probes`: select a named word set; defaults to `catalog`.
 - `--words=seat,seed`: select words within that source; this cannot add arbitrary words.
 - `--limit=24`: limit the selection; the default catalog order is alphabetical, and
   curated tiers are in frequency order.

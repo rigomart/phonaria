@@ -125,10 +125,10 @@ describe("Azure catalog generation", () => {
 		).toEqual([
 			{ form: { label: "present tense" }, ipa: "ɹid", file: "audio/read.ogg", id: "read" },
 			{ form: { n: 2, label: "past tense" }, ipa: "ɹɛd", file: "audio/read--2.ogg", id: "read--2" },
-			{ form: undefined, ipa: "ˈdeɪ.tə", file: "audio/data.ogg", id: "data" },
+			{ form: undefined, ipa: "ˈdeɪt.ə", file: "audio/data.ogg", id: "data" },
 			{
 				form: { n: 2, label: "also said" },
-				ipa: "ˈdæ.tə",
+				ipa: "ˈdæt.ə",
 				file: "audio/data--2.ogg",
 				id: "data--2",
 			},
