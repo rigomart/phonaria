@@ -1,7 +1,9 @@
+import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import { describe, expect, it } from "vitest";
 import {
 	buildAzureWordInput,
 	checkedSyllables,
+	compoundSyllables,
 	getAzureIpa,
 	getSyllables,
 	splitSyllablesByRule,
@@ -133,5 +135,27 @@ describe("syllable rule", () => {
 		expect(getSyllables(happy, { allowRule: true }).source).toBe("checked");
 		const seat = getWordPronunciation("seat", ["S I1 T"]);
 		expect(getSyllables(seat).source).toBe("one syllable");
+	});
+});
+
+describe("tap and compound splits", () => {
+	it.each([
+		["D AE1 T AX0", "ˈdæt.ə"],
+		["G E1 T IX0 NG", "ˈɡɛt.ɪŋ"],
+		["B AH1 T AX0 N", "ˈbʌ.tən"],
+		["P A1 R T I0", "ˈpɑɹ.ti"],
+		["AX0 T AE1 K", "ə.ˈtæk"],
+		["AE1 T AX0 T U2 D", "ˈæt.ə.ˌtud"],
+	])("gives %s the tap's syllables: %s", (variant, ipa) => {
+		const word = getWordPronunciation("probe", [variant]);
+		expect(getAzureIpa(word, { allowRuleSyllables: true })).toBe(ipa);
+	});
+	it("splits compounds after the first word's final stop", () => {
+		const whatever = getWordPronunciation("whatever", ["W AH2 T E1 V ER0"]);
+		expect(getSyllables(whatever, { allowRule: true }).source).toBe("checked");
+		expect(getAzureIpa(whatever)).toBe("ˌwʌt.ˈɛ.vɚ");
+		for (const [word, syllables] of Object.entries(compoundSyllables)) {
+			expect(EnglishCuratedTop10k.words[word], word).toContain(syllables.join(" "));
+		}
 	});
 });

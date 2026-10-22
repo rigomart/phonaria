@@ -18,11 +18,14 @@
 		"generate": "bun src/generate.ts",
 		"manifest": "bun src/write-manifest.ts",
 		"upload": "bun src/upload.ts",
-		"probe": "bun src/probe.ts"
+		"probe": "bun src/probe.ts",
+		"check": "bun src/check.ts",
+		"listen": "bun src/listen.ts"
 	},
 	"dependencies": {
 		"dotenv": "^17.2.0",
-		"@phonaria/phonetics-data": "workspace:*"
+		"@phonaria/phonetics-data": "workspace:*",
+		"@phonaria/pronunciation": "workspace:*"
 	},
 	"devDependencies": {
 		"vitest": "^3.2.4",

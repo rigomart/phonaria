@@ -11,11 +11,21 @@ import {
 } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { collectCuratedWords, pickPronunciation, type PronunciationChoice } from "./curated-words";
 import { spellingPronunciations } from "./reviewed-pronunciations";
+import { probeReasons } from "./top-10k-probes";
 
-export const wordSources = ["catalog", "spelling", "practice", "top-1k", "top-10k"] as const;
+export const wordSources = [
+	"catalog",
+	"spelling",
+	"practice",
+	"top-1k",
+	"top-10k",
+	"top-10k-probes",
+] as const;
 export type WordSource = (typeof wordSources)[number];
 
-export const isCuratedTier = (source: WordSource) => source === "top-1k" || source === "top-10k";
+/** Curated words go through the rules for syllables and pronunciation, and get their forms. */
+export const isCuratedTier = (source: WordSource) =>
+	source === "top-1k" || source === "top-10k" || source === "top-10k-probes";
 
 export type WordWithPhonemic = {
 	word: string;
@@ -44,6 +54,14 @@ export function getWordPronunciation(
 }
 
 export function collectWordsWithPhonemic(source: WordSource = "catalog"): WordWithPhonemic[] {
+	if (source === "top-10k-probes") {
+		const byWord = new Map(collectWordsWithPhonemic("top-10k").map((entry) => [entry.word, entry]));
+		return [...probeReasons().keys()].map((word) => {
+			const entry = byWord.get(word);
+			if (!entry) throw new Error(`Probe word "${word}" isn't an unrecorded top-10k word`);
+			return entry;
+		});
+	}
 	if (source === "top-1k" || source === "top-10k") {
 		return collectCuratedWords(source).words.map(({ word, variants }) => {
 			const { variant, choice } = pickPronunciation(word, variants);
