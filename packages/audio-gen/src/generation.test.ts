@@ -105,6 +105,25 @@ describe("Azure catalog generation", () => {
 		await runGeneration({ outputDir, dryRun: true, resume: true, ...settings });
 		expect(await readFile(path.join(outputDir, "plan.json"), "utf8")).toBe(saved);
 	});
+	it("writes the stress mark only on the reviewed one-syllable inputs, and records why", async () => {
+		const outputDir = await directory();
+		await runGeneration({ outputDir, dryRun: true, source: "top-10k", ...settings });
+		const saved = await readFile(path.join(outputDir, "plan.json"), "utf8");
+		const samples: Record<string, any>[] = JSON.parse(saved).samples;
+		const stressed = samples.filter(({ stressWritten }) => stressWritten);
+		expect(stressed.map(({ input }) => input.text)).toEqual([
+			'<phoneme alphabet="ipa" ph="ˈaɪ">i</phoneme>',
+			'<phoneme alphabet="ipa" ph="ˈit">eat</phoneme>',
+		]);
+		expect(stressed.map(({ ipa }) => ipa)).toEqual(["ˈaɪ", "ˈit"]);
+		const oneSyllable = samples.filter(
+			({ syllables, stressWritten }) => syllables === "one syllable" && !stressWritten,
+		);
+		expect(oneSyllable.length).toBeGreaterThan(1000);
+		expect(oneSyllable.filter(({ input }) => input.text.includes("ˈ"))).toEqual([]);
+		await runGeneration({ outputDir, dryRun: true, resume: true, ...settings });
+		expect(await readFile(path.join(outputDir, "plan.json"), "utf8")).toBe(saved);
+	});
 	it("plans every labelled form of a word under its own file name", async () => {
 		const outputDir = await directory();
 		await runGeneration({

@@ -488,6 +488,15 @@ export function closeTapSyllables(syllables: readonly string[]): string[] {
 	return result.map((tokens) => tokens.join(" "));
 }
 
+/**
+ * One-syllable inputs that write the primary stress mark, by form slug, with the reason. The
+ * rule leaves it off; changing that would change every existing one-syllable request.
+ */
+export const stressedOneSyllable: Readonly<Record<string, string>> = {
+	eat: 'Without the stress mark Azure said /it/ as "feet" or "Pete" in two takes (#358).',
+	i: "Without the stress mark Azure said /aɪ/ as /eɪ/ or /a/ in two takes (#358).",
+};
+
 export type SyllableSource = "one syllable" | "checked" | "rule";
 
 /** Checked boundaries first; the rule only when the caller allows unchecked words. */
@@ -509,18 +518,19 @@ export function getSyllables(
 	return { syllables: closeTapSyllables(splitSyllablesByRule(variant)), source: "rule" };
 }
 
-export function getAzureIpa(
-	word: WordWithPhonemic,
-	options?: { allowRuleSyllables?: boolean },
-): string {
+export type AzureInputOptions = { allowRuleSyllables?: boolean; stressOneSyllable?: boolean };
+
+export function getAzureIpa(word: WordWithPhonemic, options?: AzureInputOptions): string {
 	const { syllables } = getSyllables(word, { allowRule: options?.allowRuleSyllables });
+	if (options?.stressOneSyllable && (syllables.length !== 1 || !/1/.test(syllables[0])))
+		throw new Error(`Only a stressed one-syllable word can write its stress: "${word.word}"`);
 	return syllables
 		.map((syllable) => {
 			const stresses = syllable.match(/[012]/g) ?? [];
 			if (stresses.length !== 1)
 				throw new Error(`Expected one vowel per syllable for "${word.word}"`);
-			const stress =
-				syllables.length === 1 ? "" : stresses[0] === "1" ? "ˈ" : stresses[0] === "2" ? "ˌ" : "";
+			const marked = syllables.length > 1 || options?.stressOneSyllable;
+			const stress = !marked ? "" : stresses[0] === "1" ? "ˈ" : stresses[0] === "2" ? "ˌ" : "";
 			// The shared phoneme chart combines ER0/ER1. Spoken unstressed ER0 is /ɚ/.
 			const ipa = tokenizePronunciation(syllable)
 				.map((token) => (token === "ER0" ? "ɚ" : phonemeVariantToIpa(token)))
@@ -530,10 +540,7 @@ export function getAzureIpa(
 		.join(".");
 }
 
-export function buildAzureWordInput(
-	word: WordWithPhonemic,
-	options?: { allowRuleSyllables?: boolean },
-): TtsInput {
+export function buildAzureWordInput(word: WordWithPhonemic, options?: AzureInputOptions): TtsInput {
 	return {
 		id: word.word,
 		text: `<phoneme alphabet="ipa" ph="${escapeXml(getAzureIpa(word, options))}">${escapeXml(word.word)}</phoneme>`,

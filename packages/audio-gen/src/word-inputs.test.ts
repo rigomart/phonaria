@@ -38,6 +38,20 @@ describe("Azure IPA inputs", () => {
 			`<phoneme alphabet="ipa" ph="${ipa}">${word}</phoneme>`,
 		);
 	});
+	it("writes a one-syllable word's stress mark only when asked", () => {
+		const eat = getWordPronunciation("eat", ["I1 T"]);
+		expect(getAzureIpa(eat)).toBe("it");
+		expect(getAzureIpa(eat, { stressOneSyllable: true })).toBe("ˈit");
+		expect(() =>
+			getAzureIpa(getWordPronunciation("the", ["DH AX0"]), { stressOneSyllable: true }),
+		).toThrow(/stress/);
+		expect(() =>
+			getAzureIpa(getWordPronunciation("people", ["P I1 P AX0 L"]), {
+				allowRuleSyllables: true,
+				stressOneSyllable: true,
+			}),
+		).toThrow(/one-syllable/);
+	});
 	it("can build explicit pronunciation requests for the full catalog", () => {
 		const inputs = collectWordsWithPhonemic().map((word) => buildAzureWordInput(word));
 		expect(inputs).toHaveLength(400);

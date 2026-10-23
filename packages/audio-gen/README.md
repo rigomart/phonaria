@@ -54,6 +54,13 @@ When a probe or listening sample shows a wrong pick, add the word to
 `curatedPronunciations`. A wrong split goes in the checked syllables in
 `src/word-inputs.ts`.
 
+A one-syllable input carries no stress mark (/it/), and Azure sometimes reduces
+the vowel: *eat* came out as "feet" and *i* as /eɪ/, take after take (#358).
+`stressedOneSyllable` in `src/word-inputs.ts` lists the form files that write the
+mark (/ˈit/), each with its reason, which the plan records as `stressWritten`.
+Add a word only after a retake with the same input fails again; changing the rule
+for every one-syllable word would change thousands of saved requests.
+
 The top-10k includes the top-1k words. To plan the top-10k without the clips the
 top-1k batch already has, point `--skip-generated` at that batch:
 
