@@ -1,5 +1,4 @@
 import path from "node:path";
-import { LanguageWordAudioDataRegistry } from "@phonaria/phonetics-data";
 import { writeManifest } from "./manifest";
 
 const PHONETICS_DATA_DIR = path.resolve(import.meta.dirname, "../../phonetics-data");
@@ -9,11 +8,7 @@ function main() {
 	if (!arg?.slice(6).trim()) {
 		throw new Error("Usage: manifest --out=output/<completed-directory>");
 	}
-	const target = writeManifest(
-		path.resolve(arg.slice(6)),
-		PHONETICS_DATA_DIR,
-		LanguageWordAudioDataRegistry["en-us"],
-	);
+	const target = writeManifest(path.resolve(arg.slice(6)), PHONETICS_DATA_DIR);
 	console.log(`Wrote ${target}.`);
 }
 
