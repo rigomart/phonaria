@@ -4,6 +4,7 @@ import path from "node:path";
 import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { runGeneration } from "./generation";
+import { AzureNetworkError, createAzureProvider } from "./providers/azure";
 import type { TtsProvider } from "./providers/types";
 
 const directories: string[] = [];
@@ -21,6 +22,7 @@ const settings = { voiceId: "en-US-JennyNeural", region: "eastus" };
 const noWait = async () => {};
 afterEach(async () => {
 	vi.unstubAllEnvs();
+	vi.restoreAllMocks();
 	await Promise.all(directories.splice(0).map((dir) => rm(dir, { recursive: true, force: true })));
 });
 
@@ -280,6 +282,169 @@ describe("Azure catalog generation", () => {
 			...settings,
 		});
 		expect(await readFile(path.join(outputDir, "audio/ship.mp3"), "utf8")).toBe("audio:ship");
+	});
+	it("retries a sample after network errors and goes on", async () => {
+		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+		const outputDir = await directory();
+		const delays: number[] = [];
+		let failures = 2;
+		await runGeneration({
+			outputDir,
+			words: ["seat", "seed"],
+			provider: {
+				async synthesize(inputs) {
+					if (inputs[0].id === "seed" && failures-- > 0)
+						throw new AzureNetworkError("Azure request failed for seed");
+					return provider.synthesize(inputs);
+				},
+			},
+			wait: async (ms) => {
+				delays.push(ms);
+			},
+			...settings,
+		});
+		expect(delays).toEqual([3_100, 15_000, 15_000]);
+		expect(warn).toHaveBeenCalledTimes(2);
+		expect(warn).toHaveBeenLastCalledWith("Azure request failed for seed; retry 2 of 2 in 15 s");
+		const plan = JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8"));
+		expect(plan.samples.map(({ status }: { status: string }) => status)).toEqual([
+			"generated",
+			"generated",
+		]);
+	});
+	it.each([429, 500])("stops without retrying on HTTP %s", async (status) => {
+		const outputDir = await directory();
+		const fetcher = vi.fn().mockResolvedValue(new Response("", { status }));
+		await expect(
+			runGeneration({
+				outputDir,
+				words: ["seat"],
+				provider: createAzureProvider({ apiKey: "key", region: "eastus", fetcher }),
+				wait: noWait,
+				...settings,
+			}),
+		).rejects.toThrow(`HTTP ${status}`);
+		expect(fetcher).toHaveBeenCalledTimes(1);
+		const plan = JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8"));
+		expect(plan.samples[0].status).toBe("failed");
+	});
+	it("gives up after three network errors and keeps completed samples for resume", async () => {
+		vi.spyOn(console, "warn").mockImplementation(() => {});
+		const outputDir = await directory();
+		const fetcher = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+			if (String(init?.body).includes("sid")) throw new TypeError("fetch failed");
+			return new Response(new Uint8Array([1]), { headers: { "Content-Type": "audio/mpeg" } });
+		});
+		await expect(
+			runGeneration({
+				outputDir,
+				words: ["seat", "seed", "ship"],
+				provider: createAzureProvider({ apiKey: "key", region: "eastus", fetcher }),
+				wait: noWait,
+				...settings,
+			}),
+		).rejects.toThrow("Azure request failed for seed; check connectivity or timeout");
+		expect(fetcher).toHaveBeenCalledTimes(4);
+		const plan = JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8"));
+		expect(plan.samples.map(({ status }: { status: string }) => status)).toEqual([
+			"generated",
+			"failed",
+			"planned",
+		]);
+		await runGeneration({ outputDir, resume: true, provider, wait: noWait, ...settings });
+		expect(await readFile(path.join(outputDir, "audio/seat.mp3"))).toEqual(Buffer.from([1]));
+		expect(await readFile(path.join(outputDir, "audio/seed.mp3"), "utf8")).toBe("audio:seed");
+	});
+	it("leaves out samples another plan generated, form by form", async () => {
+		const top1k = await directory();
+		const options = { source: "top-10k", audioFormat: "ogg", ...settings } as const;
+		await expect(
+			runGeneration({
+				outputDir: top1k,
+				words: ["read", "data"],
+				provider: {
+					async synthesize(inputs) {
+						if (inputs[0].id === "read--2") throw new Error("HTTP 429");
+						return provider.synthesize(inputs);
+					},
+				},
+				wait: noWait,
+				...options,
+			}),
+		).rejects.toThrow("429");
+		const outputDir = await directory();
+		await runGeneration({
+			outputDir,
+			dryRun: true,
+			words: ["read", "data", "the"],
+			skipGenerated: [top1k],
+			...options,
+		});
+		const saved = await readFile(path.join(outputDir, "plan.json"), "utf8");
+		const plan = JSON.parse(saved);
+		expect(plan.skippedGenerated).toEqual([{ dir: path.relative(outputDir, top1k), samples: 1 }]);
+		expect(plan.samples.map(({ file }: { file: string }) => file)).toEqual([
+			"audio/read--2.ogg",
+			"audio/data.ogg",
+			"audio/data--2.ogg",
+			"audio/the.ogg",
+		]);
+		await runGeneration({ outputDir, dryRun: true, resume: true, ...options, source: undefined });
+		expect(await readFile(path.join(outputDir, "plan.json"), "utf8")).toBe(saved);
+		await expect(
+			runGeneration({
+				outputDir,
+				resume: true,
+				skipGenerated: [top1k],
+				...options,
+				source: undefined,
+			}),
+		).rejects.toThrow(/skipped plans/);
+		await rm(path.join(top1k, "audio/read.ogg"));
+		await expect(
+			runGeneration({ outputDir, dryRun: true, resume: true, ...options, source: undefined }),
+		).rejects.toThrow(/missing or changed: .*read\.ogg/);
+	});
+	it("refuses to resume a plan missing a form it never skipped", async () => {
+		const outputDir = await directory();
+		const options = { source: "top-10k", audioFormat: "ogg", ...settings } as const;
+		await runGeneration({ outputDir, dryRun: true, words: ["read", "data"], ...options });
+		const plan = JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8"));
+		plan.samples = plan.samples.filter(
+			({ file }: { file: string }) => file !== "audio/read--2.ogg",
+		);
+		await writeFile(path.join(outputDir, "plan.json"), JSON.stringify(plan));
+		await expect(
+			runGeneration({ outputDir, dryRun: true, resume: true, ...options, source: undefined }),
+		).rejects.toThrow(/missing audio\/read--2\.ogg/);
+	});
+	it("refuses to skip a plan made with other settings or requests", async () => {
+		const other = await directory();
+		await runGeneration({ outputDir: other, words: ["seat"], provider, wait: noWait, ...settings });
+		const outputDir = await directory();
+		await expect(
+			runGeneration({
+				outputDir,
+				dryRun: true,
+				words: ["seat", "seed"],
+				skipGenerated: [other],
+				ratePercent: -10,
+				...settings,
+			}),
+		).rejects.toThrow(/different voice, rate or format/);
+		const plan = JSON.parse(await readFile(path.join(other, "plan.json"), "utf8"));
+		plan.samples[0].input.text = "seat";
+		await writeFile(path.join(other, "plan.json"), JSON.stringify(plan));
+		await expect(
+			runGeneration({
+				outputDir,
+				dryRun: true,
+				words: ["seat", "seed"],
+				skipGenerated: [other],
+				...settings,
+			}),
+		).rejects.toThrow(/requested differently/);
+		expect(await readdir(outputDir)).toEqual([]);
 	});
 	it("rejects changed voices, damaged recordings, and overwrites before requesting audio", async () => {
 		const outputDir = await directory();

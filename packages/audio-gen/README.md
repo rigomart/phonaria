@@ -54,6 +54,21 @@ When a probe or listening sample shows a wrong pick, add the word to
 `curatedPronunciations`. A wrong split goes in the checked syllables in
 `src/word-inputs.ts`.
 
+The top-10k includes the top-1k words. To plan the top-10k without the clips the
+top-1k batch already has, point `--skip-generated` at that batch:
+
+```bash
+bun run --cwd packages/audio-gen generate --dry-run --source=top-10k \
+  --skip-generated=output/top-1k-jenny-slower-10-ogg --out=output/top-10k-jenny-slower-10-ogg
+```
+
+The new plan leaves out every sample, form files such as `read--2` included,
+that the other plan has as `generated`; its planned or failed samples stay in.
+It refuses a plan with a different voice, speed or format, a generated sample
+whose request differs, and a clip whose checksum no longer matches. `plan.json`
+records each skipped directory, relative to the new plan, and how many samples
+it covered under `skippedGenerated`.
+
 ### More than one form of a word
 
 Some words get more than one recording, listed in `src/word-forms.ts`:
@@ -183,6 +198,9 @@ are recorded in [issue #166](../../docs/research/issue-166-practice-pool.md). Op
 - `--limit=24`: limit the selection; the default catalog order is alphabetical, and
   curated tiers are in frequency order.
   The older `WORDS_LIMIT` environment variable also works; unset it for a full run.
+- `--skip-generated=path`: leave out samples another plan directory has already
+  generated with the same voice, speed and format. Repeat it for more directories.
+  New plans only, so omit it on resume.
 - `--out=path`: choose an output directory, relative to `packages/audio-gen`.
   The default is a fresh `output/azure-<timestamp>/` directory.
 - `--resume --out=path`: use an existing plan, skipping completed recordings.
@@ -195,10 +213,13 @@ are recorded in [issue #166](../../docs/research/issue-166-practice-pool.md). Op
   A format change requires a fresh output directory; renaming files does not convert them.
 
 Generation is sequential and defaults to a pause of at least 3.1 seconds between
-requests. This accommodates the free tier's 20 requests per minute. An HTTP 429,
-timeout, or other failure stops the run and preserves completed recordings;
-there are no automatic paid retries. Check Azure usage or wait for quota to
-recover, then resume. See [Azure Speech quotas](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-services-quotas-and-limits)
+requests. This accommodates the free tier's 20 requests per minute. A network
+error (the request is rejected or times out, or the audio download breaks off)
+is retried on the same word after 15 seconds, up to 3 attempts in all, with one
+console line per retry. Any HTTP error such as 429, 401 or 5xx, an unexpected
+audio type, empty audio, or a third network error stops the run and preserves
+completed recordings. HTTP errors are never retried. Check Azure usage or wait
+for quota to recover, then resume. See [Azure Speech quotas](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-services-quotas-and-limits)
 before increasing the pace for a paid resource.
 
 ## Outputs and review

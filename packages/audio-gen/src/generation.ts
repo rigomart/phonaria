@@ -5,12 +5,13 @@ import { setTimeout } from "node:timers/promises";
 import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
 import type { PronunciationChoice } from "./curated-words";
 import {
+	AzureNetworkError,
 	createAzureProvider,
 	getAzureAudioFormat,
 	getAzureRate,
 	getAzureVoice,
 } from "./providers/azure";
-import type { TtsInput, TtsProvider } from "./providers/types";
+import type { TtsInput, TtsOutput, TtsProvider } from "./providers/types";
 import { probeReasons } from "./top-10k-probes";
 import { formSlug, isFormSlug, wordForms } from "./word-forms";
 import { buildAzureWordInput, getAzureIpa, getSyllables, type SyllableSource } from "./word-inputs";
@@ -43,6 +44,8 @@ type Plan = {
 	source?: WordSource;
 	targetAccent: "en-us";
 	settings: { provider: "azure"; voiceId: string; outputFormat: string; ratePercent?: number };
+	/** Plans whose generated samples were left out, relative to this plan's directory. */
+	skippedGenerated?: { dir: string; samples: number }[];
 	samples: Sample[];
 };
 type GenerationOptions = {
@@ -52,6 +55,7 @@ type GenerationOptions = {
 	words?: string[];
 	source?: WordSource;
 	limit?: number;
+	skipGenerated?: string[];
 	voiceId?: string;
 	ratePercent?: number;
 	audioFormat?: string;
@@ -71,6 +75,48 @@ async function exists(file: string): Promise<boolean> {
 	}
 }
 const checksum = (audio: Buffer) => createHash("sha256").update(audio).digest("hex");
+
+const ATTEMPTS = 3;
+const RETRY_DELAY_MS = 15_000;
+
+/** The files each other plan already generated with this run's settings and requests. */
+async function generatedElsewhere(dirs: string[], settings: Plan["settings"], samples: Sample[]) {
+	const requests = new Map(samples.map(({ file, input }) => [file, JSON.stringify(input)]));
+	const generated = new Map<string, Set<string>>();
+	for (const dir of dirs) {
+		let plan: Plan;
+		try {
+			plan = JSON.parse(await readFile(path.join(dir, "plan.json"), "utf8")) as Plan;
+		} catch (error) {
+			if ((error as NodeJS.ErrnoException).code === "ENOENT")
+				throw new Error(`No plan to skip in ${dir}`);
+			throw error;
+		}
+		if (
+			plan.version !== 1 ||
+			plan.targetAccent !== "en-us" ||
+			JSON.stringify(plan.settings) !== JSON.stringify(settings)
+		) {
+			throw new Error(`Plan in ${dir} uses a different voice, rate or format than this run`);
+		}
+		if (!Array.isArray(plan.samples)) throw new Error(`Invalid saved samples in ${dir}`);
+		const files = new Set<string>();
+		for (const sample of plan.samples) {
+			const request = requests.get(sample.file);
+			if (sample.status !== "generated" || !request) continue;
+			if (JSON.stringify(sample.input) !== request) {
+				throw new Error(`${sample.file} in ${dir} was requested differently; don't skip that plan`);
+			}
+			const file = path.join(dir, sample.file);
+			if (!(await exists(file)) || checksum(await readFile(file)) !== sample.sha256) {
+				throw new Error(`Completed recording is missing or changed: ${file}`);
+			}
+			files.add(sample.file);
+		}
+		generated.set(dir, files);
+	}
+	return generated;
+}
 
 function selectSamples(
 	words?: string[],
@@ -171,7 +217,10 @@ function reviewSheet(samples: Sample[]): string {
 	return `${[columns.join("\t"), ...rows].join("\n")}\n`;
 }
 
-/** Generate locally; preserve originals and manual review. Never upload or retry automatically. */
+/**
+ * Generate locally; preserve originals and manual review. Never upload. Only a network
+ * error is retried, a few times on the same sample; any other failure stops the run.
+ */
 export async function runGeneration(options: GenerationOptions) {
 	const rpm = options.requestsPerMinute ?? 20;
 	if (!Number.isInteger(rpm) || rpm < 1 || rpm > 600) {
@@ -191,8 +240,8 @@ export async function runGeneration(options: GenerationOptions) {
 	let savedPlanText: string | undefined;
 	if (options.resume) {
 		if (options.source) throw new Error("Resume uses the saved source; omit source");
-		if (options.words || options.limit !== undefined)
-			throw new Error("Resume uses the saved word selection; omit words and limit");
+		if (options.words || options.limit !== undefined || options.skipGenerated?.length)
+			throw new Error("Resume uses the saved word selection; omit words, limit and skipped plans");
 		savedPlanText = await readFile(planPath, "utf8");
 		plan = JSON.parse(savedPlanText) as Plan;
 		if (
@@ -205,15 +254,18 @@ export async function runGeneration(options: GenerationOptions) {
 			);
 		}
 		if (!Array.isArray(plan.samples)) throw new Error("Invalid saved samples");
-		const expected = selectSamples(
-			[...new Set(plan.samples.map(({ word }) => word))],
-			undefined,
-			audioFormat.extension,
-			plan.source,
+		// By file: a plan that skipped generated samples can hold only some forms of a word.
+		const expected = new Map(
+			selectSamples(
+				[...new Set(plan.samples.map(({ word }) => word))],
+				undefined,
+				audioFormat.extension,
+				plan.source,
+			).map((sample) => [sample.file, sample]),
 		);
-		for (const [index, sample] of plan.samples.entries()) {
+		for (const sample of plan.samples) {
 			const { status, sha256, ...identity } = sample;
-			const { status: _status, ...expectedIdentity } = expected[index];
+			const { status: _status, ...expectedIdentity } = expected.get(sample.file) ?? {};
 			if (
 				JSON.stringify(identity) !== JSON.stringify(expectedIdentity) ||
 				!["planned", "generated", "failed"].includes(status)
@@ -228,16 +280,48 @@ export async function runGeneration(options: GenerationOptions) {
 					throw new Error(`Completed recording is missing or changed: ${sample.file}`);
 				}
 			}
+			expected.delete(sample.file);
+		}
+		// A form left out of the plan must have been generated by a skipped plan.
+		const missing = [...expected.values()];
+		if (missing.length) {
+			const skipDirs = (plan.skippedGenerated ?? []).map(({ dir }) =>
+				path.resolve(options.outputDir, dir),
+			);
+			const skipped = await generatedElsewhere(skipDirs, settings, missing);
+			const done = new Set([...skipped.values()].flatMap((files) => [...files]));
+			const absent = missing.find(({ file }) => !done.has(file));
+			if (absent) {
+				throw new Error(`Saved plan is missing ${absent.file}; use a new output directory`);
+			}
 		}
 	} else {
+		const selected = selectSamples(
+			options.words,
+			options.limit,
+			audioFormat.extension,
+			options.source,
+		);
+		const skipDirs = [...new Set(options.skipGenerated?.map((dir) => path.resolve(dir)))];
+		const skipped = await generatedElsewhere(skipDirs, settings, selected);
+		const done = new Set([...skipped.values()].flatMap((files) => [...files]));
 		plan = {
 			version: 1,
 			createdAt: new Date().toISOString(),
 			...(options.source && options.source !== "catalog" ? { source: options.source } : {}),
 			targetAccent: "en-us",
 			settings,
-			samples: selectSamples(options.words, options.limit, audioFormat.extension, options.source),
+			...(skipped.size
+				? {
+						skippedGenerated: [...skipped].map(([dir, files]) => ({
+							dir: path.relative(path.resolve(options.outputDir), dir),
+							samples: files.size,
+						})),
+					}
+				: {}),
+			samples: selected.filter(({ file }) => !done.has(file)),
 		};
+		if (!plan.samples.length) throw new Error("Every selected sample is already generated");
 		if (await exists(planPath))
 			throw new Error("Plan already exists; use --resume or a new output directory");
 	}
@@ -292,7 +376,19 @@ export async function runGeneration(options: GenerationOptions) {
 		for (const sample of pending) {
 			if (generated) await (options.wait ?? setTimeout)(Math.ceil(60_000 / rpm) + 100);
 			try {
-				const results = await provider.synthesize([sample.input]);
+				let results: TtsOutput[];
+				for (let attempt = 1; ; attempt++) {
+					try {
+						results = await provider.synthesize([sample.input]);
+						break;
+					} catch (error) {
+						if (!(error instanceof AzureNetworkError) || attempt === ATTEMPTS) throw error;
+						console.warn(
+							`${error.message}; retry ${attempt} of ${ATTEMPTS - 1} in ${RETRY_DELAY_MS / 1000} s`,
+						);
+						await (options.wait ?? setTimeout)(RETRY_DELAY_MS);
+					}
+				}
 				const result = results[0];
 				if (results.length !== 1 || result?.id !== sample.input.id || !result.audio.length) {
 					throw new Error(`Missing or mismatched audio for ${sample.input.id}`);
