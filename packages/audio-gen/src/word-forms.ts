@@ -223,7 +223,6 @@ export const wordForms: Readonly<Record<string, WordForms>> = {
 	anti: alsoSaid("AE1 N T AI2"),
 	aunt: alsoSaid("O1 N T"),
 	automobile: alsoSaid("O2 T AX0 M OU0 B I1 L"),
-	because: alsoSaid("B IX0 K AH1 Z"),
 	cannot: alsoSaid("K AX0 N A1 T"),
 	concrete: alsoSaid("K A1 N K R I0 T"),
 	data: alsoSaid("D AE1 T AX0"),
