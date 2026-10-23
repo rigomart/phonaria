@@ -2,7 +2,13 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { manifestFromPlan, renderManifestModule, voiceFolderName, writeManifest } from "./manifest";
+import {
+	manifestFile,
+	manifestFromPlan,
+	renderManifestJson,
+	voiceFolderName,
+	writeManifest,
+} from "./manifest";
 
 const sample = (word: string, status = "generated", extension = "ogg") => ({
 	word,
@@ -20,23 +26,24 @@ describe("word audio manifest", () => {
 	it("merges completed batches with existing recordings and refuses a different voice", () => {
 		const dir = mkdtempSync(path.join(tmpdir(), "phonaria-manifest-"));
 		try {
-			mkdirSync(path.join(dir, "src/languages/en"), { recursive: true });
+			const target = path.join(dir, manifestFile("en-us"));
+			mkdirSync(path.dirname(target), { recursive: true });
+			writeFileSync(target, JSON.stringify({ voice: "jenny", words: ["seed", "seat"] }));
 			writeFileSync(
 				path.join(dir, "plan.json"),
 				JSON.stringify(plan([sample("cause"), sample("seat")])),
 			);
-			const existing = { voice: "jenny", words: ["seed", "seat"] };
-			const target = writeManifest(dir, dir, existing);
-			const expected = renderManifestModule("en-us", {
-				voice: "jenny",
-				words: ["cause", "seat", "seed"],
-			});
+			expect(writeManifest(dir, dir)).toBe(target);
+			const expected = renderManifestJson({ voice: "jenny", words: ["cause", "seat", "seed"] });
 			expect(readFileSync(target, "utf8")).toBe(expected);
-			expect(existing.words).toEqual(["seed", "seat"]);
-			expect(() => writeManifest(dir, dir, { ...existing, voice: "aria" })).toThrow(/voice/i);
+			writeFileSync(
+				path.join(dir, "plan.json"),
+				JSON.stringify({ ...plan([sample("seat")]), settings: { voiceId: "en-US-AriaNeural" } }),
+			);
+			expect(() => writeManifest(dir, dir)).toThrow(/voice/i);
 			expect(readFileSync(target, "utf8")).toBe(expected);
 			writeFileSync(path.join(dir, "plan.json"), JSON.stringify(plan([sample("new", "planned")])));
-			expect(() => writeManifest(dir, dir, existing)).toThrow(/not generated/);
+			expect(() => writeManifest(dir, dir)).toThrow(/not generated/);
 			expect(readFileSync(target, "utf8")).toBe(expected);
 		} finally {
 			rmSync(dir, { recursive: true, force: true });
@@ -79,10 +86,11 @@ describe("word audio manifest", () => {
 		expect(() => manifestFromPlan(plan([sample("seat"), sample("seat")]))).toThrow(/twice/);
 	});
 
-	it("renders a module naming the bucket layout", () => {
-		const module = renderManifestModule("en-us", { voice: "jenny", words: ["seat"] });
-		expect(module).toContain("export const EnglishWordAudio");
-		expect(module).toContain('"seat",');
-		expect(() => renderManifestModule("es-419", { voice: "x", words: [] })).toThrow(/es-419/);
+	it("renders the manifest as JSON, one word per line", () => {
+		const json = renderManifestJson({ voice: "jenny", words: ["seat", "seed"] });
+		expect(JSON.parse(json)).toEqual({ voice: "jenny", words: ["seat", "seed"] });
+		expect(json).toContain('\t\t"seat",\n\t\t"seed"\n');
+		expect(manifestFile("en-us")).toBe("data/en/word-audio.json");
+		expect(() => manifestFile("es-419")).toThrow(/es-419/);
 	});
 });

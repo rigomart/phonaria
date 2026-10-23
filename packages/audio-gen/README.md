@@ -82,7 +82,7 @@ Some words get more than one recording, listed in `src/word-forms.ts`:
 The first form keeps the plain file name (`minute.ogg`), and each extra form adds
 its number (`minute--2.ogg`). A number is assigned once and never reused,
 because published keys must keep their sound. The manifest refuses labelled forms
-until it can list them (#322).
+until it can list them with their labels.
 
 `src/form-candidates.ts` finds the dictionary forms worth reviewing: the main
 stress moves, or a stressed vowel changes beyond a common US merger (cot–caught,
@@ -309,8 +309,9 @@ such as `jenny-2` needs explicit plan/manifest support before this command can u
 it. `--voice` cannot silently redirect a Jenny plan into another folder.
 
 The app only offers a play button for words listed in the committed manifest,
-`packages/phonetics-data/src/languages/en/word-audio.ts`, read through
-`getWordAudioPath()`. After uploading, regenerate it from the repo root:
+`packages/phonetics-data/data/en/word-audio.json`, read through
+`getWordAudioPath()`. The command below writes that file; don't edit it by hand.
+After uploading, regenerate it from the repo root:
 
 ```bash
 bun run --cwd packages/audio-gen manifest --out=output/azure-catalog-jenny-slower-10-ogg
