@@ -39,6 +39,7 @@ export {
 	type PhonemeSubstitution,
 	toBasePhonemeIds,
 } from "./en/minimal-pairs";
+export { isOFormOf, OFormExceptions, preferOForms, spellsOVowel } from "./en/o-forms";
 export { EnglishPhonemeSpellingPatterns } from "./en/patterns";
 export {
 	SpanishConsonantArticulations,

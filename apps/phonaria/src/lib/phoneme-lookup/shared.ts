@@ -1,4 +1,4 @@
-import { tokenizePronunciation } from "@phonaria/phonetics-data";
+import { preferOForms, tokenizePronunciation } from "@phonaria/phonetics-data";
 import {
 	type CuratedWordData,
 	EnglishCuratedTop1k,
@@ -21,10 +21,15 @@ export function cmuToSyllables(cmuVariant: string): G2PSyllable[] {
 	return syllabify(tokens);
 }
 
+/** A word's variants in display order: dictionary order, except that `preferOForms` puts /ɔ/ first. */
 export function lookupTier1(normalizedWord: string): string[] | null {
-	return EnglishCuratedTop1k.words[normalizedWord] ?? null;
+	return displayOrder(normalizedWord, EnglishCuratedTop1k.words[normalizedWord]);
 }
 
 export function lookupTier2(tier2Data: CuratedWordData, normalizedWord: string): string[] | null {
-	return tier2Data.words[normalizedWord] ?? null;
+	return displayOrder(normalizedWord, tier2Data.words[normalizedWord]);
+}
+
+function displayOrder(word: string, variants: readonly string[] | undefined): string[] | null {
+	return variants ? preferOForms(word, variants) : null;
 }

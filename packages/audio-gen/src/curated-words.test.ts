@@ -64,6 +64,31 @@ describe("pronunciation rule", () => {
 			"first stressed one-syllable form; not DH AX0 | DH I0",
 		);
 	});
+	it.each([
+		["caught", "K O1 T", "/ɔ/ form of the first stressed one-syllable form; not K A1 T"],
+		["bought", "B O1 T", "/ɔ/ form of the first stressed one-syllable form; not B A1 T"],
+		["boss", "B O1 S", "/ɔ/ form of the first stressed one-syllable form; not B A1 S"],
+		["august", "O1 G AX0 S T", "/ɔ/ form of the first dictionary form; not A1 G AX0 S T"],
+		["audience", "O1 D I0 AX0 N S", "/ɔ/ form of the first dictionary form; not A1 D I0 AX0 N S"],
+	])("prefers the /ɔ/ form of %s to its /ɑ/ form", (word, variant, reason) => {
+		expect(pickPronunciation(word, variantsOf(word))).toEqual({
+			variant,
+			choice: { source: "rule", reason },
+		});
+	});
+	it.each(["lot", "doctor", "on", "want", "watch", "beyond", "gospel"])(
+		"keeps the /ɑ/ form of %s, a LOT word or an exception",
+		(word) => {
+			expect(pickPronunciation(word, variantsOf(word)).variant).toBe(variantsOf(word)[0]);
+			expect(pickPronunciation(word, variantsOf(word)).choice.reason).not.toMatch(/ɔ/);
+		},
+	);
+	it("keeps the rule for forms that differ in something else", () => {
+		expect(pickPronunciation("either", variantsOf("either")).variant).toBe(variantsOf("either")[0]);
+		expect(pickPronunciation("because", variantsOf("because")).choice.reason).toMatch(
+			/^first dictionary form;/,
+		);
+	});
 	it("uses a reviewed choice before the rule", () => {
 		expect(pickPronunciation("sometimes", variantsOf("sometimes"))).toEqual({
 			variant: curatedPronunciations.sometimes.variant,
