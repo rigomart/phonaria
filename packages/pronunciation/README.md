@@ -211,7 +211,7 @@ bun run --cwd packages/pronunciation harness run --catalog \
 
 `run` takes any mix of sources (paths are relative to the package):
 
-- `--catalog`: the Jenny recordings, fetched once from `https://assets.rigos.dev` through `getWordAudioPath()` into `output/audio/jenny`. The default when no source is given.
+- `--catalog`: the Jenny recordings, fetched once from `https://assets.rigos.dev` through `getWordAudioPath(accent, word, { voice: "jenny" })` into `output/audio/jenny`. Always Jenny, even for words the app plays in another voice (the /ɔ/ words in Guy), since the baseline and judge thresholds were measured on her clips. The default when no source is given.
 - `--audio-dir=<dir>`: the Jenny recordings from a local folder of `<word>.ogg` instead.
 - `--tts-dir=[name=]<dir>`, repeatable: a folder of `<word>.<ext>`, or an `audio-gen` output folder with them under `audio/`. The source is named `tts:<name>`, or after the nearest folder that isn't `audio`. Two sources with the same name stop the run.
 - `--clips=<manifest.json>`, repeatable: recordings labelled one by one, for cases a folder of words can't express. See `loadClips` in `sources.ts` for the format. Each clip names its source, target, partner, what was said and its kind: `correct`, `swap`, `unrelated`, `added-sounds`, `phrase`, `nonword` or `silence`.

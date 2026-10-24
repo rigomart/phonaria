@@ -223,16 +223,25 @@ export function getPhonemeFrequencyRegistryForLanguage<TLanguage extends TargetA
  * Bucket-relative path (no leading slash) of a word's recording, e.g.
  * "audio/en-us/words/jenny/seat.ogg", or null when the word has none.
  * Words the manifest lists under `voices` play from that voice's folder.
- * Matching ignores case and surrounding whitespace.
+ * Pass `voice` to get the word's recording in that voice's folder instead, never
+ * following `voices`; null unless that voice recorded the word. The default voice
+ * recorded every word. Matching ignores case and surrounding whitespace.
  */
-export function getWordAudioPath(targetAccent: TargetAccent, word: string): string | null {
+export function getWordAudioPath(
+	targetAccent: TargetAccent,
+	word: string,
+	options: { readonly voice?: string } = {},
+): string | null {
 	const manifest = LanguageWordAudioDataRegistry[targetAccent];
 	if (!manifest) return null;
 	let voices = wordAudioVoices.get(targetAccent);
 	if (!voices) wordAudioVoices.set(targetAccent, (voices = voicesByWord(manifest)));
 	const normalized = word.toLowerCase().trim();
-	const voice = voices.get(normalized);
-	return voice ? `audio/${targetAccent}/words/${voice}/${normalized}.ogg` : null;
+	if (!voices.has(normalized)) return null;
+	const voice = options.voice ?? voices.get(normalized);
+	const recorded =
+		voice === manifest.voice || (voice && manifest.voices?.[voice]?.includes(normalized));
+	return recorded ? `audio/${targetAccent}/words/${voice}/${normalized}.ogg` : null;
 }
 
 export type { CmuArpaToken, CmuStressLevel };

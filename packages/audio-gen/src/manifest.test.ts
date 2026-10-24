@@ -61,21 +61,24 @@ describe("word audio manifest", () => {
 	});
 
 	it("records a batch in another voice as that voice's words", () => {
-		const existing = { voice: "jenny", words: ["sat", "saw", "seat"] };
+		const existing = { voice: "jenny", words: ["cause", "sat", "saw", "seat", "talk"] };
 		const guy = mergeManifest(existing, { voice: "guy", words: ["cause", "saw"] });
-		expect(guy).toEqual({
-			voice: "jenny",
-			words: ["cause", "sat", "saw", "seat"],
-			voices: { guy: ["cause", "saw"] },
-		});
+		expect(guy).toEqual({ ...existing, voices: { guy: ["cause", "saw"] } });
 		expect(mergeManifest(guy, { voice: "guy", words: ["talk"] }).voices).toEqual({
 			guy: ["cause", "saw", "talk"],
 		});
 		expect(mergeManifest(guy, { voice: "guy", words: ["saw"] })).toEqual(guy);
 		expect(mergeManifest(guy, { voice: "jenny", words: ["saw", "seed"] })).toEqual({
 			...guy,
-			words: ["cause", "sat", "saw", "seat", "seed"],
+			words: ["cause", "sat", "saw", "seat", "seed", "talk"],
 		});
+	});
+
+	it("refuses a word the default voice hasn't recorded", () => {
+		const existing = { voice: "jenny", words: ["saw"] };
+		expect(() => mergeManifest(existing, { voice: "guy", words: ["saw", "walk"] })).toThrow(
+			/jenny first.*walk/,
+		);
 	});
 
 	it("refuses a word another voice already plays", () => {

@@ -80,8 +80,8 @@ const union = (a: readonly string[], b: readonly string[]) => [...new Set([...a,
 
 /**
  * Add a batch to the manifest. A batch in the default voice adds its words; one in
- * another voice also moves its words to that voice. Refuses a word already moved to
- * a third voice.
+ * another voice moves words the default voice already recorded to that voice, so
+ * every word keeps a default recording. Refuses a word already moved to a third voice.
  */
 export function mergeManifest(
 	existing: WordAudioManifest,
@@ -89,6 +89,11 @@ export function mergeManifest(
 ): WordAudioManifest {
 	const words = union(existing.words, batch.words);
 	if (batch.voice === existing.voice) return { ...existing, words };
+	const unrecorded = batch.words.filter((word) => !existing.words.includes(word));
+	if (unrecorded.length)
+		throw new Error(
+			`Record these in ${existing.voice} first; another voice only moves recorded words: ${unrecorded.slice(0, 5).join(", ")}`,
+		);
 	const voices = existing.voices ?? {};
 	const taken = Object.entries(voices).flatMap(([voice, list]) =>
 		voice === batch.voice

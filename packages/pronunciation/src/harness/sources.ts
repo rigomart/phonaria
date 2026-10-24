@@ -33,6 +33,12 @@ export type SourceLoad = {
 	readonly relabelled: { readonly file: string; readonly as: string }[];
 };
 
+/**
+ * The catalog voice. The baseline and judge thresholds were measured on its clips, so the
+ * catalog source always reads this folder, even for words the app plays in another voice.
+ */
+const CATALOG_VOICE = "jenny";
+
 /** Catalog recordings from a local folder of `<word>.ogg`, or fetched from the public bucket. */
 export async function loadCatalogSource({
 	words,
@@ -48,7 +54,7 @@ export async function loadCatalogSource({
 	await mkdir(downloadDir, { recursive: true });
 	const missing: string[] = [];
 	const found = await mapWithConcurrency(words, 8, async (word) => {
-		const key = getWordAudioPath("en-us", word);
+		const key = getWordAudioPath("en-us", word, { voice: CATALOG_VOICE });
 		if (!key) {
 			missing.push(word);
 			return null;
@@ -73,7 +79,7 @@ export async function loadCatalogSource({
 	});
 	const recordings = words.flatMap((word, index): Recording[] => {
 		const file = found[index];
-		return file ? [{ sourceId: "tts:jenny", sourceKind: "tts", word, file }] : [];
+		return file ? [{ sourceId: `tts:${CATALOG_VOICE}`, sourceKind: "tts", word, file }] : [];
 	});
 	return { recordings, missing: missing.sort(), neither: [], relabelled: [] };
 }

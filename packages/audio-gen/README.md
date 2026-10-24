@@ -329,7 +329,9 @@ and allow additional recorded spelling examples. Add new words only after upload
 The manifest's `voice` is the default (Jenny). A batch in another voice moves its
 words to that voice: the manifest lists them under `voices`, and `getWordAudioPath()`
 returns that folder for them (`audio/en-us/words/guy/saw.ogg`). Jenny plays every
-other word. The command refuses a word another non-default voice already plays.
+other word. The command refuses a word another non-default voice already plays,
+and a word Jenny hasn't recorded, so every word keeps a Jenny clip; the
+pronunciation harness scores those through `getWordAudioPath(accent, word, { voice: "jenny" })`.
 A later batch in the default voice keeps a moved word where it is; no command
 moves a word back yet.
 

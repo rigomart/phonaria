@@ -16,4 +16,18 @@ describe("getWordAudioPath with a second voice", () => {
 		expect(getWordAudioPath("en-us", "sod")).toBe("audio/en-us/words/jenny/sod.ogg");
 		expect(getWordAudioPath("en-us", "notaword")).toBeNull();
 	});
+
+	it("returns a named voice's recording without following the move", () => {
+		expect(getWordAudioPath("en-us", "saw", { voice: "jenny" })).toBe(
+			"audio/en-us/words/jenny/saw.ogg",
+		);
+		expect(getWordAudioPath("en-us", "seat", { voice: "jenny" })).toBe(
+			"audio/en-us/words/jenny/seat.ogg",
+		);
+		expect(getWordAudioPath("en-us", "saw", { voice: "guy" })).toBe(
+			"audio/en-us/words/guy/saw.ogg",
+		);
+		expect(getWordAudioPath("en-us", "seat", { voice: "guy" })).toBeNull();
+		expect(getWordAudioPath("en-us", "notaword", { voice: "jenny" })).toBeNull();
+	});
 });

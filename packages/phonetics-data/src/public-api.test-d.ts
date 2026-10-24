@@ -30,7 +30,7 @@ expectTypeOf(getContrastRegistryForLanguage("es-419")).toEqualTypeOf<null>();
 expectTypeOf(getSpellingPatternRegistryForLanguage("es-419")).toEqualTypeOf<null>();
 expectTypeOf(getContrastRegistryForLanguage("en-us")).not.toBeNullable();
 expectTypeOf(getWordAudioPath).toEqualTypeOf<
-	(targetAccent: TargetAccent, word: string) => string | null
+	(targetAccent: TargetAccent, word: string, options?: { readonly voice?: string }) => string | null
 >();
 
 // These must stay compiler errors: a broadened public API would silently let
