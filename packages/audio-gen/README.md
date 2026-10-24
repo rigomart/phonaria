@@ -325,32 +325,11 @@ bun run --cwd packages/audio-gen manifest --out=output/azure-catalog-jenny-slowe
 ```
 
 The command merges the completed batch into the existing manifest, retaining
-every previously recorded word. It refuses
+every previously recorded word and refusing to mix voice folders. It refuses
 to run unless every sample in `plan.json` is generated and an Ogg file, and
 takes the voice folder from the plan's voice (`en-US-JennyNeural` becomes
 `jenny`). The phonetics-data tests require full minimal-pair catalog coverage
 and allow additional recorded spelling examples. Add new words only after upload.
-
-### Words in a second voice
-
-The manifest's `voice` is the default (Jenny). A batch in another voice moves its
-words to that voice: the manifest lists them under `voices`, and `getWordAudioPath()`
-returns that folder for them (`audio/en-us/words/guy/saw.ogg`). Jenny plays every
-other word. The command refuses a word another non-default voice already plays,
-and a word Jenny hasn't recorded, so every word keeps a Jenny clip; the
-pronunciation harness scores those through `getWordAudioPath(accent, word, { voice: "jenny" })`.
-A later batch in the default voice keeps a moved word where it is; no command
-moves a word back yet.
-
-Jenny says /ɔ/ like /ɑ/ (the cot–caught merger), so every published word with /ɔ/
-outside /ɔɪ/ and /ɔɹ/ gets a Guy recording (`en-US-GuyNeural`, otherwise the
-catalog settings), one batch per source. Upload each batch with `--voice=guy`
-before its manifest run:
-
-```bash
-AZURE_SPEECH_VOICE=en-US-GuyNeural bun run --cwd packages/audio-gen generate --dry-run \
-  --source=spelling --words=cause,coffee,dogs,saw,talk --out=output/guy-o-words-spelling
-```
 
 ## Voice and speed probes
 

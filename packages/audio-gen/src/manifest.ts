@@ -1,6 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import type { WordAudioManifest } from "@phonaria/phonetics-data";
 
 type PlanSample = { word: string; form?: unknown; file: string; status: string; sha256?: string };
 type Plan = {
@@ -69,51 +68,22 @@ export function manifestFile(targetAccent: string): string {
 	return file;
 }
 
-export function renderManifestJson({ voice, words, voices = {} }: WordAudioManifest): string {
-	const moved = Object.keys(voices).length
-		? { voices: Object.fromEntries(Object.entries(voices).sort(([a], [b]) => a.localeCompare(b))) }
-		: {};
-	return `${JSON.stringify({ voice, words, ...moved }, null, "\t")}\n`;
+export function renderManifestJson(manifest: WordAudioManifestSource): string {
+	return `${JSON.stringify({ voice: manifest.voice, words: manifest.words }, null, "\t")}\n`;
 }
 
-const union = (a: readonly string[], b: readonly string[]) => [...new Set([...a, ...b])].sort();
-
-/**
- * Add a batch to the manifest. A batch in the default voice adds its words; one in
- * another voice moves words the default voice already recorded to that voice, so
- * every word keeps a default recording. Refuses a word already moved to a third voice.
- */
-export function mergeManifest(
-	existing: WordAudioManifest,
-	batch: WordAudioManifestSource,
-): WordAudioManifest {
-	const words = union(existing.words, batch.words);
-	if (batch.voice === existing.voice) return { ...existing, words };
-	const unrecorded = batch.words.filter((word) => !existing.words.includes(word));
-	if (unrecorded.length)
-		throw new Error(
-			`Record these in ${existing.voice} first; another voice only moves recorded words: ${unrecorded.slice(0, 5).join(", ")}`,
-		);
-	const voices = existing.voices ?? {};
-	const taken = Object.entries(voices).flatMap(([voice, list]) =>
-		voice === batch.voice
-			? []
-			: list.filter((word) => batch.words.includes(word)).map((word) => `${word} (${voice})`),
-	);
-	if (taken.length)
-		throw new Error(`Words already play from another voice: ${taken.slice(0, 5).join(", ")}`);
-	return {
-		...existing,
-		words,
-		voices: { ...voices, [batch.voice]: union(voices[batch.voice] ?? [], batch.words) },
-	};
-}
-
-/** Merge a completed batch into the accent's manifest JSON. */
+/** Merge a completed batch into the accent's manifest JSON; refuse a different voice. */
 export function writeManifest(outputDir: string, phoneticsDataDir: string): string {
 	const plan = JSON.parse(readFileSync(path.join(outputDir, "plan.json"), "utf8")) as Plan;
+	const manifest = manifestFromPlan(plan);
 	const target = path.join(phoneticsDataDir, manifestFile(plan.targetAccent));
-	const existing = JSON.parse(readFileSync(target, "utf8")) as WordAudioManifest;
-	writeFileSync(target, renderManifestJson(mergeManifest(existing, manifestFromPlan(plan))));
+	const existing = JSON.parse(readFileSync(target, "utf8")) as WordAudioManifestSource;
+	if (existing.voice !== manifest.voice)
+		throw new Error(`Cannot merge voice ${manifest.voice} into ${existing.voice}`);
+	const merged = {
+		voice: existing.voice,
+		words: [...new Set([...existing.words, ...manifest.words])].sort(),
+	};
+	writeFileSync(target, renderManifestJson(merged));
 	return target;
 }
