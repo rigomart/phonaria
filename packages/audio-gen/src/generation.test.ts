@@ -3,9 +3,21 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import * as excluded from "./excluded-words";
 import { runGeneration } from "./generation";
 import { AzureNetworkError, createAzureProvider } from "./providers/azure";
 import type { TtsProvider } from "./providers/types";
+
+// Lets a test plan words before they were excluded, as the saved top-10k plans did.
+const exclusions = vi.hoisted(() => ({ on: true }));
+vi.mock("./excluded-words", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("./excluded-words")>();
+	return {
+		...actual,
+		getExcludedWordReason: (word: string) =>
+			exclusions.on ? actual.getExcludedWordReason(word) : undefined,
+	};
+});
 
 const directories: string[] = [];
 async function directory() {
@@ -21,6 +33,7 @@ const provider: TtsProvider = {
 const settings = { voiceId: "en-US-JennyNeural", region: "eastus" };
 const noWait = async () => {};
 afterEach(async () => {
+	exclusions.on = true;
 	vi.unstubAllEnvs();
 	vi.restoreAllMocks();
 	await Promise.all(directories.splice(0).map((dir) => rm(dir, { recursive: true, force: true })));
@@ -189,6 +202,38 @@ describe("Azure catalog generation", () => {
 				...settings,
 			}),
 		).rejects.toThrow(/top-10k/);
+	});
+	it.each(["top-1k", "top-10k"] as const)(
+		"plans no excluded word in the %s, and keeps short real words",
+		async (source) => {
+			const outputDir = await directory();
+			await runGeneration({ outputDir, dryRun: true, source, ...settings });
+			const plan = JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8"));
+			const words = new Set(plan.samples.map(({ word }: { word: string }) => word));
+			const listed = Object.values(excluded.excludedWords).flatMap((group) => Object.keys(group));
+			expect(listed.filter((word) => words.has(word))).toEqual([]);
+			expect(
+				["a", "i", "ok", "us", "it", "do", "so", "etc"].filter((word) => !words.has(word)),
+			).toEqual([]);
+		},
+	);
+	it("resumes a saved plan with words excluded since, but won't plan them anew", async () => {
+		const outputDir = await directory();
+		const options = { source: "top-10k", ...settings } as const;
+		exclusions.on = false;
+		await runGeneration({ outputDir, words: ["usa", "the"], provider, wait: noWait, ...options });
+		exclusions.on = true;
+		const saved = await readFile(path.join(outputDir, "plan.json"), "utf8");
+		await runGeneration({ outputDir, dryRun: true, resume: true, ...settings });
+		expect(await readFile(path.join(outputDir, "plan.json"), "utf8")).toBe(saved);
+		await expect(
+			runGeneration({ outputDir: await directory(), dryRun: true, words: ["usa"], ...options }),
+		).rejects.toThrow("Word is not in the top-10k source: usa");
+		const next = await directory();
+		await runGeneration({ outputDir: next, dryRun: true, skipGenerated: [outputDir], ...options });
+		const plan = JSON.parse(await readFile(path.join(next, "plan.json"), "utf8"));
+		expect(plan.skippedGenerated).toEqual([{ dir: path.relative(next, outputDir), samples: 1 }]);
+		expect(plan.samples.map(({ word }: { word: string }) => word)).not.toContain("usa");
 	});
 	it("keeps hand-checked sources free of rule provenance", async () => {
 		const outputDir = await directory();

@@ -5,6 +5,7 @@ import {
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop1k } from "@phonaria/phonetics-data/data/en/curated-1k";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
+import { type ExcludedWordReason, getExcludedWordReason } from "./excluded-words";
 import { curatedPronunciations } from "./reviewed-pronunciations";
 import { isPlainWord, wordForms } from "./word-forms";
 
@@ -15,13 +16,13 @@ export type PronunciationChoice = {
 	reason: string;
 };
 
-export type ExclusionReason = "not a plain word" | "abbreviation or letter";
+export type ExclusionReason = "not a plain word" | "abbreviation or letter" | ExcludedWordReason;
 
 export function getExclusionReason(word: string): ExclusionReason | undefined {
 	if (!isPlainWord(word)) return "not a plain word";
 	if (!/[aeiouy]/.test(word) || (word.length === 1 && word !== "a" && word !== "i"))
 		return "abbreviation or letter";
-	return undefined;
+	return getExcludedWordReason(word);
 }
 
 const vowelCount = (variant: string) => variant.match(/[012]/g)?.length ?? 0;
@@ -65,10 +66,16 @@ export function pickPronunciation(
 	};
 }
 
-/** Curated words of a tier that have no recording yet and can be recorded, in frequency order. */
+/**
+ * Curated words of a tier that have no recording yet and can be recorded, in frequency order.
+ * `saved` words, already in a saved plan, stay in even if now excluded, so that plan resumes.
+ */
 export function collectCuratedWords(
 	tier: CuratedTier,
-	recorded: ReadonlySet<string> = new Set(LanguageWordAudioDataRegistry["en-us"].words),
+	{
+		recorded = new Set(LanguageWordAudioDataRegistry["en-us"].words),
+		saved = new Set(),
+	}: { recorded?: ReadonlySet<string>; saved?: ReadonlySet<string> } = {},
 ) {
 	const dictionary = tier === "top-1k" ? EnglishCuratedTop1k : EnglishCuratedTop10k;
 	const words: { word: string; variants: readonly string[] }[] = [];
@@ -76,7 +83,7 @@ export function collectCuratedWords(
 	for (const [word, variants] of Object.entries(dictionary.words)) {
 		if (recorded.has(word)) continue;
 		const reason = getExclusionReason(word);
-		if (reason) excluded.push({ word, reason });
+		if (reason && !saved.has(word)) excluded.push({ word, reason });
 		else words.push({ word, variants });
 	}
 	return { words, excluded };
