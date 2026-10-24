@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { REVIEW_SHEET_FILE, readReviewSheet, type SheetRow } from "./review-sheet";
 
 type PageSample = {
 	word: string;
@@ -100,13 +101,38 @@ save();
 `;
 }
 
+/**
+ * The clips to list: the batch's sheet, in its order and with its reasons, when it has one;
+ * otherwise every clip in the plan.
+ */
+export function pageSamples(
+	samples: readonly PageSample[],
+	sheet: readonly SheetRow[] | undefined,
+): PageSample[] {
+	if (!sheet) return [...samples];
+	const byFile = new Map(samples.map((sample) => [sample.file, sample]));
+	return sheet.map(({ file, reason }) => {
+		const sample = byFile.get(file);
+		if (!sample) throw new Error(`${REVIEW_SHEET_FILE} lists ${file}, which isn't in the plan`);
+		return { ...sample, pickedFor: [reason] };
+	});
+}
+
 /** Writes `listen.html` beside an output directory's plan and review sheet. */
-export async function writeListeningPage(dir: string): Promise<string> {
+export async function writeListeningPage(
+	dir: string,
+): Promise<{ file: string; clips: number; fromSheet: boolean }> {
 	const plan = JSON.parse(await readFile(path.join(dir, "plan.json"), "utf8")) as {
 		samples: PageSample[];
 	};
+	const sheet = await readReviewSheet(dir);
+	const samples = pageSamples(plan.samples, sheet);
 	const review = await readFile(path.join(dir, "review.tsv"), "utf8");
 	const file = path.join(dir, "listen.html");
-	await writeFile(file, listeningPage(path.basename(dir), plan.samples, review));
-	return file;
+	await writeFile(file, listeningPage(path.basename(dir), samples, review));
+	return {
+		file,
+		clips: samples.filter(({ status }) => status === "generated").length,
+		fromSheet: Boolean(sheet),
+	};
 }

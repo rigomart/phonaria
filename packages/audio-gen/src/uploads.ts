@@ -2,18 +2,29 @@ import { spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { parseMarks } from "./check-clips";
+import { compareWithCurrentCode, type Plan, type PlanChange } from "./generation";
 import { voiceFolderName } from "./manifest";
-import { getAzureAudioFormat } from "./providers/azure";
+import { findAzureAudioFormat } from "./providers/azure";
+import {
+	assertSheetIsCurrent,
+	REVIEW_SHEET_FILE,
+	readChecks,
+	readReviewSheet,
+} from "./review-sheet";
 import { formSlug, isFormSlug } from "./word-forms";
 
 export type UploadOptions = {
-	outputDir: string;
+	/** Batches to publish together: a batch and the retake batches that replace its clips. */
+	outputDirs: string[];
 	accent: string;
 	voice: string;
 	bucket?: string;
 	concurrency?: number;
 	dryRun?: boolean;
 	overwrite?: boolean;
+	/** Upload the rest when some clips are left out because the manifest already lists their words. */
+	skipRecorded?: boolean;
 };
 type UploadClip = {
 	key: string;
@@ -21,6 +32,13 @@ type UploadClip = {
 	size: number;
 	sha256: string;
 	contentType: string;
+};
+/** A generated clip the guard keeps out of the bucket, and why. */
+export type LeftOutClip = {
+	key: string;
+	file: string;
+	kind: "marked no" | PlanChange["kind"];
+	reason: string;
 };
 type UploadEntry = UploadClip & {
 	uploadedAt: string | null;
@@ -40,7 +58,10 @@ function object(value: unknown): Record<string, unknown> {
 }
 
 function validateOptions(options: UploadOptions) {
-	if (!options.outputDir.trim()) throw new Error("--out needs a directory");
+	if (!options.outputDirs.length || options.outputDirs.some((dir) => !dir.trim()))
+		throw new Error("--out needs a directory");
+	if (new Set(options.outputDirs).size !== options.outputDirs.length)
+		throw new Error("--out lists a directory twice");
 	if (!/^[a-z]{2}-[a-z0-9]+$/.test(options.accent)) throw new Error("Invalid --accent");
 	if (!/^[a-z]+$/.test(options.voice)) throw new Error("--voice must be a lowercase voice name");
 	if (!/^[a-z0-9][a-z0-9-]*$/.test(options.bucket ?? "rigos-assets"))
@@ -52,30 +73,38 @@ function validateOptions(options: UploadOptions) {
 
 export function parseUploadArguments(args: string[]): UploadOptions {
 	const values: Record<string, string> = {};
+	const outputDirs: string[] = [];
 	let dryRun = false;
 	let overwrite = false;
+	let skipRecorded = false;
 	for (const arg of args) {
 		if (arg === "--dry-run") dryRun = true;
 		else if (arg === "--overwrite") overwrite = true;
+		else if (arg === "--skip-recorded") skipRecorded = true;
+		else if (arg.startsWith("--out=") && arg.length > 6)
+			outputDirs.push(path.resolve(arg.slice(6)));
 		else {
-			const match = /^--(out|accent|voice|bucket|concurrency)=(.+)$/.exec(arg);
+			const match = /^--(accent|voice|bucket|concurrency)=(.+)$/.exec(arg);
 			if (!match || values[match[1]] !== undefined)
 				throw new Error(`Unknown, empty, or repeated argument: ${arg}`);
 			values[match[1]] = match[2];
 		}
 	}
-	if (!values.out || !values.accent || !values.voice)
-		throw new Error("Usage: upload --out=path --accent=en-us --voice=jenny [--dry-run]");
+	if (!outputDirs.length || !values.accent || !values.voice)
+		throw new Error(
+			"Usage: upload --out=path [--out=retakes]... --accent=en-us --voice=jenny [--dry-run]",
+		);
 	if (values.concurrency && !/^\d+$/.test(values.concurrency))
 		throw new Error("--concurrency must be an integer from 1 to 32");
 	const options = {
-		outputDir: path.resolve(values.out),
+		outputDirs,
 		accent: values.accent,
 		voice: values.voice,
 		bucket: values.bucket ?? "rigos-assets",
 		concurrency: values.concurrency === undefined ? 8 : Number(values.concurrency),
 		dryRun,
 		overwrite,
+		skipRecorded,
 	};
 	validateOptions(options);
 	return options;
@@ -83,25 +112,32 @@ export function parseUploadArguments(args: string[]): UploadOptions {
 
 /** `slug` is the word, or word--n for an extra form of it. */
 export function buildUploadKey(accent: string, voice: string, slug: string, extension: string) {
-	validateOptions({ outputDir: ".", accent, voice });
+	validateOptions({ outputDirs: ["."], accent, voice });
 	if (!isFormSlug(slug) || !["ogg", "mp3"].includes(extension))
 		throw new Error("Invalid recording word or extension");
 	return `audio/${accent}/words/${voice}/${slug}.${extension}`;
 }
 
-export async function prepareUploads(options: UploadOptions): Promise<UploadClip[]> {
-	validateOptions(options);
-	const plan = object(
-		JSON.parse(await readFile(path.join(options.outputDir, "plan.json"), "utf8")),
-	);
+const listed = (files: readonly string[]) =>
+	`${files.slice(0, 5).join(", ")}${files.length > 5 ? `, and ${files.length - 5} more` : ""}`;
+
+/**
+ * The clips of one checked, marked batch that may go up. Refuses the batch unless every
+ * sample is generated with a matching checksum, `checks.json` covers it, and every clip on
+ * its sheet is marked yes or no in `review.tsv`. Leaves out each clip marked no and each
+ * sample the current code would no longer plan the same way.
+ */
+export async function prepareBatch(
+	outputDir: string,
+	options: Pick<UploadOptions, "accent" | "voice">,
+): Promise<{ clips: UploadClip[]; leftOut: LeftOutClip[] }> {
+	const plan = object(JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8")));
 	const settings = object(plan.settings);
 	if (plan.version !== 1 || plan.targetAccent !== options.accent)
 		throw new Error("Plan version or accent does not match upload options");
 	if (typeof settings.voiceId !== "string" || voiceFolderName(settings.voiceId) !== options.voice)
 		throw new Error("--voice must match the plan's manifest voice folder");
-	const format = [getAzureAudioFormat("ogg"), getAzureAudioFormat("mp3")].find(
-		({ outputFormat }) => outputFormat === settings.outputFormat,
-	);
+	const format = findAzureAudioFormat(settings.outputFormat);
 	if (!format) throw new Error("Unsupported plan audio format");
 	if (!Array.isArray(plan.samples) || !plan.samples.length)
 		throw new Error("Plan needs at least one generated sample");
@@ -125,7 +161,7 @@ export async function prepareUploads(options: UploadOptions): Promise<UploadClip
 		slugs.add(slug);
 		if (sample.file !== `audio/${slug}.${format.extension}`)
 			throw new Error(`Unexpected recording path: ${sample.file}`);
-		const file = path.resolve(options.outputDir, sample.file);
+		const file = path.resolve(outputDir, sample.file);
 		const audio = await readFile(file);
 		if (!audio.length || createHash("sha256").update(audio).digest("hex") !== sample.sha256)
 			throw new Error(`Recording is empty or checksum does not match: ${sample.file}`);
@@ -137,7 +173,72 @@ export async function prepareUploads(options: UploadOptions): Promise<UploadClip
 			contentType: format.contentType,
 		});
 	}
-	return clips;
+
+	const planFiles = (plan.samples as { file: string }[]).map(({ file }) => file);
+	const checks = await readChecks(outputDir);
+	const checked = new Set(checks.map(({ file }) => file));
+	const unchecked = planFiles.filter((file) => !checked.has(file));
+	if (unchecked.length)
+		throw new Error(`${outputDir}: checks.json has no results for ${listed(unchecked)}; run check`);
+	const sheet = await readReviewSheet(outputDir);
+	if (!sheet)
+		throw new Error(
+			`${outputDir} has no ${REVIEW_SHEET_FILE}; run sample (or sample --adopt) and mark its clips`,
+		);
+	await assertSheetIsCurrent(outputDir, plan.samples as unknown[], checks);
+	const marks = parseMarks(await readFile(path.join(outputDir, "review.tsv"), "utf8"));
+	const offPlan = sheet.filter(({ file }) => !planFiles.includes(file)).map(({ file }) => file);
+	if (offPlan.length)
+		throw new Error(
+			`${outputDir}: ${REVIEW_SHEET_FILE} lists clips not in the plan: ${listed(offPlan)}`,
+		);
+	const unmarked = sheet.filter(({ file }) => !marks.has(file)).map(({ file }) => file);
+	if (unmarked.length)
+		throw new Error(
+			`${outputDir}: ${unmarked.length} of ${sheet.length} clips on ${REVIEW_SHEET_FILE} aren't marked yes or no in review.tsv: ${listed(unmarked)}`,
+		);
+
+	const { changed } = compareWithCurrentCode(plan as Plan, format.extension);
+	const kept: UploadClip[] = [];
+	const leftOut: LeftOutClip[] = [];
+	planFiles.forEach((file, index) => {
+		const clip = clips[index];
+		const mark = marks.get(file);
+		const change = changed.get(file);
+		if (mark && !mark.accepted)
+			leftOut.push({
+				key: clip.key,
+				file: clip.file,
+				kind: "marked no",
+				reason: mark.notes || "marked no",
+			});
+		else if (change) leftOut.push({ key: clip.key, file: clip.file, ...change });
+		else kept.push(clip);
+	});
+	return { clips: kept, leftOut };
+}
+
+/**
+ * The clips of every batch to publish in one run. Two batches may not publish the same key:
+ * mark one of the two clips no.
+ */
+export async function prepareUploads(
+	options: UploadOptions,
+): Promise<{ clips: UploadClip[]; leftOut: LeftOutClip[] }> {
+	validateOptions(options);
+	const batches = [];
+	for (const dir of options.outputDirs) batches.push(await prepareBatch(dir, options));
+	const clips = batches.flatMap((batch) => batch.clips);
+	const byKey = new Map<string, string[]>();
+	for (const { key, file } of clips) byKey.set(key, [...(byKey.get(key) ?? []), file]);
+	const twice = [...byKey].filter(([, files]) => files.length > 1);
+	if (twice.length)
+		throw new Error(
+			twice
+				.map(([key, files]) => `${key} comes from ${files.join(" and ")}; mark all but one no`)
+				.join("\n"),
+		);
+	return { clips, leftOut: batches.flatMap((batch) => batch.leftOut) };
 }
 
 export function uploadArguments(bucket: string, clip: UploadClip): string[] {
@@ -186,13 +287,25 @@ async function head(fetcher: typeof fetch, key: string) {
 }
 
 export async function runUpload(options: UploadOptions, dependencies: Dependencies = {}) {
-	const clips = await prepareUploads(options);
+	const { clips, leftOut } = await prepareUploads(options);
 	const log = dependencies.log ?? console.log;
 	for (const clip of clips) log(`${clip.key} ↔ ${clip.file}`);
+	for (const clip of leftOut) log(`Left out ${clip.file}: ${clip.kind}: ${clip.reason}`);
+	const kinds = new Map<string, number>();
+	for (const { kind } of leftOut) kinds.set(kind, (kinds.get(kind) ?? 0) + 1);
+	const summary = `${clips.length} clips to upload; ${leftOut.length} left out${
+		kinds.size ? ` (${[...kinds].map(([kind, count]) => `${count} ${kind}`).join(", ")})` : ""
+	}.`;
+	const recorded = leftOut.filter(({ kind }) => kind === "already recorded");
+	const recordedWarning = `${recorded.length} clips are left out because the manifest already lists their words, as after a partial upload; check the earlier upload records, then pass --skip-recorded to upload the rest.`;
 	if (options.dryRun) {
-		log(`Dry run: ${clips.length} validated clips; no uploads or network requests.`);
+		if (recorded.length && !options.skipRecorded) log(recordedWarning);
+		log(`Dry run: ${summary} No uploads or network requests.`);
 		return;
 	}
+	if (recorded.length && !options.skipRecorded) throw new Error(recordedWarning);
+	log(summary);
+	if (!clips.length) throw new Error("Nothing to upload");
 	const fetcher = dependencies.fetcher ?? fetch;
 	const runner = dependencies.runner ?? runWrangler;
 	const concurrency = options.concurrency ?? 8;
@@ -212,7 +325,8 @@ export async function runUpload(options: UploadOptions, dependencies: Dependenci
 	if (conflicts.length) throw new Error(conflicts.join("\n"));
 
 	const startedAt = new Date().toISOString();
-	const recordPath = path.join(options.outputDir, `upload-${Date.now()}-${randomUUID()}.json`);
+	const recordName = `upload-${Date.now()}-${randomUUID()}.json`;
+	const recordPaths = options.outputDirs.map((dir) => path.join(dir, recordName));
 	const entries: UploadEntry[] = clips.map((clip) => ({
 		...clip,
 		uploadedAt: null,
@@ -220,10 +334,16 @@ export async function runUpload(options: UploadOptions, dependencies: Dependenci
 	}));
 	let checkpoint = Promise.resolve();
 	const saveRecord = () => {
-		const contents = `${JSON.stringify({ bucket, startedAt, entries }, null, 2)}\n`;
+		const contents = `${JSON.stringify(
+			{ bucket, startedAt, batches: options.outputDirs, entries, leftOut },
+			null,
+			2,
+		)}\n`;
 		checkpoint = checkpoint.then(async () => {
-			await writeFile(`${recordPath}.tmp`, contents);
-			await rename(`${recordPath}.tmp`, recordPath);
+			for (const recordPath of recordPaths) {
+				await writeFile(`${recordPath}.tmp`, contents);
+				await rename(`${recordPath}.tmp`, recordPath);
+			}
 		});
 		return checkpoint;
 	};
@@ -251,10 +371,10 @@ export async function runUpload(options: UploadOptions, dependencies: Dependenci
 	const uploaded = entries.filter(({ uploadedAt }) => uploadedAt).length;
 	const verified = entries.filter(({ verified }) => verified).length;
 	log(
-		`${uploaded}/${entries.length} uploaded; ${verified}/${entries.length} verified. Record: ${recordPath}`,
+		`${uploaded}/${entries.length} uploaded; ${verified}/${entries.length} verified. Record: ${recordPaths.join(", ")}`,
 	);
 	const failures = entries.filter(({ verified }) => !verified);
 	if (failures.length)
 		throw new Error(failures.map(({ key, error }) => `${key}: ${error}`).join("\n"));
-	return recordPath;
+	return recordPaths;
 }

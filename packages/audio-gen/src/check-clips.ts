@@ -166,7 +166,7 @@ export type Mark = { readonly accepted: boolean; readonly notes: string };
 
 /**
  * The dev's marks from `review.tsv`: `yes` or `no` in `accepted`, by file. Rows not
- * marked yet are left out.
+ * marked yet are left out. A file listed twice is refused, so a later yes can't hide a no.
  */
 export function parseMarks(reviewTsv: string): Map<string, Mark> {
 	const [header, ...rows] = reviewTsv.split(/\r?\n/).filter((line) => line.trim());
@@ -177,8 +177,12 @@ export function parseMarks(reviewTsv: string): Map<string, Mark> {
 	if (fileColumn === -1 || acceptedColumn === -1)
 		throw new Error("review.tsv needs file and accepted columns");
 	const marks = new Map<string, Mark>();
+	const seen = new Set<string>();
 	for (const row of rows) {
 		const cells = row.split("\t");
+		if (seen.has(cells[fileColumn]))
+			throw new Error(`review.tsv lists ${cells[fileColumn]} twice; keep one row for it`);
+		seen.add(cells[fileColumn]);
 		const value = cells[acceptedColumn]?.trim().toLowerCase() ?? "";
 		if (!value) continue;
 		if (!["yes", "y", "no", "n"].includes(value))

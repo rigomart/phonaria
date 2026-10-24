@@ -3,7 +3,7 @@ import { parseUploadArguments, runUpload } from "./uploads";
 async function main() {
 	if (process.argv.slice(2).includes("--help")) {
 		console.log(
-			"Upload reviewed audio: --out=path --accent=en-us --voice=jenny [--bucket=rigos-assets] [--dry-run] [--concurrency=8] [--overwrite]",
+			"Upload checked, marked batches: --out=path [--out=retakes]... --accent=en-us --voice=jenny [--bucket=rigos-assets] [--dry-run] [--concurrency=8] [--overwrite] [--skip-recorded]",
 		);
 		return;
 	}

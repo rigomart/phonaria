@@ -73,25 +73,37 @@ export function hearsTarget(
 ): boolean {
 	if (!transcript?.words.length) return false;
 	if (transcript.words.join("") === target.word) return true;
-	const goal = tapped(target.pronunciation);
-	let readings: PhonemeSymbolId[][] = [[]];
-	for (const word of transcript.words) {
-		const options = pronunciationsOf(word);
-		if (!options?.length) return false;
-		readings = readings.flatMap((reading) => options.map((option) => [...reading, ...option]));
-		if (readings.length > MAX_TRANSCRIPT_READINGS) return false;
-	}
-	return readings.some((reading) => tapped(reading) === goal);
+	const goal = tapped(target.pronunciation).join(" ");
+	return (transcriptReadings(transcript.words, pronunciationsOf) ?? []).some(
+		(reading) => tapped(reading).join(" ") === goal,
+	);
 }
 
-const tapped = (ids: readonly PhonemeSymbolId[]) =>
-	ids
-		.map((id, index) =>
-			id === "D" && isVowelPhoneme(ids[index - 1] ?? "P") && isVowelPhoneme(ids[index + 1] ?? "P")
-				? "T"
-				: id,
-		)
-		.join(" ");
+/**
+ * Every way the dictionary lets the words be said, run together; none when a word isn't
+ * in it or the words have too many readings.
+ */
+export function transcriptReadings(
+	words: readonly string[],
+	pronunciationsOf: PronunciationLookup,
+): PhonemeSymbolId[][] | undefined {
+	let readings: PhonemeSymbolId[][] = [[]];
+	for (const word of words) {
+		const options = pronunciationsOf(word);
+		if (!options?.length) return undefined;
+		readings = readings.flatMap((reading) => options.map((option) => [...reading, ...option]));
+		if (readings.length > MAX_TRANSCRIPT_READINGS) return undefined;
+	}
+	return readings;
+}
+
+/** /d/ between vowels as /t/, since both are tapped there. */
+export const tapped = (ids: readonly PhonemeSymbolId[]): PhonemeSymbolId[] =>
+	ids.map((id, index) =>
+		id === "D" && isVowelPhoneme(ids[index - 1] ?? "P") && isVowelPhoneme(ids[index + 1] ?? "P")
+			? "T"
+			: id,
+	);
 
 /** Azure's answer for a one-word clip, with every sound judged against the clip's own pronunciation. */
 export function scoreFromEvidence(evidence: RecordingEvidence, findWord?: WordFinder): ClipScore {
@@ -124,6 +136,7 @@ export function scoreChecks(
 	return {
 		"word-heard": {
 			passed: hearsTarget(score.transcript, target, pronunciationsOf),
+			// `heardWords` reads this back from checks.json.
 			detail: score.transcript
 				? `heard "${heard}" at ${round(score.transcript.confidence)}`
 				: heard,
@@ -136,6 +149,14 @@ export function scoreChecks(
 			detail: accuracy === undefined ? "no word score" : `${round(accuracy)}`,
 		},
 	};
+}
+
+/** The words recognition heard, from a saved word-heard check: none for no speech. */
+export function heardWords(check: CheckResult): string[] {
+	if (check.detail === "no speech") return [];
+	const heard = /^heard "(.*)" at [\d.]+$/.exec(check.detail);
+	if (!heard) throw new Error(`Unexpected word-heard detail: ${check.detail}`);
+	return heard[1].split(" ").filter(Boolean);
 }
 
 /** `batchLevelDb` is the median speech level of the clips checked together. */
