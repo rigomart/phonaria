@@ -6,7 +6,12 @@ import { parseMarks } from "./check-clips";
 import { compareWithCurrentCode, type Plan, type PlanChange } from "./generation";
 import { voiceFolderName } from "./manifest";
 import { findAzureAudioFormat } from "./providers/azure";
-import { REVIEW_SHEET_FILE, readChecks, readReviewSheet } from "./review-sheet";
+import {
+	assertSheetIsCurrent,
+	REVIEW_SHEET_FILE,
+	readChecks,
+	readReviewSheet,
+} from "./review-sheet";
 import { formSlug, isFormSlug } from "./word-forms";
 
 export type UploadOptions = {
@@ -18,6 +23,8 @@ export type UploadOptions = {
 	concurrency?: number;
 	dryRun?: boolean;
 	overwrite?: boolean;
+	/** Upload the rest when some clips are left out because the manifest already lists their words. */
+	skipRecorded?: boolean;
 };
 type UploadClip = {
 	key: string;
@@ -69,9 +76,11 @@ export function parseUploadArguments(args: string[]): UploadOptions {
 	const outputDirs: string[] = [];
 	let dryRun = false;
 	let overwrite = false;
+	let skipRecorded = false;
 	for (const arg of args) {
 		if (arg === "--dry-run") dryRun = true;
 		else if (arg === "--overwrite") overwrite = true;
+		else if (arg === "--skip-recorded") skipRecorded = true;
 		else if (arg.startsWith("--out=") && arg.length > 6)
 			outputDirs.push(path.resolve(arg.slice(6)));
 		else {
@@ -95,6 +104,7 @@ export function parseUploadArguments(args: string[]): UploadOptions {
 		concurrency: values.concurrency === undefined ? 8 : Number(values.concurrency),
 		dryRun,
 		overwrite,
+		skipRecorded,
 	};
 	validateOptions(options);
 	return options;
@@ -165,7 +175,8 @@ export async function prepareBatch(
 	}
 
 	const planFiles = (plan.samples as { file: string }[]).map(({ file }) => file);
-	const checked = new Set((await readChecks(outputDir)).map(({ file }) => file));
+	const checks = await readChecks(outputDir);
+	const checked = new Set(checks.map(({ file }) => file));
 	const unchecked = planFiles.filter((file) => !checked.has(file));
 	if (unchecked.length)
 		throw new Error(`${outputDir}: checks.json has no results for ${listed(unchecked)}; run check`);
@@ -174,6 +185,7 @@ export async function prepareBatch(
 		throw new Error(
 			`${outputDir} has no ${REVIEW_SHEET_FILE}; run sample (or sample --adopt) and mark its clips`,
 		);
+	await assertSheetIsCurrent(outputDir, plan.samples as unknown[], checks);
 	const marks = parseMarks(await readFile(path.join(outputDir, "review.tsv"), "utf8"));
 	const offPlan = sheet.filter(({ file }) => !planFiles.includes(file)).map(({ file }) => file);
 	if (offPlan.length)
@@ -284,10 +296,14 @@ export async function runUpload(options: UploadOptions, dependencies: Dependenci
 	const summary = `${clips.length} clips to upload; ${leftOut.length} left out${
 		kinds.size ? ` (${[...kinds].map(([kind, count]) => `${count} ${kind}`).join(", ")})` : ""
 	}.`;
+	const recorded = leftOut.filter(({ kind }) => kind === "already recorded");
+	const recordedWarning = `${recorded.length} clips are left out because the manifest already lists their words, as after a partial upload; check the earlier upload records, then pass --skip-recorded to upload the rest.`;
 	if (options.dryRun) {
+		if (recorded.length && !options.skipRecorded) log(recordedWarning);
 		log(`Dry run: ${summary} No uploads or network requests.`);
 		return;
 	}
+	if (recorded.length && !options.skipRecorded) throw new Error(recordedWarning);
 	log(summary);
 	if (!clips.length) throw new Error("Nothing to upload");
 	const fetcher = dependencies.fetcher ?? fetch;

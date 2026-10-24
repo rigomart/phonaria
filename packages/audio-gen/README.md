@@ -202,15 +202,19 @@ r-coloured vowels, and a /t/ that `closeTapSyllables` made tap), and 150 more pa
 at random. `--seed` (default 358) fixes the draw. Samples the current code would plan
 differently are left out, since upload leaves them out too. `sample --adopt=<list.tsv>`
 takes a hand-built list instead (a `file` column, and a `reason` or `picked_for` column).
+`sample` needs every sample generated and checked. It also writes `sample.json`, which
+records how the sheet was chosen and hashes of the plan's samples and of `checks.json`.
 An existing sheet is replaced only with `--force`, because the dev may have marked it.
 
 `listen` shows the sheet when the batch has one, otherwise the whole plan.
 
-`upload` refuses a batch until `checks.json` covers every clip and every clip on the sheet
-is marked yes or no in `review.tsv`. It uploads every other clip except those marked no
-and those the current code would no longer plan the same way: the request changed (a
-stress mark or an /ɔ/ form), the form was dropped, or the source no longer selects the
-word (a fragment). The dry run and the upload record list each left-out clip and why.
+`upload` refuses a batch until `checks.json` covers every clip, the plan and checks
+still match what `sample.json` recorded (otherwise draw or adopt the sheet again with
+`--force`), and every clip on the sheet is marked yes or no in `review.tsv`, with one row
+per file. It uploads every other clip except those marked no and those the current code
+would no longer plan the same way: the request changed (a stress mark or an /ɔ/ form),
+the form was dropped, or the source now excludes the word (a fragment). The dry run and
+the upload record list each left-out clip and why.
 
 A clip that needs a retake goes in its own batch, generated with `--words` into a new
 folder, then checked, sampled, listened to and marked like any other. Upload it in the
@@ -223,8 +227,10 @@ bun run --cwd packages/audio-gen upload --out=output/top-1k-jenny-slower-10-ogg 
 
 Two batches may not publish the same key in one run: mark the clip you don't want no.
 A batch uploaded in a later run can replace a published key only with `--overwrite`.
-Upload a batch and its retakes before running `manifest`: a word the manifest lists is
-no longer selected, so upload would leave out its clips.
+Upload a batch and its retakes before running `manifest`. Once the manifest lists a
+word, the source no longer offers it, so upload leaves its clips out as `already
+recorded`. That usually means an earlier run uploaded part of the batch, so upload
+refuses such a run unless `--skip-recorded` is passed; the dry run reports them either way.
 
 ## Setup
 

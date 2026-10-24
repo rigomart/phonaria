@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
@@ -363,13 +364,73 @@ export type SheetOptions = {
 	readonly pronunciationsOf: PronunciationLookup;
 };
 
+/** What a sheet was drawn from, saved beside it as `sample.json`. */
+export type SheetBinding = {
+	/** How the rows were chosen: drawn with a seed, or adopted from a list. */
+	readonly origin: string;
+	/** SHA-256 of `plan.json`'s samples, statuses and checksums included. */
+	readonly planSamples: string;
+	/** SHA-256 of `checks.json`'s clips. */
+	readonly checks: string;
+};
+
+export const SHEET_BINDING_FILE = "sample.json";
+
+const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
+
+export function sheetBinding(
+	origin: string,
+	planSamples: readonly unknown[],
+	checks: readonly unknown[],
+): SheetBinding {
+	return { origin, planSamples: hash(planSamples), checks: hash(checks) };
+}
+
+/**
+ * Refuses a sheet drawn or adopted from another `plan.json` or `checks.json` than the
+ * batch has now: the clips that changed since were never considered for listening.
+ */
+export async function assertSheetIsCurrent(
+	dir: string,
+	planSamples: readonly unknown[],
+	checks: readonly unknown[],
+): Promise<void> {
+	let saved: SheetBinding;
+	try {
+		saved = JSON.parse(await readFile(path.join(dir, SHEET_BINDING_FILE), "utf8"));
+	} catch (error) {
+		if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+		throw new Error(
+			`${dir} has no ${SHEET_BINDING_FILE} to show what ${REVIEW_SHEET_FILE} was drawn from; run sample --force (or sample --adopt --force)`,
+		);
+	}
+	const now = sheetBinding(saved.origin, planSamples, checks);
+	const changed = [
+		...(now.planSamples !== saved.planSamples ? ["plan.json"] : []),
+		...(now.checks !== saved.checks ? ["checks.json"] : []),
+	];
+	if (changed.length)
+		throw new Error(
+			`${dir}: ${changed.join(" and ")} changed since ${REVIEW_SHEET_FILE} was ${saved.origin}; draw it again with sample --force (or adopt the list again) and mark any new clips`,
+		);
+}
+
 /**
  * Writes the batch's `sample.tsv`, drawn from `plan.json` and `checks.json` or adopted from
- * a list. Samples the current code would plan differently are left out of a drawn sheet,
- * since upload leaves them out too. Never replaces a sheet without `force`.
+ * a list, and `sample.json`, which records what it was drawn from. Every sample must be
+ * generated. Samples the current code would plan differently are left out of a drawn
+ * sheet, since upload leaves them out too. Never replaces a sheet without `force`.
  */
 export async function writeReviewSheet(dir: string, options: SheetOptions) {
 	const plan = JSON.parse(await readFile(path.join(dir, "plan.json"), "utf8")) as Plan;
+	const unfinished = plan.samples.filter(({ status }) => status !== "generated");
+	if (unfinished.length)
+		throw new Error(
+			`${unfinished.length} samples aren't generated yet (${unfinished
+				.slice(0, 5)
+				.map(({ file }) => file)
+				.join(", ")}); finish the batch and check it before drawing its sheet`,
+		);
 	const checks = await readChecks(dir);
 	let rows: SheetRow[];
 	if (options.adopt) {
@@ -399,6 +460,13 @@ export async function writeReviewSheet(dir: string, options: SheetOptions) {
 			throw new Error(`${file} exists; the dev may have listened to it. Use --force to replace it`);
 		throw error;
 	}
+	const origin = options.adopt
+		? `adopted from ${path.basename(options.adopt)}`
+		: `drawn with seed ${options.seed ?? 358}`;
+	await writeFile(
+		path.join(dir, SHEET_BINDING_FILE),
+		`${JSON.stringify(sheetBinding(origin, plan.samples, checks), null, 2)}\n`,
+	);
 	return { file, rows };
 }
 

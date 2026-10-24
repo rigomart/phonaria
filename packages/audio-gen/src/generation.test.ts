@@ -634,4 +634,41 @@ describe("comparing a saved plan with the current code", () => {
 		const unselected = compareWithCurrentCode({ ...plan, samples: samples.slice(2) }, "mp3");
 		expect([...unselected.changed.keys()]).toEqual(["audio/zzz.mp3"]);
 	});
+	it("tells a word excluded since apart from one the manifest already lists", async () => {
+		const outputDir = await directory();
+		exclusions.on = false;
+		await runGeneration({
+			outputDir,
+			dryRun: true,
+			source: "top-10k",
+			words: ["usa"],
+			...settings,
+		});
+		exclusions.on = true;
+		const plan = JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8"));
+		const [usa] = plan.samples;
+		const samples = [usa, { ...usa, word: "seat", file: "audio/seat.mp3" }];
+		expect([...compareWithCurrentCode({ ...plan, samples }, "mp3").changed]).toEqual([
+			[
+				"audio/usa.mp3",
+				{ kind: "excluded", reason: 'top-10k now leaves out "usa": spelled-out abbreviation' },
+			],
+			[
+				"audio/seat.mp3",
+				{ kind: "already recorded", reason: 'the word-audio manifest already lists "seat"' },
+			],
+		]);
+	});
+	it("refuses to resume a saved plan with no samples", async () => {
+		const outputDir = await directory();
+		await runGeneration({ outputDir, dryRun: true, words: ["seat"], ...settings });
+		const file = path.join(outputDir, "plan.json");
+		await writeFile(
+			file,
+			JSON.stringify({ ...JSON.parse(await readFile(file, "utf8")), samples: [] }),
+		);
+		await expect(
+			runGeneration({ outputDir, dryRun: true, resume: true, ...settings }),
+		).rejects.toThrow("Saved plan has no samples");
+	});
 });

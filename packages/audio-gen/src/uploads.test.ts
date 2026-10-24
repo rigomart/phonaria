@@ -5,7 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { runGeneration } from "./generation";
 import type { TtsProvider } from "./providers/types";
-import { renderReviewSheet } from "./review-sheet";
+import { writeReviewSheet } from "./review-sheet";
 import {
 	buildUploadKey,
 	parseUploadArguments,
@@ -89,21 +89,16 @@ async function batch({
 		);
 	await writeChecks();
 	const [first] = plan.samples;
-	await writeFile(
-		path.join(outputDir, "sample.tsv"),
-		renderReviewSheet([
-			{
-				file: first.file,
-				word: first.word,
-				form: "",
-				ipa: "",
-				reason: "random sample of passed clips",
-				detail: "",
-			},
-		]),
-	);
+	await adoptSheet(outputDir, [first.file]);
 	await mark(outputDir, { [first.file]: "yes" });
 	return { outputDir, plan, save, writeChecks };
+}
+
+/** Takes these files as the batch's sheet, bound to its plan and checks as they are now. */
+async function adoptSheet(dir: string, files: readonly string[]) {
+	const list = path.join(dir, "list.tsv");
+	await writeFile(list, `file\treason\n${files.map((file) => `${file}\tlisted`).join("\n")}\n`);
+	await writeReviewSheet(dir, { adopt: list, force: true, pronunciationsOf: () => undefined });
 }
 
 async function fixture(extension = "ogg") {
@@ -167,6 +162,7 @@ describe("upload keys and arguments", () => {
 				"--voice=jenny",
 				"--dry-run",
 				"--overwrite",
+				"--skip-recorded",
 				"--bucket=other-bucket",
 				"--concurrency=3",
 			]),
@@ -176,6 +172,7 @@ describe("upload keys and arguments", () => {
 			voice: "jenny",
 			dryRun: true,
 			overwrite: true,
+			skipRecorded: true,
 			bucket: "other-bucket",
 			concurrency: 3,
 		});
@@ -355,6 +352,7 @@ describe("the review guard", () => {
 				})),
 			}),
 		);
+		await adoptSheet(outputDir, ["audio/seat.ogg"]);
 		const log = vi.fn();
 		const runner = vi.fn();
 		const fetcher = vi.fn<typeof fetch>();
@@ -397,6 +395,114 @@ describe("the review guard", () => {
 		]);
 		expect(leftOut).toMatchObject([
 			{ file: path.join(first.outputDir, "audio/seat.ogg"), kind: "marked no" },
+		]);
+	});
+	it("refuses a file marked twice, so a later yes can't hide a no", async () => {
+		const f = await fixture();
+		await mark(f.outputDir, { "audio/seat.ogg": "no" });
+		const review = path.join(f.outputDir, "review.tsv");
+		const lines = (await readFile(review, "utf8")).trimEnd().split("\n");
+		const again = lines[1].replace("\tno\t", "\tyes\t");
+		await writeFile(review, `${[...lines, again].join("\n")}\n`);
+		await expect(runUpload(f.options, f)).rejects.toThrow(
+			"review.tsv lists audio/seat.ogg twice; keep one row for it",
+		);
+		expect(f.runner).not.toHaveBeenCalled();
+	});
+	it("refuses a sheet drawn before the batch was finished, or before its last check", async () => {
+		const outputDir = await mkdtemp(path.join(os.tmpdir(), "phonaria-upload-test-"));
+		temporary.push(outputDir);
+		const quiet = vi.spyOn(console, "log").mockImplementation(() => {});
+		const options = { outputDir, words: ["seat", "seed"], audioFormat: "ogg" };
+		const stopsAtSeed: TtsProvider = {
+			async synthesize(inputs) {
+				if (inputs[0].id === "seed") throw new Error("HTTP 429");
+				return provider.synthesize(inputs);
+			},
+		};
+		const generate = (resume: boolean, using: TtsProvider) =>
+			runGeneration({
+				...(resume ? { outputDir, resume, audioFormat: "ogg" } : options),
+				voiceId: "en-US-JennyNeural",
+				provider: using,
+				wait: async () => {},
+			});
+		await expect(generate(false, stopsAtSeed)).rejects.toThrow(/429/);
+		const checks = (clips: object[]) =>
+			writeFile(path.join(outputDir, "checks.json"), JSON.stringify({ clips }));
+		const passed = (file: string) => ({ file, scoring: "scored", checks: {}, failed: [] });
+		await checks([passed("audio/seat.ogg")]);
+		const draw = () =>
+			writeReviewSheet(outputDir, { force: true, pronunciationsOf: () => undefined });
+		await expect(draw()).rejects.toThrow(/1 samples aren't generated yet \(audio\/seed\.ogg\)/);
+
+		await generate(true, provider);
+		quiet.mockRestore();
+		const failedBoth = {
+			file: "audio/seed.ogg",
+			scoring: "scored",
+			checks: {
+				"word-heard": { passed: false, detail: 'heard "sid" at 0.5' },
+				"no-swapped-sound": { passed: false, detail: "/i/ heard as /ɪ/" },
+			},
+			failed: ["word-heard", "no-swapped-sound"],
+		};
+		await checks([passed("audio/seat.ogg"), passed("audio/seed.ogg")]);
+		const { rows } = await draw();
+		await mark(outputDir, Object.fromEntries(rows.map(({ file }) => [file, "yes"])));
+		const upload = { outputDirs: [outputDir], accent: "en-us", voice: "jenny" };
+		expect((await prepareUploads(upload)).clips).toHaveLength(2);
+
+		await checks([passed("audio/seat.ogg"), failedBoth]);
+		await expect(prepareUploads(upload)).rejects.toThrow(
+			/checks\.json changed since sample\.tsv was drawn with seed 358; draw it again/,
+		);
+		await draw();
+		await mark(outputDir, { "audio/seed.ogg": "no" });
+		const { clips, leftOut } = await prepareUploads(upload);
+		expect(clips.map(({ file }) => path.basename(file))).toEqual(["seat.ogg"]);
+		expect(leftOut).toMatchObject([{ kind: "marked no" }]);
+		await rm(path.join(outputDir, "sample.json"));
+		await expect(prepareUploads(upload)).rejects.toThrow(/no sample\.json/);
+	});
+	it("refuses to upload clips whose words the manifest already lists, unless --skip-recorded", async () => {
+		const { outputDir, plan, save, writeChecks } = await batch({
+			source: "top-10k",
+			words: ["people"],
+		});
+		const seat = { ...plan.samples[0], word: "seat", file: "audio/seat.ogg" };
+		await writeFile(path.join(outputDir, seat.file), "seat");
+		plan.samples.push({ ...seat, sha256: sha256("seat"), input: { ...seat.input, id: "seat" } });
+		await save();
+		await writeChecks();
+		await adoptSheet(outputDir, ["audio/people.ogg"]);
+		const runner = vi.fn<(executable: string, args: string[]) => Promise<void>>();
+		const fetcher = vi.fn<typeof fetch>().mockImplementation(async () =>
+			runner.mock.calls.length
+				? new Response(null, {
+						status: 200,
+						headers: {
+							"content-type": "audio/ogg",
+							"content-length": String(Buffer.byteLength(audioFor("people"))),
+						},
+					})
+				: new Response(null, { status: 404 }),
+		);
+		const log = vi.fn();
+		const options = { outputDirs: [outputDir], accent: "en-us", voice: "jenny" };
+		const warning =
+			"1 clips are left out because the manifest already lists their words, as after a partial upload; check the earlier upload records, then pass --skip-recorded to upload the rest.";
+		await runUpload({ ...options, dryRun: true }, { log, runner, fetcher });
+		expect(log).toHaveBeenCalledWith(
+			`Left out ${outputDir}/audio/seat.ogg: already recorded: the word-audio manifest already lists "seat"`,
+		);
+		expect(log).toHaveBeenCalledWith(warning);
+		await expect(runUpload(options, { log, runner, fetcher })).rejects.toThrow(warning);
+		expect(runner).not.toHaveBeenCalled();
+		expect(fetcher).not.toHaveBeenCalled();
+		await runUpload({ ...options, skipRecorded: true }, { log, runner, fetcher });
+		expect(runner.mock.calls.map(([, args]) => args[3])).toEqual([
+			"rigos-assets/audio/en-us/words/jenny/people.ogg",
 		]);
 	});
 });
