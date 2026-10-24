@@ -32,6 +32,7 @@ export {
 } from "./en/cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./en/contrasts";
 export { EnglishPhonemeFrequencies } from "./en/frequency";
+export { EnglishPhonemeMergerNotes } from "./en/merger-notes";
 export {
 	findSubstitution,
 	getSinglePronunciation,
@@ -77,7 +78,9 @@ export type {
 	LanguagePhonemeAllophoneRegistry,
 	LanguagePhonemeContrastRegistry,
 	LanguagePhonemeFrequencyRegistry,
+	LanguagePhonemeMergerNoteRegistry,
 	LanguageSpellingPatternRegistry,
+	MergerNote,
 	MinimalPair,
 	PhonemeAllophone,
 	PhonemeAllophoneContextKey,

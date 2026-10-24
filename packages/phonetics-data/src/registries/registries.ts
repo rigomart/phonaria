@@ -18,6 +18,7 @@ import {
 import { CmuArpaMap, type CmuArpaToken, type CmuStressLevel } from "../languages/en/cmu-arpa";
 import { EnglishContrastsByPhonemeId } from "../languages/en/contrasts";
 import { EnglishPhonemeFrequencies } from "../languages/en/frequency";
+import { EnglishPhonemeMergerNotes } from "../languages/en/merger-notes";
 import { EnglishPhonemeSpellingPatterns } from "../languages/en/patterns";
 import { EnglishWordAudio } from "../languages/en/word-audio";
 import {
@@ -34,6 +35,7 @@ import type {
 } from "../languages/inventories";
 import { getLanguagePhonemeIds } from "../languages/inventories";
 import type {
+	MergerNote,
 	PhonemeAllophone,
 	PhonemeContrastMatch,
 	PhonemeFrequency,
@@ -174,6 +176,14 @@ export const LanguagePhonemeFrequencyDataRegistry = deepFreeze({
 	Partial<Record<PhonemeSymbolId, PhonemeFrequency>> | null
 >);
 
+export const LanguageMergerNoteDataRegistry = deepFreeze({
+	"en-us": EnglishPhonemeMergerNotes,
+	"es-419": null,
+} as const satisfies Record<
+	TargetAccent,
+	Partial<Record<PhonemeSymbolId, ReadonlyArray<MergerNote>>> | null
+>);
+
 export const LanguageWordAudioDataRegistry = deepFreeze({
 	"en-us": EnglishWordAudio,
 	"es-419": null,
@@ -217,6 +227,12 @@ export function getPhonemeFrequencyRegistryForLanguage<TLanguage extends TargetA
 	language: TLanguage,
 ): (typeof LanguagePhonemeFrequencyDataRegistry)[TLanguage] {
 	return LanguagePhonemeFrequencyDataRegistry[language];
+}
+
+export function getMergerNoteRegistryForLanguage<TLanguage extends TargetAccent>(
+	language: TLanguage,
+): (typeof LanguageMergerNoteDataRegistry)[TLanguage] {
+	return LanguageMergerNoteDataRegistry[language];
 }
 
 /**

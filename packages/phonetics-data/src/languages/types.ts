@@ -80,6 +80,23 @@ export type PhonemeFrequency = {
 export type LanguagePhonemeFrequencyRegistry<TLanguage extends TargetAccent = TargetAccent> =
 	Readonly<Record<LanguagePhonemeId<TLanguage>, PhonemeFrequency>>;
 
+// Merger note types
+
+/**
+ * A short note on a vowel merger: two sounds that many speakers of the
+ * accent say the same way, though Phonaria teaches them apart. In `text`,
+ * `*word*` marks an example word and `/ipa/` a sound.
+ */
+export type MergerNote = {
+	/** The merger's name in kebab case, e.g. "cot-caught". */
+	readonly id: string;
+	readonly title: string;
+	readonly text: string;
+};
+
+export type LanguagePhonemeMergerNoteRegistry<TLanguage extends TargetAccent = TargetAccent> =
+	Readonly<Partial<Record<LanguagePhonemeId<TLanguage>, ReadonlyArray<MergerNote>>>>;
+
 // Word audio types
 
 /** The single-word recordings uploaded for one accent, one file per word. */

@@ -32,6 +32,7 @@ export {
 } from "./cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./contrasts";
 export { EnglishPhonemeFrequencies } from "./frequency";
+export { EnglishPhonemeMergerNotes } from "./merger-notes";
 export {
 	findSubstitution,
 	getSinglePronunciation,
