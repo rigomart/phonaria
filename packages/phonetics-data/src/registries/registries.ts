@@ -179,15 +179,7 @@ export const LanguageWordAudioDataRegistry = deepFreeze({
 	"es-419": null,
 } as const satisfies Record<TargetAccent, WordAudioManifest | null>);
 
-const wordAudioVoices = new Map<TargetAccent, ReadonlyMap<string, string>>();
-
-/** Each recorded word's voice folder: the default voice unless `voices` lists the word. */
-function voicesByWord(manifest: WordAudioManifest): ReadonlyMap<string, string> {
-	const voices = new Map(manifest.words.map((word) => [word, manifest.voice]));
-	for (const [voice, words] of Object.entries(manifest.voices ?? {}))
-		for (const word of words) if (voices.has(word)) voices.set(word, voice);
-	return voices;
-}
+const wordAudioWordSets = new Map<TargetAccent, ReadonlySet<string>>();
 
 export function getCmuArpaRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
@@ -222,26 +214,16 @@ export function getPhonemeFrequencyRegistryForLanguage<TLanguage extends TargetA
 /**
  * Bucket-relative path (no leading slash) of a word's recording, e.g.
  * "audio/en-us/words/jenny/seat.ogg", or null when the word has none.
- * Words the manifest lists under `voices` play from that voice's folder.
- * Pass `voice` to get the word's recording in that voice's folder instead, never
- * following `voices`; null unless that voice recorded the word. The default voice
- * recorded every word. Matching ignores case and surrounding whitespace.
+ * Matching ignores case and surrounding whitespace.
  */
-export function getWordAudioPath(
-	targetAccent: TargetAccent,
-	word: string,
-	options: { readonly voice?: string } = {},
-): string | null {
+export function getWordAudioPath(targetAccent: TargetAccent, word: string): string | null {
 	const manifest = LanguageWordAudioDataRegistry[targetAccent];
-	if (!manifest) return null;
-	let voices = wordAudioVoices.get(targetAccent);
-	if (!voices) wordAudioVoices.set(targetAccent, (voices = voicesByWord(manifest)));
 	const normalized = word.toLowerCase().trim();
-	if (!voices.has(normalized)) return null;
-	const voice = options.voice ?? voices.get(normalized);
-	const recorded =
-		voice === manifest.voice || (voice && manifest.voices?.[voice]?.includes(normalized));
-	return recorded ? `audio/${targetAccent}/words/${voice}/${normalized}.ogg` : null;
+	if (!manifest) return null;
+	let words = wordAudioWordSets.get(targetAccent);
+	if (!words) wordAudioWordSets.set(targetAccent, (words = new Set(manifest.words)));
+	if (!words.has(normalized)) return null;
+	return `audio/${targetAccent}/words/${manifest.voice}/${normalized}.ogg`;
 }
 
 export type { CmuArpaToken, CmuStressLevel };

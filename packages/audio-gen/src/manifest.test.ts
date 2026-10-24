@@ -5,7 +5,6 @@ import { describe, expect, it } from "vitest";
 import {
 	manifestFile,
 	manifestFromPlan,
-	mergeManifest,
 	renderManifestJson,
 	voiceFolderName,
 	writeManifest,
@@ -24,7 +23,7 @@ const plan = (samples: ReturnType<typeof sample>[]) => ({
 });
 
 describe("word audio manifest", () => {
-	it("merges completed batches with existing recordings", () => {
+	it("merges completed batches with existing recordings and refuses a different voice", () => {
 		const dir = mkdtempSync(path.join(tmpdir(), "phonaria-manifest-"));
 		try {
 			const target = path.join(dir, manifestFile("en-us"));
@@ -37,74 +36,19 @@ describe("word audio manifest", () => {
 			expect(writeManifest(dir, dir)).toBe(target);
 			const expected = renderManifestJson({ voice: "jenny", words: ["cause", "seat", "seed"] });
 			expect(readFileSync(target, "utf8")).toBe(expected);
+			writeFileSync(
+				path.join(dir, "plan.json"),
+				JSON.stringify({ ...plan([sample("seat")]), settings: { voiceId: "en-US-AriaNeural" } }),
+			);
+			expect(() => writeManifest(dir, dir)).toThrow(/voice/i);
+			expect(readFileSync(target, "utf8")).toBe(expected);
 			writeFileSync(path.join(dir, "plan.json"), JSON.stringify(plan([sample("new", "planned")])));
 			expect(() => writeManifest(dir, dir)).toThrow(/not generated/);
 			expect(readFileSync(target, "utf8")).toBe(expected);
-			writeFileSync(
-				path.join(dir, "plan.json"),
-				JSON.stringify({ ...plan([sample("cause")]), settings: { voiceId: "en-US-GuyNeural" } }),
-			);
-			writeManifest(dir, dir);
-			expect(JSON.parse(readFileSync(target, "utf8"))).toEqual({
-				voice: "jenny",
-				words: ["cause", "seat", "seed"],
-				voices: { guy: ["cause"] },
-			});
-			writeFileSync(
-				path.join(dir, "plan.json"),
-				JSON.stringify({ ...plan([sample("cause")]), settings: { voiceId: "en-US-AriaNeural" } }),
-			);
-			expect(() => writeManifest(dir, dir)).toThrow(/another voice/);
 		} finally {
 			rmSync(dir, { recursive: true, force: true });
 		}
 	});
-
-	it("records a batch in another voice as that voice's words", () => {
-		const existing = { voice: "jenny", words: ["cause", "sat", "saw", "seat", "talk"] };
-		const guy = mergeManifest(existing, { voice: "guy", words: ["cause", "saw"] });
-		expect(guy).toEqual({ ...existing, voices: { guy: ["cause", "saw"] } });
-		expect(mergeManifest(guy, { voice: "guy", words: ["talk"] }).voices).toEqual({
-			guy: ["cause", "saw", "talk"],
-		});
-		expect(mergeManifest(guy, { voice: "guy", words: ["saw"] })).toEqual(guy);
-		expect(mergeManifest(guy, { voice: "jenny", words: ["saw", "seed"] })).toEqual({
-			...guy,
-			words: ["cause", "sat", "saw", "seat", "seed", "talk"],
-		});
-	});
-
-	it("refuses a word the default voice hasn't recorded", () => {
-		const existing = { voice: "jenny", words: ["saw"] };
-		expect(() => mergeManifest(existing, { voice: "guy", words: ["saw", "walk"] })).toThrow(
-			/jenny first.*walk/,
-		);
-	});
-
-	it("refuses a word another voice already plays", () => {
-		const guy = { voice: "jenny", words: ["saw", "seat"], voices: { guy: ["saw"] } };
-		expect(() => mergeManifest(guy, { voice: "aria", words: ["seat", "saw"] })).toThrow(
-			/saw \(guy\)/,
-		);
-		expect(mergeManifest(guy, { voice: "aria", words: ["seat"] }).voices).toEqual({
-			aria: ["seat"],
-			guy: ["saw"],
-		});
-	});
-
-	it("writes moved words after the default list, omitting an empty map", () => {
-		const json = renderManifestJson({
-			voice: "jenny",
-			words: ["saw", "seat"],
-			voices: { guy: ["saw"], aria: ["seat"] },
-		});
-		expect(Object.keys(JSON.parse(json))).toEqual(["voice", "words", "voices"]);
-		expect(Object.keys(JSON.parse(json).voices)).toEqual(["aria", "guy"]);
-		expect(renderManifestJson({ voice: "jenny", words: ["seat"], voices: {} })).not.toContain(
-			"voices",
-		);
-	});
-
 	it("derives the voice folder from the Azure voice id", () => {
 		expect(voiceFolderName("en-US-JennyNeural")).toBe("jenny");
 		expect(voiceFolderName("en-US-AriaNeural")).toBe("aria");
