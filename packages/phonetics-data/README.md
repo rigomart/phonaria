@@ -104,7 +104,8 @@ Run before merging package changes:
 ## Current scope
 
 - Spanish currently ships core inventory + articulatory data.
-- English currently provides CMU/ARPABET mappings, spelling patterns, allophones, contrasts, and curated dictionary datasets.
+- English currently provides CMU/ARPABET mappings, spelling patterns, allophones, contrasts, merger notes, and curated dictionary datasets.
+- Merger notes (`getMergerNoteRegistryForLanguage`) explain vowel mergers on the sounds they affect: cot–caught on `O`, Mary–marry–merry on `AE` and `E`. In a note's text, `*word*` marks an example word and `/ipa/` a sound; `splitMergerNoteText()` splits it for display. Sources are in `docs/research/us-vowel-mergers.md`.
 - Selectors return `null` for not-yet-implemented language features instead of widening types with placeholder data.
 
 Inventories, counts, capabilities, and feature registries returned by selectors

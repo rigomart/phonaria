@@ -5,7 +5,8 @@ import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
 import { Articulation } from "./articulation";
 import { ComparisonList } from "./comparisons";
 import { DetailsLink, DetailsSection } from "./details-section";
-import { getSpellingPattern, type PhonemeDetailsOptions } from "./sound";
+import { MergerNote } from "./merger-note";
+import { getMergerNotes, getSpellingPattern, type PhonemeDetailsOptions } from "./sound";
 import { SpellingPatterns } from "./spelling";
 
 export interface DetailSection {
@@ -18,7 +19,8 @@ export interface DetailSection {
 
 /**
  * The full view's sections, most hands-on first: how the sound is made, what
- * it gets confused with, and how it is spelled (how common it is sits in the header). Sections without
+ * it gets confused with, how it is spelled, and any vowel merger it is part of
+ * (how common it is sits in the header). Sections without
  * data, or switched off by the host, are left out here, at the source, so the
  * "More about" summary and the full view always list the same things.
  */
@@ -64,6 +66,14 @@ export function getDetailSections({
 			id: "spelling",
 			title: "Spelling",
 			content: <SpellingPatterns targetAccent={targetAccent} spelling={spelling} />,
+		});
+	}
+
+	for (const note of getMergerNotes(targetAccent, phonemeId)) {
+		sections.push({
+			id: `merger-${note.id}`,
+			title: note.title,
+			content: <MergerNote note={note} />,
 		});
 	}
 

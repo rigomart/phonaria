@@ -51,6 +51,7 @@ export type {
 	PhonemeFrequencyPayload,
 	PhonemeTrieNode,
 } from "./dict/types";
+export { type MergerNoteSegment, splitMergerNoteText } from "./formatters/merger-note";
 export { formatPhonemeLabel } from "./formatters/phoneme-label";
 export { type SpelledWordSegment, splitSpelledWord } from "./formatters/spelled-word";
 export { EnglishPhonemeAllophones } from "./languages/en/allophones";
@@ -79,6 +80,7 @@ export {
 } from "./languages/en/cmu-arpa";
 export { EnglishContrastsByPhonemeId, EnglishPhonemeContrasts } from "./languages/en/contrasts";
 export { EnglishPhonemeFrequencies } from "./languages/en/frequency";
+export { EnglishPhonemeMergerNotes } from "./languages/en/merger-notes";
 export {
 	findSubstitution,
 	getSinglePronunciation,
@@ -117,7 +119,9 @@ export type {
 	LanguagePhonemeAllophoneRegistry,
 	LanguagePhonemeContrastRegistry,
 	LanguagePhonemeFrequencyRegistry,
+	LanguagePhonemeMergerNoteRegistry,
 	LanguageSpellingPatternRegistry,
+	MergerNote,
 	MinimalPair,
 	PhonemeAllophone,
 	PhonemeAllophoneContextKey,
@@ -150,6 +154,7 @@ export {
 	getDiphthongVowelArticulationRegistryForLanguage,
 	getFeatureValueByPhonemeRegistryForLanguage,
 	getLanguageArticulationData,
+	getMergerNoteRegistryForLanguage,
 	getMonophthongVowelArticulationRegistryForLanguage,
 	getPhonemeArticulationRegistryForLanguage,
 	getPhonemeFrequencyRegistryForLanguage,
@@ -159,6 +164,7 @@ export {
 	LanguageArticulationRegistry,
 	LanguageCmuArpaDataRegistry,
 	LanguageContrastDataRegistry,
+	LanguageMergerNoteDataRegistry,
 	LanguagePhonemeFrequencyDataRegistry,
 	LanguageSpellingPatternDataRegistry,
 	LanguageWordAudioDataRegistry,

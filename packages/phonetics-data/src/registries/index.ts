@@ -21,6 +21,7 @@ export {
 	getDiphthongVowelArticulationRegistryForLanguage,
 	getFeatureValueByPhonemeRegistryForLanguage,
 	getLanguageArticulationData,
+	getMergerNoteRegistryForLanguage,
 	getMonophthongVowelArticulationRegistryForLanguage,
 	getPhonemeArticulationRegistryForLanguage,
 	getPhonemeFrequencyRegistryForLanguage,
@@ -29,6 +30,7 @@ export {
 	LanguageArticulationRegistry,
 	LanguageCmuArpaDataRegistry,
 	LanguageContrastDataRegistry,
+	LanguageMergerNoteDataRegistry,
 	LanguagePhonemeFrequencyDataRegistry,
 	LanguageSpellingPatternDataRegistry,
 } from "./registries";

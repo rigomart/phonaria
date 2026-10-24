@@ -13,6 +13,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Vowel chart | `/ipa-chart/vowels`, **Show diphthongs** | Not exercised |
 | Frequency | `/ipa-chart/frequency`, header **IPA Chart** → **Frequency** tab | Executable journey below |
 | Sound card "Frequency" and "Spelling" | Any sound, or **Details for /h/** after transcribing | Executable journey below |
+| Sound card merger notes | `/ipa-chart/vowels`, /ɔ/, /æ/ or /ɛ/, then **More about …** | Executable journey below |
 | Language Spread | `/language-spread`, header **Language Spread** (behind `FLAG_LANGUAGE_SPREAD`) | Executable journeys below: `language-spread` (flag on) and `language-spread-off` |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair speaking practice | `/practice/minimal-pairs`, Practice index **Minimal pairs** (behind `FLAG_SPEECH`, independent of `FLAG_PRACTICE`) | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
@@ -234,6 +235,36 @@ bun run verify observe "$VERIFY_RUN" followed-link
 `ranking` requires the Frequency heading, no tabs or comparison chart, no category legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and 40 distinct frequency shades without category labels. `page-card` requires the /ð/ row marked open (`data-details-open`), "Common", "11th most common" of 40 with 3 of 4 meter bars lit (3.1%) and no link on the Frequency page itself, and the pattern `th` paired with "this, mother", both `th` emphasized. `menu` requires the header's three IPA Chart tabs, which show on every chart page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the /h/ panel from a transcription result to show "Less common", "29th most common" of 40 with 2 of 4 meter bars lit (1.35% in `phoneme-frequency.json`), the block linking to the Frequency page, and the pattern `h` paired with "house, hello"; `followed-link` requires that link to open the Frequency page.
 
 Clicking a sound whose card or panel is already open closes it; clicking another sound while the panel is open swaps the panel to it. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.
+
+## Merger notes
+
+Target accent: American English (`en-us`). The [checkpoints](../scripts/merger-notes.ts) read the open sound's section titles and each note's text, italic words and IPA spans. Expected text is the copy approved in [#365](https://github.com/rigomart/phonaria/issues/365), with /r/ written as the app's /ɹ/. `o-note` requires /ɔ/ to end with a **Cot and caught** section after Spelling; `ae-note` and `e-note` require **Mary, marry and merry** after Spelling; `no-note` requires /ɑ/ to have How it's made, Compare with and Spelling only.
+
+The journey takes viewport screenshots and no trace. Full-page captures of the pinned panel, or tracing, drove the renderer to 100% CPU after three or four panel opens, on sounds with and without notes, until every command timed out.
+
+### Executable journey
+
+Run each layout in light and dark: desktop 1280 × 900 opens the compact card and then the side panel; mobile 390 × 844 opens the drawer and expands it. On mobile, open the page fresh for each sound and wait about 1.5 s after hydration, or the tap can land while the previous drawer is still closing. After `init merger-notes`, `serve`, and `open about:blank`:
+
+```bash
+HYD="Object.keys(document.querySelector('main button')||{}).some(k=>k.startsWith('__reactProps'))"
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900   # or 390 844
+bun run verify browser "$VERIFY_RUN" set media light          # then dark
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/vowels
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+# For each of o-note (ɔ, "Open-mid back rounded vowel (ɔ)"), ae-note (æ), e-note (ɛ), no-note (ɑ):
+bun run verify browser "$VERIFY_RUN" find role button click --name "Open-mid back rounded vowel (ɔ)" --exact
+bun run verify browser "$VERIFY_RUN" find role button click --name "More about /ɔ/"
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
+# Scroll the last section into view so the screenshot shows the note.
+bun run verify observe "$VERIFY_RUN" o-note
+bun run verify capture "$VERIFY_RUN" o-note-desktop-light
+bun run verify browser "$VERIFY_RUN" press Escape
+```
+
+### Limits
+
+The note words have no recordings, so playback is not exercised. es-419 has no notes and no route renders its details; unit tests cover it.
 
 ## Minimal-pair speaking practice
 

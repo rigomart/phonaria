@@ -1,9 +1,11 @@
 import {
 	formatPhonemeLabel,
 	getIpaForPhonemeId,
+	getMergerNoteRegistryForLanguage,
 	getPhonemeType,
 	getSpellingPatternRegistryForLanguage,
 	type LanguagePhonemeId,
+	type MergerNote,
 	type PhonemeType,
 	type SpellingPattern,
 	type TargetAccent,
@@ -74,4 +76,14 @@ export function getSpellingPattern(
 		Record<LanguagePhonemeId<TargetAccent>, SpellingPattern>
 	> | null;
 	return registry?.[phonemeId];
+}
+
+export function getMergerNotes(
+	targetAccent: TargetAccent,
+	phonemeId: LanguagePhonemeId<TargetAccent>,
+): readonly MergerNote[] {
+	const registry = getMergerNoteRegistryForLanguage(targetAccent) as Partial<
+		Record<LanguagePhonemeId<TargetAccent>, readonly MergerNote[]>
+	> | null;
+	return registry?.[phonemeId] ?? [];
 }
