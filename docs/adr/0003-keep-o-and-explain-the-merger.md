@@ -1,6 +1,6 @@
 # ADR 0003: Keep /ɔ/ and explain that the recordings merge it
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-10-24
 - Related issues: [#358](https://github.com/rigomart/phonaria/issues/358),
   [#353](https://github.com/rigomart/phonaria/issues/353),
