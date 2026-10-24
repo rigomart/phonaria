@@ -3,7 +3,7 @@
 The evidence behind the merger notes on the /ɔ/, /æ/ and /ɛ/ sound details, which say that many
 US speakers merge these vowels. The Azure voice Jenny merges both in our recordings. The notes
 live in `packages/phonetics-data/src/languages/en/merger-notes.ts`, and
-[ADR 0003](../adr/0003-keep-o-with-a-voice-that-keeps-it.md) records what the app does about it.
+[ADR 0003](../adr/0003-keep-o-and-explain-the-merger.md) records what the app does about it.
 
 Prepared on 2026-10-23.
 
@@ -235,8 +235,9 @@ read.
   from ANAE ch. 2 directly.
 - Jenny merging marry and merry puts her with the majority pattern. The note should say that,
   rather than treat it as an error. Whether *Mary* is also merged by Jenny was not tested here.
-- If the note says "this voice keeps /ɔ/" that is a product statement and rests on our own
-  recordings, not on these sources.
+- The note's sentence about the recordings is a product statement and rests on our own
+  measurements, not on these sources: Jenny merges every measured cot–caught pair, and Guy, tried
+  as a second voice, merged 7 of the 15 published /ɔ/ words.
 
 ## What could not be verified
 
