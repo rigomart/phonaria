@@ -14,7 +14,13 @@ import {
 import type { TtsInput, TtsOutput, TtsProvider } from "./providers/types";
 import { probeReasons } from "./top-10k-probes";
 import { formSlug, isFormSlug, wordForms } from "./word-forms";
-import { buildAzureWordInput, getAzureIpa, getSyllables, type SyllableSource } from "./word-inputs";
+import {
+	buildAzureWordInput,
+	getAzureIpa,
+	getSyllables,
+	stressedOneSyllable,
+	type SyllableSource,
+} from "./word-inputs";
 import {
 	collectWordsWithPhonemic,
 	getWordPronunciation,
@@ -32,6 +38,8 @@ type Sample = {
 	pairs: { contrast: string; words: readonly string[] }[];
 	pronunciationChoice?: PronunciationChoice;
 	syllables?: SyllableSource;
+	/** Why this one-syllable input writes its stress mark, from `stressedOneSyllable`. */
+	stressWritten?: string;
 	pickedFor?: readonly string[];
 	input: TtsInput;
 	file: string;
@@ -155,12 +163,14 @@ function selectSamples(
 		return versions.map(({ pronunciation, form }): Sample => {
 			const slug = formSlug(word.word, form && "n" in form ? form.n : undefined);
 			if (!isFormSlug(slug)) throw new Error(`Unsafe word filename: ${slug}`);
+			const stressWritten = curated ? stressedOneSyllable[slug] : undefined;
+			const inputOptions = { ...options, stressOneSyllable: Boolean(stressWritten) };
 			return {
 				word: word.word,
 				...(form ? { form } : {}),
 				variant: pronunciation.variant,
 				cmuArpa: pronunciation.cmuArpa,
-				ipa: getAzureIpa(pronunciation, options),
+				ipa: getAzureIpa(pronunciation, inputOptions),
 				pairs: EnglishPhonemeContrasts.flatMap(({ id, minimalPairs }) =>
 					minimalPairs
 						.filter(({ words }) => words.includes(word.word))
@@ -170,10 +180,11 @@ function selectSamples(
 					? {
 							pronunciationChoice: form && "n" in form ? undefined : word.pronunciationChoice,
 							syllables: getSyllables(pronunciation, { allowRule: true }).source,
+							...(stressWritten ? { stressWritten } : {}),
 						}
 					: {}),
 				...(probes ? { pickedFor: probes.get(word.word) } : {}),
-				input: { ...buildAzureWordInput(pronunciation, options), id: slug },
+				input: { ...buildAzureWordInput(pronunciation, inputOptions), id: slug },
 				file: `audio/${slug}.${extension}`,
 				status: "planned",
 			};

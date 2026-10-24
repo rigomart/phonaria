@@ -140,6 +140,7 @@ export const rejectedForms: Readonly<Record<string, readonly string[]>> = {
 		"into: IX0 N T U1",
 		"sometimes: S AX0 M T AI1 M Z",
 	],
+	"recorded, but Azure says it the same as the chosen form (#358)": ["because: B IX0 K AH1 Z"],
 	"the form a reviewed choice replaced": [
 		"costume: K A0 S T U1 M",
 		"costumes: K A0 S T U1 M Z",
