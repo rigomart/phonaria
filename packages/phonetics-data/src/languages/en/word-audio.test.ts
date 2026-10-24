@@ -44,4 +44,13 @@ describe("EnglishWordAudio", () => {
 		expect([...catalogWords].filter((word) => !recorded.has(word))).toEqual([]);
 		expect([...practiceWords].filter((word) => !recorded.has(word))).toEqual([]);
 	});
+
+	it("moves only recorded words to another voice, each to one voice", () => {
+		const recorded = new Set(EnglishWordAudio.words);
+		const moved = Object.entries(EnglishWordAudio.voices ?? {});
+		expect(moved.map(([voice]) => voice)).not.toContain(EnglishWordAudio.voice);
+		const words = moved.flatMap(([, list]) => list);
+		expect(new Set(words).size).toBe(words.length);
+		expect(words.filter((word) => !recorded.has(word))).toEqual([]);
+	});
 });
