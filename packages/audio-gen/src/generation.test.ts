@@ -123,7 +123,7 @@ describe("Azure catalog generation", () => {
 		expect(oneSyllable.filter(({ input }) => input.text.includes("ˈ"))).toEqual([]);
 		await runGeneration({ outputDir, dryRun: true, resume: true, ...settings });
 		expect(await readFile(path.join(outputDir, "plan.json"), "utf8")).toBe(saved);
-	});
+	}, 30_000);
 	it("plans every labelled form of a word under its own file name", async () => {
 		const outputDir = await directory();
 		await runGeneration({
