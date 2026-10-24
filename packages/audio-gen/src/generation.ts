@@ -131,6 +131,7 @@ function selectSamples(
 	limit?: number,
 	extension = "mp3",
 	source: WordSource = "catalog",
+	saved = false,
 ): Sample[] {
 	if (limit !== undefined && (!Number.isInteger(limit) || limit < 1)) {
 		throw new Error("Word limit must be a positive integer");
@@ -140,7 +141,8 @@ function selectSamples(
 	}
 	if (!wordSources.includes(source)) throw new Error(`Unknown word source: ${source}`);
 	const curated = isCuratedTier(source);
-	const catalog = collectWordsWithPhonemic(source);
+	// A saved plan keeps words the source has excluded since.
+	const catalog = collectWordsWithPhonemic(source, saved ? new Set(words) : undefined);
 	const probes = source === "top-10k-probes" ? probeReasons() : undefined;
 	const byWord = new Map(catalog.map((word) => [word.word, word]));
 	const selection = words
@@ -272,6 +274,7 @@ export async function runGeneration(options: GenerationOptions) {
 				undefined,
 				audioFormat.extension,
 				plan.source,
+				true,
 			).map((sample) => [sample.file, sample]),
 		);
 		for (const sample of plan.samples) {

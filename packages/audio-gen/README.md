@@ -60,7 +60,12 @@ plan records where each input came from:
     (/ˌwʌt.ˈɛ.vɚ/, not /ˌwʌ.ˈtɛ.vɚ/), so the stop isn't aspirated.
 - **Left out**: heteronyms listed in `src/curated-words.ts` (*read*, *record*,
   *live*), contractions and possessives, abbreviations without a vowel letter,
-  and single letters other than *a* and *i*.
+  and single letters other than *a* and *i*. `src/excluded-words.ts` lists the
+  rest, each with a note (#360): fragments (*sci*, *re*, *los*, *lanka*),
+  abbreviations said letter by letter (*usa*, *dna*), and written abbreviations
+  (*jan*, *inc*). Real words, interjections, names and acronyms said as words
+  stay in (*etc*, *nasa*, *ok*). A saved plan keeps the words it already has, so
+  it still resumes; its clips of excluded words must stay out of the upload.
 
 When a probe or listening sample shows a wrong pick, add the word to
 `curatedPronunciations`. A wrong split goes in the checked syllables in

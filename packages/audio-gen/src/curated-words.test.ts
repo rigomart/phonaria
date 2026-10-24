@@ -2,6 +2,7 @@ import { LanguageWordAudioDataRegistry } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import { describe, expect, it } from "vitest";
 import { collectCuratedWords, getExclusionReason, pickPronunciation } from "./curated-words";
+import { excludedWords } from "./excluded-words";
 import { curatedPronunciations } from "./reviewed-pronunciations";
 
 const variantsOf = (word: string) => EnglishCuratedTop10k.words[word];
@@ -16,7 +17,7 @@ describe("curated word selection", () => {
 		expect(top10k.filter((word) => recorded.has(word))).toEqual([]);
 	});
 	it("skips words that are already recorded", () => {
-		const words = collectCuratedWords("top-1k", new Set(["the", "of"])).words;
+		const words = collectCuratedWords("top-1k", { recorded: new Set(["the", "of"]) }).words;
 		expect(words.slice(0, 2).map(({ word }) => word)).toEqual(["to", "and"]);
 	});
 	it.each([
@@ -29,8 +30,41 @@ describe("curated word selection", () => {
 		expect(getExclusionReason(word)).toBe(reason);
 		expect(collectCuratedWords("top-10k").excluded).toContainEqual({ word, reason });
 	});
-	it.each(["a", "i", "rhythm", "the", "read"])("keeps %s", (word) => {
+	it.each(
+		Object.entries(excludedWords).flatMap(([reason, words]) =>
+			Object.entries(words).map(([word, note]) => [word, reason, note]),
+		),
+	)("leaves out %s as a %s: %s", (word, reason) => {
+		expect(getExclusionReason(word)).toBe(reason);
+		expect(collectCuratedWords("top-10k").excluded).toContainEqual({ word, reason });
+	});
+	it.each([
+		"a",
+		"i",
+		"rhythm",
+		"the",
+		"read",
+		"ok",
+		"okay",
+		"us",
+		"it",
+		"do",
+		"so",
+		"etc",
+		"nasa",
+		"nato",
+		"aids",
+		"ex",
+		"pa",
+		"mar",
+	])("keeps %s", (word) => {
 		expect(getExclusionReason(word)).toBeUndefined();
+	});
+	it("keeps excluded words a saved plan already has, so it can resume", () => {
+		const saved = collectCuratedWords("top-1k", { saved: new Set(["al"]) });
+		expect(saved.words.map(({ word }) => word)).toContain("al");
+		expect(saved.excluded).not.toContainEqual(expect.objectContaining({ word: "al" }));
+		expect(collectCuratedWords("top-1k").words.map(({ word }) => word)).not.toContain("al");
 	});
 });
 

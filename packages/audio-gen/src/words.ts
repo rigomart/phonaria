@@ -53,9 +53,15 @@ export function getWordPronunciation(
 	};
 }
 
-export function collectWordsWithPhonemic(source: WordSource = "catalog"): WordWithPhonemic[] {
+/** `saved` words, already in a saved plan, stay in a curated tier that now excludes them. */
+export function collectWordsWithPhonemic(
+	source: WordSource = "catalog",
+	saved?: ReadonlySet<string>,
+): WordWithPhonemic[] {
 	if (source === "top-10k-probes") {
-		const byWord = new Map(collectWordsWithPhonemic("top-10k").map((entry) => [entry.word, entry]));
+		const byWord = new Map(
+			collectWordsWithPhonemic("top-10k", saved).map((entry) => [entry.word, entry]),
+		);
 		return [...probeReasons().keys()].map((word) => {
 			const entry = byWord.get(word);
 			if (!entry) throw new Error(`Probe word "${word}" isn't an unrecorded top-10k word`);
@@ -63,7 +69,7 @@ export function collectWordsWithPhonemic(source: WordSource = "catalog"): WordWi
 		});
 	}
 	if (source === "top-1k" || source === "top-10k") {
-		return collectCuratedWords(source).words.map(({ word, variants }) => {
+		return collectCuratedWords(source, { saved }).words.map(({ word, variants }) => {
 			const { variant, choice } = pickPronunciation(word, variants);
 			return { ...getWordPronunciation(word, [variant]), pronunciationChoice: choice };
 		});
