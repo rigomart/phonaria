@@ -7,7 +7,7 @@ import type { MergerNote } from "../types";
 const cotCaught = {
 	id: "cot-caught",
 	title: "Cot and caught",
-	text: "Many Americans say *cot* and *caught* with the same vowel, usually the /ɑ/ of *father*. Linguists call this the cot–caught merger. It's common in the West and across Canada, and it has been spreading in the rest of the US. Both ways of speaking are ordinary American English. The examples on this page use a voice that keeps the two sounds apart, so you can hear the difference.",
+	text: "Many Americans say *cot* and *caught* with the same vowel, usually the /ɑ/ of *father*. Linguists call this the cot–caught merger. It's common in the West and across Canada, and it has been spreading in the rest of the US. Both ways of speaking are ordinary American English. The examples here use a voice that keeps the two sounds apart, so you can hear the difference.",
 } as const satisfies MergerNote;
 
 const maryMarryMerry = {
