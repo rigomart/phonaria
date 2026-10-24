@@ -139,7 +139,7 @@ download the filled `review.tsv` over the old one. It shows why each word was pi
 never the check results, so the marks stay blind to them.
 
 `check` runs every check on each generated clip and writes `checks.json`, `checks.tsv`
-(each check's numbers) and `checks.md`. A clip that fails a check goes to listening:
+(each check's numbers) and `checks.md`. The checks:
 
 - **word-heard**: Azure's plain recognition hears the word, or words that sound like
   the clip's own pronunciation (*red* for *read--2*). Between vowels /t/ and /d/ count
@@ -170,6 +170,61 @@ with raw answers cached in `output/cache` by WAV bytes and request. A rerun cost
 calls, and copying the harness's `output/cache/azure` folder in makes the catalog clips
 free. `--offline` uses only the cache. The clips and scores are never used to train
 anything (Microsoft's terms).
+
+### A batch, from generation to upload
+
+```bash
+bun run --cwd packages/audio-gen generate --source=top-1k --out=output/top-1k-jenny-slower-10-ogg
+bun run --cwd packages/audio-gen check --out=output/top-1k-jenny-slower-10-ogg
+bun run --cwd packages/audio-gen sample --out=output/top-1k-jenny-slower-10-ogg
+bun run --cwd packages/audio-gen listen --out=output/top-1k-jenny-slower-10-ogg
+# mark every clip on listen.html, save review.tsv over the old one
+bun run --cwd packages/audio-gen upload --out=output/top-1k-jenny-slower-10-ogg \
+  --accent=en-us --voice=jenny --dry-run
+```
+
+`sample` writes the batch's review sheet, `sample.tsv`: the clips to listen to, each with
+its `reason`, and the check results behind it in `detail`. Most check flags are
+recogniser habits rather than bad clips, so a rule calibrated on the dev's marks of 1,251
+clips (#358) picks the flagged clips worth hearing:
+
+- word-heard and no-swapped-sound both failed;
+- word-heard failed and recognition heard a genuinely different word, not a habit: no
+  speech, a word that sounds the same in the full CMU dictionary, *un-X* heard as "and X",
+  one vowel swapped within a pair it blurs (ɪ–ɛ, æ–ɛ, ɑ–ʌ, u–ʊ, i–ɪ, ɔ–ɑ, ɔ–ʌ), or a /t/
+  or /d/ added or dropped after the first sound (*patients* for *patience*);
+- an audio check failed, or Azure's checks didn't run;
+- the clip is a second form (`read--2`).
+
+Then it adds 20 of the flagged clips the rule lets through, 15 passed clips from each risk
+group (rule syllable splits, rule pronunciation picks, each vowel pair Azure blurs,
+r-coloured vowels, and a /t/ that `closeTapSyllables` made tap), and 150 more passed clips
+at random. `--seed` (default 358) fixes the draw. Samples the current code would plan
+differently are left out, since upload leaves them out too. `sample --adopt=<list.tsv>`
+takes a hand-built list instead (a `file` column, and a `reason` or `picked_for` column).
+An existing sheet is replaced only with `--force`, because the dev may have marked it.
+
+`listen` shows the sheet when the batch has one, otherwise the whole plan.
+
+`upload` refuses a batch until `checks.json` covers every clip and every clip on the sheet
+is marked yes or no in `review.tsv`. It uploads every other clip except those marked no
+and those the current code would no longer plan the same way: the request changed (a
+stress mark or an /ɔ/ form), the form was dropped, or the source no longer selects the
+word (a fragment). The dry run and the upload record list each left-out clip and why.
+
+A clip that needs a retake goes in its own batch, generated with `--words` into a new
+folder, then checked, sampled, listened to and marked like any other. Upload it in the
+same run as the batch it fixes, with one `--out` per batch:
+
+```bash
+bun run --cwd packages/audio-gen upload --out=output/top-1k-jenny-slower-10-ogg \
+  --out=output/top-1k-retakes-2 --accent=en-us --voice=jenny --dry-run
+```
+
+Two batches may not publish the same key in one run: mark the clip you don't want no.
+A batch uploaded in a later run can replace a published key only with `--overwrite`.
+Upload a batch and its retakes before running `manifest`: a word the manifest lists is
+no longer selected, so upload would leave out its clips.
 
 ## Setup
 
@@ -287,14 +342,15 @@ The voice folder is the lowercase voice name, so Jenny's clips are
 `audio/en-us/words/jenny/seat.ogg`. A new accent or voice gets a sibling folder.
 The 400-word en-US Jenny set is uploaded.
 
-To upload a completed, reviewed output directory, run from the repo root. Use the
-app's pinned Wrangler (`wrangler` is not installed globally) and sign in first:
+To upload a checked, marked output directory (see "A batch, from generation to upload"),
+run from the repo root. Use the app's pinned Wrangler (`wrangler` is not installed
+globally) and sign in first:
 
 ```bash
 WRANGLER="$PWD/apps/phonaria/node_modules/.bin/wrangler"
 "$WRANGLER" login
 bun run --cwd packages/audio-gen upload \
-  --out=output/azure-spelling-304-jenny-slower-10-ogg \
+  --out=output/top-1k-jenny-slower-10-ogg \
   --accent=en-us --voice=jenny --bucket=rigos-assets --concurrency=8 --dry-run
 ```
 
@@ -309,8 +365,9 @@ the manifest (`en-US-JennyNeural` → `jenny`).
 The entire plan must be generated, with nonempty files whose SHA-256 checksums
 match. Ogg plans publish `.ogg` with `audio/ogg`; MP3 plans publish `.mp3` with
 `audio/mpeg` (the app manifest currently accepts Ogg only). No files outside the
-plan are uploaded. Dry run prints every exact key ↔ file mapping after local
-validation, makes no network or Wrangler calls, and writes no upload record.
+plan are uploaded. Dry run prints every exact key ↔ file mapping and every left-out
+clip with its reason after local validation, makes no network or Wrangler calls, and
+writes no upload record.
 A generation dry-run plan is unfinished and cannot pass this validation.
 
 Before any upload, public HEAD requests to `https://assets.rigos.dev/<key>`
@@ -318,9 +375,9 @@ check every destination. HTTP 200 refuses the batch unless `--overwrite` is
 explicit; only HTTP 404 counts as absent, and other responses stop the batch.
 After each upload, HEAD must return 200, the expected content-type and exact
 content-length. Any upload or verification failure exits non-zero. Each run
-writes an `upload-<timestamp>-<id>.json` beside `plan.json`, including bucket,
-key, file, size, SHA-256, upload time, verification result, and any error for each
-attempt. These records are checkpoints after each attempt and never replace a
+writes an `upload-<timestamp>-<id>.json` beside each batch's `plan.json`, including
+bucket, the batches, key, file, size, SHA-256, upload time, verification result, and
+any error for each attempt, and each left-out clip with its reason. These records are checkpoints after each attempt and never replace a
 previous run's record. An uploaded but unverified object still exists; inspect
 the record before retrying with `--overwrite`. The public hostname is fixed;
 a different bucket must also be served there for these checks to be meaningful.
@@ -347,6 +404,8 @@ to run unless every sample in `plan.json` is generated and an Ogg file, and
 takes the voice folder from the plan's voice (`en-US-JennyNeural` becomes
 `jenny`). The phonetics-data tests require full minimal-pair catalog coverage
 and allow additional recorded spelling examples. Add new words only after upload.
+The manifest still lists every word of the plan, so it can't take a batch with
+left-out clips yet; nor labelled forms, which the top-10k batches have.
 
 ## Voice and speed probes
 

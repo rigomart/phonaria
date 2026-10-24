@@ -2,8 +2,8 @@ import { createHash } from "node:crypto";
 import { access, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout } from "node:timers/promises";
-import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
-import type { PronunciationChoice } from "./curated-words";
+import { EnglishPhonemeContrasts, LanguageWordAudioDataRegistry } from "@phonaria/phonetics-data";
+import { getExclusionReason, type PronunciationChoice } from "./curated-words";
 import {
 	AzureNetworkError,
 	createAzureProvider,
@@ -29,7 +29,7 @@ import {
 	wordSources,
 } from "./words";
 
-type Sample = {
+export type Sample = {
 	word: string;
 	form?: { n?: number; label: string };
 	variant: string;
@@ -46,7 +46,7 @@ type Sample = {
 	status: "planned" | "generated" | "failed";
 	sha256?: string;
 };
-type Plan = {
+export type Plan = {
 	version: 1;
 	createdAt: string;
 	source?: WordSource;
@@ -194,6 +194,92 @@ function selectSamples(
 	});
 }
 
+/** Why the current code wouldn't plan a saved sample the same way. */
+export type PlanChange = {
+	/**
+	 * `excluded`: the source now leaves the word out (a fragment). `already recorded`: the
+	 * manifest lists the word, so the source no longer offers it. `no longer selected`: the
+	 * source dropped the word for another reason.
+	 */
+	readonly kind:
+		| "excluded"
+		| "already recorded"
+		| "no longer selected"
+		| "form dropped"
+		| "planned differently";
+	readonly reason: string;
+};
+
+/**
+ * Compares a saved plan with what the current code plans for the same words, by file,
+ * since a plan that skipped generated samples can hold only some forms of a word.
+ * `changed` holds each saved sample the code would no longer plan the same way;
+ * `unplanned`, what the code plans for those words that the saved plan doesn't hold.
+ * A word the source now excludes is still compared, as the plan saved it.
+ */
+export function compareWithCurrentCode(
+	plan: Pick<Plan, "source" | "samples">,
+	extension: string,
+): { changed: Map<string, PlanChange>; unplanned: Sample[] } {
+	const source = plan.source ?? "catalog";
+	const planWords = new Set(plan.samples.map(({ word }) => word));
+	const selectable = new Set(collectWordsWithPhonemic(source).map(({ word }) => word));
+	const kept = new Set(collectWordsWithPhonemic(source, planWords).map(({ word }) => word));
+	const words = [...planWords].filter((word) => kept.has(word));
+	const expected = new Map(
+		(words.length ? selectSamples(words, undefined, extension, source, true) : []).map((sample) => [
+			sample.file,
+			sample,
+		]),
+	);
+	const recorded = new Set(LanguageWordAudioDataRegistry["en-us"].words);
+	const changed = new Map<string, PlanChange>();
+	for (const sample of plan.samples) {
+		const current = expected.get(sample.file);
+		expected.delete(sample.file);
+		if (!kept.has(sample.word)) {
+			changed.set(
+				sample.file,
+				recorded.has(sample.word)
+					? {
+							kind: "already recorded",
+							reason: `the word-audio manifest already lists "${sample.word}"`,
+						}
+					: { kind: "no longer selected", reason: `${source} no longer selects "${sample.word}"` },
+			);
+		} else if (!current) {
+			changed.set(sample.file, {
+				kind: "form dropped",
+				reason: `"${sample.word}" no longer has the form ${sample.file}`,
+			});
+		} else {
+			const { status: _saved, sha256: _sha256, ...saved } = sample;
+			const { status: _status, ...now } = current;
+			if (JSON.stringify(saved) === JSON.stringify(now)) {
+				if (!selectable.has(sample.word))
+					changed.set(sample.file, {
+						kind: "excluded",
+						reason: `${source} now leaves out "${sample.word}": ${getExclusionReason(sample.word) ?? "excluded"}`,
+					});
+				continue;
+			}
+			const fields = [...new Set([...Object.keys(saved), ...Object.keys(now)])].filter(
+				(field) =>
+					JSON.stringify(saved[field as keyof typeof saved]) !==
+					JSON.stringify(now[field as keyof typeof now]),
+			);
+			const changes = `${fields.join(", ") || "field order"} changed`;
+			changed.set(sample.file, {
+				kind: "planned differently",
+				reason: fields.includes("input")
+					? `now requests /${now.ipa}/, not /${saved.ipa}/ (${changes})`
+					: changes,
+			});
+		}
+	}
+	return { changed, unplanned: [...expected.values()] };
+}
+
 function reviewSheet(samples: Sample[]): string {
 	const columns = [
 		"file",
@@ -267,37 +353,27 @@ export async function runGeneration(options: GenerationOptions) {
 			);
 		}
 		if (!Array.isArray(plan.samples)) throw new Error("Invalid saved samples");
-		// By file: a plan that skipped generated samples can hold only some forms of a word.
-		const expected = new Map(
-			selectSamples(
-				[...new Set(plan.samples.map(({ word }) => word))],
-				undefined,
-				audioFormat.extension,
-				plan.source,
-				true,
-			).map((sample) => [sample.file, sample]),
-		);
+		if (!plan.samples.length) throw new Error("Saved plan has no samples");
+		const { changed, unplanned: missing } = compareWithCurrentCode(plan, audioFormat.extension);
 		for (const sample of plan.samples) {
-			const { status, sha256, ...identity } = sample;
-			const { status: _status, ...expectedIdentity } = expected.get(sample.file) ?? {};
+			// A saved plan keeps words the source has excluded since, so it can resume.
+			const kind = changed.get(sample.file)?.kind;
 			if (
-				JSON.stringify(identity) !== JSON.stringify(expectedIdentity) ||
-				!["planned", "generated", "failed"].includes(status)
+				(kind && kind !== "excluded") ||
+				!["planned", "generated", "failed"].includes(sample.status)
 			) {
 				throw new Error(
 					`Saved pronunciation or request changed for ${sample.word}; use a new output directory`,
 				);
 			}
-			if (status === "generated") {
+			if (sample.status === "generated") {
 				const file = path.join(options.outputDir, sample.file);
-				if (!(await exists(file)) || checksum(await readFile(file)) !== sha256) {
+				if (!(await exists(file)) || checksum(await readFile(file)) !== sample.sha256) {
 					throw new Error(`Completed recording is missing or changed: ${sample.file}`);
 				}
 			}
-			expected.delete(sample.file);
 		}
 		// A form left out of the plan must have been generated by a skipped plan.
-		const missing = [...expected.values()];
 		if (missing.length) {
 			const skipDirs = (plan.skippedGenerated ?? []).map(({ dir }) =>
 				path.resolve(options.outputDir, dir),

@@ -20,6 +20,7 @@
 		"upload": "bun src/upload.ts",
 		"probe": "bun src/probe.ts",
 		"check": "bun src/check.ts",
+		"sample": "bun src/sample.ts",
 		"listen": "bun src/listen.ts"
 	},
 	"dependencies": {

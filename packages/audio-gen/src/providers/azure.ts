@@ -22,6 +22,13 @@ export function getAzureAudioFormat(audioFormat = "mp3") {
 	throw new Error("Azure audio format must be mp3 or ogg");
 }
 
+/** The format a saved plan's Azure output format names, if supported. */
+export function findAzureAudioFormat(outputFormat: unknown) {
+	return [getAzureAudioFormat("ogg"), getAzureAudioFormat("mp3")].find(
+		(format) => format.outputFormat === outputFormat,
+	);
+}
+
 export function getAzureRate(ratePercent = 0): number {
 	if (!Number.isInteger(ratePercent) || ratePercent < -50 || ratePercent > 100) {
 		throw new Error("Azure speaking rate must be an integer percentage from -50 to 100");

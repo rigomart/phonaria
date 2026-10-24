@@ -4,7 +4,7 @@ import path from "node:path";
 import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as excluded from "./excluded-words";
-import { runGeneration } from "./generation";
+import { compareWithCurrentCode, runGeneration } from "./generation";
 import { AzureNetworkError, createAzureProvider } from "./providers/azure";
 import type { TtsProvider } from "./providers/types";
 
@@ -595,5 +595,43 @@ describe("Azure catalog generation", () => {
 			release();
 			await first;
 		}
+	});
+});
+
+describe("comparing a saved plan with the current code", () => {
+	it("names each sample planned differently, dropped, or no longer selected", async () => {
+		const outputDir = await directory();
+		await runGeneration({
+			outputDir,
+			dryRun: true,
+			source: "top-10k",
+			words: ["read"],
+			...settings,
+		});
+		const plan = JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8"));
+		const [read, readPast] = plan.samples;
+		const samples = [
+			{ ...read, ipa: "ɹɛd", input: { ...read.input, text: "changed" } },
+			{ ...readPast, file: "audio/read--3.mp3" },
+			{ ...read, word: "zzz", file: "audio/zzz.mp3" },
+		];
+		const { changed, unplanned } = compareWithCurrentCode({ ...plan, samples }, "mp3");
+		expect([...changed]).toEqual([
+			[
+				"audio/read.mp3",
+				{
+					kind: "planned differently",
+					reason: "now requests /ɹid/, not /ɹɛd/ (ipa, input changed)",
+				},
+			],
+			[
+				"audio/read--3.mp3",
+				{ kind: "form dropped", reason: '"read" no longer has the form audio/read--3.mp3' },
+			],
+			["audio/zzz.mp3", { kind: "no longer selected", reason: 'top-10k no longer selects "zzz"' }],
+		]);
+		expect(unplanned.map(({ file }) => file)).toEqual(["audio/read--2.mp3"]);
+		const unselected = compareWithCurrentCode({ ...plan, samples: samples.slice(2) }, "mp3");
+		expect([...unselected.changed.keys()]).toEqual(["audio/zzz.mp3"]);
 	});
 });
