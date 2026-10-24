@@ -22,7 +22,7 @@ function cacheValue(word: string, value: CmudictCacheValue): void {
 	}
 }
 
-function mapVariants(pronunciationsJson: string): CmudictVariant[] {
+function mapVariants(word: string, pronunciationsJson: string): CmudictVariant[] {
 	let parsed: unknown;
 	try {
 		parsed = JSON.parse(pronunciationsJson);
@@ -37,7 +37,7 @@ function mapVariants(pronunciationsJson: string): CmudictVariant[] {
 			typeof variant === "string" && tokenizePronunciation(variant).length > 0,
 	);
 	// The same display order as the curated lists: an /ɔ/ form ahead of its /ɑ/ form.
-	return preferOForms(variants).map((variant) => syllabify(tokenizePronunciation(variant)));
+	return preferOForms(word, variants).map((variant) => syllabify(tokenizePronunciation(variant)));
 }
 
 export type CmudictLookupOptions = {
@@ -73,7 +73,7 @@ export async function lookupManyCmudict(
 			.where(inArray(words.word, missing));
 
 		for (const row of rows) {
-			const mapped = mapVariants(row.pronunciations);
+			const mapped = mapVariants(row.word, row.pronunciations);
 			const value = mapped.length > 0 ? mapped : null;
 			resolved.set(row.word, value);
 			cacheValue(row.word, value);

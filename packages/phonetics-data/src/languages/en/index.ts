@@ -38,5 +38,5 @@ export {
 	type PhonemeSubstitution,
 	toBasePhonemeIds,
 } from "./minimal-pairs";
-export { isOFormOf, preferOForms } from "./o-forms";
+export { isOFormOf, OFormExceptions, preferOForms, spellsOVowel } from "./o-forms";
 export { EnglishPhonemeSpellingPatterns } from "./patterns";

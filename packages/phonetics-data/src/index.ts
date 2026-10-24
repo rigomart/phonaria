@@ -85,7 +85,7 @@ export {
 	type PhonemeSubstitution,
 	toBasePhonemeIds,
 } from "./languages/en/minimal-pairs";
-export { isOFormOf, preferOForms } from "./languages/en/o-forms";
+export { isOFormOf, OFormExceptions, preferOForms, spellsOVowel } from "./languages/en/o-forms";
 export { EnglishPhonemeSpellingPatterns } from "./languages/en/patterns";
 export type {
 	EnglishConsonantSymbolId,

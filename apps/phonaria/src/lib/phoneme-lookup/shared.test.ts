@@ -21,9 +21,12 @@ describe("lookupTier1", () => {
 		expect(result).toBeNull();
 	});
 
-	it("puts an /ɔ/ form ahead of its /ɑ/ form", () => {
-		expect(lookupTier1("on")).toEqual(["O1 N", "A1 N"]);
-		expect(lookupTier1("the")).toEqual(EnglishCuratedTop1k.words.the);
+	it("puts the /ɔ/ form of a THOUGHT or CLOTH word ahead of its /ɑ/ form", () => {
+		expect(lookupTier1("cost")).toEqual(["K O1 S T", "K A1 S T"]);
+	});
+
+	it.each(["on", "lot", "the"])("keeps dictionary order for %s", (word) => {
+		expect(lookupTier1(word)).toEqual(EnglishCuratedTop1k.words[word]);
 	});
 });
 

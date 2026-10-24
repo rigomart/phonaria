@@ -174,8 +174,16 @@ shorten a pronunciation.
 
 Phonaria teaches /ɔ/ (`O`) apart from /ɑ/ (`A`). Where the dictionary lists two
 forms of a word that differ only in one vowel, /ɑ/ in one and /ɔ/ in the other at
-the same stress (*caught* `K A1 T`, `K O1 T`), `preferOForms(variants)` swaps the
-/ɔ/ form into the /ɑ/ form's place and leaves every other form where it was;
-`isOFormOf` checks one pair. The app's transcription orders the curated lists and
-the full dictionary with it, and audio-gen's pronunciation rule uses it, so the
-shown form and the recording agree. The data files keep CMU order.
+the same stress (*caught* `K A1 T`, `K O1 T`), `preferOForms(word, variants)` swaps
+the /ɔ/ form into the /ɑ/ form's place and leaves every other form where it was.
+It does so only for THOUGHT and CLOTH words, told apart by spelling the way
+Merriam-Webster and American Heritage split them (`spellsOVowel`): *au*, *aw*,
+*augh*, *ough*; *a* + *l* + consonant (*talk*); *o* before *s*, *f*, *th*, *g* or
+*ng* (*boss*, *soft*, *long*). LOT words (*lot*, *doctor*), *o* before *n* (*on*),
+*wa-* words (*want*) and the reviewed `OFormExceptions` (*gospel*, *mosque*) keep
+CMU order. The spelling test is an approximation over the whole word, so it only
+applies when every /ɑ/–/ɔ/ pair of the word is at the same vowel.
+
+The app's transcription orders the curated lists and the full dictionary with it,
+and audio-gen's pronunciation rule uses it, so the shown form and the recording
+agree. The data files keep CMU order.
