@@ -1,4 +1,8 @@
-import { LanguageWordAudioDataRegistry, phonemeVariantToCmuArpa } from "@phonaria/phonetics-data";
+import {
+	LanguageWordAudioDataRegistry,
+	phonemeVariantToCmuArpa,
+	preferOForms,
+} from "@phonaria/phonetics-data";
 import { EnglishCuratedTop1k } from "@phonaria/phonetics-data/data/en/curated-1k";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import { curatedPronunciations } from "./reviewed-pronunciations";
@@ -25,7 +29,8 @@ const vowelCount = (variant: string) => variant.match(/[012]/g)?.length ?? 0;
 /**
  * Picks the form a speaker would say alone: a reviewed choice, then a heteronym's main
  * meaning, then the first dictionary form, except that a one-syllable word takes its first
- * stressed one-syllable form (/ðʌ/, not /ðə/). Throws when there are no variants.
+ * stressed one-syllable form (/ðʌ/, not /ðə/). In a THOUGHT or CLOTH word an /ɔ/ form takes
+ * the place of its /ɑ/ form (`preferOForms`), so caught is /kɔt/. Throws without variants.
  */
 export function pickPronunciation(
 	word: string,
@@ -43,16 +48,19 @@ export function pickPronunciation(
 	if (!variants.length) throw new Error(`No pronunciation for "${word}"`);
 	if (new Set(variants.map(phonemeVariantToCmuArpa)).size === 1)
 		return { variant: variants[0], choice: { source: "only", reason: "only dictionary form" } };
-	const sameLength = variants.filter((variant) => vowelCount(variant) === vowelCount(variants[0]));
+	const ordered = preferOForms(word, variants);
+	const sameLength = ordered.filter((variant) => vowelCount(variant) === vowelCount(ordered[0]));
 	const stressed =
-		vowelCount(variants[0]) === 1 ? sameLength.find((variant) => /1/.test(variant)) : undefined;
-	const variant = stressed ?? variants[0];
+		vowelCount(ordered[0]) === 1 ? sameLength.find((variant) => /1/.test(variant)) : undefined;
+	const variant = stressed ?? ordered[0];
+	const rule = stressed ? "first stressed one-syllable form" : "first dictionary form";
+	const preferredO = ordered.indexOf(variant) !== variants.indexOf(variant);
 	const others = variants.filter((other) => other !== variant).join(" | ");
 	return {
 		variant,
 		choice: {
 			source: "rule",
-			reason: `${stressed ? "first stressed one-syllable form" : "first dictionary form"}; not ${others}`,
+			reason: `${preferredO ? `/ɔ/ form of the ${rule}` : rule}; not ${others}`,
 		},
 	};
 }
