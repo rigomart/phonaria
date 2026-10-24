@@ -63,6 +63,15 @@ describe("processWords (tier 3 — DB lookup)", () => {
 		expect(result[0].variants).toHaveLength(2);
 	});
 
+	it("shows the /ɔ/ form of a word ahead of its /ɑ/ form", async () => {
+		mockDbResults([{ word: "CAUGHT", pronunciations: JSON.stringify(["K A1 T", "K O1 T"]) }]);
+
+		const [caught] = await processWords(["caught"]);
+
+		const vowels = caught.variants.map((variant) => variant[0].phonemes[1].phonemeId);
+		expect(vowels).toEqual(["O", "A"]);
+	});
+
 	it('returns source "fallback" for words not in DB', async () => {
 		mockDbResults([]);
 

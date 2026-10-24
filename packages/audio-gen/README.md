@@ -34,6 +34,14 @@ plan records where each input came from:
   count, gives a one-syllable word its first stressed form (*the* → /ðʌ/, not
   /ðə/), and keeps the first dictionary form of longer words (`rule`). The
   reason names the forms it passed over.
+- **/ɔ/ over /ɑ/**: when two forms differ only in one vowel, /ɑ/ in one and /ɔ/
+  in the other (*caught* `K A1 T`, `K O1 T`), the /ɔ/ form takes the /ɑ/ form's
+  place before the rule runs (`preferOForms` in `@phonaria/phonetics-data`), and
+  the reason starts "/ɔ/ form of the …". Phonaria teaches /ɔ/ as its own sound,
+  and the app shows the same form (#365). This changed 9 top-1k and 46 top-10k
+  picks; their retakes are in `output/top-1k-retakes-o/` and
+  `output/top-10k-retakes-o/`, and the old clips for those words must stay out
+  of the upload.
 - **Syllables** (`syllables`): checked splits come first (`checked`). Otherwise
   each vowel takes the longest onset English allows (`rule`). Before an
   unstressed vowel, /s/ + nasal or /l/ splits (*assess.ment*), and /tw/, /dw/ split

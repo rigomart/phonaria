@@ -1,4 +1,4 @@
-import { tokenizePronunciation } from "@phonaria/phonetics-data";
+import { preferOForms, tokenizePronunciation } from "@phonaria/phonetics-data";
 import { inArray } from "drizzle-orm";
 import { type AppDatabase, getDb } from "@/db/drizzle";
 import { words } from "@/db/schema";
@@ -32,17 +32,12 @@ function mapVariants(pronunciationsJson: string): CmudictVariant[] {
 
 	if (!Array.isArray(parsed)) return [];
 
-	const mapped: CmudictVariant[] = [];
-	for (const variant of parsed) {
-		if (typeof variant !== "string") continue;
-
-		const tokens = tokenizePronunciation(variant);
-
-		if (tokens.length === 0) continue;
-		mapped.push(syllabify(tokens));
-	}
-
-	return mapped;
+	const variants = parsed.filter(
+		(variant): variant is string =>
+			typeof variant === "string" && tokenizePronunciation(variant).length > 0,
+	);
+	// The same display order as the curated lists: an /ɔ/ form ahead of its /ɑ/ form.
+	return preferOForms(variants).map((variant) => syllabify(tokenizePronunciation(variant)));
 }
 
 export type CmudictLookupOptions = {
