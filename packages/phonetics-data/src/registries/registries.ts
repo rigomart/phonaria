@@ -43,6 +43,7 @@ import type {
 	WordAudioManifest,
 } from "../languages/types";
 import { deepFreeze } from "../shared/readonly";
+import { findWordAudioForms, findWordAudioPath, type WordAudioRecording } from "./word-audio";
 
 // Language articulation registry types
 
@@ -189,8 +190,6 @@ export const LanguageWordAudioDataRegistry = deepFreeze({
 	"es-419": null,
 } as const satisfies Record<TargetAccent, WordAudioManifest | null>);
 
-const wordAudioWordSets = new Map<TargetAccent, ReadonlySet<string>>();
-
 export function getCmuArpaRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageCmuArpaDataRegistry)[TLanguage] {
@@ -234,12 +233,20 @@ export function getMergerNoteRegistryForLanguage<TLanguage extends TargetAccent>
  */
 export function getWordAudioPath(targetAccent: TargetAccent, word: string): string | null {
 	const manifest = LanguageWordAudioDataRegistry[targetAccent];
-	const normalized = word.toLowerCase().trim();
-	if (!manifest) return null;
-	let words = wordAudioWordSets.get(targetAccent);
-	if (!words) wordAudioWordSets.set(targetAccent, (words = new Set(manifest.words)));
-	if (!words.has(normalized)) return null;
-	return `audio/${targetAccent}/words/${manifest.voice}/${normalized}.ogg`;
+	return manifest ? findWordAudioPath(manifest, targetAccent, word) : null;
+}
+
+/**
+ * Every recording of a word, main form first: a heteronym's meanings ("present tense",
+ * "past tense"), or an "also said" form beside the main one. A word recorded once has one
+ * entry without a label; a word without a recording, none.
+ */
+export function getWordAudioForms(
+	targetAccent: TargetAccent,
+	word: string,
+): readonly WordAudioRecording[] {
+	const manifest = LanguageWordAudioDataRegistry[targetAccent];
+	return manifest ? findWordAudioForms(manifest, targetAccent, word) : [];
 }
 
 export type { CmuArpaToken, CmuStressLevel };

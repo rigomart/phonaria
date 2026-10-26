@@ -13,6 +13,7 @@
   - Minimal-pair helpers: `getSinglePronunciation()`, `findSubstitution()`, `toBasePhonemeIds()`
   - `getPhonemeFrequencyRegistryForLanguage()`: each sound's share of everyday speech and its rank (en-us only, behind the `phonemeFrequency` capability)
   - `getWordAudioPath()`: bucket-relative path of a word's recording (`audio/en-us/words/jenny/seat.ogg`), or `null` when the word has none (en-us only, behind the `wordAudio` capability)
+  - `getWordAudioForms()`: every recording of a word as `{ path, label }`, main form first, for words recorded once per meaning or form (`read`: "present tense", `read--2.ogg`: "past tense"); single-word surfaces play only the main form
   - `getMergerNoteRegistryForLanguage()`: plain-language notes on vowel mergers, by sound (cot–caught on /ɔ/, Mary–marry–merry on /æ/ and /ɛ/; en-us only, behind the `mergerNotes` capability)
   - Spelling examples carry a `spelled` form marking the letters that spell the sound (`"ha[pp]y"`); `splitSpelledWord()` splits it for display
   - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`, `phoneme-frequency`
