@@ -137,9 +137,26 @@ export function manifestFile(targetAccent: string): string {
 	return file;
 }
 
-/** One word per line; `forms` only when some word has them. */
+/**
+ * One line per initial letter in `words` and one line per word in `forms`, so a new batch
+ * changes a few lines instead of thousands. `forms` only when some word has them.
+ */
 export function renderManifestJson({ voice, words, forms }: WordAudioManifest): string {
-	return `${JSON.stringify({ voice, words, ...(forms ? { forms } : {}) }, null, "\t")}\n`;
+	const byLetter = new Map<string, string[]>();
+	for (const word of words)
+		byLetter.set(word[0], [...(byLetter.get(word[0]) ?? []), JSON.stringify(word)]);
+	const wordLines = [...byLetter.values()].map((group) => group.join(", "));
+	const sections = [
+		`\t"voice": ${JSON.stringify(voice)}`,
+		`\t"words": [\n${wordLines.map((line) => `\t\t${line}`).join(",\n")}\n\t]`,
+	];
+	if (forms) {
+		const formLines = Object.entries(forms).map(
+			([word, listed]) => `\t\t${JSON.stringify(word)}: ${JSON.stringify(listed)}`,
+		);
+		sections.push(`\t"forms": {\n${formLines.join(",\n")}\n\t}`);
+	}
+	return `{\n${sections.join(",\n")}\n}\n`;
 }
 
 /** Merges two manifests of one voice, keeping every word and form either lists. */

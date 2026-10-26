@@ -156,11 +156,19 @@ describe("merging into the manifest", () => {
 		expect(() => mergeManifests(existing, { voice: "aria", words: [] })).toThrow(/voice/i);
 	});
 
-	it("renders one word per line and leaves out forms when no word has them", () => {
-		const json = renderManifestJson({ voice: "jenny", words: ["seat", "seed"] });
-		expect(JSON.parse(json)).toEqual({ voice: "jenny", words: ["seat", "seed"] });
-		expect(json).toContain('\t\t"seat",\n\t\t"seed"\n');
+	it("renders one line per initial letter and leaves out forms when no word has them", () => {
+		const json = renderManifestJson({ voice: "jenny", words: ["bed", "seat", "seed"] });
+		expect(JSON.parse(json)).toEqual({ voice: "jenny", words: ["bed", "seat", "seed"] });
+		expect(json).toContain('\t\t"bed",\n\t\t"seat", "seed"\n');
 		expect(json).not.toContain("forms");
+		const withForms = renderManifestJson({
+			voice: "jenny",
+			words: ["read"],
+			forms: { read: [{ label: "present tense" }, { n: 2, label: "past tense" }] },
+		});
+		expect(withForms).toContain(
+			'\t\t"read": [{"label":"present tense"},{"n":2,"label":"past tense"}]\n',
+		);
 		expect(manifestFile("en-us")).toBe("data/en/word-audio.json");
 		expect(() => manifestFile("es-419")).toThrow(/es-419/);
 	});
