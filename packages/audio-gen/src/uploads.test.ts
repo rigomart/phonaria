@@ -17,6 +17,11 @@ import {
 	type UploadOptions,
 } from "./uploads";
 
+// Plans as before the top-10k upload; the live manifest leaves no curated word to plan.
+vi.mock("@phonaria/phonetics-data/data/en/word-audio", async () => ({
+	EnglishWordAudio: (await import("./fixtures/recorded-before-top-10k")).wordAudioBeforeTop10k,
+}));
+
 const temporary: string[] = [];
 afterEach(async () => {
 	await Promise.all(temporary.splice(0).map((dir) => rm(dir, { recursive: true, force: true })));
