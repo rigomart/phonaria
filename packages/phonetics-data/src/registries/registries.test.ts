@@ -15,9 +15,9 @@ import {
 	getPhonemeArticulationRegistryForLanguage,
 	getPhonemeFrequencyRegistryForLanguage,
 	getSpellingPatternRegistryForLanguage,
-	getWordAudioPath,
 	hasLanguageFeature,
 	LANGUAGE_FEATURE_KEYS,
+	loadWordAudioManifest,
 	PHONEME_ARTICULATORY_FEATURE_KEYS,
 	TARGET_ACCENTS,
 } from "../index";
@@ -97,7 +97,7 @@ describe("accent selection", () => {
 });
 
 describe.each(TARGET_ACCENTS)("%s feature availability", (accent) => {
-	it("declares data-backed capabilities in agreement with selector results", () => {
+	it("declares data-backed capabilities in agreement with selector results", async () => {
 		const available = {
 			articulations:
 				getLanguagePhonemeIds(accent).length > 0 &&
@@ -108,7 +108,7 @@ describe.each(TARGET_ACCENTS)("%s feature availability", (accent) => {
 			spellingPatterns: getSpellingPatternRegistryForLanguage(accent) !== null,
 			phonemeFrequency: getPhonemeFrequencyRegistryForLanguage(accent) !== null,
 			mergerNotes: getMergerNoteRegistryForLanguage(accent) !== null,
-			wordAudio: getWordAudioPath(accent, "seat") !== null,
+			wordAudio: (await loadWordAudioManifest(accent)) !== null,
 		};
 		const capabilities = getLanguageFeatureCapabilities(accent);
 		for (const feature of LANGUAGE_FEATURE_KEYS) {

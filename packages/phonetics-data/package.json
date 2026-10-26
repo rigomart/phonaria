@@ -15,7 +15,8 @@
 		"./data/en/curated-1k": "./src/data/en/curated-1k.ts",
 		"./data/en/curated-10k": "./src/data/en/curated-10k.ts",
 		"./data/en/cmudict-stats": "./src/data/en/cmudict-stats.ts",
-		"./data/en/phoneme-frequency": "./src/data/en/phoneme-frequency.ts"
+		"./data/en/phoneme-frequency": "./src/data/en/phoneme-frequency.ts",
+		"./data/en/word-audio": "./src/data/en/word-audio.ts"
 	},
 	"packageManager": "bun@1.3.2",
 	"scripts": {

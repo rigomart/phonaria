@@ -1,5 +1,5 @@
-import { LanguageWordAudioDataRegistry } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
+import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import { describe, expect, it } from "vitest";
 import { collectCuratedWords, getExclusionReason, pickPronunciation } from "./curated-words";
 import { excludedWords } from "./excluded-words";
@@ -11,7 +11,7 @@ describe("curated word selection", () => {
 	it("selects unrecorded words in frequency order, the top-1k inside the top-10k", () => {
 		const top1k = collectCuratedWords("top-1k").words.map(({ word }) => word);
 		const top10k = collectCuratedWords("top-10k").words.map(({ word }) => word);
-		const recorded = new Set(LanguageWordAudioDataRegistry["en-us"].words);
+		const recorded = new Set(EnglishWordAudio.words);
 		expect(top1k.slice(0, 4)).toEqual(["the", "to", "and", "of"]);
 		expect(top10k.slice(0, top1k.length)).toEqual(top1k);
 		expect(top10k.filter((word) => recorded.has(word))).toEqual([]);

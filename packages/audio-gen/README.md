@@ -397,8 +397,8 @@ such as `jenny-2` needs explicit plan/manifest support before this command can u
 it. `--voice` cannot silently redirect a Jenny plan into another folder.
 
 The app only offers a play button for words listed in the committed manifest,
-`packages/phonetics-data/data/en/word-audio.json`, read through
-`getWordAudioPath()` and `getWordAudioForms()`. The command below writes that
+`packages/phonetics-data/data/en/word-audio.json`, which the app loads on demand
+and reads through `getWordAudioPath()` and `getWordAudioForms()`. The command below writes that
 file; don't edit it by hand. After uploading, regenerate it from the repo root,
 with one `--out` per batch uploaded together:
 

@@ -597,8 +597,14 @@ v set viewport 1280 800
 v set media light
 v open http://127.0.0.1:3000/ipa-chart/vowels
 v wait --fn "Object.keys(document.querySelector('[aria-label=\"Close front unrounded vowel (i)\"]')||{}).some(k=>k.startsWith('__reactProps'))"
+v network requests > "$VERIFY_RUN/network-before-card.json"   # must not list data/en/word-audio
+v wait 1500   # on mobile a tap right after hydration can close the drawer
 v find role button click --name "Close front unrounded vowel (i)" --exact
+v wait --fn "!!document.querySelector('[aria-label^=\"More about /i/\"]')"
+v wait 700
 v find role button click --name "More about /i/: Close front unrounded vowel"
+v wait --fn "!!document.querySelector('[data-phoneme-details] button[aria-label=\"Hear seat\"]:not([aria-disabled])')"
+v network requests > "$VERIFY_RUN/network-after-card.json"    # must list it
 v wait 1500
 bun run verify observe "$VERIFY_RUN" sound-card
 v find role button click --name "Hear seat" --exact
@@ -626,7 +632,7 @@ playing "Hear seat"
 bun run verify observe "$VERIFY_RUN" played
 ```
 
-`sound-card` requires the four pair words and four spelling examples as `Hear …` buttons. `practice-reveal` requires five rows, each button named for its row's word. `lookup` requires exactly **Hear seat**. `played` requires no button in the `error` state and no playback toast. A `wait` for `playing` that times out fails the run.
+The manifest is a chunk of its own, loaded the first time a play button mounts (#371); until then each button renders in place with `aria-disabled` and `data-status="pending"`. The two `network requests` dumps check that: the vowel chart hasn't fetched `packages/phonetics-data/src/data/en/word-audio.ts` (in a build, `/assets/word-audio-*.js`) before a card opens, and has once the card's buttons are enabled. That check reads agent-browser's network log rather than a checkpoint, because the dev server loads hundreds of modules and the page's Resource Timing buffer (250 entries) is full before the card opens. `sound-card` requires the four pair words and four spelling examples as `Hear …` buttons. `practice-reveal` requires five rows, each button named for its row's word. `lookup` requires exactly **Hear seat**. `played` requires no button in the `error` state and no playback toast. A `wait` for `playing` that times out fails the run.
 
 ### Limits
 

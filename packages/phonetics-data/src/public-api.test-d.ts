@@ -12,10 +12,12 @@ import {
 	getSpellingPatternRegistryForLanguage,
 	getWordAudioForms,
 	getWordAudioPath,
+	loadWordAudioManifest,
 	type LanguageDiphthongSymbolId,
 	type LanguagePhonemeId,
 	type LanguageSpellingPatternRegistry,
 	type TargetAccent,
+	type WordAudioManifest,
 	type WordAudioRecording,
 } from "./index";
 
@@ -32,10 +34,17 @@ expectTypeOf(getContrastRegistryForLanguage("es-419")).toEqualTypeOf<null>();
 expectTypeOf(getSpellingPatternRegistryForLanguage("es-419")).toEqualTypeOf<null>();
 expectTypeOf(getContrastRegistryForLanguage("en-us")).not.toBeNullable();
 expectTypeOf(getWordAudioPath).toEqualTypeOf<
-	(targetAccent: TargetAccent, word: string) => string | null
+	(manifest: WordAudioManifest, targetAccent: TargetAccent, word: string) => string | null
 >();
 expectTypeOf(getWordAudioForms).toEqualTypeOf<
-	(targetAccent: TargetAccent, word: string) => readonly WordAudioRecording[]
+	(
+		manifest: WordAudioManifest,
+		targetAccent: TargetAccent,
+		word: string,
+	) => readonly WordAudioRecording[]
+>();
+expectTypeOf(loadWordAudioManifest).toEqualTypeOf<
+	(targetAccent: TargetAccent) => Promise<WordAudioManifest | null>
 >();
 expectTypeOf<WordAudioRecording>().toEqualTypeOf<{
 	readonly path: string;

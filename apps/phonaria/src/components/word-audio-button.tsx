@@ -3,6 +3,7 @@
 import { getWordAudioPath, type TargetAccent } from "@phonaria/phonetics-data";
 import type { ReactNode } from "react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
+import { useWordAudioManifest } from "@/hooks/use-word-audio-manifest";
 import { buildPublicAssetUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -18,8 +19,10 @@ type Props = {
 
 /**
  * Plays one recording, by its public URL, through the shared audio manager,
- * so one clip plays at a time. Unstyled apart from the playback state
- * it exposes as `data-status` (`idle | loading | playing | error`).
+ * so one clip plays at a time. Unstyled apart from the playback state it
+ * exposes as `data-status` (`idle | loading | playing | error`). With `src`
+ * null, while the word-audio manifest loads, it renders the same button with
+ * `data-status="pending"`, disabled, so nothing moves once it can play.
  */
 export function RecordingButton({
 	src,
@@ -27,20 +30,21 @@ export function RecordingButton({
 	children,
 	className,
 }: {
-	src: string;
+	src: string | null;
 	/** The accessible name, e.g. "Hear read, past tense". */
 	name: string;
 	children: ReactNode;
 	className?: string;
 }) {
-	const { play, status } = useAudioManager(src);
+	const { play, status } = useAudioManager(src ?? "");
 	return (
 		<button
 			type="button"
 			aria-label={name}
-			data-status={status}
-			onClick={() => play()}
-			className={cn("cursor-pointer", className)}
+			aria-disabled={src ? undefined : true}
+			data-status={src ? status : "pending"}
+			onClick={src ? () => play() : undefined}
+			className={cn("cursor-pointer aria-disabled:cursor-default", className)}
 		>
 			{children}
 		</button>
@@ -49,8 +53,8 @@ export function RecordingButton({
 
 /**
  * Plays a word's main recording. The caller supplies the look through
- * `className`. Without a recording it renders `fallback`, never speech
- * synthesis.
+ * `className`. Until the manifest has loaded it shows the button disabled;
+ * without a recording it renders `fallback`, never speech synthesis.
  */
 export function WordAudioButton({
 	targetAccent,
@@ -59,11 +63,19 @@ export function WordAudioButton({
 	fallback = null,
 	className,
 }: Props) {
-	const path = getWordAudioPath(targetAccent, word);
+	const manifest = useWordAudioManifest(targetAccent);
+	const name = `Hear ${word}`;
+	if (manifest === undefined)
+		return (
+			<RecordingButton src={null} name={name} className={className}>
+				{children}
+			</RecordingButton>
+		);
+	const path = manifest && getWordAudioPath(manifest, targetAccent, word);
 	const src = path ? buildPublicAssetUrl(path) : null;
 	if (!src) return fallback;
 	return (
-		<RecordingButton src={src} name={`Hear ${word}`} className={className}>
+		<RecordingButton src={src} name={name} className={className}>
 			{children}
 		</RecordingButton>
 	);

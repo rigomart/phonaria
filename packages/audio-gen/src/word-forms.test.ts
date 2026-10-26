@@ -1,5 +1,5 @@
-import { LanguageWordAudioDataRegistry } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
+import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import { describe, expect, it } from "vitest";
 import { collectCuratedWords, pickPronunciation } from "./curated-words";
 import { isFormCandidate, rejectedForms } from "./form-candidates";
@@ -12,7 +12,7 @@ const rejected = new Set(Object.values(rejectedForms).flat());
 
 describe("reviewed word forms", () => {
 	it("lists only unrecorded top-10k words, so every form gets planned", () => {
-		const recorded = new Set(LanguageWordAudioDataRegistry["en-us"].words);
+		const recorded = new Set(EnglishWordAudio.words);
 		const words = Object.keys(wordForms);
 		expect(words.filter((word) => !EnglishCuratedTop10k.words[word])).toEqual([]);
 		expect(words.filter((word) => recorded.has(word))).toEqual([]);
