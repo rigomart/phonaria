@@ -1,4 +1,5 @@
 import { getWordAudioPath } from "@phonaria/phonetics-data";
+import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import type { ReactElement } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -12,6 +13,10 @@ const speech = vi.fn();
 vi.mock("@/hooks/use-audio-manager", () => ({
 	useAudioManager: (src: string) => useAudioManager(src),
 }));
+vi.mock("@/hooks/use-word-audio-manifest", async () => {
+	const { EnglishWordAudio } = await import("@phonaria/phonetics-data/data/en/word-audio");
+	return { useWordAudioManifest: () => EnglishWordAudio };
+});
 
 /** Resolves the shared button WordAudio renders; hooks are mocked, so it can be called directly. */
 function resolveButton(word: string) {
@@ -45,7 +50,7 @@ describe("WordAudio", () => {
 	});
 
 	it("plays the word's recording through the shared player on click", () => {
-		const path = getWordAudioPath("en-us", "adapt");
+		const path = getWordAudioPath(EnglishWordAudio, "en-us", "adapt");
 		expect(path).not.toBeNull();
 
 		const button = resolveButton("adapt");
@@ -56,7 +61,7 @@ describe("WordAudio", () => {
 	});
 
 	it("renders no button for a word without a recording", () => {
-		expect(getWordAudioPath("en-us", "zzzz")).toBeNull();
+		expect(getWordAudioPath(EnglishWordAudio, "en-us", "zzzz")).toBeNull();
 		expect(renderToString(<WordAudio word="zzzz" />)).toBe("");
 	});
 

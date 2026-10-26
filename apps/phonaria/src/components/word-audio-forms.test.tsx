@@ -6,7 +6,7 @@ import { WordAudioButton } from "./word-audio-button";
 import { WordAudioForms } from "./word-audio-forms";
 
 /** The top-10k batches add forms like these; no form clip is published yet. */
-const manifest: WordAudioManifest = {
+const withForms: WordAudioManifest = {
 	voice: "jenny",
 	words: ["either", "read", "seat"],
 	forms: {
@@ -15,22 +15,19 @@ const manifest: WordAudioManifest = {
 	},
 };
 
-vi.mock("@phonaria/phonetics-data", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@phonaria/phonetics-data")>();
-	return {
-		...actual,
-		getWordAudioPath: (accent: "en-us", word: string) =>
-			actual.findWordAudioPath(manifest, accent, word),
-		getWordAudioForms: (accent: "en-us", word: string) =>
-			actual.findWordAudioForms(manifest, accent, word),
-	};
-});
+const manifest = vi.hoisted(() => ({
+	current: undefined as WordAudioManifest | null | undefined,
+}));
+vi.mock("@/hooks/use-word-audio-manifest", () => ({
+	useWordAudioManifest: () => manifest.current,
+}));
 
 const render = (node: React.ReactNode) =>
 	renderToString(<AudioManagerProvider>{node}</AudioManagerProvider>);
 
 beforeEach(() => {
 	vi.stubEnv("PUBLIC_BUCKET_URL", "https://assets.example");
+	manifest.current = withForms;
 });
 
 afterEach(() => {
@@ -59,6 +56,14 @@ describe("WordAudioForms", () => {
 			render(<WordAudioForms targetAccent="en-us" word="seat" />).match(/<button/g),
 		).toHaveLength(1);
 		expect(render(<WordAudioForms targetAccent="en-us" word="zzzz" />)).toBe("");
+	});
+
+	it("shows one disabled button for the word until the manifest has loaded", () => {
+		manifest.current = undefined;
+		const html = render(<WordAudioForms targetAccent="en-us" word="read" />);
+		expect(html.match(/<button/g)).toHaveLength(1);
+		expect(html).toContain('aria-label="Hear read"');
+		expect(html).toContain('aria-disabled="true"');
 	});
 });
 
