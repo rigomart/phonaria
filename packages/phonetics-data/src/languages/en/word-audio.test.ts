@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { EnglishCuratedTop1k } from "../../data/en/curated-1k";
+import { EnglishCuratedTop10k } from "../../data/en/curated-10k";
 import { getWordAudioForms, getWordAudioPath } from "../../registries/registries";
 import { findWordAudioForms, findWordAudioPath } from "../../registries/word-audio";
 import type { WordAudioManifest } from "../types";
@@ -11,12 +13,18 @@ const catalogWords = new Set(
 	EnglishPhonemeContrasts.flatMap(({ minimalPairs }) => minimalPairs.flatMap(({ words }) => words)),
 );
 const practiceWords = new Set(EnglishPracticeSchwa.map(({ word }) => word));
-const supportedWords = new Set([
-	...catalogWords,
-	...practiceWords,
-	...Object.values(EnglishPhonemeSpellingPatterns).flatMap(({ examples }) =>
+const spellingWords = new Set(
+	Object.values(EnglishPhonemeSpellingPatterns).flatMap(({ examples }) =>
 		examples.map(({ spelled }) => spelled.replace(/[[\]]/g, "")),
 	),
+);
+/** Every source audio-gen records from: the catalog, Practice, spelling and the curated tiers. */
+const knownWords = new Set([
+	...catalogWords,
+	...practiceWords,
+	...spellingWords,
+	...Object.keys(EnglishCuratedTop1k.words),
+	...Object.keys(EnglishCuratedTop10k.words),
 ]);
 
 describe("getWordAudioPath", () => {
@@ -94,11 +102,17 @@ describe("EnglishWordAudio", () => {
 		}
 	});
 
-	it("keeps full catalog and Practice coverage and allows recorded spelling examples", () => {
+	it("lists each word once, and only words from a source audio-gen records", () => {
 		const recorded = new Set(EnglishWordAudio.words);
 		expect(recorded.size).toBe(EnglishWordAudio.words.length);
-		expect([...recorded].filter((word) => !supportedWords.has(word))).toEqual([]);
+		const listed = [...recorded, ...Object.keys(EnglishWordAudio.forms ?? {})];
+		expect(listed.filter((word) => !knownWords.has(word))).toEqual([]);
+	});
+
+	it("keeps every catalog, Practice and spelling word recorded", () => {
+		const recorded = new Set(EnglishWordAudio.words);
 		expect([...catalogWords].filter((word) => !recorded.has(word))).toEqual([]);
 		expect([...practiceWords].filter((word) => !recorded.has(word))).toEqual([]);
+		expect([...spellingWords].filter((word) => !recorded.has(word))).toEqual([]);
 	});
 });
