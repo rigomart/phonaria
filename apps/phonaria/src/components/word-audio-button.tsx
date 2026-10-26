@@ -17,11 +17,40 @@ type Props = {
 };
 
 /**
- * Plays a word's recording through the shared audio manager, so one clip plays
- * at a time. Unstyled apart from the playback state it exposes as
- * `data-status` (`idle | loading | playing | error`): the caller supplies the
- * look through `className`. Without a recording it renders `fallback`, never
- * speech synthesis.
+ * Plays one recording, by its public URL, through the shared audio manager,
+ * so one clip plays at a time. Unstyled apart from the playback state
+ * it exposes as `data-status` (`idle | loading | playing | error`).
+ */
+export function RecordingButton({
+	src,
+	name,
+	children,
+	className,
+}: {
+	src: string;
+	/** The accessible name, e.g. "Hear read, past tense". */
+	name: string;
+	children: ReactNode;
+	className?: string;
+}) {
+	const { play, status } = useAudioManager(src);
+	return (
+		<button
+			type="button"
+			aria-label={name}
+			data-status={status}
+			onClick={() => play()}
+			className={cn("cursor-pointer", className)}
+		>
+			{children}
+		</button>
+	);
+}
+
+/**
+ * Plays a word's main recording. The caller supplies the look through
+ * `className`. Without a recording it renders `fallback`, never speech
+ * synthesis.
  */
 export function WordAudioButton({
 	targetAccent,
@@ -32,19 +61,10 @@ export function WordAudioButton({
 }: Props) {
 	const path = getWordAudioPath(targetAccent, word);
 	const src = path ? buildPublicAssetUrl(path) : null;
-	const { play, status } = useAudioManager(src ?? "");
-
 	if (!src) return fallback;
-
 	return (
-		<button
-			type="button"
-			aria-label={`Hear ${word}`}
-			data-status={status}
-			onClick={() => play()}
-			className={cn("cursor-pointer", className)}
-		>
+		<RecordingButton src={src} name={`Hear ${word}`} className={className}>
 			{children}
-		</button>
+		</RecordingButton>
 	);
 }
