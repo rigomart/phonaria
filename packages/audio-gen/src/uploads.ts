@@ -378,3 +378,78 @@ export async function runUpload(options: UploadOptions, dependencies: Dependenci
 		throw new Error(failures.map(({ key, error }) => `${key}: ${error}`).join("\n"));
 	return recordPaths;
 }
+
+/**
+ * Writes an upload record for a batch published before upload records existed, such as the
+ * minimal-pair catalog, which was uploaded by hand. Downloads each clip of the plan from the
+ * public host and marks it verified only when its bytes match the plan's checksum, so
+ * `manifest` lists exactly the clips that are live. Fails when any clip doesn't match.
+ */
+export async function recordPublished(
+	options: Pick<UploadOptions, "outputDirs" | "accent" | "voice" | "concurrency">,
+	dependencies: Pick<Dependencies, "fetcher" | "log"> = {},
+) {
+	validateOptions(options);
+	const fetcher = dependencies.fetcher ?? fetch;
+	const log = dependencies.log ?? console.log;
+	const recordName = `upload-${Date.now()}-${randomUUID()}.json`;
+	const failures: string[] = [];
+	for (const outputDir of options.outputDirs) {
+		const plan = object(JSON.parse(await readFile(path.join(outputDir, "plan.json"), "utf8")));
+		const settings = object(plan.settings);
+		if (plan.targetAccent !== options.accent)
+			throw new Error(`${outputDir}: the plan's accent does not match --accent`);
+		if (typeof settings.voiceId !== "string" || voiceFolderName(settings.voiceId) !== options.voice)
+			throw new Error(`${outputDir}: --voice must match the plan's manifest voice folder`);
+		const format = findAzureAudioFormat(settings.outputFormat);
+		if (!format || !Array.isArray(plan.samples)) throw new Error(`${outputDir}: unusable plan`);
+		const startedAt = new Date().toISOString();
+		const entries: UploadEntry[] = plan.samples.map((value) => {
+			const sample = object(value);
+			const n = sample.form === undefined ? undefined : object(sample.form).n;
+			if (typeof sample.word !== "string" || typeof sample.sha256 !== "string")
+				throw new Error(`${outputDir}: a sample has no word or checksum`);
+			const slug = formSlug(sample.word, typeof n === "number" ? n : undefined);
+			return {
+				key: buildUploadKey(options.accent, options.voice, slug, format.extension),
+				file: path.resolve(outputDir, String(sample.file)),
+				size: 0,
+				sha256: sample.sha256,
+				contentType: format.contentType,
+				uploadedAt: null,
+				verified: false,
+			};
+		});
+		await forEachConcurrent(entries, options.concurrency ?? 8, async (entry) => {
+			try {
+				const response = await fetcher(`${PUBLIC_ASSETS}/${entry.key}`, {
+					redirect: "error",
+					signal: AbortSignal.timeout(15_000),
+				});
+				if (response.status !== 200) throw new Error(`HTTP ${response.status}`);
+				const audio = Buffer.from(await response.arrayBuffer());
+				entry.size = audio.length;
+				if (createHash("sha256").update(audio).digest("hex") !== entry.sha256)
+					throw new Error("the published bytes don't match the plan's checksum");
+				entry.verified = true;
+			} catch (error) {
+				entry.error = error instanceof Error ? error.message : "Download failed";
+				failures.push(`${entry.key}: ${entry.error}`);
+			}
+		});
+		const recordPath = path.join(outputDir, recordName);
+		const record = {
+			checked: PUBLIC_ASSETS,
+			startedAt,
+			batches: [outputDir],
+			entries,
+			leftOut: [],
+		};
+		await writeFile(recordPath, `${JSON.stringify(record, null, 2)}\n`, { flag: "wx" });
+		const verified = entries.filter((entry) => entry.verified).length;
+		log(
+			`${outputDir}: ${verified}/${entries.length} clips match what is published. Record: ${recordPath}`,
+		);
+	}
+	if (failures.length) throw new Error(failures.join("\n"));
+}

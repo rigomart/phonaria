@@ -4,12 +4,14 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { runGeneration } from "./generation";
+import { manifestFromUploads, readUploadedBatch } from "./manifest";
 import type { TtsProvider } from "./providers/types";
 import { writeReviewSheet } from "./review-sheet";
 import {
 	buildUploadKey,
 	parseUploadArguments,
 	prepareUploads,
+	recordPublished,
 	runUpload,
 	uploadArguments,
 	type UploadOptions,
@@ -634,5 +636,47 @@ describe("publishing with injected Wrangler and HEAD requests", () => {
 		});
 		await runUpload({ ...f.options, concurrency }, f);
 		expect(maximum).toBe(concurrency);
+	});
+});
+
+describe("the manifest reads what upload recorded", () => {
+	it("lists the clips verified across a batch and its retakes, and none that failed", async () => {
+		const f = await fixture();
+		const retake = await batch({ words: ["seat"] });
+		await mark(f.outputDir, { "audio/seat.ogg": "no\tclipped" });
+		const outputDirs = [f.outputDir, retake.outputDir];
+		await runUpload({ ...f.options, outputDirs }, f);
+		expect(manifestFromUploads(outputDirs.map(readUploadedBatch)).words).toEqual(["seat", "seed"]);
+
+		const failed = await fixture();
+		failed.runner.mockRejectedValueOnce(new Error("Wrangler exit 1"));
+		await expect(runUpload({ ...failed.options, concurrency: 1 }, failed)).rejects.toThrow();
+		expect(manifestFromUploads([readUploadedBatch(failed.outputDir)]).words).toEqual(["seed"]);
+	});
+
+	it("records a batch published before upload records only when its bytes match the plan", async () => {
+		const f = await fixture();
+		const fetcher = vi.fn<typeof fetch>().mockImplementation(async (url) => {
+			const word = String(url).split("/").at(-1)?.split(".")[0] as string;
+			return word === "seed"
+				? new Response("other audio", { status: 200 })
+				: new Response(audioFor(word), { status: 200 });
+		});
+		const log = vi.fn();
+		await expect(recordPublished(f.options, { fetcher, log })).rejects.toThrow(
+			/seed\.ogg: the published bytes don't match/,
+		);
+		expect(fetcher).toHaveBeenCalledWith(
+			"https://assets.rigos.dev/audio/en-us/words/jenny/seat.ogg",
+			expect.objectContaining({ redirect: "error" }),
+		);
+		const [record] = await records(f.outputDir);
+		expect(record.checked).toBe("https://assets.rigos.dev");
+		expect(record.entries.map(({ verified }: { verified: boolean }) => verified)).toEqual([
+			true,
+			false,
+		]);
+		expect(log).toHaveBeenCalledWith(expect.stringContaining("1/2 clips match"));
+		expect(manifestFromUploads([readUploadedBatch(f.outputDir)]).words).toEqual(["seat"]);
 	});
 });

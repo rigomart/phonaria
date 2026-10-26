@@ -18,6 +18,7 @@
 		"generate": "bun src/generate.ts",
 		"manifest": "bun src/write-manifest.ts",
 		"upload": "bun src/upload.ts",
+		"record-published": "bun src/record-published.ts",
 		"probe": "bun src/probe.ts",
 		"check": "bun src/check.ts",
 		"sample": "bun src/sample.ts",
