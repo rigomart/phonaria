@@ -105,8 +105,9 @@ Some words get more than one recording, listed in `src/word-forms.ts`:
 
 The first form keeps the plain file name (`minute.ogg`), and each extra form adds
 its number (`minute--2.ogg`). A number is assigned once and never reused,
-because published keys must keep their sound. The manifest refuses labelled forms
-until it can list them with their labels.
+because published keys must keep their sound. The manifest lists each uploaded form
+with its label, and the app shows every form only where a word is looked up; minimal
+pairs, Practice reveals and spelling examples play the main form.
 
 `src/form-candidates.ts` finds the dictionary forms worth reviewing: the main
 stress moves, or a stressed vowel changes beyond a common US merger (cot–caught,
@@ -397,21 +398,48 @@ it. `--voice` cannot silently redirect a Jenny plan into another folder.
 
 The app only offers a play button for words listed in the committed manifest,
 `packages/phonetics-data/data/en/word-audio.json`, read through
-`getWordAudioPath()`. The command below writes that file; don't edit it by hand.
-After uploading, regenerate it from the repo root:
+`getWordAudioPath()` and `getWordAudioForms()`. The command below writes that
+file; don't edit it by hand. After uploading, regenerate it from the repo root,
+with one `--out` per batch uploaded together:
 
 ```bash
-bun run --cwd packages/audio-gen manifest --out=output/azure-catalog-jenny-slower-10-ogg
+bun run --cwd packages/audio-gen manifest --out=output/top-1k-jenny-slower-10-ogg \
+  --out=output/top-1k-retakes-2
 ```
 
-The command merges the completed batch into the existing manifest, retaining
-every previously recorded word and refusing to mix voice folders. It refuses
-to run unless every sample in `plan.json` is generated and an Ogg file, and
-takes the voice folder from the plan's voice (`en-US-JennyNeural` becomes
-`jenny`). The phonetics-data tests require full minimal-pair catalog coverage
-and allow additional recorded spelling examples. Add new words only after upload.
-The manifest still lists every word of the plan, so it can't take a batch with
-left-out clips yet; nor labelled forms, which the top-10k batches have.
+The manifest lists only the clips that went up. It reads them from the upload
+records in each folder, not from `plan.json`: a clip counts when a record has a
+verified entry with its key and SHA-256, so clips marked no, left out, or whose
+upload failed stay out. A run's record lands in every batch of the run; entries for
+another batch's clips don't match this plan and are skipped. A folder with no
+record, or whose records verify none of its clips, is refused.
+
+- `words` holds every word whose plain `word.ogg` went up.
+- `forms` mirrors the plan's labelled forms of the clips that went up, by word:
+  `"read": [{ "label": "present tense" }, { "n": 2, "label": "past tense" }]`. An
+  entry without `n` labels the main recording; form `n` is `word--n.ogg`. "Also
+  said" words list only their extra form, since the main one has no label.
+
+The command merges into the existing manifest, keeping every word and form already
+listed. It refuses to mix voice folders or accents, a plan that isn't Ogg, and a form
+whose label differs from the one already listed. Running it again on the same batches
+writes the same bytes. The phonetics-data tests require full minimal-pair catalog
+coverage and allow additional recorded spelling examples.
+
+Records from before #373 hold only `bucket`, `startedAt` and `entries`; they're read the
+same way, so the spelling and Practice batches still work. The minimal-pair catalog was
+uploaded by hand and has no record. For a batch like that, `record-published` writes
+one: it downloads each of the plan's clips from `https://assets.rigos.dev` and marks it
+verified only if the bytes match the plan's SHA-256, then exits non-zero if any don't.
+
+```bash
+bun run --cwd packages/audio-gen record-published \
+  --out=output/azure-catalog-jenny-slower-10-ogg --accent=en-us --voice=jenny
+```
+
+Its record has `checked` (the public host) in place of `bucket`, and no upload times.
+On copies of the three published batches, the catalog's 400 clips all matched, and
+`manifest` with all three rebuilt the committed JSON byte for byte from an empty one.
 
 ## Voice and speed probes
 

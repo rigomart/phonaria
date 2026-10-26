@@ -130,6 +130,7 @@ export type {
 	PhonemeContrastMatch,
 	PhonemeFrequency,
 	SpellingPattern,
+	WordAudioForm,
 	WordAudioManifest,
 } from "./languages/types";
 export type { LanguageFeatureCapabilities, LanguageFeatureKey } from "./registries/capabilities";
@@ -148,6 +149,11 @@ export type {
 	LanguagePhonemeArticulationRegistry,
 } from "./registries/registries";
 export {
+	findWordAudioForms,
+	findWordAudioPath,
+	type WordAudioRecording,
+} from "./registries/word-audio";
+export {
 	getAllophoneRegistryForLanguage,
 	getCmuArpaRegistryForLanguage,
 	getConsonantArticulationRegistryForLanguage,
@@ -160,6 +166,7 @@ export {
 	getPhonemeArticulationRegistryForLanguage,
 	getPhonemeFrequencyRegistryForLanguage,
 	getSpellingPatternRegistryForLanguage,
+	getWordAudioForms,
 	getWordAudioPath,
 	LanguageAllophoneDataRegistry,
 	LanguageArticulationRegistry,

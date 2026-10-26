@@ -15,11 +15,13 @@ vi.mock("@/hooks/use-audio-manager", () => ({
 
 /** Resolves the shared button WordAudio renders; hooks are mocked, so it can be called directly. */
 function resolveButton(word: string) {
-	const element = WordAudio({ word }) as ReactElement<Record<string, unknown>>;
-	const Component = element.type as (props: Record<string, unknown>) => ReactElement | null;
-	const button = Component(element.props);
-	if (!button) throw new Error(`no button rendered for ${word}`);
-	return button as ReactElement<{ onClick: () => void }>;
+	let element = WordAudio({ word }) as ReactElement<Record<string, unknown>> | null;
+	while (element && typeof element.type === "function") {
+		const Component = element.type as (props: Record<string, unknown>) => ReactElement | null;
+		element = Component(element.props) as ReactElement<Record<string, unknown>> | null;
+	}
+	if (!element) throw new Error(`no button rendered for ${word}`);
+	return element as ReactElement<{ onClick: () => void }>;
 }
 
 beforeEach(() => {

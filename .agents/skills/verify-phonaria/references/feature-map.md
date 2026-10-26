@@ -18,6 +18,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair speaking practice | `/practice/minimal-pairs`, Practice index **Minimal pairs** (behind `FLAG_SPEECH`, independent of `FLAG_PRACTICE`) | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
+| Word recordings | Sound card **Compare with** and **Spelling**, Practice reveal, **Definition of …** after transcribing | Executable journey below |
 
 ## Adding a journey
 
@@ -576,3 +577,58 @@ bun run verify observe "$VERIFY_RUN" sitemap-hidden
 Chromium only, with the page flag on or off as noted. The landed camera is checked as a centre inside the step's bounds and a zoom above or below 1, not as a pixel position. The land, areas and arrows are painted on a canvas, so they are judged from the saved screenshots; arrows are counted through `data-routes-drawn`, which the page keeps. Mid-flight zoom is inferred from where pins were drawn on each frame, not read from the page; frames with fewer than three separate places on the near side are skipped. No frame rate or flight smoothness is measured. Only intro, indo-european, germanic, old-english, vikings, norman-conquest, printing, america, around-the-world and today are visited, and place descriptions are read from the page, not checked against the cited studies. The step announcement is read from the status region's text, not through a screen reader. Drags use the mouse; touch is synthetic pointer events (`pointerType: "touch"`), since desktop Chromium has no native touch here, so the browser's own panning under `touch-action` is not exercised and vertical page scrolling during a swipe is inferred from the computed `touch-action` only. Pen input, pinch zoom, the ±75° latitude cap and the glide's shape are not checked. The spin is checked at 1280 × 800 by its attribute and one pin's movement: its speed, the pauses for pin hover, focus and open details, the 2 s resume and a hidden tab are not. No DevTools trace is saved (see above). Phone coverage is one step; the mobile menu and landscape are not opened.
 
 After any synthetic key press (`press`), headless Chrome here runs almost no page tasks while a script runs every animation frame, on any page including `about:blank`, until the next page load; React then cannot commit step changes during a scripted scroll. The recipe runs `fast-scroll` on a fresh page for that reason. It is a browser automation effect, not the app's.
+
+## Word recordings
+
+Target accent: American English (`en-us`). A word with a recording in the word-audio manifest (`packages/phonetics-data/data/en/word-audio.json`) plays it from `assets.rigos.dev` through the shared audio manager, which sets the button's `data-status` to `loading`, `playing`, then `idle`, or `error` with a **Playback error** toast. Single-word surfaces play a word's main recording: minimal pairs under **Compare with** and spelling examples under **Spelling** on a sound card, and each word of a Practice reveal. The lookup popover a transcribed word opens (**Definition of seat**) shows one button per recording; a word with labelled forms gets one per form, named "Hear read, past tense" (#370). The [checkpoints](../scripts/word-audio.ts) read the `Hear …` buttons of each surface and any button in the `error` state or playback toast.
+
+The /i/ card lists the catalog's seat/sit and sheep/ship pairs and the spelling examples seed, sea, happy and be, all recorded. Practice draws five words at random; the reveal row's button must name its own word.
+
+### Executable journey
+
+Run once per viewport and theme: 1280 × 800 and 390 × 844, `set media light` and `set media dark`. Each surface is opened with `open`, a cold page load. After `init word-audio` and `serve`:
+
+```bash
+v() { bun run verify browser "$VERIFY_RUN" "$@"; }
+playing() { v wait --fn "document.querySelector('[aria-label=\"$1\"]')?.dataset.status==='playing'"; }
+v open about:blank
+v trace start
+v set viewport 1280 800
+v set media light
+v open http://127.0.0.1:3000/ipa-chart/vowels
+v wait --fn "Object.keys(document.querySelector('[aria-label=\"Close front unrounded vowel (i)\"]')||{}).some(k=>k.startsWith('__reactProps'))"
+v find role button click --name "Close front unrounded vowel (i)" --exact
+v find role button click --name "More about /i/: Close front unrounded vowel"
+v wait 1500
+bun run verify observe "$VERIFY_RUN" sound-card
+v find role button click --name "Hear seat" --exact
+playing "Hear seat"
+v find role button click --name "Hear happy" --exact
+playing "Hear happy"
+bun run verify observe "$VERIFY_RUN" played
+
+v open http://127.0.0.1:3000/practice/schwa
+v find role button click --name "Start session" --exact   # after hydration
+v find role button click --name "Next word" --exact       # four times
+v find role button click --name "Finish session" --exact
+v find role button click --name "Submit with 5 blanks" --exact
+v wait 1500
+bun run verify observe "$VERIFY_RUN" practice-reveal
+v click "li button[aria-label^=\"Hear \"]"
+v wait --fn "document.querySelector('li button[aria-label^=\"Hear \"]')?.dataset.status==='playing'"
+bun run verify observe "$VERIFY_RUN" played
+
+v open "http://127.0.0.1:3000/?q=seat"
+v find role button click --name "Definition of seat" --exact   # after hydration
+bun run verify observe "$VERIFY_RUN" lookup
+v find role button click --name "Hear seat" --exact
+playing "Hear seat"
+bun run verify observe "$VERIFY_RUN" played
+```
+
+`sound-card` requires the four pair words and four spelling examples as `Hear …` buttons. `practice-reveal` requires five rows, each button named for its row's word. `lookup` requires exactly **Hear seat**. `played` requires no button in the `error` state and no playback toast. A `wait` for `playing` that times out fails the run.
+
+### Limits
+
+Playback is proven by the `playing` state, set on the media element's `playing` event; nobody listens to the sound. The published manifest has no labelled forms yet, so the per-form buttons are covered by unit tests with a manifest fixture. Definitions need the Worker to reach Wiktionary and are not checked.
+

@@ -1,15 +1,18 @@
 "use client";
 
+import type { TargetAccent } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
 import { useState } from "react";
+import { WordAudioForms } from "@/components/word-audio-forms";
 import { useDefinition } from "@/hooks/use-definition";
 import { WIKTIONARY_SITE_URL } from "@/lib/definition/contract";
 import { cn } from "@/lib/utils";
 
 type WordDefinitionPopoverProps = {
+	targetAccent: TargetAccent;
 	word: string;
 	ipa: string;
 };
@@ -31,6 +34,7 @@ function Attribution() {
 }
 
 function DefinitionBody({
+	targetAccent,
 	word,
 	ipa,
 	status,
@@ -38,6 +42,7 @@ function DefinitionBody({
 	errorMessage,
 	onRetry,
 }: {
+	targetAccent: TargetAccent;
 	word: string;
 	ipa: string;
 	status: ReturnType<typeof useDefinition>["status"];
@@ -47,9 +52,12 @@ function DefinitionBody({
 }) {
 	return (
 		<div className="flex w-80 max-h-[min(24rem,70vh)] flex-col overflow-hidden">
-			<div className="flex shrink-0 items-baseline justify-between gap-2 pb-3">
-				<p className="text-base font-semibold font-display leading-none">{word}</p>
-				{ipa ? <p className="text-sm text-muted-foreground whitespace-nowrap">/{ipa}/</p> : null}
+			<div className="flex shrink-0 flex-col gap-2 pb-3">
+				<div className="flex items-baseline justify-between gap-2">
+					<p className="text-base font-semibold font-display leading-none">{word}</p>
+					{ipa ? <p className="text-sm text-muted-foreground whitespace-nowrap">/{ipa}/</p> : null}
+				</div>
+				<WordAudioForms targetAccent={targetAccent} word={word} />
 			</div>
 
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain">
@@ -105,7 +113,7 @@ function DefinitionBody({
 	);
 }
 
-export function WordDefinitionPopover({ word, ipa }: WordDefinitionPopoverProps) {
+export function WordDefinitionPopover({ targetAccent, word, ipa }: WordDefinitionPopoverProps) {
 	const [open, setOpen] = useState(false);
 	const definition = useDefinition(open ? word : null);
 
@@ -130,6 +138,7 @@ export function WordDefinitionPopover({ word, ipa }: WordDefinitionPopoverProps)
 			</PopoverTrigger>
 			<PopoverContent sideOffset={8} className="w-auto">
 				<DefinitionBody
+					targetAccent={targetAccent}
 					word={word}
 					ipa={ipa}
 					status={definition.status}

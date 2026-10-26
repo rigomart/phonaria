@@ -38,7 +38,7 @@ function WordColumn({ targetAccent, word, index }: WordColumnProps) {
 			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 has-[[data-expanded]]:z-20 enter-rise"
 			style={enterDelay(index * 40)}
 		>
-			<WordDefinitionPopover word={word.word} ipa={ipa} />
+			<WordDefinitionPopover targetAccent={targetAccent} word={word.word} ipa={ipa} />
 
 			{isUnknown ? (
 				<div
