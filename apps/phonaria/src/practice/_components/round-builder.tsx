@@ -47,7 +47,7 @@ export function RoundBuilder() {
 			<RoundDots currentIndex={currentIndex} onJump={goToRound} rounds={rounds} />
 
 			{/* Keyed so each new word rises in, marking the move between rounds. */}
-			<div className="flex flex-col items-center gap-0.5 enter-rise" key={currentIndex}>
+			<div className="flex flex-col items-center gap-0.5 enter-rise" key={`word-${currentIndex}`}>
 				<h1 className="font-bold font-display text-5xl tracking-tight">{round.word.word}</h1>
 				<p className="text-muted-foreground text-sm">
 					{syllables} {syllables === 1 ? "syllable" : "syllables"}
@@ -56,7 +56,7 @@ export function RoundBuilder() {
 
 			{/* Remounting per word clears the search and returns focus to the field. */}
 			<SoundComposer
-				key={currentIndex}
+				key={`composer-${currentIndex}`}
 				onAppend={appendSound}
 				onRemoveAt={removeSoundAt}
 				sequence={round.sequence}
