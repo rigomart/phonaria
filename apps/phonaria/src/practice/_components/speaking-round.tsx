@@ -9,6 +9,7 @@ import { Button, buttonVariants } from "@phonaria/ui/components/button";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { IpaSequence } from "@/components/transcription/display/ipa-sequence";
 import { WordAudioButton } from "@/components/word-audio-button";
 import { useWavRecorder } from "@/hooks/use-wav-recorder";
@@ -116,6 +117,11 @@ export function SpeakingRound({
 	}, [recording, prompt, cancel, logger]);
 
 	const view = deriveSpeakingView(recording, attempt);
+	// The words this round can play: the prompt, and the word a swap made.
+	const heardWord =
+		view.phase === "outcome" && view.outcome.verdict === "swapped"
+			? view.outcome.heardWord
+			: undefined;
 
 	function record() {
 		logger.next("retried");
@@ -167,6 +173,11 @@ export function SpeakingRound({
 				<p className="mt-3 text-center text-muted-foreground text-xs">
 					{MinimalPairActivity.privacyNotice}
 				</p>
+				<SyntheticVoiceNote
+					className="mt-1 text-center"
+					targetAccent="en-us"
+					words={heardWord ? [prompt.word, heardWord] : [prompt.word]}
+				/>
 				<EvidenceLogSetting />
 				<div aria-atomic="true" aria-live="polite" className="w-full">
 					<SpeakingStatus prompt={prompt} view={view} />

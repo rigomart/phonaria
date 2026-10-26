@@ -96,6 +96,16 @@ const CREDITS: (CreditCardProps & { key: string })[] = [
 		},
 	},
 	{
+		key: "azure-speech",
+		title: "Azure AI Speech",
+		content:
+			"Word recordings are generated with Azure AI Speech from Microsoft, using Jenny, a synthetic US English voice. They are computer-generated, not recordings of a person.",
+		link: {
+			text: "View Azure AI Speech",
+			url: "https://learn.microsoft.com/en-us/azure/ai-services/speech-service/text-to-speech",
+		},
+	},
+	{
 		key: "wordfreq",
 		title: "wordfreq Word Frequency Data",
 		content:

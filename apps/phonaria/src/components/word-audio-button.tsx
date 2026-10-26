@@ -1,6 +1,10 @@
 "use client";
 
-import { getWordAudioPath, type TargetAccent } from "@phonaria/phonetics-data";
+import {
+	getWordAudioPath,
+	type TargetAccent,
+	type WordAudioManifest,
+} from "@phonaria/phonetics-data";
 import type { ReactNode } from "react";
 import { useAudioManager } from "@/hooks/use-audio-manager";
 import { useWordAudioManifest } from "@/hooks/use-word-audio-manifest";
@@ -16,6 +20,16 @@ type Props = {
 	fallback?: ReactNode;
 	className?: string;
 };
+
+/** The public URL of a word's main recording, or null when it has none or no bucket is set. */
+export function wordRecordingUrl(
+	manifest: WordAudioManifest | null,
+	targetAccent: TargetAccent,
+	word: string,
+): string | null {
+	const path = manifest && getWordAudioPath(manifest, targetAccent, word);
+	return path ? buildPublicAssetUrl(path) : null;
+}
 
 /**
  * Plays one recording, by its public URL, through the shared audio manager,
@@ -71,8 +85,7 @@ export function WordAudioButton({
 				{children}
 			</RecordingButton>
 		);
-	const path = manifest && getWordAudioPath(manifest, targetAccent, word);
-	const src = path ? buildPublicAssetUrl(path) : null;
+	const src = wordRecordingUrl(manifest, targetAccent, word);
 	if (!src) return fallback;
 	return (
 		<RecordingButton src={src} name={name} className={className}>
