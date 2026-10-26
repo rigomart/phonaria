@@ -8,6 +8,7 @@ function render(phonemeId: LanguagePhonemeId<TargetAccent>) {
 	return renderToString(
 		<AudioManagerProvider>
 			<DetailSections
+				targetAccent="en-us"
 				sections={getDetailSections({ targetAccent: "en-us", phonemeId, showChartLink: false })}
 			/>
 		</AudioManagerProvider>,

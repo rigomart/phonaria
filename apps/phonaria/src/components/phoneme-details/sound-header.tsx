@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { SpelledWord } from "@/components/spelled-word";
+import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { cn } from "@/lib/utils";
 import { SoundFrequency } from "./frequency";
 import { PlayableWord } from "./playable-word";
@@ -12,6 +13,8 @@ import { SoundTile } from "./sound-tile";
  * example word, and how common it is. The symbol plays the sound, the example
  * word plays the word. Both levels
  * open with it, so the sound keeps its shape when the details expand.
+ *
+ * Where it shows the example word, the synthetic-voice note closes it.
  *
  * On the compact level `onExpand` turns the name into a button that opens the
  * full view, and `thumbnail` previews how the sound is made.
@@ -103,6 +106,9 @@ export function SoundHeader({
 			) : (
 				frequency
 			)}
+			{showExample && sound.example ? (
+				<SyntheticVoiceNote targetAccent={sound.targetAccent} words={[sound.example.word]} />
+			) : null}
 		</div>
 	);
 }

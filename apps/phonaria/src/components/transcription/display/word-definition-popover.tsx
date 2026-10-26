@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
 import { useState } from "react";
+import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { WordAudioForms } from "@/components/word-audio-forms";
 import { useDefinition } from "@/hooks/use-definition";
 import { WIKTIONARY_SITE_URL } from "@/lib/definition/contract";
@@ -58,6 +59,7 @@ function DefinitionBody({
 					{ipa ? <p className="text-sm text-muted-foreground whitespace-nowrap">/{ipa}/</p> : null}
 				</div>
 				<WordAudioForms targetAccent={targetAccent} word={word} />
+				<SyntheticVoiceNote targetAccent={targetAccent} words={[word]} />
 			</div>
 
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain">

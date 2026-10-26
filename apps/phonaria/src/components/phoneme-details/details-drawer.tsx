@@ -186,7 +186,11 @@ function DrawerSheet({
 					</div>
 					{/* Compact, the sections are clipped out of view, so they are out of reach too. */}
 					<div ref={sectionsRef} inert={!expanded} className="px-5 pb-safe-6">
-						<DetailSections sections={sections} />
+						<DetailSections
+							targetAccent={payload.options.targetAccent}
+							sections={sections}
+							voiceNote={expanded}
+						/>
 					</div>
 				</div>
 			</div>
