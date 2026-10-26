@@ -5,6 +5,7 @@ import { minimalPairs, minimalPairsOff } from "./minimal-pairs";
 import { frequencyPage, soundFrequency } from "./sound-frequency";
 import { transcription } from "./transcription";
 import { transcriptionHistory } from "./transcription-history";
+import { wordAudio } from "./word-audio";
 
 export const features: Record<string, Feature> = {
 	"language-spread": languageSpread,
@@ -16,6 +17,7 @@ export const features: Record<string, Feature> = {
 	"frequency-page": frequencyPage,
 	transcription,
 	"transcription-history": transcriptionHistory,
+	"word-audio": wordAudio,
 };
 
 export function getFeature(name: string | undefined, available = features): Feature {
