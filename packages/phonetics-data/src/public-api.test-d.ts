@@ -9,6 +9,7 @@ import {
 	getLanguageFeatureCapabilities,
 	getLanguagePhonemeCount,
 	getLanguagePhonemeIds,
+	findWordAudioRecording,
 	getSpellingPatternRegistryForLanguage,
 	getWordAudioForms,
 	getWordAudioPath,
@@ -43,12 +44,19 @@ expectTypeOf(getWordAudioForms).toEqualTypeOf<
 		word: string,
 	) => readonly WordAudioRecording[]
 >();
+expectTypeOf(findWordAudioRecording).toEqualTypeOf<
+	(
+		recordings: readonly WordAudioRecording[],
+		pronunciation: string,
+	) => WordAudioRecording | undefined
+>();
 expectTypeOf(loadWordAudioManifest).toEqualTypeOf<
 	(targetAccent: TargetAccent) => Promise<WordAudioManifest | null>
 >();
 expectTypeOf<WordAudioRecording>().toEqualTypeOf<{
 	readonly path: string;
 	readonly label?: string;
+	readonly pronunciation?: string;
 }>();
 
 // These must stay compiler errors: a broadened public API would silently let

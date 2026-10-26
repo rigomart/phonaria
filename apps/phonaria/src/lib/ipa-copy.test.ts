@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { extractIpaText, extractWordIpa } from "./ipa-copy";
+import { transformToTranscriptionResult } from "./g2p-client";
+import { extractIpaText, extractWordIpa, extractWordPronunciation } from "./ipa-copy";
+import { cmuToSyllables, lookupTier1 } from "./phoneme-lookup/shared";
 import type { TranscriptionResult } from "./types/g2p";
 
 function makeResult(words: TranscriptionResult["words"]): TranscriptionResult {
@@ -230,5 +232,18 @@ describe("extractWordIpa", () => {
 				0,
 			),
 		).toBe("");
+	});
+});
+
+describe("extractWordPronunciation", () => {
+	it("gives each variant back in the dictionary's notation, as the manifest writes it", () => {
+		const variants = lookupTier1("read") ?? [];
+		const [read] = transformToTranscriptionResult(
+			{ words: [{ word: "read", variants: variants.map(cmuToSyllables), source: "cmudict" }] },
+			"read",
+		).words;
+		expect(extractWordPronunciation(read, 0)).toBe("R E1 D");
+		expect(extractWordPronunciation(read, 1)).toBe("R I1 D");
+		expect(extractWordPronunciation({ ...read, source: "fallback" }, 0)).toBe("");
 	});
 });

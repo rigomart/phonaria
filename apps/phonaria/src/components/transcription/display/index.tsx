@@ -6,7 +6,7 @@ import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCurrentTranscription, useTranscribe } from "@/hooks/use-transcribe";
-import { extractWordIpa } from "@/lib/ipa-copy";
+import { extractWordIpa, extractWordPronunciation } from "@/lib/ipa-copy";
 import { enterDelay } from "@/lib/motion";
 import { type LookupErrorKind, useG2PStore } from "@/lib/transcription/g2p-store";
 import { shouldShowTranscriptionEmptyState } from "@/lib/transcription/search";
@@ -38,7 +38,12 @@ function WordColumn({ targetAccent, word, index }: WordColumnProps) {
 			className="flex flex-col items-center text-center min-w-0 gap-1 sm:gap-2 has-[[data-expanded]]:z-20 enter-rise"
 			style={enterDelay(index * 40)}
 		>
-			<WordDefinitionPopover targetAccent={targetAccent} word={word.word} ipa={ipa} />
+			<WordDefinitionPopover
+				targetAccent={targetAccent}
+				word={word.word}
+				ipa={ipa}
+				pronunciation={extractWordPronunciation(word, selected)}
+			/>
 
 			{isUnknown ? (
 				<div

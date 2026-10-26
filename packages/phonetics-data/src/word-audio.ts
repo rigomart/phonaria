@@ -1,8 +1,16 @@
 import type { TargetAccent } from "./core/types";
-import type { WordAudioManifest } from "./languages/types";
+import { tokenizePronunciation } from "./languages/en/cmu-arpa";
+import type { WordAudioForm, WordAudioManifest } from "./languages/types";
 
-/** One recording of a word; `label` names the meaning or form when the word has several. */
-export type WordAudioRecording = { readonly path: string; readonly label?: string };
+/**
+ * One recording of a word; `label` names the meaning or form when the word has several, and
+ * `pronunciation` is the one it was generated from, known for words recorded more than once.
+ */
+export type WordAudioRecording = {
+	readonly path: string;
+	readonly label?: string;
+	readonly pronunciation?: string;
+};
 
 /**
  * Loads an accent's word-audio manifest, or null for an accent without recordings. Each
@@ -40,8 +48,8 @@ export function getWordAudioPath(
 
 /**
  * Every recording of a word, main form first: a heteronym's meanings ("present tense",
- * "past tense"), or an "also said" form beside the main one. A word recorded once has one
- * entry without a label; a word without a recording, none.
+ * "past tense"), or an "also said" form beside the main one, each with its pronunciation.
+ * A word recorded once has one entry with neither; a word without a recording, none.
  */
 export function getWordAudioForms(
 	manifest: WordAudioManifest,
@@ -54,12 +62,49 @@ export function getWordAudioForms(
 		manifest.forms && Object.prototype.hasOwnProperty.call(manifest.forms, normalized)
 			? manifest.forms[normalized]
 			: [];
-	const mainLabel = forms.find(({ n }) => n === undefined)?.label;
+	const mainForm = forms.find(({ n }) => n === undefined);
 	const folder = `audio/${targetAccent}/words/${manifest.voice}`;
 	return [
-		...(main ? [mainLabel ? { path: main, label: mainLabel } : { path: main }] : []),
-		...forms.flatMap(({ n, label }) =>
-			n === undefined ? [] : [{ path: `${folder}/${normalized}--${n}.ogg`, label }],
+		...(main ? [{ path: main, ...(mainForm && described(mainForm)) }] : []),
+		...forms.flatMap((form) =>
+			form.n === undefined
+				? []
+				: [{ path: `${folder}/${normalized}--${form.n}.ogg`, ...described(form) }],
 		),
 	];
+}
+
+const described = ({ label, pronunciation }: WordAudioForm) => ({
+	...(label ? { label } : {}),
+	pronunciation,
+});
+
+/**
+ * Every unstressed vowel as one token. Only vowels carry a stress digit, so a 0 suffix marks
+ * one; audio-gen's form review ignores unstressed vowels the same way (`form-candidates.ts`).
+ */
+const withUnstressedVowelsAlike = (pronunciation: string) =>
+	tokenizePronunciation(pronunciation)
+		.map((token) => (token.endsWith("0") ? "0" : token))
+		.join(" ");
+
+/**
+ * The recording generated from a pronunciation in dictionary notation ("R IX0 K O1 R D"):
+ * the one with exactly that pronunciation, else the only one that differs from it just in
+ * unstressed vowels (*record* `R AX0 K O1 R D`, *progress* `P R OU0 G R E1 S`). Undefined
+ * when none matches, or more than one matches that way.
+ */
+export function findWordAudioRecording(
+	recordings: readonly WordAudioRecording[],
+	pronunciation: string,
+): WordAudioRecording | undefined {
+	const exact = recordings.find((recording) => recording.pronunciation === pronunciation);
+	if (exact) return exact;
+	const loose = withUnstressedVowelsAlike(pronunciation);
+	const alike = recordings.filter(
+		(recording) =>
+			recording.pronunciation !== undefined &&
+			withUnstressedVowelsAlike(recording.pronunciation) === loose,
+	);
+	return alike.length === 1 ? alike[0] : undefined;
 }

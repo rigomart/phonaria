@@ -5,10 +5,16 @@ import { EnglishCuratedTop1k } from "./data/en/curated-1k";
 import { EnglishCuratedTop10k } from "./data/en/curated-10k";
 import { EnglishWordAudio } from "./data/en/word-audio";
 import { EnglishPhonemeContrasts } from "./languages/en/contrasts";
+import { preferOForms } from "./languages/en/o-forms";
 import { EnglishPhonemeSpellingPatterns } from "./languages/en/patterns";
 import { EnglishPracticeSchwa } from "./languages/en/practice-schwa";
 import type { WordAudioManifest } from "./languages/types";
-import { getWordAudioForms, getWordAudioPath, loadWordAudioManifest } from "./word-audio";
+import {
+	findWordAudioRecording,
+	getWordAudioForms,
+	getWordAudioPath,
+	loadWordAudioManifest,
+} from "./word-audio";
 
 const catalogWords = new Set(
 	EnglishPhonemeContrasts.flatMap(({ minimalPairs }) => minimalPairs.flatMap(({ words }) => words)),
@@ -59,32 +65,42 @@ const withForms: WordAudioManifest = {
 	voice: "jenny",
 	words: ["either", "read", "seat"],
 	forms: {
-		either: [{ n: 2, label: "also said" }],
-		lead: [{ n: 2, label: "the metal" }],
-		read: [{ label: "present tense" }, { n: 2, label: "past tense" }],
+		either: [
+			{ pronunciation: "I1 DH ER0" },
+			{ n: 2, label: "also said", pronunciation: "AI1 DH ER0" },
+		],
+		lead: [{ n: 2, label: "the metal", pronunciation: "L E1 D" }],
+		read: [
+			{ label: "present tense", pronunciation: "R I1 D" },
+			{ n: 2, label: "past tense", pronunciation: "R E1 D" },
+		],
 	},
 };
 
 describe("getWordAudioForms", () => {
-	it("lists every labelled form, main form first", () => {
+	it("lists every form with its pronunciation, main form first", () => {
 		expect(getWordAudioForms(withForms, "en-us", " Read")).toEqual([
-			{ path: "audio/en-us/words/jenny/read.ogg", label: "present tense" },
-			{ path: "audio/en-us/words/jenny/read--2.ogg", label: "past tense" },
+			{ path: "audio/en-us/words/jenny/read.ogg", label: "present tense", pronunciation: "R I1 D" },
+			{ path: "audio/en-us/words/jenny/read--2.ogg", label: "past tense", pronunciation: "R E1 D" },
 		]);
 		expect(getWordAudioForms(withForms, "en-us", "either")).toEqual([
-			{ path: "audio/en-us/words/jenny/either.ogg" },
-			{ path: "audio/en-us/words/jenny/either--2.ogg", label: "also said" },
+			{ path: "audio/en-us/words/jenny/either.ogg", pronunciation: "I1 DH ER0" },
+			{
+				path: "audio/en-us/words/jenny/either--2.ogg",
+				label: "also said",
+				pronunciation: "AI1 DH ER0",
+			},
 		]);
 	});
 
 	it("lists an uploaded form even when the main recording isn't", () => {
 		expect(getWordAudioPath(withForms, "en-us", "lead")).toBeNull();
 		expect(getWordAudioForms(withForms, "en-us", "lead")).toEqual([
-			{ path: "audio/en-us/words/jenny/lead--2.ogg", label: "the metal" },
+			{ path: "audio/en-us/words/jenny/lead--2.ogg", label: "the metal", pronunciation: "L E1 D" },
 		]);
 	});
 
-	it("gives a word recorded once one unlabelled recording, and an unrecorded word none", () => {
+	it("gives a word recorded once one recording without label or pronunciation, and an unrecorded word none", () => {
 		expect(getWordAudioForms(withForms, "en-us", "seat")).toEqual([
 			{ path: "audio/en-us/words/jenny/seat.ogg" },
 		]);
@@ -92,18 +108,75 @@ describe("getWordAudioForms", () => {
 	});
 });
 
+describe("findWordAudioRecording", () => {
+	const recorded = (word: string) => getWordAudioForms(EnglishWordAudio, "en-us", word);
+	const labelFor = (word: string, pronunciation: string) =>
+		findWordAudioRecording(recorded(word), pronunciation)?.label;
+
+	it("finds the recording of exactly that pronunciation", () => {
+		expect(labelFor("read", "R E1 D")).toBe("past tense");
+		expect(labelFor("read", "R I1 D")).toBe("present tense");
+	});
+
+	const shown = (word: string) =>
+		preferOForms(word, EnglishCuratedTop1k.words[word] ?? EnglishCuratedTop10k.words[word]);
+
+	it("lets unstressed vowels differ when nothing matches exactly (#378)", () => {
+		const [record] = shown("record");
+		expect(record).toBe("R AX0 K O1 R D");
+		expect(labelFor("record", record)).toBe("verb");
+		const [refuse] = shown("refuse");
+		expect(refuse).toBe("R AX0 F Y U1 Z");
+		expect(labelFor("refuse", refuse)).toBe("verb");
+		const progress = shown("progress")[2];
+		expect(progress).toBe("P R OU0 G R E1 S");
+		expect(labelFor("progress", progress)).toBe("verb");
+	});
+
+	it("still needs every consonant, stressed vowel and stress to agree", () => {
+		expect(labelFor("record", "R AX0 K O2 R D")).toBeUndefined();
+		expect(labelFor("record", "R AX0 K O1 R")).toBeUndefined();
+		expect(labelFor("record", "R AX0 K A1 R D")).toBeUndefined();
+		expect(labelFor("addresses", "AE1 D R E1 S IX0 Z")).toBeUndefined();
+		expect(labelFor("seat", "S I1 T")).toBeUndefined();
+	});
+
+	it("finds nothing when unstressed vowels make more than one recording alike", () => {
+		const alike = [
+			{ path: "a.ogg", pronunciation: "B AX0 T" },
+			{ path: "b.ogg", label: "also said", pronunciation: "B IX0 T" },
+		];
+		expect(findWordAudioRecording(alike, "B IX0 T")?.path).toBe("b.ogg");
+		expect(findWordAudioRecording(alike, "B OU0 T")).toBeUndefined();
+	});
+});
+
 describe("EnglishWordAudio", () => {
-	it("labels each form of a word once, as the manifest command writes them", () => {
+	it("lists each form of a word once with its pronunciation, labelling every extra form", () => {
 		for (const [word, forms] of Object.entries(EnglishWordAudio.forms ?? {})) {
 			expect(word).toMatch(/^[a-z]+$/);
 			expect(forms.length).toBeGreaterThan(0);
 			expect(new Set(forms.map(({ n }) => n)).size).toBe(forms.length);
-			for (const { n, label } of forms) {
-				expect(label.trim()).not.toBe("");
+			for (const { n, label, pronunciation } of forms) {
+				expect(pronunciation).toMatch(/^[A-Z]+[0-2]?( [A-Z]+[0-2]?)*$/);
 				if (n === undefined) expect(EnglishWordAudio.words).toContain(word);
-				else expect(n).toBeGreaterThanOrEqual(2);
+				else {
+					expect(n).toBeGreaterThanOrEqual(2);
+					expect(label?.trim()).toBeTruthy();
+				}
 			}
 		}
+	});
+
+	it("gives a heteronym's main recording its own pronunciation, not the dictionary's first (#378)", () => {
+		expect(EnglishCuratedTop1k.words.read[0]).toBe("R E1 D");
+		expect(getWordAudioForms(EnglishWordAudio, "en-us", "read")).toEqual([
+			{ path: "audio/en-us/words/jenny/read.ogg", label: "present tense", pronunciation: "R I1 D" },
+			{ path: "audio/en-us/words/jenny/read--2.ogg", label: "past tense", pronunciation: "R E1 D" },
+		]);
+		expect(getWordAudioForms(EnglishWordAudio, "en-us", "seat")).toEqual([
+			{ path: "audio/en-us/words/jenny/seat.ogg" },
+		]);
 	});
 
 	it("lists each word once, and only words from a source audio-gen records", () => {

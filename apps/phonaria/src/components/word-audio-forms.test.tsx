@@ -10,8 +10,14 @@ const withForms: WordAudioManifest = {
 	voice: "jenny",
 	words: ["either", "read", "seat"],
 	forms: {
-		either: [{ n: 2, label: "also said" }],
-		read: [{ label: "present tense" }, { n: 2, label: "past tense" }],
+		either: [
+			{ pronunciation: "I1 DH ER0" },
+			{ n: 2, label: "also said", pronunciation: "AI1 DH ER0" },
+		],
+		read: [
+			{ label: "present tense", pronunciation: "R I1 D" },
+			{ n: 2, label: "past tense", pronunciation: "R E1 D" },
+		],
 	},
 };
 
@@ -42,6 +48,41 @@ describe("WordAudioForms", () => {
 		expect(html).toContain('aria-label="Hear read, past tense"');
 		expect(html).toContain("present tense</button>");
 		expect(html).toContain("past tense</button>");
+	});
+
+	it("puts the form of a given pronunciation first, and keeps the main form first otherwise", () => {
+		const order = (pronunciation?: string) =>
+			[
+				...render(
+					<WordAudioForms targetAccent="en-us" word="read" pronunciation={pronunciation} />,
+				).matchAll(/aria-label="Hear read, ([^"]*)"/g),
+			].map(([, label]) => label);
+		expect(order("R E1 D")).toEqual(["past tense", "present tense"]);
+		expect(order("R I1 D")).toEqual(["present tense", "past tense"]);
+		expect(order("R AX0 D")).toEqual(["present tense", "past tense"]);
+		expect(order()).toEqual(["present tense", "past tense"]);
+	});
+
+	it("keeps the main form first when unstressed vowels make two forms alike", () => {
+		manifest.current = {
+			voice: "jenny",
+			words: ["but"],
+			forms: {
+				but: [
+					{ label: "stressed", pronunciation: "B AH1 T" },
+					{ n: 2, label: "weak", pronunciation: "B AX0 T" },
+					{ n: 3, label: "weaker", pronunciation: "B IX0 T" },
+				],
+			},
+		};
+		const order = (pronunciation: string) =>
+			[
+				...render(
+					<WordAudioForms targetAccent="en-us" word="but" pronunciation={pronunciation} />,
+				).matchAll(/aria-label="Hear but, ([^"]*)"/g),
+			].map(([, label]) => label);
+		expect(order("B IX0 T")).toEqual(["weaker", "stressed", "weak"]);
+		expect(order("B OU0 T")).toEqual(["stressed", "weak", "weaker"]);
 	});
 
 	it("shows the word on a main form without a label", () => {

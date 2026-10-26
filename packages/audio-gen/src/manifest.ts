@@ -6,6 +6,7 @@ import { formSlug, isPlainWord } from "./word-forms";
 type PlanSample = {
 	word: string;
 	form?: { n?: number; label: string };
+	variant: string;
 	file: string;
 	sha256?: string;
 };
@@ -66,23 +67,22 @@ export function uploadedSamples({ dir, plan, records }: UploadedBatch): PlanSamp
 
 const formKey = (n: number | undefined) => n ?? 1;
 
-/** Adds forms by number, refusing a number listed again with another label. */
+/** Adds forms by number, refusing a number listed again with another label or pronunciation. */
 function addForms(
 	forms: Map<string, Map<number, WordAudioForm>>,
 	word: string,
 	added: readonly WordAudioForm[],
 ) {
 	const byNumber = forms.get(word) ?? new Map<number, WordAudioForm>();
-	for (const form of added) {
-		const listed = byNumber.get(formKey(form.n));
-		if (listed && listed.label !== form.label)
+	for (const { n, label, pronunciation } of added) {
+		const listed = byNumber.get(formKey(n));
+		if (listed && listed.label !== label)
+			throw new Error(`${formSlug(word, n)} is labelled both "${listed.label}" and "${label}"`);
+		if (listed && listed.pronunciation !== pronunciation)
 			throw new Error(
-				`${formSlug(word, form.n)} is labelled both "${listed.label}" and "${form.label}"`,
+				`${formSlug(word, n)} is said both "${listed.pronunciation}" and "${pronunciation}"`,
 			);
-		byNumber.set(
-			formKey(form.n),
-			form.n ? { n: form.n, label: form.label } : { label: form.label },
-		);
+		byNumber.set(formKey(n), { ...(n ? { n } : {}), ...(label ? { label } : {}), pronunciation });
 	}
 	forms.set(word, byNumber);
 }
@@ -100,7 +100,9 @@ function sortedForms(forms: Map<string, Map<number, WordAudioForm>>) {
 
 /**
  * The uploaded recordings of a batch and its retakes. `words` holds every word whose plain
- * recording went up; `forms` mirrors the plan's labelled forms of the clips that went up.
+ * recording went up; `forms` lists, with its pronunciation, every clip that went up of a
+ * word recorded more than once, so an "also said" word's unlabelled main clip is in it too.
+ * Refuses a clip that went up with two pronunciations, whatever the batch order.
  */
 export function manifestFromUploads(batches: readonly UploadedBatch[]): WordAudioManifest & {
 	accent: string;
@@ -109,7 +111,7 @@ export function manifestFromUploads(batches: readonly UploadedBatch[]): WordAudi
 	if (!first) throw new Error("manifest needs at least one --out");
 	const accent = first.plan.targetAccent;
 	const voice = voiceFolderName(first.plan.settings.voiceId);
-	const words = new Set<string>();
+	const words = new Map<string, string>();
 	const forms = new Map<string, Map<number, WordAudioForm>>();
 	for (const batch of batches) {
 		if (
@@ -117,13 +119,23 @@ export function manifestFromUploads(batches: readonly UploadedBatch[]): WordAudi
 			voiceFolderName(batch.plan.settings.voiceId) !== voice
 		)
 			throw new Error(`${batch.dir} uses another accent or voice than ${first.dir}`);
-		for (const { word, form } of uploadedSamples(batch)) {
+		for (const { word, form, variant } of uploadedSamples(batch)) {
 			if (!isPlainWord(word)) throw new Error(`Words must be lowercase a-z: ${word}`);
-			if (!form?.n) words.add(word);
-			if (form) addForms(forms, word, [form]);
+			if (!form?.n) {
+				const listed = words.get(word);
+				if (listed !== undefined && listed !== variant)
+					throw new Error(`${word} is said both "${listed}" and "${variant}"`);
+				words.set(word, variant);
+			}
+			if (form) addForms(forms, word, [{ ...form, pronunciation: variant }]);
 		}
 	}
-	return { accent, voice, words: [...words].sort(), forms: sortedForms(forms) };
+	for (const [word, byNumber] of forms) {
+		const pronunciation = words.get(word);
+		if (pronunciation && !byNumber.has(formKey(undefined)))
+			byNumber.set(formKey(undefined), { pronunciation });
+	}
+	return { accent, voice, words: [...words.keys()].sort(), forms: sortedForms(forms) };
 }
 
 /** Per-accent manifest JSON in @phonaria/phonetics-data. */

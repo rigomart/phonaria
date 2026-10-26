@@ -24,6 +24,19 @@ export function extractWordIpa(
 	return formatVariantIpa(currentVariant);
 }
 
+/**
+ * The selected variant in the dictionary's notation ("R I1 D"), as the word-audio manifest
+ * writes a recording's pronunciation. Empty for a word not found.
+ */
+export function extractWordPronunciation(
+	word: Pick<TranscribedWord, "source" | "variants">,
+	selectedVariantIndex: number,
+): string {
+	if (word.source === "fallback") return "";
+	const variant = word.variants[selectedVariantIndex] ?? [];
+	return variant.flatMap(({ phonemes }) => phonemes.map(({ cmuToken }) => cmuToken)).join(" ");
+}
+
 export function extractIpaText(result: TranscriptionResult, selectedVariants: number[]): string {
 	const ipaWords = result.words.map((word) =>
 		extractWordIpa(word, selectedVariants[word.wordIndex] ?? 0),
