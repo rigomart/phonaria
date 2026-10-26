@@ -8,6 +8,10 @@ import { compareWithCurrentCode, runGeneration } from "./generation";
 import { AzureNetworkError, createAzureProvider } from "./providers/azure";
 import type { TtsProvider } from "./providers/types";
 
+// Plans as before the top-10k upload; the live manifest leaves no curated word to plan.
+vi.mock("@phonaria/phonetics-data/data/en/word-audio", async () => ({
+	EnglishWordAudio: (await import("./fixtures/recorded-before-top-10k")).wordAudioBeforeTop10k,
+}));
 // Lets a test plan words before they were excluded, as the saved top-10k plans did.
 const exclusions = vi.hoisted(() => ({ on: true }));
 vi.mock("./excluded-words", async (importOriginal) => {

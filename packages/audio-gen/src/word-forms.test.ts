@@ -1,21 +1,20 @@
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
-import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import { describe, expect, it } from "vitest";
 import { collectCuratedWords, pickPronunciation } from "./curated-words";
+import { recordedBeforeTop10k } from "./fixtures/recorded-before-top-10k";
 import { isFormCandidate, rejectedForms } from "./form-candidates";
 import { curatedPronunciations } from "./reviewed-pronunciations";
 import { formSlug, isFormSlug, wordForms } from "./word-forms";
 import { getWordPronunciation } from "./words";
 
-const planned = collectCuratedWords("top-10k").words;
+// The top-10k as planned before its upload, whose candidate forms were reviewed.
+const planned = collectCuratedWords("top-10k", { recorded: recordedBeforeTop10k }).words;
 const rejected = new Set(Object.values(rejectedForms).flat());
 
 describe("reviewed word forms", () => {
-	it("lists only unrecorded top-10k words, so every form gets planned", () => {
-		const recorded = new Set(EnglishWordAudio.words);
-		const words = Object.keys(wordForms);
-		expect(words.filter((word) => !EnglishCuratedTop10k.words[word])).toEqual([]);
-		expect(words.filter((word) => recorded.has(word))).toEqual([]);
+	it("lists only words the top-10k plans, so every form gets planned", () => {
+		const plannedWords = new Set(planned.map(({ word }) => word));
+		expect(Object.keys(wordForms).filter((word) => !plannedWords.has(word))).toEqual([]);
 	});
 	it.each(Object.entries(wordForms))("numbers and labels every form of %s", (word, forms) => {
 		expect(forms.extra.map(({ n }) => n)).toEqual(forms.extra.map((_, index) => index + 2));

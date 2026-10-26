@@ -1,9 +1,14 @@
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { runGeneration } from "./generation";
 import { probeGroups, probeReasons } from "./top-10k-probes";
+
+// Plans as before the top-10k upload; the live manifest leaves no curated word to plan.
+vi.mock("@phonaria/phonetics-data/data/en/word-audio", async () => ({
+	EnglishWordAudio: (await import("./fixtures/recorded-before-top-10k")).wordAudioBeforeTop10k,
+}));
 
 const directories: string[] = [];
 afterEach(async () => {

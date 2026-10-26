@@ -1,20 +1,24 @@
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
-import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import { describe, expect, it } from "vitest";
 import { collectCuratedWords, getExclusionReason, pickPronunciation } from "./curated-words";
 import { excludedWords } from "./excluded-words";
+import { recordedBeforeTop10k } from "./fixtures/recorded-before-top-10k";
 import { curatedPronunciations } from "./reviewed-pronunciations";
 
 const variantsOf = (word: string) => EnglishCuratedTop10k.words[word];
+const beforeTop10k = { recorded: recordedBeforeTop10k };
 
 describe("curated word selection", () => {
 	it("selects unrecorded words in frequency order, the top-1k inside the top-10k", () => {
-		const top1k = collectCuratedWords("top-1k").words.map(({ word }) => word);
-		const top10k = collectCuratedWords("top-10k").words.map(({ word }) => word);
-		const recorded = new Set(EnglishWordAudio.words);
+		const top1k = collectCuratedWords("top-1k", beforeTop10k).words.map(({ word }) => word);
+		const top10k = collectCuratedWords("top-10k", beforeTop10k).words.map(({ word }) => word);
 		expect(top1k.slice(0, 4)).toEqual(["the", "to", "and", "of"]);
 		expect(top10k.slice(0, top1k.length)).toEqual(top1k);
-		expect(top10k.filter((word) => recorded.has(word))).toEqual([]);
+		expect(top10k.filter((word) => recordedBeforeTop10k.has(word))).toEqual([]);
+	});
+	it("leaves no curated word to plan once the live manifest lists the top-10k", () => {
+		expect(collectCuratedWords("top-1k").words).toEqual([]);
+		expect(collectCuratedWords("top-10k").words).toEqual([]);
 	});
 	it("skips words that are already recorded", () => {
 		const words = collectCuratedWords("top-1k", { recorded: new Set(["the", "of"]) }).words;
@@ -28,7 +32,7 @@ describe("curated word selection", () => {
 		["b", "abbreviation or letter"],
 	])("leaves out %s as %s", (word, reason) => {
 		expect(getExclusionReason(word)).toBe(reason);
-		expect(collectCuratedWords("top-10k").excluded).toContainEqual({ word, reason });
+		expect(collectCuratedWords("top-10k", beforeTop10k).excluded).toContainEqual({ word, reason });
 	});
 	it.each(
 		Object.entries(excludedWords).flatMap(([reason, words]) =>
@@ -36,7 +40,7 @@ describe("curated word selection", () => {
 		),
 	)("leaves out %s as a %s: %s", (word, reason) => {
 		expect(getExclusionReason(word)).toBe(reason);
-		expect(collectCuratedWords("top-10k").excluded).toContainEqual({ word, reason });
+		expect(collectCuratedWords("top-10k", beforeTop10k).excluded).toContainEqual({ word, reason });
 	});
 	it.each([
 		"a",
@@ -61,10 +65,11 @@ describe("curated word selection", () => {
 		expect(getExclusionReason(word)).toBeUndefined();
 	});
 	it("keeps excluded words a saved plan already has, so it can resume", () => {
-		const saved = collectCuratedWords("top-1k", { saved: new Set(["al"]) });
+		const saved = collectCuratedWords("top-1k", { ...beforeTop10k, saved: new Set(["al"]) });
 		expect(saved.words.map(({ word }) => word)).toContain("al");
 		expect(saved.excluded).not.toContainEqual(expect.objectContaining({ word: "al" }));
-		expect(collectCuratedWords("top-1k").words.map(({ word }) => word)).not.toContain("al");
+		const fresh = collectCuratedWords("top-1k", beforeTop10k).words.map(({ word }) => word);
+		expect(fresh).not.toContain("al");
 	});
 });
 
