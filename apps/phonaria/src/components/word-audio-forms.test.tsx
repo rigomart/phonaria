@@ -63,6 +63,28 @@ describe("WordAudioForms", () => {
 		expect(order()).toEqual(["present tense", "past tense"]);
 	});
 
+	it("keeps the main form first when unstressed vowels make two forms alike", () => {
+		manifest.current = {
+			voice: "jenny",
+			words: ["but"],
+			forms: {
+				but: [
+					{ label: "stressed", pronunciation: "B AH1 T" },
+					{ n: 2, label: "weak", pronunciation: "B AX0 T" },
+					{ n: 3, label: "weaker", pronunciation: "B IX0 T" },
+				],
+			},
+		};
+		const order = (pronunciation: string) =>
+			[
+				...render(
+					<WordAudioForms targetAccent="en-us" word="but" pronunciation={pronunciation} />,
+				).matchAll(/aria-label="Hear but, ([^"]*)"/g),
+			].map(([, label]) => label);
+		expect(order("B IX0 T")).toEqual(["weaker", "stressed", "weak"]);
+		expect(order("B OU0 T")).toEqual(["stressed", "weak", "weaker"]);
+	});
+
 	it("shows the word on a main form without a label", () => {
 		const html = render(<WordAudioForms targetAccent="en-us" word="either" />);
 		expect(html).toContain('aria-label="Hear either"');

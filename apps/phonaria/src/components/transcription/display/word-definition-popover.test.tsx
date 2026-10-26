@@ -15,8 +15,12 @@ vi.mock("@/hooks/use-definition", () => ({ useDefinition: vi.fn() }));
 /** The dictionary lists past-tense /ɹɛd/ first; the main recording is present tense. */
 const recorded: WordAudioManifest = {
 	voice: "jenny",
-	words: ["read", "seat"],
+	words: ["read", "record", "seat"],
 	forms: {
+		record: [
+			{ label: "noun", pronunciation: "R E1 K ER0 D" },
+			{ n: 2, label: "verb", pronunciation: "R IX0 K O1 R D" },
+		],
 		read: [
 			{ label: "present tense", pronunciation: "R I1 D" },
 			{ n: 2, label: "past tense", pronunciation: "R E1 D" },
@@ -64,6 +68,12 @@ describe("word popover (#378)", () => {
 		const html = popover("read", "ˈɹid", "R I1 D");
 		expect(html).toContain("/ˈɹid/");
 		expect(buttons(html)).toEqual(["Hear read, present tense", "Hear read, past tense"]);
+	});
+
+	it("plays the verb first under record's default /ɹə.ˈkɔɹd/, recorded as /ɹɪˈkɔɹd/", () => {
+		const html = popover("record", "ɹə.ˈkɔɹd", "R AX0 K O1 R D");
+		expect(html).toContain("/ɹə.ˈkɔɹd/");
+		expect(buttons(html)).toEqual(["Hear record, verb", "Hear record, noun"]);
 	});
 
 	it("leaves a word recorded once as it was", () => {

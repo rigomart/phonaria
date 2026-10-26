@@ -9,6 +9,7 @@ import {
 	getLanguageFeatureCapabilities,
 	getLanguagePhonemeCount,
 	getLanguagePhonemeIds,
+	findWordAudioRecording,
 	getSpellingPatternRegistryForLanguage,
 	getWordAudioForms,
 	getWordAudioPath,
@@ -42,6 +43,12 @@ expectTypeOf(getWordAudioForms).toEqualTypeOf<
 		targetAccent: TargetAccent,
 		word: string,
 	) => readonly WordAudioRecording[]
+>();
+expectTypeOf(findWordAudioRecording).toEqualTypeOf<
+	(
+		recordings: readonly WordAudioRecording[],
+		pronunciation: string,
+	) => WordAudioRecording | undefined
 >();
 expectTypeOf(loadWordAudioManifest).toEqualTypeOf<
 	(targetAccent: TargetAccent) => Promise<WordAudioManifest | null>

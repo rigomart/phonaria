@@ -1,4 +1,5 @@
 import type { TargetAccent } from "./core/types";
+import { tokenizePronunciation } from "./languages/en/cmu-arpa";
 import type { WordAudioForm, WordAudioManifest } from "./languages/types";
 
 /**
@@ -77,3 +78,33 @@ const described = ({ label, pronunciation }: WordAudioForm) => ({
 	...(label ? { label } : {}),
 	pronunciation,
 });
+
+/**
+ * Every unstressed vowel as one token. Only vowels carry a stress digit, so a 0 suffix marks
+ * one; audio-gen's form review ignores unstressed vowels the same way (`form-candidates.ts`).
+ */
+const withUnstressedVowelsAlike = (pronunciation: string) =>
+	tokenizePronunciation(pronunciation)
+		.map((token) => (token.endsWith("0") ? "0" : token))
+		.join(" ");
+
+/**
+ * The recording generated from a pronunciation in dictionary notation ("R IX0 K O1 R D"):
+ * the one with exactly that pronunciation, else the only one that differs from it just in
+ * unstressed vowels (*record* `R AX0 K O1 R D`, *progress* `P R OU0 G R E1 S`). Undefined
+ * when none matches, or more than one matches that way.
+ */
+export function findWordAudioRecording(
+	recordings: readonly WordAudioRecording[],
+	pronunciation: string,
+): WordAudioRecording | undefined {
+	const exact = recordings.find((recording) => recording.pronunciation === pronunciation);
+	if (exact) return exact;
+	const loose = withUnstressedVowelsAlike(pronunciation);
+	const alike = recordings.filter(
+		(recording) =>
+			recording.pronunciation !== undefined &&
+			withUnstressedVowelsAlike(recording.pronunciation) === loose,
+	);
+	return alike.length === 1 ? alike[0] : undefined;
+}

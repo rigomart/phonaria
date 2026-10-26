@@ -170,6 +170,7 @@ export {
 	LanguageSpellingPatternDataRegistry,
 } from "./registries/registries";
 export {
+	findWordAudioRecording,
 	getWordAudioForms,
 	getWordAudioPath,
 	loadWordAudioManifest,

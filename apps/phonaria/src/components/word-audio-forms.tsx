@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	findWordAudioRecording,
 	getWordAudioForms,
 	type TargetAccent,
 	type WordAudioRecording,
@@ -21,8 +22,8 @@ const formButton = cn(
  * One play button per recording of a word, for places where a word is looked
  * up: a heteronym's meanings each under their label ("present tense", "past
  * tense"), an "also said" form beside the main one. A form without a label
- * shows the word. The main form comes first, unless `pronunciation` is
- * another form's: then that form leads. While the manifest loads it shows one
+ * shows the word. The main form comes first, unless `pronunciation` finds
+ * another form (`findWordAudioRecording`): then that form leads. While the manifest loads it shows one
  * disabled button; without a recording, nothing.
  */
 export function WordAudioForms({
@@ -68,8 +69,6 @@ export function WordAudioForms({
 
 /** The recording generated from `pronunciation` first, the rest in manifest order. */
 function leading(recordings: readonly WordAudioRecording[], pronunciation: string | undefined) {
-	const first = pronunciation
-		? recordings.find((recording) => recording.pronunciation === pronunciation)
-		: undefined;
+	const first = pronunciation ? findWordAudioRecording(recordings, pronunciation) : undefined;
 	return first ? [first, ...recordings.filter((recording) => recording !== first)] : recordings;
 }

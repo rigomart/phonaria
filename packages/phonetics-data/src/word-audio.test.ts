@@ -5,10 +5,16 @@ import { EnglishCuratedTop1k } from "./data/en/curated-1k";
 import { EnglishCuratedTop10k } from "./data/en/curated-10k";
 import { EnglishWordAudio } from "./data/en/word-audio";
 import { EnglishPhonemeContrasts } from "./languages/en/contrasts";
+import { preferOForms } from "./languages/en/o-forms";
 import { EnglishPhonemeSpellingPatterns } from "./languages/en/patterns";
 import { EnglishPracticeSchwa } from "./languages/en/practice-schwa";
 import type { WordAudioManifest } from "./languages/types";
-import { getWordAudioForms, getWordAudioPath, loadWordAudioManifest } from "./word-audio";
+import {
+	findWordAudioRecording,
+	getWordAudioForms,
+	getWordAudioPath,
+	loadWordAudioManifest,
+} from "./word-audio";
 
 const catalogWords = new Set(
 	EnglishPhonemeContrasts.flatMap(({ minimalPairs }) => minimalPairs.flatMap(({ words }) => words)),
@@ -99,6 +105,49 @@ describe("getWordAudioForms", () => {
 			{ path: "audio/en-us/words/jenny/seat.ogg" },
 		]);
 		expect(getWordAudioForms(withForms, "en-us", "constructor")).toEqual([]);
+	});
+});
+
+describe("findWordAudioRecording", () => {
+	const recorded = (word: string) => getWordAudioForms(EnglishWordAudio, "en-us", word);
+	const labelFor = (word: string, pronunciation: string) =>
+		findWordAudioRecording(recorded(word), pronunciation)?.label;
+
+	it("finds the recording of exactly that pronunciation", () => {
+		expect(labelFor("read", "R E1 D")).toBe("past tense");
+		expect(labelFor("read", "R I1 D")).toBe("present tense");
+	});
+
+	const shown = (word: string) =>
+		preferOForms(word, EnglishCuratedTop1k.words[word] ?? EnglishCuratedTop10k.words[word]);
+
+	it("lets unstressed vowels differ when nothing matches exactly (#378)", () => {
+		const [record] = shown("record");
+		expect(record).toBe("R AX0 K O1 R D");
+		expect(labelFor("record", record)).toBe("verb");
+		const [refuse] = shown("refuse");
+		expect(refuse).toBe("R AX0 F Y U1 Z");
+		expect(labelFor("refuse", refuse)).toBe("verb");
+		const progress = shown("progress")[2];
+		expect(progress).toBe("P R OU0 G R E1 S");
+		expect(labelFor("progress", progress)).toBe("verb");
+	});
+
+	it("still needs every consonant, stressed vowel and stress to agree", () => {
+		expect(labelFor("record", "R AX0 K O2 R D")).toBeUndefined();
+		expect(labelFor("record", "R AX0 K O1 R")).toBeUndefined();
+		expect(labelFor("record", "R AX0 K A1 R D")).toBeUndefined();
+		expect(labelFor("addresses", "AE1 D R E1 S IX0 Z")).toBeUndefined();
+		expect(labelFor("seat", "S I1 T")).toBeUndefined();
+	});
+
+	it("finds nothing when unstressed vowels make more than one recording alike", () => {
+		const alike = [
+			{ path: "a.ogg", pronunciation: "B AX0 T" },
+			{ path: "b.ogg", label: "also said", pronunciation: "B IX0 T" },
+		];
+		expect(findWordAudioRecording(alike, "B IX0 T")?.path).toBe("b.ogg");
+		expect(findWordAudioRecording(alike, "B OU0 T")).toBeUndefined();
 	});
 });
 
