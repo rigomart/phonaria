@@ -100,12 +100,16 @@ export type LanguagePhonemeMergerNoteRegistry<TLanguage extends TargetAccent = T
 // Word audio types
 
 /**
- * A labelled recording of a word: a heteronym's meaning ("past tense") or an "also said"
- * form. Without `n` it is the word's main recording; form `n` is the file `{word}--{n}`.
+ * One recording of a word recorded more than once: a heteronym's meaning ("past tense") or
+ * an "also said" form. Without `n` it is the word's main recording, which has no label in
+ * an "also said" word; form `n` is the file `{word}--{n}`. `pronunciation` is the one the
+ * clip was generated from, in dictionary notation ("R I1 D"); it need not be the
+ * dictionary's first.
  */
 export type WordAudioForm = {
 	readonly n?: number;
-	readonly label: string;
+	readonly label?: string;
+	readonly pronunciation: string;
 };
 
 /** The single-word recordings uploaded for one accent, in one voice. */
@@ -114,6 +118,6 @@ export type WordAudioManifest = {
 	readonly voice: string;
 	/** Lowercase words whose main recording (`{word}.ogg`) is uploaded, sorted. */
 	readonly words: readonly string[];
-	/** The uploaded labelled forms of words recorded more than once, by word. */
+	/** The uploaded forms of words recorded more than once, by word. */
 	readonly forms?: Readonly<Record<string, readonly WordAudioForm[]>>;
 };

@@ -59,32 +59,42 @@ const withForms: WordAudioManifest = {
 	voice: "jenny",
 	words: ["either", "read", "seat"],
 	forms: {
-		either: [{ n: 2, label: "also said" }],
-		lead: [{ n: 2, label: "the metal" }],
-		read: [{ label: "present tense" }, { n: 2, label: "past tense" }],
+		either: [
+			{ pronunciation: "I1 DH ER0" },
+			{ n: 2, label: "also said", pronunciation: "AI1 DH ER0" },
+		],
+		lead: [{ n: 2, label: "the metal", pronunciation: "L E1 D" }],
+		read: [
+			{ label: "present tense", pronunciation: "R I1 D" },
+			{ n: 2, label: "past tense", pronunciation: "R E1 D" },
+		],
 	},
 };
 
 describe("getWordAudioForms", () => {
-	it("lists every labelled form, main form first", () => {
+	it("lists every form with its pronunciation, main form first", () => {
 		expect(getWordAudioForms(withForms, "en-us", " Read")).toEqual([
-			{ path: "audio/en-us/words/jenny/read.ogg", label: "present tense" },
-			{ path: "audio/en-us/words/jenny/read--2.ogg", label: "past tense" },
+			{ path: "audio/en-us/words/jenny/read.ogg", label: "present tense", pronunciation: "R I1 D" },
+			{ path: "audio/en-us/words/jenny/read--2.ogg", label: "past tense", pronunciation: "R E1 D" },
 		]);
 		expect(getWordAudioForms(withForms, "en-us", "either")).toEqual([
-			{ path: "audio/en-us/words/jenny/either.ogg" },
-			{ path: "audio/en-us/words/jenny/either--2.ogg", label: "also said" },
+			{ path: "audio/en-us/words/jenny/either.ogg", pronunciation: "I1 DH ER0" },
+			{
+				path: "audio/en-us/words/jenny/either--2.ogg",
+				label: "also said",
+				pronunciation: "AI1 DH ER0",
+			},
 		]);
 	});
 
 	it("lists an uploaded form even when the main recording isn't", () => {
 		expect(getWordAudioPath(withForms, "en-us", "lead")).toBeNull();
 		expect(getWordAudioForms(withForms, "en-us", "lead")).toEqual([
-			{ path: "audio/en-us/words/jenny/lead--2.ogg", label: "the metal" },
+			{ path: "audio/en-us/words/jenny/lead--2.ogg", label: "the metal", pronunciation: "L E1 D" },
 		]);
 	});
 
-	it("gives a word recorded once one unlabelled recording, and an unrecorded word none", () => {
+	it("gives a word recorded once one recording without label or pronunciation, and an unrecorded word none", () => {
 		expect(getWordAudioForms(withForms, "en-us", "seat")).toEqual([
 			{ path: "audio/en-us/words/jenny/seat.ogg" },
 		]);
@@ -93,17 +103,31 @@ describe("getWordAudioForms", () => {
 });
 
 describe("EnglishWordAudio", () => {
-	it("labels each form of a word once, as the manifest command writes them", () => {
+	it("lists each form of a word once with its pronunciation, labelling every extra form", () => {
 		for (const [word, forms] of Object.entries(EnglishWordAudio.forms ?? {})) {
 			expect(word).toMatch(/^[a-z]+$/);
 			expect(forms.length).toBeGreaterThan(0);
 			expect(new Set(forms.map(({ n }) => n)).size).toBe(forms.length);
-			for (const { n, label } of forms) {
-				expect(label.trim()).not.toBe("");
+			for (const { n, label, pronunciation } of forms) {
+				expect(pronunciation).toMatch(/^[A-Z]+[0-2]?( [A-Z]+[0-2]?)*$/);
 				if (n === undefined) expect(EnglishWordAudio.words).toContain(word);
-				else expect(n).toBeGreaterThanOrEqual(2);
+				else {
+					expect(n).toBeGreaterThanOrEqual(2);
+					expect(label?.trim()).toBeTruthy();
+				}
 			}
 		}
+	});
+
+	it("gives a heteronym's main recording its own pronunciation, not the dictionary's first (#378)", () => {
+		expect(EnglishCuratedTop1k.words.read[0]).toBe("R E1 D");
+		expect(getWordAudioForms(EnglishWordAudio, "en-us", "read")).toEqual([
+			{ path: "audio/en-us/words/jenny/read.ogg", label: "present tense", pronunciation: "R I1 D" },
+			{ path: "audio/en-us/words/jenny/read--2.ogg", label: "past tense", pronunciation: "R E1 D" },
+		]);
+		expect(getWordAudioForms(EnglishWordAudio, "en-us", "seat")).toEqual([
+			{ path: "audio/en-us/words/jenny/seat.ogg" },
+		]);
 	});
 
 	it("lists each word once, and only words from a source audio-gen records", () => {

@@ -1,8 +1,15 @@
 import type { TargetAccent } from "./core/types";
-import type { WordAudioManifest } from "./languages/types";
+import type { WordAudioForm, WordAudioManifest } from "./languages/types";
 
-/** One recording of a word; `label` names the meaning or form when the word has several. */
-export type WordAudioRecording = { readonly path: string; readonly label?: string };
+/**
+ * One recording of a word; `label` names the meaning or form when the word has several, and
+ * `pronunciation` is the one it was generated from, known for words recorded more than once.
+ */
+export type WordAudioRecording = {
+	readonly path: string;
+	readonly label?: string;
+	readonly pronunciation?: string;
+};
 
 /**
  * Loads an accent's word-audio manifest, or null for an accent without recordings. Each
@@ -40,8 +47,8 @@ export function getWordAudioPath(
 
 /**
  * Every recording of a word, main form first: a heteronym's meanings ("present tense",
- * "past tense"), or an "also said" form beside the main one. A word recorded once has one
- * entry without a label; a word without a recording, none.
+ * "past tense"), or an "also said" form beside the main one, each with its pronunciation.
+ * A word recorded once has one entry with neither; a word without a recording, none.
  */
 export function getWordAudioForms(
 	manifest: WordAudioManifest,
@@ -54,12 +61,19 @@ export function getWordAudioForms(
 		manifest.forms && Object.prototype.hasOwnProperty.call(manifest.forms, normalized)
 			? manifest.forms[normalized]
 			: [];
-	const mainLabel = forms.find(({ n }) => n === undefined)?.label;
+	const mainForm = forms.find(({ n }) => n === undefined);
 	const folder = `audio/${targetAccent}/words/${manifest.voice}`;
 	return [
-		...(main ? [mainLabel ? { path: main, label: mainLabel } : { path: main }] : []),
-		...forms.flatMap(({ n, label }) =>
-			n === undefined ? [] : [{ path: `${folder}/${normalized}--${n}.ogg`, label }],
+		...(main ? [{ path: main, ...(mainForm && described(mainForm)) }] : []),
+		...forms.flatMap((form) =>
+			form.n === undefined
+				? []
+				: [{ path: `${folder}/${normalized}--${form.n}.ogg`, ...described(form) }],
 		),
 	];
 }
+
+const described = ({ label, pronunciation }: WordAudioForm) => ({
+	...(label ? { label } : {}),
+	pronunciation,
+});

@@ -16,6 +16,8 @@ type WordDefinitionPopoverProps = {
 	targetAccent: TargetAccent;
 	word: string;
 	ipa: string;
+	/** The selected variant in dictionary notation; its recording plays first. */
+	pronunciation: string;
 };
 
 function Attribution() {
@@ -34,10 +36,11 @@ function Attribution() {
 	);
 }
 
-function DefinitionBody({
+export function DefinitionBody({
 	targetAccent,
 	word,
 	ipa,
+	pronunciation,
 	status,
 	groups,
 	errorMessage,
@@ -46,6 +49,7 @@ function DefinitionBody({
 	targetAccent: TargetAccent;
 	word: string;
 	ipa: string;
+	pronunciation: string;
 	status: ReturnType<typeof useDefinition>["status"];
 	groups: ReturnType<typeof useDefinition>["groups"];
 	errorMessage: string | null;
@@ -58,7 +62,7 @@ function DefinitionBody({
 					<p className="text-base font-semibold font-display leading-none">{word}</p>
 					{ipa ? <p className="text-sm text-muted-foreground whitespace-nowrap">/{ipa}/</p> : null}
 				</div>
-				<WordAudioForms targetAccent={targetAccent} word={word} />
+				<WordAudioForms targetAccent={targetAccent} word={word} pronunciation={pronunciation} />
 				<SyntheticVoiceNote targetAccent={targetAccent} words={[word]} />
 			</div>
 
@@ -115,7 +119,12 @@ function DefinitionBody({
 	);
 }
 
-export function WordDefinitionPopover({ targetAccent, word, ipa }: WordDefinitionPopoverProps) {
+export function WordDefinitionPopover({
+	targetAccent,
+	word,
+	ipa,
+	pronunciation,
+}: WordDefinitionPopoverProps) {
 	const [open, setOpen] = useState(false);
 	const definition = useDefinition(open ? word : null);
 
@@ -143,6 +152,7 @@ export function WordDefinitionPopover({ targetAccent, word, ipa }: WordDefinitio
 					targetAccent={targetAccent}
 					word={word}
 					ipa={ipa}
+					pronunciation={pronunciation}
 					status={definition.status}
 					groups={definition.groups}
 					errorMessage={definition.errorMessage}

@@ -49,6 +49,7 @@ expectTypeOf(loadWordAudioManifest).toEqualTypeOf<
 expectTypeOf<WordAudioRecording>().toEqualTypeOf<{
 	readonly path: string;
 	readonly label?: string;
+	readonly pronunciation?: string;
 }>();
 
 // These must stay compiler errors: a broadened public API would silently let

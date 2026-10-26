@@ -415,14 +415,19 @@ another batch's clips don't match this plan and are skipped. A folder with no
 record, or whose records verify none of its clips, is refused.
 
 - `words` holds every word whose plain `word.ogg` went up.
-- `forms` mirrors the plan's labelled forms of the clips that went up, by word:
-  `"read": [{ "label": "present tense" }, { "n": 2, "label": "past tense" }]`. An
-  entry without `n` labels the main recording; form `n` is `word--n.ogg`. "Also
-  said" words list only their extra form, since the main one has no label.
+- `forms` lists, by word, every clip that went up of a word recorded more than once,
+  with its label and the pronunciation the plan generated it from:
+  `"read": [{ "label": "present tense", "pronunciation": "R I1 D" }, { "n": 2, "label":
+  "past tense", "pronunciation": "R E1 D" }]`.
+  An entry without `n` is the main recording; form `n` is `word--n.ogg`. An "also
+  said" word's main entry has no label. The main pronunciation need not be the
+  dictionary's first (*read* lists /ɹɛd/ first), so the Transcription popover matches
+  the selected variant against it to pick the first button (#378).
 
 The command merges into the existing manifest, keeping every word and form already
 listed. It refuses to mix voice folders or accents, a plan that isn't Ogg, and a form
-whose label differs from the one already listed. Running it again on the same batches
+whose label or pronunciation differs from the one already listed, a main clip included,
+whichever batch comes first. Running it again on the same batches
 writes the same bytes. The phonetics-data tests require full minimal-pair catalog
 coverage and allow additional recorded spelling examples.
 

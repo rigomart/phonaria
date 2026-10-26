@@ -14,10 +14,26 @@ import {
 } from "./manifest";
 
 const sha = (slug: string) => `sha-of-${slug}`;
+const said: Record<string, string> = {
+	read: "R I1 D",
+	"read--2": "R E1 D",
+	either: "I1 DH ER0",
+	"either--2": "AI1 DH ER0",
+};
 const sample = (word: string, form?: { n?: number; label: string }, extension = "ogg") => {
 	const slug = form?.n ? `${word}--${form.n}` : word;
-	return { word, ...(form ? { form } : {}), file: `audio/${slug}.${extension}`, sha256: sha(slug) };
+	return {
+		word,
+		...(form ? { form } : {}),
+		variant: said[slug] ?? "S I1 T",
+		file: `audio/${slug}.${extension}`,
+		sha256: sha(slug),
+	};
 };
+const readForms = [
+	{ label: "present tense", pronunciation: "R I1 D" },
+	{ n: 2, label: "past tense", pronunciation: "R E1 D" },
+];
 type Sample = ReturnType<typeof sample>;
 const plan = (samples: Sample[], voiceId = "en-US-JennyNeural") => ({
 	targetAccent: "en-us",
@@ -44,7 +60,7 @@ const read = [
 ];
 
 describe("manifest from upload records", () => {
-	it("lists only the clips a record verifies, with the labels of their forms", () => {
+	it("lists only the clips a record verifies, with the labels and pronunciations of their forms", () => {
 		const either = [sample("either"), sample("either", { n: 2, label: "also said" })];
 		const manifest = manifestFromUploads([
 			batch(
@@ -57,10 +73,46 @@ describe("manifest from upload records", () => {
 			voice: "jenny",
 			words: ["read", "seat", "seed"],
 			forms: {
-				either: [{ n: 2, label: "also said" }],
-				read: [{ label: "present tense" }, { n: 2, label: "past tense" }],
+				either: [{ n: 2, label: "also said", pronunciation: "AI1 DH ER0" }],
+				read: readForms,
 			},
 		});
+	});
+
+	it("lists the unlabelled main clip of an also-said word with its pronunciation", () => {
+		const either = [sample("either"), sample("either", { n: 2, label: "also said" })];
+		expect(manifestFromUploads([batch(either, [record(["either", "either--2"])])]).forms).toEqual({
+			either: [
+				{ pronunciation: "I1 DH ER0" },
+				{ n: 2, label: "also said", pronunciation: "AI1 DH ER0" },
+			],
+		});
+	});
+
+	it("refuses a main clip that went up with two pronunciations, in either batch order", () => {
+		const either = [sample("either"), sample("either", { n: 2, label: "also said" })];
+		const first = batch(either, [record(["either", "either--2"])], "top-10k");
+		const retake = batch(
+			[{ ...sample("either"), variant: "AI1 DH ER0", sha256: "sha-of-the-retake" }],
+			[
+				{
+					entries: [
+						{
+							key: "audio/en-us/words/jenny/either.ogg",
+							sha256: "sha-of-the-retake",
+							verified: true,
+						},
+					],
+				},
+			],
+			"top-10k-retakes",
+		);
+		expect(() => manifestFromUploads([first, retake])).toThrow(
+			'either is said both "I1 DH ER0" and "AI1 DH ER0"',
+		);
+		expect(() => manifestFromUploads([retake, first])).toThrow(
+			'either is said both "AI1 DH ER0" and "I1 DH ER0"',
+		);
 	});
 
 	it("takes a batch's retakes from their own folders, and skips other batches' entries", () => {
@@ -77,10 +129,7 @@ describe("manifest from upload records", () => {
 			batch([retake], [run], "top-1k-retakes"),
 		]);
 		expect(manifest.words).toEqual(["read", "seat"]);
-		expect(manifest.forms?.read).toEqual([
-			{ label: "present tense" },
-			{ n: 2, label: "past tense" },
-		]);
+		expect(manifest.forms?.read).toEqual(readForms);
 	});
 
 	it("reads records from before #373, which have only entries", () => {
@@ -130,29 +179,25 @@ describe("manifest from upload records", () => {
 });
 
 describe("merging into the manifest", () => {
-	it("keeps every word and form, and refuses a form relabelled", () => {
-		const existing = {
-			voice: "jenny",
-			words: ["read", "seat"],
-			forms: { read: [{ label: "present tense" }] },
-		};
+	it("keeps every word and form, and refuses a form relabelled or said another way", () => {
+		const [present, past] = readForms;
+		const alsoSaid = { n: 2, label: "also said", pronunciation: "AI1 DH ER0" };
+		const existing = { voice: "jenny", words: ["read", "seat"], forms: { read: [present] } };
 		expect(
 			mergeManifests(existing, {
 				voice: "jenny",
 				words: ["cause"],
-				forms: { read: [{ n: 2, label: "past tense" }], either: [{ n: 2, label: "also said" }] },
+				forms: { read: [past], either: [alsoSaid] },
 			}),
 		).toEqual({
 			voice: "jenny",
 			words: ["cause", "read", "seat"],
-			forms: {
-				either: [{ n: 2, label: "also said" }],
-				read: [{ label: "present tense" }, { n: 2, label: "past tense" }],
-			},
+			forms: { either: [alsoSaid], read: readForms },
 		});
-		expect(() =>
-			mergeManifests(existing, { voice: "jenny", words: [], forms: { read: [{ label: "noun" }] } }),
-		).toThrow(/labelled both/);
+		const merged = (form: { label: string; pronunciation: string }) =>
+			mergeManifests(existing, { voice: "jenny", words: [], forms: { read: [form] } });
+		expect(() => merged({ ...present, label: "noun" })).toThrow(/labelled both/);
+		expect(() => merged({ ...present, pronunciation: "R E1 D" })).toThrow(/said both/);
 		expect(() => mergeManifests(existing, { voice: "aria", words: [] })).toThrow(/voice/i);
 	});
 
@@ -164,10 +209,10 @@ describe("merging into the manifest", () => {
 		const withForms = renderManifestJson({
 			voice: "jenny",
 			words: ["read"],
-			forms: { read: [{ label: "present tense" }, { n: 2, label: "past tense" }] },
+			forms: { read: readForms },
 		});
 		expect(withForms).toContain(
-			'\t\t"read": [{"label":"present tense"},{"n":2,"label":"past tense"}]\n',
+			'\t\t"read": [{"label":"present tense","pronunciation":"R I1 D"},{"n":2,"label":"past tense","pronunciation":"R E1 D"}]\n',
 		);
 		expect(manifestFile("en-us")).toBe("data/en/word-audio.json");
 		expect(() => manifestFile("es-419")).toThrow(/es-419/);
@@ -209,7 +254,7 @@ describe("writeManifest", () => {
 		const expected = renderManifestJson({
 			voice: "jenny",
 			words: ["cause", "read", "seat", "seed"],
-			forms: { read: [{ label: "present tense" }, { n: 2, label: "past tense" }] },
+			forms: { read: readForms },
 		});
 		expect(readFileSync(target, "utf8")).toBe(expected);
 		writeManifest([top, retakes], data);
