@@ -20,7 +20,6 @@ import { EnglishContrastsByPhonemeId } from "../languages/en/contrasts";
 import { EnglishPhonemeFrequencies } from "../languages/en/frequency";
 import { EnglishPhonemeMergerNotes } from "../languages/en/merger-notes";
 import { EnglishPhonemeSpellingPatterns } from "../languages/en/patterns";
-import { EnglishWordAudio } from "../languages/en/word-audio";
 import {
 	SpanishConsonantArticulations,
 	SpanishDiphthongArticulations,
@@ -40,10 +39,8 @@ import type {
 	PhonemeContrastMatch,
 	PhonemeFrequency,
 	SpellingPattern,
-	WordAudioManifest,
 } from "../languages/types";
 import { deepFreeze } from "../shared/readonly";
-import { findWordAudioForms, findWordAudioPath, type WordAudioRecording } from "./word-audio";
 
 // Language articulation registry types
 
@@ -185,11 +182,6 @@ export const LanguageMergerNoteDataRegistry = deepFreeze({
 	Partial<Record<PhonemeSymbolId, ReadonlyArray<MergerNote>>> | null
 >);
 
-export const LanguageWordAudioDataRegistry = deepFreeze({
-	"en-us": EnglishWordAudio,
-	"es-419": null,
-} as const satisfies Record<TargetAccent, WordAudioManifest | null>);
-
 export function getCmuArpaRegistryForLanguage<TLanguage extends TargetAccent>(
 	language: TLanguage,
 ): (typeof LanguageCmuArpaDataRegistry)[TLanguage] {
@@ -224,29 +216,6 @@ export function getMergerNoteRegistryForLanguage<TLanguage extends TargetAccent>
 	language: TLanguage,
 ): (typeof LanguageMergerNoteDataRegistry)[TLanguage] {
 	return LanguageMergerNoteDataRegistry[language];
-}
-
-/**
- * Bucket-relative path (no leading slash) of a word's recording, e.g.
- * "audio/en-us/words/jenny/seat.ogg", or null when the word has none.
- * Matching ignores case and surrounding whitespace.
- */
-export function getWordAudioPath(targetAccent: TargetAccent, word: string): string | null {
-	const manifest = LanguageWordAudioDataRegistry[targetAccent];
-	return manifest ? findWordAudioPath(manifest, targetAccent, word) : null;
-}
-
-/**
- * Every recording of a word, main form first: a heteronym's meanings ("present tense",
- * "past tense"), or an "also said" form beside the main one. A word recorded once has one
- * entry without a label; a word without a recording, none.
- */
-export function getWordAudioForms(
-	targetAccent: TargetAccent,
-	word: string,
-): readonly WordAudioRecording[] {
-	const manifest = LanguageWordAudioDataRegistry[targetAccent];
-	return manifest ? findWordAudioForms(manifest, targetAccent, word) : [];
 }
 
 export type { CmuArpaToken, CmuStressLevel };

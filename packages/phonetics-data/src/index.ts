@@ -149,11 +149,6 @@ export type {
 	LanguagePhonemeArticulationRegistry,
 } from "./registries/registries";
 export {
-	findWordAudioForms,
-	findWordAudioPath,
-	type WordAudioRecording,
-} from "./registries/word-audio";
-export {
 	getAllophoneRegistryForLanguage,
 	getCmuArpaRegistryForLanguage,
 	getConsonantArticulationRegistryForLanguage,
@@ -166,8 +161,6 @@ export {
 	getPhonemeArticulationRegistryForLanguage,
 	getPhonemeFrequencyRegistryForLanguage,
 	getSpellingPatternRegistryForLanguage,
-	getWordAudioForms,
-	getWordAudioPath,
 	LanguageAllophoneDataRegistry,
 	LanguageArticulationRegistry,
 	LanguageCmuArpaDataRegistry,
@@ -175,5 +168,10 @@ export {
 	LanguageMergerNoteDataRegistry,
 	LanguagePhonemeFrequencyDataRegistry,
 	LanguageSpellingPatternDataRegistry,
-	LanguageWordAudioDataRegistry,
 } from "./registries/registries";
+export {
+	getWordAudioForms,
+	getWordAudioPath,
+	loadWordAudioManifest,
+	type WordAudioRecording,
+} from "./word-audio";

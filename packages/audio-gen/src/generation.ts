@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import { access, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout } from "node:timers/promises";
-import { EnglishPhonemeContrasts, LanguageWordAudioDataRegistry } from "@phonaria/phonetics-data";
+import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
+import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import { getExclusionReason, type PronunciationChoice } from "./curated-words";
 import {
 	AzureNetworkError,
@@ -232,7 +233,7 @@ export function compareWithCurrentCode(
 			sample,
 		]),
 	);
-	const recorded = new Set(LanguageWordAudioDataRegistry["en-us"].words);
+	const recorded = new Set(EnglishWordAudio.words);
 	const changed = new Map<string, PlanChange>();
 	for (const sample of plan.samples) {
 		const current = expected.get(sample.file);

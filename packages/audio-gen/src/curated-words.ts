@@ -1,10 +1,7 @@
-import {
-	LanguageWordAudioDataRegistry,
-	phonemeVariantToCmuArpa,
-	preferOForms,
-} from "@phonaria/phonetics-data";
+import { phonemeVariantToCmuArpa, preferOForms } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop1k } from "@phonaria/phonetics-data/data/en/curated-1k";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
+import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import { type ExcludedWordReason, getExcludedWordReason } from "./excluded-words";
 import { curatedPronunciations } from "./reviewed-pronunciations";
 import { isPlainWord, wordForms } from "./word-forms";
@@ -73,7 +70,7 @@ export function pickPronunciation(
 export function collectCuratedWords(
 	tier: CuratedTier,
 	{
-		recorded = new Set(LanguageWordAudioDataRegistry["en-us"].words),
+		recorded = new Set(EnglishWordAudio.words),
 		saved = new Set(),
 	}: { recorded?: ReadonlySet<string>; saved?: ReadonlySet<string> } = {},
 ) {

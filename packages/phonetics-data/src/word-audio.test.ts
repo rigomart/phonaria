@@ -1,13 +1,14 @@
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { EnglishCuratedTop1k } from "../../data/en/curated-1k";
-import { EnglishCuratedTop10k } from "../../data/en/curated-10k";
-import { getWordAudioForms, getWordAudioPath } from "../../registries/registries";
-import { findWordAudioForms, findWordAudioPath } from "../../registries/word-audio";
-import type { WordAudioManifest } from "../types";
-import { EnglishPhonemeContrasts } from "./contrasts";
-import { EnglishPhonemeSpellingPatterns } from "./patterns";
-import { EnglishPracticeSchwa } from "./practice-schwa";
-import { EnglishWordAudio } from "./word-audio";
+import { EnglishCuratedTop1k } from "./data/en/curated-1k";
+import { EnglishCuratedTop10k } from "./data/en/curated-10k";
+import { EnglishWordAudio } from "./data/en/word-audio";
+import { EnglishPhonemeContrasts } from "./languages/en/contrasts";
+import { EnglishPhonemeSpellingPatterns } from "./languages/en/patterns";
+import { EnglishPracticeSchwa } from "./languages/en/practice-schwa";
+import type { WordAudioManifest } from "./languages/types";
+import { getWordAudioForms, getWordAudioPath, loadWordAudioManifest } from "./word-audio";
 
 const catalogWords = new Set(
 	EnglishPhonemeContrasts.flatMap(({ minimalPairs }) => minimalPairs.flatMap(({ words }) => words)),
@@ -27,22 +28,30 @@ const knownWords = new Set([
 	...Object.keys(EnglishCuratedTop10k.words),
 ]);
 
+describe("loadWordAudioManifest", () => {
+	it("loads the en-us manifest once per module, and none for an accent without recordings", async () => {
+		expect(await loadWordAudioManifest("en-us")).toBe(EnglishWordAudio);
+		expect(await loadWordAudioManifest("en-us")).toBe(EnglishWordAudio);
+		expect(await loadWordAudioManifest("es-419")).toBeNull();
+	});
+});
+
 describe("getWordAudioPath", () => {
 	it("returns the bucket-relative path of a recorded word", () => {
-		expect(getWordAudioPath("en-us", "seat")).toBe("audio/en-us/words/jenny/seat.ogg");
+		expect(getWordAudioPath(EnglishWordAudio, "en-us", "seat")).toBe(
+			"audio/en-us/words/jenny/seat.ogg",
+		);
 	});
 
 	it("ignores case and surrounding whitespace", () => {
-		expect(getWordAudioPath("en-us", "  SeAt ")).toBe("audio/en-us/words/jenny/seat.ogg");
+		expect(getWordAudioPath(EnglishWordAudio, "en-us", "  SeAt ")).toBe(
+			"audio/en-us/words/jenny/seat.ogg",
+		);
 	});
 
 	it("returns null for a word without a recording", () => {
-		expect(getWordAudioPath("en-us", "notaword")).toBeNull();
-		expect(getWordAudioPath("en-us", "")).toBeNull();
-	});
-
-	it("returns null for an accent without recordings", () => {
-		expect(getWordAudioPath("es-419", "seat")).toBeNull();
+		expect(getWordAudioPath(EnglishWordAudio, "en-us", "notaword")).toBeNull();
+		expect(getWordAudioPath(EnglishWordAudio, "en-us", "")).toBeNull();
 	});
 });
 
@@ -58,33 +67,28 @@ const withForms: WordAudioManifest = {
 
 describe("getWordAudioForms", () => {
 	it("lists every labelled form, main form first", () => {
-		expect(findWordAudioForms(withForms, "en-us", " Read")).toEqual([
+		expect(getWordAudioForms(withForms, "en-us", " Read")).toEqual([
 			{ path: "audio/en-us/words/jenny/read.ogg", label: "present tense" },
 			{ path: "audio/en-us/words/jenny/read--2.ogg", label: "past tense" },
 		]);
-		expect(findWordAudioForms(withForms, "en-us", "either")).toEqual([
+		expect(getWordAudioForms(withForms, "en-us", "either")).toEqual([
 			{ path: "audio/en-us/words/jenny/either.ogg" },
 			{ path: "audio/en-us/words/jenny/either--2.ogg", label: "also said" },
 		]);
 	});
 
 	it("lists an uploaded form even when the main recording isn't", () => {
-		expect(findWordAudioPath(withForms, "en-us", "lead")).toBeNull();
-		expect(findWordAudioForms(withForms, "en-us", "lead")).toEqual([
+		expect(getWordAudioPath(withForms, "en-us", "lead")).toBeNull();
+		expect(getWordAudioForms(withForms, "en-us", "lead")).toEqual([
 			{ path: "audio/en-us/words/jenny/lead--2.ogg", label: "the metal" },
 		]);
 	});
 
 	it("gives a word recorded once one unlabelled recording, and an unrecorded word none", () => {
-		expect(findWordAudioForms(withForms, "en-us", "seat")).toEqual([
+		expect(getWordAudioForms(withForms, "en-us", "seat")).toEqual([
 			{ path: "audio/en-us/words/jenny/seat.ogg" },
 		]);
-		expect(findWordAudioForms(withForms, "en-us", "constructor")).toEqual([]);
-		expect(getWordAudioForms("en-us", "seat")).toEqual([
-			{ path: getWordAudioPath("en-us", "seat") },
-		]);
-		expect(getWordAudioForms("en-us", "notaword")).toEqual([]);
-		expect(getWordAudioForms("es-419", "seat")).toEqual([]);
+		expect(getWordAudioForms(withForms, "en-us", "constructor")).toEqual([]);
 	});
 });
 
@@ -114,5 +118,22 @@ describe("EnglishWordAudio", () => {
 		expect([...catalogWords].filter((word) => !recorded.has(word))).toEqual([]);
 		expect([...practiceWords].filter((word) => !recorded.has(word))).toEqual([]);
 		expect([...spellingWords].filter((word) => !recorded.has(word))).toEqual([]);
+	});
+});
+
+describe("word-audio manifest boundary", () => {
+	it("is imported only through its subpath and the dynamic loader, never by the package entry", () => {
+		const root = import.meta.dirname;
+		const sources = readdirSync(root, { recursive: true, encoding: "utf8" })
+			.filter((file) => /\.tsx?$/.test(file) && !/\.test(-d)?\.ts$/.test(file))
+			.map((file) => ({ file, source: readFileSync(path.join(root, file), "utf8") }));
+		expect(
+			sources.filter(({ source }) => source.includes("word-audio.json")).map(({ file }) => file),
+		).toEqual([path.join("data", "en", "word-audio.ts")]);
+		expect(
+			sources
+				.filter(({ source }) => /from\s+["'][^"']*data\/en\/word-audio["']/.test(source))
+				.map(({ file }) => file),
+		).toEqual([]);
 	});
 });

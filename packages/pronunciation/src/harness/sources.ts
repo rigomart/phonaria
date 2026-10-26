@@ -3,6 +3,7 @@ import { access, mkdir, readdir, readFile, rename, stat } from "node:fs/promises
 import path from "node:path";
 import { promisify } from "node:util";
 import { getWordAudioPath } from "@phonaria/phonetics-data";
+import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import type { WavAudio } from "../contract";
 import { type ClipLabel, WRONG_WORD_KINDS } from "./cases";
 import type { SourceKind } from "./metrics";
@@ -48,7 +49,7 @@ export async function loadCatalogSource({
 	await mkdir(downloadDir, { recursive: true });
 	const missing: string[] = [];
 	const found = await mapWithConcurrency(words, 8, async (word) => {
-		const key = getWordAudioPath("en-us", word);
+		const key = getWordAudioPath(EnglishWordAudio, "en-us", word);
 		if (!key) {
 			missing.push(word);
 			return null;

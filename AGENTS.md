@@ -12,11 +12,12 @@
   - English-specific data: `EnglishPhonemeContrasts` (minimal-pair catalog, validated against top-10k) / `EnglishContrastsByPhonemeId`, `EnglishPhonemeAllophones`, `EnglishPhonemeSpellingPatterns`, `CmuArpaMap`
   - Minimal-pair helpers: `getSinglePronunciation()`, `findSubstitution()`, `toBasePhonemeIds()`
   - `getPhonemeFrequencyRegistryForLanguage()`: each sound's share of everyday speech and its rank (en-us only, behind the `phonemeFrequency` capability)
-  - `getWordAudioPath()`: bucket-relative path of a word's recording (`audio/en-us/words/jenny/seat.ogg`), or `null` when the word has none (en-us only, behind the `wordAudio` capability)
-  - `getWordAudioForms()`: every recording of a word as `{ path, label }`, main form first, for words recorded once per meaning or form (`read`: "present tense", `read--2.ogg`: "past tense"); single-word surfaces play only the main form
+  - `loadWordAudioManifest()`: loads an accent's word-audio manifest on demand, or `null` (en-us only, behind the `wordAudio` capability). The manifest is its own chunk, so it stays out of the app's main bundle; in the app, use `useWordAudioManifest()`
+  - `getWordAudioPath(manifest, accent, word)`: bucket-relative path of a word's recording (`audio/en-us/words/jenny/seat.ogg`), or `null` when the word has none
+  - `getWordAudioForms(manifest, accent, word)`: every recording of a word as `{ path, label }`, main form first, for words recorded once per meaning or form (`read`: "present tense", `read--2.ogg`: "past tense"); single-word surfaces play only the main form
   - `getMergerNoteRegistryForLanguage()`: plain-language notes on vowel mergers, by sound (cot–caught on /ɔ/, Mary–marry–merry on /æ/ and /ɛ/; en-us only, behind the `mergerNotes` capability)
   - Spelling examples carry a `spelled` form marking the letters that spell the sound (`"ha[pp]y"`); `splitSpelledWord()` splits it for display
-  - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`, `phoneme-frequency`
+  - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `cmudict-stats`, `phoneme-frequency`, `word-audio` (for tooling; the app loads it through `loadWordAudioManifest()`)
 - `packages/pronunciation`: Hears which sound a learner said. Holds the scoring contract (`Scorer`, `WordEvidence`) and `judgeWord`, a pure judge that turns a scorer's evidence into a `match`, `swapped` or `unclear` verdict per judged sound, using contrast partners from `@phonaria/phonetics-data`. See the package README.
 - `packages/helper-scripts`: Utilities for CMUDict processing and word-mapping reports; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`.
 - `packages/audio-gen`: Local Azure Speech pronunciation generation from the minimal-pair catalog. Reads `.env`, writes recordings and review sheets to ignored `output/` directories, and never uploads audio automatically. See the package README.
