@@ -62,6 +62,7 @@ export const wordAudio = {
 		"Practice words are drawn at random; the reveal checks that each row's button names its own word",
 		"definitions in the lookup popover need the Worker to reach Wiktionary and are not checked",
 		"viewport screenshots: a full-page capture closed the pinned sound card before the next click",
+		"that the manifest loads only once a button needs it is checked in agent-browser's network log, not by a checkpoint: in dev the page's Resource Timing buffer fills before the card opens",
 	],
 	screenshot: "viewport",
 } satisfies Feature;
