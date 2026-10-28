@@ -2,7 +2,7 @@
 # See: https://worktrunk.dev/hook/
 
 [post-create]
-# Copy environment variables from main worktree
-env = "cp {{ main_worktree_path }}/apps/phonaria/.env.local apps/phonaria/.env.local"
+# Copy the gitignored env files listed in .worktreeinclude from the main worktree, skipping any that don't exist
+env = "for f in apps/phonaria/.env.local apps/phonaria/.dev.vars packages/audio-gen/.env packages/helper-scripts/.env packages/pronunciation/.env; do [ -f {{ main_worktree_path }}/$f ] && cp {{ main_worktree_path }}/$f $f; done; true"
 # Install all dependencies
 install = "bun install"
