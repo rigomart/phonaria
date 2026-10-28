@@ -1,5 +1,7 @@
 # Lab production cutover record
 
+> Historical record. It describes `apps/lab` and the setup before the cutover to `apps/phonaria`, not the current app.
+
 > Historical cutover evidence. The `phonaria-lab` Vercel fallback was retired
 > under #207; rollback is now a forward fix or a rebuilt deployment.
 

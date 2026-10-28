@@ -60,8 +60,9 @@ Representative source responses:
 [point](https://en.wiktionary.org/api/rest_v1/page/definition/point), and
 [number](https://en.wiktionary.org/api/rest_v1/page/definition/number).
 
-I compared the raw fragments with the current functions in
-`apps/lab/src/lib/definition/normalize.ts`. This was read-only probing; no
+I compared the raw fragments with the functions then in
+`apps/lab/src/lib/definition/normalize.ts` (now
+`apps/phonaria/src/lib/definition/normalize.ts`). This was read-only probing; no
 product code was changed.
 
 ## Findings

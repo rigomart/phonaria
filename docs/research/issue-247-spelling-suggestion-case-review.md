@@ -11,12 +11,12 @@ explains which rule was chosen, what it costs, and how to reproduce the numbers.
 Reproduce both columns, and the sweeps further down, with:
 
 ```
-bun --cwd apps/lab ./scripts/review-spelling-cases.ts           # the case table
-bun --cwd apps/lab ./scripts/review-spelling-cases.ts --sweep   # plus the sweeps
+bun --cwd apps/phonaria ./scripts/review-spelling-cases.ts           # the case table
+bun --cwd apps/phonaria ./scripts/review-spelling-cases.ts --sweep   # plus the sweeps
 ```
 
 The script keeps the `3cc4464` rule frozen as `previousPolicyPick` so the before column
-stays reproducible. `apps/lab/scripts/review-spelling-cases.test.ts` keeps the after
+stays reproducible. `apps/phonaria/scripts/review-spelling-cases.test.ts` keeps the after
 column honest.
 
 ## The rule
