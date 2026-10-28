@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * The post-submit reveal (#146): word score as the headline, every row fully
  * expanded and one way out. Blank rows show

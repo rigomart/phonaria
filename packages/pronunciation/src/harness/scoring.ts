@@ -69,7 +69,7 @@ export function sha256(data: Uint8Array | string): string {
 	return createHash("sha256").update(data).digest("hex");
 }
 
-export function cacheKey(
+function cacheKey(
 	scorer: Pick<HarnessScorer, "id" | "settings">,
 	audioSha256: string,
 	request: ScoringRequest,

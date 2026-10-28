@@ -71,7 +71,7 @@ const TEXT_BOUNDARY_ELEMENTS = new Set([
 ]);
 const NESTED_SENSE_LISTS = new Set(["ol", "ul"]);
 
-export type WiktionarySense = {
+type WiktionarySense = {
 	definition: string;
 	example?: string;
 };

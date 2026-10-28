@@ -45,12 +45,7 @@ export type {
 } from "./core/phoneme-articulations";
 export { type PhonemeCategory, TARGET_ACCENTS, type TargetAccent } from "./core/types";
 export type { CuratedWordData } from "./data/en/curated-1k";
-export type {
-	CmudictPayload,
-	CmudictStatsPayload,
-	PhonemeFrequencyPayload,
-	PhonemeTrieNode,
-} from "./dict/types";
+export type { CmudictPayload, CmudictStatsPayload, PhonemeFrequencyPayload } from "./dict/types";
 export { type MergerNoteSegment, splitMergerNoteText } from "./formatters/merger-note";
 export { formatPhonemeLabel } from "./formatters/phoneme-label";
 export { type SpelledWordSegment, splitSpelledWord } from "./formatters/spelled-word";

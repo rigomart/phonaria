@@ -39,7 +39,7 @@ export const CLIP_CHECK_LIMITS = {
 } as const;
 
 /** Fitted on the published clips. */
-export function expectedSpeechMs(soundCount: number): number {
+function expectedSpeechMs(soundCount: number): number {
 	return 279 + 60 * soundCount;
 }
 

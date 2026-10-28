@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@phonaria/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Info } from "lucide-react";

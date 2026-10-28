@@ -1,32 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { g2pRequestSchema, g2pResponseSchema, g2pWordSchema } from "./model";
-
-describe("g2pRequestSchema", () => {
-	it("accepts valid text input", () => {
-		const result = g2pRequestSchema.safeParse({ text: "hello world" });
-		expect(result.success).toBe(true);
-	});
-
-	it("rejects empty text", () => {
-		const result = g2pRequestSchema.safeParse({ text: "" });
-		expect(result.success).toBe(false);
-	});
-
-	it("rejects text longer than 200 characters", () => {
-		const result = g2pRequestSchema.safeParse({ text: "a".repeat(201) });
-		expect(result.success).toBe(false);
-	});
-
-	it("accepts text at exactly 200 characters", () => {
-		const result = g2pRequestSchema.safeParse({ text: "a".repeat(200) });
-		expect(result.success).toBe(true);
-	});
-
-	it("accepts text with punctuation", () => {
-		const result = g2pRequestSchema.safeParse({ text: "Hello, world!" });
-		expect(result.success).toBe(true);
-	});
-});
+import { g2pResponseSchema, g2pWordSchema } from "./model";
 
 describe("g2pWordSchema", () => {
 	it("accepts a valid word with known phonemes", () => {

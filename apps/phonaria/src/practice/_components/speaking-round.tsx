@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * One word to say, on the same calm centred column as a Practice round. The
  * parent keys it by word, so a new word starts with a fresh recorder and no

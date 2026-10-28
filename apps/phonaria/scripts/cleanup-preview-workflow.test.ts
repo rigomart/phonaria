@@ -28,7 +28,7 @@ describe("Cloudflare preview cleanup workflow", () => {
 
 		expect(workflow).toContain("types: [closed]");
 		expect(workflow).toContain(`WORKER_NAME: phonaria-pr-${pullRequestNumber}`);
-		expect(workflow).toContain(`LEGACY_WORKER_NAME: phonaria-lab-pr-${pullRequestNumber}`);
+		expect(workflow).not.toContain("phonaria-lab-pr-");
 		expect(workflow).toContain("/workers/scripts/$name?force=true");
 		expect(workflow).toContain('echo "$name was already absent."');
 		expect(workflow).not.toContain("phonaria-staging");

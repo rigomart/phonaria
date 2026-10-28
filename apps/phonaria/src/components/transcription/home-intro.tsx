@@ -1,5 +1,3 @@
-"use client";
-
 import { type EnglishPhonemeSymbolId, getIpaForPhonemeId } from "@phonaria/phonetics-data";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useCurrentTranscription } from "@/hooks/use-transcribe";

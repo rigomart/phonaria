@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * The record control. A red dot says "record" before anything starts; while
  * recording, a ring fills toward the time limit around a pulsing stop square,

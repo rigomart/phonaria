@@ -23,7 +23,7 @@ export interface SpellingMiss {
 	candidates: string[];
 }
 
-export interface SpellingSuggestionSegment {
+interface SpellingSuggestionSegment {
 	text: string;
 	underlined: boolean;
 }

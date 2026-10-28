@@ -1,5 +1,3 @@
-"use client";
-
 import type { TargetAccent } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";

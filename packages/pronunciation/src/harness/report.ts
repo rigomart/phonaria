@@ -35,7 +35,7 @@ export type ScoringSummary = {
 	readonly failures: readonly string[];
 };
 
-export type CaseRow = {
+type CaseRow = {
 	readonly source: string;
 	readonly contrast: string;
 	readonly kind: "correct" | "swap" | "wrong-word";

@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * The last screen before an irreversible submit. Blanks are allowed — the
  * primary button says how many rather than blocking (#140).

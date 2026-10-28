@@ -41,7 +41,7 @@ export function voiceFolderName(voiceId: string): string {
  * entry has the sample's key and checksum. A record's entries for other batches of the same
  * run don't match and are skipped. Refuses a batch with no verified clip.
  */
-export function uploadedSamples({ dir, plan, records }: UploadedBatch): PlanSample[] {
+function uploadedSamples({ dir, plan, records }: UploadedBatch): PlanSample[] {
 	const prefix = `audio/${plan.targetAccent}/words/${voiceFolderName(plan.settings.voiceId)}/`;
 	const verified = new Set(
 		records.flatMap(({ entries }) =>

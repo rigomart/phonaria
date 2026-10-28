@@ -44,7 +44,7 @@ export type SoundResult = {
 };
 
 /** The verdict on the contrast sound, which the result leads with. */
-export type ContrastOutcome =
+type ContrastOutcome =
 	| { verdict: "match" }
 	| { verdict: "swapped"; heard: ContrastSound; heardWord: string | null }
 	| { verdict: "unclear"; reason: UnclearReason };

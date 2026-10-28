@@ -30,7 +30,6 @@ describe("transformToTranscriptionResult", () => {
 		expect(result.words).toHaveLength(1);
 		expect(result.words[0].word).toBe("the");
 		expect(result.words[0].wordIndex).toBe(0);
-		expect(result.words[0].selectedVariantIndex).toBe(0);
 		expect(result.words[0].source).toBe("cmudict");
 		expect(result.timestamp).toBeInstanceOf(Date);
 	});

@@ -1,5 +1,3 @@
-"use client";
-
 import { Toaster } from "@phonaria/ui/components/sonner";
 import type { ReactNode } from "react";
 import { ThemeProvider, useTheme } from "@/components/theme";

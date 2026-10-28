@@ -37,10 +37,10 @@ function findPattern(word: string, pattern: string): Span[][] {
 	return matches;
 }
 
-export type SpellingExample = SpellingPattern["examples"][number];
+type SpellingExample = SpellingPattern["examples"][number];
 
 /** One way to spell the sound with the example words that use it, or an example no pattern explains. */
-export interface SpellingRow {
+interface SpellingRow {
 	pattern: string | null;
 	examples: readonly SpellingExample[];
 }

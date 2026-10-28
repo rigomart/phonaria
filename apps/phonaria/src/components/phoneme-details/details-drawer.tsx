@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@phonaria/ui/components/button";
 import { Drawer, DrawerClose, DrawerContent } from "@phonaria/ui/components/drawer";
 import { XIcon } from "lucide-react";

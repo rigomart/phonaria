@@ -1,5 +1,3 @@
-"use client";
-
 import { Popover, PopoverContent } from "@phonaria/ui/components/popover";
 import { useId, useRef } from "react";
 import { ArticulationThumbnail } from "./articulation-thumbnail";

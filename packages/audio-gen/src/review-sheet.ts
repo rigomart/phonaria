@@ -16,7 +16,7 @@ import { closeTapSyllables, splitSyllablesByRule } from "./word-inputs";
 
 /** The clips of a batch the dev listens to, each with why it was chosen. */
 export const REVIEW_SHEET_FILE = "sample.tsv";
-export const REVIEW_SHEET_COLUMNS = ["file", "word", "form", "ipa", "reason", "detail"] as const;
+const REVIEW_SHEET_COLUMNS = ["file", "word", "form", "ipa", "reason", "detail"] as const;
 
 export type SheetRow = {
 	readonly file: string;
@@ -374,11 +374,11 @@ export type SheetBinding = {
 	readonly checks: string;
 };
 
-export const SHEET_BINDING_FILE = "sample.json";
+const SHEET_BINDING_FILE = "sample.json";
 
 const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
-export function sheetBinding(
+function sheetBinding(
 	origin: string,
 	planSamples: readonly unknown[],
 	checks: readonly unknown[],

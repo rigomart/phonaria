@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Five dots: progress and jump target in one control (#140). Current, answered
  * and empty are three states, so the label says which — colour alone would not.

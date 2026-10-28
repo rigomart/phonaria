@@ -35,12 +35,7 @@ type PropertyMetaTag = { property: string; content: string };
 type CharsetMetaTag = { charSet: string };
 type ViewportMetaTag = { name: "viewport"; content: string };
 
-export type StartMetaTag =
-	| TitleTag
-	| NamedMetaTag
-	| PropertyMetaTag
-	| CharsetMetaTag
-	| ViewportMetaTag;
+type StartMetaTag = TitleTag | NamedMetaTag | PropertyMetaTag | CharsetMetaTag | ViewportMetaTag;
 
 export type StartHead = {
 	meta: StartMetaTag[];
@@ -161,7 +156,7 @@ type PageHeadInput = {
 	image?: SocialImage;
 };
 
-export function buildPageHead({
+function buildPageHead({
 	path,
 	title,
 	description,

@@ -1,5 +1,3 @@
-"use client";
-
 /** Every judged sound of the word with its verdict in words and an icon, so none relies on color. */
 import { isPhonemeInLanguage } from "@phonaria/phonetics-data";
 import { ArrowLeftRight, ArrowRight, Check, CircleHelp } from "lucide-react";

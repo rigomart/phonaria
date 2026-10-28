@@ -1,5 +1,3 @@
-"use client";
-
 import { useLayoutEffect, useRef } from "react";
 import { useTranscribe } from "@/hooks/use-transcribe";
 import { useG2PStore } from "@/lib/transcription/g2p-store";

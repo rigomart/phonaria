@@ -16,9 +16,9 @@ import { judgeWord, type JudgeMargins, type WordJudgement } from "../judge";
 import { gateWord, type PronunciationLookup, type WordGate } from "../word-gate";
 import { curatedPronunciations } from "./cases";
 
-export type EvidenceLogNext = "retried" | "moved-on";
+type EvidenceLogNext = "retried" | "moved-on";
 
-export type LoggedVerdicts = {
+type LoggedVerdicts = {
 	/** Absent when every sound was judged. */
 	readonly judgedPhonemeIds?: readonly PhonemeSymbolId[];
 	readonly gate: WordGate;
@@ -38,7 +38,7 @@ export type LoggedAttempt = {
 	readonly next: EvidenceLogNext;
 };
 
-export const EVIDENCE_LOG_EXPORT_FORMAT = "phonaria-evidence-log";
+const EVIDENCE_LOG_EXPORT_FORMAT = "phonaria-evidence-log";
 
 /**
  * The app keeps a real word only in a one-word transcript, a one-word gate `heard`
@@ -52,7 +52,7 @@ export const EVIDENCE_LOG_OTHER_WORD = "<other>";
 const loggedPronunciations: PronunciationLookup = (word) =>
 	word === EVIDENCE_LOG_OTHER_WORD ? undefined : curatedPronunciations(word);
 
-export type EvidenceLogExport = {
+type EvidenceLogExport = {
 	readonly format: typeof EVIDENCE_LOG_EXPORT_FORMAT;
 	readonly version: 1;
 	readonly exportedAt: string;
@@ -306,7 +306,7 @@ export function summarizeEvidenceLog(
 	return summary;
 }
 
-export function renderEvidenceLogSummary(summary: EvidenceLogSummary): string {
+function renderEvidenceLogSummary(summary: EvidenceLogSummary): string {
 	const line = (name: string, { total, retried }: Tally) =>
 		`  ${name.padEnd(15)} ${String(total).padStart(5)}, retried after ${retried}`;
 	return [

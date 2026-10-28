@@ -1,7 +1,5 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { createWavRecorder, type WavRecorderState } from "@/lib/recording/wav-recorder";
-
-export type { WavRecorderState };
+import { createWavRecorder } from "@/lib/recording/wav-recorder";
 
 /**
  * Records the learner as 16 kHz mono WAV for the pronunciation scorer. Stops on

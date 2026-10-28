@@ -2,7 +2,7 @@ import { z } from "zod";
 import { type G2PWord, g2pWordSchema } from "@/lib/g2p/model";
 
 export const MAX_TRANSCRIPTION_WORDS = 200;
-export const MAX_TRANSCRIPTION_WORD_LENGTH = 64;
+const MAX_TRANSCRIPTION_WORD_LENGTH = 64;
 
 export const transcriptionWordsInputSchema = z.object({
 	words: z

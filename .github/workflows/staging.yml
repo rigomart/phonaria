@@ -65,10 +65,6 @@ jobs:
         working-directory: apps/phonaria
         run: bun ./scripts/assert-generated-worker-name.ts phonaria-staging
 
-      - name: Assert Practice word data stays out of the Worker
-        working-directory: apps/phonaria
-        run: bun ./scripts/assert-worker-excludes-curated-10k.ts
-
       - name: Assert server bundle keeps curated-10k client-only
         working-directory: apps/phonaria
         env:

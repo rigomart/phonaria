@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * One polite live region for the whole practice experience. Components call
  * `announce()` from event handlers or effects; the single region is mounted

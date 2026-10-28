@@ -10,8 +10,6 @@ export const definitionLookupInputSchema = z.object({
 	word: z.string().min(1).max(MAX_DEFINITION_WORD_LENGTH),
 });
 
-export type DefinitionLookupInput = z.input<typeof definitionLookupInputSchema>;
-
 export type DefinitionSense = {
 	definition: string;
 	example?: string;

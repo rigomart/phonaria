@@ -32,7 +32,7 @@ export type ScoredCase = {
  * `otherFlags`: sounds besides the case's judged `swapped`, which are said as the
  * target in every case. Always empty when judging the contrast sounds only.
  */
-export type CaseOutcome =
+type CaseOutcome =
 	| { readonly type: "rejected"; readonly gate: Exclude<WordGate, { type: "judged" }> }
 	| {
 			readonly type: "judged";
@@ -47,10 +47,10 @@ export type CaseOutcome =
 	  };
 
 /** `rejected`: the word gate stopped the recording before any sound was judged. */
-export type CorrectCategory = "match" | "false-flag" | "unclear" | "no-evidence" | "rejected";
-export type SwapCategory = "named" | "misnamed" | "missed" | "unclear" | "no-evidence" | "rejected";
+type CorrectCategory = "match" | "false-flag" | "unclear" | "no-evidence" | "rejected";
+type SwapCategory = "named" | "misnamed" | "missed" | "unclear" | "no-evidence" | "rejected";
 /** `accepted`: the word gate let a recording of another word through to the judge. */
-export type WrongWordCategory = "rejected" | "accepted";
+type WrongWordCategory = "rejected" | "accepted";
 
 export type CaseResult = Omit<ScoredCase, "evidence" | "transcript"> & {
 	readonly outcome: CaseOutcome;
@@ -58,7 +58,7 @@ export type CaseResult = Omit<ScoredCase, "evidence" | "transcript"> & {
 };
 
 /** The word gate, then the judge on the case's sound and, judging every sound, the others. */
-export function evaluateCase(
+function evaluateCase(
 	harnessCase: HarnessCase,
 	{ evidence, transcript }: Pick<ScoredCase, "evidence" | "transcript">,
 	margins?: JudgeMargins | JudgeThresholds,
@@ -102,7 +102,7 @@ export function evaluateCase(
 	return { type: "judged", verdict: own.verdict, sound, otherFlags };
 }
 
-export function categorize(
+function categorize(
 	harnessCase: HarnessCase,
 	outcome: CaseOutcome,
 ): CorrectCategory | SwapCategory | WrongWordCategory {
@@ -133,9 +133,9 @@ export function evaluateCases(
 	});
 }
 
-export type CorrectCounts = Record<CorrectCategory, number> & { readonly total: number };
-export type SwapCounts = Record<SwapCategory, number> & { readonly total: number };
-export type WrongWordCounts = Record<WrongWordCategory, number> & {
+type CorrectCounts = Record<CorrectCategory, number> & { readonly total: number };
+type SwapCounts = Record<SwapCategory, number> & { readonly total: number };
+type WrongWordCounts = Record<WrongWordCategory, number> & {
 	readonly total: number;
 	readonly byKind: Readonly<Partial<Record<WrongWordKind, { total: number; accepted: number }>>>;
 };
@@ -172,7 +172,7 @@ export type Rates = {
 };
 
 /** How the judged sound's evidence looked, before any margin is applied. */
-export type EvidenceShape = {
+type EvidenceShape = {
 	readonly scored: number;
 	/** No rivals at all, so only `match` or `unclear` is possible. */
 	readonly targetOnly: number;
@@ -377,7 +377,7 @@ export function groupMetrics(results: readonly CaseResult[]): GroupMetrics {
 }
 
 /** Every group the report shows: all cases, each source kind, and each source. */
-export function groupIds(result: Pick<CaseResult, "sourceId" | "sourceKind">): string[] {
+function groupIds(result: Pick<CaseResult, "sourceId" | "sourceKind">): string[] {
 	return ["all", result.sourceKind, result.sourceId];
 }
 

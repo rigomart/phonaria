@@ -22,7 +22,7 @@ const FRAME_MS = 10;
 const SPEECH_RANGE_DB = 45;
 /** ...and above this absolute level, so a near-silent clip has no speech. */
 const SPEECH_FLOOR_DB = -60;
-export const CLIPPED_LEVEL = 0.999;
+const CLIPPED_LEVEL = 0.999;
 
 const toDb = (rms: number) => (rms > 0 ? 20 * Math.log10(rms) : -Infinity);
 

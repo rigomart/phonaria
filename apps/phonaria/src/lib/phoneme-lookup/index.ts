@@ -1,7 +1,7 @@
 import type { G2PSyllable } from "../g2p/model";
 import { cmuToSyllables, loadTier2, lookupTier1, lookupTier2 } from "./shared";
 
-export type LookupSource = "tier1" | "tier2";
+type LookupSource = "tier1" | "tier2";
 
 export interface WordLookupResult {
 	word: string;

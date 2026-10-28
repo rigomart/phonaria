@@ -15,7 +15,7 @@ import {
 	EnglishMonophthongArticulations,
 	EnglishPhonemeArticulations,
 } from "../languages/en/articulations";
-import { CmuArpaMap, type CmuArpaToken, type CmuStressLevel } from "../languages/en/cmu-arpa";
+import { CmuArpaMap } from "../languages/en/cmu-arpa";
 import { EnglishContrastsByPhonemeId } from "../languages/en/contrasts";
 import { EnglishPhonemeFrequencies } from "../languages/en/frequency";
 import { EnglishPhonemeMergerNotes } from "../languages/en/merger-notes";
@@ -217,5 +217,3 @@ export function getMergerNoteRegistryForLanguage<TLanguage extends TargetAccent>
 ): (typeof LanguageMergerNoteDataRegistry)[TLanguage] {
 	return LanguageMergerNoteDataRegistry[language];
 }
-
-export type { CmuArpaToken, CmuStressLevel };

@@ -127,7 +127,7 @@ const listed = (files: readonly string[]) =>
  * its sheet is marked yes or no in `review.tsv`. Leaves out each clip marked no and each
  * sample the current code would no longer plan the same way.
  */
-export async function prepareBatch(
+async function prepareBatch(
 	outputDir: string,
 	options: Pick<UploadOptions, "accent" | "voice">,
 ): Promise<{ clips: UploadClip[]; leftOut: LeftOutClip[] }> {

@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@phonaria/ui/components/button";
 import { Check, Copy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

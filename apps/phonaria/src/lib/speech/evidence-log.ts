@@ -90,7 +90,7 @@ export function withCatalogWordsOnly(payload: EvidenceLogPayload): EvidenceLogPa
 /** What the learner did after seeing the result. */
 export type EvidenceLogNext = "retried" | "moved-on";
 
-export type EvidenceLogVerdicts = {
+type EvidenceLogVerdicts = {
 	/** The sounds the judge and the word gate were told to judge. Absent when every sound was. */
 	readonly judgedPhonemeIds?: readonly PhonemeSymbolId[];
 	readonly gate: WordGate;

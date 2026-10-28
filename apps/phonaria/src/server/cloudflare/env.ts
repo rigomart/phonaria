@@ -41,7 +41,3 @@ export function readWorkerString(bindings: WorkerEnv, name: keyof WorkerEnv): st
 	const trimmed = value.trim();
 	return trimmed ? trimmed : undefined;
 }
-
-export function getWorkerString(name: keyof WorkerEnv): string | undefined {
-	return readWorkerString(getWorkerEnv(), name);
-}

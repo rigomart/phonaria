@@ -5,8 +5,7 @@ import {
 	transcriptionWordsInputSchema,
 } from "./contract";
 
-export type { TranscriptionWordsInput, TranscriptionWordsOutput } from "./contract";
-export { TranscriptionError, transcriptionWordsInputSchema } from "./contract";
+export { TranscriptionError } from "./contract";
 
 export type TranscribeWordsDependencies = {
 	processWords?: typeof defaultProcessWords;

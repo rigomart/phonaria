@@ -1,11 +1,6 @@
 import type { CmuStressLevel, PhonemeSymbolId } from "@phonaria/phonetics-data";
 import type { SpellingSuggestion } from "@/lib/transcription/spelling-suggestion";
 
-export type {
-	SpellingSuggestion,
-	SpellingSuggestionSegment,
-} from "@/lib/transcription/spelling-suggestion";
-
 export interface TranscribedPhoneme {
 	symbol: string;
 	ipa?: string;
@@ -23,9 +18,8 @@ export interface TranscribedSyllable {
 export interface TranscribedWord {
 	word: string;
 	variants: TranscribedSyllable[][];
-	selectedVariantIndex: number;
 	wordIndex: number;
-	source: "cmudict" | "fallback" | "rules";
+	source: "cmudict" | "fallback";
 }
 
 export interface TranscriptionResult {

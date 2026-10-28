@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * What the page says about one spoken attempt. Every verdict and failure is a
  * sentence, so none of them depends on its color or icon. Nothing here is

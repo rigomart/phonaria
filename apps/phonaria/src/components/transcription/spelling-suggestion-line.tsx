@@ -1,5 +1,3 @@
-"use client";
-
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
 import {

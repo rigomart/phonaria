@@ -19,11 +19,11 @@ import { readBody } from "@/server/read-body";
 
 const BYTES_PER_SECOND = SCORER_SAMPLE_RATE * 2;
 /** Room for the RIFF header and small metadata chunks such as ffmpeg's `LIST`. */
-export const WAV_HEADER_ALLOWANCE_BYTES = 1_024;
+const WAV_HEADER_ALLOWANCE_BYTES = 1_024;
 export const MAX_SPEECH_BYTES =
 	MAX_RECORDING_SECONDS * BYTES_PER_SECOND + WAV_HEADER_ALLOWANCE_BYTES;
 
-export type SpeechErrorCode =
+type SpeechErrorCode =
 	| "invalid_word"
 	| "unsupported_accent"
 	| "invalid_audio"

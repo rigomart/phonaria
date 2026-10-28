@@ -24,7 +24,7 @@ const PADDING = 0.12;
 const GRID = 9;
 const CENTERING_PASSES = 4;
 
-export function freeArea({ width, height, insets }: Viewport) {
+function freeArea({ width, height, insets }: Viewport) {
 	const free = {
 		width: Math.max(1, width - insets.left - insets.right),
 		height: Math.max(1, height - insets.top - insets.bottom),
@@ -107,7 +107,7 @@ export function visibleRadius(camera: Camera, viewport: Viewport): number {
 }
 
 /** A move is far when it travels more than this many times the wider view's visible radius. */
-export const FAR_FACTOR = 1.5;
+const FAR_FACTOR = 1.5;
 const MIN_FLIGHT_MS = 900;
 const MAX_FLIGHT_MS = 2200;
 const PACE_SAMPLES = 64;
@@ -195,7 +195,7 @@ export function planFlight(
 }
 
 /** Share of the great-circle turn done at eased time `s`. */
-export function turnAt(flight: Flight, s: number): number {
+function turnAt(flight: Flight, s: number): number {
 	const position = Math.min(1, Math.max(0, s)) * PACE_SAMPLES;
 	const i = Math.min(PACE_SAMPLES - 1, Math.floor(position));
 	return flight.pace[i] + (flight.pace[i + 1] - flight.pace[i]) * (position - i);

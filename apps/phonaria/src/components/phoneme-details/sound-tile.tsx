@@ -1,5 +1,3 @@
-"use client";
-
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { PlayIcon } from "lucide-react";
 import { useAudioManager } from "@/hooks/use-audio-manager";

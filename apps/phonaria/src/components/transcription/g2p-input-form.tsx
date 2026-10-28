@@ -1,5 +1,3 @@
-"use client";
-
 import { Autocomplete, AutocompleteInput } from "@phonaria/ui/components/autocomplete";
 import { Button } from "@phonaria/ui/components/button";
 import { ButtonGroup } from "@phonaria/ui/components/button-group";

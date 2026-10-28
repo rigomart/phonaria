@@ -12,7 +12,7 @@ import { mapWithConcurrency, sha256, writeAtomically } from "./scoring";
 const run = promisify(execFile);
 
 /** Where the app serves word recordings from. */
-export const PUBLIC_ASSETS_URL = "https://assets.rigos.dev";
+const PUBLIC_ASSETS_URL = "https://assets.rigos.dev";
 
 const AUDIO_EXTENSIONS = new Set([".wav", ".ogg", ".mp3", ".m4a", ".webm", ".flac", ".opus"]);
 
@@ -135,7 +135,7 @@ function folderName(dir: string): string {
 }
 
 /** `NEITHER` in labels.json: the recording came out as neither pair word. */
-export const NEITHER = "neither";
+const NEITHER = "neither";
 
 /**
  * `labels.json` maps a recording's word to the word it came out as, or to

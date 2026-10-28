@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * One placed sound, as a split control (#140): the symbol opens the shared
  * phoneme details, the `×` removes it. Read-only without `onRemove`.

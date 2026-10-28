@@ -1,5 +1,3 @@
-"use client";
-
 import { toast } from "@phonaria/ui/components/sonner";
 import { createContext, useEffect, useRef, useState } from "react";
 
