@@ -294,3 +294,156 @@ bun run --cwd packages/pronunciation harness run --catalog \
 bun run --cwd packages/pronunciation harness run --catalog \
   --tts-dir=output/tts/guy --tts-dir=output/tts/aria --offline --margins=lenient --report=lenient
 ```
+
+## Five more voices (#354)
+
+Run on 2026-10-28: does the tuned judge hold on voices it wasn't tuned on? The catalog's 400
+words were generated with `audio-gen` at default speed, from the same IPA tags, in five more
+prebuilt neural voices: Andrew (`en-US-AndrewNeural`), Brian, Emma, Ava and Davis. As with Guy
+and Aria, nobody listened to them before the run. The harness judged every sound with the tuned
+thresholds from #335, unchanged. Jenny, Guy and Aria came from the cache and match the tuned
+results above. The clips and scores are for testing the judge only; they are not published or used
+for training.
+
+**The tuned thresholds don't hold.** Three of the five new voices miss the 2% target:
+
+| Voice | Recordings flagged | False flag | Swap named | Unclear | Stopped by the gate | Target |
+| --- | --- | --- | --- | --- | --- | --- |
+| Jenny | 0.5% (2 of 400) | 0.6% (3) | 87.6% | 9.0% | 0.5% (5) | met |
+| Guy | 1.8% (7) | 1.4% (7) | 86.2% | 8.8% | 1.5% (15) | met |
+| Aria | 0.3% (1) | 0.2% (1) | 94.1% | 3.7% | 0.3% (3) | met |
+| Andrew | **4.3% (17)** | 3.9% (20) | 67.5% | 7.5% | 18.6% (189) | missed |
+| Brian | 1.3% (5) | 1.4% (7) | 62.8% | 10.8% | 21.9% (223) | met |
+| Emma | **4.5% (18)** | 4.1% (21) | 66.5% | 12.6% | 15.0% (152) | missed |
+| Ava | 1.3% (5) | 1.8% (9) | 88.0% | 6.5% | 2.5% (25) | met |
+| Davis | **4.5% (18)** | 6.7% (34) | 77.4% | 12.8% | 3.4% (35) | missed |
+| Five new voices | 3.2% (63 of 2,000) | 3.6% (91 of 2,540) | 72.4% | 10.0% | 12.3% (624) | |
+
+False flag counts correct cases, so a recording in several contrasts counts once per contrast.
+Stopped by the gate counts correct and swap cases the word gate rejected before judging. On the
+contrast sound alone (`--judged=contrast`) the three still miss: Andrew 2.8%, Emma 3.3%, Davis
+3.5% recordings flagged, against Brian 1.3% and Ava 1.0%.
+
+### An empty transcript stops short clips
+
+The gate stopped 15–22% of Andrew's, Brian's and Emma's cases, almost all as `not-heard`.
+Azure's plain recognition returned `Success` with an empty `Lexical` for 205 of the 2,000 new
+clips, while the assessment of the same audio heard the word (*gas*, *peak*, *bin*). The gate reads
+an empty transcript as no speech. Each clip gave the same answer every time it was sent, and the
+empty answers cluster by length: of the clips converted to 16 kHz WAV at exactly 650, 662.5 and
+675 ms, 193 of 207 came back empty, and none of the clips from 687.5 to 750 ms or from 600 to
+637.5 ms did. A few more fall near 1.0 s and 1.3 s. Jenny's, Guy's and Aria's clips are almost
+all padded to 1.82 s (below), and only one of them came back empty: Jenny's *see*, the two Jenny
+cases the gate already stopped as not heard.
+
+So these cases were never judged, which lowers the flag rates of the three voices it hits. Judged
+again from the cache, with an empty transcript read as no transcript (the gate then checks word
+accuracy alone):
+
+| Voice | Recordings flagged | Swap named | Unclear | Stopped by the gate |
+| --- | --- | --- | --- | --- |
+| Andrew | **5.3% (21)** | 81.3% | 9.7% | 1.4% (14) |
+| Brian | 1.3% (5) | 79.5% | 14.0% | 0.8% (8) |
+| Emma | **5.3% (21)** | 76.4% | 15.1% | 1.2% (12) |
+| Ava | 1.3% (5) | 89.2% | 6.8% | 0.9% (9) |
+| Davis | **4.5% (18)** | 77.8% | 13.1% | 2.8% (28) |
+
+The same three voices miss the target either way. Whether a learner's short recording can get the
+same empty transcript is untested, but if it can, a correct word is turned away as not heard. That
+is worth a follow-up on the gate or the scorer, apart from this issue.
+
+### What was flagged
+
+The flagged sounds on the five new voices, as target and heard, over correct and pair recordings:
+
+| Voice | Flagged sounds | Most often |
+| --- | --- | --- |
+| Andrew | 24 | /d/ as /t/ 17, /z/ as /s/ 4, /dʒ/ as /tʃ/ 2, /v/ as /f/ 1 |
+| Brian | 9 | /ʌ/ as /ɑ/ 3, /t/ as /d/ 3, /ɑ/ as /ʌ/ 1, /dʒ/ as /tʃ/ 1, /v/ as /b/ 1 |
+| Emma | 31 | /d/ as /t/ 15, /v/ as /f/ 4, /z/ as /s/ 3, /s/ as /θ/ 2, five others once |
+| Ava | 12 | /ɑ/ as /ʌ/ 6, /ʊ/ as /u/ 4, /ɑ/ as /æ/ 2 |
+| Davis | 51 | /æ/ as /ɛ/ 24, /ɑ/ as /ʌ/ 11, /ʊ/ as /u/ 4, /ɑ/ as /æ/ 3, /ʌ/ as /ʊ/ 3, /t/ as /d/ 3, /n/ as /m/ 3 |
+
+Two kinds of error, neither of them what the margins were tuned on:
+
+- **Final voiced consonants heard as voiceless, on Andrew and Emma.** Every one of Andrew's
+  flagged sounds is a word-final /d z dʒ v/ heard as /t s tʃ f/ (*bad*, *feed*, *ones*, *ridge*,
+  *prove*), and so are most of Emma's, besides /v/ as /f/ at the start of *view*, *vault* and
+  *verse*. The three tuned voices had a few consonant flags (Guy's /n/ as /ŋ/ and /s/ as /z/),
+  never this many. The tuned margins only raise /æ/, /aɪ/, /ɛ/ and /i/, so these sounds are judged at
+  the default swap margin of 0.2. Azure's own transcript names the voiceless word for 15 of Andrew's
+  17 flagged recordings ("bat", "feet", "once"), which hints that the voice said it, but only
+  listening can tell.
+- **Low and front vowels blurring, on Davis and Ava.** Davis has Guy's blur, more of it: /æ/ as
+  /ɛ/ (*bat*, *bath*, *flash*, *sat*) and /ɑ/ as /ʌ/ (*lock*, *stock*, *rob*). The tuned /æ/ margin
+  of 0.45 isn't enough: five of its seven /æ/ flags win by more than 0.5. Ava and Davis also flag /ʊ/ as /u/ on
+  *full* and *pull*, a sound kept at the default for having too few cases.
+
+Brian and Ava flag little. The judge's misses there are mostly swaps left unclear, not flags.
+
+### Worst contrasts
+
+On the five new voices, by false-flag rate, every sound judged. A correct recording flagged on any
+of its sounds counts in every contrast it belongs to:
+
+| Contrast | False flag | Swap named | What was flagged |
+| --- | --- | --- | --- |
+| u-ux (/u/–/ʊ/) | 20.0% (4 of 20) | 25.0% | /ʊ/ as /u/ (*full*, *pull*) |
+| ch-j (/tʃ/–/dʒ/) | 13.3% (4 of 30) | 56.7% | final /dʒ/ as /tʃ/ (*ridge*, *surge*) |
+| ae-a (/æ/–/ɑ/) | 10.0% (9 of 90) | 58.9% | /ɑ/ as /ʌ/, /æ/ as /ɛ/ |
+| ah-a (/ʌ/–/ɑ/) | 10.0% (10 of 100) | 53.0% | /ɑ/ as /ʌ/, /ʌ/ as /ɑ/ |
+| e-ae (/ɛ/–/æ/) | 9.1% (10 of 110) | 37.3% | /æ/ as /ɛ/, final /d/ as /t/ |
+| s-z | 7.3% (8 of 110) | 56.4% | final /z/ as /s/ |
+| ae-ah (/æ/–/ʌ/) | 5.7% (8 of 140) | 68.6% | final /d/ as /t/, /æ/ as /ɛ/ |
+| t-d | 5.3% (8 of 150) | 64.7% | final /d/ as /t/, /æ/ as /ɛ/ |
+
+Swap named is low partly because the gate stopped the cases (above). With the empty transcript
+read as no transcript, e-ae still names only 42.7% of swaps on the new voices.
+
+### Clip durations
+
+Azure pads a short clip to at least 1.8265 s, but not always. Guy, Aria and Davis are padded on
+90–100% of clips and Ava on 86%. Andrew, Brian and Emma are padded on only 6–12%, and their other
+clips run 0.51–0.93 s. The newer voices also speak faster: from the first to the last loud frame,
+the median word lasts 280–320 ms on Andrew, Brian and Emma, 420–490 ms on Davis, Ava and Guy, and
+550 ms on Aria. Nothing is cut off: every unpadded clip of Andrew, Brian and Emma keeps at least 50 ms
+of silence before the word and 290 ms after it, and Ava's at least 120 ms and 200 ms. Within each voice, padded and unpadded clips are flagged at about
+the same rate. The length matters only through the empty transcripts above. One clip is broken:
+Brian's *add* is near silent (peak −36 dBFS), and the gate stopped it as not heard.
+
+No voice looks like it ignored the IPA tags. Each voice's transcript differed from the word as often
+as Guy's did, mostly homophones (*buy* as "bye", *son* as "sun").
+
+### The false flags, sorted by ear
+
+> **Placeholder.** The 70 flagged clips on the new voices (63 the harness counted, plus 7 the
+> gate stopped that are flagged once judged) are listed in
+> `packages/pronunciation/output/issue-354-false-flags.md`. Each is to be sorted as a voice error
+> (the voice said the heard sound) or a judge error (it said the target), with the counts per voice
+> here.
+
+### Retuning
+
+The numbers say the margins fit the three voices they were tuned on and don't carry to others.
+How much to retune depends on the sorting above. If Andrew's and Emma's devoiced endings are voice
+errors, they say nothing about the judge. Davis's vowels need more than a margin: a single swap
+margin of 0.5 for every sound still leaves Davis at 4.9% of cases flagged, while swap named falls
+to 69.9%. Retuning on eight voices is out of scope here; it is for a follow-up issue with these
+numbers once the false flags are sorted.
+
+### Cost and reproducing
+
+The run sent 4,540 new requests (89 minutes of audio, each sent twice, for assessment and plain
+recognition), four at a time, with no throttling. 75 timed out during a slow stretch and were
+re-sent by running the same command again. Generating the five voices took 2,000 synthesis
+requests. Reports and the response cache are in the ignored `packages/pronunciation/output/`, so a
+rerun costs no calls:
+
+```bash
+bun run --cwd packages/pronunciation harness run --catalog \
+  --tts-dir=output/tts/guy --tts-dir=output/tts/aria --tts-dir=output/tts/andrew \
+  --tts-dir=output/tts/brian --tts-dir=output/tts/emma --tts-dir=output/tts/ava \
+  --tts-dir=output/tts/davis --report=issue-354-eight-voices
+```
+
+Add `--judged=contrast` for the contrast-sound figures.
