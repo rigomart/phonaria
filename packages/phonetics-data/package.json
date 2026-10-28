@@ -9,7 +9,7 @@
 		".": "./src/index.ts",
 		"./core": "./src/core/index.ts",
 		"./languages": "./src/languages/index.ts",
-		"./languages/en/practice-schwa": "./src/languages/en/practice-schwa.ts",
+		"./languages/en/practice": "./src/languages/en/practice.ts",
 		"./languages/en": "./src/languages/en/index.ts",
 		"./languages/es": "./src/languages/es/index.ts",
 		"./data/en/curated-1k": "./src/data/en/curated-1k.ts",

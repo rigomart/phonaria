@@ -7,7 +7,11 @@ import { EnglishWordAudio } from "./data/en/word-audio";
 import { EnglishPhonemeContrasts } from "./languages/en/contrasts";
 import { preferOForms } from "./languages/en/o-forms";
 import { EnglishPhonemeSpellingPatterns } from "./languages/en/patterns";
-import { EnglishPracticeSchwa } from "./languages/en/practice-schwa";
+import {
+	EnglishPracticeRColoredVowel,
+	EnglishPracticeSchwa,
+	EnglishPracticeStrut,
+} from "./languages/en/practice";
 import type { WordAudioManifest } from "./languages/types";
 import {
 	findWordAudioRecording,
@@ -19,7 +23,11 @@ import {
 const catalogWords = new Set(
 	EnglishPhonemeContrasts.flatMap(({ minimalPairs }) => minimalPairs.flatMap(({ words }) => words)),
 );
-const practiceWords = new Set(EnglishPracticeSchwa.map(({ word }) => word));
+const practiceWords = new Set(
+	[EnglishPracticeSchwa, EnglishPracticeStrut, EnglishPracticeRColoredVowel].flatMap((entries) =>
+		entries.map(({ word }) => word),
+	),
+);
 const spellingWords = new Set(
 	Object.values(EnglishPhonemeSpellingPatterns).flatMap(({ examples }) =>
 		examples.map(({ spelled }) => spelled.replace(/[[\]]/g, "")),

@@ -1,4 +1,6 @@
+import practiceRColoredVowelJson from "../../../data/en/practice-r-colored-vowel.json";
 import practiceSchwaJson from "../../../data/en/practice-schwa.json";
+import practiceStrutJson from "../../../data/en/practice-strut.json";
 
 export interface PracticeWordEntry {
 	readonly word: string;
@@ -6,6 +8,8 @@ export interface PracticeWordEntry {
 }
 
 export const EnglishPracticeSchwa: readonly PracticeWordEntry[] = practiceSchwaJson;
+export const EnglishPracticeStrut: readonly PracticeWordEntry[] = practiceStrutJson;
+export const EnglishPracticeRColoredVowel: readonly PracticeWordEntry[] = practiceRColoredVowelJson;
 
 /** Rejects missing, ambiguous, changed or duplicate pinned dictionary entries. */
 export function validatePracticeEntries(

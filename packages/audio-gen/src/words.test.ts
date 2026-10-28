@@ -1,5 +1,5 @@
 import { EnglishPhonemeSpellingPatterns } from "@phonaria/phonetics-data";
-import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
+import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice";
 import { describe, expect, it } from "vitest";
 import { getAzureIpa } from "./word-inputs";
 import { collectWordsWithPhonemic, getWordPronunciation } from "./words";

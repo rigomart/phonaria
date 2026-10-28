@@ -20,6 +20,8 @@ describe("Practice word data loading", () => {
 			"src/routes/practice.index.tsx",
 			"src/routes/practice.$topic.tsx",
 			"src/lib/practice/topics/schwa/index.ts",
+			"src/lib/practice/topics/strut/index.ts",
+			"src/lib/practice/topics/r-colored-vowel/index.ts",
 		]) {
 			expect(src(file), file).not.toContain("curated-10k");
 			expect(src(file), file).not.toContain("EnglishCuratedTop10k");

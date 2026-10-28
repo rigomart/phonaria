@@ -1,5 +1,5 @@
 import type { PhonemeSymbolId } from "@phonaria/phonetics-data";
-import type { PracticeWordEntry } from "@phonaria/phonetics-data/languages/en/practice-schwa";
+import type { PracticeWordEntry } from "@phonaria/phonetics-data/languages/en/practice";
 
 /**
  * Inclusive syllable-count band for one session slot.

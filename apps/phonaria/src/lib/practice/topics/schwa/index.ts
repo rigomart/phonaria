@@ -1,19 +1,8 @@
-import { tokenizePronunciation, tryExtractBasePhonemeId } from "@phonaria/phonetics-data";
-import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
+import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice";
+import { everyVariantContains } from "../every-variant-contains";
 import type { TopicDefinition } from "../types";
 
-/**
- * A word qualifies only when every CMU variant contains schwa — if only some
- * variants had it, a learner could dodge the topic sound entirely.
- */
-export function everyVariantContainsSchwa(variants: readonly string[]): boolean {
-	return (
-		variants.length > 0 &&
-		variants.every((variant) =>
-			tokenizePronunciation(variant).some((token) => tryExtractBasePhonemeId(token) === "AX"),
-		)
-	);
-}
+export const everyVariantContainsSchwa = everyVariantContains("AX");
 
 export const SchwaTopic: TopicDefinition = {
 	id: "schwa",
