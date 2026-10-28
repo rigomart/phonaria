@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Renders scored sounds on the reveal (#146). `Glyph` is the one atom: every
  * known sound opens the shared phoneme details; unknown strings fall back to a
@@ -24,7 +22,7 @@ function soundName(sound: string): string {
 	return key ? describeSound(key) : sound;
 }
 
-export function Glyph({
+function Glyph({
 	sound,
 	className,
 	strike,

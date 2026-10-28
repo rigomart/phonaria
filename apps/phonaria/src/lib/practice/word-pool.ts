@@ -13,7 +13,7 @@ import type { TopicDefinition } from "./topics/types";
  * Editorial blocklist for words that read badly in play (abbreviations,
  * initialisms, loanword fragments). Grows as bad words are spotted.
  */
-export const EditorialBlocklist: ReadonlySet<string> = new Set([
+const EditorialBlocklist: ReadonlySet<string> = new Set([
 	"etc",
 	"bmw",
 	"aaa",

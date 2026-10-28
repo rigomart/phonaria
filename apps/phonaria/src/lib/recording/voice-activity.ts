@@ -2,7 +2,7 @@ export const MAX_RECORDING_SECONDS = 5;
 /** Root-mean-square level, on a -1..1 signal, above which a stretch of audio counts as speech. */
 export const SPEECH_RMS_THRESHOLD = 0.02;
 /** Loud audio needed before trailing silence can end a recording, so a click doesn't count as speech. */
-export const SPEECH_ONSET_SECONDS = 0.1;
+const SPEECH_ONSET_SECONDS = 0.1;
 export const TRAILING_SILENCE_SECONDS = 0.8;
 
 export type VoiceActivity = {

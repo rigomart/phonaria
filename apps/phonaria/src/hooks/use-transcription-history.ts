@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect } from "react";
 import { extractIpaText } from "@/lib/ipa-copy";
 import { useG2PStore } from "@/lib/transcription/g2p-store";

@@ -1,5 +1,3 @@
-"use client";
-
 import { Link } from "@tanstack/react-router";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { type ContrastOption, listContrastOptions } from "../_lib/minimal-pair-prompt";

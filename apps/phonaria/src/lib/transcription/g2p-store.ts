@@ -37,7 +37,7 @@ export type LookupErrorKind = "wordlist" | "service" | "unknown";
 export type TranscribeWordsFn = (input: { words: string[] }) => Promise<G2PWord[]>;
 export type LookupWordsFn = (words: string[]) => Promise<BatchLookupResult>;
 
-export interface SpellingOptions {
+interface SpellingOptions {
 	/** Defaults to the curated top-10k ranks. */
 	frequency?: SpellingFrequency;
 	/**
@@ -71,11 +71,6 @@ interface G2PStore {
 	setVariant: (wordIndex: number, variantIndex: number) => void;
 	transcribe: (
 		text: string,
-		transcribeWords: TranscribeWordsFn,
-		lookupWords?: LookupWordsFn,
-		spelling?: SpellingOptions,
-	) => Promise<void>;
-	acceptSpellingSuggestion: (
 		transcribeWords: TranscribeWordsFn,
 		lookupWords?: LookupWordsFn,
 		spelling?: SpellingOptions,
@@ -301,21 +296,6 @@ export const useG2PStore = create<G2PStore>((set, get) => ({
 			console.error("transcription: unexpected failure", error);
 			set(failed("unknown"));
 		}
-	},
-
-	acceptSpellingSuggestion: async (transcribeWords, lookupWords, spelling) => {
-		const state = get();
-		const suggestion = state.currentResult?.spellingSuggestion;
-		if (
-			!suggestion ||
-			state.lookupError !== null ||
-			state.isTranscribing ||
-			state.currentResult?.originalText !== state.draftText
-		) {
-			return;
-		}
-		get().setDraftText(suggestion.suggestedText);
-		await get().transcribe(suggestion.suggestedText, transcribeWords, lookupWords, spelling);
 	},
 }));
 

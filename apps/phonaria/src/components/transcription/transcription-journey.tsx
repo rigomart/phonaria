@@ -1,5 +1,3 @@
-"use client";
-
 import { useSearch } from "@tanstack/react-router";
 import { TranscriptionProvider } from "@/hooks/use-transcribe";
 import { useRecordTranscriptionHistory } from "@/hooks/use-transcription-history";

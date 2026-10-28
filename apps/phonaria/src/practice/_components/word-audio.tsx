@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Hear-the-word button on the reveal (#146, #166): plays the word's recording
  * through the shared audio manager. A word without a recording gets no button.

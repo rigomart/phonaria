@@ -1,5 +1,3 @@
-"use client";
-
 /** The opt-in for sharing scoring evidence (#336), off until the learner turns it on and remembered in this browser. */
 import { Switch } from "@phonaria/ui/components/switch";
 import { useEffect, useId } from "react";

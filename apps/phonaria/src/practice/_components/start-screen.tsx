@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@phonaria/ui/components/button";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";

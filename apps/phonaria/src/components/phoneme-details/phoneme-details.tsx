@@ -1,5 +1,3 @@
-"use client";
-
 import { DrawerTrigger } from "@phonaria/ui/components/drawer";
 import { PopoverTrigger } from "@phonaria/ui/components/popover";
 import {
@@ -25,8 +23,6 @@ import { DetailsCard } from "./details-card";
 import { DetailsDrawer } from "./details-drawer";
 import { DetailsPanel } from "./details-panel";
 import type { PhonemeDetailsOptions } from "./sound";
-
-export type { PhonemeDetailsOptions } from "./sound";
 
 /** Tailwind's `lg`: wide enough for an anchored card and a side panel over the page. */
 const WIDE_QUERY = "(width >= 64rem)";

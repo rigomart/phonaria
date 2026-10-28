@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * How a learner builds one word's sound sequence: a search field over every
  * notation, plus the full 40-key palette always visible beneath it — never

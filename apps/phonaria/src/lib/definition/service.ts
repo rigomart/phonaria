@@ -7,7 +7,7 @@ import {
 import { capDefinitionSenses, parseWiktionaryPayload } from "./normalize";
 import { isLookupableDefinitionWord, normalizeDefinitionWord } from "./word";
 
-export type DefinitionFetch = (
+type DefinitionFetch = (
 	input: string,
 	init?: { method?: string; headers?: Record<string, string>; signal?: AbortSignal },
 ) => Promise<Response>;

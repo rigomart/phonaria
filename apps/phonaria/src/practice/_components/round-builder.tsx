@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * One word at a time on a calm centred page. Everything sits in one column in
  * page flow — nothing pinned to the viewport, no side rail, no word rail (#140

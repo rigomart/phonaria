@@ -1,5 +1,3 @@
-"use client";
-
 import { useRouterState } from "@tanstack/react-router";
 import { useLayoutEffect } from "react";
 import { extractDocumentTitle } from "@/lib/document-head";

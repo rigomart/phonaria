@@ -1,5 +1,3 @@
-"use client";
-
 import { type ReactNode, useEffect, useRef } from "react";
 import { getTopic } from "@/lib/practice/topics";
 import { selectWordsCorrect, usePracticeSessionStore } from "../_store/practice-session-store";

@@ -1,5 +1,3 @@
-"use client";
-
 import type { TargetAccent } from "@phonaria/phonetics-data";
 import type { ComponentProps } from "react";
 import { wordRecordingUrl } from "@/components/word-audio-button";

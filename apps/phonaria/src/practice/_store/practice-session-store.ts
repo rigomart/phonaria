@@ -11,7 +11,7 @@ import { generateSession, type SessionRng } from "@/lib/practice/session-generat
 import type { TopicDefinition } from "@/lib/practice/topics/types";
 import { loadWordPoolForTopic, type PoolWord } from "@/lib/practice/word-pool";
 
-export type PracticePhase = "idle" | "building" | "checking" | "review";
+type PracticePhase = "idle" | "building" | "checking" | "review";
 
 export type PoolStatus = "idle" | "loading" | "ready" | "error";
 
@@ -21,7 +21,7 @@ export interface PracticeRound {
 	sequence: string[];
 }
 
-export type PoolLoader = (topic: TopicDefinition) => Promise<PoolWord[]>;
+type PoolLoader = (topic: TopicDefinition) => Promise<PoolWord[]>;
 
 interface PracticeSessionState {
 	topicId: string | null;

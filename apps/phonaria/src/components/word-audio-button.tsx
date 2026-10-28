@@ -1,5 +1,3 @@
-"use client";
-
 import {
 	getWordAudioPath,
 	type TargetAccent,

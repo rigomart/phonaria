@@ -1,4 +1,4 @@
-export type WorkerLogLevel = "info" | "warn" | "error";
+type WorkerLogLevel = "info" | "warn" | "error";
 
 export type WorkerLogEvent = {
 	level: WorkerLogLevel;

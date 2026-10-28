@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@phonaria/ui/components/button";
 import { type LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { type ThemeMode, useTheme } from "@/components/theme";

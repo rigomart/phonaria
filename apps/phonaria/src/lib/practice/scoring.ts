@@ -17,7 +17,7 @@ export type AlignmentOp =
 	| { kind: "omission"; target: string }
 	| { kind: "insertion"; source: string };
 
-export interface SoundTally {
+interface SoundTally {
 	matched: number;
 	total: number;
 }

@@ -13,9 +13,9 @@ import { spellingEditDistanceWithinTwo } from "./spelling-edit-distance";
  * Most text sent to Jev. Generous next to the 200-character transcription box, so in practice
  * the learner's whole input goes; the cap holds if either limit changes. Whole words only.
  */
-export const SPELLING_CONTEXT_MAX_CHARS = 300;
+const SPELLING_CONTEXT_MAX_CHARS = 300;
 /** Below this, a pick is treated as silence. Validated at 0.7 in issue #262. */
-export const SPELLING_CONTEXT_MIN_CONFIDENCE = 0.7;
+const SPELLING_CONTEXT_MIN_CONFIDENCE = 0.7;
 /** Not a dictionary spelling, so it cannot collide with a candidate such as `none`. */
 export const NONE_OPTION = "none_of_these";
 

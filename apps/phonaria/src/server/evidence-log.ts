@@ -15,7 +15,7 @@ import { logWorkerEvent } from "@/server/cloudflare/log";
 import { readBody } from "@/server/read-body";
 
 export const MAX_EVIDENCE_LOG_BYTES = 16 * 1024;
-export const MAX_ATTEMPT_AGE_MS = 24 * 60 * 60 * 1000;
+const MAX_ATTEMPT_AGE_MS = 24 * 60 * 60 * 1000;
 const MAX_CLOCK_SKEW_MS = 5 * 60 * 1000;
 const RETENTION_MS = EVIDENCE_LOG_RETENTION_DAYS * 24 * 60 * 60 * 1000;
 
@@ -119,7 +119,7 @@ export const evidenceLogPayloadSchema: z.ZodType<EvidenceLogPayload> = z.strictO
 	next: z.enum(["retried", "moved-on"]),
 });
 
-export type EvidenceLogErrorCode =
+type EvidenceLogErrorCode =
 	| "invalid_payload"
 	| "unsupported_media"
 	| "payload_too_large"
@@ -141,10 +141,7 @@ export type EvidenceLogClient = {
 	execute(statement: { sql: string; args: (string | number)[] }): Promise<{ rowsAffected: number }>;
 };
 
-export type EvidenceLogClientFactory = (config: {
-	url: string;
-	authToken: string;
-}) => EvidenceLogClient;
+type EvidenceLogClientFactory = (config: { url: string; authToken: string }) => EvidenceLogClient;
 
 export type EvidenceLogDependencies = {
 	createClient: EvidenceLogClientFactory;

@@ -1,11 +1,7 @@
-"use client";
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { DefinitionLookupOutput, DefinitionSenseGroup } from "@/lib/definition/contract";
 import { lookupDefinitionDeduped } from "@/lib/definition/inflight";
 import { lookupDefinitionFromStart } from "@/server/lookup-definition";
-
-export type DefinitionViewStatus = "idle" | "loading" | "found" | "not_found" | "error";
 
 export type DefinitionViewState =
 	| { status: "idle" | "loading" | "not_found"; groups: []; errorMessage: null }

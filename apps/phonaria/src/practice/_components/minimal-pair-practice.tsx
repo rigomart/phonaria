@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * The contrast and word live in the URL, so a word can be reloaded or shared.
  * A contrast without a word draws one in the browser, after hydration, since

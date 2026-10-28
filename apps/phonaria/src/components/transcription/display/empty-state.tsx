@@ -1,5 +1,3 @@
-"use client";
-
 import { ArrowRightIcon } from "lucide-react";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";

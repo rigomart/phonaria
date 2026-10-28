@@ -8,7 +8,7 @@ import type { SpellingMiss } from "./spelling-suggestion";
  */
 
 /** Hard input limit. The transcription box allows 200 characters, so this only stops abuse. */
-export const MAX_SPELLING_CONTEXT_TEXT_LENGTH = 1_000;
+const MAX_SPELLING_CONTEXT_TEXT_LENGTH = 1_000;
 /** Jev accepts at most 255 options per question, one of which is "none of these". */
 export const MAX_SPELLING_CONTEXT_CANDIDATES = 100;
 export const MAX_SPELLING_CONTEXT_MISSES = 8;

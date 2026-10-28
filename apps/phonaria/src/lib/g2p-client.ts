@@ -34,7 +34,6 @@ export function transformToTranscriptionResult(
 		return {
 			word: word.word,
 			variants,
-			selectedVariantIndex: 0,
 			wordIndex,
 			source: word.source,
 		};

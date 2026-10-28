@@ -12,7 +12,7 @@ import {
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
 
-export type StaticVowelFeatures = {
+type StaticVowelFeatures = {
 	height: VowelArticulatoryFeatures["height"];
 	backness: VowelArticulatoryFeatures["backness"];
 	roundness: VowelArticulatoryFeatures["roundness"];

@@ -1,5 +1,3 @@
-"use client";
-
 import { Link as RouterLink } from "@tanstack/react-router";
 import { type ComponentProps, forwardRef } from "react";
 

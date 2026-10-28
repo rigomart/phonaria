@@ -1,5 +1,3 @@
-"use client";
-
 import type { PhonemeSymbolId, TargetAccent } from "@phonaria/phonetics-data";
 import { ScrollArea } from "@phonaria/ui/components/scroll-area";
 import { Toggle } from "@phonaria/ui/components/toggle";

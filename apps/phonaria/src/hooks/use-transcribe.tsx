@@ -1,5 +1,3 @@
-"use client";
-
 import {
 	createContext,
 	type ReactNode,
@@ -51,7 +49,6 @@ export function useTranscribe() {
 	const [isPending, startTransition] = useTransition();
 	const transcribe = useG2PStore((s) => s.transcribe);
 	const lastText = useG2PStore((s) => s.lastText);
-	const acceptSpellingSuggestionOnStore = useG2PStore((s) => s.acceptSpellingSuggestion);
 	const { transcribeWords, chooseSpellingInContext } = useTranscriptionServices();
 	const spelling = useMemo(
 		() => ({ chooseInContext: chooseSpellingInContext }),
@@ -72,13 +69,7 @@ export function useTranscribe() {
 		else console.error("transcription: retry with no text to replay");
 	}, [lastText, mutate]);
 
-	const acceptSpellingSuggestion = useCallback(() => {
-		startTransition(async () => {
-			await acceptSpellingSuggestionOnStore(transcribeWords, undefined, spelling);
-		});
-	}, [acceptSpellingSuggestionOnStore, transcribeWords, spelling]);
-
-	return { mutate, retry, acceptSpellingSuggestion, isPending };
+	return { mutate, retry, isPending };
 }
 
 export function useCurrentTranscription() {
