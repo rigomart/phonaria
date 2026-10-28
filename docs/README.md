@@ -7,6 +7,6 @@ Start with the [project overview](project-overview.md) for the learner experienc
 | [Architecture decisions](adr/) | Accepted decisions and their reasoning, including the single Cloudflare app and phoneme articulation model |
 | [Agent conventions](agents/) | Issue tracking, labels, and domain terms |
 | [Versioning](versioning.md) | Release tags and GitHub Releases |
-| [Research records](research/) | Point-in-time investigations and validation; these are historical evidence, not current setup instructions |
+| [Research records](research/) | Point-in-time investigations and validation; these are historical evidence, not current setup instructions. Records about the retired `apps/lab` setup are in [`research/archive/`](research/archive/) |
 
 Keep current instructions in the root, app, and package READMEs. Add links here when a new long-lived document needs to be easy to find.

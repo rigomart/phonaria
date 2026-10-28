@@ -1,12 +1,14 @@
 # Cloudflare preview-worker lifecycle validation
 
+> Historical record. It describes `apps/lab` and the setup before the cutover to `apps/phonaria`, not the current app.
+
 Date: 2026-09-14
 
 ## Scope and repository facts
 
 `apps/lab/wrangler.jsonc` defines a base Worker named `phonaria-lab` and
 named `staging`, `preview`, and `production` environments.  The existing
-[`Lab Start` workflow](../../.github/workflows/lab-start.yml) does **not**
+`Lab Start` workflow (`lab-start.yml`, since removed) does **not**
 deploy a named environment per pull request.  Instead, its preview job
 explicitly deploys the separate script
 `phonaria-lab-pr-${{ github.event.pull_request.number }}` with `--name`.

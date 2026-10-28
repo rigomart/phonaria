@@ -1,5 +1,7 @@
 # Issue #205 — Cloudflare Lab qualification record
 
+> Historical record. It describes `apps/lab` and the setup before the cutover to `apps/phonaria`, not the current app.
+
 > Historical qualification evidence. The Lab now runs only on Cloudflare;
 > Vercel comparisons below record the migration decision and are not active
 > deployment instructions.

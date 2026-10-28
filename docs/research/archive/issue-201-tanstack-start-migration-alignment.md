@@ -1,5 +1,7 @@
 # Issue #201: TanStack Start migration alignment
 
+> Historical record. It describes `apps/lab` and the setup before the cutover to `apps/phonaria`, not the current app.
+
 **Scope.** Validate the proposed first TanStack Start slice in `apps/lab` against
 TanStack's official Next.js migration guide and its official hosting and environment
 documentation. This is an implementation decision note, not a migration plan.

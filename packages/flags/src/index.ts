@@ -20,7 +20,7 @@ export interface FlagRegistry<TName extends string> {
 	snapshot(): Record<TName, boolean>;
 }
 
-/** Live env map. Defaults to `process.env` so Next.js and Vite can both supply FLAG_*. */
+/** Live env map of `FLAG_*` values. Defaults to `process.env`. */
 export type FlagEnvSource = {
 	readonly [key: string]: string | undefined;
 };

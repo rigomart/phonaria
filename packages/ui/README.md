@@ -59,6 +59,14 @@ The CLI rewrites the `cn` import to a bare `"cn"` module; change it back to
 use (`data-open:` and friends) are copied into `src/styles/shadcn.css` instead of importing the shadcn
 package.
 
+Two components are not plain upstream source:
+
+- `autocomplete.tsx` is our own. shadcn has no Autocomplete, so the CLI can't add or update it. It
+  follows the base-luma Combobox styles ([#311](https://github.com/rigomart/phonaria/pull/311)).
+- `popover.tsx` adds a `Payload` generic to `Popover` and `PopoverTrigger` and exports
+  `createPopoverHandle` ([#301](https://github.com/rigomart/phonaria/pull/301)). `--diff` shows these
+  as local changes; keep them when updating.
+
 ## Development
 
 From repo root:

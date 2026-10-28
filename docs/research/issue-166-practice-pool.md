@@ -5,9 +5,10 @@ uploads, manifest changes or Practice UI changes were made by this work.
 
 ## Approved inventory and provenance
 
-`packages/phonetics-data/src/languages/en/practice-schwa.ts` pins all 360 approved
+`packages/phonetics-data/data/en/practice-schwa.json` pins all 360 approved
 words with exact Phonaria tokens and stress. Both Practice and audio-gen import
-that package subpath. The list was approved from the 2026-10-17 editorial report
+it through the `@phonaria/phonetics-data/languages/en/practice` subpath. (It was
+`src/languages/en/practice-schwa.ts` until #381.) The list was approved from the 2026-10-17 editorial report
 prepared against commit `577f9810fc18ce8d9c4f165db78fdf62a251a3a1`.
 Its temporary evidence was `/tmp/phonaria-practice-pool/report.md`,
 `candidates.csv`, `candidate-variants.json` and `borderline.csv`; the tracked list

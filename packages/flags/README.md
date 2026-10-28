@@ -15,4 +15,6 @@ flags.snapshot(); // { practice: boolean }
 
 `createFlags(definitions, env?)` accepts an optional environment map for tests or apps with another configuration source. Values `1` and `true` (case-insensitive) enable a flag; an unset or empty value uses `enabledByDefault`.
 
-Phonaria sets `FLAG_PRACTICE` and `FLAG_LANGUAGE_SPREAD` in `apps/phonaria/wrangler.jsonc` by environment. Both are off in production and on in staging and preview. The app also enables them by default during local development. Flags used by prerendered pages are fixed at build time, so changing a deployed flag requires a rebuild and redeploy.
+Phonaria has three flags: `FLAG_PRACTICE`, `FLAG_LANGUAGE_SPREAD` and `FLAG_SPEECH`. Each deployed environment sets them in its `vars` in `apps/phonaria/wrangler.jsonc` and in the build environment of its deploy workflow (`apps/phonaria/scripts/deploy-staging.ts` for a manual staging deploy). All three are off in production and on in staging and preview. The app also enables them by default during local development.
+
+The app reads every flag at build time. `apps/phonaria/vite.config.mts` replaces each `process.env.FLAG_*` read with the value in the build environment, so the Worker and the browser see the same value. Changing a deployed flag needs a rebuild and redeploy. A new flag needs an entry, with its own getter, in `src/lib/flags.ts`, and a line in the Vite config's `definePublicAppFlags`.

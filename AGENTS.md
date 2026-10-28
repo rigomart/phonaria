@@ -3,7 +3,8 @@
 ## Project Structure & Module Organization
 - Agents can read the README for any relevant package or app to get a fast overview before making changes.
 - `apps/phonaria`: The Phonaria application, and the only one. TanStack Start on Vite, deployed to Cloudflare Workers at `phonaria.rigos.dev`. Routes live in `src/routes`, shared chrome in `src/components`, domain logic in `src/lib`, Practice in `src/practice`, the Language Spread story in `src/components/language-spread` and `src/lib/language-spread`, and request-time Cloudflare adapters in `src/server/cloudflare`. Worker delivery is configured only in `wrangler.jsonc`. See `apps/phonaria/README.md`.
-- `packages/flags`: Env-backed feature flags (`FLAG_*`) so modules can ship dark and be enabled per environment. The app supplies them as Worker `vars`.
+- `packages/flags`: Env-backed feature flags (`FLAG_*`) so modules can ship dark and be enabled per environment. The app bakes them in at build time from the build environment, which each deploy sets to match its `vars` in `wrangler.jsonc`, so flipping one needs a rebuild and redeploy.
+- `packages/ui`: Vendored shadcn/ui components (Base UI, Tailwind v4) and the global styles the app imports. Keep components close to upstream. See the package README.
 - `packages/browser-contract`: Browser-level contract run with Playwright against a deployed target, selected by target profile.
 - `packages/phonetics-data`: Source of truth for phoneme metadata including articulations, allophones, contrasts, spelling patterns, and CMU lookup utilities. See the package README for architecture details. Key API surface:
   - `PhonemeIpaMap` / `getIpaForPhonemeId()`: Core ID-to-IPA symbol map (language-agnostic)
@@ -19,9 +20,9 @@
   - Spelling examples carry a `spelled` form marking the letters that spell the sound (`"ha[pp]y"`); `splitSpelledWord()` splits it for display
   - Subpath exports for large assets: `@phonaria/phonetics-data/data/en/curated-1k`, `curated-10k`, `word-audio` (for tooling; the app loads it through `loadWordAudioManifest()`)
 - `packages/pronunciation`: Hears which sound a learner said. Holds the scoring contract (`Scorer`, `WordEvidence`) and `judgeWord`, a pure judge that turns a scorer's evidence into a `match`, `swapped` or `unclear` verdict per judged sound, using contrast partners from `@phonaria/phonetics-data`. See the package README.
-- `packages/helper-scripts`: Utilities for CMUDict processing and word-mapping reports; Python scripts generate curated word lists. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`.
+- `packages/helper-scripts`: Utilities for CMUDict processing (JSON, SQLite export, coverage stats) and minimal-pair candidate search; Python scripts generate curated word lists and each sound's frequency. Scripts read `.env` config and emit assets into `packages/phonetics-data/data`; the minimal-pair search writes a review sheet to the package's ignored `output/`.
 - `packages/audio-gen`: Local Azure Speech pronunciation generation from the minimal-pair catalog. Reads `.env`, writes recordings and review sheets to ignored `output/` directories, and never uploads audio automatically. See the package README.
-- `docs`: Product context and the project overview, accepted decisions in `adr/`, agent conventions in `agents/`, and migration records in `research/`.
+- `docs`: Product context and the project overview, accepted decisions in `adr/`, agent conventions in `agents/`, and point-in-time research records in `research/` (data curation, evals, investigations, and the Language Spread notes). Finished records about the old `apps/lab` setup are in `research/archive/`.
 
 ## Phoneme ID System & Target Accent
 - `packages/phonetics-data/src/core/ipa-map.ts` defines custom uppercase IDs that each map to exactly one IPA symbol. The map is the single source of truth regardless of language. IDs are extensible: when two languages need phonemically distinct sounds (e.g. English `E`=/ɛ/ vs Spanish `EE`=/e/), add a new ID rather than overriding an existing one.
@@ -32,10 +33,10 @@
 - For user-facing browser verification, use the project skill at `.agents/skills/verify-phonaria/SKILL.md`. It uses agent-browser and saves local evidence; the existing Playwright browser contract remains the CI regression suite.
 - `bun install`: Install workspace dependencies once per environment.
 - `bun dev`: Launch the TanStack Start app at `http://localhost:3000`.
-- `bun build`: Execute workspace production builds.
+- `bun run build`: Execute workspace production builds.
 - `bun lint`: Run Oxlint with auto-fixing (`--fix`) and format with Oxfmt; commits should land clean. `bun lint:check` is the read-only version CI runs.
 - `bun check-types`: Run `tsc --noEmit` across packages to maintain strict type safety.
-- `bun test`: Execute Vitest test suites via Turborepo; use `bun --filter @phonaria/app test` for targeted runs.
+- `bun run test`: Execute Vitest test suites via Turborepo (plain `bun test` starts Bun's own test runner instead); use `bun --filter @phonaria/app test` for targeted runs.
 - `bun e2e`: Run the shared browser contract against a deployed base URL (default: public Cloudflare production). See `packages/browser-contract/README.md`.
 - `bun e2e:baseline`: Collect page-load and transcription latency baselines.
 - `bun --cwd packages/browser-contract e2e:install`: Install Chromium for the browser contract.
