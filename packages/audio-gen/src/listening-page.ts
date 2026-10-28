@@ -19,11 +19,7 @@ const escapeHtml = (value: string) =>
  * download the review sheet with `accepted` and `notes` filled. Marks stay in the
  * browser until downloaded. It never shows check results, so marks stay blind to them.
  */
-export function listeningPage(
-	title: string,
-	samples: readonly PageSample[],
-	reviewTsv: string,
-): string {
+function listeningPage(title: string, samples: readonly PageSample[], reviewTsv: string): string {
 	const rows = samples
 		.filter(({ status }) => status === "generated")
 		.map(

@@ -6,7 +6,7 @@ export class AzureNetworkError extends Error {
 	override name = "AzureNetworkError";
 }
 
-export const AZURE_OUTPUT_FORMAT = "audio-24khz-160kbitrate-mono-mp3";
+const AZURE_OUTPUT_FORMAT = "audio-24khz-160kbitrate-mono-mp3";
 
 export function getAzureAudioFormat(audioFormat = "mp3") {
 	if (audioFormat === "mp3") {

@@ -1,12 +1,6 @@
 import type { PhonemeSymbolId } from "../core/ipa-map";
 import type { PhonemeFrequency } from "../languages/types";
 
-export type PhonemeTrieNode = {
-	words: string[];
-	count: number;
-	next: Record<string, PhonemeTrieNode>;
-};
-
 export type CmudictPayload = {
 	meta: {
 		formatVersion: number;

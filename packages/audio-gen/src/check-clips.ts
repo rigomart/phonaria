@@ -132,7 +132,7 @@ export async function checkBatch(
 const cell = (value: string) => value.replace(/[\t\n]/g, " ");
 
 /** One row per clip: what was failed, then each check's numbers. */
-export function checkSheet(clips: readonly ClipResult[]): string {
+function checkSheet(clips: readonly ClipResult[]): string {
 	const columns = ["file", "word", "form", "ipa", "picked_for", "scoring", "failed", ...checkNames];
 	const rows = clips.map((clip) =>
 		[

@@ -490,14 +490,6 @@ Earlier local 24-word trials use the older plan format. Keep those recordings,
 their original Azure plan entries, and review rows for listening and review
 rather than passing them to `--resume`.
 
-The optional dictionary audit remains available:
-
-```bash
-bun run --cwd packages/helper-scripts generate-word-mappings
-```
-
-It writes `data/cmu-arpa-mappings.json`; the generator does not depend on it.
-
 ## Checks
 
 ```bash

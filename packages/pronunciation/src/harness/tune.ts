@@ -100,7 +100,7 @@ function countAt(occurrences: readonly SoundOccurrence[], step: number): SoundCo
 	return { correct, flagged, swaps, named };
 }
 
-export type SoundTuning = {
+type SoundTuning = {
 	readonly phonemeId: PhonemeSymbolId;
 	/** `too-few`: said correctly under `MIN_CORRECT_SOUNDS` times, so it keeps the default. */
 	readonly status: "tuned" | "too-few";

@@ -19,6 +19,6 @@ export interface CuratedWordData {
 
 /**
  * Top 1,000 most frequent English words with internal pronunciations derived from CMUDict.
- * Covers ~80% of everyday usage. Bundled inline (~22KB).
+ * Covers ~80% of everyday usage. Bundled inline (~27KB).
  */
 export const EnglishCuratedTop1k: CuratedWordData = curatedTop1kJson;
