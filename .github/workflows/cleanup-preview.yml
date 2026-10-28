@@ -20,7 +20,6 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER_NAME: phonaria-pr-${{ github.event.pull_request.number }}
-      LEGACY_WORKER_NAME: phonaria-lab-pr-${{ github.event.pull_request.number }}
     steps:
       - name: Delete preview Worker
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
@@ -52,7 +51,6 @@ jobs:
           }
 
           delete_script "$WORKER_NAME"
-          delete_script "$LEGACY_WORKER_NAME"
 
       - name: Report missing Cloudflare credentials
         if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''

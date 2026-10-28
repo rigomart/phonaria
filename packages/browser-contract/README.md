@@ -29,7 +29,7 @@ adapter.
 
 Preview, staging, and production deployment workflows run `e2e:smoke` after
 deployment. The preview workflow also checks Wiktionary definitions. The
-manual Browser contract and Qualify workflows run the full `e2e` suite.
+manual Qualify workflow runs the full `e2e` suite.
 Tag only checks that prove a deployed service boundary or a core entry point
 with `@smoke`; keep detailed interactions in the full suite.
 

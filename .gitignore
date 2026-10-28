@@ -8,8 +8,6 @@
 # Build outputs
 /build/
 /dist/
-/.next/
-/out/
 .turbo
 
 # Testing
@@ -24,7 +22,6 @@ playwright/.cache/
 .env.development.local
 .env.test.local
 .env.production.local
-.vercel
 
 .codex
 

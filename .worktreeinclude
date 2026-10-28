@@ -1,5 +1,7 @@
 # Gitignored files copied into every worktree Claude Code creates.
 # Uses .gitignore syntax; only files that match AND are gitignored are copied.
-apps/lab/.env.local
+apps/phonaria/.env.local
+apps/phonaria/.dev.vars
 packages/audio-gen/.env
 packages/helper-scripts/.env
+packages/pronunciation/.env
