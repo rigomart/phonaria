@@ -8,7 +8,7 @@ import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-1
 import {
 	EnglishPracticeSchwa,
 	validatePracticeEntries,
-} from "@phonaria/phonetics-data/languages/en/practice-schwa";
+} from "@phonaria/phonetics-data/languages/en/practice";
 import { collectCuratedWords, pickPronunciation, type PronunciationChoice } from "./curated-words";
 import { spellingPronunciations } from "./reviewed-pronunciations";
 import { probeReasons } from "./top-10k-probes";

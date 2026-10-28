@@ -6,7 +6,15 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-const MARKERS = ["B AI1 P AE2 S", "H OU1 L D ER0", "data/en/curated/top-10k.json"] as const;
+/**
+ * Whole pronunciations of 10k-only words, so a Practice list may hold a word that
+ * contains one ("shoulder", SH OU1 L D ER0). Bundled JSON may escape the quotes.
+ */
+const MARKERS = [
+	/"B AI1 P AE2 S\\?"/,
+	/"H OU1 L D ER0\\?"/,
+	/data\/en\/curated\/top-10k\.json/,
+] as const;
 const JS_MODULE = /\.(m?js)$/i;
 
 function listFiles(directory: string): string[] {
@@ -29,8 +37,8 @@ function runCli(): void {
 		if (statSync(file).isDirectory()) continue;
 		const contents = readFileSync(file, "utf8");
 		for (const marker of MARKERS) {
-			if (contents.includes(marker)) {
-				hits.push(`${file}: ${marker}`);
+			if (marker.test(contents)) {
+				hits.push(`${file}: ${marker.source}`);
 			}
 		}
 	}

@@ -3,7 +3,7 @@
 Azure Speech is the sole generator for issue #274. By default it reads all 400 unique words
 in the minimal-pair catalog and the bundled curated dictionary directly. The explicit
 `--source=spelling` option selects the 88 unique spelling example words instead. It
-requests one Ogg/Opus file per word. `--source=practice` selects the 358 pinned
+requests one Ogg/Opus file per word. `--source=practice` selects the 358 pinned schwa
 Practice words outside the catalog, checking exact pronunciation matches before
 reusing the catalog’s adapt/adopt recordings. The selected catalog configuration is Jenny
 (`en-US-JennyNeural`) at 10% slower, with default pitch and delivery. This
@@ -275,8 +275,10 @@ bun run --cwd packages/audio-gen generate --words=seat,seed,adapt,adopt
 Omitting selection options plans or generates the whole catalog. For the reviewed
 56-word spelling batch and every pronunciation decision, see
 [issue #304 review record](../../docs/research/issue-304-spelling-recordings.md).
-The pinned 360-word Practice pool, 358-word generation batch and handoff commands
-are recorded in [issue #166](../../docs/research/issue-166-practice-pool.md). Options:
+The pinned 360-word schwa Practice pool, 358-word generation batch and handoff commands
+are recorded in [issue #166](../../docs/research/issue-166-practice-pool.md). The strut and
+r-colored vowel lists need no batch of their own: every word on them was recorded with the
+top-10k words. Options:
 
 - `--dry-run`: write a plan and review sheet without calling Azure.
 - `--source=catalog|spelling|practice|top-1k|top-10k|top-10k-probes`: select a named word set; defaults to `catalog`.

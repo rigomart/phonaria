@@ -5,7 +5,7 @@ import {
 	tryExtractBasePhonemeId,
 } from "@phonaria/phonetics-data";
 import type { CuratedWordData } from "@phonaria/phonetics-data/data/en/curated-1k";
-import { validatePracticeEntries } from "@phonaria/phonetics-data/languages/en/practice-schwa";
+import { validatePracticeEntries } from "@phonaria/phonetics-data/languages/en/practice";
 import { loadTier2 } from "../phoneme-lookup/shared";
 import type { TopicDefinition } from "./topics/types";
 

@@ -1,4 +1,4 @@
-import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
+import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { normalizeVariant, type WordScore } from "@/lib/practice/scoring";
 import { SchwaTopic } from "@/lib/practice/topics/schwa";

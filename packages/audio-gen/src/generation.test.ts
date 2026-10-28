@@ -1,7 +1,7 @@
 import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice-schwa";
+import { EnglishPracticeSchwa } from "@phonaria/phonetics-data/languages/en/practice";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as excluded from "./excluded-words";
 import { compareWithCurrentCode, runGeneration } from "./generation";
