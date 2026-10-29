@@ -292,6 +292,26 @@ export type SpeakingView =
 	| { phase: "outcome"; outcome: SpeakingOutcome }
 	| { phase: "failure"; failure: SpeakingFailure };
 
+/**
+ * Which word of the pair the attempt came out as: the prompt when no sound
+ * swapped, its partner when only the contrast sound did, to the partner sound.
+ * Null before an outcome, and when the attempt was neither word.
+ */
+export function heardSide(
+	prompt: MinimalPairPrompt,
+	view: SpeakingView,
+): "target" | "partner" | null {
+	if (view.phase !== "outcome") return null;
+	const { outcome } = view;
+	if (outcome.verdict !== "match" && outcome.verdict !== "swapped") return null;
+	const otherSwapped = outcome.sounds.some(
+		(sound) => sound.position !== prompt.position && sound.verdict.type === "swapped",
+	);
+	if (otherSwapped) return null;
+	if (outcome.verdict === "match") return "target";
+	return outcome.heard.id === prompt.partner.id ? "partner" : null;
+}
+
 export function deriveSpeakingView(
 	recorder: WavRecorderState,
 	attempt: AttemptState,

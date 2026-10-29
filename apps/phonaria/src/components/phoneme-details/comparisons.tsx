@@ -3,8 +3,12 @@ import {
 	type LanguagePhonemeId,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import { SpelledWord } from "@/components/spelled-word";
+import { flags } from "@/lib/flags";
 import type { PhonemeComparison } from "@/lib/phoneme-comparisons";
+import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { DetailsCard } from "./details-section";
 import { PlayableWordCell } from "./playable-word";
 
@@ -12,7 +16,8 @@ import { PlayableWordCell } from "./playable-word";
  * Similar sounds, a card each, titled by that sound. Its minimal pairs sit
  * below as rows, this sound's word on the left and the other's on the right,
  * with the letters that differ marked. This sound's words are raised and the
- * other's outlined, so which side is which shows without a label.
+ * other's outlined, so which side is which shows without a label. With
+ * speaking practice on, each card links to that pair of sounds there.
  */
 export function ComparisonList({
 	targetAccent,
@@ -24,6 +29,7 @@ export function ComparisonList({
 	ipa: string;
 	comparisons: readonly PhonemeComparison[];
 }) {
+	const practise = targetAccent === MinimalPairActivity.targetAccent && flags.isEnabled("speech");
 	return (
 		<div className="flex flex-col gap-2">
 			{comparisons.map(({ contrastId, partnerId, partnerIpa, pairs }) => {
@@ -57,6 +63,16 @@ export function ComparisonList({
 								</li>
 							))}
 						</ul>
+						{practise ? (
+							<Link
+								className="flex items-center gap-1 self-start rounded-sm px-1 text-muted-foreground text-xs transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+								search={{ contrast: contrastId }}
+								to={MinimalPairActivity.path}
+							>
+								Practise saying /{ipa}/ and /{partnerIpa}/
+								<ArrowRight aria-hidden="true" className="size-3" />
+							</Link>
+						) : null}
 					</DetailsCard>
 				);
 			})}

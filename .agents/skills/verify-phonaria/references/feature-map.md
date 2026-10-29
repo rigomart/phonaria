@@ -16,7 +16,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Sound card merger notes | `/ipa-chart/vowels`, /ɔ/, /æ/ or /ɛ/, then **More about …** | Executable journey below |
 | Language Spread | `/language-spread`, header **Language Spread** (behind `FLAG_LANGUAGE_SPREAD`) | Executable journeys below: `language-spread` (flag on) and `language-spread-off` |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
-| Minimal-pair speaking practice | `/practice/minimal-pairs`, Practice index **Minimal pairs** (behind `FLAG_SPEECH`, independent of `FLAG_PRACTICE`) | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
+| Minimal-pair speaking practice | `/minimal-pairs`, header **Minimal pairs**, or a sound's **Practise saying …** link under Compare with (behind `FLAG_SPEECH`, independent of `FLAG_PRACTICE`; `/practice/minimal-pairs` redirects) | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 | Word recordings | Sound card **Compare with** and **Spelling**, Practice reveal, **Definition of …** after transcribing | Executable journey below |
 
@@ -269,7 +269,7 @@ The note words have no recordings, so playback is not exercised. es-419 has no n
 
 ## Minimal-pair speaking practice
 
-Target accent: American English (`en-us`). The learner picks a contrast, gets a word from one of its pairs, records it, and the page checks that the recording holds the word with `gateWord`, then judges every sound with `judgeWord`, on the evidence from `POST /api/speech/score`. The result leads with the contrast sound's sentence in the live region; under it, outside the live region, a **Sound by sound** row has one tile per sound (`[data-sound-result="match|swapped|unclear"]`) with the sound's glyph, the heard sound beside it for a swap, an icon and a sentence such as "/ɪ/ sounded like /i/" (the sound's name is screen-reader text). Every glyph opens the sound card. Expected copy comes from [#332](https://github.com/rigomart/phonaria/issues/332), [#334](https://github.com/rigomart/phonaria/issues/334) and [#344](https://github.com/rigomart/phonaria/issues/344); the IPA for *ship* (`SH IX1 P`) is `ˈʃɪp` from the curated dictionary. The [checkpoints](../scripts/minimal-pairs.ts) read the page heading, the IPA tokens, the marked sound's label, the visible buttons, the sentence in the result live region and the sound-by-sound tiles.
+Target accent: American English (`en-us`). The learner picks a contrast, gets a word from one of its pairs shown beside the pair's other word, records it, and the page checks that the recording holds the word with `gateWord`, then judges every sound with `judgeWord`, on the evidence from `POST /api/speech/score`. The result leads with the contrast sound's sentence in the live region; under it, outside the live region, a **Sound by sound** row has one tile per sound (`[data-sound-result="match|swapped|unclear"]`) with the sound's glyph, the heard sound beside it for a swap, an icon and a sentence such as "/ɪ/ sounded like /i/" (the sound's name is screen-reader text). Every glyph opens the sound card. Expected copy comes from [#332](https://github.com/rigomart/phonaria/issues/332), [#334](https://github.com/rigomart/phonaria/issues/334) and [#344](https://github.com/rigomart/phonaria/issues/344); the IPA for *ship* (`SH IX1 P`) is `ˈʃɪp` and for *sheep* (`SH I1 P`) `ˈʃip`, from the curated dictionary. The word to say is the h1 in the card marked `data-side="target"`; its partner is in `data-side="partner"`, and after an attempt the word that came through carries `data-heard`. The [checkpoints](../scripts/minimal-pairs.ts) read the page heading, the IPA tokens, the marked sound's label, the visible buttons, the sentence in the result live region and the sound-by-sound tiles.
 
 Live scoring needs `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` in `apps/phonaria/.dev.vars`; without them the route answers 503 and `match`, `swapped`, `not-heard`, `random-word`, `added-sounds` and `phrase` are **blocked**. Never print the key. Each recorded attempt is two live Azure calls (assessment and plain recognition), so the journey costs twelve.
 
@@ -279,10 +279,10 @@ Headless Chromium has no microphone. The journey's `fakeMic` helper replaces `na
 
 | User control | CLI locator |
 | --- | --- |
-| Practice index link | `find role link click --name "Minimal pairs Say a word like ship or sheep and find out which sound came through. Pick a pair of sounds to start."` |
+| Main nav link | `find role link click --name "Minimal pairs" --exact` |
 | A contrast | `find label "seat and sit" click` (named by its first pair) |
 | Record, Stop, Try again, Next word | `find role button click --name "Record"` (and so on) |
-| Play the word, play the heard word | `find role button click --name "Hear ship"`, `"Hear sheep"` |
+| Play either word of the pair | `find role button click --name "Hear ship"`, `"Hear sheep"` (a swap adds a second **Hear sheep** in the result) |
 | A sound in the sound-by-sound row | `find role button click --name "Details for /i/"` (a heard sound; the IPA display above has its own **Details for** buttons, so scope to `[data-sound-result]` when the label repeats) |
 
 ### Executable journey (flag on)
@@ -297,10 +297,12 @@ bun run verify browser "$VERIFY_RUN" open about:blank
 bun run verify browser "$VERIFY_RUN" trace start
 bun run verify browser "$VERIFY_RUN" set viewport 1280 900
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/practice
-bun run verify observe "$VERIFY_RUN" index-link
-# Click the Practice index link, wait for the list, then:
-bun run verify observe "$VERIFY_RUN" picker
+bun run verify observe "$VERIFY_RUN" nav
 bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/practice/minimal-pairs?contrast=i-ix&word=ship"
+bun run verify observe "$VERIFY_RUN" redirect
+# Click the main nav's Minimal pairs link, wait for the list, then:
+bun run verify observe "$VERIFY_RUN" picker
+bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/minimal-pairs?contrast=i-ix&word=ship"
 bun run verify observe "$VERIFY_RUN" word
 # For each attempt: set up, click, wait for "$settled", observe.
 js fakeMic @/path/to/ship.ogg;   # click Record     -> observe match
@@ -312,7 +314,7 @@ js fakeMic @/path/to/a-ship.wav; # click Try again  -> observe phrase
 js fakeMic @/path/to/ship.ogg; js stubVowel '{ "targetScore": 0.6, "rival": "I", "rivalScore": 0.62 }'  # Try again -> observe close-call
 js stubVowel '{ "targetScore": 0.2, "rival": "E", "rivalScore": 0.9 }'  # click Try again -> observe other-sound
 js stubSounds '[{ "phonemeId": "SH", "targetScore": 0.9 }, { "phonemeId": "IX", "targetScore": 0.02, "rival": "I", "rivalScore": 1 }, { "phonemeId": "P", "targetScore": 0.2 }]'  # Try again -> observe every-sound
-# Click the heard /i/ in the row (Details for /i/) -> observe heard-card, then press Escape
+# Click the heard /i/ in the row ([data-sound-result] button "Details for /i/") -> observe heard-card, then press Escape
 js failMic '"NotAllowedError"';  # click Try again  -> observe denied
 js failMic '"NotFoundError"';    # click Try again  -> observe unsupported
 js fakeMic @/path/to/ship.ogg; js failRoute 429  # Try again -> observe rate-limited
@@ -320,9 +322,11 @@ js failRoute 503                 # click Try again  -> observe unavailable
 js failRoute 502                 # click Try again  -> observe scoring-failed
 # Click Next word, wait for a new h1, then:
 bun run verify observe "$VERIFY_RUN" next-word
+# Open /ipa-chart/vowels, the /ɪ/ sound, then "More about /ɪ/: …", then:
+bun run verify observe "$VERIFY_RUN" card-link
 ```
 
-`index-link` requires the Practice index to list Schwa and a link to `/practice/minimal-pairs`. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 contrast links, the first named **pat and bat**. `word` requires `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound**, **Hear ship** and **Record** buttons, the privacy line and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences (`swapped` also a **Hear sheep** button; the wrong-word ones no sound named); `every-sound` requires the swapped sentence above a **Sound by sound** row of three tiles: /ʃ/ `match` "/ʃ/ sounded right", /ɪ/ `swapped` with the marked /ɪ/ and the heard /i/ as buttons and "/ɪ/ sounded like /i/", and /p/ `unclear` "/p/ wasn't clear". `heard-card` requires the heard /i/ tile button to be the open trigger and the card to be titled **More about /i/**. Each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, with no result showing.
+`nav` requires the main nav to read Transcription, IPA Chart, **Minimal pairs** (to `/minimal-pairs`), Practice, Language Spread, and the Practice index to list Schwa with no minimal-pairs card. `redirect` requires the old `/practice/minimal-pairs?contrast=i-ix&word=ship` to land on `/minimal-pairs` with the same search. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 contrast links, the first named **pat and bat**. `word` requires the target card *ship* `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound** beside the partner card *sheep* `ˈʃip` with /i/ marked, **Hear ship**, **Hear sheep** and **Record** buttons, the privacy line, no card marked heard and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences and visible buttons, `match` with the *ship* card marked heard and `swapped` with the *sheep* card marked and a second **Hear sheep** in the result; the others mark no card and the wrong-word ones name no sound; `every-sound` requires the swapped sentence above a **Sound by sound** row of three tiles: /ʃ/ `match` "/ʃ/ sounded right", /ɪ/ `swapped` with the marked /ɪ/ and the heard /i/ as buttons and "/ɪ/ sounded like /i/", and /p/ `unclear` "/p/ wasn't clear". `heard-card` requires the heard /i/ tile button to be the open trigger and the card to be titled **More about /i/**. Each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, with no result showing. `card-link` requires the /ɪ/ sound's full view to link **Practise saying /ɪ/ and /i/** to `/minimal-pairs?contrast=i-ix`.
 
 ### Flag off
 
@@ -330,13 +334,13 @@ bun run verify observe "$VERIFY_RUN" next-word
 bun run verify init minimal-pairs-off
 FLAG_SPEECH=0 bun run verify serve "$VERIFY_RUN"
 # open about:blank, trace start, set viewport 1280 900
-bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/practice/minimal-pairs
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/minimal-pairs
 bun run verify observe "$VERIFY_RUN" not-found
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/practice
-bun run verify observe "$VERIFY_RUN" index-hidden
+bun run verify observe "$VERIFY_RUN" nav-hidden
 ```
 
-`not-found` requires HTTP 404 with the shared **This page doesn't exist** h1 and no **Record** button; `index-hidden` requires the Practice index to list Schwa without the minimal-pairs link.
+`not-found` requires HTTP 404 with the shared **This page doesn't exist** h1 and no **Record** button; `nav-hidden` requires the main nav without **Minimal pairs** and the Practice index to list Schwa without a minimal-pairs card.
 
 ### Limits
 

@@ -321,16 +321,16 @@ describe("buildPracticeTopicHead", () => {
 });
 
 describe("buildMinimalPairPracticeHead", () => {
-	it("is a noindexed Practice page", () => {
+	it("is a noindexed page at its own path", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		process.env.SITE_INDEXING_ENABLED = "1";
 		const head = buildMinimalPairPracticeHead();
 		expect(head.meta).toContainEqual({
-			title: practiceDocumentTitle("Minimal pairs — Practice"),
+			title: practiceDocumentTitle("Minimal pairs"),
 		});
 		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
 		expect(head.links).toEqual([
-			{ rel: "canonical", href: "https://phonaria-staging.example.test/practice/minimal-pairs" },
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/minimal-pairs" },
 		]);
 	});
 });

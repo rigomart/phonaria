@@ -252,7 +252,7 @@ export function buildPracticeTopicHead(topic: PracticeTopicHeadSource | undefine
 export function buildMinimalPairPracticeHead(): StartHead {
 	return buildPageHead({
 		path: MinimalPairActivity.path,
-		title: `${MinimalPairActivity.name} — Practice`,
+		title: MinimalPairActivity.name,
 		description: MinimalPairActivity.description,
 		robots: PRACTICE_ROBOTS,
 	});
