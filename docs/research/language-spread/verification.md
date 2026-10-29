@@ -55,6 +55,14 @@ The flights are measured from where the pins are drawn on every frame, since the
 
 The Playwright browser contract ran in full against the flag-on server of run `1792285299813-60102` with `CONTRACT_TARGET=local` and `CONTRACT_BASE_URL=http://127.0.0.1:3008`: 42 passed, 10 skipped, 8 failed. The Language Spread spec and the metadata spec passed, including the sitemap listing `/language-spread`, once `CONTRACT_CANONICAL_ORIGIN=http://127.0.0.1:4173` matched the `SITE_URL` in this checkout's `.dev.vars`; the local target expects `http://localhost:3000`. Seven transcription tests failed because the server lookup has no database here (`Database is unavailable` in `server.log`). `toggles diphthongs on the vowel chart` failed because it clicks **Show diphthongs**, while the committed vowel chart has a **Diphthongs** button. Neither is part of this page. The flag-off Language Spread checks passed against the flag-off server of run `1792285697020-65515` with `CONTRACT_TARGET=cloudflare-production` (2 passed, 3 skipped).
 
+### Plain-language copy and the sample sentence (#387)
+
+Recorded from the body of PR #387, merged on 2026-10-29 as `9cfa24d`. The PR doesn't give run ids.
+
+- The `language-spread` journey passed all 31 checkpoints against the local dev server. The first run failed only `near-flight`: it compared the starting zoom, measured against the area the cards leave free before the step change, with flight frames measured against that area after it. The new caption makes the two differ, so a smooth flight read as a dip. The check now measures its dip from the flight's first frame, and the next run passed all 31.
+- A frame recorder logged the sample caption's text, opacity and position on every frame across step changes. Before the fixes, an entering sentence showed at full opacity, faded out, then faded in; a leaving one vanished at once; and leaving Old English or Today it jumped from x=583 to x=175 at full opacity. After them, no frame showed the text changing or moving while visible.
+- The Article JSON-LD now has 33 citations, one per source; the 2026-10-17 runs recorded 28, before the five sources for the sample sentence. The journey expects 33.
+
 ### Findings
 
 - Printing to America is not a far move. America's camera frames the whole North Atlantic (-90 to 5 degrees of longitude), so the camera only zooms out from England and lands at about 1.5 over the mid-Atlantic, not near Virginia. The pull-back to the whole globe happens on the next step, America to Around the world. The unit tests check England to Virginia with a tighter Virginia frame than the story uses.

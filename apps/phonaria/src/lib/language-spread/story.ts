@@ -20,9 +20,9 @@ export const STOPS: readonly Stop[] = [
 		at: [42, 47],
 		areaKm: 800,
 		where:
-			"north of the Black and Caspian Seas, as most experts think; others say Anatolia (in today's Turkey) or south of the Caucasus Mountains",
+			"north of the Black and Caspian Seas, as many experts think; others say Anatolia (in today's Turkey) or south of the Caucasus Mountains",
 		description:
-			"The ancestor of most languages in Europe, and of Persian and Hindi. Ancient DNA and old words for wagons lead many experts to the grasslands north of the Black Sea, about 6,000 years ago. Studies that compare language family trees lead others to an older start, in Anatolia or south of the Caucasus.",
+			"The ancestor of most languages in Europe, and of Persian and Hindi. Ancient DNA and old words for wagons point many experts north of the Black Sea, about 6,000 years ago. Language tree studies point to an older start, in Anatolia or south of the Caucasus. Newer work on both sides points toward the Caucasus.",
 		sources: [
 			"haak-2015",
 			"anthony-ringe-2015",
@@ -52,7 +52,7 @@ export const STOPS: readonly Stop[] = [
 		areaKm: 200,
 		where: "in eastern England, where settlers came from across the North Sea",
 		description:
-			"After Roman rule ended, settlers from what is now northern Germany and Denmark crossed the North Sea. Ancient DNA shows that some people in eastern England had up to three-quarters of their family roots in these settlers. Their language became Old English. The oldest long texts in it were written around 700 CE.",
+			"After Roman rule ended, settlers from today's northern Germany and Denmark crossed the North Sea. Ancient DNA shows that some people in eastern England had up to three-quarters of their family roots in these settlers. Their language became Old English. Its oldest writing, from about 700 CE, is word lists with Latin.",
 		sources: ["gretzinger-2022", "oed-old-english"],
 	},
 	{
@@ -64,7 +64,7 @@ export const STOPS: readonly Stop[] = [
 		areaKm: 220,
 		where: "in the east and north of England",
 		description:
-			"People from Scandinavia settled mostly in the east and north of England. Their language, Old Norse, later died out there. But English kept many everyday words from it, like sky, egg, skin, take and want. It even took they, them and their. Languages very rarely borrow words like these.",
+			"People from Scandinavia settled mostly in the east and north of England. Their language, Old Norse, later died out there. But English kept many everyday words from it, like sky, egg, skirt and window. It even took they, them and their. Languages very rarely borrow words like these.",
 		sources: ["oed-middle-english", "nottingham-danelaw"],
 	},
 	{
@@ -75,7 +75,7 @@ export const STOPS: readonly Stop[] = [
 		at: [0.49, 50.91],
 		where: "near Hastings. French then spread with England's new rulers",
 		description:
-			"After 1066, the people who ruled England and its church spoke French. For a long time, people almost stopped writing in English. When English came back, it had many French words, like peace, mercy, prison and rule. By 1500, more than 40% of all the words English took from French had already arrived.",
+			"After 1066, the people who ruled England and its church spoke French. For years after, people almost stopped writing in English. When English came back, it had many French words, like peace, mercy, prison and rule. By 1500, more than 40% of all the words English took from French had already arrived.",
 		sources: ["english-heritage-hastings", "oed-middle-english"],
 	},
 	{
@@ -86,7 +86,7 @@ export const STOPS: readonly Stop[] = [
 		at: [-0.13, 51.5],
 		where: "at Westminster, next to London",
 		description:
-			'In 1476, William Caxton set up England\'s first printing press here. His books spread the English of the London area, but spelling still changed from book to book. Caxton saw that English was changing. Should he write "egges", a word from Old Norse, or "eyren", the only word a woman in Kent knew?',
+			'In 1476, William Caxton set up England\'s first printing press here. His books helped make London English the standard, but spelling still changed from book to book. Should he write "egges", a word from Old Norse, or "eyren", the word a woman in Kent understood? English was changing, he wrote.',
 		sources: [
 			"bl-caxton-life",
 			"bl-caxton-english",
@@ -98,12 +98,12 @@ export const STOPS: readonly Stop[] = [
 		id: "great-vowel-shift",
 		name: "The Great Vowel Shift",
 		kind: "change",
-		era: { ce: 1400, to: 1700 },
+		era: { ce: 1400, to: 1600 },
 		at: [-1.2, 52.3],
 		areaKm: 250,
 		where: "across England. In the north, the vowels changed in a different way",
 		description:
-			'Long vowels in stressed syllables changed. Most moved higher in the mouth. The two highest became diphthongs: "mine" went from /miːn/ to /maɪn/, and "house" from /huːs/ to /haʊs/. Most of this happened in the 1400s and 1500s. Some experts say it started in the 1200s, as several connected changes, not one.',
+			'Long vowels in stressed syllables changed. Most moved higher in the mouth. The two highest became diphthongs: "mine" went from /miːn/ to /maɪn/, and "house" from /huːs/ to /haʊs/. Most of this happened in the 1400s and 1500s. Some experts see several connected changes, starting in the 1200s. Others see one shift.',
 		sources: ["harvard-gvs", "oed-early-modern", "stenbrenden-2015", "prichard-2014"],
 	},
 	{
@@ -114,7 +114,7 @@ export const STOPS: readonly Stop[] = [
 		at: [-76.78, 37.21],
 		where: "at Jamestown, Virginia, the first English settlement that lasted",
 		description:
-			"Jamestown, started in 1607, was the first English settlement in North America that lasted. Most American accents kept the r after vowels, in words like car. Much of southern England later stopped saying it. Noah Webster's 1828 dictionary made his spellings, like color, the standard.",
+			"Jamestown, started in 1607, was the first English settlement in North America that lasted. Most American accents kept the r after vowels, in words like car. Much of southern England later stopped saying it. Noah Webster's 1828 dictionary helped make some of his spellings, like color, the standard.",
 		sources: ["nps-jamestown", "npg-webster", "trudgill-gordon-2006", "bl-sounds-familiar"],
 	},
 	{
@@ -125,8 +125,8 @@ export const STOPS: readonly Stop[] = [
 		at: [151.21, -33.86],
 		where: "at Sydney Cove, on the land of the Eora people",
 		description:
-			"On 26 January 1788, the 11 ships of the First Fleet started a prison settlement at Sydney Cove. This was the start of European colonization of Australia. It changed forever the lives of the Eora people, the traditional owners of the land.",
-		sources: ["nma-first-fleet"],
+			"On 26 January 1788, the 11 ships of the First Fleet started a prison settlement at Sydney Cove. This was the start of European colonization of Australia, and English came with it. It changed forever the lives of the Eora people, the traditional owners of the land.",
+		sources: ["nma-first-fleet", "ethnologue-most-spoken"],
 	},
 ];
 
@@ -248,9 +248,9 @@ export const STEPS: readonly Step[] = [
 	{
 		id: "great-vowel-shift",
 		title: "The Great Vowel Shift",
-		era: { ce: 1400, to: 1700 },
+		era: { ce: 1400, to: 1600 },
 		paragraphs: [
-			'Between about 1400 and 1700, the long vowels of English changed. "Mine" used to sound like "meen", and "house" like "hoos".',
+			'Between about 1400 and 1600, the long stressed vowels of English changed. "Mine" used to sound like "meen", and "house" like "hoos".',
 			"Spelling didn't change with them, and printing kept the old spellings. That's why English vowel letters often don't match their sounds.",
 		],
 		card: "center-right",
@@ -264,7 +264,7 @@ export const STEPS: readonly Step[] = [
 		era: { ce: 1476 },
 		paragraphs: [
 			"In 1476, William Caxton set up England's first printing press, at Westminster near London.",
-			"Printed books spread London English. Printers slowly made spelling regular, but kept old spellings while the sounds changed.",
+			"Printed books helped make London English the standard. Printers slowly made spelling regular, but kept old spellings while the sounds changed.",
 		],
 		card: "top-left",
 		camera: { west: -6, south: 49.5, east: 4, north: 55 },
@@ -278,7 +278,7 @@ export const STEPS: readonly Step[] = [
 		era: { ce: 1607 },
 		paragraphs: [
 			"In 1607, English settlers founded Jamestown, Virginia, the first English settlement in North America that lasted.",
-			"Most American accents kept the r in words like car, as the accent on this site does. Webster's 1828 dictionary made spellings like color standard.",
+			"Most American accents kept the r in words like car, as the accent on this site does. Webster's 1828 dictionary helped make some of his spellings, like color, standard.",
 		],
 		card: "bottom-left",
 		camera: { west: -90, south: 25, east: 5, north: 58 },
@@ -488,7 +488,7 @@ export const SOURCES: readonly Source[] = [
 	{
 		id: "english-heritage-hastings",
 		citation: "English Heritage",
-		title: "History of 1066 Battle of Hastings, Abbey and Battlefield",
+		title: "History of Battle Abbey and Battlefield",
 		url: "https://www.english-heritage.org.uk/visit/places/1066-battle-of-hastings-abbey-and-battlefield/history-and-stories/history/",
 	},
 	{
@@ -586,7 +586,7 @@ export const SOURCES: readonly Source[] = [
 		citation: "Skeat 1887, Cambridge University Press, p. 54",
 		title:
 			"The Gospel according to Saint Matthew in Anglo-Saxon, Northumbrian, and Old Mercian versions",
-		url: "https://objects.library.uu.nl/reader/1874-374575",
+		url: "https://objects.library.uu.nl/reader/1874-374575?page=74",
 	},
 	{
 		id: "forshall-madden-1850",
@@ -603,13 +603,13 @@ export const SOURCES: readonly Source[] = [
 	},
 	{
 		id: "king-james-1611",
-		citation: "King James Bible, 1611, Robert Barker (University of Pennsylvania copy)",
+		citation: "King James Bible, 1611, Robert Barker (University of Pennsylvania Libraries)",
 		title: "The Holy Bible, conteyning the Old Testament, and the New",
-		url: "https://archive.org/details/Bible1611/page/n1225",
+		url: "https://digitalcollections.library.upenn.edu/items/27ecd163-8bae-410b-afbc-8d7c87a3cedc?asset-id=baf5356f-4bc6-4e2f-83cd-6bda12db195f",
 	},
 	{
 		id: "british-council-future-english",
-		citation: "British Council, reporting David Crystal",
+		citation: "British Council, 2014 (David Crystal's estimate)",
 		title: "What's the future of English?",
 		url: "https://web.archive.org/web/20260115214447/https://www.britishcouncil.org/voices-magazine/whats-future-english",
 	},
