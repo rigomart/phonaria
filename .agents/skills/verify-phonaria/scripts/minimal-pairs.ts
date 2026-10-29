@@ -228,12 +228,9 @@ export const minimalPairs = {
 						.querySelector("[data-sound-result] button[data-details-open]")
 						?.getAttribute("aria-label") ?? null,
 				cardIpa:
-					document
-						.querySelector('[data-phoneme-details] button[aria-label^="More about"]')
-						?.getAttribute("aria-label")
-						?.split(":")[0] ?? null,
+					document.querySelector("[data-phoneme-details] h2")?.textContent?.split(",")[0] ?? null,
 			}),
-			{ open: "Details for /i/", cardIpa: "More about /i/" },
+			{ open: "Details for /i/", cardIpa: "/i/" },
 		),
 		denied: statusIs(
 			"Phonaria can't use your microphone. Allow microphone access for this site, then try again.",

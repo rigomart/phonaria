@@ -7,7 +7,11 @@ import { AudioManagerProvider } from "@/hooks/use-audio-manager";
 import { DetailSections, getDetailSections } from "./phoneme-details/sections";
 import { describeSound, type PhonemeDetailsOptions } from "./phoneme-details/sound";
 import { SoundHeader } from "./phoneme-details/sound-header";
-import { SYNTHETIC_VOICE_NOTE, SyntheticVoiceNote } from "./synthetic-voice-note";
+import {
+	SYNTHETIC_VOICE_NOTE,
+	SyntheticVoiceInfo,
+	SyntheticVoiceNote,
+} from "./synthetic-voice-note";
 
 const manifest = vi.hoisted(() => ({
 	current: undefined as WordAudioManifest | null | undefined,
@@ -55,6 +59,18 @@ describe("SyntheticVoiceNote", () => {
 	it("stays out when recordings have nowhere to play from", () => {
 		vi.stubEnv("PUBLIC_BUCKET_URL", "");
 		expect(note(["seat"])).toBe("");
+	});
+});
+
+describe("SyntheticVoiceInfo", () => {
+	const info = (words: readonly string[]) =>
+		render(<SyntheticVoiceInfo targetAccent="en-us" words={words} />);
+
+	it("folds the note into a mark named by it, under the same condition", () => {
+		expect(info(["zzzz", "seat"])).toContain(`aria-label="${SYNTHETIC_VOICE_NOTE}"`);
+		expect(info(["zzzz"])).toBe("");
+		manifest.current = null;
+		expect(info(["seat"])).toBe("");
 	});
 });
 

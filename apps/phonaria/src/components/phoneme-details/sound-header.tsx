@@ -8,6 +8,18 @@ import { PlayableWord } from "./playable-word";
 import type { SoundSummary } from "./sound";
 import { SoundTile } from "./sound-tile";
 
+const TITLE_CLASS = "font-display text-lg leading-snug font-semibold tracking-tight text-balance";
+
+/** The sound's name as the heading of the container that shows it, its symbol read first. */
+export function SoundHeading({ sound, titleId }: { sound: SoundSummary; titleId: string }) {
+	return (
+		<h2 id={titleId} tabIndex={-1} className={cn(TITLE_CLASS, "outline-none")}>
+			<span className="sr-only">/{sound.ipa}/, </span>
+			{sound.name}
+		</h2>
+	);
+}
+
 /**
  * What the sound is and what it sounds like: symbol, name, type with an
  * example word, and how common it is. The symbol plays the sound, the example
@@ -49,7 +61,6 @@ export function SoundHeader({
 			) : null}
 		</span>
 	);
-	const titleClass = "font-display text-lg leading-snug font-semibold tracking-tight text-balance";
 	const compact = Boolean(thumbnail);
 	const frequency = sound.frequency ? (
 		<SoundFrequency
@@ -74,7 +85,7 @@ export function SoundHeader({
 								aria-label={`More about /${sound.ipa}/: ${sound.name}`}
 								className="group/expand -mx-2 -my-1 flex cursor-pointer items-center gap-1 self-start rounded-lg px-2 py-1 text-left outline-none transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 							>
-								<span id={titleId} className={titleClass}>
+								<span id={titleId} className={TITLE_CLASS}>
 									{sound.name}
 								</span>
 								<ChevronRight
@@ -83,15 +94,7 @@ export function SoundHeader({
 								/>
 							</button>
 						) : (
-							<h2
-								id={titleId}
-								// Focus lands here when a container opens on the full view.
-								tabIndex={-1}
-								className={cn(titleClass, "outline-none")}
-							>
-								<span className="sr-only">/{sound.ipa}/, </span>
-								{sound.name}
-							</h2>
+							<SoundHeading sound={sound} titleId={titleId} />
 						)}
 						<p>{subtitle}</p>
 					</div>
