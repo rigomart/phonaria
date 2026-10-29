@@ -142,7 +142,7 @@ const intro = observation(
 			imageSize: "1200x630",
 			twitterCard: ["summary_large_image"],
 			twitterTitle: ["The history of English, from Old English to today"],
-			structuredData: [{ type: "Article", citations: 28 }],
+			structuredData: [{ type: "Article", citations: 33 }],
 		},
 		era: "~4000 BCE",
 		step: "intro",
@@ -346,8 +346,9 @@ const flight = observation(
 			// The first frame is a few pixels from the view before the step changed, dragged or not.
 			startsWhereItWas: jumps.length > 0 && Math.max(...jumps) < 10,
 			landsZoomedIn: landingZoom > 1,
-			// Below both ends of the flight: the camera pulled back on the way.
-			dips: lowest < Math.min(recorded.startZoom, landingZoom) * 0.95,
+			// Below both ends of the flight: the camera pulled back on the way. Compare against the
+			// first frame, not `startZoom`, which is relative to a free area a sample caption can shrink.
+			dips: lowest < Math.min(zooms[0] ?? recorded.startZoom, landingZoom) * 0.95,
 			wholeGlobe: lowest < 1,
 		};
 	},
@@ -467,7 +468,7 @@ const earlierPin = observation(detailsOpen, {
 	name: "Old Norse",
 	kindAndDate: "Language, ~800 CE",
 	description:
-		"Scandinavians settled mostly in the east and north of England. Their Old Norse died out there, but English kept everyday words from it, such as sky, egg, skin, take and want. It even took the pronouns they, them and their, which languages very rarely borrow.",
+		"People from Scandinavia settled mostly in the east and north of England. Their language, Old Norse, later died out there. But English kept many everyday words from it, like sky, egg, skin, take and want. It even took they, them and their. Languages very rarely borrow words like these.",
 	area: "Roughly in the east and north of England. The pin marks the general area, not an exact spot.",
 	sources: "Sources (2)",
 	close: true,

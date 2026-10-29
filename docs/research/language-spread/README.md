@@ -53,6 +53,9 @@ Judgment calls for this story:
 - **Names.** The research note calls the printing stop `printing`; the page uses `london-english` for the stop and `printing` for the step.
 - **Left out:** Angles, Saxons and Jutes as three named homelands, Celtic retreat details, Norse place names in -by, causes of the vowel shift, Caxton as the creator of standard spelling, and dated claims for English in India and Africa. [english.md](english.md) lists every dropped claim and why.
 
+- **Plain language.** On 2026-10-28 the card and pin copy was rewritten for readers whose first language isn't English: shorter sentences, one idea each, everyday words ("experts" not "scholars", "family roots" not "ancestry"), and no idioms ("didn't keep up"). Each card was also cut to two or three short sentences per paragraph, leaving secondary details (Chaucer, Webster's r-dropping contrast, 104 settlers) to the pins. No new claims were added. The drafts in [english.md](english.md) keep the earlier wording.
+- **The sample sentence.** The opening of the Lord's Prayer is shown in each stage of English, as a caption over the map with today's word under each old word, and in a comparison after the story. [english.md](english.md#the-sample-sentence) records each line's edition and the choices.
+
 The tables were generated from `story.ts`; the story tests check that every id appears here.
 
 | Step | Era shown | Stops | Card | Card sources |

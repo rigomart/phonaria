@@ -6,4 +6,6 @@
 :root {
 	--font-display-serif: "Sora Variable", system-ui, sans-serif;
 	--font-noto-sans: "Noto Sans Variable", system-ui, sans-serif;
+	/* No serif is bundled: Noto Serif where the system has it, else the system's book serif. */
+	--font-noto-serif: "Noto Serif", "Iowan Old Style", Georgia, "Times New Roman", serif;
 }

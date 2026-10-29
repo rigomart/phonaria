@@ -1,7 +1,7 @@
 import { ArrowDown, MoveRight } from "lucide-react";
 import { useId, useLayoutEffect, useRef } from "react";
 import { formatEra } from "@/lib/language-spread/era";
-import type { CardPlacement, Source, Step, Stop } from "@/lib/language-spread/types";
+import type { CardPlacement, Sample, Source, Step, Stop } from "@/lib/language-spread/types";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { KindMark, SourceLink } from "./stop-details";
@@ -68,6 +68,7 @@ function animateCard(card: HTMLElement, shown: boolean, direction: 1 | -1, side:
  */
 export function StoryCard({
 	step,
+	sample,
 	index,
 	active,
 	shown,
@@ -79,6 +80,8 @@ export function StoryCard({
 	cardRef,
 }: {
 	step: Step;
+	/** The version of the sample sentence shown with this card; its sources join the card's. */
+	sample?: Sample;
 	index: number;
 	active: boolean;
 	/** Visible: active, and its step has been revealed. */
@@ -96,6 +99,7 @@ export function StoryCard({
 	const headingId = useId();
 	const places = step.stops.flatMap((id) => stops.get(id) ?? []);
 	const placement = placementOf(step);
+	const cardSources = [...(step.sources ?? []), ...(sample?.sources ?? [])];
 	const card = useRef<HTMLElement | null>(null);
 	const wasShown = useRef(shown);
 	useLayoutEffect(() => {
@@ -169,13 +173,13 @@ export function StoryCard({
 						})}
 					</ul>
 				)}
-				{step.sources && (
+				{cardSources.length > 0 && (
 					<details inert={!active} className="mt-3 text-xs text-muted-foreground">
 						<summary className="cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
 							Sources for this card
 						</summary>
 						<ul className="mt-1.5 flex flex-col gap-1">
-							{step.sources
+							{cardSources
 								.flatMap((id) => sources.get(id) ?? [])
 								.map((source) => (
 									<li key={source.id}>

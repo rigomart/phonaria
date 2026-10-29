@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { eraYear } from "./era";
-import { MAIN_SOURCES, SOURCES, STEPS, STOPS } from "./story";
+import { MAIN_SOURCES, SAMPLES, SOURCES, STEPS, STOPS } from "./story";
 
 const stopIds = STOPS.map((stop) => stop.id);
 const sourceIds = new Set(SOURCES.map((source) => source.id));
@@ -47,12 +47,32 @@ describe("language spread story", () => {
 			cite(stop.id, stop.sources);
 		}
 		for (const step of STEPS) cite(step.id, step.sources ?? []);
+		for (const sample of SAMPLES) cite(sample.id, sample.sources ?? []);
 		expect([...sourceIds].filter((id) => !used.has(id))).toEqual([]);
 	});
 
 	it("backs every card after the introduction with a stop or its own sources", () => {
 		for (const step of STEPS.slice(1)) {
 			expect(step.stops.length + (step.sources?.length ?? 0), step.id).toBeGreaterThan(0);
+		}
+	});
+
+	it("shows each sample on a card that exists, in story order, and quotes every old one from a source", () => {
+		const stepIndex = (id: string) => STEPS.findIndex((step) => step.id === id);
+		const steps = SAMPLES.flatMap((sample) => sample.step ?? []);
+		for (const id of steps) expect(stepIndex(id), id).toBeGreaterThanOrEqual(0);
+		expect(new Set(steps).size).toBe(steps.length);
+		expect([...steps].sort((a, b) => stepIndex(a) - stepIndex(b))).toEqual(steps);
+		expect(new Set(SAMPLES.map((sample) => sample.id)).size).toBe(SAMPLES.length);
+		for (const sample of SAMPLES.slice(0, -1)) {
+			expect(sample.sources?.length, sample.id).toBeGreaterThan(0);
+		}
+		expect(SAMPLES.at(-1)?.step).toBe("today");
+	});
+
+	it("glosses every word of a sample, in order", () => {
+		for (const sample of SAMPLES.filter((sample) => sample.gloss)) {
+			expect(sample.gloss?.length, sample.id).toBe(sample.text.split(" ").length);
 		}
 	});
 
