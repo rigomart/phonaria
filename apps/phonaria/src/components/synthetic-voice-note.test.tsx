@@ -24,6 +24,8 @@ const note = (words: readonly string[]) =>
 
 beforeEach(() => {
 	vi.stubEnv("PUBLIC_BUCKET_URL", "https://assets.example");
+	// Link needs a router; keep the practice links off.
+	vi.stubEnv("FLAG_SPEECH", "0");
 	manifest.current = EnglishWordAudio;
 });
 

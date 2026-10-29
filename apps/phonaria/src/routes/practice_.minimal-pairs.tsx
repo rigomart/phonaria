@@ -1,22 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { buildMinimalPairPracticeHead } from "@/lib/document-head";
-import { requireFlag } from "@/lib/require-flag";
-import { MinimalPairPractice } from "@/practice/_components/minimal-pair-practice";
-import { validateMinimalPairSearch } from "@/practice/_lib/minimal-pair-prompt";
+import { redirect } from "@/lib/navigation";
+import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 
 /**
- * Outside the /practice layout (the trailing underscore), so FLAG_SPEECH alone
- * gates it and FLAG_PRACTICE's topic flow can stay off.
+ * Redirects links shared before the page left Practice. The trailing underscore
+ * keeps it outside the /practice layout, so FLAG_PRACTICE does not gate it.
  */
 export const Route = createFileRoute("/practice_/minimal-pairs")({
-	validateSearch: validateMinimalPairSearch,
-	beforeLoad: () => {
-		requireFlag("speech");
+	beforeLoad: ({ location }) => {
+		redirect(`${MinimalPairActivity.path}${location.searchStr}`, 308);
 	},
-	head: () => buildMinimalPairPracticeHead(),
-	component: MinimalPairPracticeRoute,
 });
-
-function MinimalPairPracticeRoute() {
-	return <MinimalPairPractice search={Route.useSearch()} />;
-}

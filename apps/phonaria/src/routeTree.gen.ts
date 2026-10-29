@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreditsRouteImport } from './routes/credits'
 import { Route as LanguageSpreadRouteImport } from './routes/language-spread'
+import { Route as MinimalPairsRouteImport } from './routes/minimal-pairs'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -39,6 +40,11 @@ const CreditsRoute = CreditsRouteImport.update({
 const LanguageSpreadRoute = LanguageSpreadRouteImport.update({
   id: '/language-spread',
   path: '/language-spread',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinimalPairsRoute = MinimalPairsRouteImport.update({
+  id: '/minimal-pairs',
+  path: '/minimal-pairs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PracticeRoute = PracticeRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
   '/language-spread': typeof LanguageSpreadRoute
+  '/minimal-pairs': typeof MinimalPairsRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
   '/language-spread': typeof LanguageSpreadRoute
+  '/minimal-pairs': typeof MinimalPairsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
   '/language-spread': typeof LanguageSpreadRoute
+  '/minimal-pairs': typeof MinimalPairsRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/'
     | '/credits'
     | '/language-spread'
+    | '/minimal-pairs'
     | '/practice'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/'
     | '/credits'
     | '/language-spread'
+    | '/minimal-pairs'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/ipa-chart/$'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/'
     | '/credits'
     | '/language-spread'
+    | '/minimal-pairs'
     | '/practice'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -221,6 +233,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreditsRoute: typeof CreditsRoute
   LanguageSpreadRoute: typeof LanguageSpreadRoute
+  MinimalPairsRoute: typeof MinimalPairsRoute
   PracticeRoute: typeof PracticeRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -255,6 +268,13 @@ declare module '@tanstack/react-router' {
       path: '/language-spread'
       fullPath: '/language-spread'
       preLoaderRoute: typeof LanguageSpreadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minimal-pairs': {
+      id: '/minimal-pairs'
+      path: '/minimal-pairs'
+      fullPath: '/minimal-pairs'
+      preLoaderRoute: typeof MinimalPairsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/practice': {
@@ -369,6 +389,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreditsRoute: CreditsRoute,
   LanguageSpreadRoute: LanguageSpreadRoute,
+  MinimalPairsRoute: MinimalPairsRoute,
   PracticeRoute: PracticeRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

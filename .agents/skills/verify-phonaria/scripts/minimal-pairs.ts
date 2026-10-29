@@ -2,7 +2,8 @@ import { type Feature, observation } from "./feature";
 
 // These functions run in the browser after serialization. Keep their dependencies
 // inside the function body and read only rendered DOM and browser state.
-// Expected copy comes from issues #332, #334 and #344; the IPA for ship (SH IX1 P) from the curated dictionary.
+// Expected copy comes from issues #332, #334 and #344; the IPA for ship (SH IX1 P) and sheep (SH I1 P)
+// from the curated dictionary.
 
 const statusIs = (expected: string) =>
 	observation(
@@ -16,6 +17,7 @@ const statusIs = (expected: string) =>
 
 const readAttempt = () => ({
 	word: document.querySelector("h1")?.textContent?.trim() ?? null,
+	heard: document.querySelector("[data-heard]")?.getAttribute("data-side") ?? null,
 	status:
 		document.querySelector('[aria-live="polite"][aria-atomic="true"] p')?.textContent?.trim() ??
 		null,
@@ -51,28 +53,48 @@ const notFound = observation(
 		).length,
 	}),
 	{
-		path: "/practice/minimal-pairs",
+		path: "/minimal-pairs",
 		status: 404,
 		heading: "This page doesn't exist",
 		recordButtons: 0,
 	},
 );
 
-const practiceIndex = (expectedLink: boolean) =>
+const practiceIndex = (expectedNav: boolean) =>
 	observation(
 		() => ({
 			path: location.pathname,
 			heading: document.querySelector("h1")?.textContent?.trim() ?? null,
 			schwa: !!document.querySelector('a[href="/practice/schwa"]'),
-			minimalPairs: !!document.querySelector('a[href="/practice/minimal-pairs"]'),
+			card: !!document.querySelector('main a[href^="/minimal-pairs"]'),
+			nav: Array.from(document.querySelectorAll('nav[aria-label="Main"] a')).map((link) =>
+				link.textContent?.trim(),
+			),
+			navHref:
+				document
+					.querySelector('nav[aria-label="Main"] a[href="/minimal-pairs"]')
+					?.textContent?.trim() ?? null,
 		}),
-		{ path: "/practice", heading: "Practice", schwa: true, minimalPairs: expectedLink },
+		{
+			path: "/practice",
+			heading: "Practice",
+			schwa: true,
+			card: false,
+			nav: expectedNav
+				? ["Transcription", "IPA Chart", "Minimal pairs", "Practice", "Language Spread"]
+				: ["Transcription", "IPA Chart", "Practice", "Language Spread"],
+			navHref: expectedNav ? "Minimal pairs" : null,
+		},
 	);
 
 export const minimalPairs = {
 	title: "Minimal-pair speaking practice",
 	checkpoints: {
-		"index-link": practiceIndex(true),
+		nav: practiceIndex(true),
+		redirect: observation(() => ({ path: location.pathname, search: location.search }), {
+			path: "/minimal-pairs",
+			search: "?contrast=i-ix&word=ship",
+		}),
 		picker: observation(
 			() => ({
 				path: location.pathname,
@@ -83,7 +105,7 @@ export const minimalPairs = {
 				seatSit: !!document.querySelector('a[aria-label="seat and sit"]'),
 			}),
 			{
-				path: "/practice/minimal-pairs",
+				path: "/minimal-pairs",
 				heading: "Minimal pairs",
 				groups: ["Consonants", "Vowels"],
 				contrasts: 27,
@@ -98,14 +120,18 @@ export const minimalPairs = {
 					path: location.pathname,
 					contrast: params.get("contrast"),
 					word: document.querySelector("h1")?.textContent?.trim() ?? null,
-					ipa: Array.from(document.querySelectorAll("main [data-ipa-token]"))
-						.map((token) => token.textContent)
-						.join(""),
-					marked:
-						document
-							.querySelector('[aria-label$="the marked sound"]')
-							?.getAttribute("aria-label") ?? null,
-					hear: !!document.querySelector('button[aria-label="Hear ship"]'),
+					sides: Array.from(document.querySelectorAll("[data-side]")).map((card) => [
+						card.getAttribute("data-side"),
+						card.querySelector("h1, p")?.textContent?.trim(),
+						Array.from(card.querySelectorAll("[data-ipa-token]"))
+							.map((token) => token.textContent)
+							.join(""),
+						card.querySelector('[aria-label$="the marked sound"]')?.getAttribute("aria-label"),
+					]),
+					heard: document.querySelector("[data-heard]")?.getAttribute("data-side") ?? null,
+					hear: ["Hear ship", "Hear sheep"].map(
+						(label) => !!document.querySelector(`button[aria-label="${label}"]`),
+					),
 					record: Array.from(document.querySelectorAll("button")).some(
 						(button) => button.textContent?.trim() === "Record",
 					),
@@ -120,12 +146,15 @@ export const minimalPairs = {
 				};
 			},
 			{
-				path: "/practice/minimal-pairs",
+				path: "/minimal-pairs",
 				contrast: "i-ix",
 				word: "ship",
-				ipa: "ˈʃɪp",
-				marked: "Details for /ɪ/, the marked sound",
-				hear: true,
+				sides: [
+					["target", "ship", "ˈʃɪp", "Details for /ɪ/, the marked sound"],
+					["partner", "sheep", "ˈʃip", "Details for /i/, the marked sound"],
+				],
+				heard: null,
+				hear: [true, true],
 				record: true,
 				privacy: true,
 				status: null,
@@ -133,43 +162,51 @@ export const minimalPairs = {
 		),
 		match: observation(readAttempt, {
 			word: "ship",
+			heard: "target",
 			status: "Your /ɪ/ sounded right. That's ship.",
-			buttons: ["Hear ship", "Try again", "Next word"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		swapped: observation(readAttempt, {
 			word: "ship",
+			heard: "partner",
 			status: "Your /ɪ/ sounded like /i/, which makes sheep.",
-			buttons: ["Hear ship", "Try again", "Hear sheep", "Next word"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "Hear sheep"],
 		}),
 		"not-heard": observation(readAttempt, {
 			word: "ship",
+			heard: null,
 			status: "We didn't catch anything. Check your microphone and try again.",
-			buttons: ["Hear ship", "Try again", "Next word"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		"random-word": observation(readAttempt, {
 			word: "ship",
+			heard: null,
 			status: "That sounded like kid, not ship. Try again with just the word.",
-			buttons: ["Hear ship", "Try again", "Next word"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		"added-sounds": observation(readAttempt, {
 			word: "ship",
+			heard: null,
 			status: "That sounded like ships, not ship. Try again with just the word.",
-			buttons: ["Hear ship", "Try again", "Next word"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		phrase: observation(readAttempt, {
 			word: "ship",
+			heard: null,
 			status: 'We heard "a ship". Say just ship on its own.',
-			buttons: ["Hear ship", "Try again", "Next word"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		"close-call": observation(readAttempt, {
 			word: "ship",
+			heard: null,
 			status: "Somewhere between /ɪ/ and /i/. Try again and make it a clear /ɪ/.",
-			buttons: ["Hear ship", "Try again", "Next word"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		"other-sound": observation(readAttempt, {
 			word: "ship",
+			heard: null,
 			status: "That didn't sound clearly like /ɪ/ or /i/. Try again.",
-			buttons: ["Hear ship", "Try again", "Next word"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		"every-sound": observation(readSounds, {
 			status: "Your /ɪ/ sounded like /i/, which makes sheep.",
@@ -209,6 +246,19 @@ export const minimalPairs = {
 		),
 		unavailable: statusIs("Checking sounds isn't available right now. Try again later."),
 		"scoring-failed": statusIs("Your recording couldn't be checked. Try again."),
+		"card-link": observation(
+			() => ({
+				href:
+					Array.from(document.querySelectorAll("[data-phoneme-details] a"))
+						.find((link) => link.textContent?.trim().startsWith("Practise saying"))
+						?.getAttribute("href") ?? null,
+				label:
+					Array.from(document.querySelectorAll("[data-phoneme-details] a"))
+						.find((link) => link.textContent?.trim().startsWith("Practise saying"))
+						?.textContent?.trim() ?? null,
+			}),
+			{ href: "/minimal-pairs?contrast=i-ix", label: "Practise saying /ɪ/ and /i/" },
+		),
 		"next-word": observation(
 			() => {
 				const params = new URL(location.href).searchParams;
@@ -243,12 +293,12 @@ export const minimalPairsOff = {
 	title: "Minimal-pair speaking practice, FLAG_SPEECH off",
 	checkpoints: {
 		"not-found": notFound,
-		"index-hidden": practiceIndex(false),
+		"nav-hidden": practiceIndex(false),
 	},
 	coverageLimits: [
 		"The journey sees only the flag's effects; it cannot tell how the server was started.",
 	],
-	expectedResponses: [{ path: "/practice/minimal-pairs", status: 404 }],
+	expectedResponses: [{ path: "/minimal-pairs", status: 404 }],
 } satisfies Feature;
 
 /** Replaces the microphone with a stream that plays `base64` audio after a short pause, or silence when null. */

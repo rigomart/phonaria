@@ -11,14 +11,16 @@ import {
 } from "@phonaria/pronunciation";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MISCUE_FIXTURES } from "../../../../../packages/pronunciation/src/azure/fixtures/miscue";
-import { type MinimalPairPrompt, promptFor } from "./minimal-pair-prompt";
+import { contrastSound, type MinimalPairPrompt, promptFor } from "./minimal-pair-prompt";
 import {
 	type AttemptResult,
 	attemptReducer,
 	deriveSpeakingView,
+	heardSide,
 	outcomeFromJudgement,
 	READY,
 	type SoundResult,
+	type SpeakingOutcome,
 	scoreAttempt,
 	wordFinder,
 } from "./speaking-attempt";
@@ -588,5 +590,49 @@ describe("deriveSpeakingView", () => {
 				result: { type: "failure", failure: "rate_limited" },
 			}),
 		).toEqual({ phase: "failure", failure: "rate_limited" });
+	});
+});
+
+describe("heardSide", () => {
+	const ship = prompt("i-ix", "ship");
+	const [sh, ix, p] = [contrastSound("SH"), contrastSound("IX"), contrastSound("P")];
+	const match = { type: "match" } as const;
+	const outcome = (verdict: SpeakingOutcome) => ({ phase: "outcome", outcome: verdict }) as const;
+	const sounds = (vowel: SoundResult["verdict"], last: SoundResult["verdict"] = match) =>
+		[
+			{ position: 0, sound: sh, verdict: match },
+			{ position: 1, sound: ix, verdict: vowel },
+			{ position: 2, sound: p, verdict: last },
+		] satisfies SoundResult[];
+
+	it("marks the prompt when no sound swapped", () => {
+		const unclear = { type: "unclear", reason: "close-call" } as const;
+		expect(heardSide(ship, outcome({ verdict: "match", sounds: sounds(match, unclear) }))).toBe(
+			"target",
+		);
+	});
+
+	it("marks the partner when only the contrast sound swapped to the partner sound", () => {
+		const toI = { type: "swapped", heard: contrastSound("I"), heardWord: "sheep" } as const;
+		expect(
+			heardSide(
+				ship,
+				outcome({ verdict: "swapped", heard: toI.heard, heardWord: "sheep", sounds: sounds(toI) }),
+			),
+		).toBe("partner");
+	});
+
+	it("marks neither when the word came out as something else", () => {
+		const toE = { type: "swapped", heard: contrastSound("E"), heardWord: null } as const;
+		const toB = { type: "swapped", heard: contrastSound("B"), heardWord: "shib" } as const;
+		expect(
+			heardSide(
+				ship,
+				outcome({ verdict: "swapped", heard: toE.heard, heardWord: null, sounds: sounds(toE) }),
+			),
+		).toBeNull();
+		expect(heardSide(ship, outcome({ verdict: "match", sounds: sounds(match, toB) }))).toBeNull();
+		expect(heardSide(ship, outcome({ verdict: "not-heard" }))).toBeNull();
+		expect(heardSide(ship, { phase: "recording" })).toBeNull();
 	});
 });

@@ -1,5 +1,5 @@
 import { useLocation } from "@tanstack/react-router";
-import { AudioLines, BookOpen, Globe, Grid3x3, type LucideIcon } from "lucide-react";
+import { AudioLines, BookOpen, Globe, Grid3x3, type LucideIcon, Mic } from "lucide-react";
 import type { AppFlags } from "@/lib/flags";
 import {
 	IPA_CHART_CONSONANTS_PATH,
@@ -8,9 +8,10 @@ import {
 	IPA_CHART_VOWELS_PATH,
 } from "@/lib/ipa-chart-metadata";
 import { LANGUAGE_SPREAD_PATH } from "@/lib/language-spread/metadata";
+import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 
 export type Tool = {
-	id: "transcription" | "ipa-chart" | "practice" | "language-spread";
+	id: "transcription" | "ipa-chart" | "minimal-pairs" | "practice" | "language-spread";
 	href: string;
 	label: string;
 	icon: LucideIcon;
@@ -32,6 +33,13 @@ const tools: readonly Tool[] = [
 		label: "IPA Chart",
 		icon: Grid3x3,
 		match: (pathname) => pathname.startsWith(IPA_CHART_INDEX_PATH),
+	},
+	{
+		id: "minimal-pairs",
+		href: MinimalPairActivity.path,
+		label: MinimalPairActivity.name,
+		icon: Mic,
+		match: (pathname) => pathname === MinimalPairActivity.path,
 	},
 	{
 		id: "practice",
@@ -57,6 +65,7 @@ export const chartSections = [
 
 export function getTools(flags: AppFlags): readonly Tool[] {
 	return tools.filter((tool) => {
+		if (tool.id === "minimal-pairs") return flags.speech;
 		if (tool.id === "practice") return flags.practice;
 		if (tool.id === "language-spread") return flags.languageSpread;
 		return true;
