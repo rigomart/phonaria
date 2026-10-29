@@ -138,7 +138,7 @@ Draft card: "The Dene (Athabaskan) languages are centered in the far northwest o
 
 - id: `southern-athabaskan-southwest`
 - kind: branch
-- date range: "After about AD 1450, perhaps earlier (debated); the first recognizably Navajo sites date from the mid-1500s." (Second check: changed from "Sometime between about AD 1200 and 1500". The 1200s start rested only on Seymour 2012, read through a search summary and marked WEAK; Gordon's 1200-1400 is a gap in the record, not an arrival date. The retired `navajo-apache` stop's ~1200–1500 CE rested on the same weak point.)
+- date range: "Debated: proposals run from after about AD 800 (Gordon) and the 1300s (Seymour's earliest dated sites) to after about AD 1450 (Crow Canyon); the first recognizably Navajo sites date from the mid-1500s." (Second check: changed from "Sometime between about AD 1200 and 1500". No source gives a 1200s arrival: Gordon's 1200-1400 is a gap in the record, not an arrival date, and Seymour's earliest dates are from the 1300s. The sources are competing accounts, not ranked here. The retired `navajo-apache` stop's ~1200–1500 CE had the same 1200s start.)
 - era year: 1400
 - location: (36.3, -109.4) Four Corners region (Navajo country), radius ~350 km.
 - location uncertainty: High on date and route. Early sites are rare and hard to identify. The point marks where the languages are found, not where the move began.
@@ -152,10 +152,10 @@ Claims:
 1. Navajo and the Apache languages belong to the Athabaskan family, even though their nearest relatives are far to the north.
    - [Glottolog]: places Navajo (36.3, -109.4) and Western Apache (33.9, -110.1) in Athabaskan-Eyak-Tlingit.
    - [ANLC Languages]: the family extends into the desert Southwest.
-2. The date of arrival is debated. The best-sourced view puts it after about 1450, with the first clearly Navajo sites in the Mesa Verde region from the mid-1500s; one researcher argues for a much earlier arrival.
+2. The date of arrival is debated, and the sources disagree: Crow Canyon puts it after about 1450, Seymour dates the earliest ancestral Athabaskan sites to the 1300s and 1400s, and Gordon argues for a migration after 800. The first clearly Navajo sites in the Mesa Verde region are from the mid-1500s.
    - [Crow Canyon]: "Scholars disagree about the exact timing of these migrations, but it seems likely that Athabaskan speakers arrived in the Southwest after A.D. 1450 and were in the Mesa Verde region by at least the early 1500s"; the earliest recognizably Navajo sites there "date from the mid-1500s" (re-read 2026-10-29).
    - [Gordon]: a Carleton University researcher proposes a "post-800 AD southern Athapaskan migration to the American Southwest", and argues that "a large space/time gap in the period 1200-1400 AD" in the record should prompt a new look at old collections for Proto-Apachean artifacts. The gap is a reason to search, not an arrival date. One author's argument.
-   - [Seymour 2012]: the abstract (read only through a search summary) reports the earliest known ancestral Athabaskan dates in the Southwest as the 1300s to 1400s. WEAK: not read directly, and not enough on its own to move the date range earlier.
+   - [Seymour 2012] (full text, read 2026-10-29): "The earliest known dates (A.D. 1300s and 1400s) for ancestral Athabascans are found along the Rio Grande valley in the Southwest and in the bordering mountains of southern New Mexico and Arizona." She adds that the earliest dated sites are few but have "high quality direct dates". Upgraded from WEAK, which recorded only that the first pass read a search summary. Full text read 2026-10-29 at https://camnnation.org/wp-content/uploads/2024/01/Gateways-for-Athabascan-Migration-to-the-American-Southwest-Seymour-Deni-J.pdf.
 3. The migrants are hard to see in the ground, which is part of why scholars disagree.
    - [Gordon]: Dene groups often adopted local toolkits, leaving little distinctive material, and tree-ring dates are unreliable where hogans used older wood.
 4. The route is also debated: across the Plains, down the Rocky Mountain foothills, or through the Intermountain West.
@@ -169,7 +169,7 @@ Draft card: "The ancestors of the Navajo and Apache spoke Dene languages from th
 
 - id: `uto-aztecan`
 - kind: family
-- date range: "No consensus. Merrill et al. (2009) put the break-up about 6900 cal BCE (about 8,900 years ago); the older view, as Hill (2001) describes it, put the speakers about 5,000 years ago; Hill's own farming model ties the spread to 4500-3000 BP." The 5,000 end is the older view, not a current estimate alongside Merrill's. (Second check: "Roughly 9,000 to 5,000 years ago" read as one range of current estimates; the retired `uto-aztecan` stop's ~9,000–5,000 years ago had the same problem.)
+- date range: "No consensus. Merrill et al. (2009) put the break-up about 6900 cal BCE (about 8,900 years ago); the older view, as Hill (2001) describes it, put the speakers about 5,000 years ago; Hill's own farming model ties the spread to 4500-3000 BP." These are different proposals from different dates, not one range of estimates. (Second check: "Roughly 9,000 to 5,000 years ago" read as one range of current estimates; the retired `uto-aztecan` stop's ~9,000–5,000 years ago had the same problem.)
 - era year: -5000 (editorial midpoint of proposals, WEAK)
 - location: (30.7, -110.9) Glottolog's center of the family, near the Arizona-Sonora border, radius ~1500 km. Two candidate homelands to show, if the page can show both: (39.0, -117.0) west-central Great Basin and (23.0, -104.5) northwest Mexico.
 - location uncertainty: High on purpose. The homeland is the classic open question for this family. Do not pin it to a single dot.
@@ -241,16 +241,16 @@ Draft card: "Nahuatl was the language of the Mexica, who founded Tenochtitlan ar
 
 Claims:
 
-1. About 30 Mayan languages exist today, spoken by well over 5 million people in Guatemala, Mexico, Belize and Honduras. NOT RE-VERIFIED (second check): neither source's text could be re-opened.
-   - [Law 2013]: "between 29 and 31 contemporary languages spoken collectively by more than 5 million people". Not in the Crossref abstract; the full text is not open access (see "How sources were checked").
-   - [Bennett 2015]: "over 6 million people"; about 40% of Guatemalans speak a Mayan language natively on official estimates, possibly 50-60% in reality. Content not re-verified.
+1. About 30 Mayan languages exist today, spoken by well over 5 million people in Guatemala, Mexico, Belize and Honduras. Re-checked 2026-10-29 in public copies of both full texts (see the bibliography).
+   - [Law 2013]: "between 29 and 31 contemporary languages spoken collectively by more than 5 million people".
+   - [Bennett 2015]: "over 6 million people"; "about 40% of Guatemalans speak a Mayan language natively" on official census estimates, likely "50–60% or higher" in reality.
    - [Glottolog]: lists 34 entries (extinct included).
-2. The usual view puts the ancestral language in the Guatemalan highlands, near Soloma, before it split. NOT RE-VERIFIED (second check).
-   - [Law 2013] (full text, not re-opened): "by far the dominant hypothesis" places Proto-Mayan in the southern highlands of Guatemala; Kaufman (1976) narrowed it to Soloma. Law calls two of Kaufman's supporting arguments "not probative", and notes the earliest maize and pottery are lowland, which has led some to prefer a lowland homeland.
-3. The "about 2200 BCE" date is a glottochronology estimate and is contested. NOT RE-VERIFIED (second check); the retired `mayan` stop's ~2200 BCE rested on this.
-   - [Law 2013] (full text, not re-opened): Kaufman's estimates "place the initial break-up of proto-Mayan ... at 2200 B.C.", still widely used by archaeologists; a computational model gives a time depth of 6,000 to 6,500 years (Atkinson 2006), and another gives about 2,200 years ago (Holman 2011). "No published work has evaluated these hypotheses for Mayan languages specifically."
-4. Proto-Mayan speakers farmed maize, beans and squash and kept dogs and turkeys. NOT RE-VERIFIED (second check).
-   - [Law 2013] (full text, not re-opened): reconstructed vocabulary shows "well developed agricultural practices".
+2. The usual view puts the ancestral language in the Guatemalan highlands, near Soloma, before it split.
+   - [Law 2013] (full text): "by far the dominant hypothesis" places Proto-Mayan in the southern highlands of Guatemala; Kaufman (1976) narrowed it to Soloma. Of two of Kaufman's supporting arguments, Law writes: "Neither of these arguments is probative, however." Law also notes that the earliest maize and pottery are lowland, which has led some to prefer a lowland homeland.
+3. The "about 2200 BCE" date is a glottochronology estimate and is contested. The retired `mayan` stop's ~2200 BCE rested on this.
+   - [Law 2013] (full text): Kaufman's estimates "place the initial break-up of proto-Mayan ... at 2200 B.C.", still widely used by archaeologists; a computational model gives a time depth of 6,000 to 6,500 years (Atkinson 2006), and another gives about 2,200 years ago (Holman 2011). "No published work has evaluated these hypotheses for Mayan languages specifically."
+4. Proto-Mayan speakers farmed maize, beans and squash and kept dogs and turkeys.
+   - [Law 2013] (full text): reconstructed vocabulary shows that its speakers had "well developed agricultural practices, cultivated maize, beans, squash, chiles and other plants and had domesticated dogs and turkeys".
 
 Draft card: "Mayan languages grew from a single ancestor that most scholars place in the highlands of Guatemala several thousand years ago. About 30 survive today, spoken by millions of people. The exact date is debated."
 
@@ -275,7 +275,7 @@ Claims:
 2. During the Classic period (AD 250 to 900), the lowland Maya used a fully developed hieroglyphic writing system.
    - [Kelly 2017]: "During the Classic period (AD 250-900), the Maya ... institutionalized a hieroglyphic writing system."
 3. The language written in most Classic inscriptions is a Ch'olan language, not the everyday speech of every city.
-   - [Law 2013] (full text, not re-opened; NOT RE-VERIFIED): about 20,000 inscriptions survive; "the vast majority" are written in a Ch'olan language, and the language of the hieroglyphs was a single unified one even though the Maya spoke many languages.
+   - [Law 2013] (full text): "some 20,000 terse hieroglyphic inscriptions" survive; "the vast majority" are written in a Ch'olan language, and the language of the hieroglyphs was a single unified one even though the Maya spoke many languages.
    - [Kelly 2017]: the glyphs record a largely uniform written language despite the spoken variety.
 
 Draft card: "Classic Maya kings carved texts in a hieroglyphic script between about AD 250 and 900. Most of those texts are written in a Ch'olan language, even though the Maya spoke many languages."
@@ -475,8 +475,8 @@ Draft card: "Arawakan speakers moved from northern South America into the Caribb
 
 ## How sources were checked
 
-- Abstracts of journal articles were checked against Crossref and Europe PMC records, or against the publisher page, when marked as read. Texts read in full (Law 2013, Bennett 2015, Adelaar 2017, Heggarty and Beresford-Jones 2010, Gulløv and McGhee 2006, Kelly 2017, INEI 2017, Gerardi 2023, Schroeder 2018) were read in the text. Correction (second check): Law 2013 is not open access (Unpaywall: is_oa false; Wiley returned 403 on 2026-10-29), so how its full text was read in the first pass is unknown. The Mayan speaker count, "2200 B.C.", Soloma, "not probative" and the 20,000-inscriptions claims are not in its Crossref abstract and are NOT RE-VERIFIED. Bennett 2015 has an open submitted version on eScholarship, but it did not download in the second check; its content is not re-verified either.
-- Not opened directly (paywall or blocked): Science and Nature article pages (abstracts checked via Crossref/Europe PMC), Campbell 2011 and Seymour 2012 (bibliographic details confirmed, argument relayed from other sources), INEGI tables, Ethnologue, Britannica. Hill 2001: abstract read via Crossref in the second check; full text not read.
+- Abstracts of journal articles were checked against Crossref and Europe PMC records, or against the publisher page, when marked as read. Texts read in full (Law 2013, Bennett 2015, Adelaar 2017, Heggarty and Beresford-Jones 2010, Gulløv and McGhee 2006, Kelly 2017, INEI 2017, Gerardi 2023, Schroeder 2018) were read in the text. Second check: Law 2013 is not open access at Wiley (Unpaywall: is_oa false), but a public copy of the full text is hosted at the University of Texas, and Bennett 2015's author copy at UC Santa Cruz; both were read on 2026-10-29 and support the Mayan claims (links in the bibliography).
+- Not opened directly (paywall or blocked): Science and Nature article pages (abstracts checked via Crossref/Europe PMC), Campbell 2011 (bibliographic details confirmed, argument relayed from other sources). Seymour 2012 was read in full in the second check, INEGI tables, Ethnologue, Britannica. Hill 2001: abstract read via Crossref in the second check; full text not read.
 - Glottolog's website was not reachable. Counts and coordinates come from the Glottolog CLDF data on GitHub, parsed directly. Family counts: 83 families with an American macro-area, plus Eskimo-Aleut (which Glottolog tags as Eurasia and North America), giving about 84. Isolates: 31 in North America and 64 in South America.
 
 ## Bibliography
@@ -518,8 +518,8 @@ Keys are in the order they first appear.
 - [NatGeo Education] National Geographic Education. "Aztec Civilization." https://education.nationalgeographic.org/resource/aztec-civilization/. Supports: archaeologists date the founding to 1325; 1428 alliance.
 - [Jordan] Jordan, David K. "Aztec Chronology." University of California San Diego. https://pages.ucsd.edu/~dkjordan/arch/aztecchron.html. Supports: 1325 and 1428. The page names no author; the attribution comes from the site address, so treat as a course page.
 - [Indigenous Mexico 2020] Indigenous Mexico. "Ethnic identity in the 2020 Mexican census." http://www.indigenousmexico.org/articles/ethnic-identity-in-the-2020-mexican-census. Supports: 1,651,958 Nahuatl speakers (INEGI 2020 tables, relayed). WEAK.
-- [Law 2013] Law, Danny. "Mayan Historical Linguistics in a New Age." Language and Linguistics Compass 7(3), 141-156 (2013). https://doi.org/10.1111/lnc3.12012. Supports (first pass; NOT RE-VERIFIED): number of languages and speakers; homeland debate; dating debate; hieroglyphic corpus in Ch'olan. Not open access (Unpaywall is_oa false; Wiley 403); the Crossref abstract, re-read 2026-10-29, contains none of these claims.
-- [Bennett 2015] Bennett, Ryan; Coon, Jessica; Henderson, Robert. "Introduction to Mayan Linguistics." Language and Linguistics Compass 10(10), 455-468 (online 8 December 2015; print 2016). https://doi.org/10.1111/lnc3.12159 (submitted version: https://escholarship.org/uc/item/9cw9320j). Supports (first pass; content NOT RE-VERIFIED): over 6 million speakers; Guatemala percentages.
+- [Law 2013] Law, Danny. "Mayan Historical Linguistics in a New Age." Language and Linguistics Compass 7(3), 141-156 (2013). https://doi.org/10.1111/lnc3.12012. Full text read 2026-10-29 at https://www.cs.utexas.edu/~tandy/law-paper.pdf (not open access at Wiley). Supports: number of languages and speakers; homeland debate; dating debate; agricultural vocabulary; hieroglyphic corpus in Ch'olan.
+- [Bennett 2015] Bennett, Ryan; Coon, Jessica; Henderson, Robert. "Introduction to Mayan Linguistics." Language and Linguistics Compass 10(10), 455-468 (online 8 December 2015; print 2016). https://doi.org/10.1111/lnc3.12159 (submitted version: https://escholarship.org/uc/item/9cw9320j). Author copy read 2026-10-29 at https://people.ucsc.edu/~rbennett/resources/papers/pdfs/Bennett%20et%20al.%20%282016%29%20-%20Introduction%20to%20Mayan%20linguistics.pdf. Supports: over 6 million speakers; Guatemala percentages.
 - [Saturno 2006] Saturno, William A.; Stuart, David; Beltrán, Boris. "Early Maya Writing at San Bartolo, Guatemala." Science 311, 1281-1283 (2006). https://doi.org/10.1126/science.1121745. Supports: writing dated 200-300 BCE.
 - [Stuart 2022] Stuart, David; Hurst, Heather; Beltrán, Boris; Saturno, William. "An early Maya calendar record from San Bartolo, Guatemala." Science Advances 8 (2022). https://doi.org/10.1126/sciadv.abl9290. Supports: fragments 300-200 BCE; earliest known Maya calendar record.
 - [Kelly 2017] Kelly, Mary Kate. "The Scribe's Hand Betrays His Tongue: Diglossia Among the Ancient Maya." Proceedings of the Symposium About Language and Society, Austin (SALSA) 2017. https://asol.ling.utexas.edu/salsa/proceedings/2017/Kelly.pdf. Supports: Classic period AD 250-900; hieroglyphic system institutionalized.

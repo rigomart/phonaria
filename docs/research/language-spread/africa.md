@@ -146,7 +146,7 @@ Draft card text: "Within a few thousand years of leaving Africa, people reached 
 
 - id: `afroasiatic`
 - kind: family
-- date range: "roughly 10,000-11,000 years ago or more for the common ancestor, with no agreed figure" (Militarev 2002: break-up in the ninth millennium BC; Blažek: about -10,000). Second check: narrowed from "10,000-15,000"; the 15,000 end came from Ehret's figure, which claim 4 below marks WEAK and not used.
+- date range: "roughly 10,000-12,000 years ago for the common ancestor, with no agreed figure" (Militarev 2002: break-up in the ninth millennium BC, about 10,000-11,000 years ago; Blažek: about -10,000, about 12,000 years ago). Second check: narrowed from "10,000-15,000"; the 15,000 end came from Ehret's figure, which claim 4 below marks WEAK and not used.
 - era year: -10000
 - location: (18.0, 31.0), radius ~1200 km: the Nile valley between Upper Egypt and the Sudan, with the eastern Sahara and Horn to the south and east. Alternative minority placement: the Levant (32.0, 35.5).
 - location uncertainty: High. The homeland is genuinely debated (see split note). The Nile marker is a compromise inside the majority view, not a finding.
