@@ -28,7 +28,7 @@ Reused from [western-eurasia.md](western-eurasia.md), "Indo-European: where did 
 
 - id: `indo-european`
 - kind: family
-- date shown: ~8,000–6,000 years ago (`{ yearsAgo: 8000, to: 6000 }`)
+- date shown: ~9,500–6,000 years ago (`{ yearsAgo: 9500, to: 6000 }`)
 - place: `[42, 47]`, `areaKm: 800`. The steppe north of the Black and Caspian Seas, the leading view. The wide area is there because the location is the open question.
 - location uncertainty: high; see the source note.
 
@@ -87,7 +87,7 @@ Claims:
 4. The earliest extensive English texts in contemporary copies are Latin-English glossaries from around 700. Most Old English documents come from the late 800s on. [oed-old-english] FETCHED
 5. Writing long texts in the Roman alphabet came with the conversion to Christianity, which began in the late 500s; before that, English was written only in short runic inscriptions. [oed-old-english] FETCHED (not used in the copy)
 
-Where scholars split: whether the migration was many families or a small elite. Gretzinger 2022 argues for many; earlier studies argued for fewer (see western-eurasia.md). The OED calls the fate of the Britons "a matter of much debate". The card says "still debated" and doesn't pick a side.
+Where scholars split: whether the migration was many families or a small elite. Gretzinger 2022 argues for many; earlier studies argued for fewer (see western-eurasia.md). The OED calls the fate of the Britons "a matter of much debate". The 2026-10-17 card said "still debated"; since the 2026-10-28 rewrite it leaves the question out. Neither picks a side.
 
 Dropped:
 
@@ -187,7 +187,7 @@ Claims:
 6. Caxton wrote that English had changed since he was born. In the preface to the Eneydos, one of his last works, he told of merchants on the Thames who asked a woman in Kent for "egges"; she said she spoke no French, and understood only when another asked for "eyren". "What should a man in these days now write, eggs or eyren?" [bl-caxton-english] FETCHED. "Egg" is from Old Norse. [nottingham-danelaw] FETCHED
 7. Printers from the late 1400s printed the London English that had already become a kind of standard in manuscripts. English spelling became gradually regular between 1475 and about 1630, and printed English looks largely modern after the mid-1600s. [oed-early-modern] FETCHED
 
-Where scholars split: how standard written English formed. The OED says "Chancery English" (the usage of official documents) fed into printers' practice, "but this is only one aspect of a very complex story, which is still subject to considerable uncertainty and debate". The BL is cautious about Caxton's own part. The copy says printing "helped spread" London English and that spelling still varied.
+Where scholars split: how standard written English formed. The OED says "Chancery English" (the usage of official documents) fed into printers' practice, "but this is only one aspect of a very complex story, which is still subject to considerable uncertainty and debate". The BL is cautious about Caxton's own part. The copy says printed books "used London English, which was becoming the standard" and that spelling still varied.
 
 Dropped:
 
@@ -208,8 +208,8 @@ The most important step for Phonaria learners: it explains why English vowel let
 
 - id: `great-vowel-shift`
 - name: "The Great Vowel Shift"
-- kind: language. The types have no kind for a sound change; `language` is the nearest.
-- date shown: ~1400–1700 CE (`{ ce: 1400, to: 1700 }`). Harvard's Chaucer site gives the 12th to the 18th century "but with its main effects in the fifteenth and early sixteenth centuries"; the OED shows spelling falling out of step with pronunciation "by the sixteenth century". The range shows the main period, not the earliest proposed start.
+- kind: change. The stop kind for a change in the language rather than a place it reached.
+- date shown: ~1400–1600 CE (`{ ce: 1400, to: 1600 }`). Harvard's Chaucer site gives the 12th to the 18th century "but with its main effects in the fifteenth and early sixteenth centuries"; the OED shows spelling falling out of step with pronunciation "by the sixteenth century". The range shows Harvard's main period, not the earliest proposed start or the latest effects. Until 2026-10-29 it was ~1400–1700, which went past that main period.
 - place: `[-1.2, 52.3]`, `areaKm: 250`. England, with the soft area over the Midlands and south. It happened across England, unevenly.
 - where (draft): "across England; northern dialects changed differently"
 - location uncertainty: medium. This is a change in speech, not a movement of people, so the area just marks where it happened. The standard language followed the south and the London area; northern dialects had their own outcomes [stenbrenden-2015] [prichard-2014].
@@ -265,7 +265,7 @@ Where scholars split: why American English stayed rhotic. The usual explanation 
 Dropped:
 
 - "Americans speak like Shakespeare" and similar: popular, not sourced, and misleading.
-- Webster "invented" American spelling: Merriam-Webster says he presented it as reasserting older rules, and the spellings were not all new. The copy says he made them standard.
+- Webster "invented" American spelling: Merriam-Webster says he presented it as reasserting older rules, and the spellings were not all new. The copy says his dictionary "helped make some of his spellings, like color, the standard", since many of his proposals didn't catch on.
 - Numbers of entries in Webster's dictionaries (65,000 or 70,000): sources disagree, and the copy doesn't need them.
 - The spread of r-pronunciation in the US after the Second World War: search summaries and Wikipedia only.
 
@@ -302,11 +302,13 @@ Dropped:
 
 Draft description (219 chars): "The First Fleet of 11 ships set up a convict settlement at Sydney Cove on 26 January 1788, the start of European colonisation of Australia. It changed forever the lives of the Eora people, the land's traditional owners."
 
-Sources on the page: nma-first-fleet.
+Sources on the page: nma-first-fleet, ethnologue-most-spoken (English spread with the British Empire).
 
 ---
 
 ## Steps
+
+The drafts below predate the 2026-10-17 review and the 2026-10-28 rewrite; `story.ts` holds the current copy.
 
 Eleven steps. Copy lengths are card text only, both paragraphs together. Card placement assumes a 16:10 screen with the camera region centred; fractions are of screen width (x, from the left) and height (y, from the top), estimated from the bounds, which is approximate on a globe.
 
@@ -486,16 +488,16 @@ Added on 2026-10-28 so a reader can see English change, not only read about it. 
 
 | Sample | Card | Line as printed | Edition and check |
 | --- | --- | --- | --- |
-| `old-english` | `old-english` | Fæder úre þu þe eart on heofonum; Si þin nama gehalgod | Skeat 1887, p. 54, col. 1 (Corpus Christi College Cambridge MS 140). Scan viewed. Skeat prints "heofonum ;" with a space and marks the expanded abbreviation in italics; the page drops both. The acute on úre is the manuscript's. Skeat gives no date; Cook puts the Old English versions "not earlier than 950 to 1000 A.D.", so the page says "about 1000 CE". |
-| `middle-english` | `norman-conquest` | Oure fadir that art in heuenes, halewid be thi name | Forshall & Madden 1850, vol. 4, p. 14, the later version (the earlier version reads "halwid"). Scan viewed. The editors date the later version by its General Prologue, summer 1388, so the page says "about 1390". |
+| `old-english` | `old-english` | Fæder úre þu þe eart on heofonum; Si þin nama gehalgod | Skeat 1887, p. 54, col. 1 (Corpus Christi College Cambridge MS 140, usually dated to the 11th century; Ker: s. xi¹). Scan viewed. Skeat prints "heofonum ;" with a space and marks the expanded abbreviation in italics; the page drops both. The acute on úre is the manuscript's. Skeat gives no date; Cook puts the Old English versions "not earlier than 950 to 1000 A.D.", so the page says "about 1000 CE". |
+| `middle-english` | `norman-conquest` | Oure fadir that art in heuenes, halewid be thi name | Forshall & Madden 1850, vol. 4, p. 14, the later version (the earlier version reads "halwid"). Scan viewed. The editors date the later version from its General Prologue, about 1388; its dating is loose, about 1388–95, so the page says "about 1390". |
 | `tyndale` | `printing` | O oure father which arte in heven/ halowed be thy name. | Fry's 1862 facsimile of Tyndale's 1526 New Testament, leaf "Fo. vij" verso. Scan viewed; Offor's 1836 reprint (Bagster) prints the same line. The slash is the original's virgule. Fry calls it "The first New Testament printed in the English language". |
-| `king-james` | none, comparison only | Our father which art in heauen, hallowed be thy name. | King James Bible, 1611, Robert Barker (University of Pennsylvania copy, BS185 1611 .L65). Scan viewed. Caveat: a public upload to an Internet Archive community collection, not Penn's own; the He/She issue was not checked, and the verse is not expected to differ. |
+| `king-james` | none, comparison only | Our father which art in heauen, hallowed be thy name. | King James Bible, 1611, Robert Barker (University of Pennsylvania Libraries, Kislak Center, Folio BS185 1611 .L65), in Penn's own digital collection, image 1224. Scan viewed on 2026-10-29 (until then the page linked a community upload of this copy to the Internet Archive). Penn's catalogue calls it the "Great HE" edition, from Ruth 3:15 "and he went into the citie". |
 | `today` | `today` | Our Father in heaven, may your name be kept holy. | The page's own plain-English meaning, not a quoted translation, so it has no source. |
 
 Judgment calls:
 
 - **A religious text.** It is the only text with versions in every stage, and it is the standard comparison. The section introduces it plainly as "a Christian prayer", without comment.
-- **A caption and a comparison.** On its step, each version floats over the map as a caption under the era dial, on the side the card leaves free, with today's word under each old word. The camera frames the globe below it. All versions also appear together after the story, with a hint of a few words ("þ = th", "heuenes = heavens") and their sources. The King James line is shown only there, since no step covers 1611 in England. The design was chosen from prototypes: a separate card, a tilted folio page, a pull quote, an inverted word-by-word card and the caption, then the caption with three ways to show today's words.
+- **A caption and a comparison.** On its step, each version floats over the map as a caption under the era dial, on the side the card leaves free, with today's word under each old word. The camera frames the globe below it. All versions also appear together after the story, with a hint of a few words ("þ = th", "heuenes = heavens") and their sources. The King James line is shown only there: each step shows one line, the steps around 1611 are about the sound change and America, and Tyndale already stands for printing. The design was chosen from prototypes: a separate card, a tilted folio page, a pull quote, an inverted word-by-word card and the caption, then the caption with three ways to show today's words.
 - **Today's words are the page's own glosses**, one modern word per old word, in the old order (`fæder úre` over "father our"), so a reader sees both the old words and the old word order. They are not taken from a source: they are standard and checked against the meaning, and a test keeps one gloss per word. `thou`/`thy` forms are glossed "you"/"your", and "which" as "who".
 - **Dates.** A version is written later than its step's date: the Old English step is ~450 CE but the line is from about 1000. The caption's label gives its own date.
 - **Left out:** audio of the old lines (no sourced reconstructions), the Lindisfarne gloss and other Old English dialect versions, and the rest of the prayer.
@@ -538,7 +540,7 @@ Reused ids keep the citation and URL already in `story.ts`. New ids are marked "
 - `stenbrenden-2016` (new). Stenbrenden, Gjertrud Flermoen. 2016. Long-Vowel Shifts in English, c. 1050–1700: Evidence from Spelling. Cambridge University Press. https://doi.org/10.1017/CBO9781107295469. ABSTRACT (publisher description via Crossref and Cambridge Core). Supports: the shift studied together with earlier long-vowel changes usually treated as separate. Notes only; the 2015 chapter carries the specific dates.
 - `prichard-2014` (new). Prichard, Hilary. 2014. "Northern dialect evidence for the chronology of the Great Vowel Shift." Journal of Linguistic Geography 2(2): 87–102. https://doi.org/10.1017/jlg.2014.9. ABSTRACT (via Crossref). Supports: dialect outcomes once used against the shift's unity are explained by dialect contact; push-chain order.
 - `nottingham-danelaw` (new). University of Nottingham Manuscripts and Special Collections. "Danelaw Saga: Language and Runes" (exhibition panel, PDF). https://www.nottingham.ac.uk/manuscriptsandspecialcollections/documents/exhibitions/danelaw-saga/ds-language-and-runes.pdf. FETCHED. Supports: Old Norse a North Germanic language; close kinship and possible mutual understanding; skirt, sky, window and egg from Old Norse; Swarkestone.
-- `english-heritage-hastings` (new). English Heritage. "History of 1066 Battle of Hastings, Abbey and Battlefield." https://www.english-heritage.org.uk/visit/places/1066-battle-of-hastings-abbey-and-battlefield/history-and-stories/history/. FETCHED. Supports: 14 October 1066; William, Duke of Normandy; landing at Pevensey; crowned Christmas Day 1066.
+- `english-heritage-hastings` (new). English Heritage. "History of Battle Abbey and Battlefield." https://www.english-heritage.org.uk/visit/places/1066-battle-of-hastings-abbey-and-battlefield/history-and-stories/history/. FETCHED. Supports: 14 October 1066; William, Duke of Normandy; landing at Pevensey; crowned Christmas Day 1066.
 - `bl-caxton-life` (new). British Library. "Caxton's Chaucer: Caxton's life." Read at https://web.archive.org/web/20201202183431/https://www.bl.uk/treasures/caxton/caxtonslife.html. FETCHED. Supports: born in Kent; Cologne; first book printed in English around 1473, probably in Bruges; returned late 1475 or early 1476; first English press at Westminster; Canterbury Tales probably his first substantial book in England; died 1492.
 - `bl-caxton-westminster` (new). British Library. "Caxton's Chaucer: From Flanders to Westminster." Read at https://web.archive.org/web/20211206022303/https://www.bl.uk/treasures/caxton/flanderswest.html. FETCHED. Supports: first record of rent for a Westminster shop on 30 September 1476. Notes only; the page cites bl-caxton-life.
 - `bl-caxton-canterbury` (new). British Library. "Caxton's Chaucer: The Canterbury Tales." Read at https://web.archive.org/web/20210126182155/https://www.bl.uk/treasures/caxton/canterbury.html. FETCHED. Supports: first edition undated, dated to 1476 from type and paper; second edition probably 1483. Notes only.
@@ -553,15 +555,15 @@ Reused ids keep the citation and URL already in `story.ts`. New ids are marked "
 - `bl-sounds-familiar` (new). British Library. "Sounds Familiar? Phonological variation" (Rhoticity). Read at https://web.archive.org/web/20151224231447/http://www.bl.uk/learning/langlit/sounds/regional-voices/phonological-variation/. FETCHED. Supports: definition of rhotic; once a feature throughout the UK; now restricted in England to the West Country and part of Lancashire; kept in most Scottish and Irish accents.
 - `nma-first-fleet` (reused). National Museum of Australia. "The First Fleet arrives at Sydney Cove." https://digital-classroom.nma.gov.au/defining-moments/first-fleet-arrives-sydney-cove; read at https://web.archive.org/web/20260103052530/https://digital-classroom.nma.gov.au/defining-moments/first-fleet-arrives-sydney-cove. FETCHED (upgraded from SEARCH-CONFIRMED in modern.md). Supports: 11 ships under Arthur Phillip; Sydney Cove on 26 January 1788; start of European colonisation; the Eora people; transportation until 1868.
 - `ethnologue-most-spoken` (reused). Ethnologue. "What is the most spoken language?" https://www.ethnologue.com/insights/most-spoken-language/; read at https://web.archive.org/web/20260314040856/https://www.ethnologue.com/insights/most-spoken-language/. FETCHED. Supports: English largest counting non-native speakers, Mandarin by native speakers; by native speakers Mandarin, Spanish, English, Hindi; the British Empire and American culture; 188 countries, many in Africa; more non-native speakers.
-- `statista-2026` (new). Statista Research Department. "The most spoken languages worldwide in 2026." https://www.statista.com/statistics/266808/the-most-spoken-languages-worldwide/; read at https://web.archive.org/web/20261009091746/https://www.statista.com/statistics/266808/the-most-spoken-languages-worldwide/. FETCHED. Supports: around 1.49 billion people speak English natively or as a second language in 2026. Statista repackages Ethnologue data; it is used because Ethnologue's figure is behind a paywall.
+- `statista-2026` (new). Statista Research Department. "The most spoken languages worldwide in 2026." https://www.statista.com/statistics/266808/the-most-spoken-languages-worldwide/; read at https://web.archive.org/web/20261009091746/https://www.statista.com/statistics/266808/the-most-spoken-languages-worldwide/. FETCHED. Supports: around 1.49 billion people speak English natively or as a second language in 2026. Whether Statista's figure comes from Ethnologue couldn't be checked (see the review in README.md), so the page cites it only as "Statista, 2026". It is used because Ethnologue's own figure is behind a paywall.
 - `cervantes-2025` (reused, notes only). Instituto Cervantes 2025, as recorded in modern.md. Supports the "most learned it as an extra language" inference (about 520 million native Spanish speakers).
 - `haak-2015`, `anthony-ringe-2015`, `bouckaert-2012`, `heggarty-2023`, `lazaridis-2025` (reused). See western-eurasia.md. ABSTRACT (Lazaridis full text). Support the `indo-european` stop unchanged.
 - `faarlund-2008`, `ringe-taylor-2014`, `gretzinger-2022` (reused). See western-eurasia.md. ABSTRACT; Gretzinger re-read for this note. Support the `germanic` and `old-english` stops.
 
 - `cook-1891` (new). Cook, Albert S. 1891. "The Evolution of the Lord's Prayer in English." American Journal of Philology 12(1): 59–66. Read at https://archive.org/details/jstor-287989 (JSTOR Early Journal Content). FETCHED (OCR full text). Supports: tracing the Lord's Prayer through the stages of English, from the West Saxon version (Corpus MS 140, as printed by Skeat) through Wyclif, Tyndale and later Bibles; Old English versions not earlier than 950 to 1000.
-- `skeat-1887` (new). Skeat, Walter W., ed. 1887. The Gospel according to Saint Matthew in Anglo-Saxon, Northumbrian, and Old Mercian Versions. Cambridge University Press. Read at https://objects.library.uu.nl/reader/1874-374575 (Utrecht University Library, image 74, p. 54). SCAN VIEWED. Supports: the Old English sample line.
-- `forshall-madden-1850` (new). Forshall, Josiah and Madden, Frederic, eds. 1850. The Holy Bible … in the Earliest English Versions made from the Latin Vulgate by John Wycliffe and his Followers, vol. 4. Oxford University Press. Read at https://archive.org/details/holybiblecontain04wycluoft/page/n21 (p. 14); dates from vol. 1, https://archive.org/details/holybiblecontain01wycluoft. SCAN VIEWED (vol. 4), OCR (vol. 1 preface). Supports: the Middle English sample line, later version, about 1388.
+- `skeat-1887` (new). Skeat, Walter W., ed. 1887. The Gospel according to Saint Matthew in Anglo-Saxon, Northumbrian, and Old Mercian Versions. Cambridge University Press. Read at https://objects.library.uu.nl/reader/1874-374575?page=74 (Utrecht University Library, image 74, p. 54; the `page` parameter opens the reader on that image). SCAN VIEWED. Supports: the Old English sample line.
+- `forshall-madden-1850` (new). Forshall, Josiah and Madden, Frederic, eds. 1850. The Holy Bible … in the Earliest English Versions made from the Latin Vulgate by John Wycliffe and his Followers, vol. 4. Oxford University Press. Read at https://archive.org/details/holybiblecontain04wycluoft/page/n21 (p. 14); dates from vol. 1, https://archive.org/details/holybiblecontain01wycluoft. SCAN VIEWED (vol. 4), OCR (vol. 1 preface). Supports: the Middle English sample line, later version, about 1388–95.
 - `tyndale-1526` (new). Fry, Francis, ed. 1862. The First New Testament printed in the English Language (1525 or 1526) … Reproduced in Facsimile. Bristol. Read at https://archive.org/details/firstnewtestame00frygoog/page/n50. SCAN VIEWED; cross-checked with Offor's 1836 reprint, https://archive.org/details/newtestamentofou00tynd/page/n122. Supports: the Tyndale sample line and "the first printed English New Testament".
-- `king-james-1611` (new). The Holy Bible, Conteyning the Old Testament, and the New. London: Robert Barker, 1611. University of Pennsylvania copy, read at https://archive.org/details/Bible1611/page/n1225. SCAN VIEWED; community upload, see the caveat above. Supports: the King James sample line.
+- `king-james-1611` (new). The Holy Bible, Conteyning the Old Testament, and the New. London: Robert Barker, 1611. University of Pennsylvania Libraries, Folio BS185 1611 .L65 (the "Great HE" edition). Read at https://digitalcollections.library.upenn.edu/items/27ecd163-8bae-410b-afbc-8d7c87a3cedc?asset-id=baf5356f-4bc6-4e2f-83cd-6bda12db195f (image 1224, Matthew 6:9 in the right column; the `asset-id` parameter opens the viewer on that image). SCAN VIEWED. Supports: the King James sample line.
 
 Not used: `ethnologue-2026`, `owid-ethnologue-2026` and `ethnologue-how-many` (world language counts, which this story no longer needs), and `nma-first-fleet`'s companion "Convict cargo" page.

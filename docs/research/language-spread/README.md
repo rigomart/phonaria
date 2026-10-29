@@ -17,7 +17,6 @@ For the world story, research was split by region among five research agents, ea
 | [modern.md](modern.md) | Colonial and modern spread, creoles, and the world's languages today |
 | [english.md](english.md) | The story of English: Germanic settlers, Old Norse, the Norman Conquest, printing, the Great Vowel Shift, American and Australian English, and English today |
 | [verification.md](verification.md) | Browser verification runs, performance checks and the independent code review |
-| [handoff.md](handoff.md) | Current state, file map and caveats for whoever picks the page up next |
 
 The page was written from these notes. A claim was kept only when the notes show it in a reputable source and it does not rest on a single weak one. Copy uses the widely accepted view, and where scholars are closely split, the description says so. Dates are shown as approximate, and places as general areas.
 
@@ -46,7 +45,7 @@ The English story was researched on 2026-10-17 by one research agent to the same
 Judgment calls for this story:
 
 - **The Great Vowel Shift** gets its own kind of pin, "Change in the language", since it is a change in how English sounds rather than a place it reached. The card uses plain respellings ("meen", "hoos"); the pin's details add IPA. It comes before the printing step so the steps stay in time order, and its card points ahead to printing as the reason spelling stopped following the sounds.
-- **Dating the shift.** The card gives about 1400 to 1700, the main period in Harvard's account. The pin says some scholars trace the first changes to the 1200s and see several linked changes rather than one (Stenbrenden 2015; Prichard 2014 argues for its unity).
+- **Dating the shift.** The card and pin give about 1400 to 1600, Harvard's main period (the 15th and early 16th centuries). The pin says some experts see several connected changes, starting in the 1200s (Stenbrenden 2015), and others one shift (Prichard 2014).
 - **The fate of the Britons** after the Anglo-Saxon settlement is "still debated", as the OED puts it. The card doesn't pick between many migrant families and a small elite.
 - **The r after vowels.** The America card says American English kept it, as the accent Phonaria teaches does, and that southern England later dropped it. It avoids saying why, which Trudgill and Gordon (2006) dispute.
 - **"Most speakers learned it as an extra language"** rests on the British Council's report of David Crystal's estimate, one native speaker to every five non-native speakers, with Statista's 2026 total of about 1.49 billion.
@@ -66,7 +65,7 @@ The tables were generated from `story.ts`; the story tests check that every id a
 | `old-english` | ~450 CE | `old-english` | bottom-left | via its stops |
 | `vikings` | ~800 CE | `old-norse` | bottom-right | via its stops |
 | `norman-conquest` | ~1066 CE | `norman-french` | top-right | via its stops |
-| `great-vowel-shift` | ~1400–1700 CE | `great-vowel-shift` | center-right | via its stops |
+| `great-vowel-shift` | ~1400–1600 CE | `great-vowel-shift` | center-right | via its stops |
 | `printing` | ~1476 CE | `london-english` | top-left | oed-middle-english, oed-early-modern |
 | `america` | ~1607 CE | `american-english` | bottom-left | npg-webster, merriam-webster-1828 |
 | `around-the-world` | ~1788 CE | `australian-english` | top-right | ethnologue-most-spoken |
@@ -80,9 +79,9 @@ The tables were generated from `story.ts`; the story tests check that every id a
 | `old-norse` | language | ~800 CE | [english.md](english.md) | oed-middle-english, nottingham-danelaw |
 | `norman-french` | language | ~1066 CE | [english.md](english.md) | english-heritage-hastings, oed-middle-english |
 | `london-english` | language | ~1476 CE | [english.md](english.md) | bl-caxton-life, bl-caxton-english, westminster-abbey-caxton, nottingham-danelaw |
-| `great-vowel-shift` | change | ~1400–1700 CE | [english.md](english.md) | harvard-gvs, oed-early-modern, stenbrenden-2015, prichard-2014 |
+| `great-vowel-shift` | change | ~1400–1600 CE | [english.md](english.md) | harvard-gvs, oed-early-modern, stenbrenden-2015, prichard-2014 |
 | `american-english` | language | ~1607 CE | [english.md](english.md) | nps-jamestown, npg-webster, trudgill-gordon-2006, bl-sounds-familiar |
-| `australian-english` | language | ~1788 CE | [english.md](english.md) | nma-first-fleet |
+| `australian-english` | language | ~1788 CE | [english.md](english.md) | nma-first-fleet, ethnologue-most-spoken |
 
 ### Independent review of the English story
 
@@ -98,6 +97,32 @@ On 2026-10-17 a model from another provider (Codex, GPT-6.1-Sol) checked the Eng
 | `london-english` | "egges, a Norse word" wasn't backed by the stop's sources | Added nottingham-danelaw |
 | `today` | Ethnologue's "more non-native speakers" compares English with Mandarin; it doesn't say most English speakers are non-native | Added the British Council's report of David Crystal's estimate: "one native speaker to every five non-native speakers" (read at https://web.archive.org/web/20260115214447/https://www.britishcouncil.org/voices-magazine/whats-future-english) |
 | `statista-2026` | That Statista's figure comes from Ethnologue couldn't be checked | Citation now reads "Statista, 2026" |
+
+### Second check of the English story (2026-10-29)
+
+On 2026-10-29 five Claude agents checked the live copy, the sources and the sample sentence against each other, after the 2026-10-28 plain-language rewrite. They found no wrong dates, numbers, places or links, and all four old sample lines matched their editions letter for letter. What they did find was copy the rewrite had made stronger than its sources, and stale notes. The owner approved every change:
+
+| Where | Finding | Response |
+| --- | --- | --- |
+| `old-english` | "The oldest long texts in it were written around 700 CE": the OED says the earliest extensive sources in contemporary copies "are Latin-English glossaries from around the year 700" | Now "Its oldest texts include word lists with Latin, from about 700 CE." ("from today's northern Germany" keeps it within the length limit). The Codex review noted that "its oldest writing" would leave out earlier inscriptions, which the OED sets apart from its "earliest extensive sources" |
+| `london-english`, `printing` | "His books spread the English of the London area" and "Printed books spread London English": the BL says his books "helped consolidate a growing perception" of a London standard. In Caxton's story the woman in Kent understood "eyren"; it wasn't "the only word" she knew | Now "His books used London English, which was becoming the standard" (card: "Printed books used London English, which was becoming the standard"), "the word a woman in Kent understood", and "English was changing, he wrote." A first fix, "helped make London English the standard", still claimed more than the BL, as the Codex review found |
+| `american-english`, `america` | "Made his spellings, like color, the standard": Merriam-Webster says his ideas "contributed to" color and theater, and many of his proposals (tung, lether, fether) didn't catch on | Now "helped make some of his spellings, like color, the standard" |
+| `great-vowel-shift` | ~1400–1700 went past Harvard's main period, "the fifteenth and early sixteenth centuries" | Stop and step now ~1400–1600. Since Harvard's whole span runs from the 12th to the 18th century, the card says the vowels changed "mostly between about 1400 and 1600", as the Codex review suggested |
+| `great-vowel-shift` | The rewrite dropped "stressed" from the card, which the 2026-10-17 review had added | Card now says "the long stressed vowels" |
+| `great-vowel-shift` | "Some experts say it started in the 1200s, as several connected changes, not one" left out the view the pin also cites: Prichard 2014 argues it was one shift | Now "Some experts trace the first changes to the 1200s. Experts disagree on how they were linked." A first fix set "several connected changes" against "one shift", but the Codex review pointed out that Prichard's single shift is itself a chain of connected changes |
+| `indo-european` | The pin said "as most experts think" where the card says "many", and the rewrite dropped the judgment call above that newer work on both sides points toward the Caucasus | `where` says "many"; the description ends "Newer work on both sides points toward the Caucasus." (Heggarty 2023: south of the Caucasus; Lazaridis 2025: a Caucasus–lower Volga population) |
+| `old-norse` | "sky, egg, skin, take and want": the Nottingham panel names "skirt, sky, window, and egg"; the OED lists skin, take and want only among the Ormulum's "certain or likely" Norse words | Now "sky, egg, skirt and window" |
+| `norman-french` | "For a long time" said more than the card's "For years" | Now "For years after" |
+| `australian-english` | The pin, named English in Australia, never said English arrived | Adds "and English came with it", citing ethnologue-most-spoken (English spread with the British Empire) |
+| `english-heritage-hastings` | The title wasn't the page's own | Now "History of Battle Abbey and Battlefield" |
+| `british-council-future-english` | The citation had no year and didn't say the figure is an estimate | Now "British Council, 2014 (David Crystal's estimate)"; the article is by Keira Ives-Keeler, 13 June 2014 |
+| `skeat-1887` | The link opened the Utrecht reader at page 1, not the cited p. 54 | Now `?page=74`, which the reader passes to its viewer as the image to open; image 74 is p. 54 |
+| `king-james-1611` | The scan was a community upload to the Internet Archive, not Penn's own | Now Penn Libraries' own digital copy, opened on image 1224, where Matthew 6:9 reads "Our father which art in heauen, hallowed be thy name." Penn's catalogue calls the copy the "Great HE" edition, which settles the He/She caveat |
+| [english.md](english.md) | `statista-2026` said "Statista repackages Ethnologue data", which the 2026-10-17 review found couldn't be checked | Reworded to match the review |
+| [english.md](english.md) | The Indo-European section still gave ~8,000–6,000 years ago | Now ~9,500–6,000 (`yearsAgo: 9500`) |
+| [english.md](english.md#the-sample-sentence) | The King James line was said to be left off the cards because "no step covers 1611 in England", but the vowel shift and America steps span 1611. The Old English row gave no date for its manuscript, and "summer 1388" was firmer than the dating of the later Wycliffite version | Now gives the real reason (each step shows one line, and Tyndale already stands for printing), dates Corpus Christi College Cambridge MS 140 to the 11th century (Ker: s. xi¹), and gives about 1388–95 |
+
+These changes were then reviewed on 2026-10-29 by a model from another provider (Codex, GPT-6.1-Sol), read-only against the sources, in PR #389. It confirmed the other claims, the citation fixes, the Skeat and King James links and the regenerated tables. Its findings on the first fixes for `old-english`, `london-english` and `great-vowel-shift` are applied in the rows above, and english.md no longer says the vowel shift uses `kind: language`. One finding was not applied: it read the Wycliffite link `page/n21` as printed p. 13, but the Internet Archive's page map gives index 21 as leaf 22, printed p. 14, which holds the line.
 
 ## Retired: the world story
 
