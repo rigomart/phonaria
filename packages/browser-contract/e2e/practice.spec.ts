@@ -91,7 +91,7 @@ test.describe("Practice enabled", () => {
 			name: /^(How it's made|Compare with|Spelling)$/,
 		});
 		await page.getByRole("main").locator('button[aria-haspopup="dialog"]').first().click();
-		await page.getByRole("button", { name: /^More about / }).click();
+		await page.getByRole("button", { name: /^Full details for / }).click();
 		await expect(page.getByRole("heading", { name: "How it's made" })).toBeVisible();
 
 		await page.getByRole("button", { name: "New session" }).click();

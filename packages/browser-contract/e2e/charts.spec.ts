@@ -46,8 +46,7 @@ test.describe("IPA charts", () => {
 			await page.getByRole("button", { name: CONSONANT_BUTTON_NAME }).click();
 			await expect(page.getByLabel("Play /p/")).toBeEnabled({ timeout: 1_000 });
 		}).toPass({ timeout: 10_000 });
-		// The compact card shows the sound, its symbol playing it; the diagram is one level deeper.
-		await page.getByRole("button", { name: /^More about \/p\// }).click();
+		await page.getByRole("button", { name: "Full details for /p/" }).click();
 		await expect(
 			page.getByRole("img", { name: "Voiceless bilabial plosive articulation" }),
 		).toBeVisible();
