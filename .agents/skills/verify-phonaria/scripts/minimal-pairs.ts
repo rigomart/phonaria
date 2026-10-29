@@ -81,8 +81,8 @@ const practiceIndex = (expectedNav: boolean) =>
 			schwa: true,
 			card: false,
 			nav: expectedNav
-				? ["Transcription", "IPA Chart", "Minimal pairs", "Practice", "Language Spread"]
-				: ["Transcription", "IPA Chart", "Practice", "Language Spread"],
+				? ["Transcription", "IPA Chart", "Minimal pairs", "Practice", "History"]
+				: ["Transcription", "IPA Chart", "Practice", "History"],
 			navHref: expectedNav ? "Minimal pairs" : null,
 		},
 	);

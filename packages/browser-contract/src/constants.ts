@@ -19,7 +19,7 @@ export interface ContractTarget {
 	baseUrl: string;
 	expectedCanonicalOrigin: string;
 	practiceEnabled: boolean;
-	languageSpreadEnabled: boolean;
+	languageHistoryEnabled: boolean;
 	indexingEnabled: boolean;
 	bucketAssetsAvailable: boolean;
 	requiresBaseUrlOverride?: boolean;
@@ -38,7 +38,7 @@ export const INDEXABLE_PATHS = [
 ] as const;
 
 /** Indexed only on targets where its flag is on, since the route 404s otherwise. */
-export const LANGUAGE_SPREAD_PATH = "/language-spread";
+export const LANGUAGE_HISTORY_PATH = "/history";
 
 export const SITE_NAME = "Phonaria";
 export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";

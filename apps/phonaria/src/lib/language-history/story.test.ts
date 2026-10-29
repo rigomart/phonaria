@@ -7,12 +7,12 @@ import { MAIN_SOURCES, SAMPLES, SOURCES, STEPS, STOPS } from "./story";
 const stopIds = STOPS.map((stop) => stop.id);
 const sourceIds = new Set(SOURCES.map((source) => source.id));
 const revealed = STEPS.flatMap((step) => step.stops);
-const researchDir = resolve(import.meta.dirname, "../../../../../docs/research/language-spread");
+const researchDir = resolve(import.meta.dirname, "../../../../../docs/research/language-history");
 
 const validPlace = ([lon, lat]: readonly [number, number]) =>
 	lon >= -180 && lon <= 360 && lat >= -58 && lat <= 84;
 
-describe("language spread story", () => {
+describe("language history story", () => {
 	it("gives every stop, step and source a unique id", () => {
 		expect(new Set(stopIds).size).toBe(stopIds.length);
 		expect(new Set(STEPS.map((step) => step.id)).size).toBe(STEPS.length);

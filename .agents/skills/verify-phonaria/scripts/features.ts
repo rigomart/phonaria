@@ -1,5 +1,5 @@
 import type { Feature } from "./feature";
-import { languageSpread, languageSpreadOff } from "./language-spread";
+import { languageHistory, languageHistoryOff } from "./language-history";
 import { mergerNotes } from "./merger-notes";
 import { minimalPairs, minimalPairsOff } from "./minimal-pairs";
 import { frequencyPage, soundFrequency } from "./sound-frequency";
@@ -8,8 +8,8 @@ import { transcriptionHistory } from "./transcription-history";
 import { wordAudio } from "./word-audio";
 
 export const features: Record<string, Feature> = {
-	"language-spread": languageSpread,
-	"language-spread-off": languageSpreadOff,
+	"language-history": languageHistory,
+	"language-history-off": languageHistoryOff,
 	"merger-notes": mergerNotes,
 	"minimal-pairs": minimalPairs,
 	"minimal-pairs-off": minimalPairsOff,

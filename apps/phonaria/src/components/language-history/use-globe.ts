@@ -10,7 +10,7 @@ import {
 	planFlight,
 	type Viewport,
 	zoomOf,
-} from "@/lib/language-spread/camera";
+} from "@/lib/language-history/camera";
 import {
 	DRAG_THRESHOLD,
 	type DragMode,
@@ -19,9 +19,9 @@ import {
 	INERTIA_STOP,
 	isAway,
 	releaseVelocity,
-} from "@/lib/language-spread/drag";
-import { type LandShape, loadLand } from "@/lib/language-spread/land";
-import { buildRoute } from "@/lib/language-spread/route-path";
+} from "@/lib/language-history/drag";
+import { type LandShape, loadLand } from "@/lib/language-history/land";
+import { buildRoute } from "@/lib/language-history/route-path";
 import {
 	AREA_OPACITY,
 	phaseOf,
@@ -29,22 +29,22 @@ import {
 	ROUTE_LOOK,
 	revealDelay,
 	TIMING,
-} from "@/lib/language-spread/scene";
-import type { PinHead } from "@/lib/language-spread/scene";
+} from "@/lib/language-history/scene";
+import type { PinHead } from "@/lib/language-history/scene";
 import {
 	EARTH_RADIUS_KM,
 	orthographic,
 	type Projected,
 	RAD,
 	wrapLongitude,
-} from "@/lib/language-spread/sphere";
+} from "@/lib/language-history/sphere";
 import {
 	nextThrottle,
 	SPIN_RESUME_MS,
 	spinAllowed,
 	spinDegrees,
 	spinWanted,
-} from "@/lib/language-spread/spin";
+} from "@/lib/language-history/spin";
 import {
 	rest,
 	restingTween,
@@ -52,9 +52,9 @@ import {
 	type Tween,
 	tweenAt,
 	tweenDone,
-} from "@/lib/language-spread/tween";
-import type { Step, Stop } from "@/lib/language-spread/types";
-import { WORLD_LAND_COARSE, WORLD_LAND_FINE } from "@/lib/language-spread/world-land";
+} from "@/lib/language-history/tween";
+import type { Step, Stop } from "@/lib/language-history/types";
+import { WORLD_LAND_COARSE, WORLD_LAND_FINE } from "@/lib/language-history/world-land";
 import {
 	type AreaShape,
 	createGlobePainter,
@@ -778,7 +778,7 @@ export function useGlobe({
 					}
 					const pin: PinPlace = { element, lon, lat, head: { width: 0, height: 0 }, shown: null };
 					pins.current.set(id, pin);
-					// Pin markup in spread-map.tsx must keep the head as the last child.
+					// Pin markup in history-map.tsx must keep the head as the last child.
 					const head = element.lastElementChild;
 					if (head) {
 						heads.current ??= new ResizeObserver(measureHeads);

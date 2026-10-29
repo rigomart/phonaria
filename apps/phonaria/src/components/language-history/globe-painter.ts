@@ -1,9 +1,9 @@
 import { geoGraticule, geoOrthographic, geoPath } from "d3-geo";
 import type { LineString, MultiLineString, Polygon } from "geojson";
-import type { Camera } from "@/lib/language-spread/camera";
-import { type LandShape, mayBeVisible } from "@/lib/language-spread/land";
-import { partialRoute, pointAt, type RoutePath } from "@/lib/language-spread/route-path";
-import { orthographic, type Projected, toVector } from "@/lib/language-spread/sphere";
+import type { Camera } from "@/lib/language-history/camera";
+import { type LandShape, mayBeVisible } from "@/lib/language-history/land";
+import { partialRoute, pointAt, type RoutePath } from "@/lib/language-history/route-path";
+import { orthographic, type Projected, toVector } from "@/lib/language-history/sphere";
 
 export type Rgb = readonly [number, number, number];
 

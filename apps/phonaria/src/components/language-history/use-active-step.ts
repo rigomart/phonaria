@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { activeStepIndex, STEP_ANCHOR, stepScrollTop } from "@/lib/language-spread/scroll-step";
+import { activeStepIndex, STEP_ANCHOR, stepScrollTop } from "@/lib/language-history/scroll-step";
 
 /**
  * The story step in view, read from where each step's section sits as the page scrolls. `story` is

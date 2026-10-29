@@ -1,5 +1,5 @@
 import { type AppFlags, flags } from "./flags";
-import { LANGUAGE_SPREAD_PATH } from "./language-spread/metadata";
+import { LANGUAGE_HISTORY_PATH } from "./language-history/metadata";
 import { getSiteUrl, isIndexingEnabled } from "./site";
 
 /** `/ipa-chart` only redirects, so it is not listed. */
@@ -12,15 +12,15 @@ const UNFLAGGED_INDEXABLE_PATHS = [
 ] as const;
 
 /**
- * Indexable application paths for a build's flags. Language Spread joins only when
+ * Indexable application paths for a build's flags. History joins only when
  * its flag is on, since the route 404s otherwise. Practice stays out of search
  * whether or not its flag is on.
  */
 export function getIndexablePaths(
-	enabled: Pick<AppFlags, "languageSpread"> = flags.snapshot(),
+	enabled: Pick<AppFlags, "languageHistory"> = flags.snapshot(),
 ): string[] {
-	return enabled.languageSpread
-		? [...UNFLAGGED_INDEXABLE_PATHS, LANGUAGE_SPREAD_PATH]
+	return enabled.languageHistory
+		? [...UNFLAGGED_INDEXABLE_PATHS, LANGUAGE_HISTORY_PATH]
 		: [...UNFLAGGED_INDEXABLE_PATHS];
 }
 

@@ -9,23 +9,23 @@ const read = (path: string) => readFileSync(resolve(repo, path), "utf8");
  * The flag is baked into the bundle at build time from the build's environment,
  * so each deploy workflow must set it to match the Worker vars in wrangler.jsonc.
  */
-describe("FLAG_LANGUAGE_SPREAD build configuration", () => {
+describe("FLAG_LANGUAGE_HISTORY build configuration", () => {
 	it.each([
 		[".github/workflows/staging.yml", "1"],
 		[".github/workflows/preview.yml", "1"],
 		[".github/workflows/production.yml", "0"],
 		[".github/workflows/pull_request.yml", "0"],
 	])("%s builds with the flag set to %s", (workflow, value) => {
-		expect(read(workflow)).toContain(`FLAG_LANGUAGE_SPREAD: "${value}"`);
+		expect(read(workflow)).toContain(`FLAG_LANGUAGE_HISTORY: "${value}"`);
 	});
 
 	it("defaults manual staging deploys to on, like the staging Worker", () => {
 		expect(read("apps/phonaria/scripts/deploy-staging.ts")).toContain(
-			'FLAG_LANGUAGE_SPREAD: baseEnv.FLAG_LANGUAGE_SPREAD ?? "1"',
+			'FLAG_LANGUAGE_HISTORY: baseEnv.FLAG_LANGUAGE_HISTORY ?? "1"',
 		);
 	});
 
 	it("inlines the flag into the client and Worker bundles", () => {
-		expect(read("apps/phonaria/vite.config.mts")).toContain('"process.env.FLAG_LANGUAGE_SPREAD"');
+		expect(read("apps/phonaria/vite.config.mts")).toContain('"process.env.FLAG_LANGUAGE_HISTORY"');
 	});
 });

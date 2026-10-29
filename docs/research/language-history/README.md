@@ -1,6 +1,6 @@
-# Language spread: research behind the page
+# Language history: research behind the page
 
-Research for the flagged `/language-spread` page (`FLAG_LANGUAGE_SPREAD`). The page now tells the story of one language, English, as a scrolling story over a globe: from its Indo-European ancestor through Old English, the Vikings, the Norman Conquest, the Great Vowel Shift and printing, to the English spoken around the world today. The page copy, stops and source list are in `apps/phonaria/src/lib/language-spread/story.ts`. These notes record why each claim is there.
+Research for the flagged History page at `/history` (`FLAG_LANGUAGE_HISTORY`; called Language Spread at `/language-spread` until 2026-10-29). The page now tells the story of one language, English, as a scrolling story over a globe: from its Indo-European ancestor through Old English, the Vikings, the Norman Conquest, the Great Vowel Shift and printing, to the English spoken around the world today. The page copy, stops and source list are in `apps/phonaria/src/lib/language-history/story.ts`. These notes record why each claim is there.
 
 Until commit `ceaddbc` the page told how languages spread across the whole world, in 25 steps. Following many branches at once was hard to read, so the story was narrowed to English. The world research is kept: the regional notes below and the [retired world story](#retired-the-world-story) tables still record every claim and source behind it, ready for future stories about other languages.
 

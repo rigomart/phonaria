@@ -27,19 +27,19 @@ export function skipUnlessPracticeDisabled(): void {
 	);
 }
 
-export function skipUnlessLanguageSpreadEnabled(): void {
+export function skipUnlessLanguageHistoryEnabled(): void {
 	const target = getTarget();
 	test.skip(
-		!target.languageSpreadEnabled,
-		`Language Spread is disabled on ${target.name}, so enabled-route assertions do not apply.`,
+		!target.languageHistoryEnabled,
+		`History is disabled on ${target.name}, so enabled-route assertions do not apply.`,
 	);
 }
 
-export function skipUnlessLanguageSpreadDisabled(): void {
+export function skipUnlessLanguageHistoryDisabled(): void {
 	const target = getTarget();
 	test.skip(
-		target.languageSpreadEnabled,
-		`Language Spread is enabled on ${target.name}, so disabled-route assertions do not apply.`,
+		target.languageHistoryEnabled,
+		`History is enabled on ${target.name}, so disabled-route assertions do not apply.`,
 	);
 }
 

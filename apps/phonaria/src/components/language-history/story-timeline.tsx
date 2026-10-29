@@ -1,7 +1,7 @@
 import { Button } from "@phonaria/ui/components/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { type Ref, useLayoutEffect, useRef } from "react";
-import type { Step } from "@/lib/language-spread/types";
+import type { Step } from "@/lib/language-history/types";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 

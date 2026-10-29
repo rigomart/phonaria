@@ -7,11 +7,11 @@ import {
 	IPA_CHART_INDEX_PATH,
 	IPA_CHART_VOWELS_PATH,
 } from "@/lib/ipa-chart-metadata";
-import { LANGUAGE_SPREAD_PATH } from "@/lib/language-spread/metadata";
+import { LANGUAGE_HISTORY_PATH } from "@/lib/language-history/metadata";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 
 export type Tool = {
-	id: "transcription" | "ipa-chart" | "minimal-pairs" | "practice" | "language-spread";
+	id: "transcription" | "ipa-chart" | "minimal-pairs" | "practice" | "language-history";
 	href: string;
 	label: string;
 	icon: LucideIcon;
@@ -49,11 +49,11 @@ const tools: readonly Tool[] = [
 		match: (pathname) => pathname.startsWith("/practice"),
 	},
 	{
-		id: "language-spread",
-		href: LANGUAGE_SPREAD_PATH,
-		label: "Language Spread",
+		id: "language-history",
+		href: LANGUAGE_HISTORY_PATH,
+		label: "History",
 		icon: Globe,
-		match: (pathname) => pathname === LANGUAGE_SPREAD_PATH,
+		match: (pathname) => pathname === LANGUAGE_HISTORY_PATH,
 	},
 ];
 
@@ -67,7 +67,7 @@ export function getTools(flags: AppFlags): readonly Tool[] {
 	return tools.filter((tool) => {
 		if (tool.id === "minimal-pairs") return flags.speech;
 		if (tool.id === "practice") return flags.practice;
-		if (tool.id === "language-spread") return flags.languageSpread;
+		if (tool.id === "language-history") return flags.languageHistory;
 		return true;
 	});
 }

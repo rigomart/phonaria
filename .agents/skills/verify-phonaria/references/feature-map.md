@@ -1,6 +1,6 @@
 # Phonaria feature map
 
-This map describes how to reach features, not a claim that all features pass. The common-word transcription, transcription history, sound-frequency, minimal-pair speaking, and Language Spread journeys below have executable verification recipes. Other entries are navigation references awaiting dedicated journeys.
+This map describes how to reach features, not a claim that all features pass. The common-word transcription, transcription history, sound-frequency, minimal-pair speaking, and History journeys below have executable verification recipes. Other entries are navigation references awaiting dedicated journeys.
 
 | Feature | Entry point | Coverage here |
 | --- | --- | --- |
@@ -14,7 +14,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Frequency | `/ipa-chart/frequency`, header **IPA Chart** → **Frequency** tab | Executable journey below |
 | Sound card "Frequency" and "Spelling" | Any sound, or **Details for /h/** after transcribing | Executable journey below |
 | Sound card merger notes | `/ipa-chart/vowels`, /ɔ/, /æ/ or /ɛ/, then **More about …** | Executable journey below |
-| Language Spread | `/language-spread`, header **Language Spread** (behind `FLAG_LANGUAGE_SPREAD`) | Executable journeys below: `language-spread` (flag on) and `language-spread-off` |
+| History | `/history`, header **History** (behind `FLAG_LANGUAGE_HISTORY`) | Executable journeys below: `language-history` (flag on) and `language-history-off` |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair speaking practice | `/minimal-pairs`, header **Minimal pairs**, or a sound's **Practise saying …** link under Compare with (behind `FLAG_SPEECH`, independent of `FLAG_PRACTICE`; `/practice/minimal-pairs` redirects) | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
@@ -326,7 +326,7 @@ bun run verify observe "$VERIFY_RUN" next-word
 bun run verify observe "$VERIFY_RUN" card-link
 ```
 
-`nav` requires the main nav to read Transcription, IPA Chart, **Minimal pairs** (to `/minimal-pairs`), Practice, Language Spread, and the Practice index to list Schwa with no minimal-pairs card. `redirect` requires the old `/practice/minimal-pairs?contrast=i-ix&word=ship` to land on `/minimal-pairs` with the same search. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 contrast links, the first named **pat and bat**. `word` requires the target card *ship* `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound** beside the partner card *sheep* `ˈʃip` with /i/ marked, **Hear ship**, **Hear sheep** and **Record** buttons, the privacy line, no card marked heard and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences and visible buttons, `match` with the *ship* card marked heard and `swapped` with the *sheep* card marked and a second **Hear sheep** in the result; the others mark no card and the wrong-word ones name no sound; `every-sound` requires the swapped sentence above a **Sound by sound** row of three tiles: /ʃ/ `match` "/ʃ/ sounded right", /ɪ/ `swapped` with the marked /ɪ/ and the heard /i/ as buttons and "/ɪ/ sounded like /i/", and /p/ `unclear` "/p/ wasn't clear". `heard-card` requires the heard /i/ tile button to be the open trigger and the card to be titled **More about /i/**. Each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, with no result showing. `card-link` requires the /ɪ/ sound's full view to link **Practise saying /ɪ/ and /i/** to `/minimal-pairs?contrast=i-ix`.
+`nav` requires the main nav to read Transcription, IPA Chart, **Minimal pairs** (to `/minimal-pairs`), Practice, History, and the Practice index to list Schwa with no minimal-pairs card. `redirect` requires the old `/practice/minimal-pairs?contrast=i-ix&word=ship` to land on `/minimal-pairs` with the same search. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 contrast links, the first named **pat and bat**. `word` requires the target card *ship* `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound** beside the partner card *sheep* `ˈʃip` with /i/ marked, **Hear ship**, **Hear sheep** and **Record** buttons, the privacy line, no card marked heard and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences and visible buttons, `match` with the *ship* card marked heard and `swapped` with the *sheep* card marked and a second **Hear sheep** in the result; the others mark no card and the wrong-word ones name no sound; `every-sound` requires the swapped sentence above a **Sound by sound** row of three tiles: /ʃ/ `match` "/ʃ/ sounded right", /ɪ/ `swapped` with the marked /ɪ/ and the heard /i/ as buttons and "/ɪ/ sounded like /i/", and /p/ `unclear` "/p/ wasn't clear". `heard-card` requires the heard /i/ tile button to be the open trigger and the card to be titled **More about /i/**. Each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, with no result showing. `card-link` requires the /ɪ/ sound's full view to link **Practise saying /ɪ/ and /i/** to `/minimal-pairs?contrast=i-ix`.
 
 ### Flag off
 
@@ -346,11 +346,11 @@ bun run verify observe "$VERIFY_RUN" nav-hidden
 
 Chromium only, with the microphone replaced by a stream playing Azure Jenny TTS, so real voices and real microphones are not exercised. Close-call, other-sound, every-sound, heard-card, denied, unsupported and the route failures are simulated in the page, so they check the page and the browser judge, not the route or Azure. The wrong words are TTS, not learners. Only i-ix and *ship* are recorded; the no-evidence sentence and the word named for a swapped sound outside the contrast are covered by unit tests only. The live region is read from the DOM, not through a screen reader.
 
-## Language Spread
+## History
 
-"The story of English" is a scroll story at `/language-spread`, behind `FLAG_LANGUAGE_SPREAD` (on locally, off in production unless set). A canvas globe (orthographic) stays pinned under the 48 px sticky header. Scrolling moves through 11 steps; each step's card fades in at the place its step gives it (`card` in the story data: top, middle or bottom, left or right, on wide screens; always at the bottom on phones), and the previous card fades out. The active step is the `<li data-step="<id>">` with `aria-current="step"`. The expected literals come from the story data in `apps/phonaria/src/lib/language-spread/story.ts` and the product requirements, not from importing the app's helpers: 11 steps (intro, indo-european, germanic, old-english, vikings, norman-conquest, great-vowel-shift, printing, america, around-the-world, today), 9 places, 8 routes, 9 main works.
+"The story of English" is a scroll story at `/history`, behind `FLAG_LANGUAGE_HISTORY` (on locally, off in production unless set). A canvas globe (orthographic) stays pinned under the 48 px sticky header. Scrolling moves through 11 steps; each step's card fades in at the place its step gives it (`card` in the story data: top, middle or bottom, left or right, on wide screens; always at the bottom on phones), and the previous card fades out. The active step is the `<li data-step="<id>">` with `aria-current="step"`. The expected literals come from the story data in `apps/phonaria/src/lib/language-history/story.ts` and the product requirements, not from importing the app's helpers: 11 steps (intro, indo-european, germanic, old-english, vikings, norman-conquest, great-vowel-shift, printing, america, around-the-world, today), 9 places, 8 routes, 9 main works.
 
-The [checkpoints](../scripts/language-spread.ts) read the era dial (`[data-era]`, its 11 ticks and the `Step N of 11` screen-reader text), the Previous/Next step buttons, `data-stop` pins (`data-revealed`, the pin's `<li>` `inert` until revealed, and the pin's positioned parent hidden and `inert` on the far side of the globe), the cards (computed opacity, whether their chips sit inside an `inert` element, their box against the screen edges), and the map region's box and attributes: `data-camera` (`dragging` while the reader holds the globe, `moving` during a flight or the glide after a drag, `settled` once it rests), `data-camera-center` (`lon,lat`, 1 decimal), `data-camera-zoom` (2 decimals; 1 means the whole globe exactly fits the area the card and dial leave free, the whole-globe view reads 0.88, steps on England read 4 to 16) and `data-routes-drawn` (arrows fully drawn, far side included), and `data-spinning` while the globe turns slowly eastward at `today` (about one turn per 100 s; paused by hovering the globe or a pin, focus in the map, open details or a drag, resuming about 2 s later; off with reduced motion, a hidden tab, or less than half the map on screen). Centre and zoom are written only when the camera lands. After a drag moves the step's centre more than 48 px, or behind the globe, a **Recenter on this step** button (`[data-recenter]`) appears at the bottom middle of the free area. The active card shows only once the globe reveals its step (about 60% into a flight, at most 1.6 s), so waits require it opaque. Arrows are painted on the canvas, so there are no paths to count. Also the details panel `[data-stop-details]`, the card chips and the sources section. Not yet checked: the sample-sentence caption under the dial on the old-english, norman-conquest, printing and today steps (`[data-sample-caption]` holds the shown sample's id; it fades in with the card, and an invisible copy of the active step's caption sets how far down the globe is framed), and the comparison section after the story.
+The [checkpoints](../scripts/language-history.ts) read the era dial (`[data-era]`, its 11 ticks and the `Step N of 11` screen-reader text), the Previous/Next step buttons, `data-stop` pins (`data-revealed`, the pin's `<li>` `inert` until revealed, and the pin's positioned parent hidden and `inert` on the far side of the globe), the cards (computed opacity, whether their chips sit inside an `inert` element, their box against the screen edges), and the map region's box and attributes: `data-camera` (`dragging` while the reader holds the globe, `moving` during a flight or the glide after a drag, `settled` once it rests), `data-camera-center` (`lon,lat`, 1 decimal), `data-camera-zoom` (2 decimals; 1 means the whole globe exactly fits the area the card and dial leave free, the whole-globe view reads 0.88, steps on England read 4 to 16) and `data-routes-drawn` (arrows fully drawn, far side included), and `data-spinning` while the globe turns slowly eastward at `today` (about one turn per 100 s; paused by hovering the globe or a pin, focus in the map, open details or a drag, resuming about 2 s later; off with reduced motion, a hidden tab, or less than half the map on screen). Centre and zoom are written only when the camera lands. After a drag moves the step's centre more than 48 px, or behind the globe, a **Recenter on this step** button (`[data-recenter]`) appears at the bottom middle of the free area. The active card shows only once the globe reveals its step (about 60% into a flight, at most 1.6 s), so waits require it opaque. Arrows are painted on the canvas, so there are no paths to count. Also the details panel `[data-stop-details]`, the card chips and the sources section. Not yet checked: the sample-sentence caption under the dial on the old-english, norman-conquest, printing and today steps (`[data-sample-caption]` holds the shown sample's id; it fades in with the card, and an invisible copy of the active step's caption sets how far down the globe is framed), and the comparison section after the story.
 
 ### Controls
 
@@ -362,14 +362,14 @@ The [checkpoints](../scripts/language-spread.ts) read the era dial (`[data-era]`
 | A pin | `click '[data-stop="old-norse"]'` (a button; the pin's `<li>` is `inert` until revealed) |
 | A card chip | `button[aria-label="Old Norse, show details"]` inside the card's `ul[aria-label="Places on the map"]` |
 | Close details | `press Escape`, or **Close Old Norse**; focus returns to the opener |
-| Header link | **Language Spread** in `nav[aria-label="Main"]`, `aria-current="page"` on the page |
+| Header link | **History** in `nav[aria-label="Main"]`, `aria-current="page"` on the page |
 | Drag the globe | `mouse move X Y`, `mouse down`, `mouse move X2 Y2 --steps 10 --duration 200`, `mouse up` on empty globe (the canvas); a move under 4 px stays a click |
 | Recenter | `click '[data-recenter]'` (**Recenter on this step**) |
 | Touch spin | no native touch in desktop Chromium: `js touchSpin "DX, DY"` dispatches touch pointer events on the canvas |
 
 ### Executable journey (flag on)
 
-Start with `bun run verify init language-spread` and `bun run verify serve "$VERIFY_RUN"`. Keep the display awake first: on a Mac whose display sleeps, headless Chrome's frame clock stops, `requestAnimationFrame` barely runs, scroll steps never change and flights stay `moving` (see the troubleshooting note in the skill). The active step, the camera and the arrows all run on animation frames, so wait for the expected state after every step change instead of sleeping. A flight lasts 0.9 to 2.2 s and a step's arrows draw after it lands, so wait on the step, a landed centre inside the step's bounds and the route count together; `data-camera` still reads `settled` from the previous step for a moment. These recipes do not start a DevTools trace: on the earlier version of this page, tracing stalled the renderer until browser commands timed out.
+Start with `bun run verify init language-history` and `bun run verify serve "$VERIFY_RUN"`. Keep the display awake first: on a Mac whose display sleeps, headless Chrome's frame clock stops, `requestAnimationFrame` barely runs, scroll steps never change and flights stay `moving` (see the troubleshooting note in the skill). The active step, the camera and the arrows all run on animation frames, so wait for the expected state after every step change instead of sleeping. A flight lasts 0.9 to 2.2 s and a step's arrows draw after it lands, so wait on the step, a landed centre inside the step's bounds and the route count together; `data-camera` still reads `settled` from the previous step for a moment. These recipes do not start a DevTools trace: on the earlier version of this page, tracing stalled the renderer until browser commands timed out.
 
 The `*-flight` checkpoints need a recorder installed just before the step changes. `recordFlight` in the journey file saves, on every frame while the camera is `moving` and once after it lands, where each pin on the near side of the globe was drawn. The checkpoint then works out the globe's radius on each frame from those positions (a least-squares fit of the orthographic projection over a grid of camera centres) and turns it into the page's zoom with the radius at landing. The `rec` helper below sends the recorder with `eval -b`; `land` also waits for the recording to finish.
 
@@ -381,7 +381,7 @@ HYD="!!document.querySelector('[data-camera=settled]') && Object.keys(document.q
 land() { echo "(()=>{const d=document.querySelector('[data-camera]').dataset;const a=document.querySelector('[data-step][aria-current=step]');if(a?.dataset.step!=='$1'||getComputedStyle(a.querySelector('article')).opacity!=='1'||d.camera!=='settled'||d.routesDrawn!=='$6'||(window.__spreadFlight&&!window.__spreadFlight.done))return false;const [lon,lat]=d.cameraCenter.split(',').map(Number);return lon>=$2&&lon<=$4&&lat>=$3&&lat<=$5})()"; }
 step() { bun run verify browser "$VERIFY_RUN" eval "document.querySelector('[data-step=$1]').scrollIntoView()"; }
 # js NAME ARGS: runs an exported helper from the journey file in the page, e.g. js fastScroll '"today"'.
-js() { bun run verify browser "$VERIFY_RUN" eval -b "$(bun -e 'const [n, a] = process.argv.slice(-2); const j = await import("./.agents/skills/verify-phonaria/scripts/language-spread.ts"); process.stdout.write(Buffer.from(`(${j[n]})(${a})`).toString("base64"))' -- "$1" "$2")"; }
+js() { bun run verify browser "$VERIFY_RUN" eval -b "$(bun -e 'const [n, a] = process.argv.slice(-2); const j = await import("./.agents/skills/verify-phonaria/scripts/language-history.ts"); process.stdout.write(Buffer.from(`(${j[n]})(${a})`).toString("base64"))' -- "$1" "$2")"; }
 rec() { js recordFlight ""; }
 # A mouse drag that starts at (X1, Y1), ends at (X2, Y2) and lets go at once, so the globe glides.
 from() { bun run verify browser "$VERIFY_RUN" eval "window.__dragFrom=document.querySelector('[data-camera]').dataset.cameraCenter"; }
@@ -389,7 +389,7 @@ press() { bun run verify browser "$VERIFY_RUN" mouse move $1 $2; bun run verify 
 release() { bun run verify browser "$VERIFY_RUN" mouse up; bun run verify browser "$VERIFY_RUN" wait --fn "(()=>{const d=document.querySelector('[data-camera]').dataset;return d.camera==='settled'&&d.cameraCenter!==window.__dragFrom})()"; }
 bun run verify browser "$VERIFY_RUN" open about:blank
 bun run verify browser "$VERIFY_RUN" set viewport 1280 800
-bun run verify browser "$VERIFY_RUN" open $O/language-spread
+bun run verify browser "$VERIFY_RUN" open $O/history
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify observe "$VERIFY_RUN" intro
 
@@ -456,7 +456,7 @@ bun run verify observe "$VERIFY_RUN" scroll-back
 # Scroll to today over 24 frames, through 8 steps, and watch which cards show. This needs a fresh
 # page: after a synthetic key press, headless Chrome starves page tasks while a script runs every
 # frame, so React would not commit the step changes until the scroll ends.
-bun run verify browser "$VERIFY_RUN" open $O/language-spread
+bun run verify browser "$VERIFY_RUN" open $O/history
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 step germanic
 bun run verify browser "$VERIFY_RUN" wait --fn "$(land germanic -12 44 30 64 1)"
@@ -486,7 +486,7 @@ bun run verify observe "$VERIFY_RUN" recentered
 # The spin resumes off the globe, stops at the sources, and stops on leaving today.
 bun run verify browser "$VERIFY_RUN" mouse move 1200 700
 bun run verify browser "$VERIFY_RUN" wait --fn "$SPIN"
-bun run verify browser "$VERIFY_RUN" eval "document.querySelector('section[aria-labelledby=language-spread-sources]').scrollIntoView()"
+bun run verify browser "$VERIFY_RUN" eval "document.querySelector('section[aria-labelledby=language-history-sources]').scrollIntoView()"
 bun run verify observe "$VERIFY_RUN" spin-sources
 step today
 bun run verify browser "$VERIFY_RUN" wait --fn "$SPIN"
@@ -498,7 +498,7 @@ bun run verify observe "$VERIFY_RUN" sitemap
 
 # Phone: a fresh page at 390 x 844, scrolled to the Vikings step, then a touch swipe.
 bun run verify browser "$VERIFY_RUN" set viewport 390 844
-bun run verify browser "$VERIFY_RUN" open $O/language-spread
+bun run verify browser "$VERIFY_RUN" open $O/history
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 step vikings
 bun run verify browser "$VERIFY_RUN" wait --fn "$(land vikings -14 48 16 63 5)"
@@ -509,7 +509,7 @@ bun run verify observe "$VERIFY_RUN" phone-spin
 # Reduced motion: desktop again, then scroll and require a landed camera and a shown card within 300 ms.
 bun run verify browser "$VERIFY_RUN" set viewport 1280 800
 bun run verify browser "$VERIFY_RUN" set media light reduced-motion
-bun run verify browser "$VERIFY_RUN" open $O/language-spread
+bun run verify browser "$VERIFY_RUN" open $O/history
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify browser "$VERIFY_RUN" eval "document.querySelector('[data-step=vikings]').scrollIntoView(); new Promise((ok,fail)=>setTimeout(()=>{const d=document.querySelector('[data-camera]').dataset;const [lon,lat]=(d.cameraCenter||'').split(',').map(Number);const card=getComputedStyle(document.querySelector('[data-step=vikings] article')).opacity;d.camera==='settled'&&d.routesDrawn==='5'&&card==='1'&&lon>=-14&&lon<=16&&lat>=48&&lat<=63?ok('landed within 300 ms'):fail(new Error('not landed: '+JSON.stringify({...d,card})))},300))"
 bun run verify observe "$VERIFY_RUN" reduced-motion
@@ -520,7 +520,7 @@ kill $CAFFEINATE
 
 The `eval` in the last block rejects (the command fails and is logged in `commands.jsonl`) unless the camera has landed on the Vikings step, with its arrows drawn, 300 ms after the scroll; this is the only timing check, since `observe` polls. Use the same origin as `serve` (change `O` for another port or a deployed target).
 
-- `intro` requires path `/language-spread`, title **The history of English, from Old English to today - Phonaria**, h1 **The story of English**, the header link with `aria-current="page"`, `<meta name="robots" content="noindex, follow">` (robots follows `SITE_INDEXING_ENABLED`, which is `0` in the local vars of `wrangler.jsonc` and unset in `.dev.vars`; expect `index, follow` where indexing is on), share metadata (`og:type` `article`; `og:title` and `twitter:title` the document title without the site name; `og:description` starting **English from Indo-European roots**; every `og:image` and `twitter:image` ending in `/og/language-spread.jpg`, 1200 × 630; `twitter:card` `summary_large_image`; one `application/ld+json` script with `@type` `Article` and 33 `citation` entries), era `~4000 BCE`, step `intro`, **Step 1 of 11**, the 11 step ids in order, 11 ticks, 9 pins and none revealed, `data-routes-drawn` 0, a landed whole-globe view (zoom below 1; it reads 0.88), the map region within 2 px of the header (top 48, height `innerHeight - 48`), the intro card opaque, not inert and centred on the left (24 px inside the map region's left edge, centred top to bottom). Placement is measured against the map region, not the window, since the page's scrollbar narrows it, the other 10 cards transparent, Previous step disabled, and the **Sources** section with 9 `https` links.
+- `intro` requires path `/history`, title **The history of English, from Old English to today - Phonaria**, h1 **The story of English**, the header link with `aria-current="page"`, `<meta name="robots" content="noindex, follow">` (robots follows `SITE_INDEXING_ENABLED`, which is `0` in the local vars of `wrangler.jsonc` and unset in `.dev.vars`; expect `index, follow` where indexing is on), share metadata (`og:type` `article`; `og:title` and `twitter:title` the document title without the site name; `og:description` starting **English from Indo-European roots**; every `og:image` and `twitter:image` ending in `/og/history.jpg`, 1200 × 630; `twitter:card` `summary_large_image`; one `application/ld+json` script with `@type` `Article` and 33 `citation` entries), era `~4000 BCE`, step `intro`, **Step 1 of 11**, the 11 step ids in order, 11 ticks, 9 pins and none revealed, `data-routes-drawn` 0, a landed whole-globe view (zoom below 1; it reads 0.88), the map region within 2 px of the header (top 48, height `innerHeight - 48`), the intro card opaque, not inert and centred on the left (24 px inside the map region's left edge, centred top to bottom). Placement is measured against the map region, not the window, since the page's scrollbar narrows it, the other 10 cards transparent, Previous step disabled, and the **Sources** section with 9 `https` links.
 - `next-step` requires Enter on the focused **Next step** button to scroll the page to `indo-european` (era still `~4000 BCE`, the steppe pin revealed), the new card opaque and every other card transparent, the dial's `[role="status"]` region reading **Step 2 of 11, ~4000 BCE: One ancestor, many languages**, and focus on the new card.
 - `previous-step` requires Enter on the focused **Previous step** button to go back to `intro` (no pins revealed), the status reading **Step 1 of 11, ~4000 BCE: The story of English**, and focus on the intro card. Scrolling by hand leaves the status unchanged, so only these two steps announce.
 - `near-flight` requires, for old-english to vikings, a recorded flight whose pins fit one globe within 3 px, landing above zoom 1, and a zoom that never drops below 95% of the lower of the two ends: a near move pans and zooms without pulling back. Measured: 6.20 to 5.55, lowest 5.55.
@@ -546,7 +546,7 @@ The `eval` in the last block rejects (the command fails and is logged in `comman
 - `recentered` requires, after clicking Recenter, the camera settled at latitude `11.0` (the drag also moved it 60 px south, and the spin only turns longitude) and a longitude at or west of today's `10.0` (the spin has turned the step's view since), with the button gone.
 - `spin-sources` requires, still at `today`, the spin stopped once the page scrolls to the sources and less than half the map is on screen.
 - `left-today` requires, after the spin was running again, scrolling back to `around-the-world` to stop it, with the camera settled.
-- `sitemap` requires `/sitemap.xml`, fetched into the page by `js readSitemap`, to list exactly `/`, `/ipa-chart/consonants`, `/ipa-chart/vowels`, `/ipa-chart/frequency`, `/credits` and `/language-spread`. Opening the XML directly would request a favicon the app doesn't serve, a failed request.
+- `sitemap` requires `/sitemap.xml`, fetched into the page by `js readSitemap`, to list exactly `/`, `/ipa-chart/consonants`, `/ipa-chart/vowels`, `/ipa-chart/frequency`, `/credits` and `/history`. Opening the XML directly would request a favicon the app doesn't serve, a failed request.
 - `mobile` requires, at 390 × 844 on `vikings`, a landed camera inside the step bounds above zoom 1, the map pinned, the active card across the width and within 40 px of the bottom edge, the era dial in the top 160 px, and the Old Norse pin on screen between the dial and the card. The desktop nav is hidden at this width, so the nav is not asserted.
 - `phone-spin` requires, after `touchSpin` swipes 120 px left and 60 px up with touch pointer events, the camera settled with its longitude moved east by more than a degree and its latitude unchanged (touch only spins), and computed `touch-action: pan-y pinch-zoom` on the canvas, which leaves vertical swipes to the page.
 - `reduced-motion` requires `prefers-reduced-motion` matched, era `~800 CE`, step `vikings`, a landed camera inside the step bounds with its 5 arrows drawn, the vikings card opaque with no running animations, and computed `transition-property: none` on the Old Norse pin. The 300 ms `eval` also requires the card opaque by then.
@@ -558,23 +558,23 @@ The flag is read when the server starts, so this journey needs its own run and i
 
 ```bash
 caffeinate -u -t 3600 &
-bun run verify init language-spread-off
-FLAG_LANGUAGE_SPREAD=0 bun run verify serve "$VERIFY_RUN"
+bun run verify init language-history-off
+FLAG_LANGUAGE_HISTORY=0 bun run verify serve "$VERIFY_RUN"
 bun run verify browser "$VERIFY_RUN" open about:blank
 bun run verify browser "$VERIFY_RUN" trace start
 bun run verify browser "$VERIFY_RUN" set viewport 1280 800
-bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/language-spread
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/history
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('h1')"
 bun run verify observe "$VERIFY_RUN" not-found
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('nav[aria-label=Main] a')"
 bun run verify observe "$VERIFY_RUN" nav-hidden
-js() { bun run verify browser "$VERIFY_RUN" eval -b "$(bun -e 'const [n, a] = process.argv.slice(-2); const j = await import("./.agents/skills/verify-phonaria/scripts/language-spread.ts"); process.stdout.write(Buffer.from(`(${j[n]})(${a})`).toString("base64"))' -- "$1" "$2")"; }
+js() { bun run verify browser "$VERIFY_RUN" eval -b "$(bun -e 'const [n, a] = process.argv.slice(-2); const j = await import("./.agents/skills/verify-phonaria/scripts/language-history.ts"); process.stdout.write(Buffer.from(`(${j[n]})(${a})`).toString("base64"))' -- "$1" "$2")"; }
 js readSitemap ""
 bun run verify observe "$VERIFY_RUN" sitemap-hidden
 ```
 
-`not-found` requires, on `/language-spread`, HTTP status 404 (from the navigation timing entry, so the page must be opened directly, not reached by a link), the shared **This page doesn't exist** h1, no map region or pins, and main nav labels exactly **Transcription**, **IPA Chart**, **Practice**. `nav-hidden` requires the same labels on `/`, all visible, and no `a[href="/language-spread"]` anywhere in the page. Practice is on in local dev unless `FLAG_PRACTICE=0` (checked: a dev server started with only `FLAG_LANGUAGE_SPREAD=0` shows all three). The journey cannot tell whether the server really had the flag off; it only sees its effects. `sitemap-hidden` requires the fetched sitemap to list the same pages without `/language-spread`.
+`not-found` requires, on `/history`, HTTP status 404 (from the navigation timing entry, so the page must be opened directly, not reached by a link), the shared **This page doesn't exist** h1, no map region or pins, and main nav labels exactly **Transcription**, **IPA Chart**, **Practice**. `nav-hidden` requires the same labels on `/`, all visible, and no `a[href="/history"]` anywhere in the page. Practice is on in local dev unless `FLAG_PRACTICE=0` (checked: a dev server started with only `FLAG_LANGUAGE_HISTORY=0` shows all three). The journey cannot tell whether the server really had the flag off; it only sees its effects. `sitemap-hidden` requires the fetched sitemap to list the same pages without `/history`.
 
 ### Limits
 

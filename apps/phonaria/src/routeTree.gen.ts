@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreditsRouteImport } from './routes/credits'
-import { Route as LanguageSpreadRouteImport } from './routes/language-spread'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as MinimalPairsRouteImport } from './routes/minimal-pairs'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -37,9 +37,9 @@ const CreditsRoute = CreditsRouteImport.update({
   path: '/credits',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LanguageSpreadRoute = LanguageSpreadRouteImport.update({
-  id: '/language-spread',
-  path: '/language-spread',
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MinimalPairsRoute = MinimalPairsRouteImport.update({
@@ -116,7 +116,7 @@ const ApiSpeechScoreRoute = ApiSpeechScoreRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
-  '/language-spread': typeof LanguageSpreadRoute
+  '/history': typeof HistoryRoute
   '/minimal-pairs': typeof MinimalPairsRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
@@ -135,7 +135,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
-  '/language-spread': typeof LanguageSpreadRoute
+  '/history': typeof HistoryRoute
   '/minimal-pairs': typeof MinimalPairsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -154,7 +154,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
-  '/language-spread': typeof LanguageSpreadRoute
+  '/history': typeof HistoryRoute
   '/minimal-pairs': typeof MinimalPairsRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
@@ -175,7 +175,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/credits'
-    | '/language-spread'
+    | '/history'
     | '/minimal-pairs'
     | '/practice'
     | '/robots.txt'
@@ -194,7 +194,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/credits'
-    | '/language-spread'
+    | '/history'
     | '/minimal-pairs'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -212,7 +212,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/credits'
-    | '/language-spread'
+    | '/history'
     | '/minimal-pairs'
     | '/practice'
     | '/robots.txt'
@@ -232,7 +232,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreditsRoute: typeof CreditsRoute
-  LanguageSpreadRoute: typeof LanguageSpreadRoute
+  HistoryRoute: typeof HistoryRoute
   MinimalPairsRoute: typeof MinimalPairsRoute
   PracticeRoute: typeof PracticeRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -263,11 +263,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreditsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/language-spread': {
-      id: '/language-spread'
-      path: '/language-spread'
-      fullPath: '/language-spread'
-      preLoaderRoute: typeof LanguageSpreadRouteImport
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/minimal-pairs': {
@@ -388,7 +388,7 @@ const PracticeRouteWithChildren = PracticeRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreditsRoute: CreditsRoute,
-  LanguageSpreadRoute: LanguageSpreadRoute,
+  HistoryRoute: HistoryRoute,
   MinimalPairsRoute: MinimalPairsRoute,
   PracticeRoute: PracticeRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,

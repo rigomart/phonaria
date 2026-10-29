@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import type { Insets } from "@/lib/language-spread/camera";
-import { coveredInsets } from "@/lib/language-spread/covered-insets";
-import { formatEra } from "@/lib/language-spread/era";
-import { MAIN_SOURCES, SAMPLES, SOURCES, STEPS, STOPS } from "@/lib/language-spread/story";
-import type { Stop } from "@/lib/language-spread/types";
+import type { Insets } from "@/lib/language-history/camera";
+import { coveredInsets } from "@/lib/language-history/covered-insets";
+import { formatEra } from "@/lib/language-history/era";
+import { MAIN_SOURCES, SAMPLES, SOURCES, STEPS, STOPS } from "@/lib/language-history/story";
+import type { Stop } from "@/lib/language-history/types";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { HistoryMap } from "./history-map";
 import { SampleCaption, SampleComparison } from "./sample-sentence";
-import { SpreadMap } from "./spread-map";
 import { SourceLink, StopDetails } from "./stop-details";
 import { CARD_EXIT_MS, cardSide, placementOf, StoryCard } from "./story-card";
 import { EraDial } from "./story-timeline";
@@ -43,7 +43,7 @@ const samplesByStep = new Map(
 	SAMPLES.flatMap((sample) => (sample.step ? [[sample.step, sample]] : [])),
 );
 
-export function LanguageSpreadContent() {
+export function LanguageHistoryContent() {
 	const stops = useMemo(() => new Map(STOPS.map((stop) => [stop.id, stop])), []);
 	const { active, story, registerSection, goToStep } = useActiveStep();
 	const detailsId = useId();
@@ -250,7 +250,7 @@ export function LanguageSpreadContent() {
 		<div className="flex flex-col">
 			<div className="relative">
 				<div className="sticky top-12 h-[calc(100svh-3rem)]">
-					<SpreadMap
+					<HistoryMap
 						steps={STEPS}
 						stops={stops}
 						detailsId={detailsId}
@@ -336,11 +336,11 @@ function Sources() {
 	const main = MAIN_SOURCES.flatMap((id) => sourcesById.get(id) ?? []);
 	return (
 		<section
-			aria-labelledby="language-spread-sources"
+			aria-labelledby="language-history-sources"
 			className="relative z-10 border-t bg-background"
 		>
 			<div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
-				<h2 id="language-spread-sources" className="font-display text-lg font-semibold">
+				<h2 id="language-history-sources" className="font-display text-lg font-semibold">
 					Sources
 				</h2>
 				<p className="mt-1.5 text-xs leading-relaxed text-muted-foreground text-pretty sm:text-sm">
