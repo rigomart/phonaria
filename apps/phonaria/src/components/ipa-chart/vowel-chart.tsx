@@ -331,7 +331,7 @@ function DiphthongLabel({
 							<button
 								type="button"
 								data-diphthong={glide.entry.id}
-								className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors hover:text-primary data-details-open:bg-secondary data-details-open:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg enter-pop"
+								className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors sound-trigger data-details-open:bg-secondary data-details-open:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg enter-pop"
 								style={buttonStyles as CSSProperties}
 								aria-label={ariaLabel}
 							/>

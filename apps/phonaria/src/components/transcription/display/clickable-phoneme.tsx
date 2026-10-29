@@ -38,6 +38,9 @@ export function ClickablePhoneme({ targetAccent, phoneme, marked = false }: Clic
 	);
 }
 
+const markedSoundHover = "hover:bg-secondary hover:text-primary";
+const drawnBarHover = "relative sound-trigger";
+
 export function PhonemeDetailsButton({
 	targetAccent,
 	phonemeId,
@@ -64,8 +67,8 @@ export function PhonemeDetailsButton({
 					type="button"
 					className={cn(
 						"rounded-lg px-1.5 py-1 cursor-pointer",
-						"transition-colors duration-150",
-						"hover:bg-secondary hover:text-primary",
+						"transition-colors duration-150 motion-reduce:transition-none",
+						marked ? markedSoundHover : drawnBarHover,
 						"data-details-open:bg-secondary data-details-open:text-primary",
 						className,
 					)}

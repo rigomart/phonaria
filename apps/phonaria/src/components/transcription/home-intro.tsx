@@ -36,8 +36,6 @@ const MORPH_END = MORPH_START + NAME_PRONUNCIATION.length * MORPH_STEP + CAPTION
 const SETTLE_AT =
 	MORPH_START + (NAME_PRONUNCIATION.length - 1) * MORPH_STEP + SOUND_LAG + TURN_MS + 100;
 const EASING = "cubic-bezier(0.2, 0, 0, 1)";
-// Once the name settles, a soft glow passes across the sounds to show they can be opened.
-// Each glow outlasts the stagger many times over, so it reads as one wave, not steps.
 const SWEEP_START = SETTLE_AT + 400;
 const SWEEP_STAGGER = 70;
 const SWEEP_MS = 900;
@@ -198,11 +196,11 @@ function NameSegment({
 	useEffect(() => {
 		const button = soundRef.current?.querySelector("button");
 		if (sweepDelay === null || !button) return;
-		const glow = getComputedStyle(button).getPropertyValue("--secondary").trim();
-		const animation = button.animate([{ offset: 0.4, backgroundColor: glow }], {
+		const animation = button.animate([{ offset: 0.4, transform: "scaleX(1)" }], {
 			duration: SWEEP_MS,
 			delay: sweepDelay,
 			easing: "ease-in-out",
+			pseudoElement: "::after",
 		});
 		return () => animation.cancel();
 	}, [sweepDelay]);
