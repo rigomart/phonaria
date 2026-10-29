@@ -52,7 +52,7 @@ export const STOPS: readonly Stop[] = [
 		areaKm: 200,
 		where: "in eastern England, where settlers came from across the North Sea",
 		description:
-			"After Roman rule ended, settlers from today's northern Germany and Denmark crossed the North Sea. Ancient DNA shows that some people in eastern England had up to three-quarters of their family roots in these settlers. Their language became Old English. Its oldest writing, from about 700 CE, is word lists with Latin.",
+			"After Roman rule ended, settlers from today's northern Germany and Denmark crossed the North Sea. Ancient DNA shows that some people in eastern England had up to three-quarters of their family roots in these settlers. Their language became Old English. Its oldest texts include word lists with Latin, from about 700 CE.",
 		sources: ["gretzinger-2022", "oed-old-english"],
 	},
 	{
@@ -86,7 +86,7 @@ export const STOPS: readonly Stop[] = [
 		at: [-0.13, 51.5],
 		where: "at Westminster, next to London",
 		description:
-			'In 1476, William Caxton set up England\'s first printing press here. His books helped make London English the standard, but spelling still changed from book to book. Should he write "egges", a word from Old Norse, or "eyren", the word a woman in Kent understood? English was changing, he wrote.',
+			'In 1476, William Caxton set up England\'s first printing press here. His books used London English, which was becoming the standard, but spelling still changed from book to book. Should he write "egges", a word from Old Norse, or "eyren", the word a woman in Kent understood? English was changing, he wrote.',
 		sources: [
 			"bl-caxton-life",
 			"bl-caxton-english",
@@ -103,7 +103,7 @@ export const STOPS: readonly Stop[] = [
 		areaKm: 250,
 		where: "across England. In the north, the vowels changed in a different way",
 		description:
-			'Long vowels in stressed syllables changed. Most moved higher in the mouth. The two highest became diphthongs: "mine" went from /miːn/ to /maɪn/, and "house" from /huːs/ to /haʊs/. Most of this happened in the 1400s and 1500s. Some experts see several connected changes, starting in the 1200s. Others see one shift.',
+			'Long vowels in stressed syllables changed. Most moved higher in the mouth. The two highest became diphthongs: "mine" went from /miːn/ to /maɪn/, and "house" from /huːs/ to /haʊs/. Most of this happened in the 1400s and 1500s. Some experts trace the first changes to the 1200s. Experts disagree on how they were linked.',
 		sources: ["harvard-gvs", "oed-early-modern", "stenbrenden-2015", "prichard-2014"],
 	},
 	{
@@ -250,7 +250,7 @@ export const STEPS: readonly Step[] = [
 		title: "The Great Vowel Shift",
 		era: { ce: 1400, to: 1600 },
 		paragraphs: [
-			'Between about 1400 and 1600, the long stressed vowels of English changed. "Mine" used to sound like "meen", and "house" like "hoos".',
+			'The long stressed vowels of English changed, mostly between about 1400 and 1600. "Mine" used to sound like "meen", and "house" like "hoos".',
 			"Spelling didn't change with them, and printing kept the old spellings. That's why English vowel letters often don't match their sounds.",
 		],
 		card: "center-right",
@@ -264,7 +264,7 @@ export const STEPS: readonly Step[] = [
 		era: { ce: 1476 },
 		paragraphs: [
 			"In 1476, William Caxton set up England's first printing press, at Westminster near London.",
-			"Printed books helped make London English the standard. Printers slowly made spelling regular, but kept old spellings while the sounds changed.",
+			"Printed books used London English, which was becoming the standard. Printers slowly made spelling regular, but kept old spellings while the sounds changed.",
 		],
 		card: "top-left",
 		camera: { west: -6, south: 49.5, east: 4, north: 55 },

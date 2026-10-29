@@ -187,7 +187,7 @@ Claims:
 6. Caxton wrote that English had changed since he was born. In the preface to the Eneydos, one of his last works, he told of merchants on the Thames who asked a woman in Kent for "egges"; she said she spoke no French, and understood only when another asked for "eyren". "What should a man in these days now write, eggs or eyren?" [bl-caxton-english] FETCHED. "Egg" is from Old Norse. [nottingham-danelaw] FETCHED
 7. Printers from the late 1400s printed the London English that had already become a kind of standard in manuscripts. English spelling became gradually regular between 1475 and about 1630, and printed English looks largely modern after the mid-1600s. [oed-early-modern] FETCHED
 
-Where scholars split: how standard written English formed. The OED says "Chancery English" (the usage of official documents) fed into printers' practice, "but this is only one aspect of a very complex story, which is still subject to considerable uncertainty and debate". The BL is cautious about Caxton's own part. The copy says printed books "helped make London English the standard" and that spelling still varied.
+Where scholars split: how standard written English formed. The OED says "Chancery English" (the usage of official documents) fed into printers' practice, "but this is only one aspect of a very complex story, which is still subject to considerable uncertainty and debate". The BL is cautious about Caxton's own part. The copy says printed books "used London English, which was becoming the standard" and that spelling still varied.
 
 Dropped:
 
@@ -208,7 +208,7 @@ The most important step for Phonaria learners: it explains why English vowel let
 
 - id: `great-vowel-shift`
 - name: "The Great Vowel Shift"
-- kind: language. The types have no kind for a sound change; `language` is the nearest.
+- kind: change. The stop kind for a change in the language rather than a place it reached.
 - date shown: ~1400–1600 CE (`{ ce: 1400, to: 1600 }`). Harvard's Chaucer site gives the 12th to the 18th century "but with its main effects in the fifteenth and early sixteenth centuries"; the OED shows spelling falling out of step with pronunciation "by the sixteenth century". The range shows Harvard's main period, not the earliest proposed start or the latest effects. Until 2026-10-29 it was ~1400–1700, which went past that main period.
 - place: `[-1.2, 52.3]`, `areaKm: 250`. England, with the soft area over the Midlands and south. It happened across England, unevenly.
 - where (draft): "across England; northern dialects changed differently"
