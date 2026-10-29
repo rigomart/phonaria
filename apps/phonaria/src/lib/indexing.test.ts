@@ -4,7 +4,7 @@ import { formatRobotsTxt, getIndexablePaths, getRobotsPolicy, getSitemapUrls } f
 afterEach(() => {
 	delete process.env.SITE_URL;
 	delete process.env.SITE_INDEXING_ENABLED;
-	delete process.env.FLAG_LANGUAGE_SPREAD;
+	delete process.env.FLAG_LANGUAGE_HISTORY;
 });
 
 describe("indexing helpers", () => {
@@ -25,7 +25,7 @@ describe("indexing helpers", () => {
 
 	it("lists the indexable application URLs and omits Practice", () => {
 		process.env.SITE_URL = "https://phonaria.rigos.dev";
-		process.env.FLAG_LANGUAGE_SPREAD = "0";
+		process.env.FLAG_LANGUAGE_HISTORY = "0";
 		expect(getSitemapUrls()).toEqual([
 			"https://phonaria.rigos.dev",
 			"https://phonaria.rigos.dev/ipa-chart/consonants",
@@ -35,16 +35,16 @@ describe("indexing helpers", () => {
 		]);
 	});
 
-	it("adds Language Spread only when its flag is on", () => {
-		expect(getIndexablePaths({ languageSpread: true })).toContain("/language-spread");
-		expect(getIndexablePaths({ languageSpread: false })).not.toContain("/language-spread");
+	it("adds History only when its flag is on", () => {
+		expect(getIndexablePaths({ languageHistory: true })).toContain("/history");
+		expect(getIndexablePaths({ languageHistory: false })).not.toContain("/history");
 	});
 
-	it("reads the Language Spread flag from the environment by default", () => {
+	it("reads the History flag from the environment by default", () => {
 		process.env.SITE_URL = "https://phonaria.rigos.dev";
-		process.env.FLAG_LANGUAGE_SPREAD = "1";
-		expect(getSitemapUrls()).toContain("https://phonaria.rigos.dev/language-spread");
-		process.env.FLAG_LANGUAGE_SPREAD = "0";
-		expect(getSitemapUrls()).not.toContain("https://phonaria.rigos.dev/language-spread");
+		process.env.FLAG_LANGUAGE_HISTORY = "1";
+		expect(getSitemapUrls()).toContain("https://phonaria.rigos.dev/history");
+		process.env.FLAG_LANGUAGE_HISTORY = "0";
+		expect(getSitemapUrls()).not.toContain("https://phonaria.rigos.dev/history");
 	});
 });

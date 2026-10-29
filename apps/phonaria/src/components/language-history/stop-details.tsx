@@ -1,8 +1,8 @@
 import { Button } from "@phonaria/ui/components/button";
 import { MapPin, XIcon } from "lucide-react";
 import { useId, useLayoutEffect, useRef } from "react";
-import { formatMaybeEra } from "@/lib/language-spread/era";
-import type { Source, Stop, StopKind } from "@/lib/language-spread/types";
+import { formatMaybeEra } from "@/lib/language-history/era";
+import type { Source, Stop, StopKind } from "@/lib/language-history/types";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 

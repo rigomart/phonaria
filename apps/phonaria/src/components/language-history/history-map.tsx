@@ -1,10 +1,10 @@
 import { Button } from "@phonaria/ui/components/button";
 import { LocateFixed } from "lucide-react";
 import type { RefCallback } from "react";
-import type { Insets } from "@/lib/language-spread/camera";
-import { formatMaybeEra } from "@/lib/language-spread/era";
-import { type Phase, phaseOf, TIMING } from "@/lib/language-spread/scene";
-import type { Step, Stop } from "@/lib/language-spread/types";
+import type { Insets } from "@/lib/language-history/camera";
+import { formatMaybeEra } from "@/lib/language-history/era";
+import { type Phase, phaseOf, TIMING } from "@/lib/language-history/scene";
+import type { Step, Stop } from "@/lib/language-history/types";
 import { cn } from "@/lib/utils";
 import { KIND_LABELS, KindMark } from "./stop-details";
 import { useGlobe } from "./use-globe";
@@ -13,7 +13,7 @@ import { useGlobe } from "./use-globe";
  * Pins on the far side of the globe are hidden. Dragging turns the globe; the recenter button
  * returns it to the step's view.
  */
-export function SpreadMap({
+export function HistoryMap({
 	steps,
 	stops,
 	detailsId,

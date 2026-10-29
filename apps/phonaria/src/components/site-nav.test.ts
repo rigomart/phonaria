@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { getTools } from "./site-nav";
 
-const ids = (practice: boolean, languageSpread: boolean, speech = false) =>
-	getTools({ practice, languageSpread, speech }).map((tool) => tool.id);
+const ids = (practice: boolean, languageHistory: boolean, speech = false) =>
+	getTools({ practice, languageHistory, speech }).map((tool) => tool.id);
 
 describe("getTools", () => {
-	it("shows Language Spread only when its flag is on", () => {
-		expect(ids(false, true)).toContain("language-spread");
-		expect(ids(true, false)).not.toContain("language-spread");
+	it("shows History only when its flag is on", () => {
+		expect(ids(false, true)).toContain("language-history");
+		expect(ids(true, false)).not.toContain("language-history");
 	});
 
 	it("shows Minimal pairs, before Practice, only when speech is on", () => {

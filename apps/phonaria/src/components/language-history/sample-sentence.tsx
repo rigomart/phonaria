@@ -1,6 +1,6 @@
 import { type Ref, useState } from "react";
-import { SAMPLE_MEANING, SAMPLES } from "@/lib/language-spread/story";
-import type { Sample, Source } from "@/lib/language-spread/types";
+import { SAMPLE_MEANING, SAMPLES } from "@/lib/language-history/story";
+import type { Sample, Source } from "@/lib/language-history/types";
 import { cn } from "@/lib/utils";
 import { SourceLink } from "./stop-details";
 
@@ -108,11 +108,11 @@ export function SampleCaption({
 export function SampleComparison({ sources }: { sources: ReadonlyMap<string, Source> }) {
 	return (
 		<section
-			aria-labelledby="language-spread-sample"
+			aria-labelledby="language-history-sample"
 			className="relative z-10 border-t bg-background"
 		>
 			<div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
-				<h2 id="language-spread-sample" className="font-display text-lg font-semibold">
+				<h2 id="language-history-sample" className="font-display text-lg font-semibold">
 					One sentence through 1,000 years
 				</h2>
 				<p className="mt-1.5 text-sm leading-relaxed text-muted-foreground text-pretty">

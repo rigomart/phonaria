@@ -14,7 +14,7 @@ export type WorkerEnv = {
 	SITE_URL?: string;
 	SITE_INDEXING_ENABLED?: string;
 	FLAG_PRACTICE?: string;
-	FLAG_LANGUAGE_SPREAD?: string;
+	FLAG_LANGUAGE_HISTORY?: string;
 	FLAG_SPEECH?: string;
 	PUBLIC_BUCKET_URL?: string;
 	TURSO_DATABASE_URL?: string;

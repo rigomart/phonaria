@@ -29,10 +29,10 @@ describe("Cloudflare Practice flag", () => {
 		expect(envVarsBlock("production")).toContain('"FLAG_PRACTICE": "0"');
 	});
 
-	it("enables Language Spread on staging and preview and keeps production off", () => {
-		expect(envVarsBlock("staging")).toContain('"FLAG_LANGUAGE_SPREAD": "1"');
-		expect(envVarsBlock("preview")).toContain('"FLAG_LANGUAGE_SPREAD": "1"');
-		expect(envVarsBlock("production")).toContain('"FLAG_LANGUAGE_SPREAD": "0"');
+	it("enables History on staging and preview and keeps production off", () => {
+		expect(envVarsBlock("staging")).toContain('"FLAG_LANGUAGE_HISTORY": "1"');
+		expect(envVarsBlock("preview")).toContain('"FLAG_LANGUAGE_HISTORY": "1"');
+		expect(envVarsBlock("production")).toContain('"FLAG_LANGUAGE_HISTORY": "0"');
 	});
 
 	it("enables speech scoring on staging and preview and keeps production off", () => {
@@ -51,7 +51,7 @@ describe("Cloudflare Practice flag", () => {
 			"/ipa-chart/*",
 			"/practice",
 			"/practice/*",
-			"/language-spread",
+			"/history",
 			"/robots.txt",
 			"/sitemap.xml",
 			"/en",

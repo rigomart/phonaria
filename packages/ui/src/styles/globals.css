@@ -60,7 +60,7 @@
 	/* Voiced consonants on the chart: a light primary tint. */
 	--voiced: color-mix(in oklch, var(--primary) 15%, var(--background-strong));
 	--voiced-border: color-mix(in oklch, var(--primary) 20%, var(--background-strong));
-	/* Language spread map: a globe with lapis-ink routes, and glass panels floating over it.
+	/* Language history map: a globe with lapis-ink routes, and glass panels floating over it.
 	   The glass is not blurred: a backdrop blur over the moving map doubled slow frames on throttled CPUs. */
 	--map-space: oklch(0.975 0.004 250);
 	--map-water: oklch(0.925 0.022 240);

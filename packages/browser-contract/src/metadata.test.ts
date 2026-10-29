@@ -7,7 +7,7 @@ const target = {
 	baseUrl: "https://phonaria.rigos.dev",
 	expectedCanonicalOrigin: "https://phonaria.rigos.dev",
 	practiceEnabled: false,
-	languageSpreadEnabled: false,
+	languageHistoryEnabled: false,
 	indexingEnabled: true,
 	bucketAssetsAvailable: true,
 	authentication: { type: "none" },
@@ -37,10 +37,10 @@ describe("metadata helpers", () => {
 		expect(expectedSitemapUrls(target).join(" ")).not.toContain("practice");
 	});
 
-	it("adds Language Spread to the sitemap set only where its flag is on", () => {
-		expect(expectedSitemapUrls(target).join(" ")).not.toContain("language-spread");
-		expect(expectedSitemapUrls({ ...target, languageSpreadEnabled: true }).at(-1)).toBe(
-			"https://phonaria.rigos.dev/language-spread",
+	it("adds History to the sitemap set only where its flag is on", () => {
+		expect(expectedSitemapUrls(target).join(" ")).not.toContain("language-history");
+		expect(expectedSitemapUrls({ ...target, languageHistoryEnabled: true }).at(-1)).toBe(
+			"https://phonaria.rigos.dev/history",
 		);
 	});
 });

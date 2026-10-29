@@ -13,7 +13,7 @@ const target = {
 	baseUrl: "https://phonaria.rigos.dev",
 	expectedCanonicalOrigin: "https://phonaria.rigos.dev",
 	practiceEnabled: false,
-	languageSpreadEnabled: false,
+	languageHistoryEnabled: false,
 	indexingEnabled: true,
 	bucketAssetsAvailable: true,
 	authentication: { type: "none" },

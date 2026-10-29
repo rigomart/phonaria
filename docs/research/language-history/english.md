@@ -4,7 +4,7 @@ Research notes for refocusing the `/language-spread` page on the history of one 
 
 Check levels, as in the other notes: FETCHED (full page text read), ABSTRACT (abstract or publisher description only), SEARCH-CONFIRMED (a search summary only), SECONDHAND (the claim reaches us through a third party). A claim is in the draft copy only if a FETCHED or ABSTRACT source supports it and it does not rest on a single weak source. Several sites block automated fetching (oed.com, merriam-webster.com, npg.si.edu, the live Harvard Chaucer site); for those I read the Internet Archive's copy and give the exact capture URL in the Bibliography.
 
-Conventions: places are `[lon, lat]`, as in `story.ts`. Eras use the `Era` formats in `apps/phonaria/src/lib/language-spread/era.ts`. Character counts for card copy and descriptions were checked by script.
+Conventions: places are `[lon, lat]`, as in `story.ts`. Eras use the `Era` formats in `apps/phonaria/src/lib/language-history/era.ts`. Character counts for card copy and descriptions were checked by script.
 
 Stops, in page order:
 

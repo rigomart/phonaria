@@ -28,7 +28,7 @@ EVIDENCE_LOG_AUTH_TOKEN="your-write-token"
 
 The first two keys are needed when a word misses the bundled lists and must be looked up in Turso. Without them, common words can still transcribe in the browser while server lookups fail. `.env.local` is useful for build-time settings and scripts, but its secret values are not automatically copied into `.dev.vars`. Restart the dev server after editing `.dev.vars`. Both files are ignored by Git; use `.env.example` as a reference.
 
-`scripts/write-dev-vars.ts` writes public settings and preserves existing Worker secret lines during builds. It never imports secret values from the process environment. The app uses `SITE_URL` for canonical links; production builds require it. Practice, Language Spread and speech scoring default on locally and are controlled per deployed environment by `FLAG_PRACTICE`, `FLAG_LANGUAGE_SPREAD` and `FLAG_SPEECH`. When a flag is off, its route returns 404 and its header link is hidden.
+`scripts/write-dev-vars.ts` writes public settings and preserves existing Worker secret lines during builds. It never imports secret values from the process environment. The app uses `SITE_URL` for canonical links; production builds require it. Practice, History and speech scoring default on locally and are controlled per deployed environment by `FLAG_PRACTICE`, `FLAG_LANGUAGE_HISTORY` and `FLAG_SPEECH`. When a flag is off, its route returns 404 and its header link is hidden.
 
 ## Commands
 
@@ -47,11 +47,11 @@ Deploy workflows pass Worker secrets from GitHub Actions secrets through `script
 
 Staging CI uses the GitHub variables `STAGING_URL` and `WORKERS_DEV_SUBDOMAIN`. `STAGING_URL` must point to `https://phonaria-staging.<subdomain>.workers.dev`; the staging origin check rejects a URL for another Worker before deployment.
 
-## Language Spread
+## History
 
-`/language-spread` tells the story of English as a scrolling story over a globe, from its Indo-European ancestor to the English used around the world today. Story data, sources, camera framing and card placement are in `src/lib/language-spread/story.ts`, with the research notes behind every stop in [`docs/research/language-spread`](../../docs/research/language-spread/). The UI is in `src/components/language-spread`: the globe is drawn on a canvas with `d3-geo`'s orthographic projection, and pins are buttons placed over it.
+`/history` tells the story of English as a scrolling story over a globe, from its Indo-European ancestor to the English used around the world today. Story data, sources, camera framing and card placement are in `src/lib/language-history/story.ts`, with the research notes behind every stop in [`docs/research/language-history`](../../docs/research/language-history/). The UI is in `src/components/language-history`: the globe is drawn on a canvas with `d3-geo`'s orthographic projection, and pins are buttons placed over it.
 
-The land in `src/lib/language-spread/world-land.ts` is generated from Natural Earth 1:50m land (public domain) by `scripts/generate-world-map.ts`, as a coarse outline for whole-globe views and a fine one for close-ups. Regenerate it with:
+The land in `src/lib/language-history/world-land.ts` is generated from Natural Earth 1:50m land (public domain) by `scripts/generate-world-map.ts`, as a coarse outline for whole-globe views and a fine one for close-ups. Regenerate it with:
 
 ```bash
 bun apps/phonaria/scripts/generate-world-map.ts [path/to/ne_50m_land.geojson]

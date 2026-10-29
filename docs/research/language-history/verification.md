@@ -1,8 +1,8 @@
-# Language spread: verification record
+# Language history: verification record
 
 Browser verification of `/language-spread` with the verify-phonaria skill, run on 2026-10-17 against a local dev server. The full evidence (checkpoint screenshots, page snapshots, `diagnostics.json`, `commands.jsonl`, `server.log`, and `report.md`/`report.json`) is under the git-ignored `test-results/verification/<run>/` in the checkout where the runs were made. This file records the outcomes so they survive outside that folder.
 
-The journeys, their checkpoints and their limits are described in [the feature map](../../../.agents/skills/verify-phonaria/references/feature-map.md#language-spread).
+The journeys, their checkpoints and their limits are described in [the feature map](../../../.agents/skills/verify-phonaria/references/feature-map.md#history). The page was called Language Spread, at `/language-spread` behind `FLAG_LANGUAGE_SPREAD`, until 2026-10-29; the runs below keep the names they ran under.
 
 ## The globe and the story of English
 
@@ -96,7 +96,7 @@ Everything below covers the earlier version of the page: the 25-step world story
 
 Checkpoints in the flag-on run: `intro`, `out-of-africa`, `earlier-pin-mid-story` (opening the Sino-Tibetan pin while on the Austronesian step), `details-closed` (Escape returns focus to the pin), `chip-keyboard`, `scroll-back` (later pins hidden again, arrows undrawn, camera back on Africa), `today` (all 49 pins and 80 arrows), `mobile` and `reduced-motion` (the camera lands within 300 ms). Neither run had browser errors, console errors or unexpected failed requests.
 
-The Playwright browser contract (`packages/browser-contract/e2e/language-spread.spec.ts`) also passed against the local target: the enabled-flag checks for the nav link, the map and era on load, and the era advancing on scroll. Its disabled-flag checks (the 404 and the hidden nav link) passed against the same flag-off server on `eab1521`, run with the production target and `CONTRACT_BASE_URL=http://127.0.0.1:3001`.
+The Playwright browser contract (`packages/browser-contract/e2e/language-history.spec.ts`) also passed against the local target: the enabled-flag checks for the nav link, the map and era on load, and the era advancing on scroll. Its disabled-flag checks (the 404 and the hidden nav link) passed against the same flag-off server on `eab1521`, run with the production target and `CONTRACT_BASE_URL=http://127.0.0.1:3001`.
 
 ### Earlier runs, kept as evidence
 

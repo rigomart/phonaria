@@ -124,12 +124,12 @@ test("missing observations cannot silently pass", () => {
 test("an expected error response does not fail a run, but any other does", () => {
 	const notFound = {
 		method: "GET",
-		url: "http://127.0.0.1:3000/language-spread",
+		url: "http://127.0.0.1:3000/history",
 		status: 404,
 		error: null,
 	};
 	const elsewhere = { ...notFound, url: "http://127.0.0.1:3000/ipa-chart" };
-	const expected = [{ path: "/language-spread", status: 404 }];
+	const expected = [{ path: "/history", status: 404 }];
 	const diagnostics = { ...clean, failedRequests: [notFound] };
 	assert.equal(assessRun("passed", passed, required, diagnostics), "failed");
 	assert.equal(

@@ -16,8 +16,8 @@ export const flags = createFlags(
 			// builds until the env var opts them in.
 			enabledByDefault: process.env.NODE_ENV !== "production",
 		},
-		languageSpread: {
-			envVar: "FLAG_LANGUAGE_SPREAD",
+		languageHistory: {
+			envVar: "FLAG_LANGUAGE_HISTORY",
 			enabledByDefault: process.env.NODE_ENV !== "production",
 		},
 		speech: {
@@ -33,8 +33,8 @@ export const flags = createFlags(
 		get FLAG_PRACTICE() {
 			return process.env.FLAG_PRACTICE;
 		},
-		get FLAG_LANGUAGE_SPREAD() {
-			return process.env.FLAG_LANGUAGE_SPREAD;
+		get FLAG_LANGUAGE_HISTORY() {
+			return process.env.FLAG_LANGUAGE_HISTORY;
 		},
 		get FLAG_SPEECH() {
 			return process.env.FLAG_SPEECH;

@@ -2,9 +2,9 @@ import type { Bounds } from "./camera";
 import type { Sample, Source, Step, Stop } from "./types";
 
 /**
- * The story told on /language-spread: how English came to be, from its
+ * The story told on /history: how English came to be, from its
  * Indo-European ancestor to the language most of the world uses. Every stop
- * and card claim is traced to docs/research/language-spread/english.md, which
+ * and card claim is traced to docs/research/language-history/english.md, which
  * records the evidence and the disagreements behind each one. Places are
  * approximate on purpose.
  */

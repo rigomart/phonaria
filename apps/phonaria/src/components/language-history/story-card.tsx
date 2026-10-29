@@ -1,7 +1,7 @@
 import { ArrowDown, MoveRight } from "lucide-react";
 import { useId, useLayoutEffect, useRef } from "react";
-import { formatEra } from "@/lib/language-spread/era";
-import type { CardPlacement, Sample, Source, Step, Stop } from "@/lib/language-spread/types";
+import { formatEra } from "@/lib/language-history/era";
+import type { CardPlacement, Sample, Source, Step, Stop } from "@/lib/language-history/types";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { KindMark, SourceLink } from "./stop-details";

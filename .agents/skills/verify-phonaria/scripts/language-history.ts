@@ -4,7 +4,7 @@ import { type Feature, observation } from "./feature";
 // inside the function body and read only rendered DOM and browser state.
 //
 // Expected values are literals taken from the story data in
-// apps/phonaria/src/lib/language-spread/story.ts and from the product requirements:
+// apps/phonaria/src/lib/language-history/story.ts and from the product requirements:
 // 11 steps, 9 places, 8 spread routes, 9 main works. Routes drawn by step are cumulative:
 // intro 0, indo-european 1, germanic 1, old-english 3, vikings 5, norman-conquest 6,
 // great-vowel-shift 6, printing 6, america 7, around-the-world 8, today 8.
@@ -41,7 +41,7 @@ const intro = observation(
 			'[role="region"][aria-label^="Map of where languages spread"]',
 		);
 		const box = region?.getBoundingClientRect();
-		const sources = document.querySelector('section[aria-labelledby="language-spread-sources"]');
+		const sources = document.querySelector('section[aria-labelledby="language-history-sources"]');
 		const links = Array.from(sources?.querySelectorAll("a") ?? []);
 		const cards = Array.from(document.querySelectorAll<HTMLElement>("li[data-step] > * article"));
 		const card = document.querySelector('[data-step="intro"] article')?.getBoundingClientRect();
@@ -57,7 +57,7 @@ const intro = observation(
 			heading: document.querySelector("h1")?.textContent?.trim() ?? null,
 			navCurrent:
 				document
-					.querySelector('nav[aria-label="Main"] a[href="/language-spread"]')
+					.querySelector('nav[aria-label="Main"] a[href="/history"]')
 					?.getAttribute("aria-current") ?? null,
 			robots: document.querySelector('meta[name="robots"]')?.getAttribute("content") ?? null,
 			share: (() => {
@@ -77,7 +77,7 @@ const intro = observation(
 						meta("og:description")[0]?.startsWith("English from Indo-European roots") ?? false,
 					// Every og:image and twitter:image, whatever origin they carry, is the page's own image.
 					images: [...meta("og:image"), ...meta("twitter:image")].every((url) =>
-						url.endsWith("/og/language-spread.jpg"),
+						url.endsWith("/og/history.jpg"),
 					),
 					imageSize: `${meta("og:image:width")[0]}x${meta("og:image:height")[0]}`,
 					twitterCard: meta("twitter:card"),
@@ -128,7 +128,7 @@ const intro = observation(
 		};
 	},
 	{
-		path: "/language-spread",
+		path: "/history",
 		title: "The history of English, from Old English to today - Phonaria",
 		heading: "The story of English",
 		navCurrent: "page",
@@ -1023,7 +1023,7 @@ const sitemap = observation(sitemapRead, {
 		"/ipa-chart/vowels",
 		"/ipa-chart/frequency",
 		"/credits",
-		"/language-spread",
+		"/history",
 	],
 });
 
@@ -1307,8 +1307,8 @@ export function recordFlight() {
 	return "recording";
 }
 
-export const languageSpread = {
-	title: "Language Spread story page",
+export const languageHistory = {
+	title: "History story page",
 	checkpoints: {
 		intro,
 		"next-step": nextStep,
@@ -1350,7 +1350,7 @@ export const languageSpread = {
 		"reduced-no-spin": reducedNoSpin,
 	},
 	coverageLimits: [
-		"Chromium only, with the page flag on; flag-off behaviour is the separate language-spread-off journey",
+		"Chromium only, with the page flag on; flag-off behaviour is the separate language-history-off journey",
 		"the landed camera is checked as a centre inside the step's bounds and a zoom above or below 1; land, areas, arrows and visual quality are drawn on a canvas and reviewed in screenshots only",
 		"mid-flight zoom is worked out from where pins were drawn on each frame, not read from the page or from canvas pixels; frames with too few separate pins on the near side are skipped",
 		"no frame rate or flight smoothness is measured; a settled attribute proves the flight ended, not that it looked right",
@@ -1371,8 +1371,8 @@ export const languageSpread = {
 	trace: "skip",
 } satisfies Feature;
 
-export const languageSpreadOff = {
-	title: "Language Spread flag off",
+export const languageHistoryOff = {
+	title: "History flag off",
 	checkpoints: {
 		"not-found": observation(
 			() => ({
@@ -1390,7 +1390,7 @@ export const languageSpreadOff = {
 				),
 			}),
 			{
-				path: "/language-spread",
+				path: "/history",
 				status: 404,
 				heading: "This page doesn't exist",
 				map: false,
@@ -1416,13 +1416,13 @@ export const languageSpreadOff = {
 				visible: Array.from(document.querySelectorAll('nav[aria-label="Main"] a')).every(
 					(link) => link.getClientRects().length > 0,
 				),
-				spreadLinks: document.querySelectorAll('a[href="/language-spread"]').length,
+				historyLinks: document.querySelectorAll('a[href="/history"]').length,
 			}),
 			{
 				path: "/",
 				navLinks: ["Transcription", "IPA Chart", "Practice"],
 				visible: true,
-				spreadLinks: 0,
+				historyLinks: 0,
 			},
 		),
 	},
@@ -1430,7 +1430,7 @@ export const languageSpreadOff = {
 		"Chromium desktop only; the phone menu is not opened, but any link to the page anywhere in the DOM is counted",
 		"the status comes from the navigation timing entry of the first page load, so open the page directly before observing",
 		"Practice is on locally unless FLAG_PRACTICE=0, so the expected labels include it",
-		"the server must be started with FLAG_LANGUAGE_SPREAD=0; the journey cannot tell whether it was",
+		"the server must be started with FLAG_LANGUAGE_HISTORY=0; the journey cannot tell whether it was",
 	],
-	expectedResponses: [{ path: "/language-spread", status: 404 }],
+	expectedResponses: [{ path: "/history", status: 404 }],
 } satisfies Feature;

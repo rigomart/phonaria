@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Generate `src/lib/language-spread/world-land.ts` from Natural Earth 1:50m land
+ * Generate `src/lib/language-history/world-land.ts` from Natural Earth 1:50m land
  * (public domain): a coarse outline for whole-globe views and a fine one for
  * close-ups, both in longitude/latitude and encoded by `land-codec.ts`.
  * Pass a local GeoJSON path to skip the download:
@@ -11,11 +11,11 @@ import { mkdtempSync, writeFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { geoArea } from "d3-geo";
-import { encodeLand, type LandPolygon, type Ring } from "../src/lib/language-spread/land-codec";
+import { encodeLand, type LandPolygon, type Ring } from "../src/lib/language-history/land-codec";
 
 const SOURCE_URL =
 	"https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_land.geojson";
-const OUTPUT_PATH = new URL("../src/lib/language-spread/world-land.ts", import.meta.url);
+const OUTPUT_PATH = new URL("../src/lib/language-history/world-land.ts", import.meta.url);
 
 const EARTH_RADIUS_KM = 6371;
 const RAD = Math.PI / 180;

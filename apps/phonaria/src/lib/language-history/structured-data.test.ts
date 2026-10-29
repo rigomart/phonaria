@@ -1,20 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { LANGUAGE_SPREAD_PAGE_DESCRIPTION, LANGUAGE_SPREAD_PAGE_TITLE } from "./metadata";
+import { LANGUAGE_HISTORY_PAGE_DESCRIPTION, LANGUAGE_HISTORY_PAGE_TITLE } from "./metadata";
 import { SOURCES, STEPS } from "./story";
-import { buildLanguageSpreadStructuredData, serializeJsonLd } from "./structured-data";
+import { buildLanguageHistoryStructuredData, serializeJsonLd } from "./structured-data";
 
 const SITE_URL = "https://phonaria.example.test";
 
-describe("buildLanguageSpreadStructuredData", () => {
-	const data = buildLanguageSpreadStructuredData(SITE_URL);
+describe("buildLanguageHistoryStructuredData", () => {
+	const data = buildLanguageHistoryStructuredData(SITE_URL);
 
 	it("describes the page as a free English-language article", () => {
 		expect(data).toMatchObject({
 			"@context": "https://schema.org",
 			"@type": "Article",
 			headline: STEPS[0]?.title,
-			alternativeHeadline: LANGUAGE_SPREAD_PAGE_TITLE,
-			description: LANGUAGE_SPREAD_PAGE_DESCRIPTION,
+			alternativeHeadline: LANGUAGE_HISTORY_PAGE_TITLE,
+			description: LANGUAGE_HISTORY_PAGE_DESCRIPTION,
 			inLanguage: "en",
 			about: { "@type": "Thing", name: "History of the English language" },
 			isAccessibleForFree: true,
@@ -22,10 +22,10 @@ describe("buildLanguageSpreadStructuredData", () => {
 	});
 
 	it("uses absolute URLs for the page, its image and the publisher", () => {
-		expect(data.url).toBe(`${SITE_URL}/language-spread`);
+		expect(data.url).toBe(`${SITE_URL}/history`);
 		expect(data.image).toEqual({
 			"@type": "ImageObject",
-			url: `${SITE_URL}/og/language-spread.jpg`,
+			url: `${SITE_URL}/og/history.jpg`,
 			width: 1200,
 			height: 630,
 		});
@@ -53,7 +53,7 @@ describe("serializeJsonLd", () => {
 	});
 
 	it("parses back to the same value", () => {
-		const value = { text: "</script>", data: buildLanguageSpreadStructuredData(SITE_URL) };
+		const value = { text: "</script>", data: buildLanguageHistoryStructuredData(SITE_URL) };
 		expect(JSON.parse(serializeJsonLd(value))).toEqual(value);
 	});
 });

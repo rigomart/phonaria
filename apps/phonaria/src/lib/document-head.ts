@@ -11,15 +11,15 @@ import {
 	VOWELS_PAGE_TITLE,
 } from "@/lib/ipa-chart-metadata";
 import {
-	LANGUAGE_SPREAD_IMAGE,
-	LANGUAGE_SPREAD_PAGE_DESCRIPTION,
-	LANGUAGE_SPREAD_PAGE_TITLE,
-	LANGUAGE_SPREAD_PATH,
-} from "@/lib/language-spread/metadata";
+	LANGUAGE_HISTORY_IMAGE,
+	LANGUAGE_HISTORY_PAGE_DESCRIPTION,
+	LANGUAGE_HISTORY_PAGE_TITLE,
+	LANGUAGE_HISTORY_PATH,
+} from "@/lib/language-history/metadata";
 import {
-	buildLanguageSpreadStructuredData,
+	buildLanguageHistoryStructuredData,
 	serializeJsonLd,
-} from "@/lib/language-spread/structured-data";
+} from "@/lib/language-history/structured-data";
 import { PracticeActivity } from "@/lib/practice/activity";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import {
@@ -259,13 +259,13 @@ export function buildMinimalPairPracticeHead(): StartHead {
 }
 
 /** Includes JSON-LD only when SITE_URL is set. */
-export function buildLanguageSpreadHead(): StartHead {
+export function buildLanguageHistoryHead(): StartHead {
 	const head = buildPageHead({
-		path: LANGUAGE_SPREAD_PATH,
-		title: LANGUAGE_SPREAD_PAGE_TITLE,
-		description: LANGUAGE_SPREAD_PAGE_DESCRIPTION,
+		path: LANGUAGE_HISTORY_PATH,
+		title: LANGUAGE_HISTORY_PAGE_TITLE,
+		description: LANGUAGE_HISTORY_PAGE_DESCRIPTION,
 		ogType: "article",
-		image: LANGUAGE_SPREAD_IMAGE,
+		image: LANGUAGE_HISTORY_IMAGE,
 	});
 	const metadata = tryGetDocumentMetadata();
 	if (!metadata) return head;
@@ -274,7 +274,7 @@ export function buildLanguageSpreadHead(): StartHead {
 		scripts: [
 			{
 				type: "application/ld+json",
-				children: serializeJsonLd(buildLanguageSpreadStructuredData(metadata.siteUrl)),
+				children: serializeJsonLd(buildLanguageHistoryStructuredData(metadata.siteUrl)),
 			},
 		],
 	};
