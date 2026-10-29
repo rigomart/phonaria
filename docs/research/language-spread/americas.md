@@ -2,6 +2,8 @@
 
 Research notes for the Indigenous Americas stops of the "How languages spread" page. Colonial spread is covered elsewhere. Items marked WEAK rest on one weak or indirect source and should be dropped or softened. Wikipedia was used only to find leads and is not cited.
 
+Second check, 2026-10-29: the claims flagged in a source check were re-read against their abstracts, publisher pages or the web pages cited (see the README's "Second check of the world notes"). Quotes were made verbatim, and claims that could not be re-verified are marked NOT RE-VERIFIED. Entries changed in that check say so.
+
 Conventions: years are negative for BCE. Coordinates are decimal degrees (lat, lon). "Era year" is the single year for the era indicator. Citation keys such as [Bennett 2021] point to the Bibliography. "Glottolog counts" were computed by the investigator from the public Glottolog CLDF export (see [Glottolog]); they include extinct languages, so they run higher than counts of languages spoken today.
 
 Stops covered:
@@ -44,9 +46,9 @@ Claims:
 1. The first Americans came from northeast Asia by way of Beringia, the land that once joined Siberia and Alaska.
    - [Moreno-Mayar 2018]: opens by noting "broad agreement that the Americas were initially populated via Beringia"; the Alaskan infant genome (about 11,500 years old) shows the ancestors of Native Americans split from East Asians around 36,000 years ago, and that the main Native American branches diverged around 17,500 to 14,600 years ago, probably south of the ice sheets.
    - [Willerslev and Meltzer 2021]: ancient genomes show the first dispersal "involved the movement from northeast Asia of distinct and previously unknown populations", and nearly all ancient individuals are more closely related to living Indigenous Americans than to anyone elsewhere.
-2. Sites in the Americas dated to roughly 16,000 to 14,500 years ago are widely accepted. Monte Verde II in Chile is about 14,500 years old, and Cooper's Ferry in Idaho has stone points about 16,000 years old.
+2. Monte Verde II in Chile, about 14,500 years old, is widely accepted. Cooper's Ferry in Idaho has stone points dated to about 16,000 years old by the excavating team; "widely accepted" is not shown for that date by the one study cited here. (Second check: the first pass called both "widely accepted".)
    - [Dillehay 2015]: its introduction treats Monte Verde II as "one valid human site" dated about 14,500 calendar years before present. The same paper reports possible older human activity at nearby Monte Verde I (about 18,500 to 14,500 years ago) that the authors call probable, not certain.
-   - [Davis 2022]: a stone-tool assemblage at Cooper's Ferry dated to about 16,000 years ago, older than Clovis points, from a time when glaciers had closed off an inland land route.
+   - [Davis 2022]: a stone-tool assemblage at Cooper's Ferry dated to about 16,000 years ago, older than Clovis points, from a time when glaciers had closed off an inland land route. One study, by the team that excavated the site; no independent assessment was read.
 3. Footprints at White Sands, New Mexico, have been dated to about 23,000 to 21,000 years ago, but that age is contested.
    - [Bennett 2021]: human footprints between seed layers, radiocarbon dated to about 23,000 to 21,000 years ago, during the Ice Age peak.
    - [Oviatt 2022]: argues the dated water-plant seeds may carry old carbon from the water, so the ages are less certain than reported; a seed sample collected in 1947 from a nearby spring returned about 7,400 years.
@@ -59,7 +61,7 @@ Claims:
    - [Glottolog]: about 84 families and 95 isolates in North and South America (extinct languages included).
    - [Gregersen 2025]: reviewing Campbell's 2024 book, mentions the Americas' diversity "with c. 170 recognized language families and isolates".
    - [Rogers 2021]: university lecture slides: most linguists do not accept Greenberg's three-group scheme and recognize roughly 150 to 180 independent families.
-   - [EBSCO Native American families]: "Traditionalists immediately rejected Amerind", and a majority of linguists reject or doubt Greenberg's method, though most assume large-scale relationships exist.
+   - [EBSCO Native American families]: Amerind, "by far the largest group with 583 languages, was immediately denounced by traditionalists", who rejected the phylum and many of its branches; a majority of linguists reject or doubt Greenberg's method, though most assume large-scale relationships exist (paraphrase).
 
 Draft card: "People first reached the Americas from northeast Asia, crossing the land around the Bering Strait. Most researchers agree they were south of the ice sheets by about 15,000 years ago. A few sites hint at much earlier arrivals, and that is still debated."
 
@@ -69,7 +71,7 @@ Draft card: "People first reached the Americas from northeast Asia, crossing the
 
 - id: `eskimo-aleut-inuit-thule`
 - kind: family (the stop's arrows show the Inuit branch)
-- date range: "Inuit ancestors spread east from Alaska about AD 1000 to 1300; most recent work favors the 1200s"
+- date range: "Inuit ancestors spread east from Alaska in the 1200s, within a few centuries at most." A start near AD 1000 is the older view going back to Mathiassen (1927), which the newer radiocarbon work below has superseded; only the 1200s are supported by the sources here. (Second check: changed from "about AD 1000 to 1300", which put the superseded start in the range; the retired `inuit` stop's ~1000–1300 CE had the same problem.)
 - era year: 1250
 - location: (71.3, -156.8) northern Alaska coast near Point Barrow, radius ~600 km.
 - location uncertainty: Moderate. Thule culture grew out of coastal Alaska, but the exact starting district is debated, and the wider Eskimo-Aleut family also reaches the Bering Strait, Siberia and the Aleutian Islands. The older family history before the Thule move is not covered here.
@@ -93,10 +95,11 @@ Claims:
    - [Gulløv and McGhee 2006]: re-reading the Eastern Arctic dates, the Ruin Island phase of northwest Greenland and Ellesmere Island is "probably" thirteenth century; they argue many older dates were misread because of driftwood and marine carbon.
    - [UAF Museum Thule]: the Thule tradition grew out of coastal Alaskan cultures and moved east into the Canadian High Arctic and parts of Greenland; the page credits Mathiassen (1927) with the original idea of a migration around AD 1000.
 4. The newcomers largely replaced the earlier Arctic population genetically.
-   - [Raghavan 2014]: ancient and modern genomes show the Arctic was settled by a migration separate from other Native Americans about 6,000 years ago, and that the earlier Paleo-Eskimo population was replaced around 700 years ago.
-   - [Flegontov 2019]: earlier Arctic peoples "were subsequently joined and largely displaced around 1,000 years ago by ancestors of the present-day Inuit and Yup'ik".
+   - [Raghavan 2014]: ancient and modern genomes show Paleo-Eskimos (about 3000 BCE to 1300 CE) were a migration separate from other Native Americans and from the Inuit; the Paleo-Eskimo metapopulation survived in near-isolation for more than 4,000 years, "only to vanish around 700 years ago".
+   - [Flegontov 2019]: Palaeo-Eskimos "were subsequently joined and largely displaced around 1,000 years ago by ancestors of the present-day Inuit and Yup'ik".
+   - The two papers give different dates for the replacement: about 700 years ago (Raghavan) and about 1,000 years ago (Flegontov). Name the source with the date. (Second check.)
 
-Draft card: "Inuit languages form one long chain of related dialects from Alaska to Greenland. The ancestors of today's Inuit spread east from Alaska across the Arctic in a few centuries, roughly between AD 1000 and 1300."
+Draft card: "Inuit languages form one long chain of related dialects from Alaska to Greenland. The ancestors of today's Inuit spread east from Alaska across the Arctic quickly, probably in the 1200s." (Second check: "roughly between AD 1000 and 1300" replaced.)
 
 ---
 
@@ -116,7 +119,7 @@ Draft card: "Inuit languages form one long chain of related dialects from Alaska
 Claims:
 
 1. Athabaskan languages are spoken across Alaska and western Canada, with outliers on the Pacific coast and in the Southwest. Eyak and Tlingit are their closest relatives, forming the Athabaskan-Eyak-Tlingit (Na-Dene) family.
-   - [ANLC Languages]: Athabascan languages "extend through western Canada and into the US Pacific Northwest and the desert Southwest"; "the relationship of Eyak to both Athabascan and Tlingit is now well-established".
+   - [ANLC Languages]: "Athabascan languages range through western Canada and down into the US Pacific Northwest and desert Southwest"; "the relationship of Eyak to both Athabascan and Tlingit is now well-established" (both re-read 2026-10-29).
    - [Glottolog]: lists 46 languages in Athabaskan-Eyak-Tlingit (extinct included).
 2. Some linguists propose a link between Na-Dene and Yeniseian, a family now represented by Ket in central Siberia ("Dene-Yeniseian"). The idea is not settled.
    - [Vajda 2016]: summarizes the hypothesis as a proposed genealogical link; since 2006 new evidence has been published, but "Dene-Yeniseian cannot be accepted as a proven language family" until the evidence is expanded and tested.
@@ -135,7 +138,7 @@ Draft card: "The Dene (Athabaskan) languages are centered in the far northwest o
 
 - id: `southern-athabaskan-southwest`
 - kind: branch
-- date range: "Sometime between about AD 1200 and 1500 (debated); settled sites clearly dated from the early to mid 1500s"
+- date range: "Debated: proposals run from after about AD 800 (Gordon) and the 1300s (Seymour's earliest dated sites) to after about AD 1450 (Crow Canyon); the first recognizably Navajo sites date from the mid-1500s." (Second check: changed from "Sometime between about AD 1200 and 1500". No source gives a 1200s arrival: Gordon's 1200-1400 is a gap in the record, not an arrival date, and Seymour's earliest dates are from the 1300s. The sources are competing accounts, not ranked here. The retired `navajo-apache` stop's ~1200–1500 CE had the same 1200s start.)
 - era year: 1400
 - location: (36.3, -109.4) Four Corners region (Navajo country), radius ~350 km.
 - location uncertainty: High on date and route. Early sites are rare and hard to identify. The point marks where the languages are found, not where the move began.
@@ -149,16 +152,16 @@ Claims:
 1. Navajo and the Apache languages belong to the Athabaskan family, even though their nearest relatives are far to the north.
    - [Glottolog]: places Navajo (36.3, -109.4) and Western Apache (33.9, -110.1) in Athabaskan-Eyak-Tlingit.
    - [ANLC Languages]: the family extends into the desert Southwest.
-2. The date of arrival is debated. Dates run from the 1200s to the early 1500s, with the first clearly Navajo sites in the Mesa Verde region from the mid-1500s.
-   - [Crow Canyon]: scholars disagree on timing; Athabaskan speakers likely arrived "after A.D. 1450" and were in the Mesa Verde region by at least the early 1500s; the earliest recognizably Navajo sites there date from the mid-1500s.
-   - [Gordon]: Carleton University researcher proposes migration to the Southwest "after about 800 AD" and argues a gap in the 1200-1400 record could hold Proto-Apachean sites.
-   - [Seymour 2012]: the abstract (read only through a search summary) reports the earliest known ancestral Athabaskan dates in the Southwest as the 1300s to 1400s. WEAK: not read directly.
+2. The date of arrival is debated, and the sources disagree: Crow Canyon puts it after about 1450, Seymour dates the earliest ancestral Athabaskan sites to the 1300s and 1400s, and Gordon argues for a migration after 800. The first clearly Navajo sites in the Mesa Verde region are from the mid-1500s.
+   - [Crow Canyon]: "Scholars disagree about the exact timing of these migrations, but it seems likely that Athabaskan speakers arrived in the Southwest after A.D. 1450 and were in the Mesa Verde region by at least the early 1500s"; the earliest recognizably Navajo sites there "date from the mid-1500s" (re-read 2026-10-29).
+   - [Gordon]: a Carleton University researcher proposes a "post-800 AD southern Athapaskan migration to the American Southwest", and argues that "a large space/time gap in the period 1200-1400 AD" in the record should prompt a new look at old collections for Proto-Apachean artifacts. The gap is a reason to search, not an arrival date. One author's argument.
+   - [Seymour 2012] (full text, read 2026-10-29): "The earliest known dates (A.D. 1300s and 1400s) for ancestral Athabascans are found along the Rio Grande valley in the Southwest and in the bordering mountains of southern New Mexico and Arizona." She adds that the earliest dated sites are few but have "high quality direct dates". Upgraded from WEAK, which recorded only that the first pass read a search summary. Full text read 2026-10-29 at https://camnnation.org/wp-content/uploads/2024/01/Gateways-for-Athabascan-Migration-to-the-American-Southwest-Seymour-Deni-J.pdf.
 3. The migrants are hard to see in the ground, which is part of why scholars disagree.
    - [Gordon]: Dene groups often adopted local toolkits, leaving little distinctive material, and tree-ring dates are unreliable where hogans used older wood.
 4. The route is also debated: across the Plains, down the Rocky Mountain foothills, or through the Intermountain West.
    - [Gordon]: Sapir's Plains route was favored for decades, later work shifted attention to an Intermountain route, and the author argues the Plains route has never been ruled out.
 
-Draft card: "The ancestors of the Navajo and Apache spoke Dene languages from the far north and made their way to the American Southwest sometime between about AD 1200 and 1500. Researchers still disagree about when, and which way they came."
+Draft card: "The ancestors of the Navajo and Apache spoke Dene languages from the far north and made their way to the American Southwest, probably after about AD 1450, perhaps earlier. Researchers still disagree about when, and which way they came." (Second check: "sometime between about AD 1200 and 1500" replaced.)
 
 ---
 
@@ -166,7 +169,7 @@ Draft card: "The ancestors of the Navajo and Apache spoke Dene languages from th
 
 - id: `uto-aztecan`
 - kind: family
-- date range: "Roughly 9,000 to 5,000 years ago for the shared ancestor; no consensus"
+- date range: "No consensus. Merrill et al. (2009) put the break-up about 6900 cal BCE (about 8,900 years ago); the older view, as Hill (2001) describes it, put the speakers about 5,000 years ago; Hill's own farming model ties the spread to 4500-3000 BP." These are different proposals from different dates, not one range of estimates. (Second check: "Roughly 9,000 to 5,000 years ago" read as one range of current estimates; the retired `uto-aztecan` stop's ~9,000–5,000 years ago had the same problem.)
 - era year: -5000 (editorial midpoint of proposals, WEAK)
 - location: (30.7, -110.9) Glottolog's center of the family, near the Arizona-Sonora border, radius ~1500 km. Two candidate homelands to show, if the page can show both: (39.0, -117.0) west-central Great Basin and (23.0, -104.5) northwest Mexico.
 - location uncertainty: High on purpose. The homeland is the classic open question for this family. Do not pin it to a single dot.
@@ -181,11 +184,11 @@ Claims:
 1. Uto-Aztecan is a large family running from the Great Basin to northern Central America. It includes Shoshone, Hopi and Nahuatl.
    - [EBSCO Uto-Aztecan]: speakers have lived "from central Idaho in the north to northern Central America in the south"; eight branches.
    - [Glottolog]: 69 entries in the family (extinct included); the family includes Hopi, Shoshoni and Classical Nahuatl.
-2. One view puts the homeland in the Great Basin, around 9,700 to 6,900 BCE, and says maize spread by neighbors passing it on.
-   - [Merrill 2009]: proposes a west-central Great Basin homeland; the speech community split around 6900 cal BCE; Southern Uto-Aztecan ancestors moved southeast; maize reached the US Southwest by about 2100 cal BCE by group-to-group diffusion, not by migrating farmers.
-3. The other view puts the homeland among maize farmers on the northwest edge of Mesoamerica, with farming driving a northward expansion.
-   - [Hill 2001]: title confirmed: "Proto-Uto-Aztecan: A Community of Cultivators in Central Mexico?"
-   - [Merrill 2009]: describes Hill's position as a community of maize farmers in what is now Jalisco, Nayarit, Durango, Zacatecas and Aguascalientes, with population pressure pushing groups north. WEAK for Hill's own wording: the description comes from a paper that rejects her view. Read Hill 2001 directly before quoting her.
+2. One view puts the homeland in the Great Basin, with a break-up around 6900 cal BCE, and says maize spread by neighbors passing it on.
+   - [Merrill 2009]: the abstract gives "a Great Basin homeland for the PUA, the breakup of this speech community into northern and southern divisions approximately 6900 cal. B.C."; maize reached the US Southwest by about 2100 cal BCE "via group-to-group diffusion", not by migrating farmers. The west-central Great Basin location, the 9,700 BCE start of the first pass's range and the southeastward move come from the full text, which could not be re-opened on 2026-10-29 (PMC returned a captcha). NOT RE-VERIFIED.
+3. The other view puts the homeland among maize farmers in Mesoamerica, with farming driving a northward expansion.
+   - [Hill 2001] (abstract, read 2026-10-29): earlier authorities held that the speakers "were foragers who lived in upland regions of Arizona, New Mexico, and the adjacent areas of the Mexican states of Sonora and Chihuahua about 5,000 years ago"; new lexical evidence suggests instead that they "were maize cultivators", that the community "was probably located in Mesoamerica and spread northward into the present range because of demographic pressure associated with cultivation", and that the spread should match the northward spread of maize "between 4500 and 3000 B.P."
+   - [Merrill 2009]: describes Hill's position as a community of maize farmers in what is now Jalisco, Nayarit, Durango, Zacatecas and Aguascalientes. The list of states is Merrill's (a paper that rejects her view); Hill's abstract says only "Mesoamerica".
 4. DNA does not settle the question.
    - [Kemp 2010]: Y-chromosome variation correlates with language distance but mtDNA does not; if Uto-Aztecan farmers carried maize north, the move "was possibly biased to males", but the authors call a migration from Mesoamerica "unlikely", and also find a local population expansion in the Southwest about 2,100 years ago.
 
@@ -207,7 +210,7 @@ Draft card: "Uto-Aztecan languages, including Shoshone, Hopi and Nahuatl, stretc
 Claims:
 
 1. The Mexica spoke Nahuatl, the same language as the earlier Toltec civilization, and founded their island capital Tenochtitlan around 1325.
-   - [NatGeo Aztec]: "The Mexica spoke Nahuatl, the same language as the earlier Toltec civilization"; around 1325 they founded Tenochtitlan.
+   - [NatGeo Aztec]: "They spoke Nahuatl, the same tongue of the mighty Toltec civilization who dominated the region between the 10th and 12th centuries"; "Around 1325, the Mexica founded Tenochtitlan and made it their capital" (re-read 2026-10-29).
    - [NatGeo Education]: "Archaeologists date the founding of Tenochtitlan to 1325 C.E."
    - [Jordan]: UC San Diego course site: the Mexica founded Tenochtitlan in 1325.
 2. In 1428 Tenochtitlan joined with Texcoco and Tlacopan in the Triple Alliance, the core of what is called the Aztec Empire.
@@ -238,16 +241,16 @@ Draft card: "Nahuatl was the language of the Mexica, who founded Tenochtitlan ar
 
 Claims:
 
-1. About 30 Mayan languages exist today, spoken by well over 5 million people in Guatemala, Mexico, Belize and Honduras.
+1. About 30 Mayan languages exist today, spoken by well over 5 million people in Guatemala, Mexico, Belize and Honduras. Re-checked 2026-10-29 in public copies of both full texts (see the bibliography).
    - [Law 2013]: "between 29 and 31 contemporary languages spoken collectively by more than 5 million people".
-   - [Bennett 2015]: "over 6 million people"; about 40% of Guatemalans speak a Mayan language natively on official estimates, possibly 50-60% in reality.
+   - [Bennett 2015]: "over 6 million people"; "about 40% of Guatemalans speak a Mayan language natively" on official census estimates, likely "50–60% or higher" in reality.
    - [Glottolog]: lists 34 entries (extinct included).
 2. The usual view puts the ancestral language in the Guatemalan highlands, near Soloma, before it split.
-   - [Law 2013]: "by far the dominant hypothesis" places Proto-Mayan in the southern highlands of Guatemala; Kaufman (1976) narrowed it to Soloma. Law calls two of Kaufman's supporting arguments "not probative", and notes the earliest maize and pottery are lowland, which has led some to prefer a lowland homeland.
-3. The "about 2200 BCE" date is a glottochronology estimate and is contested.
-   - [Law 2013]: Kaufman's estimates "place the initial break-up of proto-Mayan ... at 2200 B.C.", still widely used by archaeologists; a computational model gives a time depth of 6,000 to 6,500 years (Atkinson 2006), and another gives about 2,200 years ago (Holman 2011). "No published work has evaluated these hypotheses for Mayan languages specifically."
+   - [Law 2013] (full text): "by far the dominant hypothesis" places Proto-Mayan in the southern highlands of Guatemala; Kaufman (1976) narrowed it to Soloma. Of two of Kaufman's supporting arguments, Law writes: "Neither of these arguments is probative, however." Law also notes that the earliest maize and pottery are lowland, which has led some to prefer a lowland homeland.
+3. The "about 2200 BCE" date is a glottochronology estimate and is contested. The retired `mayan` stop's ~2200 BCE rested on this.
+   - [Law 2013] (full text): Kaufman's estimates "place the initial break-up of proto-Mayan ... at 2200 B.C.", still widely used by archaeologists; a computational model gives a time depth of 6,000 to 6,500 years (Atkinson 2006), and another gives about 2,200 years ago (Holman 2011). "No published work has evaluated these hypotheses for Mayan languages specifically."
 4. Proto-Mayan speakers farmed maize, beans and squash and kept dogs and turkeys.
-   - [Law 2013]: reconstructed vocabulary shows "well developed agricultural practices".
+   - [Law 2013] (full text): reconstructed vocabulary shows that its speakers had "well developed agricultural practices, cultivated maize, beans, squash, chiles and other plants and had domesticated dogs and turkeys".
 
 Draft card: "Mayan languages grew from a single ancestor that most scholars place in the highlands of Guatemala several thousand years ago. About 30 survive today, spoken by millions of people. The exact date is debated."
 
@@ -272,7 +275,7 @@ Claims:
 2. During the Classic period (AD 250 to 900), the lowland Maya used a fully developed hieroglyphic writing system.
    - [Kelly 2017]: "During the Classic period (AD 250-900), the Maya ... institutionalized a hieroglyphic writing system."
 3. The language written in most Classic inscriptions is a Ch'olan language, not the everyday speech of every city.
-   - [Law 2013]: about 20,000 inscriptions survive; "the vast majority" are written in a Ch'olan language, and the language of the hieroglyphs was a single unified one even though the Maya spoke many languages.
+   - [Law 2013] (full text): "some 20,000 terse hieroglyphic inscriptions" survive; "the vast majority" are written in a Ch'olan language, and the language of the hieroglyphs was a single unified one even though the Maya spoke many languages.
    - [Kelly 2017]: the glyphs record a largely uniform written language despite the spoken variety.
 
 Draft card: "Classic Maya kings carved texts in a hieroglyphic script between about AD 250 and 900. Most of those texts are written in a Ch'olan language, even though the Maya spoke many languages."
@@ -322,7 +325,7 @@ Draft card: "Quechua did not begin with the Incas. It grew out of central Peru a
 - location uncertainty: Low for the capital. Quechua in the regions the Incas conquered came in different ways, so arrows are approximate.
 - spread to (approximate):
   - (-19.0, -65.3) southern Bolivia (Sucre area)
-  - (-26.8, -65.2) northwest Argentina
+  - (-26.8, -65.2) northwest Argentina (the authors say deriving Argentine Quechua from Inca-era Cuzco Quechua is "not quite so straightforward"; see claim 2)
   - (-0.2, -78.5) highland Ecuador (Quito area)
 - scholars split? Mildly, on how much of today's Quechua map is Inca-era. Southern Bolivia is clearly from Cuzco Quechua. Ecuador is more complicated.
 
@@ -331,8 +334,8 @@ Claims:
 1. The Incas made Quechua their official language and unified the Central Andes in the fifteenth and early sixteenth centuries.
    - [Heggarty and Beresford-Jones 2010]: "the Incas themselves did indeed promote Quechua as their 'official language' of Empire."
    - [Adelaar 2017]: "The ultimate unification of the Central Andean region was achieved by the Incas of Cuzco in the fifteenth and early sixteenth centuries."
-2. Quechua in southern Bolivia comes from Cuzco Quechua of the Inca period. Ecuador's Quechua was not simply moved from Cuzco.
-   - [Heggarty and Beresford-Jones 2010]: southern Bolivian forms "can be derived directly from that of Cuzco at the time of Inca imperial expansion"; the Quechua of Ecuador "was certainly not transplanted from Cuzco", though Inca policy may have moved speakers there.
+2. Quechua in southern Bolivia comes from Cuzco Quechua of the Inca period. Argentina's is less clear, and Ecuador's Quechua was not simply moved from Cuzco.
+   - [Heggarty and Beresford-Jones 2010]: southern Bolivian forms "can be derived directly from that of Cuzco at the time of Inca imperial expansion", but "this is not quite so straightforward even for the far-flung Quechua of Argentina"; the Quechua of Ecuador "was certainly not transplanted from Cuzco", though Inca policy may have moved speakers there. Elsewhere the same paper groups north-west Argentina with southern Bolivia among Quechua's recent (Inca and colonial) expansions.
 3. Cusco itself is full of older, non-Quechua names.
    - [Heggarty and Beresford-Jones 2010]: the Inca heartland has place names that look Aymara, such as the river Vilcanota and Cuzco itself; Spanish chroniclers describe a "secret language" of the Inca nobility whose verses "clearly betray their non-Quechua origins".
 4. Quechua is today the most widely spoken Indigenous language family of the Americas, with a total usually given as roughly 8 to 12 million.
@@ -472,8 +475,8 @@ Draft card: "Arawakan speakers moved from northern South America into the Caribb
 
 ## How sources were checked
 
-- Abstracts of journal articles were checked against Crossref and Europe PMC records, or against the publisher page, when marked as read. Open-access texts (Law 2013, Bennett 2015, Adelaar 2017, Heggarty and Beresford-Jones 2010, Gulløv and McGhee 2006, Kelly 2017, INEI 2017, Gerardi 2023, Schroeder 2018) were read in the text.
-- Not opened directly (paywall or blocked): Science and Nature article pages (abstracts checked via Crossref/Europe PMC), Campbell 2011, Seymour 2012 and Hill 2001 (bibliographic details confirmed, argument relayed from other sources), INEGI tables, Ethnologue, Britannica.
+- Abstracts of journal articles were checked against Crossref and Europe PMC records, or against the publisher page, when marked as read. Texts read in full (Law 2013, Bennett 2015, Adelaar 2017, Heggarty and Beresford-Jones 2010, Gulløv and McGhee 2006, Kelly 2017, INEI 2017, Gerardi 2023, Schroeder 2018) were read in the text. Second check: Law 2013 is not open access at Wiley (Unpaywall: is_oa false), but a public copy of the full text is hosted at the University of Texas, and Bennett 2015's author copy at UC Santa Cruz; both were read on 2026-10-29 and support the Mayan claims (links in the bibliography).
+- Not opened directly (paywall or blocked): Science and Nature article pages (abstracts checked via Crossref/Europe PMC), Campbell 2011 (bibliographic details confirmed, argument relayed from other sources). Seymour 2012 was read in full in the second check, INEGI tables, Ethnologue, Britannica. Hill 2001: abstract read via Crossref in the second check; full text not read.
 - Glottolog's website was not reachable. Counts and coordinates come from the Glottolog CLDF data on GitHub, parsed directly. Family counts: 83 families with an American macro-area, plus Eskimo-Aleut (which Glottolog tags as Eurasia and North America), giving about 84. Isolates: 31 in North America and 64 in South America.
 
 ## Bibliography
@@ -487,7 +490,7 @@ Keys are in the order they first appear.
 - [Dillehay 2015] Dillehay, Tom D.; Ocampo, Carlos; Saavedra, José; et al. "New Archaeological Evidence for an Early Human Presence at Monte Verde, Chile." PLOS ONE 10(11): e0141923 (2015). https://doi.org/10.1371/journal.pone.0141923. Supports: Monte Verde II about 14,500 cal BP; possible older activity at Monte Verde I (about 18,500 to 14,500 cal BP).
 - [Davis 2022] Davis, Loren G.; Madsen, David B.; Sisson, Daniel A.; et al. "Dating of a large tool assemblage at the Cooper's Ferry site (Idaho, USA) to ~15,785 cal yr B.P. extends the age of stemmed points in the Americas." Science Advances 8 (2022). https://doi.org/10.1126/sciadv.ade1248. Supports: about 16,000-year-old points; glaciers had closed an interior route; resemblance to northwest Pacific rim tools.
 - [Bennett 2021] Bennett, Matthew R.; Bustos, David; Pigati, Jeffrey S.; et al. "Evidence of humans in North America during the Last Glacial Maximum." Science 373, 1528-1531 (2021). https://doi.org/10.1126/science.abg7586. Supports: White Sands footprints about 23,000 to 21,000 years old.
-- [Oviatt 2022] Oviatt, Charles G.; Madsen, David B.; Rhode, David; Davis, Loren. "A critical assessment of claims that human footprints in the Lake Otero basin, New Mexico date to the Last Glacial Maximum." Quaternary Research 111, 138-147 (2022). https://doi.org/10.1017/qua.2022.38. Supports: reservoir-effect concern; 1947 Ruppia sample about 7,400 cal BP; call for independent dating.
+- [Oviatt 2022] Oviatt, Charles G.; Madsen, David B.; Rhode, David; Davis, Loren. "A critical assessment of claims that human footprints in the Lake Otero basin, New Mexico date to the Last Glacial Maximum." Quaternary Research 111, 138-147 (print January 2023; online 2 September 2022). https://doi.org/10.1017/qua.2022.38. Supports: reservoir-effect concern; 1947 Ruppia sample about 7,400 cal BP; call for independent dating.
 - [Pigati 2023] Pigati, Jeffrey S.; Springer, Kathleen B.; Honke, Jeffrey S.; et al. "Independent age estimates resolve the controversy of ancient human footprints at White Sands." Science 382, 73-75 (2023). https://doi.org/10.1126/science.adh5007. Supports: pollen and luminescence dates agree with the original chronology.
 - [Holliday 2025] Holliday, Vance T.; Windingstad, Jason D.; Bright, Jordon; et al. "Paleolake geochronology supports Last Glacial Maximum (LGM) age for human tracks at White Sands, New Mexico." Science Advances 11 (2025). https://doi.org/10.1126/sciadv.adv4951. Supports: independent radiocarbon dating of mud (26 new dates, two outside labs).
 - [Pedersen 2016] Pedersen, Mikkel W.; Ruter, Anthony; Schweger, Charles; et al. "Postglacial viability and colonization in North America's ice-free corridor." Nature 537, 45-49 (2016). https://doi.org/10.1038/nature19085. Supports: corridor viable by about 12,600 years ago; first Americans unlikely to have used it.
@@ -504,19 +507,19 @@ Keys are in the order they first appear.
 - [UAF news 2010] University of Alaska Fairbanks. "New book chronicles Asia, North America language link" (28 June 2010). https://uaf.edu/news/archives/news-archives-2010-2021/new-book-chronicles-asia-north-america-language-link.php. Supports: more than 100 shared cognates claimed; the 2010 volume. A university press release, so not independent.
 - [Campbell 2011] Campbell, Lyle. Review of Kari and Potter (eds.), The Dene-Yeniseian Connection. International Journal of American Linguistics 77, 445-451 (2011). https://doi.org/10.1086/660977. Citation confirmed in Crossref; text not read (see WEAK note).
 - [Sicoli and Holton 2014] Sicoli, Mark A.; Holton, Gary. "Linguistic phylogenies support back-migration from Beringia to Asia." PLOS ONE 9(3): e91722 (2014). https://doi.org/10.1371/journal.pone.0091722. Supports: back-migration model fits better than a one-way Asia-to-America model.
-- [Crow Canyon] Crow Canyon Archaeological Center. "Post-Pueblo: Navajo History and Culture." https://crowcanyon.org/EducationProducts/peoples_mesa_verde/post_pueblo_navajo.php. Supports: arrival after AD 1450; scholars disagree; first Navajo sites mid-1500s.
-- [Gordon] Gordon, Bryan C. "Historical research and hypotheses" and "Hypotheses," Southern Athapaskan Migration, Rangifer Central, Carleton University. https://carleton.ca/rangifercentral/historical-research-and-hypotheses/ and https://carleton.ca/rangifercentral/southern-athapaskan-migration/hypotheses/. Supports: after about AD 800 proposal; 1200-1400 gap; dating obstacles; route debate. One author's argument, not a survey.
+- [Crow Canyon] Crow Canyon Archaeological Center. "Post-Pueblo: Navajo History and Culture." https://crowcanyon.org/EducationProducts/peoples_mesa_verde/post_pueblo_navajo.php. Supports: arrival after AD 1450; scholars disagree; first Navajo sites mid-1500s. Re-read 2026-10-29.
+- [Gordon] Gordon, Bryan C. "Historical research and hypotheses" and "Hypotheses," Southern Athapaskan Migration, Rangifer Central, Carleton University. https://carleton.ca/rangifercentral/historical-research-and-hypotheses/ and https://carleton.ca/rangifercentral/southern-athapaskan-migration/hypotheses/. Supports: post-800 AD proposal; 1200-1400 gap in the record; dating obstacles; route debate. One author's argument, not a survey. Re-read 2026-10-29.
 - [Seymour 2012] Seymour, Deni J. "Gateways for Athabascan Migration to the American Southwest." Plains Anthropologist 57(222), 149-161 (2012). https://doi.org/10.1179/pan.2012.015. Also Seymour (ed.), From the Land of Ever Winter to the American Southwest (University of Utah Press, 2012). Citation confirmed in Crossref; the 1300s-1400s claim comes from a search summary of the abstract (WEAK).
 - [EBSCO Uto-Aztecan] EBSCO Research Starters. "Uto-Aztecan language family." https://www.ebsco.com/research-starters/language-and-linguistics/uto-aztecan-language-family/. Supports: range from central Idaho to northern Central America; eight branches. Secondary source.
-- [Merrill 2009] Merrill, William L.; Hard, Robert J.; Mabry, Jonathan B.; et al. "The diffusion of maize to the southwestern United States and its impact." PNAS 106(50), 21019-21026 (2009). https://doi.org/10.1073/pnas.0906075106. Supports: Great Basin homeland and dates; description of Hill's view.
-- [Hill 2001] Hill, Jane H. "Proto-Uto-Aztecan: A Community of Cultivators in Central Mexico?" American Anthropologist 103(4), 913-934 (2001). https://doi.org/10.1525/aa.2001.103.4.913. Title and details confirmed in Crossref; not read.
+- [Merrill 2009] Merrill, William L.; Hard, Robert J.; Mabry, Jonathan B.; et al. "The diffusion of maize to the southwestern United States and its impact." PNAS 106(50), 21019-21026 (2009). https://doi.org/10.1073/pnas.0906075106. Supports: Great Basin homeland; break-up about 6900 cal BCE; maize by 2100 cal BCE by diffusion (abstract, re-read 2026-10-29). The 9,700 BCE figure and the description of Hill's view are from the full text, NOT RE-VERIFIED in the second check.
+- [Hill 2001] Hill, Jane H. "Proto-Uto-Aztecan: A Community of Cultivators in Central Mexico?" American Anthropologist 103(4), 913-934 (2001). https://doi.org/10.1525/aa.2001.103.4.913. Abstract read via Crossref (2026-10-29); full text not read. Supports: the older view (foragers about 5,000 years ago); Hill's Mesoamerican cultivator homeland; spread between 4500 and 3000 BP.
 - [Kemp 2010] Kemp, Brian M.; González-Oliver, Angélica; Malhi, Ripan S.; et al. "Evaluating the Farming/Language Dispersal Hypothesis with genetic variation exhibited by populations in the Southwest and Mesoamerica." PNAS 107(15), 6759-6764 (2010). https://doi.org/10.1073/pnas.0905753107. Supports: mixed genetic signal; "unlikely" farmer migration.
 - [NatGeo Aztec] National Geographic. "Who were the Aztec, really? It's complicated." https://www.nationalgeographic.com/history/history-magazine/article/who-were-the-aztec. Supports: Nahuatl; Triple Alliance 1428; founding around 1325.
 - [NatGeo Education] National Geographic Education. "Aztec Civilization." https://education.nationalgeographic.org/resource/aztec-civilization/. Supports: archaeologists date the founding to 1325; 1428 alliance.
 - [Jordan] Jordan, David K. "Aztec Chronology." University of California San Diego. https://pages.ucsd.edu/~dkjordan/arch/aztecchron.html. Supports: 1325 and 1428. The page names no author; the attribution comes from the site address, so treat as a course page.
 - [Indigenous Mexico 2020] Indigenous Mexico. "Ethnic identity in the 2020 Mexican census." http://www.indigenousmexico.org/articles/ethnic-identity-in-the-2020-mexican-census. Supports: 1,651,958 Nahuatl speakers (INEGI 2020 tables, relayed). WEAK.
-- [Law 2013] Law, Danny. "Mayan Historical Linguistics in a New Age." Language and Linguistics Compass 7(3), 141-156 (2013). https://doi.org/10.1111/lnc3.12012. Supports: number of languages and speakers; homeland debate; dating debate; hieroglyphic corpus in Ch'olan.
-- [Bennett 2015] Bennett, Ryan; Coon, Jessica; Henderson, Robert. "Introduction to Mayan Linguistics." Language and Linguistics Compass (2015). https://doi.org/10.1111/lnc3.12159. Supports: over 6 million speakers; Guatemala percentages.
+- [Law 2013] Law, Danny. "Mayan Historical Linguistics in a New Age." Language and Linguistics Compass 7(3), 141-156 (2013). https://doi.org/10.1111/lnc3.12012. Full text read 2026-10-29 at https://www.cs.utexas.edu/~tandy/law-paper.pdf (not open access at Wiley). Supports: number of languages and speakers; homeland debate; dating debate; agricultural vocabulary; hieroglyphic corpus in Ch'olan.
+- [Bennett 2015] Bennett, Ryan; Coon, Jessica; Henderson, Robert. "Introduction to Mayan Linguistics." Language and Linguistics Compass 10(10), 455-468 (online 8 December 2015; print 2016). https://doi.org/10.1111/lnc3.12159 (submitted version: https://escholarship.org/uc/item/9cw9320j). Author copy read 2026-10-29 at https://people.ucsc.edu/~rbennett/resources/papers/pdfs/Bennett%20et%20al.%20%282016%29%20-%20Introduction%20to%20Mayan%20linguistics.pdf. Supports: over 6 million speakers; Guatemala percentages.
 - [Saturno 2006] Saturno, William A.; Stuart, David; Beltrán, Boris. "Early Maya Writing at San Bartolo, Guatemala." Science 311, 1281-1283 (2006). https://doi.org/10.1126/science.1121745. Supports: writing dated 200-300 BCE.
 - [Stuart 2022] Stuart, David; Hurst, Heather; Beltrán, Boris; Saturno, William. "An early Maya calendar record from San Bartolo, Guatemala." Science Advances 8 (2022). https://doi.org/10.1126/sciadv.abl9290. Supports: fragments 300-200 BCE; earliest known Maya calendar record.
 - [Kelly 2017] Kelly, Mary Kate. "The Scribe's Hand Betrays His Tongue: Diglossia Among the Ancient Maya." Proceedings of the Symposium About Language and Society, Austin (SALSA) 2017. https://asol.ling.utexas.edu/salsa/proceedings/2017/Kelly.pdf. Supports: Classic period AD 250-900; hieroglyphic system institutionalized.
