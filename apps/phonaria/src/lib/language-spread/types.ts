@@ -57,6 +57,26 @@ export type Step = {
 	sources?: readonly string[];
 };
 
+/** One version of the sample sentence, quoted as its edition prints it. */
+export type Sample = {
+	id: string;
+	/** The card that shows it; left out for a version shown only in the comparison. */
+	step?: string;
+	/** The stage of English or the book, e.g. "Old English" or "King James Bible". */
+	stage: string;
+	/** When this version was written, e.g. "~1000 CE". */
+	written: string;
+	text: string;
+	/** BCP 47 tag for screen readers when the text isn't modern English: "ang" Old English, "enm" Middle English. */
+	lang?: "ang" | "enm";
+	/** Today's word for each word of `text`, in order, when a modern reader can't follow it. */
+	gloss?: readonly string[];
+	/** A few words to help read it, e.g. "þ = th". */
+	note?: string;
+	/** Ids from the sources list; absent for modern English. */
+	sources?: readonly string[];
+};
+
 export type Source = {
 	id: string;
 	/** Short citation, e.g. "Gray, Drummond & Greenhill 2009, Science". */

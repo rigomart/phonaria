@@ -480,6 +480,28 @@ The old step had a second arrow east to the Urals. It is left out because this s
 
 ---
 
+## The sample sentence
+
+Added on 2026-10-28 so a reader can see English change, not only read about it. One sentence is shown in every stage: the opening of the Lord's Prayer (Matthew 6:9). It was put into English again and again from Old English onward, so it is the usual way to compare the stages. Cook (1891) traces it this way, from the West Saxon Gospels through Wyclif, Tyndale and later Bibles. Each line is quoted as its edition prints it, and was checked by a research agent against the page scan, not OCR. Cook is used for the comparison only: his Wycliffite text uses modern v, and he dates Tyndale to 1534.
+
+| Sample | Card | Line as printed | Edition and check |
+| --- | --- | --- | --- |
+| `old-english` | `old-english` | Fæder úre þu þe eart on heofonum; Si þin nama gehalgod | Skeat 1887, p. 54, col. 1 (Corpus Christi College Cambridge MS 140). Scan viewed. Skeat prints "heofonum ;" with a space and marks the expanded abbreviation in italics; the page drops both. The acute on úre is the manuscript's. Skeat gives no date; Cook puts the Old English versions "not earlier than 950 to 1000 A.D.", so the page says "about 1000 CE". |
+| `middle-english` | `norman-conquest` | Oure fadir that art in heuenes, halewid be thi name | Forshall & Madden 1850, vol. 4, p. 14, the later version (the earlier version reads "halwid"). Scan viewed. The editors date the later version by its General Prologue, summer 1388, so the page says "about 1390". |
+| `tyndale` | `printing` | O oure father which arte in heven/ halowed be thy name. | Fry's 1862 facsimile of Tyndale's 1526 New Testament, leaf "Fo. vij" verso. Scan viewed; Offor's 1836 reprint (Bagster) prints the same line. The slash is the original's virgule. Fry calls it "The first New Testament printed in the English language". |
+| `king-james` | none, comparison only | Our father which art in heauen, hallowed be thy name. | King James Bible, 1611, Robert Barker (University of Pennsylvania copy, BS185 1611 .L65). Scan viewed. Caveat: a public upload to an Internet Archive community collection, not Penn's own; the He/She issue was not checked, and the verse is not expected to differ. |
+| `today` | `today` | Our Father in heaven, may your name be kept holy. | The page's own plain-English meaning, not a quoted translation, so it has no source. |
+
+Judgment calls:
+
+- **A religious text.** It is the only text with versions in every stage, and it is the standard comparison. The section introduces it plainly as "a Christian prayer", without comment.
+- **A caption and a comparison.** On its step, each version floats over the map as a caption under the era dial, on the side the card leaves free, with today's word under each old word. The camera frames the globe below it. All versions also appear together after the story, with a hint of a few words ("þ = th", "heuenes = heavens") and their sources. The King James line is shown only there, since no step covers 1611 in England. The design was chosen from prototypes: a separate card, a tilted folio page, a pull quote, an inverted word-by-word card and the caption, then the caption with three ways to show today's words.
+- **Today's words are the page's own glosses**, one modern word per old word, in the old order (`fæder úre` over "father our"), so a reader sees both the old words and the old word order. They are not taken from a source: they are standard and checked against the meaning, and a test keeps one gloss per word. `thou`/`thy` forms are glossed "you"/"your", and "which" as "who".
+- **Dates.** A version is written later than its step's date: the Old English step is ~450 CE but the line is from about 1000. The caption's label gives its own date.
+- **Left out:** audio of the old lines (no sourced reconstructions), the Lindisfarne gloss and other Old English dialect versions, and the rest of the prayer.
+
+---
+
 ## Claims dropped across the story
 
 | Claim | Reason |
@@ -535,5 +557,11 @@ Reused ids keep the citation and URL already in `story.ts`. New ids are marked "
 - `cervantes-2025` (reused, notes only). Instituto Cervantes 2025, as recorded in modern.md. Supports the "most learned it as an extra language" inference (about 520 million native Spanish speakers).
 - `haak-2015`, `anthony-ringe-2015`, `bouckaert-2012`, `heggarty-2023`, `lazaridis-2025` (reused). See western-eurasia.md. ABSTRACT (Lazaridis full text). Support the `indo-european` stop unchanged.
 - `faarlund-2008`, `ringe-taylor-2014`, `gretzinger-2022` (reused). See western-eurasia.md. ABSTRACT; Gretzinger re-read for this note. Support the `germanic` and `old-english` stops.
+
+- `cook-1891` (new). Cook, Albert S. 1891. "The Evolution of the Lord's Prayer in English." American Journal of Philology 12(1): 59–66. Read at https://archive.org/details/jstor-287989 (JSTOR Early Journal Content). FETCHED (OCR full text). Supports: tracing the Lord's Prayer through the stages of English, from the West Saxon version (Corpus MS 140, as printed by Skeat) through Wyclif, Tyndale and later Bibles; Old English versions not earlier than 950 to 1000.
+- `skeat-1887` (new). Skeat, Walter W., ed. 1887. The Gospel according to Saint Matthew in Anglo-Saxon, Northumbrian, and Old Mercian Versions. Cambridge University Press. Read at https://objects.library.uu.nl/reader/1874-374575 (Utrecht University Library, image 74, p. 54). SCAN VIEWED. Supports: the Old English sample line.
+- `forshall-madden-1850` (new). Forshall, Josiah and Madden, Frederic, eds. 1850. The Holy Bible … in the Earliest English Versions made from the Latin Vulgate by John Wycliffe and his Followers, vol. 4. Oxford University Press. Read at https://archive.org/details/holybiblecontain04wycluoft/page/n21 (p. 14); dates from vol. 1, https://archive.org/details/holybiblecontain01wycluoft. SCAN VIEWED (vol. 4), OCR (vol. 1 preface). Supports: the Middle English sample line, later version, about 1388.
+- `tyndale-1526` (new). Fry, Francis, ed. 1862. The First New Testament printed in the English Language (1525 or 1526) … Reproduced in Facsimile. Bristol. Read at https://archive.org/details/firstnewtestame00frygoog/page/n50. SCAN VIEWED; cross-checked with Offor's 1836 reprint, https://archive.org/details/newtestamentofou00tynd/page/n122. Supports: the Tyndale sample line and "the first printed English New Testament".
+- `king-james-1611` (new). The Holy Bible, Conteyning the Old Testament, and the New. London: Robert Barker, 1611. University of Pennsylvania copy, read at https://archive.org/details/Bible1611/page/n1225. SCAN VIEWED; community upload, see the caveat above. Supports: the King James sample line.
 
 Not used: `ethnologue-2026`, `owid-ethnologue-2026` and `ethnologue-how-many` (world language counts, which this story no longer needs), and `nma-first-fleet`'s companion "Convict cargo" page.

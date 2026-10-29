@@ -1,5 +1,5 @@
 import type { Bounds } from "./camera";
-import type { Source, Step, Stop } from "./types";
+import type { Sample, Source, Step, Stop } from "./types";
 
 /**
  * The story told on /language-spread: how English came to be, from its
@@ -20,9 +20,9 @@ export const STOPS: readonly Stop[] = [
 		at: [42, 47],
 		areaKm: 800,
 		where:
-			"the grasslands north of the Black and Caspian Seas, in the leading view; others favour Anatolia or south of the Caucasus",
+			"north of the Black and Caspian Seas, as most experts think; others say Anatolia (in today's Turkey) or south of the Caucasus Mountains",
 		description:
-			"The ancestor of most languages of Europe, and of Persian and Hindi. Ancient DNA and words for wagons point many scholars to the steppe about 6,000 years ago. Language-tree studies point others to an older start in Anatolia or south of the Caucasus.",
+			"The ancestor of most languages in Europe, and of Persian and Hindi. Ancient DNA and old words for wagons lead many experts to the grasslands north of the Black Sea, about 6,000 years ago. Studies that compare language family trees lead others to an older start, in Anatolia or south of the Caucasus.",
 		sources: [
 			"haak-2015",
 			"anthony-ringe-2015",
@@ -40,7 +40,7 @@ export const STOPS: readonly Stop[] = [
 		areaKm: 400,
 		where: "in southern Scandinavia and northern Germany",
 		description:
-			"A distinct Germanic branch had formed here by about 500 BCE. Its western group includes English, Frisian, Dutch and German; its northern group became Icelandic, Norwegian, Swedish and Danish.",
+			"By about 500 BCE, Germanic was a separate branch of the family. Its western group includes English, Frisian, Dutch and German. Its northern group became Icelandic, Norwegian, Swedish and Danish.",
 		sources: ["faarlund-2008", "ringe-taylor-2014", "oed-old-english"],
 	},
 	{
@@ -50,9 +50,9 @@ export const STOPS: readonly Stop[] = [
 		era: { ce: 450 },
 		at: [0.5, 52.5],
 		areaKm: 200,
-		where: "in eastern England, settled from across the North Sea",
+		where: "in eastern England, where settlers came from across the North Sea",
 		description:
-			"Settlers from what is now northern Germany and Denmark crossed the North Sea after Roman rule ended. Ancient DNA shows some people in eastern England got up to three-quarters of their ancestry from them. Their speech became Old English; its oldest substantial manuscripts date from about 700 CE.",
+			"After Roman rule ended, settlers from what is now northern Germany and Denmark crossed the North Sea. Ancient DNA shows that some people in eastern England had up to three-quarters of their family roots in these settlers. Their language became Old English. The oldest long texts in it were written around 700 CE.",
 		sources: ["gretzinger-2022", "oed-old-english"],
 	},
 	{
@@ -64,7 +64,7 @@ export const STOPS: readonly Stop[] = [
 		areaKm: 220,
 		where: "in the east and north of England",
 		description:
-			"Scandinavians settled mostly in the east and north of England. Their Old Norse died out there, but English kept everyday words from it, such as sky, egg, skin, take and want. It even took the pronouns they, them and their, which languages very rarely borrow.",
+			"People from Scandinavia settled mostly in the east and north of England. Their language, Old Norse, later died out there. But English kept many everyday words from it, like sky, egg, skin, take and want. It even took they, them and their. Languages very rarely borrow words like these.",
 		sources: ["oed-middle-english", "nottingham-danelaw"],
 	},
 	{
@@ -73,9 +73,9 @@ export const STOPS: readonly Stop[] = [
 		kind: "language",
 		era: { ce: 1066 },
 		at: [0.49, 50.91],
-		where: "near Hastings; French then spread with England's new rulers",
+		where: "near Hastings. French then spread with England's new rulers",
 		description:
-			"After 1066, England's rulers in church and state spoke French, and English almost disappeared from writing. When it came back, it was full of French words such as peace, mercy, prison and rule. By 1500 over 40% of all the words English has borrowed from French had arrived.",
+			"After 1066, the people who ruled England and its church spoke French. For a long time, people almost stopped writing in English. When English came back, it had many French words, like peace, mercy, prison and rule. By 1500, more than 40% of all the words English took from French had already arrived.",
 		sources: ["english-heritage-hastings", "oed-middle-english"],
 	},
 	{
@@ -84,9 +84,9 @@ export const STOPS: readonly Stop[] = [
 		kind: "language",
 		era: { ce: 1476 },
 		at: [-0.13, 51.5],
-		where: "at Westminster, beside London",
+		where: "at Westminster, next to London",
 		description:
-			'Caxton set up England\'s first printing press here in 1476. His books spread the English of the London area, though their spelling still varied. He saw English changing too: should he write "egges", a Norse word, or "eyren", the only word a woman in Kent understood?',
+			'In 1476, William Caxton set up England\'s first printing press here. His books spread the English of the London area, but spelling still changed from book to book. Caxton saw that English was changing. Should he write "egges", a word from Old Norse, or "eyren", the only word a woman in Kent knew?',
 		sources: [
 			"bl-caxton-life",
 			"bl-caxton-english",
@@ -101,9 +101,9 @@ export const STOPS: readonly Stop[] = [
 		era: { ce: 1400, to: 1700 },
 		at: [-1.2, 52.3],
 		areaKm: 250,
-		where: "across England; northern dialects changed differently",
+		where: "across England. In the north, the vowels changed in a different way",
 		description:
-			'Long stressed vowels shifted: most moved up in the mouth, while the highest two became glides: "mine" went from /miːn/ to /maɪn/, "house" from /huːs/ to /haʊs/. Most of it happened in the 1400s and 1500s, but some scholars trace the first changes to the 1200s and see several linked changes, not one.',
+			'Long vowels in stressed syllables changed. Most moved higher in the mouth. The two highest became diphthongs: "mine" went from /miːn/ to /maɪn/, and "house" from /huːs/ to /haʊs/. Most of this happened in the 1400s and 1500s. Some experts say it started in the 1200s, as several connected changes, not one.',
 		sources: ["harvard-gvs", "oed-early-modern", "stenbrenden-2015", "prichard-2014"],
 	},
 	{
@@ -112,9 +112,9 @@ export const STOPS: readonly Stop[] = [
 		kind: "language",
 		era: { ce: 1607 },
 		at: [-76.78, 37.21],
-		where: "at Jamestown, Virginia, the first lasting English settlement",
+		where: "at Jamestown, Virginia, the first English settlement that lasted",
 		description:
-			"Jamestown, founded in 1607, was the first lasting English settlement in North America. Most American accents kept the r after vowels, in words like car; much of southern England later lost it. Noah Webster's 1828 dictionary made its own spellings, like color, standard.",
+			"Jamestown, started in 1607, was the first English settlement in North America that lasted. Most American accents kept the r after vowels, in words like car. Much of southern England later stopped saying it. Noah Webster's 1828 dictionary made his spellings, like color, the standard.",
 		sources: ["nps-jamestown", "npg-webster", "trudgill-gordon-2006", "bl-sounds-familiar"],
 	},
 	{
@@ -123,9 +123,9 @@ export const STOPS: readonly Stop[] = [
 		kind: "language",
 		era: { ce: 1788 },
 		at: [151.21, -33.86],
-		where: "at Sydney Cove, on Eora land",
+		where: "at Sydney Cove, on the land of the Eora people",
 		description:
-			"The First Fleet of 11 ships set up a convict settlement at Sydney Cove on 26 January 1788, the start of European colonisation of Australia. It changed forever the lives of the Eora people, the land's traditional owners.",
+			"On 26 January 1788, the 11 ships of the First Fleet started a prison settlement at Sydney Cove. This was the start of European colonization of Australia. It changed forever the lives of the Eora people, the traditional owners of the land.",
 		sources: ["nma-first-fleet"],
 	},
 ];
@@ -136,8 +136,8 @@ export const STEPS: readonly Step[] = [
 		title: "The story of English",
 		era: { bce: 4000 },
 		paragraphs: [
-			"English is one language with a long family history. Its roots reach back thousands of years, to people who never wrote anything down.",
-			"Follow it to the language about 1.5 billion people use today, and see why its spelling and sounds so often disagree. Pins mark approximate places, never exact spots.",
+			"English has a family history that goes back thousands of years.",
+			"Follow it to today, and see why English spelling and sounds often don't match. Pins show rough areas, not exact places.",
 		],
 		camera: WORLD,
 		stops: [],
@@ -148,8 +148,8 @@ export const STEPS: readonly Step[] = [
 		title: "One ancestor, many languages",
 		era: { bce: 4000 },
 		paragraphs: [
-			"English belongs to the Indo-European family, with most languages of Europe and also Persian and Hindi. All of them come from one ancestor spoken before writing.",
-			"Where it was spoken is still argued. Many archaeologists and geneticists favour the grasslands north of the Black Sea, about 6,000 years ago. Language-tree studies point others to an older start further south.",
+			"English is part of the Indo-European family, with most languages of Europe, Persian and Hindi. They all come from one old language that nobody wrote down.",
+			"Many experts think people spoke it north of the Black Sea, about 6,000 years ago. Others think it started earlier, further south.",
 		],
 		card: "bottom-left",
 		camera: { west: 5, south: 36, east: 75, north: 62 },
@@ -169,8 +169,8 @@ export const STEPS: readonly Step[] = [
 		title: "The Germanic branch",
 		era: { bce: 500 },
 		paragraphs: [
-			"By about 500 BCE, people in southern Scandinavia and northern Germany spoke a language of their own: Germanic.",
-			"Its descendants include English, Frisian, Dutch, German and the Scandinavian languages. English sits in the western group, with Frisian, Dutch and German.",
+			"By about 500 BCE, people in southern Scandinavia and northern Germany spoke Germanic.",
+			"English grew from its western group, together with Frisian, Dutch and German.",
 		],
 		card: "bottom-left",
 		camera: { west: -12, south: 44, east: 30, north: 64 },
@@ -182,8 +182,8 @@ export const STEPS: readonly Step[] = [
 		title: "Across the North Sea",
 		era: { ce: 450 },
 		paragraphs: [
-			"After Roman rule in Britain ended in the early 400s, settlers from what is now northern Germany and Denmark crossed the North Sea. Their speech became Old English.",
-			"Most people in Britain then spoke Celtic languages, and what happened to them is still debated. English took very few Celtic words.",
+			"After Roman rule ended in the early 400s, people from today's northern Germany and Denmark settled in Britain. Their language became Old English.",
+			"Most people in Britain spoke Celtic languages then, but English took very few Celtic words.",
 		],
 		card: "bottom-left",
 		camera: { west: -14, south: 47, east: 14, north: 60 },
@@ -206,8 +206,8 @@ export const STEPS: readonly Step[] = [
 		title: "Vikings and Old Norse",
 		era: { ce: 800 },
 		paragraphs: [
-			"From the late 700s, Viking raiders and settlers from Scandinavia came to England. Their Old Norse was a close cousin of English.",
-			"English took words like sky, egg, skin and window from them, and even the pronouns they, them and their. Borrowing pronouns is very rare; this probably reflects close contact and the similarity of the two languages.",
+			"From the late 700s, Vikings from Scandinavia came to England. They spoke Old Norse, a close relative of Old English.",
+			"English took words like sky, egg and window from them, and even they, them and their. Languages rarely borrow words like these.",
 		],
 		card: "bottom-right",
 		camera: { west: -14, south: 48, east: 16, north: 63 },
@@ -231,8 +231,8 @@ export const STEPS: readonly Step[] = [
 		title: "The Norman Conquest",
 		era: { ce: 1066 },
 		paragraphs: [
-			"In 1066 William, Duke of Normandy, defeated King Harold at Hastings and took the English throne. England's new rulers, in church and state, spoke French.",
-			"English almost vanished from writing. When it came back it was full of French words like peace, mercy and rule. This stage, from about 1150 to 1500, is called Middle English.",
+			"In 1066, William of Normandy won the Battle of Hastings and became king of England. The new rulers spoke French.",
+			"For years, people almost stopped writing in English. When it came back, it had many French words, like peace and rule. This is Middle English (about 1150 to 1500).",
 		],
 		card: "top-right",
 		camera: { west: -8, south: 46, east: 8, north: 56 },
@@ -250,8 +250,8 @@ export const STEPS: readonly Step[] = [
 		title: "The Great Vowel Shift",
 		era: { ce: 1400, to: 1700 },
 		paragraphs: [
-			'Between about 1400 and 1700, the long stressed vowels of English changed. Chaucer\'s "mine" sounded like "meen", his "meet" like "mate" without its glide, and his "house" like "hoos".',
-			"Spelling didn't keep up. Printing, which reached England in these years, fixed it in its older form. That's why English vowel letters often don't match their sounds, or their sounds in other languages.",
+			'Between about 1400 and 1700, the long vowels of English changed. "Mine" used to sound like "meen", and "house" like "hoos".',
+			"Spelling didn't change with them, and printing kept the old spellings. That's why English vowel letters often don't match their sounds.",
 		],
 		card: "center-right",
 		camera: { west: -10, south: 48, east: 10, north: 58 },
@@ -263,8 +263,8 @@ export const STEPS: readonly Step[] = [
 		title: "London English and the printing press",
 		era: { ce: 1476 },
 		paragraphs: [
-			"By the late 1300s English was back in books and official records, above all in London, home to writers like Geoffrey Chaucer. In 1476 William Caxton set up England's first printing press at Westminster, and the Canterbury Tales was among his first books.",
-			"Printing helped spread London English. Its spelling still varied, but printers slowly made it regular, keeping old spellings while the sounds moved on.",
+			"In 1476, William Caxton set up England's first printing press, at Westminster near London.",
+			"Printed books spread London English. Printers slowly made spelling regular, but kept old spellings while the sounds changed.",
 		],
 		card: "top-left",
 		camera: { west: -6, south: 49.5, east: 4, north: 55 },
@@ -277,8 +277,8 @@ export const STEPS: readonly Step[] = [
 		title: "Across the Atlantic",
 		era: { ce: 1607 },
 		paragraphs: [
-			"In 1607, 104 English men and boys founded Jamestown, Virginia, the first lasting English settlement in North America.",
-			"Most American accents kept the r in car and hard, as the accent taught here does; much of southern England later lost it. Noah Webster's 1828 dictionary made spellings like color and theater standard.",
+			"In 1607, English settlers founded Jamestown, Virginia, the first English settlement in North America that lasted.",
+			"Most American accents kept the r in words like car, as the accent on this site does. Webster's 1828 dictionary made spellings like color standard.",
 		],
 		card: "bottom-left",
 		camera: { west: -90, south: 25, east: 5, north: 58 },
@@ -297,8 +297,8 @@ export const STEPS: readonly Step[] = [
 		title: "Around the world",
 		era: { ce: 1788 },
 		paragraphs: [
-			"In January 1788 a fleet of 11 ships set up a British convict settlement at Sydney Cove, on the land of the Eora people. It began the colonisation of Australia.",
-			"English spread with the British Empire, and later with American culture. Today it is spoken in 188 countries, many of them in Africa.",
+			"In 1788, British ships brought prisoners to Sydney Cove, on the land of the Eora people. This began the colonization of Australia.",
+			"English spread with the British Empire, and later with American culture. Today it is spoken in 188 countries.",
 		],
 		card: "top-right",
 		camera: { west: 10, south: -45, east: 160, north: 20 },
@@ -319,14 +319,79 @@ export const STEPS: readonly Step[] = [
 		title: "Today",
 		era: "today",
 		paragraphs: [
-			"About 1.5 billion people speak English, more than any other language. Most of them learned it as an extra language.",
-			"Counting only native speakers, English comes third, after Mandarin Chinese and Spanish.",
+			"About 1.5 billion people speak English, more than any other language. Most of them did not grow up speaking it.",
+			"Counting only native speakers, English is third, after Mandarin Chinese and Spanish.",
 		],
 		camera: WORLD,
 		spin: true,
 		stops: [],
 		routes: [],
 		sources: ["statista-2026", "ethnologue-most-spoken", "british-council-future-english"],
+	},
+];
+
+export const SAMPLE_MEANING = "Our Father in heaven, may your name be kept holy.";
+
+/** The opening of the Lord's Prayer (Matthew 6:9) in each stage of English, oldest first, as Cook 1891 traces it. */
+export const SAMPLES: readonly Sample[] = [
+	{
+		id: "old-english",
+		step: "old-english",
+		stage: "Old English",
+		written: "~1000 CE",
+		lang: "ang",
+		text: "Fæder úre þu þe eart on heofonum; Si þin nama gehalgod",
+		gloss: [
+			"father",
+			"our",
+			"you",
+			"who",
+			"are",
+			"in",
+			"heavens",
+			"be",
+			"your",
+			"name",
+			"hallowed",
+		],
+		note: "þ = th",
+		sources: ["skeat-1887", "cook-1891"],
+	},
+	{
+		id: "middle-english",
+		step: "norman-conquest",
+		stage: "Middle English",
+		written: "~1390",
+		lang: "enm",
+		text: "Oure fadir that art in heuenes, halewid be thi name",
+		gloss: ["our", "father", "who", "are", "in", "heavens", "hallowed", "be", "your", "name"],
+		note: "heuenes = heavens",
+		sources: ["forshall-madden-1850", "cook-1891"],
+	},
+	{
+		id: "tyndale",
+		step: "printing",
+		stage: "Tyndale's New Testament",
+		written: "1526",
+		text: "O oure father which arte in heven/ halowed be thy name.",
+		gloss: ["O", "our", "father", "who", "are", "in", "heaven", "hallowed", "be", "your", "name"],
+		note: "heven = heaven",
+		sources: ["tyndale-1526"],
+	},
+	{
+		id: "king-james",
+		stage: "King James Bible",
+		written: "1611",
+		text: "Our father which art in heauen, hallowed be thy name.",
+		note: "heauen = heaven",
+		sources: ["king-james-1611"],
+	},
+	{
+		id: "today",
+		step: "today",
+		stage: "Modern English",
+		written: "Today",
+		text: SAMPLE_MEANING,
 	},
 ];
 
@@ -509,6 +574,38 @@ export const SOURCES: readonly Source[] = [
 		citation: "Statista, 2026",
 		title: "The most spoken languages worldwide in 2026",
 		url: "https://www.statista.com/statistics/266808/the-most-spoken-languages-worldwide/",
+	},
+	{
+		id: "cook-1891",
+		citation: "Cook 1891, American Journal of Philology",
+		title: "The evolution of the Lord's Prayer in English",
+		url: "https://archive.org/details/jstor-287989",
+	},
+	{
+		id: "skeat-1887",
+		citation: "Skeat 1887, Cambridge University Press, p. 54",
+		title:
+			"The Gospel according to Saint Matthew in Anglo-Saxon, Northumbrian, and Old Mercian versions",
+		url: "https://objects.library.uu.nl/reader/1874-374575",
+	},
+	{
+		id: "forshall-madden-1850",
+		citation: "Forshall & Madden 1850, Oxford University Press, vol. 4, p. 14",
+		title:
+			"The Holy Bible in the earliest English versions made by John Wycliffe and his followers",
+		url: "https://archive.org/details/holybiblecontain04wycluoft/page/n21",
+	},
+	{
+		id: "tyndale-1526",
+		citation: "Fry 1862, facsimile of Tyndale's 1526 New Testament",
+		title: "The first New Testament printed in the English language",
+		url: "https://archive.org/details/firstnewtestame00frygoog/page/n50",
+	},
+	{
+		id: "king-james-1611",
+		citation: "King James Bible, 1611, Robert Barker (University of Pennsylvania copy)",
+		title: "The Holy Bible, conteyning the Old Testament, and the New",
+		url: "https://archive.org/details/Bible1611/page/n1225",
 	},
 	{
 		id: "british-council-future-english",

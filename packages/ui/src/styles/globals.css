@@ -221,6 +221,8 @@
 	--color-map-pin: var(--map-pin);
 	--color-glass: var(--glass);
 	--color-glass-border: var(--glass-border);
+	/* A glow in the map's own colour, so text floating over the globe stays readable. */
+	--text-shadow-halo: 0 0 12px var(--map-space), 0 0 4px var(--map-space);
 
 	--font-sans: var(--font-noto-sans);
 	--font-mono: var(--font-noto-sans-mono);

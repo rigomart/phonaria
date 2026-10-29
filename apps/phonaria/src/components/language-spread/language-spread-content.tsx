@@ -3,10 +3,11 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import type { Insets } from "@/lib/language-spread/camera";
 import { coveredInsets } from "@/lib/language-spread/covered-insets";
 import { formatEra } from "@/lib/language-spread/era";
-import { MAIN_SOURCES, SOURCES, STEPS, STOPS } from "@/lib/language-spread/story";
+import { MAIN_SOURCES, SAMPLES, SOURCES, STEPS, STOPS } from "@/lib/language-spread/story";
 import type { Stop } from "@/lib/language-spread/types";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { SampleCaption, SampleComparison } from "./sample-sentence";
 import { SpreadMap } from "./spread-map";
 import { SourceLink, StopDetails } from "./stop-details";
 import { CARD_EXIT_MS, cardSide, placementOf, StoryCard } from "./story-card";
@@ -25,7 +26,22 @@ function layoutBox(element: HTMLElement) {
 	return { left, top, right: left + element.offsetWidth, bottom: top + element.offsetHeight };
 }
 
+function underDialAndCaption(dial: HTMLElement | null, caption: HTMLElement | null) {
+	const box = dial?.getBoundingClientRect();
+	const below = caption?.getBoundingClientRect();
+	if (!box || !below || below.height === 0) return box;
+	return {
+		top: box.top,
+		left: box.left,
+		right: box.right,
+		bottom: Math.max(box.bottom, below.bottom),
+	};
+}
+
 const sourcesById = new Map(SOURCES.map((source) => [source.id, source]));
+const samplesByStep = new Map(
+	SAMPLES.flatMap((sample) => (sample.step ? [[sample.step, sample]] : [])),
+);
 
 export function LanguageSpreadContent() {
 	const stops = useMemo(() => new Map(STOPS.map((stop) => [stop.id, stop])), []);
@@ -36,6 +52,7 @@ export function LanguageSpreadContent() {
 	const opener = useRef<HTMLElement | null>(null);
 	const cards = useRef<(HTMLElement | null)[]>([]);
 	const dial = useRef<HTMLDivElement>(null);
+	const caption = useRef<HTMLElement>(null);
 	const activeRef = useRef(active);
 	useLayoutEffect(() => {
 		activeRef.current = active;
@@ -50,7 +67,7 @@ export function LanguageSpreadContent() {
 		return coveredInsets({
 			container: container.getBoundingClientRect(),
 			card: card ? layoutBox(card) : undefined,
-			dial: dial.current?.getBoundingClientRect(),
+			dial: underDialAndCaption(dial.current, caption.current),
 			margin: desktop ? UI_MARGIN_PX : UI_MARGIN_PX / 2,
 			gap: UI_MARGIN_PX,
 		});
@@ -63,6 +80,18 @@ export function LanguageSpreadContent() {
 		setPlaced(placement);
 		setLayout((version) => version + 1);
 	}
+	useEffect(() => {
+		const box = caption.current;
+		if (!box) return;
+		let height = box.offsetHeight;
+		const observer = new ResizeObserver(() => {
+			if (box.offsetHeight === height) return;
+			height = box.offsetHeight;
+			setLayout((version) => version + 1);
+		});
+		observer.observe(box);
+		return () => observer.disconnect();
+	}, []);
 	useEffect(() => {
 		const card = cards.current[active];
 		if (!card) return;
@@ -242,6 +271,12 @@ export function LanguageSpreadContent() {
 						announcement={announcement}
 						dialRef={dial}
 					/>
+					<SampleCaption
+						sample={samplesByStep.get(STEPS[active].id)}
+						shown={revealed?.index === active}
+						sizerRef={caption}
+						cardSide={side}
+					/>
 					<div
 						ref={detailsBox}
 						id={detailsId}
@@ -274,6 +309,7 @@ export function LanguageSpreadContent() {
 						>
 							<StoryCard
 								step={step}
+								sample={samplesByStep.get(step.id)}
 								index={index}
 								active={index === active}
 								shown={index === active && revealed?.index === index}
@@ -290,6 +326,7 @@ export function LanguageSpreadContent() {
 					))}
 				</ol>
 			</div>
+			<SampleComparison sources={sourcesById} />
 			<Sources />
 		</div>
 	);
@@ -307,8 +344,8 @@ function Sources() {
 					Sources
 				</h2>
 				<p className="mt-1.5 text-xs leading-relaxed text-muted-foreground text-pretty sm:text-sm">
-					Dates are rounded and places are general areas. Where experts disagree, the story says so.
-					Each pin lists the studies behind it; these are the main works the story draws on.
+					Dates are rounded, and places are rough areas. When experts disagree, the story says so.
+					Each pin lists its own sources. These are the main works behind the whole story.
 				</p>
 				<ul className="mt-3 flex flex-col gap-1.5 text-xs leading-relaxed sm:text-sm">
 					{main.map((source) => (
