@@ -40,7 +40,6 @@ const SWEEP_START = SETTLE_AT + 400;
 const SWEEP_STAGGER = 70;
 const SWEEP_MS = 900;
 const FOLD_MS = 500;
-const LEARNER_REACHES = ["pointerenter", "focus", "click"] as const;
 
 /**
  * `waiting` lasts until hydration and the IPA font, so the morph measures
@@ -106,11 +105,12 @@ export function HomeIntro({ query }: { query: string | undefined }) {
 
 function NamePronunciation() {
 	const [phase, setPhase] = useState<Phase>("waiting");
-	const [animated, setAnimated] = useState(false);
+	const [sweeping, setSweeping] = useState(false);
 
 	useEffect(() => {
 		let cancelled = false;
 		let settleTimer: number | undefined;
+		let sweepTimer: number | undefined;
 		void whenFontsReady().then(() => {
 			if (cancelled) return;
 			if (prefersReducedMotion()) {
@@ -118,12 +118,13 @@ function NamePronunciation() {
 				return;
 			}
 			setPhase("playing");
-			setAnimated(true);
 			settleTimer = window.setTimeout(() => setPhase("settled"), SETTLE_AT);
+			sweepTimer = window.setTimeout(() => setSweeping(true), SWEEP_START);
 		});
 		return () => {
 			cancelled = true;
 			window.clearTimeout(settleTimer);
+			window.clearTimeout(sweepTimer);
 		};
 	}, []);
 
@@ -149,7 +150,7 @@ function NamePronunciation() {
 						phonemeId={segment.phonemeId}
 						stressed={"stressed" in segment}
 						turnAt={MORPH_START + index * MORPH_STEP}
-						sweepDelay={animated ? SWEEP_START + index * SWEEP_STAGGER : null}
+						sweepDelay={sweeping ? index * SWEEP_STAGGER : null}
 					/>
 				))}
 				<Slash phase={phase} className="left-full" />
@@ -195,17 +196,13 @@ function NameSegment({
 	useEffect(() => {
 		const button = soundRef.current?.querySelector("button");
 		if (sweepDelay === null || !button) return;
-		const flash = getComputedStyle(button).getPropertyValue("--foreground").trim();
-		const animation = button.animate(
-			[{ textDecorationColor: "transparent" }, { offset: 0.4, textDecorationColor: flash }],
-			{ duration: SWEEP_MS, delay: sweepDelay, easing: "ease-in-out", fill: "backwards" },
-		);
-		const yieldToLearner = () => animation.cancel();
-		for (const type of LEARNER_REACHES) button.addEventListener(type, yieldToLearner);
-		return () => {
-			animation.cancel();
-			for (const type of LEARNER_REACHES) button.removeEventListener(type, yieldToLearner);
-		};
+		const animation = button.animate([{ offset: 0.4, transform: "scaleX(1)" }], {
+			duration: SWEEP_MS,
+			delay: sweepDelay,
+			easing: "ease-in-out",
+			pseudoElement: "::after",
+		});
+		return () => animation.cancel();
 	}, [sweepDelay]);
 
 	return (
@@ -243,7 +240,7 @@ function NameSegment({
 					targetAccent="en-us"
 					phonemeId={phonemeId}
 					symbol={symbol}
-					className="px-1 py-0 leading-tight underline-offset-4"
+					className="px-1 py-0 leading-tight"
 				/>
 			</span>
 

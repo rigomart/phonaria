@@ -19,7 +19,7 @@ export function ClickablePhoneme({ targetAccent, phoneme, marked = false }: Clic
 	if (!phoneme.phonemeId) {
 		return (
 			<span
-				className="text-2xl md:text-4xl rounded-lg px-1.5 py-1 opacity-70"
+				className="text-2xl md:text-4xl rounded-lg px-1.5 py-1 opacity-70 underline decoration-dotted underline-offset-4"
 				title={`/${phoneme.symbol}/ - not found in phoneme database`}
 			>
 				{phoneme.symbol}
@@ -37,6 +37,9 @@ export function ClickablePhoneme({ targetAccent, phoneme, marked = false }: Clic
 		/>
 	);
 }
+
+const markedSoundHover = "hover:bg-secondary hover:text-primary";
+const drawnBarHover = "relative sound-trigger";
 
 export function PhonemeDetailsButton({
 	targetAccent,
@@ -64,8 +67,8 @@ export function PhonemeDetailsButton({
 					type="button"
 					className={cn(
 						"rounded-lg px-1.5 py-1 cursor-pointer",
-						"transition-colors duration-150",
-						marked ? "hover:bg-secondary" : "sound-trigger",
+						"transition-colors duration-150 motion-reduce:transition-none",
+						marked ? markedSoundHover : drawnBarHover,
 						"data-details-open:bg-secondary data-details-open:text-primary",
 						className,
 					)}

@@ -1,32 +1,45 @@
 /*
- * Every sound that opens the phoneme details wears a dotted underline, like a
- * link: solid on hover, thick while its details are open, both in the text's
- * own color. Put `sound-trigger` on the trigger, or on the glyph's element when
- * it is the trigger's child, so the trigger's hover and `data-details-open`
- * reach it. A host on a filled surface sets its own `decoration-*` color.
+ * A bare sound that opens the phoneme details: on hover a short bar draws out
+ * from under its center and the sound shifts to the primary color. Put
+ * `sound-trigger` on a positioned trigger, or on a positioned element hugging
+ * the glyph inside it, so the trigger's hover reaches it.
  */
 
 @utility sound-trigger {
-	text-decoration-line: underline;
-	text-decoration-style: dotted;
-	text-decoration-color: var(--color-muted-foreground);
-	text-decoration-thickness: 2px;
-	text-underline-offset: 0.32em;
-	/* Skipping ink would break the line around descenders like p and ʃ. */
-	text-decoration-skip-ink: none;
+	transition-property: color;
+	transition-duration: 150ms;
+
+	&::after {
+		content: "";
+		position: absolute;
+		left: 20%;
+		right: 20%;
+		bottom: 0.08em;
+		height: max(2px, 0.06em);
+		border-radius: 9999px;
+		background: currentColor;
+		pointer-events: none;
+		transform: scaleX(0);
+		transition: transform 200ms var(--ease-emphasized);
+	}
 
 	@media (hover: hover) {
 		&:hover,
-		button:hover > & {
-			text-decoration-style: solid;
-			text-decoration-color: currentColor;
+		button:hover & {
+			color: var(--color-primary);
+		}
+
+		&:hover::after,
+		button:hover &::after {
+			transform: scaleX(1);
 		}
 	}
 
-	&[data-details-open],
-	[data-details-open] > & {
-		text-decoration-style: solid;
-		text-decoration-color: currentColor;
-		text-decoration-thickness: 3px;
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+
+		&::after {
+			transition: none;
+		}
 	}
 }

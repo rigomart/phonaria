@@ -82,7 +82,7 @@ function ConsonantButton({
 							/>
 						}
 					>
-						<div className="sound-trigger text-base sm:text-lg font-medium leading-none tracking-tight">
+						<div className="text-base sm:text-lg font-medium leading-none tracking-tight">
 							{phoneme.symbol}
 						</div>
 					</PhonemeDetailsTrigger>

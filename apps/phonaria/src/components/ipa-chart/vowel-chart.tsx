@@ -276,7 +276,7 @@ function VowelMarker({
 									"hover:z-10 motion-reduce:transition-none enter-pop",
 									"data-details-open:z-10 data-details-open:ring-2 data-details-open:ring-ring data-details-open:ring-offset-2 data-details-open:ring-offset-background",
 									{
-										"border-transparent bg-primary text-primary-foreground decoration-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary":
+										"border-transparent bg-primary text-primary-foreground rounded-full size-6 sm:size-9 hover:bg-primary":
 											isRounded && !isRhotic,
 										"border-primary bg-background text-foreground rounded-full size-6 sm:size-9 hover:bg-background-strong":
 											!isRounded && !isRhotic,

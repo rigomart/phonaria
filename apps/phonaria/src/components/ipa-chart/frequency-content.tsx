@@ -77,8 +77,8 @@ function RankingRow({
 				<span className="w-7 shrink-0 text-xs tabular-nums text-muted-foreground sm:w-8">
 					{sound.rank}
 				</span>
-				<span className="sound-trigger w-12 shrink-0 font-display text-lg leading-none sm:w-14">
-					{ipa}
+				<span className="w-12 shrink-0 font-display text-lg leading-none sm:w-14">
+					<span className="sound-trigger relative pb-1">{ipa}</span>
 				</span>
 				<span className="w-22 shrink-0 truncate text-sm text-muted-foreground sm:w-28">
 					<SpelledWord spelled={example.spelled} />

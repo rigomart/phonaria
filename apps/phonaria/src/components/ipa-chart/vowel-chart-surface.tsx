@@ -153,7 +153,7 @@ function AxisLabels() {
 }
 
 export const vowelMarkerButtonBaseClass =
-	"sound-trigger underline-offset-2 absolute grid place-items-center border text-sm sm:text-lg font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+	"absolute grid place-items-center border text-sm sm:text-lg font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function getMarkerPercentPosition(
 	point: ChartPoint,
