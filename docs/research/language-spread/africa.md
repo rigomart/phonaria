@@ -1,6 +1,8 @@
 # How languages spread: Africa and the opening
 
-Research notes for the opening and African stops of the "How languages spread" page. Every claim below was checked against the source text or abstract (see "How sources were checked" at the end). Items marked WEAK should be dropped or softened. Wikipedia was used only to find leads and is not cited.
+Research notes for the opening and African stops of the "How languages spread" page. Claims were checked against the source text or abstract, except where a source was only relayed: [Campbell 2008] reaches us through a review and an announcement, and [Guldemann 2018] was not read (see "How sources were checked" at the end).
+
+Second check, 2026-10-29: the claims flagged in a source check were re-read against their abstracts or texts (see the README's "Second check of the world notes"). Entries changed in that check say so. Items marked WEAK should be dropped or softened. Wikipedia was used only to find leads and is not cited.
 
 Conventions: years are negative for BCE. Coordinates are decimal degrees (lat, lon). "Era year" is the single year for the era indicator. Citation keys such as [Hublin 2017] point to the Bibliography.
 
@@ -27,7 +29,7 @@ Stops covered:
 - date range: "~300,000 years ago and later"
 - era year: -300000
 - location: (4.0, 22.0), radius ~3500 km, i.e. the whole continent. Reference fossil point: Jebel Irhoud, Morocco (31.85, -8.87).
-- location uncertainty: High on purpose. The earliest fossils come from Morocco, Ethiopia and South Africa, and the genetic and fossil evidence points to a population spread across Africa, not one birthplace. Do not pin this to a single dot.
+- location uncertainty: High on purpose. The oldest fossils in these notes come from Jebel Irhoud in Morocco [Hublin 2017], and the genetic and fossil evidence points to a population spread across Africa, not one birthplace. Do not pin this to a single dot. (Second check: the first pass also named Ethiopia and South Africa, but no source here says so; add one before naming them.)
 - spread to: none (the next stop carries the arrows)
 - scholars split? Mildly. The classic "one cradle in East Africa" picture is being replaced by a "many connected populations across Africa" picture. The 300,000-year age for the earliest Homo sapiens features is the commonly used figure, but "modern" skull shape appears later, so where you draw the line for "our species" is a judgement call.
 
@@ -43,7 +45,7 @@ Claims:
    - [Schlebusch 2017]: the first modern human population divergence is estimated at 350,000 to 260,000 years ago.
    - [Mallick 2016]: the ancestors of some pairs of living populations were substantially separated by 100,000 years ago.
 
-Draft card text: "Our species, Homo sapiens, appeared in Africa roughly 300,000 years ago. The oldest fossils turn up from Morocco to Ethiopia to South Africa, which suggests many connected groups across the continent, not one single homeland."
+Draft card text: "Our species, Homo sapiens, appeared in Africa roughly 300,000 years ago. The oldest known fossils come from Morocco, and the evidence suggests many connected groups across the continent, not one single homeland." (Second check: "from Morocco to Ethiopia to South Africa" removed; only Morocco is sourced.)
 
 ---
 
@@ -65,9 +67,9 @@ Claims:
    - [Hauser 2014]: "the fossil and archaeological evidence does not inform our understanding of the computations and representations of our earliest ancestors, leaving details of origins and selective pressure unresolved"; the authors conclude the "most fundamental questions about the origins and evolution of our linguistic capacity remain as mysterious as ever."
 2. A gene linked to speech, FOXP2, is a clue, not proof, and its story keeps changing.
    - [Krause 2007]: Neandertals carry the same two human-specific FOXP2 changes, so those changes predate the split of modern humans and Neandertals (about 300,000-400,000 years ago).
-   - [Atkinson 2018]: a reanalysis of hundreds of genomes found "no evidence of recent positive or balancing selection at FOXP2," revising the idea that it marks a recent leap.
-3. Every living human group has full language, and the capacity is shared by all humans, so it very probably existed before our ancestors spread around the world. This is an inference, not a measured date.
-   - [Hauser 2014]: language competence is "a biological capacity shared by all humans" (stated as the view of the authors and many language scientists).
+   - [Atkinson 2018]: a reanalysis of hundreds of genomes: "We do not find evidence of recent positive or balancing selection at FOXP2." The authors call this "a substantial revision to the adaptive history of FOXP2".
+3. Every living human group has full language, and the capacity is shared by all humans, so it very probably existed before our ancestors spread around the world. This is an inference, not a measured date, and no source here states it. (Second check: the retired world story's `africa` step said "people were almost certainly talking" by the time some groups left for Asia; that overstated this inference, which these notes never put stronger than "very probably".)
+   - [Hauser 2014] (full text, not the abstract): "the core competence for language is a biological capacity shared by all humans" (stated as the view of the authors and "many other language scientists").
    - [Mallick 2016] and [Schlebusch 2017] show living groups whose ancestors separated 100,000 years ago or more. WEAK as a single logical step: the papers establish the genetic separation dates; the language inference is ours and is the standard reasoning, not a finding of those papers.
 4. Estimates of how old language is range from tens of thousands of years to around half a million.
    - [Dediu 2013]: argue recognisably modern language is likely an ancient feature of our genus, predating the common ancestor of modern humans and Neandertals "about half a million years ago," against the "usually quoted 50,000-100,000 years."
@@ -102,13 +104,14 @@ Claims:
    - [Hershkovitz 2018]: a jaw from Misliya Cave, Israel, dated to 177,000-194,000 years ago, shows Homo sapiens left Africa earlier than thought; the older Levant sites Skhul and Qafzeh date to 90,000-120,000 years ago.
    - [Armitage 2011]: stone tools at Jebel Faya, United Arab Emirates, show humans in eastern Arabia during the last interglacial (the paper's own dating, well before 60,000 years ago).
    - [Pagani 2016]: about 2% of Papuan genomes may come from "an early and largely extinct expansion" out of Africa earlier than 75,000 years ago.
+   - Disagreement (second check): [Mallick 2016], published in the same issue of Nature, finds that "indigenous Australians, New Guineans and Andamanese do not derive substantial ancestry from an early dispersal of modern humans". So the genetic trace of an early dispersal in Papuans is disputed; the archaeological evidence for early trips (Misliya, Jebel Faya) is separate.
    - [Bae 2017]: "growing evidence for multiple dispersals predating 60,000 years ago," which left "at least some genetic traces."
 3. The route out is still debated: across the Bab-el-Mandeb strait into Arabia, or via Egypt and Sinai.
    - [Pagani 2015]: "Two alternative routes, via Egypt and Sinai or across the Bab el Mandeb strait into Arabia, have traditionally been proposed"; their genomes of Egyptians and Ethiopians point to Egypt as "the more likely gateway" (a northern route).
    - [Armitage 2011] argue for a southern route into Arabia ("The southern route out of Africa").
    - Both are real, peer-reviewed positions; the card should say "by land or across a narrow sea" without picking one.
 
-Disagreement to state neutrally: some researchers see one main exit about 60,000 years ago with small earlier failures; others see several dispersals, some leaving DNA in living people.
+Disagreement to state neutrally: some researchers see one main exit about 60,000 years ago with small earlier failures; others see several dispersals, some leaving DNA in living people. Pagani 2016 and Mallick 2016 reach opposite answers on the DNA point for New Guinea.
 
 Draft card text: "Around 70,000 to 50,000 years ago, a group of modern humans left Africa, probably by the Horn of Africa or the Sinai, and their descendants spread across the rest of the world. Smaller, earlier trips almost certainly happened too."
 
@@ -143,7 +146,7 @@ Draft card text: "Within a few thousand years of leaving Africa, people reached 
 
 - id: `afroasiatic`
 - kind: family
-- date range: "roughly 10,000-15,000 years ago for the common ancestor, with no agreed figure"
+- date range: "roughly 10,000-11,000 years ago or more for the common ancestor, with no agreed figure" (Militarev 2002: break-up in the ninth millennium BC; Blažek: about -10,000). Second check: narrowed from "10,000-15,000"; the 15,000 end came from Ehret's figure, which claim 4 below marks WEAK and not used.
 - era year: -10000
 - location: (18.0, 31.0), radius ~1200 km: the Nile valley between Upper Egypt and the Sudan, with the eastern Sahara and Horn to the south and east. Alternative minority placement: the Levant (32.0, 35.5).
 - location uncertainty: High. The homeland is genuinely debated (see split note). The Nile marker is a compromise inside the majority view, not a finding.
@@ -181,7 +184,7 @@ Draft card text: "Afroasiatic is a family of related languages that includes Ara
 - location: from southern Arabia (15.0, 45.0) to the Ethiopian and Eritrean highlands (11.0, 39.5)
 - location uncertainty: Moderate. The study names southern Arabia as the source and the Horn as the target; the exact crossing and the first settlements are not located.
 - spread to: highlands of Ethiopia and Eritrea (11.0, 39.5)
-- scholars split? Yes, partly. A Bayesian word-list study supports an Arabian crossing; earlier scholarship (for example Diakonoff, as discussed in [Ehret 2004]) put Semitic's roots inside Africa, near the Nile Delta and Sinai.
+- scholars split? Yes, partly. A Bayesian word-list study supports an Arabian crossing. Older views differ on where Semitic itself began: [Ehret 2004] reads Diakonoff's 1988 book as moving the Common Semitic homeland "from solely within northeast Africa to areas straddling the Delta and Sinai", while [Huehnergard 2008] lists Diakonoff 1998 among the few scholars who argue for a southwest Asian homeland of Afroasiatic. (Second check: the first pass said Diakonoff put Semitic "inside Africa", which neither source says.)
 
 Claims:
 
@@ -215,7 +218,7 @@ Claims:
    - [Fortes-Lima 2024]: "more than 500 Bantu languages" spoken by about 350 million people (this one is a count of Bantu only, from the paper's introduction).
 2. Whether all of "Niger-Congo" is one family is debated. Glottolog keeps a core and sets aside several groups for now.
    - [Glottolog]: the Atlantic-Congo core "is held together by regular sound correspondences" plus noun class systems and verb extensions; Mande, Kordofanian, Ijoid, Kru and Dogon "have not yet been shown to stand up to these criteria wherefore they are excluded" (Mande's own entry says it "has not yet been shown to contain systematic sound correspondences, noun class systems or verbal extensions with Niger-Congo in some form").
-   - [Guldemann 2018]: argues the publicly available evidence supports accepting Niger-Congo only in a narrower sense (relayed through the author's colloquium abstract, which says he reassesses Greenberg's four-family map of Africa; the "narrower sense" wording is from a lecture summary I only saw through search: WEAK on the exact wording, solid on the general point that the reassessment exists).
+   - [Guldemann 2018] (SECONDHAND, not read): the author's 2026 colloquium announcement says only that the book provides "a classificatory reassessment" of Greenberg's four-family map "from inside African linguistics"; it does not mention two families or a "narrower sense" of Niger-Congo. That wording came from a lecture summary seen only through search. The second check found nothing first-hand behind it, so the claim that Niger-Congo holds only in a narrower sense rests on Glottolog's wording above, not on Güldemann.
    - [Campbell 2008], as quoted by [Guldemann 2026 abstract]: Greenberg's continental classification is "badly in need of major reinvestigation and reworking."
 3. Africanists have been called "lumpers" by comparative linguists elsewhere, which is part of why the boundaries are argued over.
    - [Dimmendaal 2008] (abstract): "Africanists have been criticized by comparative linguists working on language families in other parts of the world for being lumpers."
@@ -306,7 +309,7 @@ Draft card text: "Swahili is a Bantu language from the East African coast. Centu
 Claims:
 
 1. "Nilo-Saharan" is Greenberg's 1963 grouping of many languages scattered from Mali to northern Tanzania. Many specialists see it as unproven.
-   - [Guldemann 2018] (via the author's own abstract): Greenberg's four-family map of Africa has been reassessed; he concludes only two big families are firmly supported (Afroasiatic and Niger-Congo, each in a narrower sense) and that Nilo-Saharan and Khoisan should "for the time being" be split into smaller units. The "two families" wording reached me through a lecture summary found by search: WEAK on exact wording; solid that the chapter argues for splitting.
+   - [Guldemann 2018] (SECONDHAND, not read): the author's 2026 colloquium announcement says the book reassesses Greenberg's four-family map; it says nothing about two families, a narrower sense, or splitting Nilo-Saharan and Khoisan. Those points (and the quoted "for the time being") came from a lecture summary seen only through search, so they are WEAK and not first-hand. The splitting point is supported by [Glottolog] (claim 2) and, for Khoisan, by [Guldemann 2014a] and [Guldemann 2014b].
    - [Campbell 2008], as quoted by Guldemann: Greenberg's classification is "badly in need of major reinvestigation and reworking."
 2. Glottolog does not use "Nilo-Saharan" as a family, and lists its parts separately.
    - [Glottolog]: its top-level African families include Central Sudanic (63 languages), Nilotic (56), Saharan (10), Maban (10), Kuliak (3), Koman (5) and Songhay as separate groupings, with no Nilo-Saharan node (checked in the language tree).
@@ -346,9 +349,9 @@ Claims:
    - [Schlebusch 2017]: the first split among modern human populations estimated at 350,000 to 260,000 years ago.
    - [Skoglund 2017]: ancestry related to today's San was once more widespread, forming about two-thirds of the ancestry of Malawi hunter-gatherers (8,100-2,500 years ago) and about one-third of Tanzanian hunter-gatherers 1,400 years ago.
    - Do not turn "old lineage" into "oldest language": no source supports a language age.
-5. Bantu farmers and herders took over much of the old click-speaking range.
-   - [Skoglund 2017]: the spread of farmers from western Africa replaced local hunter-gatherers entirely in some regions.
-   - [Pickrell 2012]: all southern Khoisan individuals derive at least a few percent of their genomes from non-Khoisan admixture starting ~1,200 years ago.
+5. Farmers from western Africa, and separately herders from eastern Africa, spread into regions where San-related ancestry was once widespread. In some regions the farmers completely replaced local hunter-gatherers; elsewhere the groups mixed. (Second check: the first pass said "Bantu farmers and herders took over much of the old click-speaking range". Skoglund ties replacement to "some regions", not to click-speaking areas, and the herders it tracks came from Tanzania, not from Bantu-speaking farmers; neither paper is about who spoke click languages. The retired world story's "took over" was reworded after the independent review.)
+   - [Skoglund 2017]: "the spread of farmers from western Africa involved complete replacement of local hunter-gatherers in some regions"; a separate spread of herders, tracked from a ~3,100-year-old pastoralist in Tanzania, contributed ancestry "from northeastern to southern Africa".
+   - [Pickrell 2012]: "all individuals derive at least a few percent of their genomes from admixture with non-Khoisan populations that began ∼1,200 years ago" (southern African Khoisan).
 
 Draft card text: "'Khoisan' is a name for click languages in southern and eastern Africa. Linguists now see at least three separate families there, plus two lone languages in Tanzania, that picked up their clicks and other traits from living side by side. The name describes a region and a sound, not one family."
 
@@ -356,9 +359,9 @@ Draft card text: "'Khoisan' is a name for click languages in southern and easter
 
 ## How sources were checked
 
-- Read full text or PDF: [Clarkson 2017], [Hublin 2017], [Ehret 2004] (submitted version), [Militarev 2002] (excerpt), [Blazek] (conference text), [Brielle 2023], [Koile 2022], [Fortes-Lima 2024], [Guldemann 2026 abstract], Glottolog data files (language tree and CLDF export, v5.2.1/5.3), [WOLD Swahili], [UNESCO Kiswahili], [Smithsonian HOP], [Huehnergard 2008] (page text), [Pouwels 1999] (opening).
-- Read abstract only (Europe PMC or Crossref): [Mallick 2016], [Malaspinas 2016], [Pagani 2015], [Pagani 2016], [Hershkovitz 2018], [Armitage 2011], [Groucutt 2015], [Bae 2017], [O'Connell 2018], [Scerri 2018], [Schlebusch 2012], [Schlebusch 2017], [Skoglund 2017], [Pickrell 2012], [Kitchen 2009], [Grollemund 2015], [de Filippo 2012], [Dediu 2013], [Hauser 2014], [Krause 2007], [Atkinson 2018], [Guldemann 2014a], [Guldemann 2014b], [Dimmendaal 2008].
-- Relayed only: [Campbell 2008] quotes through [Erschler 2009] and [Guldemann 2026 abstract]; Britannica and Ethnologue were blocked (403) and are not cited.
+- Read full text or PDF: [Clarkson 2017], [Hauser 2014] (for the "shared by all humans" quote in the third claim of the language-origin stop; the two quotes in its first claim are in the abstract), [Hublin 2017], [Ehret 2004] (submitted version), [Militarev 2002] (excerpt), [Blazek] (conference text), [Brielle 2023], [Koile 2022], [Fortes-Lima 2024], [Guldemann 2026 abstract], Glottolog data files (language tree and CLDF export, v5.2.1/5.3), [WOLD Swahili], [UNESCO Kiswahili], [Smithsonian HOP], [Huehnergard 2008] (page text), [Pouwels 1999] (opening).
+- Read abstract only (Europe PMC or Crossref): [Mallick 2016], [Malaspinas 2016], [Pagani 2015], [Pagani 2016], [Hershkovitz 2018], [Armitage 2011], [Groucutt 2015], [Bae 2017], [O'Connell 2018], [Scerri 2018], [Schlebusch 2012], [Schlebusch 2017], [Skoglund 2017], [Pickrell 2012], [Kitchen 2009], [Grollemund 2015], [de Filippo 2012], [Dediu 2013], [Hauser 2014] (abstract quotes only), [Krause 2007], [Atkinson 2018], [Guldemann 2014a], [Guldemann 2014b], [Dimmendaal 2008]. ([Groucutt 2015] was read but is not used for any claim.)
+- Relayed only: [Campbell 2008] quotes through [Erschler 2009] and [Guldemann 2026 abstract]; [Guldemann 2018] (not read; its content reached us through a lecture summary seen by search, and the announcement only says it reassesses Greenberg). Britannica and Ethnologue were blocked (403) and are not cited.
 - Dropped as WEAK: Chimerah Swahili article; Ehret "15,000 years" figure; Dimmendaal Koman/Gumuz quote; Britannica wording on Nilo-Saharan; exact "1.7 thousand years" arrival in southern Africa.
 
 ---
@@ -376,25 +379,25 @@ Draft card text: "'Khoisan' is a name for click languages in southern and easter
 - Dediu, D., Levinson, S. C. (2013). On the antiquity of language: the reinterpretation of Neandertal linguistic capacities and its consequences. Frontiers in Psychology 4:397. https://doi.org/10.3389/fpsyg.2013.00397. Supports: argument that modern language is ancient (~500,000 years).
 - Dimmendaal, G. J. (2008). Language ecology and linguistic diversity on the African continent. Language and Linguistics Compass 2(5), 840-858. https://doi.org/10.1111/j.1749-818X.2008.00085.x. Supports: Africanists criticised as "lumpers" (abstract).
 - Dimmendaal, G. J., Ahland, C., Jakobi, A., Kutsch Lojenga, C. (2019). Linguistic features and typologies in languages commonly referred to as "Nilo-Saharan". In H. E. Wolff (ed.), The Cambridge Handbook of African Linguistics, 326-381. Cambridge University Press. https://doi.org/10.1017/9781108283991.011. Supports: title shows the label is conventional. Body not read.
-- [Ehret 2004] Ehret, C., Keita, S. O. Y., Newman, P. (2004). The origins of Afroasiatic. Science 306(5702), 1680-1681 (submitted version dated 10 Oct 2004, IU ScholarWorks, CC BY 4.0: https://hdl.handle.net/2022/21062). Supports: southeastern Sahara/Horn homeland, pre-farming proto-language, reply to Diamond and Bellwood.
+- [Ehret 2004] Ehret, C., Keita, S. O. Y., Newman, P. (2004). The origins of Afroasiatic. Science 306(5702), 1680-1681 (submitted version dated 10 Oct 2004, IU ScholarWorks, CC BY 4.0: https://hdl.handle.net/2022/21062). Supports: southeastern Sahara/Horn homeland, pre-farming proto-language, reply to Diamond and Bellwood; Diakonoff's Common Semitic homeland moved to "areas straddling the Delta and Sinai".
 - [Erschler 2009] Erschler, D. (2009). Review of Campbell and Poser, Language Classification: History and Method. LINGUIST List 20.1935. https://linguistlist.org/issues/20/1935/. Supports: quotes from the Proto-World, Nostratic and Amerind chapters.
 - Fortes-Lima, C. A., Burgarella, C., Hammarén, R., et al. (2024). The genetic legacy of the expansion of Bantu-speaking peoples in Africa. Nature 625. https://doi.org/10.1038/s41586-023-06770-6 (open access via PMC10794141). Supports: demic expansion consensus; >500 languages, ~350 million speakers; serial-founder pattern.
 - Glottolog: Hammarström, H., Forkel, R., Haspelmath, M., Bank, S. (2025). Glottolog 5.2.1 (data v5.3). Max Planck Institute for Evolutionary Anthropology, Leipzig. https://glottolog.org; language tree files https://github.com/glottolog/glottolog (Afro-Asiatic afro1255, Atlantic-Congo atla1278, Mande mand1469, Khoe-Kwadi khoe1240, Kxa kxaa1236, Tuu tuuu1241, Swahili swah1253) and CLDF export https://github.com/glottolog/glottolog-cldf. Supports: classification notes and language counts used above. glottolog.org itself refused my connections; the data files on GitHub are the same release.
 - Grollemund, R., Branford, S., Bostoen, K., Meade, A., Venditti, C., Pagel, M. (2015). Bantu expansion shows that habitat alters the route and pace of human dispersals. PNAS 112(43). https://doi.org/10.1073/pnas.1503793112. Supports: ~5,000 years ago, savannah corridors, rainforest slowed movement.
-- Groucutt, H. S., Petraglia, M. D., Bailey, G., et al. (2015). Rethinking the dispersal of Homo sapiens out of Africa. Evolutionary Anthropology 24(4). https://doi.org/10.1002/evan.21455. Supports: dispersal picture is complex and challenges simple narratives.
+- Groucutt, H. S., Petraglia, M. D., Bailey, G., et al. (2015). Rethinking the dispersal of Homo sapiens out of Africa. Evolutionary Anthropology 24(4). https://doi.org/10.1002/evan.21455. Notes only: read (abstract) but not used for any claim above. The dispersal picture is complex and challenges simple narratives.
 - [Guldemann 2014a] Güldemann, T. (2014). "Khoisan" linguistic classification today. In T. Güldemann and A.-M. Fehn (eds.), Beyond "Khoisan", 1-40. John Benjamins. https://doi.org/10.1075/cilt.330.01gul.
 - [Guldemann 2014b] Güldemann, T., Fehn, A.-M. (eds.) (2014). Beyond "Khoisan": Historical Relations in the Kalahari Basin. John Benjamins. https://doi.org/10.1075/cilt.330.
-- [Guldemann 2018] Güldemann, T. (2018). Historical linguistics and genealogical language classification in Africa. In T. Güldemann (ed.), The Languages and Linguistics of Africa, 58-444. De Gruyter Mouton. https://doi.org/10.1515/9783110421668-002. Not read in full; used only for the point that it reassesses Greenberg's classification.
-- [Guldemann 2026 abstract] Güldemann, T. (2026). The Niger-Congo family in time and space: a first attempt. Afrikanistisches Kolloquium announcement, Goethe-Universität Frankfurt, 30 Jan 2026. https://www.fb09.uni-frankfurt.de/182716499/G%C3%BCldemann__AK_30_01_26.pdf. Supports: the Campbell and Poser 2008:128 quote on Greenberg's classification.
-- Hauser, M. D., Yang, C., Berwick, R. C., Tattersall, I., Ryan, M. J., Watumull, J., Chomsky, N., Lewontin, R. C. (2014). The mystery of language evolution. Frontiers in Psychology 5:401. https://doi.org/10.3389/fpsyg.2014.00401. Supports: fossil and archaeological evidence does not answer the origin question; language capacity shared by all humans.
+- [Guldemann 2018] Güldemann, T. (2018). Historical linguistics and genealogical language classification in Africa. In T. Güldemann (ed.), The Languages and Linguistics of Africa, 58-444. De Gruyter Mouton. https://doi.org/10.1515/9783110421668-002. Not read; SECONDHAND. Used only for the point that it reassesses Greenberg's classification, which the author's 2026 announcement states. The "two families" and "narrower sense" points are not in anything read first-hand.
+- [Guldemann 2026 abstract] Güldemann, T. (2026). The Niger-Congo family in time and space: a first attempt. Afrikanistisches Kolloquium announcement, Goethe-Universität Frankfurt, 30 Jan 2026. https://www.fb09.uni-frankfurt.de/182716499/G%C3%BCldemann__AK_30_01_26.pdf. Supports: the Campbell and Poser 2008:128 quote on Greenberg's classification; that Güldemann (2018) is "a classificatory reassessment from inside African linguistics". Re-read 2026-10-29: it does not mention two families or a narrower Niger-Congo.
+- Hauser, M. D., Yang, C., Berwick, R. C., Tattersall, I., Ryan, M. J., Watumull, J., Chomsky, N., Lewontin, R. C. (2014). The mystery of language evolution. Frontiers in Psychology 5:401. https://doi.org/10.3389/fpsyg.2014.00401. Supports: fossil and archaeological evidence does not answer the origin question (abstract); language capacity shared by all humans (full text, PMC4019876).
 - Hershkovitz, I., Weber, G. W., Quam, R., et al. (2018). The earliest modern humans outside Africa. Science 359(6374). https://doi.org/10.1126/science.aap8369. Supports: Misliya jaw 177,000-194,000 years old.
 - Hublin, J.-J., Ben-Ncer, A., Bailey, S. E., et al. (2017). New fossils from Jebel Irhoud, Morocco and the pan-African origin of Homo sapiens. Nature 546, 289-292. https://doi.org/10.1038/nature22336. Supports: 315 ± 34 thousand years; whole-continent emergence.
-- Huehnergard, J. (2008). Afro-Asiatic. In R. D. Woodard (ed.), The Ancient Languages of Syria-Palestine and Arabia. Cambridge University Press. https://www.cambridge.org/core/books/ancient-languages-of-syriapalestine-and-arabia/afroasiatic/52090A4EA262B5236AC49C5E34B5A332. Supports: five to eight branches; homeland debate.
+- Huehnergard, J. (2008). Afro-Asiatic. In R. D. Woodard (ed.), The Ancient Languages of Syria-Palestine and Arabia. Cambridge University Press. https://www.cambridge.org/core/books/ancient-languages-of-syriapalestine-and-arabia/afroasiatic/52090A4EA262B5236AC49C5E34B5A332. Supports: five to eight branches; homeland debate; Diakonoff 1998 and Militarev 1994 among the few who argue for southwest Asia.
 - Kitchen, A., Ehret, C., Assefa, S., Mulligan, C. J. (2009). Bayesian phylogenetic analysis of Semitic languages identifies an Early Bronze Age origin of Semitic in the Near East. Proceedings of the Royal Society B 276. https://doi.org/10.1098/rspb.2009.0408. Supports: Semitic ~5,750 years ago in the Levant; Ethiosemitic ~2,800 years ago from southern Arabia.
 - Koile, E., Greenhill, S. J., Blasi, D. E., Bouckaert, R., Gray, R. D. (2022). Phylogeographic analysis of the Bantu language expansion supports a rainforest route. PNAS 119(32). https://doi.org/10.1073/pnas.2112853119 (open access via PMC9372543). Supports: homeland near Nigeria-Cameroon border; 4,000-5,000 years ago; rainforest route.
 - Krause, J., Lalueza-Fox, C., Orlando, L., et al. (2007). The derived FOXP2 variant of modern humans was shared with Neandertals. Current Biology 17. https://doi.org/10.1016/j.cub.2007.10.008. Supports: Neandertals carry the human FOXP2 changes.
 - Malaspinas, A.-S., Westaway, M. C., Muller, C., et al. (2016). A genomic history of Aboriginal Australia. Nature 538. https://doi.org/10.1038/nature18299. Supports: 51-72 kya divergence from Eurasians; single out-of-Africa dispersal; single founding population.
-- Mallick, S., Li, H., Lipson, M., et al. (2016). The Simons Genome Diversity Project: 300 genomes from 142 diverse populations. Nature 538. https://doi.org/10.1038/nature18964. Supports: some populations separated by 100,000 years ago.
+- Mallick, S., Li, H., Lipson, M., et al. (2016). The Simons Genome Diversity Project: 300 genomes from 142 diverse populations. Nature 538. https://doi.org/10.1038/nature18964. Supports: some populations separated by 100,000 years ago; Australians, New Guineans and Andamanese do not derive substantial ancestry from an early dispersal (against [Pagani 2016]).
 - Militarev, A. (2002). The prehistory of a dispersal: the Proto-Afrasian (Afroasiatic) farming lexicon. In P. Bellwood and C. Renfrew (eds.), Examining the Farming/Language Dispersal Hypothesis, ch. 12. McDonald Institute for Archaeological Research, Cambridge. Text excerpt: https://starlingdb.org/Texts/afrfarm.pdf. Supports: ninth millennium BC break-up; Natufian identification.
 - O'Connell, J. F., Allen, J., Williams, M. A. J., et al. (2018). When did Homo sapiens first reach Southeast Asia and Sahul? PNAS 115(34). https://doi.org/10.1073/pnas.1808385115. Supports: argues a >50 ka age for Madjedbebe is unlikely.
 - Pagani, L., Schiffels, S., Gurdasani, D., et al. (2015). Tracing the route of modern humans out of Africa by using 225 human genome sequences from Ethiopians and Egyptians. American Journal of Human Genetics 96. https://doi.org/10.1016/j.ajhg.2015.04.019. Supports: northern route via Egypt favoured; split times 55,000/65,000/75,000 years.
