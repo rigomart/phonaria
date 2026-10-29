@@ -6,3 +6,4 @@
 @import "@phonaria/ui/globals.css";
 @import "./lib/fonts.css";
 @import "./motion.css";
+@import "./sound-trigger.css";

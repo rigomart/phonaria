@@ -72,7 +72,7 @@ function Glyph({
 				/>
 			}
 		>
-			{key.ipa}
+			<span className="sound-trigger">{key.ipa}</span>
 		</PhonemeDetailsTrigger>
 	);
 }

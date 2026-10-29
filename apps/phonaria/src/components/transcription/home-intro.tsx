@@ -36,12 +36,11 @@ const MORPH_END = MORPH_START + NAME_PRONUNCIATION.length * MORPH_STEP + CAPTION
 const SETTLE_AT =
 	MORPH_START + (NAME_PRONUNCIATION.length - 1) * MORPH_STEP + SOUND_LAG + TURN_MS + 100;
 const EASING = "cubic-bezier(0.2, 0, 0, 1)";
-// Once the name settles, a soft glow passes across the sounds to show they can be opened.
-// Each glow outlasts the stagger many times over, so it reads as one wave, not steps.
 const SWEEP_START = SETTLE_AT + 400;
 const SWEEP_STAGGER = 70;
 const SWEEP_MS = 900;
 const FOLD_MS = 500;
+const LEARNER_REACHES = ["pointerenter", "focus", "click"] as const;
 
 /**
  * `waiting` lasts until hydration and the IPA font, so the morph measures
@@ -107,12 +106,11 @@ export function HomeIntro({ query }: { query: string | undefined }) {
 
 function NamePronunciation() {
 	const [phase, setPhase] = useState<Phase>("waiting");
-	const [sweeping, setSweeping] = useState(false);
+	const [animated, setAnimated] = useState(false);
 
 	useEffect(() => {
 		let cancelled = false;
 		let settleTimer: number | undefined;
-		let sweepTimer: number | undefined;
 		void whenFontsReady().then(() => {
 			if (cancelled) return;
 			if (prefersReducedMotion()) {
@@ -120,13 +118,12 @@ function NamePronunciation() {
 				return;
 			}
 			setPhase("playing");
+			setAnimated(true);
 			settleTimer = window.setTimeout(() => setPhase("settled"), SETTLE_AT);
-			sweepTimer = window.setTimeout(() => setSweeping(true), SWEEP_START);
 		});
 		return () => {
 			cancelled = true;
 			window.clearTimeout(settleTimer);
-			window.clearTimeout(sweepTimer);
 		};
 	}, []);
 
@@ -152,7 +149,7 @@ function NamePronunciation() {
 						phonemeId={segment.phonemeId}
 						stressed={"stressed" in segment}
 						turnAt={MORPH_START + index * MORPH_STEP}
-						sweepDelay={sweeping ? index * SWEEP_STAGGER : null}
+						sweepDelay={animated ? SWEEP_START + index * SWEEP_STAGGER : null}
 					/>
 				))}
 				<Slash phase={phase} className="left-full" />
@@ -198,13 +195,17 @@ function NameSegment({
 	useEffect(() => {
 		const button = soundRef.current?.querySelector("button");
 		if (sweepDelay === null || !button) return;
-		const glow = getComputedStyle(button).getPropertyValue("--secondary").trim();
-		const animation = button.animate([{ offset: 0.4, backgroundColor: glow }], {
-			duration: SWEEP_MS,
-			delay: sweepDelay,
-			easing: "ease-in-out",
-		});
-		return () => animation.cancel();
+		const flash = getComputedStyle(button).getPropertyValue("--foreground").trim();
+		const animation = button.animate(
+			[{ textDecorationColor: "transparent" }, { offset: 0.4, textDecorationColor: flash }],
+			{ duration: SWEEP_MS, delay: sweepDelay, easing: "ease-in-out", fill: "backwards" },
+		);
+		const yieldToLearner = () => animation.cancel();
+		for (const type of LEARNER_REACHES) button.addEventListener(type, yieldToLearner);
+		return () => {
+			animation.cancel();
+			for (const type of LEARNER_REACHES) button.removeEventListener(type, yieldToLearner);
+		};
 	}, [sweepDelay]);
 
 	return (
@@ -242,7 +243,7 @@ function NameSegment({
 					targetAccent="en-us"
 					phonemeId={phonemeId}
 					symbol={symbol}
-					className="px-1 py-0 leading-tight"
+					className="px-1 py-0 leading-tight underline-offset-4"
 				/>
 			</span>
 

@@ -19,7 +19,7 @@ export function ClickablePhoneme({ targetAccent, phoneme, marked = false }: Clic
 	if (!phoneme.phonemeId) {
 		return (
 			<span
-				className="text-2xl md:text-4xl rounded-lg px-1.5 py-1 opacity-70 underline decoration-dotted underline-offset-4"
+				className="text-2xl md:text-4xl rounded-lg px-1.5 py-1 opacity-70"
 				title={`/${phoneme.symbol}/ - not found in phoneme database`}
 			>
 				{phoneme.symbol}
@@ -65,7 +65,7 @@ export function PhonemeDetailsButton({
 					className={cn(
 						"rounded-lg px-1.5 py-1 cursor-pointer",
 						"transition-colors duration-150",
-						"hover:bg-secondary hover:text-primary",
+						marked ? "hover:bg-secondary" : "sound-trigger",
 						"data-details-open:bg-secondary data-details-open:text-primary",
 						className,
 					)}

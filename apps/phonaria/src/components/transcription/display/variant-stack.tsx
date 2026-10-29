@@ -79,8 +79,8 @@ export function VariantStack({ targetAccent, word, selected, onSelect }: Variant
 	}
 
 	return (
-		<div className="flex flex-col items-center" data-expanded={expanded || undefined}>
-			<div ref={activeRef}>
+		<div className="isolate flex flex-col items-center" data-expanded={expanded || undefined}>
+			<div ref={activeRef} className="relative z-40">
 				<IpaSequence
 					targetAccent={targetAccent}
 					syllables={word.variants[active ?? 0] ?? []}
