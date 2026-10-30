@@ -10,13 +10,28 @@ import { SoundTile } from "./sound-tile";
 
 const TITLE_CLASS = "font-display text-lg leading-snug font-semibold tracking-tight text-balance";
 
-/** The sound's name as the heading of the container that shows it, its symbol read first. */
-export function SoundHeading({ sound, titleId }: { sound: SoundSummary; titleId: string }) {
+/**
+ * The sound's name as the heading of the container that shows it, its symbol
+ * read first: an h2 in a drawer or panel, the h1 of a page of its own.
+ */
+export function SoundHeading({
+	sound,
+	titleId,
+	as: Heading = "h2",
+}: {
+	sound: SoundSummary;
+	titleId: string;
+	as?: "h1" | "h2";
+}) {
 	return (
-		<h2 id={titleId} tabIndex={-1} className={cn(TITLE_CLASS, "outline-none")}>
+		<Heading
+			id={titleId}
+			tabIndex={-1}
+			className={cn(TITLE_CLASS, "outline-none", Heading === "h1" && "text-2xl sm:text-3xl")}
+		>
 			<span className="sr-only">/{sound.ipa}/, </span>
 			{sound.name}
-		</h2>
+		</Heading>
 	);
 }
 
@@ -31,6 +46,7 @@ export function SoundHeading({ sound, titleId }: { sound: SoundSummary; titleId:
  * On the compact level `onExpand` turns the name into a button that opens the
  * full view, and `thumbnail` previews how the sound is made.
  * `action` is the corner control (close); `titleId` labels the surrounding dialog.
+ * `titleAs` makes the name the page's h1 where the details are a page of their own.
  */
 export function SoundHeader({
 	sound,
@@ -39,6 +55,7 @@ export function SoundHeader({
 	showExample = true,
 	onExpand,
 	thumbnail,
+	titleAs,
 }: {
 	sound: SoundSummary;
 	titleId: string;
@@ -47,6 +64,7 @@ export function SoundHeader({
 	showExample?: boolean;
 	onExpand?: () => void;
 	thumbnail?: ReactNode;
+	titleAs?: "h1" | "h2";
 }) {
 	const subtitle = (
 		<span className="text-sm text-muted-foreground">
@@ -94,7 +112,7 @@ export function SoundHeader({
 								/>
 							</button>
 						) : (
-							<SoundHeading sound={sound} titleId={titleId} />
+							<SoundHeading sound={sound} titleId={titleId} as={titleAs} />
 						)}
 						<p>{subtitle}</p>
 					</div>

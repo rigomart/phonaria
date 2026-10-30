@@ -1,3 +1,4 @@
+import type { EnglishPhonemeSymbolId } from "@phonaria/phonetics-data";
 import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
 import {
 	CONSONANTS_PAGE_DESCRIPTION,
@@ -28,6 +29,7 @@ import {
 	SITE_DESCRIPTION,
 	SITE_NAME,
 } from "@/lib/site";
+import { soundPageDescription, soundPagePath, soundPageTitle } from "@/lib/sound-pages";
 
 type TitleTag = { title: string };
 type NamedMetaTag = { name: string; content: string };
@@ -222,6 +224,14 @@ export function buildFrequencyHead(): StartHead {
 		path: IPA_CHART_FREQUENCY_PATH,
 		title: FREQUENCY_PAGE_TITLE,
 		description: FREQUENCY_PAGE_DESCRIPTION,
+	});
+}
+
+export function buildSoundHead(phonemeId: EnglishPhonemeSymbolId): StartHead {
+	return buildPageHead({
+		path: soundPagePath(phonemeId),
+		title: soundPageTitle(phonemeId),
+		description: soundPageDescription(phonemeId),
 	});
 }
 
