@@ -77,7 +77,7 @@ jobs:
           WORKER_BUNDLE_DIR: dist/server
         run: bun ./scripts/assert-server-bundle-boundary.ts
 
-      - name: Capture Worker startup time
+      - name: Wrangler dry-run
         working-directory: apps/phonaria
         run: |
           set -o pipefail
@@ -97,6 +97,7 @@ jobs:
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
       - name: Deploy production Worker
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -112,11 +113,19 @@ jobs:
       - name: Record deployed Worker metrics
         working-directory: apps/phonaria
         env:
+          # Only the real deploy reports Worker startup time; a dry-run never does.
+          DEPLOY_OUTPUT: ${{ steps.deploy.outputs.command-output }}
+          WRANGLER_DEPLOY_LOG: wrangler-deploy.log
           # Measure the Wrangler upload, not Vite's client+server dist tree.
           WORKER_BUNDLE_DIR: .wrangler/dry-run
           WORKER_METRICS_OUT: worker-metrics.json
-          WRANGLER_DEPLOY_LOG: wrangler-dry-run.log
-        run: bun ./scripts/record-worker-metrics.ts
+        run: |
+          printf '%s\n' "$DEPLOY_OUTPUT" > wrangler-deploy.log
+          bun ./scripts/record-worker-metrics.ts
+          if ! jq -e '.metrics.startupMs != null' worker-metrics.json > /dev/null; then
+            echo "::error::The deploy output has no Worker Startup Time, so startup was not checked."
+            exit 1
+          fi
 
       - name: Install Chromium
         if: ${{ inputs.run_contract }}
@@ -151,6 +160,7 @@ jobs:
           name: production-evidence
           path: |
             apps/phonaria/worker-metrics.json
+            apps/phonaria/wrangler-deploy.log
             apps/phonaria/worker-analytics.log
             packages/browser-contract/playwright-report/
             packages/browser-contract/test-results/
