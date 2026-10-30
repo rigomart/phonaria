@@ -5,8 +5,7 @@
  * fresh recorder and no result.
  */
 import { Button, buttonVariants } from "@phonaria/ui/components/button";
-import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
+import { ArrowRight, Volume2 } from "lucide-react";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { IpaSequence } from "@/components/transcription/display/ipa-sequence";
@@ -143,7 +142,6 @@ function WordCard({
 }) {
 	const syllables = useWordSyllables(word);
 	const isTarget = side === "target";
-	const Word = isTarget ? "h1" : "p";
 	return (
 		<div
 			className={cn(
@@ -164,14 +162,14 @@ function WordCard({
 			>
 				{isTarget ? "Say this" : "Not this"}
 			</span>
-			<Word
+			<p
 				className={cn(
 					"font-bold font-display tracking-tight",
 					isTarget ? "text-4xl sm:text-5xl" : "text-3xl text-muted-foreground sm:text-4xl",
 				)}
 			>
 				{word}
-			</Word>
+			</p>
 			<div className="flex min-h-10 items-center">
 				{syllables ? (
 					<IpaSequence
@@ -220,18 +218,9 @@ export function SpeakingRound({
 	if (heardWord && !playable.includes(heardWord)) playable.push(heardWord);
 
 	return (
-		<div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-6 enter-fade">
+		<div className="flex w-full flex-col gap-8 enter-fade">
 			<div className="flex items-center justify-between gap-2">
-				<Link
-					className={buttonVariants({ size: "sm", variant: "ghost" })}
-					to={MinimalPairActivity.path}
-				>
-					<ArrowLeft aria-hidden="true" />
-					All pairs
-				</Link>
-				<p className="font-display text-muted-foreground text-sm">
-					/{prompt.target.ipa}/ or /{prompt.partner.ipa}/
-				</p>
+				<h2 className="font-display font-semibold">Say a word</h2>
 				<Button onClick={onNextWord} size="sm" variant="ghost">
 					Next word
 					<ArrowRight aria-hidden="true" />

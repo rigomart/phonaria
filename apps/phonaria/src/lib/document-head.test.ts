@@ -15,6 +15,7 @@ import {
 	LANGUAGE_HISTORY_PAGE_DESCRIPTION,
 	LANGUAGE_HISTORY_PAGE_TITLE,
 } from "@/lib/language-history/metadata";
+import { getContrastPage } from "@/lib/minimal-pairs";
 import { PracticeActivity } from "@/lib/practice/activity";
 import { getTopic } from "@/lib/practice/topics";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
@@ -25,7 +26,8 @@ import {
 	buildFrequencyHead,
 	buildHomeHead,
 	buildLanguageHistoryHead,
-	buildMinimalPairPracticeHead,
+	buildMinimalPairContrastHead,
+	buildMinimalPairsHead,
 	buildPracticeIndexHead,
 	buildPracticeTopicHead,
 	buildRootHead,
@@ -361,18 +363,46 @@ describe("buildPracticeTopicHead", () => {
 	});
 });
 
-describe("buildMinimalPairPracticeHead", () => {
-	it("is a noindexed page at its own path", () => {
+describe("buildMinimalPairsHead", () => {
+	it("follows the site-wide indexing setting at its own path", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		process.env.SITE_INDEXING_ENABLED = "1";
-		const head = buildMinimalPairPracticeHead();
-		expect(head.meta).toContainEqual({
-			title: practiceDocumentTitle("Minimal pairs"),
-		});
-		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
+		const head = buildMinimalPairsHead();
+		expect(head.meta).toContainEqual({ title: formatDocumentTitle("Minimal pairs") });
+		expect(head.meta).toContainEqual({ name: "robots", content: "index, follow" });
 		expect(head.links).toEqual([
 			{ rel: "canonical", href: "https://phonaria-staging.example.test/minimal-pairs" },
 		]);
+	});
+});
+
+describe("buildMinimalPairContrastHead", () => {
+	it("names the contrast and its first pair, and is indexable at the contrast's path", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		process.env.SITE_INDEXING_ENABLED = "1";
+		const head = buildMinimalPairContrastHead(getContrastPage("th-s"));
+		expect(head.meta).toContainEqual({
+			title: formatDocumentTitle("/θ/ vs /s/: minimal pairs like thin and sin"),
+		});
+		expect(head.meta).toContainEqual({
+			name: "description",
+			content:
+				"11 American English word pairs that differ only by /θ/ and /s/, like thin and sin, with recordings and how each sound is made.",
+		});
+		expect(head.meta).toContainEqual({ name: "robots", content: "index, follow" });
+		expect(head.links).toEqual([
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/minimal-pairs/th-s" },
+		]);
+	});
+
+	it("keeps the title on the client when production SITE_URL is missing", () => {
+		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
+		const head = buildMinimalPairContrastHead(getContrastPage("p-b"));
+		expect(head.meta).toContainEqual({
+			title: formatDocumentTitle("/p/ vs /b/: minimal pairs like pat and bat"),
+		});
+		expect(head.links).toBeUndefined();
 	});
 });
 

@@ -4,6 +4,7 @@
 	"expectedCanonicalOrigin": "http://localhost:3000",
 	"practiceEnabled": true,
 	"languageHistoryEnabled": true,
+	"speechEnabled": true,
 	"indexingEnabled": false,
 	"bucketAssetsAvailable": true,
 	"startLocal": false,

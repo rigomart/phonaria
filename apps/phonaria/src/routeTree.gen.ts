@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreditsRouteImport } from './routes/credits'
 import { Route as HistoryRouteImport } from './routes/history'
-import { Route as MinimalPairsRouteImport } from './routes/minimal-pairs'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -21,6 +20,8 @@ import { Route as IpaChartSplatRouteImport } from './routes/ipa-chart/$'
 import { Route as IpaChartConsonantsRouteImport } from './routes/ipa-chart/consonants'
 import { Route as IpaChartFrequencyRouteImport } from './routes/ipa-chart/frequency'
 import { Route as IpaChartVowelsRouteImport } from './routes/ipa-chart/vowels'
+import { Route as MinimalPairsIndexRouteImport } from './routes/minimal-pairs.index'
+import { Route as MinimalPairsContrastRouteImport } from './routes/minimal-pairs.$contrast'
 import { Route as PracticeIndexRouteImport } from './routes/practice.index'
 import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
 import { Route as PracticeMinimalPairsRouteImport } from './routes/practice_.minimal-pairs'
@@ -40,11 +41,6 @@ const CreditsRoute = CreditsRouteImport.update({
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MinimalPairsRoute = MinimalPairsRouteImport.update({
-  id: '/minimal-pairs',
-  path: '/minimal-pairs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PracticeRoute = PracticeRouteImport.update({
@@ -87,6 +83,16 @@ const IpaChartVowelsRoute = IpaChartVowelsRouteImport.update({
   path: '/ipa-chart/vowels',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MinimalPairsIndexRoute = MinimalPairsIndexRouteImport.update({
+  id: '/minimal-pairs/',
+  path: '/minimal-pairs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinimalPairsContrastRoute = MinimalPairsContrastRouteImport.update({
+  id: '/minimal-pairs/$contrast',
+  path: '/minimal-pairs/$contrast',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PracticeIndexRoute = PracticeIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -117,7 +123,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
   '/history': typeof HistoryRoute
-  '/minimal-pairs': typeof MinimalPairsRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -125,9 +130,11 @@ export interface FileRoutesByFullPath {
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
   '/ipa-chart/frequency': typeof IpaChartFrequencyRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
+  '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
+  '/minimal-pairs/': typeof MinimalPairsIndexRoute
   '/practice/': typeof PracticeIndexRoute
   '/api/speech/evidence-log': typeof ApiSpeechEvidenceLogRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
@@ -136,16 +143,17 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
   '/history': typeof HistoryRoute
-  '/minimal-pairs': typeof MinimalPairsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
   '/ipa-chart/frequency': typeof IpaChartFrequencyRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
+  '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/ipa-chart': typeof IpaChartIndexRoute
+  '/minimal-pairs': typeof MinimalPairsIndexRoute
   '/practice': typeof PracticeIndexRoute
   '/api/speech/evidence-log': typeof ApiSpeechEvidenceLogRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
@@ -155,7 +163,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
   '/history': typeof HistoryRoute
-  '/minimal-pairs': typeof MinimalPairsRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -163,9 +170,11 @@ export interface FileRoutesById {
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
   '/ipa-chart/frequency': typeof IpaChartFrequencyRoute
   '/ipa-chart/vowels': typeof IpaChartVowelsRoute
+  '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice_/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
+  '/minimal-pairs/': typeof MinimalPairsIndexRoute
   '/practice/': typeof PracticeIndexRoute
   '/api/speech/evidence-log': typeof ApiSpeechEvidenceLogRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
@@ -176,7 +185,6 @@ export interface FileRouteTypes {
     | '/'
     | '/credits'
     | '/history'
-    | '/minimal-pairs'
     | '/practice'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -184,9 +192,11 @@ export interface FileRouteTypes {
     | '/ipa-chart/consonants'
     | '/ipa-chart/frequency'
     | '/ipa-chart/vowels'
+    | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice/minimal-pairs'
     | '/ipa-chart/'
+    | '/minimal-pairs/'
     | '/practice/'
     | '/api/speech/evidence-log'
     | '/api/speech/score'
@@ -195,16 +205,17 @@ export interface FileRouteTypes {
     | '/'
     | '/credits'
     | '/history'
-    | '/minimal-pairs'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
     | '/ipa-chart/frequency'
     | '/ipa-chart/vowels'
+    | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice/minimal-pairs'
     | '/ipa-chart'
+    | '/minimal-pairs'
     | '/practice'
     | '/api/speech/evidence-log'
     | '/api/speech/score'
@@ -213,7 +224,6 @@ export interface FileRouteTypes {
     | '/'
     | '/credits'
     | '/history'
-    | '/minimal-pairs'
     | '/practice'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -221,9 +231,11 @@ export interface FileRouteTypes {
     | '/ipa-chart/consonants'
     | '/ipa-chart/frequency'
     | '/ipa-chart/vowels'
+    | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice_/minimal-pairs'
     | '/ipa-chart/'
+    | '/minimal-pairs/'
     | '/practice/'
     | '/api/speech/evidence-log'
     | '/api/speech/score'
@@ -233,7 +245,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreditsRoute: typeof CreditsRoute
   HistoryRoute: typeof HistoryRoute
-  MinimalPairsRoute: typeof MinimalPairsRoute
   PracticeRoute: typeof PracticeRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -241,8 +252,10 @@ export interface RootRouteChildren {
   IpaChartConsonantsRoute: typeof IpaChartConsonantsRoute
   IpaChartFrequencyRoute: typeof IpaChartFrequencyRoute
   IpaChartVowelsRoute: typeof IpaChartVowelsRoute
+  MinimalPairsContrastRoute: typeof MinimalPairsContrastRoute
   PracticeMinimalPairsRoute: typeof PracticeMinimalPairsRoute
   IpaChartIndexRoute: typeof IpaChartIndexRoute
+  MinimalPairsIndexRoute: typeof MinimalPairsIndexRoute
   ApiSpeechEvidenceLogRoute: typeof ApiSpeechEvidenceLogRoute
   ApiSpeechScoreRoute: typeof ApiSpeechScoreRoute
 }
@@ -268,13 +281,6 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/minimal-pairs': {
-      id: '/minimal-pairs'
-      path: '/minimal-pairs'
-      fullPath: '/minimal-pairs'
-      preLoaderRoute: typeof MinimalPairsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/practice': {
@@ -333,6 +339,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IpaChartVowelsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/minimal-pairs/': {
+      id: '/minimal-pairs/'
+      path: '/minimal-pairs'
+      fullPath: '/minimal-pairs/'
+      preLoaderRoute: typeof MinimalPairsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minimal-pairs/$contrast': {
+      id: '/minimal-pairs/$contrast'
+      path: '/minimal-pairs/$contrast'
+      fullPath: '/minimal-pairs/$contrast'
+      preLoaderRoute: typeof MinimalPairsContrastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/practice/': {
       id: '/practice/'
       path: '/'
@@ -389,7 +409,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreditsRoute: CreditsRoute,
   HistoryRoute: HistoryRoute,
-  MinimalPairsRoute: MinimalPairsRoute,
   PracticeRoute: PracticeRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -397,8 +416,10 @@ const rootRouteChildren: RootRouteChildren = {
   IpaChartConsonantsRoute: IpaChartConsonantsRoute,
   IpaChartFrequencyRoute: IpaChartFrequencyRoute,
   IpaChartVowelsRoute: IpaChartVowelsRoute,
+  MinimalPairsContrastRoute: MinimalPairsContrastRoute,
   PracticeMinimalPairsRoute: PracticeMinimalPairsRoute,
   IpaChartIndexRoute: IpaChartIndexRoute,
+  MinimalPairsIndexRoute: MinimalPairsIndexRoute,
   ApiSpeechEvidenceLogRoute: ApiSpeechEvidenceLogRoute,
   ApiSpeechScoreRoute: ApiSpeechScoreRoute,
 }

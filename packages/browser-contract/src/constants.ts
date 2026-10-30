@@ -20,6 +20,8 @@ export interface ContractTarget {
 	expectedCanonicalOrigin: string;
 	practiceEnabled: boolean;
 	languageHistoryEnabled: boolean;
+	/** `FLAG_SPEECH`: speaking practice on the minimal-pair pages. */
+	speechEnabled: boolean;
 	indexingEnabled: boolean;
 	bucketAssetsAvailable: boolean;
 	requiresBaseUrlOverride?: boolean;
@@ -39,6 +41,10 @@ export const INDEXABLE_PATHS = [
 
 /** Indexed only on targets where its flag is on, since the route 404s otherwise. */
 export const LANGUAGE_HISTORY_PATH = "/history";
+
+/** The minimal-pair index, indexed on every target, and one page per catalog contrast under it. */
+export const MINIMAL_PAIRS_PATH = "/minimal-pairs";
+export const MINIMAL_PAIR_CONTRAST_COUNT = 27;
 
 export const SITE_NAME = "Phonaria";
 export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";

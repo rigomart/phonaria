@@ -43,6 +43,22 @@ export function skipUnlessLanguageHistoryDisabled(): void {
 	);
 }
 
+export function skipUnlessSpeechEnabled(): void {
+	const target = getTarget();
+	test.skip(
+		!target.speechEnabled,
+		`Speaking practice is off on ${target.name}, so enabled-practice assertions do not apply.`,
+	);
+}
+
+export function skipUnlessSpeechDisabled(): void {
+	const target = getTarget();
+	test.skip(
+		target.speechEnabled,
+		`Speaking practice is on on ${target.name}, so practice-off assertions do not apply.`,
+	);
+}
+
 export function skipUnlessBucketAssets(): void {
 	const target = getTarget();
 	test.skip(

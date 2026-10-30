@@ -16,7 +16,7 @@ const statusIs = (expected: string) =>
 	);
 
 const readAttempt = () => ({
-	word: document.querySelector("h1")?.textContent?.trim() ?? null,
+	word: document.querySelector('[data-side="target"] p')?.textContent?.trim() ?? null,
 	heard: document.querySelector("[data-heard]")?.getAttribute("data-side") ?? null,
 	status:
 		document.querySelector('[aria-live="polite"][aria-atomic="true"] p')?.textContent?.trim() ??
@@ -41,23 +41,66 @@ const readSounds = () => ({
 	})),
 });
 
-const notFound = observation(
+const contrastPage = observation(
 	() => ({
 		path: location.pathname,
 		status: (
 			performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined
 		)?.responseStatus,
 		heading: document.querySelector("h1")?.textContent?.trim() ?? null,
+		difference: document.querySelector("header p")?.textContent?.trim() ?? null,
+		columns: Array.from(document.querySelectorAll("main table th")).map((th) =>
+			th.textContent?.trim(),
+		),
+		pairs: Array.from(document.querySelectorAll("main table tbody tr")).map((row) =>
+			Array.from(row.querySelectorAll("td")).map((cell) => cell.textContent?.trim()),
+		),
+		hear: ["Hear think", "Hear sink"].map(
+			(label) =>
+				!!document.querySelector(
+					`main table button[aria-label="${label}"]:not([data-status="pending"])`,
+				),
+		),
 		recordButtons: Array.from(document.querySelectorAll("button")).filter(
 			(button) => button.textContent?.trim() === "Record",
 		).length,
+		allPairs: document.querySelector('main a[href="/minimal-pairs"]')?.textContent?.trim() ?? null,
 	}),
 	{
-		path: "/minimal-pairs",
-		status: 404,
-		heading: "This page doesn't exist",
+		path: "/minimal-pairs/th-s",
+		status: 200,
+		heading: "/θ/ vs /s/",
+		difference:
+			"/θ/ is made with the tongue between the teeth. /s/ is made with the tongue tip on the gum ridge behind the top teeth. Everything else is the same.",
+		columns: ["/θ/Voiceless dental fricative", "/s/Voiceless alveolar fricative"],
+		pairs: [
+			["thin", "sin"],
+			["thing", "sing"],
+			["think", "sink"],
+			["thick", "sick"],
+			["theme", "seem"],
+			["faith", "face"],
+			["path", "pass"],
+			["mouth", "mouse"],
+			["math", "mass"],
+			["myth", "miss"],
+			["tenth", "tense"],
+		],
+		hear: [true, true],
 		recordButtons: 0,
+		allPairs: "All pairs",
 	},
+);
+
+const unknownContrast = observation(
+	() => ({
+		path: location.pathname,
+		status: (
+			performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined
+		)?.responseStatus,
+		heading: document.querySelector("h1")?.textContent?.trim() ?? null,
+	}),
+	{ path: "/minimal-pairs/th-zz", status: 404, heading: "This page doesn't exist" },
 );
 
 const practiceIndex = (expectedNav: boolean) =>
@@ -92,16 +135,18 @@ export const minimalPairs = {
 	checkpoints: {
 		nav: practiceIndex(true),
 		redirect: observation(() => ({ path: location.pathname, search: location.search }), {
-			path: "/minimal-pairs",
-			search: "?contrast=i-ix&word=ship",
+			path: "/minimal-pairs/i-ix",
+			search: "?word=ship",
 		}),
 		picker: observation(
 			() => ({
 				path: location.pathname,
 				heading: document.querySelector("h1")?.textContent?.trim() ?? null,
 				groups: Array.from(document.querySelectorAll("main h2")).map((h) => h.textContent?.trim()),
-				contrasts: document.querySelectorAll('main a[href*="contrast="]').length,
-				first: document.querySelector('main a[href*="contrast="]')?.getAttribute("aria-label"),
+				contrasts: document.querySelectorAll('main a[href^="/minimal-pairs/"]').length,
+				first: document
+					.querySelector('main a[href^="/minimal-pairs/"]')
+					?.getAttribute("aria-label"),
 				seatSit: !!document.querySelector('a[aria-label="seat and sit"]'),
 			}),
 			{
@@ -118,8 +163,8 @@ export const minimalPairs = {
 				const params = new URL(location.href).searchParams;
 				return {
 					path: location.pathname,
-					contrast: params.get("contrast"),
-					word: document.querySelector("h1")?.textContent?.trim() ?? null,
+					heading: document.querySelector("h1")?.textContent?.trim() ?? null,
+					word: params.get("word"),
 					sides: Array.from(document.querySelectorAll("[data-side]")).map((card) => [
 						card.getAttribute("data-side"),
 						card.querySelector("h1, p")?.textContent?.trim(),
@@ -146,8 +191,8 @@ export const minimalPairs = {
 				};
 			},
 			{
-				path: "/minimal-pairs",
-				contrast: "i-ix",
+				path: "/minimal-pairs/i-ix",
+				heading: "/i/ vs /ɪ/",
 				word: "ship",
 				sides: [
 					["target", "ship", "ˈʃɪp", "Details for /ɪ/, the marked sound"],
@@ -259,13 +304,13 @@ export const minimalPairs = {
 		"next-word": observation(
 			() => {
 				const params = new URL(location.href).searchParams;
-				const word = document.querySelector("h1")?.textContent?.trim() ?? "";
+				const word = document.querySelector('[data-side="target"] p')?.textContent?.trim() ?? "";
 				const words =
 					"seat sit sheep ship beat bit feet fit heat hit seek sick peak pick cheap chip sleep slip deep dip bean bin cheek chick least list teen tin leak lick".split(
 						" ",
 					);
 				return {
-					contrast: params.get("contrast"),
+					path: location.pathname,
 					urlMatchesHeading: params.get("word") === word,
 					moved: word !== "ship",
 					inContrast: words.includes(word),
@@ -275,7 +320,13 @@ export const minimalPairs = {
 							?.textContent?.trim() ?? null,
 				};
 			},
-			{ contrast: "i-ix", urlMatchesHeading: true, moved: true, inContrast: true, status: null },
+			{
+				path: "/minimal-pairs/i-ix",
+				urlMatchesHeading: true,
+				moved: true,
+				inContrast: true,
+				status: null,
+			},
 		),
 	},
 	coverageLimits: [
@@ -287,15 +338,16 @@ export const minimalPairs = {
 } satisfies Feature;
 
 export const minimalPairsOff = {
-	title: "Minimal-pair speaking practice, FLAG_SPEECH off",
+	title: "Minimal-pair pages, FLAG_SPEECH off",
 	checkpoints: {
-		"not-found": notFound,
+		"contrast-page": contrastPage,
+		"unknown-contrast": unknownContrast,
 		"nav-hidden": practiceIndex(false),
 	},
 	coverageLimits: [
 		"The journey sees only the flag's effects; it cannot tell how the server was started.",
 	],
-	expectedResponses: [{ path: "/minimal-pairs", status: 404 }],
+	expectedResponses: [{ path: "/minimal-pairs/th-zz", status: 404 }],
 } satisfies Feature;
 
 /** Replaces the microphone with a stream that plays `base64` audio after a short pause, or silence when null. */

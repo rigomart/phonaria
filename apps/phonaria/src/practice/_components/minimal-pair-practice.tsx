@@ -1,37 +1,33 @@
 /**
- * The contrast and word live in the URL, so a word can be reloaded or shared.
- * A contrast without a word draws one in the browser, after hydration, since
- * the draw is random. New words replace the history entry, so Back returns to
- * the list of pairs rather than stepping through every word.
+ * The word lives in the contrast page's URL, so a word can be reloaded or
+ * shared. Without a word, or with one outside the contrast's pairs, it draws
+ * one in the browser, after hydration, since the draw is random. New words
+ * replace the history entry, so Back leaves the page rather than stepping
+ * through every word.
  */
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
-import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
-import { drawWord, type MinimalPairSearch, promptFor } from "../_lib/minimal-pair-prompt";
-import { ContrastPicker } from "./contrast-picker";
+import { drawWord, promptFor } from "../_lib/minimal-pair-prompt";
 import { SpeakingRound } from "./speaking-round";
 
-export function MinimalPairPractice({ search }: { search: MinimalPairSearch }) {
+export function MinimalPairPractice({ contrast, word }: { contrast: string; word?: string }) {
 	const navigate = useNavigate();
-	const { contrast, word } = search;
-	const prompt = useMemo(
-		() => (contrast && word ? promptFor(contrast, word) : null),
-		[contrast, word],
-	);
+	const prompt = useMemo(() => (word ? promptFor(contrast, word) : null), [contrast, word]);
 
 	useEffect(() => {
-		if (!contrast || word) return;
+		if (prompt) return;
 		const drawn = drawWord(contrast);
 		if (drawn) {
 			void navigate({
-				to: MinimalPairActivity.path,
-				search: { contrast, word: drawn },
+				to: "/minimal-pairs/$contrast",
+				params: { contrast },
+				search: { word: drawn },
 				replace: true,
+				resetScroll: false,
 			});
 		}
-	}, [contrast, word, navigate]);
+	}, [contrast, prompt, navigate]);
 
-	if (!contrast) return <ContrastPicker />;
 	if (!prompt) return null;
 
 	function nextWord() {
@@ -39,9 +35,11 @@ export function MinimalPairPractice({ search }: { search: MinimalPairSearch }) {
 		const next = drawWord(prompt.contrastId, prompt.word);
 		if (!next) return;
 		void navigate({
-			to: MinimalPairActivity.path,
-			search: { contrast: prompt.contrastId, word: next },
+			to: "/minimal-pairs/$contrast",
+			params: { contrast: prompt.contrastId },
+			search: { word: next },
 			replace: true,
+			resetScroll: false,
 		});
 	}
 

@@ -39,7 +39,8 @@ const tools: readonly Tool[] = [
 		href: MinimalPairActivity.path,
 		label: MinimalPairActivity.name,
 		icon: Mic,
-		match: (pathname) => pathname === MinimalPairActivity.path,
+		match: (pathname) =>
+			pathname === MinimalPairActivity.path || pathname.startsWith(`${MinimalPairActivity.path}/`),
 	},
 	{
 		id: "practice",

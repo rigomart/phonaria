@@ -22,7 +22,7 @@ adapter.
 | Command | What it does |
 | --- | --- |
 | `bun run e2e` | Contract against `CONTRACT_TARGET`, defaulting to Cloudflare production |
-| `bun run e2e:smoke` | Focused deployed checks for transcription (client and server), charts/media, Practice flag, landing page, headers, and accessibility |
+| `bun run e2e:smoke` | Focused deployed checks for transcription (client and server), charts/media, Practice flag, a minimal-pair page without speaking practice, landing page, headers, and accessibility |
 | `bun run e2e:cloudflare` | Contract against Cloudflare staging (`CONTRACT_BASE_URL` + Access token) |
 | `bun run e2e:baseline` | Tagged page-load and transcription timing collection |
 | `CONTRACT_WRITE_BASELINE=1 bun run e2e:baseline` | Also write `baselines/<target>.json` |
@@ -39,15 +39,15 @@ Profiles live in `targets/*.json` and are selected with `CONTRACT_TARGET`.
 
 | Profile | Use |
 | --- | --- |
-| `cloudflare-staging` | Private staging. Requires `CONTRACT_BASE_URL` and Cloudflare Access service-token env vars. Practice enabled. |
-| `cloudflare-production` | Public Cloudflare production site. Practice disabled. |
+| `cloudflare-staging` | Private staging. Requires `CONTRACT_BASE_URL` and Cloudflare Access service-token env vars. Practice and speaking practice enabled. |
+| `cloudflare-production` | Public Cloudflare production site. Practice and speaking practice disabled. |
 | `local` | `http://localhost:3000`. Set `CONTRACT_START_LOCAL=1` to have Playwright start `apps/phonaria`. |
 
 Required fields:
 
 - `baseUrl` or `requiresBaseUrlOverride`
 - `expectedCanonicalOrigin`
-- `practiceEnabled`, `languageHistoryEnabled`, `indexingEnabled`, `bucketAssetsAvailable`
+- `practiceEnabled`, `languageHistoryEnabled`, `speechEnabled`, `indexingEnabled`, `bucketAssetsAvailable`
 - `authentication` (`none` or `cloudflare-access`)
 - `capabilities` booleans for `controlledServiceFailure`, `controlledWordlistFailure`, and `practiceSession`
 
