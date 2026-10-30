@@ -4,26 +4,42 @@ import { Link } from "@/components/link";
 import { cn } from "@/lib/utils";
 
 /**
+ * Where the full details render: in a drawer or panel under the sound's h2,
+ * or on a page of their own under its h1.
+ */
+export type DetailsLayout = "drawer" | "page";
+
+/**
  * One titled block of the full details. Sections are separated by space, not
  * lines; `action` sits opposite the title for a link or a "show all" toggle.
  */
 export function DetailsSection({
 	title,
 	action,
+	layout = "drawer",
 	children,
 }: {
 	title: string;
 	action?: ReactNode;
+	layout?: DetailsLayout;
 	children: ReactNode;
 }) {
 	const headingId = useId();
+	const Heading = layout === "page" ? "h2" : "h3";
 
 	return (
 		<section aria-labelledby={headingId} className="flex flex-col gap-2">
 			<div className="flex min-h-6 items-center justify-between gap-2">
-				<h3 id={headingId} className="text-sm font-semibold text-foreground">
+				<Heading
+					id={headingId}
+					className={
+						layout === "page"
+							? "font-display text-lg font-semibold text-foreground"
+							: "text-sm font-semibold text-foreground"
+					}
+				>
 					{title}
-				</h3>
+				</Heading>
 				{action}
 			</div>
 			{children}

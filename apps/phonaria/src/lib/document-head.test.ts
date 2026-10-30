@@ -18,6 +18,7 @@ import {
 import { PracticeActivity } from "@/lib/practice/activity";
 import { getTopic } from "@/lib/practice/topics";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import { soundPageDescription, soundPageTitle } from "@/lib/sound-pages";
 import {
 	buildConsonantsHead,
 	buildCreditsHead,
@@ -28,6 +29,7 @@ import {
 	buildPracticeIndexHead,
 	buildPracticeTopicHead,
 	buildRootHead,
+	buildSoundHead,
 	buildVowelsHead,
 	consonantsDocumentTitle,
 	creditsDocumentTitle,
@@ -273,6 +275,45 @@ describe("buildVowelsHead", () => {
 				href: `https://phonaria-staging.example.test${IPA_CHART_VOWELS_PATH}`,
 			},
 		]);
+	});
+});
+
+describe("buildSoundHead", () => {
+	it("keeps the sound's title and description on the client when production SITE_URL is missing", () => {
+		vi.stubEnv("NODE_ENV", "production");
+		vi.stubGlobal("window", {} as Window);
+		const head = buildSoundHead("TH");
+		expect(head.meta).toEqual([
+			{ title: formatDocumentTitle(soundPageTitle("TH")) },
+			{ name: "description", content: soundPageDescription("TH") },
+		]);
+		expect(head.links).toBeUndefined();
+	});
+
+	it("titles, describes and canonicalizes the sound's page by its slug", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const { meta, links } = buildSoundHead("TH");
+		expect(meta).toContainEqual({
+			title: "The /θ/ sound (th in 'thin'): how to pronounce it - Phonaria",
+		});
+		expect(meta).toContainEqual({ property: "og:title", content: soundPageTitle("TH") });
+		expect(meta).toContainEqual({
+			property: "og:description",
+			content: soundPageDescription("TH"),
+		});
+		expect(meta).toContainEqual({
+			property: "og:url",
+			content: "https://phonaria-staging.example.test/sounds/th-thin",
+		});
+		expect(links).toEqual([
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/sounds/th-thin" },
+		]);
+	});
+
+	it("follows the site-wide indexing setting", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		process.env.SITE_INDEXING_ENABLED = "1";
+		expect(buildSoundHead("AX").meta).toContainEqual({ name: "robots", content: "index, follow" });
 	});
 });
 
