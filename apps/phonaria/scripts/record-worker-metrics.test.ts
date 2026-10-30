@@ -33,6 +33,25 @@ Your worker has access to the following bindings:
 		});
 	});
 
+	it("reads startup from a real staging deploy's output", () => {
+		// Excerpt of the Wrangler 4.131.1 output from staging run 41113151037.
+		const output = `
+│ Total (74 modules)                                        │      │ 3487.59 KiB │
+└───────────────────────────────────────────────────────────┴──────┴─────────────┘
+✨ Success! Uploaded 20 files (36 already uploaded) (1.65 sec)
+
+Total Upload: 3488.50 KiB / gzip: 850.60 KiB
+Worker Startup Time: 9 ms
+Your Worker has access to the following bindings:
+`;
+		expect(parseWranglerOutput(output)).toEqual({
+			uncompressedBytes: Math.round(3488.5 * 1024),
+			gzipBytes: Math.round(850.6 * 1024),
+			modules: 74,
+			startupMs: 9,
+		});
+	});
+
 	it("reads dry-run upload lines that omit colons and say extra modules", () => {
 		const output = "Total Upload 1449.22 KiB / gzip 310.87 KiB, 8 extra modules";
 		expect(parseWranglerOutput(output)).toEqual({
@@ -142,14 +161,34 @@ describe("deploy workflows", () => {
 		/set -o pipefail\s+bunx wrangler deploy --dry-run --outdir \.wrangler\/dry-run \| tee wrangler-dry-run\.log/;
 
 	const workflows = ["preview.yml", "staging.yml", "production.yml"];
+	const realDeployWorkflows = ["staging.yml", "production.yml"];
 
 	it("records Worker metrics from the Wrangler upload, not Vite dist", () => {
 		for (const name of workflows) {
 			const workflow = readWorkflow(name);
 
-			expect(workflow).toContain("WRANGLER_DEPLOY_LOG: wrangler-dry-run.log");
 			expect(workflow).toContain("WORKER_BUNDLE_DIR: .wrangler/dry-run");
 			expect(workflow).not.toMatch(/WORKER_BUNDLE_DIR:\s+dist\s*$/m);
+		}
+	});
+
+	it("reads startup time from the real deploy, since a dry-run never reports it", () => {
+		expect(readWorkflow("preview.yml")).toContain("WRANGLER_DEPLOY_LOG: wrangler-dry-run.log");
+		for (const name of realDeployWorkflows) {
+			const workflow = readWorkflow(name);
+
+			expect(workflow).toMatch(/- name: Deploy \w+ Worker\n\s+id: deploy\n/);
+			expect(workflow).toContain("DEPLOY_OUTPUT: ${{ steps.deploy.outputs.command-output }}");
+			expect(workflow).toContain("WRANGLER_DEPLOY_LOG: wrangler-deploy.log");
+			expect(workflow).toContain(`printf '%s\\n' "$DEPLOY_OUTPUT" > wrangler-deploy.log`);
+		}
+	});
+
+	it("fails staging and production when the deploy reports no startup time", () => {
+		for (const name of realDeployWorkflows) {
+			expect(readWorkflow(name)).toMatch(
+				/if ! jq -e '\.metrics\.startupMs != null' worker-metrics\.json > \/dev\/null; then\n.*::error::.*\n\s+exit 1\n/,
+			);
 		}
 	});
 
