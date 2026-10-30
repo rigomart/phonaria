@@ -11,6 +11,7 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
+import { findSoundPagePath } from "@/lib/sound-pages";
 
 /** What a host decides about the details view. Practice hosts switch the answer-revealing parts off. */
 export interface PhonemeDetailsOptions {
@@ -30,6 +31,8 @@ export interface PhonemeDetailsOptions {
 	showFrequencyLink?: boolean;
 	/** Off on the IPA chart pages, which already show the chart, and in Practice for the same reason as the frequency link. */
 	showChartLink?: boolean;
+	/** The link to the sound's own page. Off on that page, and in Practice for the same reason as the frequency link. */
+	showPageLink?: boolean;
 }
 
 const TYPE_LABELS: Record<PhonemeType, string> = {
@@ -46,6 +49,7 @@ export function describeSound({
 	phonemeId,
 	showSpellings = true,
 	showFrequencyLink = true,
+	showPageLink = true,
 }: PhonemeDetailsOptions) {
 	const type = getPhonemeType(phonemeId);
 	const ipa = getIpaForPhonemeId(phonemeId);
@@ -65,6 +69,8 @@ export function describeSound({
 		/** Rank and share of speech among all sounds, or null when the accent has no frequency data. */
 		frequency: summarizePhonemeFrequency(targetAccent, phonemeId),
 		showFrequencyLink,
+		/** The sound's own page, where the host allows the link and the accent has pages. */
+		pagePath: showPageLink ? findSoundPagePath(targetAccent, phonemeId) : undefined,
 	};
 }
 

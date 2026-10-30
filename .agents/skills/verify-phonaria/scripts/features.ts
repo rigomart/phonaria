@@ -3,6 +3,7 @@ import { languageHistory, languageHistoryOff } from "./language-history";
 import { mergerNotes } from "./merger-notes";
 import { minimalPairs, minimalPairsOff } from "./minimal-pairs";
 import { frequencyPage, soundFrequency } from "./sound-frequency";
+import { soundLinks } from "./sound-links";
 import { soundPages } from "./sound-pages";
 import { transcription } from "./transcription";
 import { transcriptionHistory } from "./transcription-history";
@@ -16,6 +17,7 @@ export const features: Record<string, Feature> = {
 	"minimal-pairs-off": minimalPairsOff,
 	"sound-frequency": soundFrequency,
 	"frequency-page": frequencyPage,
+	"sound-links": soundLinks,
 	"sound-pages": soundPages,
 	transcription,
 	"transcription-history": transcriptionHistory,

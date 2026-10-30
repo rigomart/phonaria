@@ -54,6 +54,8 @@ describe("Cloudflare Practice flag", () => {
 			"/history",
 			"/minimal-pairs",
 			"/minimal-pairs/*",
+			"/sounds",
+			"/sounds/*",
 			"/robots.txt",
 			"/sitemap.xml",
 			"/en",

@@ -46,6 +46,10 @@ export const LANGUAGE_HISTORY_PATH = "/history";
 export const MINIMAL_PAIRS_PATH = "/minimal-pairs";
 export const MINIMAL_PAIR_CONTRAST_COUNT = 27;
 
+/** The sound list, indexed on every target, and one page per en-us sound under it. */
+export const SOUNDS_PATH = "/sounds";
+export const SOUND_PAGE_COUNT = 40;
+
 export const SITE_NAME = "Phonaria";
 export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";
 

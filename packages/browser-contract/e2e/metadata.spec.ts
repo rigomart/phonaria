@@ -3,6 +3,8 @@ import {
 	MINIMAL_PAIRS_PATH,
 	SITE_DESCRIPTION,
 	SITE_NAME,
+	SOUND_PAGE_COUNT,
+	SOUNDS_PATH,
 } from "../src/constants";
 import { expect, test } from "../src/fixtures";
 import {
@@ -53,6 +55,18 @@ const PUBLIC_ROUTES = [
 		description:
 			"11 American English word pairs that differ only by /θ/ and /s/, like thin and sin, with recordings and how each sound is made.",
 	},
+	{
+		path: "/sounds",
+		title: "The sounds of American English - Phonaria",
+		description:
+			"Every consonant and vowel sound of American English, each with how it's made, how it's spelled, example words and minimal pairs.",
+	},
+	{
+		path: "/sounds/th-thin",
+		title: "The /θ/ sound (th in 'thin'): how to pronounce it - Phonaria",
+		description:
+			"How to say /θ/ as in 'thin', the voiceless dental fricative: how it's made, spellings (th), minimal pairs with /t/ and /s/, and how common it is.",
+	},
 ] as const;
 
 test.describe("Metadata, robots, and sitemap", () => {
@@ -100,8 +114,11 @@ test.describe("Metadata, robots, and sitemap", () => {
 		const contrastPages = `${target.expectedCanonicalOrigin}${MINIMAL_PAIRS_PATH}/`;
 		expect(xml).toContain(`<loc>${contrastPages}th-s</loc>`);
 		expect(xml.split(`<loc>${contrastPages}`).length - 1).toBe(MINIMAL_PAIR_CONTRAST_COUNT);
+		const soundPages = `${target.expectedCanonicalOrigin}${SOUNDS_PATH}/`;
+		expect(xml).toContain(`<loc>${soundPages}th-thin</loc>`);
+		expect(xml.split(`<loc>${soundPages}`).length - 1).toBe(SOUND_PAGE_COUNT);
 		expect(xml.match(/<loc>/g)?.length).toBe(
-			expectedSitemapUrls(target).length + MINIMAL_PAIR_CONTRAST_COUNT,
+			expectedSitemapUrls(target).length + MINIMAL_PAIR_CONTRAST_COUNT + SOUND_PAGE_COUNT,
 		);
 	});
 });

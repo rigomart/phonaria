@@ -6,7 +6,7 @@ import { type Feature, observation } from "./feature";
 
 const ranking = observation(
 	() => {
-		const rows = Array.from(document.querySelectorAll("ol > li > button"));
+		const rows = Array.from(document.querySelectorAll("ol > li > a"));
 		const ipa = (row: Element) => row.children[1]?.textContent?.trim() ?? null;
 		return {
 			path: location.pathname,

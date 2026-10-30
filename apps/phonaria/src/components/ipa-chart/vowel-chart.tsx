@@ -10,6 +10,7 @@ import type {
 	StaticVowelChartEntry,
 } from "@/lib/ipa-chart/vowel-chart-data";
 import { enterDelay } from "@/lib/motion";
+import { findSoundPagePath } from "@/lib/sound-pages";
 import { cn } from "@/lib/utils";
 import { type ChartPoint, getVowelPoint } from "@/lib/vowel-chart-geometry";
 import { VowelChartGuide } from "./vowel-chart-guide";
@@ -267,9 +268,10 @@ function VowelMarker({
 				render={
 					<PhonemeDetailsTrigger
 						details={{ targetAccent, phonemeId: marker.entry.id, showChartLink: false }}
+						nativeButton={false}
 						render={
-							<button
-								type="button"
+							<a
+								href={findSoundPagePath(targetAccent, marker.entry.id)}
 								className={cn(
 									vowelMarkerButtonBaseClass,
 									"left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2",
@@ -327,9 +329,10 @@ function DiphthongLabel({
 				render={
 					<PhonemeDetailsTrigger
 						details={{ targetAccent, phonemeId: glide.entry.id, showChartLink: false }}
+						nativeButton={false}
 						render={
-							<button
-								type="button"
+							<a
+								href={findSoundPagePath(targetAccent, glide.entry.id)}
 								data-diphthong={glide.entry.id}
 								className="absolute left-(--marker-left) top-(--marker-top) -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 font-display text-sm font-semibold text-foreground outline-none transition-colors sound-trigger data-details-open:bg-secondary data-details-open:text-primary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none sm:text-lg enter-pop"
 								style={buttonStyles as CSSProperties}

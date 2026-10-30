@@ -5,6 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { AudioManagerProvider } from "@/hooks/use-audio-manager";
 import { PhonemeDetailsPage } from "./details-page";
 import { DetailSections, getDetailSections } from "./sections";
+import { describeSound, type PhonemeDetailsOptions } from "./sound";
+import { SoundHeader } from "./sound-header";
 
 vi.mock("@tanstack/react-router", () => ({
 	Link: ({
@@ -99,5 +101,34 @@ describe("the two layouts", () => {
 			expect(html).toMatch(new RegExp(`<h2 [^>]*>${title}</h2>`));
 		}
 		expect(html).not.toContain("<h3");
+	});
+});
+
+describe("the link to the sound's own page", () => {
+	function header(options: PhonemeDetailsOptions) {
+		return renderToString(
+			<AudioManagerProvider>
+				<SoundHeader sound={describeSound(options)} titleId="title" />
+			</AudioManagerProvider>,
+		);
+	}
+
+	it("links the details to the sound's page", () => {
+		expect(header({ targetAccent: "en-us", phonemeId: "TH" })).toMatch(
+			/<a [^>]*href="\/sounds\/th-thin\?"[^>]*>Open full page/,
+		);
+	});
+
+	it("leaves it out in Practice, for an accent without pages, and on the page itself", () => {
+		expect(header({ targetAccent: "en-us", phonemeId: "TH", showPageLink: false })).not.toContain(
+			"Open full page",
+		);
+		expect(header({ targetAccent: "es-419", phonemeId: "S" })).not.toContain("Open full page");
+		const page = renderToString(
+			<AudioManagerProvider>
+				<PhonemeDetailsPage options={{ targetAccent: "en-us", phonemeId: "TH" }} />
+			</AudioManagerProvider>,
+		);
+		expect(page).not.toContain("Open full page");
 	});
 });

@@ -52,6 +52,7 @@ function Glyph({
 				phonemeId: key.id,
 				showFrequencyLink: false,
 				showChartLink: false,
+				showPageLink: false,
 			}}
 			render={
 				<button

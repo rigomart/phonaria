@@ -106,6 +106,7 @@ describe("the synthetic-voice note in the sound details", () => {
 						targetAccent: "en-us",
 						phonemeId: "I",
 						showFrequencyLink: false,
+						showPageLink: false,
 						...options,
 					})}
 					titleId="title"

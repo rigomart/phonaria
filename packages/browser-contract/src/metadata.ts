@@ -4,6 +4,7 @@ import {
 	INDEXABLE_PATHS,
 	LANGUAGE_HISTORY_PATH,
 	MINIMAL_PAIRS_PATH,
+	SOUNDS_PATH,
 } from "./constants";
 
 export async function fetchDocument(
@@ -43,11 +44,11 @@ export function expectedRobots(target: ContractTarget): string {
 	return target.indexingEnabled ? "index, follow" : "noindex, follow";
 }
 
-/** Every indexable URL but the contrast pages, which are counted separately. */
+/** Every indexable URL but the contrast and sound pages, which are counted separately. */
 export function expectedSitemapUrls(target: ContractTarget): string[] {
 	const paths = target.languageHistoryEnabled
-		? [...INDEXABLE_PATHS, MINIMAL_PAIRS_PATH, LANGUAGE_HISTORY_PATH]
-		: [...INDEXABLE_PATHS, MINIMAL_PAIRS_PATH];
+		? [...INDEXABLE_PATHS, MINIMAL_PAIRS_PATH, SOUNDS_PATH, LANGUAGE_HISTORY_PATH]
+		: [...INDEXABLE_PATHS, MINIMAL_PAIRS_PATH, SOUNDS_PATH];
 	return paths.map((path) => expectedCanonical(target, path));
 }
 

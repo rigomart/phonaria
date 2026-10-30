@@ -10,6 +10,7 @@ import type {
 	PlaceOfArticulation,
 	Voicing,
 } from "@/lib/ipa-chart/consonant-grid";
+import { findSoundPagePath } from "@/lib/sound-pages";
 import { cn } from "@/lib/utils";
 
 export interface ConsonantPhoneme {
@@ -64,9 +65,10 @@ function ConsonantButton({
 				render={
 					<PhonemeDetailsTrigger
 						details={{ targetAccent, phonemeId: phoneme.id, showChartLink: false }}
+						nativeButton={false}
 						render={
-							<button
-								type="button"
+							<a
+								href={findSoundPagePath(targetAccent, phoneme.id)}
 								aria-label={ariaLabel}
 								className={cn(
 									"group relative grid place-items-center text-center",

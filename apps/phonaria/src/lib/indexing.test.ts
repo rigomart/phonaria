@@ -1,4 +1,4 @@
-import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
+import { EnglishPhonemeContrasts, getLanguagePhonemeIds } from "@phonaria/phonetics-data";
 import { afterEach, describe, expect, it } from "vitest";
 import { formatRobotsTxt, getIndexablePaths, getRobotsPolicy, getSitemapUrls } from "./indexing";
 
@@ -46,6 +46,14 @@ describe("indexing helpers", () => {
 		expect(contrastPaths).toHaveLength(EnglishPhonemeContrasts.length);
 		expect(contrastPaths).toContain("/minimal-pairs/th-s");
 		expect(contrastPaths[0]).toBe("/minimal-pairs/p-b");
+	});
+
+	it("lists /sounds and every sound page", () => {
+		const paths = getIndexablePaths({ languageHistory: false });
+		expect(paths).toContain("/sounds");
+		const soundPaths = paths.filter((path) => path.startsWith("/sounds/"));
+		expect(soundPaths).toHaveLength(getLanguagePhonemeIds("en-us").length);
+		expect(soundPaths).toContain("/sounds/th-thin");
 	});
 
 	it("adds History only when its flag is on", () => {

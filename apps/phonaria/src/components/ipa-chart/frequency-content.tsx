@@ -13,6 +13,7 @@ import {
 	type RankedPhoneme,
 	rankPhonemes,
 } from "@/lib/phoneme-frequency";
+import { soundPagePath } from "@/lib/sound-pages";
 
 const targetAccent = "en-us" satisfies TargetAccent;
 const ranked = rankPhonemes(targetAccent);
@@ -66,9 +67,10 @@ function RankingRow({
 		<li className="enter-rise" style={enterDelay(rowDelay)}>
 			<PhonemeDetailsTrigger
 				details={{ targetAccent, phonemeId: sound.phonemeId, showFrequencyLink: false }}
+				nativeButton={false}
 				render={
-					<button
-						type="button"
+					<a
+						href={soundPagePath(sound.phonemeId)}
 						aria-label={`/${ipa}/ as in ${example.word}: ${formatOrdinal(sound.rank)}, ${share}`}
 						className="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-details-open:bg-accent motion-reduce:transition-none"
 					/>

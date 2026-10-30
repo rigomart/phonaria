@@ -6,17 +6,18 @@ import {
 	VOWEL_COUNT_COPY,
 } from "../src/constants";
 import { expect, test } from "../src/fixtures";
+import { waitForHydration } from "../src/hydration";
 import { notFoundHeading } from "../src/locators";
 
 test.describe("IPA charts", () => {
 	test("renders consonant chart content and opens a phoneme popover", async ({ page }) => {
 		await page.goto("/ipa-chart/consonants");
 		await expect(page.getByText(CONSONANT_COUNT_COPY)).toBeVisible();
-		// A cold dev server can take the first click before React attaches.
-		await expect(async () => {
-			await page.getByRole("button", { name: CONSONANT_BUTTON_NAME }).click();
-			await expect(page.getByText("Voiceless bilabial plosive")).toBeVisible({ timeout: 1_000 });
-		}).toPass({ timeout: 10_000 });
+		const tile = page.getByRole("button", { name: CONSONANT_BUTTON_NAME });
+		await waitForHydration(tile);
+		await tile.click();
+		await expect(page.getByRole("dialog", { name: /Voiceless bilabial plosive$/ })).toBeVisible();
+		await expect(page).toHaveURL(/\/ipa-chart\/consonants$/);
 	});
 
 	test("toggles diphthongs on the vowel chart", async ({ page }) => {
@@ -42,10 +43,10 @@ test.describe("IPA charts", () => {
 		});
 
 		await page.goto("/ipa-chart/consonants");
-		await expect(async () => {
-			await page.getByRole("button", { name: CONSONANT_BUTTON_NAME }).click();
-			await expect(page.getByLabel("Play /p/")).toBeEnabled({ timeout: 1_000 });
-		}).toPass({ timeout: 10_000 });
+		const tile = page.getByRole("button", { name: CONSONANT_BUTTON_NAME });
+		await waitForHydration(tile);
+		await tile.click();
+		await expect(page.getByLabel("Play /p/")).toBeEnabled();
 		await page.getByRole("button", { name: "Full details for /p/" }).click();
 		await expect(
 			page.getByRole("img", { name: "Voiceless bilabial plosive articulation" }),

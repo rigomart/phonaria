@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { SpelledWord } from "@/components/spelled-word";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { cn } from "@/lib/utils";
+import { DetailsLink } from "./details-section";
 import { SoundFrequency } from "./frequency";
 import { PlayableWord } from "./playable-word";
 import type { SoundSummary } from "./sound";
@@ -37,8 +38,8 @@ export function SoundHeading({
 
 /**
  * What the sound is and what it sounds like: symbol, name, type with an
- * example word, and how common it is. The symbol plays the sound, the example
- * word plays the word. Both levels
+ * example word, a link to the sound's own page, and how common it is. The
+ * symbol plays the sound, the example word plays the word. Both levels
  * open with it, so the sound keeps its shape when the details expand.
  *
  * Where it shows the example word, the synthetic-voice note closes it.
@@ -115,6 +116,9 @@ export function SoundHeader({
 							<SoundHeading sound={sound} titleId={titleId} as={titleAs} />
 						)}
 						<p>{subtitle}</p>
+						{sound.pagePath ? (
+							<DetailsLink href={sound.pagePath}>Open full page</DetailsLink>
+						) : null}
 					</div>
 				</div>
 				{action}

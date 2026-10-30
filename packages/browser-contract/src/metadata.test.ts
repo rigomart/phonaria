@@ -26,7 +26,7 @@ describe("metadata helpers", () => {
 		expect(expectedCanonical(target, "/credits")).toBe("https://phonaria.rigos.dev/credits");
 	});
 
-	it("keeps production indexed, lists the minimal-pair index and omits Practice from the sitemap set", () => {
+	it("keeps production indexed, lists the minimal-pair and sound indexes and omits Practice from the sitemap set", () => {
 		expect(expectedRobots(target)).toBe("index, follow");
 		expect(expectedSitemapUrls(target)).toEqual([
 			"https://phonaria.rigos.dev",
@@ -35,6 +35,7 @@ describe("metadata helpers", () => {
 			"https://phonaria.rigos.dev/ipa-chart/frequency",
 			"https://phonaria.rigos.dev/credits",
 			"https://phonaria.rigos.dev/minimal-pairs",
+			"https://phonaria.rigos.dev/sounds",
 		]);
 		expect(expectedSitemapUrls(target).join(" ")).not.toContain("practice");
 	});
