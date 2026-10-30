@@ -11,6 +11,9 @@ import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
 import { summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
 
 export const SOUNDS_PATH = "/sounds";
+export const SOUNDS_PAGE_TITLE = "The sounds of American English";
+export const SOUNDS_PAGE_DESCRIPTION =
+	"Every consonant and vowel sound of American English, each with how it's made, how it's spelled, example words and minimal pairs.";
 
 /** Each en-us sound's slug in its page's URL. Slugs are public: changing one breaks links to it. */
 const SOUND_SLUGS = {
@@ -85,7 +88,8 @@ function getSpelling(phonemeId: EnglishPhonemeSymbolId): SpellingPattern {
 	return spelling;
 }
 
-function getKeyExample(phonemeId: EnglishPhonemeSymbolId) {
+/** The word in the sound's slug, from its spelling examples (the first one for schwa). */
+export function getSoundKeyExample(phonemeId: EnglishPhonemeSymbolId) {
 	const { examples } = getSpelling(phonemeId);
 	const word = getSoundSlug(phonemeId).split("-").at(-1);
 	const example = examples.find((candidate) => candidate.word === word) ?? examples[0];
@@ -94,11 +98,11 @@ function getKeyExample(phonemeId: EnglishPhonemeSymbolId) {
 		.filter(({ highlighted }) => highlighted)
 		.map(({ text }) => text)
 		.join("-");
-	return { word: example.word, letters };
+	return { word: example.word, spelled: example.spelled, letters };
 }
 
 export function soundPageTitle(phonemeId: EnglishPhonemeSymbolId): string {
-	const { word, letters } = getKeyExample(phonemeId);
+	const { word, letters } = getSoundKeyExample(phonemeId);
 	return `The /${getIpaForPhonemeId(phonemeId)}/ sound (${letters} in '${word}'): how to pronounce it`;
 }
 
@@ -106,7 +110,7 @@ const list = new Intl.ListFormat("en", { type: "conjunction" });
 
 export function soundPageDescription(phonemeId: EnglishPhonemeSymbolId): string {
 	const ipa = getIpaForPhonemeId(phonemeId);
-	const { word } = getKeyExample(phonemeId);
+	const { word } = getSoundKeyExample(phonemeId);
 	const kind =
 		getPhonemeType(phonemeId) === "diphthong"
 			? `a vowel that glides from /${ipa.charAt(0)}/ to /${ipa.slice(-1)}/`

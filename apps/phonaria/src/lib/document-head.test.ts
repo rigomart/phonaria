@@ -19,7 +19,7 @@ import { getContrastPage } from "@/lib/minimal-pairs";
 import { PracticeActivity } from "@/lib/practice/activity";
 import { getTopic } from "@/lib/practice/topics";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
-import { soundPageDescription, soundPageTitle } from "@/lib/sound-pages";
+import { SOUNDS_PAGE_DESCRIPTION, soundPageDescription, soundPageTitle } from "@/lib/sound-pages";
 import {
 	buildConsonantsHead,
 	buildCreditsHead,
@@ -32,6 +32,7 @@ import {
 	buildPracticeTopicHead,
 	buildRootHead,
 	buildSoundHead,
+	buildSoundsIndexHead,
 	buildVowelsHead,
 	consonantsDocumentTitle,
 	creditsDocumentTitle,
@@ -316,6 +317,20 @@ describe("buildSoundHead", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		process.env.SITE_INDEXING_ENABLED = "1";
 		expect(buildSoundHead("AX").meta).toContainEqual({ name: "robots", content: "index, follow" });
+	});
+});
+
+describe("buildSoundsIndexHead", () => {
+	it("titles, describes and canonicalizes the list of sounds", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const { meta, links } = buildSoundsIndexHead();
+		expect(meta).toContainEqual({
+			title: "The sounds of American English - Phonaria",
+		});
+		expect(meta).toContainEqual({ name: "description", content: SOUNDS_PAGE_DESCRIPTION });
+		expect(links).toEqual([
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/sounds" },
+		]);
 	});
 });
 

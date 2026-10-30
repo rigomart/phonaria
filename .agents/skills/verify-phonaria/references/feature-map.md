@@ -17,6 +17,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | History | `/history`, header **History** (behind `FLAG_LANGUAGE_HISTORY`) | Executable journeys below: `language-history` (flag on) and `language-history-off` |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair pages and speaking practice | `/minimal-pairs` and one page per contrast at `/minimal-pairs/<contrast>` (the pairs and recordings in every build); header **Minimal pairs** or a sound's **Practise saying …** link under Compare with while `FLAG_SPEECH` is on, which also adds speaking practice to each contrast page. `?contrast=` links and `/practice/minimal-pairs` redirect to the contrast's page | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
+| Sound pages | `/sounds` and `/sounds/<slug>` (e.g. `/sounds/th-thin`); not linked from the app yet | Executable journey below |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 | Word recordings | Sound card **Compare with** and **Spelling**, Practice reveal, **Definition of …** after transcribing | Executable journey below |
 
@@ -645,3 +646,29 @@ The manifest is a chunk of its own, loaded the first time a play button mounts (
 
 Playback is proven by the `playing` state, set on the media element's `playing` event; nobody listens to the sound. The published manifest has no labelled forms yet, so the per-form buttons are covered by unit tests with a manifest fixture. Definitions need the Worker to reach Wiktionary and are not checked.
 
+## Sound pages
+
+Target accent: American English (`en-us`). `/sounds` lists every sound, consonants then vowels, each a link to `/sounds/<slug>`; a sound's page is the details drawer's content laid out as a page. Slugs and titles are the ones reviewed in [#392](https://github.com/rigomart/phonaria/issues/392). The [checkpoints](../scripts/sound-pages.ts) read the list's groups and links, the sound page's title, canonical link, h1, section headings, rank and spelling words, the not-found heading, and where the rank sentence and **See ranking** link fall at phone width.
+
+### Executable journey
+
+After `init sound-pages`, `serve`, `open about:blank` and `trace start`:
+
+```bash
+HYD="Object.keys(document.querySelector('main a')||{}).some(k=>k.startsWith('__reactProps'))"
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" index
+bun run verify browser "$VERIFY_RUN" find role link click --name "/θ/ as in thin" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname==='/sounds/th-thin' && !!document.querySelector('[data-phoneme-details]')"
+bun run verify observe "$VERIFY_RUN" sound-page
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds/nope
+bun run verify observe "$VERIFY_RUN" not-found
+bun run verify browser "$VERIFY_RUN" set viewport 390 844
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds/aw-saw
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" rank-line
+```
+
+`index` requires 24 consonant and 16 vowel links, 40 distinct, from `/sounds/p-pat` to `/sounds/oy-boy`. `sound-page` requires the /θ/ title, a canonical `/sounds/th-thin`, one h1, the sections How it's made, Compare with and Spelling, and the **All sounds** link. `not-found` requires the app's 404 page; its 404 response is expected. `rank-line` requires the rank sentence on one line with **See ranking** off that line and no horizontal overflow. To check the text is server-rendered, `curl` a sound page and look for its description and spellings. Review screenshots in both themes.

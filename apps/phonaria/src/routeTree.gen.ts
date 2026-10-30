@@ -25,6 +25,7 @@ import { Route as MinimalPairsContrastRouteImport } from './routes/minimal-pairs
 import { Route as PracticeIndexRouteImport } from './routes/practice.index'
 import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
 import { Route as PracticeMinimalPairsRouteImport } from './routes/practice_.minimal-pairs'
+import { Route as SoundsChar123SlugChar125RouteImport } from './routes/sounds.{-$slug}'
 import { Route as ApiSpeechEvidenceLogRouteImport } from './routes/api.speech.evidence-log'
 import { Route as ApiSpeechScoreRouteImport } from './routes/api.speech.score'
 
@@ -108,6 +109,12 @@ const PracticeMinimalPairsRoute = PracticeMinimalPairsRouteImport.update({
   path: '/practice/minimal-pairs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SoundsChar123SlugChar125Route =
+  SoundsChar123SlugChar125RouteImport.update({
+    id: '/sounds/{-$slug}',
+    path: '/sounds/{-$slug}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiSpeechEvidenceLogRoute = ApiSpeechEvidenceLogRouteImport.update({
   id: '/api/speech/evidence-log',
   path: '/api/speech/evidence-log',
@@ -133,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
+  '/sounds/{-$slug}': typeof SoundsChar123SlugChar125Route
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/minimal-pairs/': typeof MinimalPairsIndexRoute
   '/practice/': typeof PracticeIndexRoute
@@ -152,6 +160,7 @@ export interface FileRoutesByTo {
   '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
+  '/sounds/{-$slug}': typeof SoundsChar123SlugChar125Route
   '/ipa-chart': typeof IpaChartIndexRoute
   '/minimal-pairs': typeof MinimalPairsIndexRoute
   '/practice': typeof PracticeIndexRoute
@@ -173,6 +182,7 @@ export interface FileRoutesById {
   '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice_/minimal-pairs': typeof PracticeMinimalPairsRoute
+  '/sounds/{-$slug}': typeof SoundsChar123SlugChar125Route
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/minimal-pairs/': typeof MinimalPairsIndexRoute
   '/practice/': typeof PracticeIndexRoute
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice/minimal-pairs'
+    | '/sounds/{-$slug}'
     | '/ipa-chart/'
     | '/minimal-pairs/'
     | '/practice/'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice/minimal-pairs'
+    | '/sounds/{-$slug}'
     | '/ipa-chart'
     | '/minimal-pairs'
     | '/practice'
@@ -234,6 +246,7 @@ export interface FileRouteTypes {
     | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice_/minimal-pairs'
+    | '/sounds/{-$slug}'
     | '/ipa-chart/'
     | '/minimal-pairs/'
     | '/practice/'
@@ -254,6 +267,7 @@ export interface RootRouteChildren {
   IpaChartVowelsRoute: typeof IpaChartVowelsRoute
   MinimalPairsContrastRoute: typeof MinimalPairsContrastRoute
   PracticeMinimalPairsRoute: typeof PracticeMinimalPairsRoute
+  SoundsChar123SlugChar125Route: typeof SoundsChar123SlugChar125Route
   IpaChartIndexRoute: typeof IpaChartIndexRoute
   MinimalPairsIndexRoute: typeof MinimalPairsIndexRoute
   ApiSpeechEvidenceLogRoute: typeof ApiSpeechEvidenceLogRoute
@@ -374,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticeMinimalPairsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sounds/{-$slug}': {
+      id: '/sounds/{-$slug}'
+      path: '/sounds/{-$slug}'
+      fullPath: '/sounds/{-$slug}'
+      preLoaderRoute: typeof SoundsChar123SlugChar125RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/speech/evidence-log': {
       id: '/api/speech/evidence-log'
       path: '/api/speech/evidence-log'
@@ -418,6 +439,7 @@ const rootRouteChildren: RootRouteChildren = {
   IpaChartVowelsRoute: IpaChartVowelsRoute,
   MinimalPairsContrastRoute: MinimalPairsContrastRoute,
   PracticeMinimalPairsRoute: PracticeMinimalPairsRoute,
+  SoundsChar123SlugChar125Route: SoundsChar123SlugChar125Route,
   IpaChartIndexRoute: IpaChartIndexRoute,
   MinimalPairsIndexRoute: MinimalPairsIndexRoute,
   ApiSpeechEvidenceLogRoute: ApiSpeechEvidenceLogRoute,
