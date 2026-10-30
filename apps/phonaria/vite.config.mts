@@ -95,7 +95,10 @@ export default defineConfig({
 					path === "/ipa-chart" ||
 					path === "/ipa-chart/" ||
 					path === "/ipa-chart/consonants" ||
-					path === "/ipa-chart/vowels",
+					path === "/ipa-chart/vowels" ||
+					path === "/minimal-pairs" ||
+					path === "/minimal-pairs/" ||
+					/^\/minimal-pairs\/[a-z-]+$/.test(path),
 			},
 		}),
 		viteReact(),

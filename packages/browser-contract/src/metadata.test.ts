@@ -8,6 +8,7 @@ const target = {
 	expectedCanonicalOrigin: "https://phonaria.rigos.dev",
 	practiceEnabled: false,
 	languageHistoryEnabled: false,
+	speechEnabled: false,
 	indexingEnabled: true,
 	bucketAssetsAvailable: true,
 	authentication: { type: "none" },
@@ -25,7 +26,7 @@ describe("metadata helpers", () => {
 		expect(expectedCanonical(target, "/credits")).toBe("https://phonaria.rigos.dev/credits");
 	});
 
-	it("keeps production indexed and omits Practice from the sitemap set", () => {
+	it("keeps production indexed, lists the minimal-pair index and omits Practice from the sitemap set", () => {
 		expect(expectedRobots(target)).toBe("index, follow");
 		expect(expectedSitemapUrls(target)).toEqual([
 			"https://phonaria.rigos.dev",
@@ -33,6 +34,7 @@ describe("metadata helpers", () => {
 			"https://phonaria.rigos.dev/ipa-chart/vowels",
 			"https://phonaria.rigos.dev/ipa-chart/frequency",
 			"https://phonaria.rigos.dev/credits",
+			"https://phonaria.rigos.dev/minimal-pairs",
 		]);
 		expect(expectedSitemapUrls(target).join(" ")).not.toContain("practice");
 	});

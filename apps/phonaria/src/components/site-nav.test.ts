@@ -25,4 +25,13 @@ describe("getTools", () => {
 		expect(ids(true, false)).toEqual(["transcription", "ipa-chart", "practice"]);
 		expect(ids(false, false)).toEqual(["transcription", "ipa-chart"]);
 	});
+
+	it("marks Minimal pairs active on its index and every contrast page", () => {
+		const tool = getTools({ practice: false, languageHistory: false, speech: true }).find(
+			(candidate) => candidate.id === "minimal-pairs",
+		);
+		expect(tool?.match("/minimal-pairs")).toBe(true);
+		expect(tool?.match("/minimal-pairs/th-s")).toBe(true);
+		expect(tool?.match("/minimal-pairsx")).toBe(false);
+	});
 });

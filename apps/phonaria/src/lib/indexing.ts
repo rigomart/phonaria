@@ -1,5 +1,7 @@
 import { type AppFlags, flags } from "./flags";
 import { LANGUAGE_HISTORY_PATH } from "./language-history/metadata";
+import { listContrastPagePaths } from "./minimal-pairs";
+import { MinimalPairActivity } from "./practice/minimal-pair-activity";
 import { getSiteUrl, isIndexingEnabled } from "./site";
 
 /** `/ipa-chart` only redirects, so it is not listed. */
@@ -14,14 +16,18 @@ const UNFLAGGED_INDEXABLE_PATHS = [
 /**
  * Indexable application paths for a build's flags. History joins only when
  * its flag is on, since the route 404s otherwise. Practice stays out of search
- * whether or not its flag is on.
+ * whether or not its flag is on. The minimal-pair pages are listed in every
+ * build, since their pairs show without the `speech` flag.
  */
 export function getIndexablePaths(
 	enabled: Pick<AppFlags, "languageHistory"> = flags.snapshot(),
 ): string[] {
-	return enabled.languageHistory
-		? [...UNFLAGGED_INDEXABLE_PATHS, LANGUAGE_HISTORY_PATH]
-		: [...UNFLAGGED_INDEXABLE_PATHS];
+	return [
+		...UNFLAGGED_INDEXABLE_PATHS,
+		MinimalPairActivity.path,
+		...listContrastPagePaths(),
+		...(enabled.languageHistory ? [LANGUAGE_HISTORY_PATH] : []),
+	];
 }
 
 export type RobotsPolicy = {

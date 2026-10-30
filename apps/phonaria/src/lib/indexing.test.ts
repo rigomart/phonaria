@@ -1,3 +1,4 @@
+import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
 import { afterEach, describe, expect, it } from "vitest";
 import { formatRobotsTxt, getIndexablePaths, getRobotsPolicy, getSitemapUrls } from "./indexing";
 
@@ -26,13 +27,25 @@ describe("indexing helpers", () => {
 	it("lists the indexable application URLs and omits Practice", () => {
 		process.env.SITE_URL = "https://phonaria.rigos.dev";
 		process.env.FLAG_LANGUAGE_HISTORY = "0";
-		expect(getSitemapUrls()).toEqual([
+		const urls = getSitemapUrls();
+		expect(urls.slice(0, 6)).toEqual([
 			"https://phonaria.rigos.dev",
 			"https://phonaria.rigos.dev/ipa-chart/consonants",
 			"https://phonaria.rigos.dev/ipa-chart/vowels",
 			"https://phonaria.rigos.dev/ipa-chart/frequency",
 			"https://phonaria.rigos.dev/credits",
+			"https://phonaria.rigos.dev/minimal-pairs",
 		]);
+		expect(urls.some((url) => url.includes("/practice"))).toBe(false);
+	});
+
+	it("lists every contrast page, with or without speaking practice", () => {
+		const contrastPaths = getIndexablePaths({ languageHistory: false }).filter((path) =>
+			path.startsWith("/minimal-pairs/"),
+		);
+		expect(contrastPaths).toHaveLength(EnglishPhonemeContrasts.length);
+		expect(contrastPaths).toContain("/minimal-pairs/th-s");
+		expect(contrastPaths[0]).toBe("/minimal-pairs/p-b");
 	});
 
 	it("adds History only when its flag is on", () => {

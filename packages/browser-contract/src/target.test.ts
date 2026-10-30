@@ -25,6 +25,7 @@ describe("loadTargetFromEnv", () => {
 		expect(target.name).toBe("cloudflare-production");
 		expect(target.baseUrl).toBe("https://phonaria.rigos.dev");
 		expect(target.practiceEnabled).toBe(false);
+		expect(target.speechEnabled).toBe(false);
 		expect(target.indexingEnabled).toBe(true);
 		expect(target.capabilities.practiceSession).toBe(false);
 		expect(target.skipReasons.practiceSession).toMatch(/Practice stays disabled/);
@@ -67,6 +68,7 @@ describe("loadTargetFromEnv", () => {
 				expectedCanonicalOrigin: "https://example.test",
 				practiceEnabled: false,
 				languageHistoryEnabled: false,
+				speechEnabled: false,
 				indexingEnabled: false,
 				bucketAssetsAvailable: true,
 				authentication: { type: "none" },

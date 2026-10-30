@@ -21,6 +21,7 @@ import {
 	buildLanguageHistoryStructuredData,
 	serializeJsonLd,
 } from "@/lib/language-history/structured-data";
+import { type ContrastPage, contrastPagePath } from "@/lib/minimal-pairs";
 import { PracticeActivity } from "@/lib/practice/activity";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import {
@@ -259,12 +260,23 @@ export function buildPracticeTopicHead(topic: PracticeTopicHeadSource | undefine
 	});
 }
 
-export function buildMinimalPairPracticeHead(): StartHead {
+/** Indexable, unlike Practice: the pairs and recordings show without speaking practice. */
+export function buildMinimalPairsHead(): StartHead {
 	return buildPageHead({
 		path: MinimalPairActivity.path,
 		title: MinimalPairActivity.name,
-		description: MinimalPairActivity.description,
-		robots: PRACTICE_ROBOTS,
+		description: MinimalPairActivity.listDescription,
+	});
+}
+
+export function buildMinimalPairContrastHead(contrast: ContrastPage | undefined): StartHead {
+	if (!contrast) return buildMinimalPairsHead();
+	const [a, b] = contrast.sounds;
+	const [first, second] = contrast.pairs[0] ?? [];
+	return buildPageHead({
+		path: contrastPagePath(contrast.id),
+		title: `/${a.ipa}/ vs /${b.ipa}/: minimal pairs like ${first} and ${second}`,
+		description: `${contrast.pairs.length} American English word pairs that differ only by /${a.ipa}/ and /${b.ipa}/, like ${first} and ${second}, with recordings and how each sound is made.`,
 	});
 }
 

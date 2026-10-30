@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { PlayableWord } from "@/components/phoneme-details/playable-word";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
+import { flags } from "@/lib/flags";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { type ContrastOption, listContrastOptions } from "../_lib/minimal-pair-prompt";
 
@@ -31,8 +32,8 @@ function ContrastRow({ option }: { option: ContrastOption }) {
 				// The visible IPA is hidden from screen readers, so the example pair names the link.
 				aria-label={`${first} and ${second}`}
 				className="flex items-center text-muted-foreground after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring focus-visible:after:ring-inset"
-				search={{ contrast: option.id }}
-				to={MinimalPairActivity.path}
+				params={{ contrast: option.id }}
+				to="/minimal-pairs/$contrast"
 			>
 				<ChevronRight aria-hidden="true" className="size-4" />
 			</Link>
@@ -50,7 +51,10 @@ export function ContrastPicker() {
 					{MinimalPairActivity.name}
 				</h1>
 				<p className="max-w-xl text-pretty text-muted-foreground text-sm enter-rise enter-delay-40">
-					{MinimalPairActivity.description} Tap a word to hear it first.
+					{flags.isEnabled("speech")
+						? MinimalPairActivity.description
+						: MinimalPairActivity.listDescription}{" "}
+					Tap a word to hear it first.
 				</p>
 			</div>
 

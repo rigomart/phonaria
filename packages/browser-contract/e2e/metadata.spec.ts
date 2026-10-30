@@ -1,4 +1,9 @@
-import { SITE_DESCRIPTION, SITE_NAME } from "../src/constants";
+import {
+	MINIMAL_PAIR_CONTRAST_COUNT,
+	MINIMAL_PAIRS_PATH,
+	SITE_DESCRIPTION,
+	SITE_NAME,
+} from "../src/constants";
 import { expect, test } from "../src/fixtures";
 import {
 	canonicalHref,
@@ -35,6 +40,18 @@ const PUBLIC_ROUTES = [
 		path: "/ipa-chart/frequency",
 		title: "Frequency — IPA Chart - Phonaria",
 		description: "How often each American English sound comes up in everyday speech.",
+	},
+	{
+		path: "/minimal-pairs",
+		title: "Minimal pairs - Phonaria",
+		description:
+			"Word pairs that differ by one sound, like ship and sheep, for the American English sounds learners often mix up.",
+	},
+	{
+		path: "/minimal-pairs/th-s",
+		title: "/θ/ vs /s/: minimal pairs like thin and sin - Phonaria",
+		description:
+			"11 American English word pairs that differ only by /θ/ and /s/, like thin and sin, with recordings and how each sound is made.",
 	},
 ] as const;
 
@@ -80,6 +97,11 @@ test.describe("Metadata, robots, and sitemap", () => {
 		}
 		expect(xml).not.toContain("/practice");
 		expect(xml).not.toContain("/ipa-chart</loc>");
-		expect(xml.match(/<loc>/g)?.length).toBe(expectedSitemapUrls(target).length);
+		const contrastPages = `${target.expectedCanonicalOrigin}${MINIMAL_PAIRS_PATH}/`;
+		expect(xml).toContain(`<loc>${contrastPages}th-s</loc>`);
+		expect(xml.split(`<loc>${contrastPages}`).length - 1).toBe(MINIMAL_PAIR_CONTRAST_COUNT);
+		expect(xml.match(/<loc>/g)?.length).toBe(
+			expectedSitemapUrls(target).length + MINIMAL_PAIR_CONTRAST_COUNT,
+		);
 	});
 });

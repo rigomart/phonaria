@@ -32,6 +32,12 @@ test.describe("Accessibility", () => {
 		await expectNoAxeViolations(page);
 	});
 
+	test("has no serious axe violations on a minimal-pair contrast page", async ({ page }) => {
+		await page.goto("/minimal-pairs/th-s");
+		await expect(page.getByRole("heading", { level: 1, name: "/θ/ vs /s/" })).toBeVisible();
+		await expectNoAxeViolations(page);
+	});
+
 	test("has no serious axe violations on the consonant chart", async ({ page }) => {
 		await page.goto("/ipa-chart/consonants");
 		await expect(page.getByRole("heading", { name: "Consonants" })).toBeVisible();

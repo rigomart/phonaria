@@ -1,5 +1,10 @@
 import type { APIRequestContext, APIResponse } from "@playwright/test";
-import { type ContractTarget, INDEXABLE_PATHS, LANGUAGE_HISTORY_PATH } from "./constants";
+import {
+	type ContractTarget,
+	INDEXABLE_PATHS,
+	LANGUAGE_HISTORY_PATH,
+	MINIMAL_PAIRS_PATH,
+} from "./constants";
 
 export async function fetchDocument(
 	request: APIRequestContext,
@@ -38,10 +43,11 @@ export function expectedRobots(target: ContractTarget): string {
 	return target.indexingEnabled ? "index, follow" : "noindex, follow";
 }
 
+/** Every indexable URL but the contrast pages, which are counted separately. */
 export function expectedSitemapUrls(target: ContractTarget): string[] {
 	const paths = target.languageHistoryEnabled
-		? [...INDEXABLE_PATHS, LANGUAGE_HISTORY_PATH]
-		: [...INDEXABLE_PATHS];
+		? [...INDEXABLE_PATHS, MINIMAL_PAIRS_PATH, LANGUAGE_HISTORY_PATH]
+		: [...INDEXABLE_PATHS, MINIMAL_PAIRS_PATH];
 	return paths.map((path) => expectedCanonical(target, path));
 }
 

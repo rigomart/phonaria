@@ -5,6 +5,7 @@
 	"expectedCanonicalOrigin": "",
 	"practiceEnabled": true,
 	"languageHistoryEnabled": true,
+	"speechEnabled": true,
 	"indexingEnabled": false,
 	"bucketAssetsAvailable": true,
 	"authentication": {
