@@ -26,6 +26,29 @@ test.describe("Minimal-pair pages", () => {
 		expect(`${location.pathname}${location.search}`).toBe("/minimal-pairs/th-s");
 	});
 
+	test("links a contrast's sounds to their pages and to other contrasts with them", async ({
+		page,
+	}) => {
+		await page.goto("/minimal-pairs/th-s");
+		const pairs = page.getByRole("table", { name: "Minimal pairs for /θ/ and /s/" });
+		await expect(pairs.getByRole("link", { name: /^\/θ\// })).toHaveAttribute(
+			"href",
+			"/sounds/th-thin",
+		);
+		await expect(pairs.getByRole("link", { name: /^\/s\// })).toHaveAttribute(
+			"href",
+			"/sounds/s-sun",
+		);
+		const moreWithTh = page.getByRole("region", { name: "More contrasts with /θ/" });
+		await expect(moreWithTh.getByRole("link", { name: /^\/θ\/ vs \/t\// })).toHaveAttribute(
+			"href",
+			"/minimal-pairs/th-t",
+		);
+		await expect(
+			page.getByRole("region", { name: "More contrasts with /s/" }).getByRole("link"),
+		).toHaveCount(2);
+	});
+
 	test("returns not-found for an unknown contrast", async ({ page }) => {
 		const response = await page.goto("/minimal-pairs/th-zz");
 		expect(response?.status()).toBe(404);

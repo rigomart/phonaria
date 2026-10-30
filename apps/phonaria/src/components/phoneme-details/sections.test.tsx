@@ -19,7 +19,7 @@ vi.mock("@tanstack/react-router", () => ({
 		search?: Record<string, string>;
 		children: ReactNode;
 	}) => (
-		<a href={`${to}?${new URLSearchParams(search)}`} {...props}>
+		<a href={search ? `${to}?${new URLSearchParams(search)}` : to} {...props}>
 			{children}
 		</a>
 	),
@@ -63,19 +63,20 @@ describe("merger notes in the sound details", () => {
 	});
 });
 
-describe("practice links under Compare with", () => {
-	it("links each similar sound to minimal-pair practice of that pair", () => {
-		vi.stubEnv("FLAG_SPEECH", "1");
-		const html = render("I");
-		expect(html).toContain('href="/minimal-pairs?contrast=i-ix"');
-		expect(html).toContain("Practise saying /<!-- -->i<!-- -->/ and /<!-- -->ɪ<!-- -->/");
-	});
-
-	it("leaves the links out while speaking practice is off", () => {
+describe("contrast links under Compare with", () => {
+	it("links each similar sound to the page of that contrast", () => {
 		vi.stubEnv("FLAG_SPEECH", "0");
 		const html = render("I");
-		expect(html).toContain("Compare with");
-		expect(html).not.toContain("/minimal-pairs");
+		expect(html).toMatch(/<a [^>]*href="\/minimal-pairs\/i-ix"[^>]*>All pairs for \/i\/ and \/ɪ\//);
+		expect(html).not.toContain("Practise saying");
+	});
+
+	it("offers practice there while speaking practice is on", () => {
+		vi.stubEnv("FLAG_SPEECH", "1");
+		const html = render("I");
+		expect(html).toMatch(
+			/<a [^>]*href="\/minimal-pairs\/i-ix"[^>]*>Practise saying \/i\/ and \/ɪ\//,
+		);
 	});
 });
 
@@ -115,7 +116,7 @@ describe("the link to the sound's own page", () => {
 
 	it("links the details to the sound's page", () => {
 		expect(header({ targetAccent: "en-us", phonemeId: "TH" })).toMatch(
-			/<a [^>]*href="\/sounds\/th-thin\?"[^>]*>Open full page/,
+			/<a [^>]*href="\/sounds\/th-thin"[^>]*>Open full page/,
 		);
 	});
 

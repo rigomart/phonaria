@@ -21,6 +21,19 @@ test.describe("Sound pages", () => {
 		);
 	});
 
+	test("links each contrast the sound is in to the contrast's page", async ({ page }) => {
+		await page.goto(TH_PAGE);
+		const compare = page.getByRole("region", { name: "Compare with" });
+		await expect(compare.getByRole("link", { name: /\/θ\/ and \/t\/$/ })).toHaveAttribute(
+			"href",
+			"/minimal-pairs/th-t",
+		);
+		await expect(compare.getByRole("link", { name: /\/θ\/ and \/s\/$/ })).toHaveAttribute(
+			"href",
+			"/minimal-pairs/th-s",
+		);
+	});
+
 	test("lists every sound, each linked to its page", async ({ page }) => {
 		const response = await page.goto(SOUNDS_PATH);
 		expect(response?.status()).toBe(200);

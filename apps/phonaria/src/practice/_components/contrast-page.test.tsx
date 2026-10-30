@@ -45,6 +45,18 @@ describe("a contrast page", () => {
 		expect(html).not.toContain("Record");
 	});
 
+	it("links both sounds to their pages and to the other contrasts with each", () => {
+		vi.stubEnv("FLAG_SPEECH", "0");
+		const html = render();
+		expect(html).toMatch(/<a [^>]*href="\/sounds\/th-thin"[^>]*>\/<!-- -->θ<!-- -->\/<\/a>/);
+		expect(html).toMatch(/<a [^>]*href="\/sounds\/s-sun"[^>]*>\/<!-- -->s<!-- -->\/<\/a>/);
+		expect(html).toContain("More contrasts with /<!-- -->θ<!-- -->/");
+		expect(html).toMatch(/<a [^>]*href="\/minimal-pairs\/th-t"[^>]*>.*θ.* vs .*t.*thin.*tin/);
+		expect(html).toContain("More contrasts with /<!-- -->s<!-- -->/");
+		for (const id of ["s-z", "s-sh"]) expect(html).toContain(`href="/minimal-pairs/${id}"`);
+		expect(html).not.toContain('href="/minimal-pairs/th-s"');
+	});
+
 	it("adds speaking practice on the contrast's words where speech is on", () => {
 		vi.stubEnv("FLAG_SPEECH", "1");
 		const html = render();

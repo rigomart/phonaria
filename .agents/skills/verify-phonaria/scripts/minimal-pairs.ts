@@ -65,6 +65,18 @@ const contrastPage = observation(
 			(button) => button.textContent?.trim() === "Record",
 		).length,
 		allPairs: document.querySelector('main a[href="/minimal-pairs"]')?.textContent?.trim() ?? null,
+		soundLinks: Array.from(document.querySelectorAll("main table th a")).map((link) =>
+			link.getAttribute("href"),
+		),
+		moreContrasts: Array.from(document.querySelectorAll("main section h2"))
+			.filter((heading) => heading.textContent?.startsWith("More contrasts"))
+			.map((heading) => ({
+				heading: heading.textContent?.trim(),
+				links: Array.from(heading.closest("section")?.querySelectorAll("a") ?? []).map((link) => [
+					link.textContent?.trim(),
+					link.getAttribute("href"),
+				]),
+			})),
 	}),
 	{
 		path: "/minimal-pairs/th-s",
@@ -89,7 +101,32 @@ const contrastPage = observation(
 		hear: [true, true],
 		recordButtons: 0,
 		allPairs: "All pairs",
+		soundLinks: ["/sounds/th-thin", "/sounds/s-sun"],
+		moreContrasts: [
+			{
+				heading: "More contrasts with /θ/",
+				links: [["/θ/ vs /t/thin, tin", "/minimal-pairs/th-t"]],
+			},
+			{
+				heading: "More contrasts with /s/",
+				links: [
+					["/s/ vs /z/price, prize", "/minimal-pairs/s-z"],
+					["/s/ vs /ʃ/see, she", "/minimal-pairs/s-sh"],
+				],
+			},
+		],
 	},
+);
+
+const soundPageContrastLinks = observation(
+	() =>
+		Array.from(document.querySelectorAll("[data-phoneme-details] a"))
+			.filter((link) => link.getAttribute("href")?.startsWith("/minimal-pairs"))
+			.map((link) => [link.textContent?.trim(), link.getAttribute("href")]),
+	[
+		["All pairs for /θ/ and /t/", "/minimal-pairs/th-t"],
+		["All pairs for /θ/ and /s/", "/minimal-pairs/th-s"],
+	],
 );
 
 const unknownContrast = observation(
@@ -299,7 +336,7 @@ export const minimalPairs = {
 						.find((link) => link.textContent?.trim().startsWith("Practise saying"))
 						?.textContent?.trim() ?? null,
 			}),
-			{ href: "/minimal-pairs?contrast=i-ix", label: "Practise saying /ɪ/ and /i/" },
+			{ href: "/minimal-pairs/i-ix", label: "Practise saying /ɪ/ and /i/" },
 		),
 		"next-word": observation(
 			() => {
@@ -342,6 +379,7 @@ export const minimalPairsOff = {
 	checkpoints: {
 		"contrast-page": contrastPage,
 		"unknown-contrast": unknownContrast,
+		"sound-page-links": soundPageContrastLinks,
 		"nav-hidden": practiceIndex(false),
 	},
 	coverageLimits: [

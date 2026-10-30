@@ -17,12 +17,25 @@ import {
 	type PhonemeCategory,
 } from "@phonaria/phonetics-data";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
+import { soundPagePath } from "@/lib/sound-pages";
 
 export interface ContrastPageSound {
 	id: EnglishPhonemeSymbolId;
 	ipa: string;
 	/** Its articulation label, e.g. "Voiceless dental fricative". */
 	label: string;
+	/** Its sound page, e.g. `/sounds/th-thin`. */
+	path: string;
+	/** The catalog's other contrasts with this sound, in catalog order. */
+	otherContrasts: readonly OtherContrast[];
+}
+
+export interface OtherContrast {
+	id: string;
+	/** Both sounds' IPA, in the contrast's order, as its page's title has them. */
+	ipas: readonly [string, string];
+	/** Its first pair. */
+	example: readonly [string, string];
 }
 
 export interface ContrastPage {
@@ -54,7 +67,7 @@ function contrastPages(): ReadonlyMap<string, ContrastPage> {
 			const page: ContrastPage = {
 				id: contrast.id,
 				category: getPhonemeCategory(first),
-				sounds: [pageSound(first), pageSound(second)],
+				sounds: [pageSound(first, contrast.id), pageSound(second, contrast.id)],
 				pairs: contrast.minimalPairs.map((pair) => pair.words),
 				difference: describeDifference(first, second),
 			};
@@ -73,8 +86,20 @@ export function listContrastPagePaths(): string[] {
 	return [...contrastPages().keys()].map(contrastPagePath);
 }
 
-function pageSound(id: EnglishPhonemeSymbolId): ContrastPageSound {
-	return { id, ipa: getIpaForPhonemeId(id), label: formatPhonemeLabel("en-us", id) };
+function pageSound(id: EnglishPhonemeSymbolId, contrastId: string): ContrastPageSound {
+	return {
+		id,
+		ipa: getIpaForPhonemeId(id),
+		label: formatPhonemeLabel("en-us", id),
+		path: soundPagePath(id),
+		otherContrasts: EnglishPhonemeContrasts.filter(
+			(other) => other.id !== contrastId && other.phonemeIds.includes(id),
+		).map((other) => ({
+			id: other.id,
+			ipas: [getIpaForPhonemeId(other.phonemeIds[0]), getIpaForPhonemeId(other.phonemeIds[1])],
+			example: other.minimalPairs[0].words,
+		})),
+	};
 }
 
 function articulation(id: EnglishPhonemeSymbolId): PhonemeArticulation {

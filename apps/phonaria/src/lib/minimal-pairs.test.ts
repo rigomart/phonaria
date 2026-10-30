@@ -12,12 +12,22 @@ describe("contrast pages", () => {
 	it("holds the contrast's sounds and every one of its pairs", () => {
 		const page = getContrastPage("th-s");
 		expect(page?.category).toBe("consonant");
-		expect(page?.sounds).toEqual([
+		expect(page?.sounds.map(({ id, ipa, label }) => ({ id, ipa, label }))).toEqual([
 			{ id: "TH", ipa: "θ", label: "Voiceless dental fricative" },
 			{ id: "S", ipa: "s", label: "Voiceless alveolar fricative" },
 		]);
 		expect(page?.pairs).toHaveLength(11);
 		expect(page?.pairs).toContainEqual(["think", "sink"]);
+	});
+
+	it("links each sound to its page and to the other contrasts it is in", () => {
+		const [th, s] = getContrastPage("th-s")?.sounds ?? [];
+		expect(th?.path).toBe("/sounds/th-thin");
+		expect(s?.path).toBe("/sounds/s-sun");
+		expect(th?.otherContrasts).toEqual([
+			{ id: "th-t", ipas: ["θ", "t"], example: ["thin", "tin"] },
+		]);
+		expect(s?.otherContrasts.map(({ id }) => id)).toEqual(["s-z", "s-sh"]);
 	});
 
 	it("has no page for an unknown contrast", () => {

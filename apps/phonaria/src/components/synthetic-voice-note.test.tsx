@@ -19,6 +19,13 @@ const manifest = vi.hoisted(() => ({
 vi.mock("@/hooks/use-word-audio-manifest", () => ({
 	useWordAudioManifest: () => manifest.current,
 }));
+vi.mock("@tanstack/react-router", () => ({
+	Link: ({ to, children, ...props }: { to: string; children: ReactNode }) => (
+		<a href={to} {...props}>
+			{children}
+		</a>
+	),
+}));
 
 const render = (node: ReactNode) =>
 	renderToString(<AudioManagerProvider>{node}</AudioManagerProvider>);
@@ -28,8 +35,6 @@ const note = (words: readonly string[]) =>
 
 beforeEach(() => {
 	vi.stubEnv("PUBLIC_BUCKET_URL", "https://assets.example");
-	// Link needs a router; keep the practice links off.
-	vi.stubEnv("FLAG_SPEECH", "0");
 	manifest.current = EnglishWordAudio;
 });
 
