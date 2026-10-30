@@ -49,15 +49,13 @@ export function SoundFrequency({
 					<span className="mt-1">{share} of speech</span>
 				</p>
 			) : (
-				<div className="flex items-baseline justify-between gap-3">
-					<p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm text-muted-foreground tabular-nums">
-						<span>
-							{rankNumber} most common of {frequency.count} sounds
-						</span>
-						<span>{share} of speech</span>
-					</p>
-					{link}
-				</div>
+				<p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm text-muted-foreground tabular-nums">
+					<span>
+						{rankNumber} most common of {frequency.count} sounds
+					</span>
+					<span>{share} of speech</span>
+					{link ? <span className="ml-auto">{link}</span> : null}
+				</p>
 			)}
 			<span aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-accent">
 				<span

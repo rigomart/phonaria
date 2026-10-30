@@ -30,7 +30,14 @@ import {
 	SITE_DESCRIPTION,
 	SITE_NAME,
 } from "@/lib/site";
-import { soundPageDescription, soundPagePath, soundPageTitle } from "@/lib/sound-pages";
+import {
+	SOUNDS_PAGE_DESCRIPTION,
+	SOUNDS_PAGE_TITLE,
+	SOUNDS_PATH,
+	soundPageDescription,
+	soundPagePath,
+	soundPageTitle,
+} from "@/lib/sound-pages";
 
 type TitleTag = { title: string };
 type NamedMetaTag = { name: string; content: string };
@@ -233,6 +240,14 @@ export function buildSoundHead(phonemeId: EnglishPhonemeSymbolId): StartHead {
 		path: soundPagePath(phonemeId),
 		title: soundPageTitle(phonemeId),
 		description: soundPageDescription(phonemeId),
+	});
+}
+
+export function buildSoundsIndexHead(): StartHead {
+	return buildPageHead({
+		path: SOUNDS_PATH,
+		title: SOUNDS_PAGE_TITLE,
+		description: SOUNDS_PAGE_DESCRIPTION,
 	});
 }
 
