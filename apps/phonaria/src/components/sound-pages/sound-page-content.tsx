@@ -1,7 +1,10 @@
 import type { EnglishPhonemeSymbolId } from "@phonaria/phonetics-data";
+import { buttonVariants } from "@phonaria/ui/components/button";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "@/components/link";
 import { PhonemeDetailsPage } from "@/components/phoneme-details/details-page";
 import { SOUNDS_PATH } from "@/lib/sound-pages";
+import { cn } from "@/lib/utils";
 
 export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
 	return (
@@ -9,8 +12,9 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 			<div className="flex w-full max-w-5xl flex-col gap-4 p-4 sm:p-6">
 				<Link
 					href={SOUNDS_PATH}
-					className="self-start rounded-sm text-sm text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+					className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "-ml-2.5 self-start")}
 				>
+					<ArrowLeft aria-hidden="true" />
 					All sounds
 				</Link>
 				<PhonemeDetailsPage options={{ targetAccent: "en-us", phonemeId }} />

@@ -25,7 +25,8 @@ import { Route as MinimalPairsContrastRouteImport } from './routes/minimal-pairs
 import { Route as PracticeIndexRouteImport } from './routes/practice.index'
 import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
 import { Route as PracticeMinimalPairsRouteImport } from './routes/practice_.minimal-pairs'
-import { Route as SoundsChar123SlugChar125RouteImport } from './routes/sounds.{-$slug}'
+import { Route as SoundsIndexRouteImport } from './routes/sounds.index'
+import { Route as SoundsSlugRouteImport } from './routes/sounds.$slug'
 import { Route as ApiSpeechEvidenceLogRouteImport } from './routes/api.speech.evidence-log'
 import { Route as ApiSpeechScoreRouteImport } from './routes/api.speech.score'
 
@@ -109,12 +110,16 @@ const PracticeMinimalPairsRoute = PracticeMinimalPairsRouteImport.update({
   path: '/practice/minimal-pairs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SoundsChar123SlugChar125Route =
-  SoundsChar123SlugChar125RouteImport.update({
-    id: '/sounds/{-$slug}',
-    path: '/sounds/{-$slug}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const SoundsIndexRoute = SoundsIndexRouteImport.update({
+  id: '/sounds/',
+  path: '/sounds/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SoundsSlugRoute = SoundsSlugRouteImport.update({
+  id: '/sounds/$slug',
+  path: '/sounds/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSpeechEvidenceLogRoute = ApiSpeechEvidenceLogRouteImport.update({
   id: '/api/speech/evidence-log',
   path: '/api/speech/evidence-log',
@@ -140,10 +145,11 @@ export interface FileRoutesByFullPath {
   '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
-  '/sounds/{-$slug}': typeof SoundsChar123SlugChar125Route
+  '/sounds/$slug': typeof SoundsSlugRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/minimal-pairs/': typeof MinimalPairsIndexRoute
   '/practice/': typeof PracticeIndexRoute
+  '/sounds/': typeof SoundsIndexRoute
   '/api/speech/evidence-log': typeof ApiSpeechEvidenceLogRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
 }
@@ -160,10 +166,11 @@ export interface FileRoutesByTo {
   '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
-  '/sounds/{-$slug}': typeof SoundsChar123SlugChar125Route
+  '/sounds/$slug': typeof SoundsSlugRoute
   '/ipa-chart': typeof IpaChartIndexRoute
   '/minimal-pairs': typeof MinimalPairsIndexRoute
   '/practice': typeof PracticeIndexRoute
+  '/sounds': typeof SoundsIndexRoute
   '/api/speech/evidence-log': typeof ApiSpeechEvidenceLogRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
 }
@@ -182,10 +189,11 @@ export interface FileRoutesById {
   '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice_/minimal-pairs': typeof PracticeMinimalPairsRoute
-  '/sounds/{-$slug}': typeof SoundsChar123SlugChar125Route
+  '/sounds/$slug': typeof SoundsSlugRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/minimal-pairs/': typeof MinimalPairsIndexRoute
   '/practice/': typeof PracticeIndexRoute
+  '/sounds/': typeof SoundsIndexRoute
   '/api/speech/evidence-log': typeof ApiSpeechEvidenceLogRoute
   '/api/speech/score': typeof ApiSpeechScoreRoute
 }
@@ -205,10 +213,11 @@ export interface FileRouteTypes {
     | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice/minimal-pairs'
-    | '/sounds/{-$slug}'
+    | '/sounds/$slug'
     | '/ipa-chart/'
     | '/minimal-pairs/'
     | '/practice/'
+    | '/sounds/'
     | '/api/speech/evidence-log'
     | '/api/speech/score'
   fileRoutesByTo: FileRoutesByTo
@@ -225,10 +234,11 @@ export interface FileRouteTypes {
     | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice/minimal-pairs'
-    | '/sounds/{-$slug}'
+    | '/sounds/$slug'
     | '/ipa-chart'
     | '/minimal-pairs'
     | '/practice'
+    | '/sounds'
     | '/api/speech/evidence-log'
     | '/api/speech/score'
   id:
@@ -246,10 +256,11 @@ export interface FileRouteTypes {
     | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice_/minimal-pairs'
-    | '/sounds/{-$slug}'
+    | '/sounds/$slug'
     | '/ipa-chart/'
     | '/minimal-pairs/'
     | '/practice/'
+    | '/sounds/'
     | '/api/speech/evidence-log'
     | '/api/speech/score'
   fileRoutesById: FileRoutesById
@@ -267,9 +278,10 @@ export interface RootRouteChildren {
   IpaChartVowelsRoute: typeof IpaChartVowelsRoute
   MinimalPairsContrastRoute: typeof MinimalPairsContrastRoute
   PracticeMinimalPairsRoute: typeof PracticeMinimalPairsRoute
-  SoundsChar123SlugChar125Route: typeof SoundsChar123SlugChar125Route
+  SoundsSlugRoute: typeof SoundsSlugRoute
   IpaChartIndexRoute: typeof IpaChartIndexRoute
   MinimalPairsIndexRoute: typeof MinimalPairsIndexRoute
+  SoundsIndexRoute: typeof SoundsIndexRoute
   ApiSpeechEvidenceLogRoute: typeof ApiSpeechEvidenceLogRoute
   ApiSpeechScoreRoute: typeof ApiSpeechScoreRoute
 }
@@ -388,11 +400,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticeMinimalPairsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sounds/{-$slug}': {
-      id: '/sounds/{-$slug}'
-      path: '/sounds/{-$slug}'
-      fullPath: '/sounds/{-$slug}'
-      preLoaderRoute: typeof SoundsChar123SlugChar125RouteImport
+    '/sounds/': {
+      id: '/sounds/'
+      path: '/sounds'
+      fullPath: '/sounds/'
+      preLoaderRoute: typeof SoundsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sounds/$slug': {
+      id: '/sounds/$slug'
+      path: '/sounds/$slug'
+      fullPath: '/sounds/$slug'
+      preLoaderRoute: typeof SoundsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/speech/evidence-log': {
@@ -439,9 +458,10 @@ const rootRouteChildren: RootRouteChildren = {
   IpaChartVowelsRoute: IpaChartVowelsRoute,
   MinimalPairsContrastRoute: MinimalPairsContrastRoute,
   PracticeMinimalPairsRoute: PracticeMinimalPairsRoute,
-  SoundsChar123SlugChar125Route: SoundsChar123SlugChar125Route,
+  SoundsSlugRoute: SoundsSlugRoute,
   IpaChartIndexRoute: IpaChartIndexRoute,
   MinimalPairsIndexRoute: MinimalPairsIndexRoute,
+  SoundsIndexRoute: SoundsIndexRoute,
   ApiSpeechEvidenceLogRoute: ApiSpeechEvidenceLogRoute,
   ApiSpeechScoreRoute: ApiSpeechScoreRoute,
 }
