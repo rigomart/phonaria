@@ -55,9 +55,19 @@ describe("compareToGuardrails", () => {
 		).toMatchObject({
 			uncompressedBytes: "investigate",
 			gzipBytes: "ok",
-			modules: "ok",
 			startupMs: "ok",
 		});
+	});
+
+	it("never fails on module count", () => {
+		const compared = compareToGuardrails({
+			uncompressedBytes: 1_024_000,
+			gzipBytes: 220_000,
+			modules: 10_000,
+			startupMs: 20,
+		});
+		expect(compared).not.toHaveProperty("modules");
+		expect(Object.values(compared)).not.toContain("investigate");
 	});
 
 	it("formats a reviewable report", () => {
@@ -76,6 +86,21 @@ describe("compareToGuardrails", () => {
 				comparedToGuardrails: compared,
 			}),
 		).toContain("startup: n/a (needs a real deploy)");
+	});
+
+	it("prints the module count as information, not against a limit", () => {
+		const metrics = {
+			uncompressedBytes: 1_024_000,
+			gzipBytes: 220_000,
+			modules: 74,
+			startupMs: null,
+		};
+		const report = formatWorkerMetricsReport({
+			...metrics,
+			comparedToGuardrails: compareToGuardrails(metrics),
+		});
+		expect(report).toContain("- modules: 74 (info)");
+		expect(report).not.toMatch(/modules: 74 \//);
 	});
 });
 

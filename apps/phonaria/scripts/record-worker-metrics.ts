@@ -2,15 +2,16 @@
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 /**
- * Record Cloudflare Worker upload size, module count, and startup time
- * against the #200/#201 investigation guardrails.
+ * Record Cloudflare Worker upload size, module count, and startup time.
+ * Size and startup are held to the #200/#201 investigation guardrails; the
+ * module count is recorded for information only, since Cloudflare sets no
+ * limit on it.
  */
 import { gzipSync } from "node:zlib";
 
 export const GUARDRAILS = {
 	uncompressedBytes: 5 * 1024 * 1024,
 	gzipBytes: 1.5 * 1024 * 1024,
-	modules: 75,
 	startupMs: 100,
 } as const;
 
@@ -22,7 +23,6 @@ export type WorkerMetrics = {
 	comparedToGuardrails: {
 		uncompressedBytes: "ok" | "investigate";
 		gzipBytes: "ok" | "investigate";
-		modules: "ok" | "investigate";
 		startupMs: "ok" | "investigate" | "unavailable";
 	};
 };
@@ -84,7 +84,6 @@ export function compareToGuardrails(
 		uncompressedBytes:
 			metrics.uncompressedBytes <= GUARDRAILS.uncompressedBytes ? "ok" : "investigate",
 		gzipBytes: metrics.gzipBytes <= GUARDRAILS.gzipBytes ? "ok" : "investigate",
-		modules: metrics.modules <= GUARDRAILS.modules ? "ok" : "investigate",
 		startupMs:
 			metrics.startupMs == null
 				? "unavailable"
@@ -99,7 +98,7 @@ export function formatWorkerMetricsReport(metrics: WorkerMetrics): string {
 		"Cloudflare Worker metrics vs #201 guardrails",
 		`- uncompressed: ${formatMib(metrics.uncompressedBytes)} / 5.00 MiB (${metrics.comparedToGuardrails.uncompressedBytes})`,
 		`- gzip: ${formatMib(metrics.gzipBytes)} / 1.50 MiB (${metrics.comparedToGuardrails.gzipBytes})`,
-		`- modules: ${metrics.modules} / 75 (${metrics.comparedToGuardrails.modules})`,
+		`- modules: ${metrics.modules} (info)`,
 		`- startup: ${metrics.startupMs == null ? "n/a (needs a real deploy)" : `${metrics.startupMs} ms`} / 100 ms (${metrics.comparedToGuardrails.startupMs})`,
 	];
 	return `${lines.join("\n")}\n`;
