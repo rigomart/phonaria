@@ -49,6 +49,7 @@ export function SoundChip({ sound, onRemove, className }: SoundChipProps) {
 					showSpellings: false,
 					showFrequencyLink: false,
 					showChartLink: false,
+					showPageLink: false,
 				}}
 				render={
 					<button

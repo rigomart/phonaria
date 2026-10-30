@@ -17,7 +17,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | History | `/history`, header **History** (behind `FLAG_LANGUAGE_HISTORY`) | Executable journeys below: `language-history` (flag on) and `language-history-off` |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair pages and speaking practice | `/minimal-pairs` and one page per contrast at `/minimal-pairs/<contrast>` (the pairs and recordings in every build); header **Minimal pairs** or a sound's **Practise saying …** link under Compare with while `FLAG_SPEECH` is on, which also adds speaking practice to each contrast page. `?contrast=` links and `/practice/minimal-pairs` redirect to the contrast's page | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
-| Sound pages | `/sounds` and `/sounds/<slug>` (e.g. `/sounds/th-thin`); not linked from the app yet | Executable journey below |
+| Sound pages | `/sounds` and `/sounds/<slug>` (e.g. `/sounds/th-thin`); every chart tile and frequency row links to its sound's page, and the drawer and side panel have **Open full page** | Executable journeys below: `sound-pages` and `sound-links` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 | Word recordings | Sound card **Compare with** and **Spelling**, Practice reveal, **Definition of …** after transcribing | Executable journey below |
 
@@ -672,3 +672,42 @@ bun run verify observe "$VERIFY_RUN" rank-line
 ```
 
 `index` requires 24 consonant and 16 vowel links, 40 distinct, from `/sounds/p-pat` to `/sounds/oy-boy`. `sound-page` requires the /θ/ title, a canonical `/sounds/th-thin`, one h1, the sections How it's made, Compare with and Spelling, and the **All sounds** link. `not-found` requires the app's 404 page; its 404 response is expected. `rank-line` requires the rank sentence on one line with **See ranking** off that line and no horizontal overflow. To check the text is server-rendered, `curl` a sound page and look for its description and spellings. Review screenshots in both themes.
+
+## Chart tiles and Open full page
+
+Target accent: American English (`en-us`). Each sound on the consonant and vowel charts and each frequency row is a link to its sound's page (`/sounds/<slug>`). A plain click (or Enter) still opens the details in place and the URL stays; cmd/ctrl-click, middle-click and crawlers follow the link. The drawer (both levels) and the wide side panel show **Open full page** under the sound's type; the compact card does not, and neither do Practice or the sound's own page. The [checkpoints](../scripts/sound-links.ts) read the open sound's tile (its tag, label and `href`), the details' title and **Open full page** link, the page that link opens, and the sitemap's `<loc>`s. Modified clicks need real modifier keys, so the browser contract's `e2e/sound-pages.spec.ts` covers them, not this journey.
+
+### Executable journey
+
+After `init sound-links`, `serve`, `open about:blank` and `trace start`:
+
+```bash
+HYD="Object.keys(document.querySelector('main a[aria-haspopup]')||{}).some(k=>k.startsWith('__reactProps'))"
+bun run verify browser "$VERIFY_RUN" set viewport 390 844
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/consonants
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" scrollintoview '[aria-label="Voiceless dental fricative (θ)"]'
+bun run verify browser "$VERIFY_RUN" click '[aria-label="Voiceless dental fricative (θ)"]'
+bun run verify browser "$VERIFY_RUN" wait "[data-phoneme-details]"
+bun run verify observe "$VERIFY_RUN" consonant-tile
+bun run verify browser "$VERIFY_RUN" find role link click --name "Open full page"
+bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname==='/sounds/th-thin' && !!document.querySelector('h1')"
+bun run verify observe "$VERIFY_RUN" open-full-page
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/frequency
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" scrollintoview '[aria-label^="/ʃ/ as in shop:"]'
+bun run verify browser "$VERIFY_RUN" click '[aria-label^="/ʃ/ as in shop:"]'
+bun run verify browser "$VERIFY_RUN" wait "[data-phoneme-details]"
+bun run verify observe "$VERIFY_RUN" frequency-row
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/vowels
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" click '[aria-label^="Near-open front unrounded"]'
+bun run verify browser "$VERIFY_RUN" wait "[data-phoneme-details]"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /æ/"
+bun run verify observe "$VERIFY_RUN" vowel-tile
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sitemap.xml
+bun run verify observe "$VERIFY_RUN" sitemap
+```
+
+`consonant-tile`, `frequency-row` and `vowel-tile` require the path to stay on the chart, the open sound's tile to be an `<a>` with its sound's `href`, the details titled for that sound, and **Open full page** pointing at the same page (`vowel-tile` reads it in the side panel). `open-full-page` requires `/sounds/th-thin` with one h1. `sitemap` requires `/sounds` and 40 sound pages; Chrome's XML viewer asks for `/favicon.ico`, whose 404 is expected. Click the tile only after `$HYD` passes: before hydration the tile is a plain link and the click goes to the sound's page. On wide screens, `capture` (a full-page screenshot) closes the compact card, whatever its trigger, so take `screenshot` of the viewport while the card is open.

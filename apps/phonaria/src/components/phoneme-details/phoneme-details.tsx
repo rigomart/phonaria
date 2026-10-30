@@ -2,6 +2,7 @@ import { DrawerTrigger } from "@phonaria/ui/components/drawer";
 import { PopoverTrigger } from "@phonaria/ui/components/popover";
 import {
 	type ComponentProps,
+	type MouseEvent,
 	type ReactNode,
 	useCallback,
 	useEffect,
@@ -94,6 +95,10 @@ type TriggerProps = Omit<ComponentProps<typeof PopoverTrigger>, "handle" | "payl
  * panel to this sound (or closes it when this sound is already showing).
  * The trigger of the open sound carries `data-details-open` for hosts to style,
  * whichever container shows it.
+ *
+ * A host can render the trigger as a link to the sound's page (with
+ * `nativeButton={false}`): a plain click still opens the details in place, and
+ * a modified click (new tab or window) follows the link.
  */
 export function PhonemeDetailsTrigger({ details, id, onClick, ...props }: TriggerProps) {
 	const { wide, panelTriggerId, activeTriggerId, openPanel, closePanel, releaseTrigger } =
@@ -113,7 +118,10 @@ export function PhonemeDetailsTrigger({ details, id, onClick, ...props }: Trigge
 				payload={payload}
 				id={triggerId}
 				data-details-open={selected}
-				onClick={onClick}
+				onClick={(event) => {
+					onClick?.(event);
+					followsLink(event);
+				}}
 				{...props}
 			/>
 		);
@@ -131,7 +139,7 @@ export function PhonemeDetailsTrigger({ details, id, onClick, ...props }: Trigge
 			data-details-open={selected}
 			onClick={(event) => {
 				onClick?.(event);
-				if (panelTriggerId === null) return;
+				if (followsLink(event) || panelTriggerId === null) return;
 				// The panel is open, so it takes this sound instead of the card.
 				event.preventBaseUIHandler();
 				if (showingInPanel) closePanel();
@@ -140,4 +148,20 @@ export function PhonemeDetailsTrigger({ details, id, onClick, ...props }: Trigge
 			{...props}
 		/>
 	);
+}
+
+/**
+ * For a trigger that is a link: a modified click is left to the browser and
+ * skips the details; a plain one opens them instead of navigating.
+ */
+function followsLink(
+	event: MouseEvent<HTMLElement> & { preventBaseUIHandler: () => void },
+): boolean {
+	if (!(event.currentTarget instanceof HTMLAnchorElement)) return false;
+	if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+		event.preventBaseUIHandler();
+		return true;
+	}
+	event.preventDefault();
+	return false;
 }

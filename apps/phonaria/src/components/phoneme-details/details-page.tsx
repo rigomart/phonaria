@@ -17,7 +17,7 @@ export function PhonemeDetailsPage({ options }: { options: PhonemeDetailsOptions
 			className="flex flex-col gap-10 rounded-3xl bg-popover p-5 sm:p-8"
 		>
 			<SoundHeader
-				sound={describeSound(options)}
+				sound={describeSound({ ...options, showPageLink: false })}
 				titleId={titleId}
 				titleAs="h1"
 				showExample={false}

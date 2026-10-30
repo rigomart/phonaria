@@ -38,6 +38,14 @@ test.describe("Accessibility", () => {
 		await expectNoAxeViolations(page);
 	});
 
+	test("has no serious axe violations on a sound page", async ({ page }) => {
+		await page.goto("/sounds/th-thin");
+		await expect(
+			page.getByRole("heading", { level: 1, name: "/θ/, Voiceless dental fricative" }),
+		).toBeVisible();
+		await expectNoAxeViolations(page);
+	});
+
 	test("has no serious axe violations on the consonant chart", async ({ page }) => {
 		await page.goto("/ipa-chart/consonants");
 		await expect(page.getByRole("heading", { name: "Consonants" })).toBeVisible();

@@ -5,8 +5,10 @@ import {
 } from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import {
+	findSoundPagePath,
 	getPhonemeIdForSoundSlug,
 	getSoundSlug,
+	listSoundPagePaths,
 	soundPageDescription,
 	soundPagePath,
 	soundPageTitle,
@@ -56,6 +58,20 @@ describe("sound slugs", () => {
 
 	it("puts each sound's page under /sounds", () => {
 		expect(soundPagePath("TH")).toBe("/sounds/th-thin");
+	});
+
+	it("finds a page only for an en-us sound", () => {
+		expect(findSoundPagePath("en-us", "TH")).toBe("/sounds/th-thin");
+		expect(findSoundPagePath("es-419", "S")).toBeUndefined();
+		expect(findSoundPagePath("en-us", "EE")).toBeUndefined();
+	});
+
+	it("lists every sound's page once, consonants then vowels", () => {
+		const paths = listSoundPagePaths();
+		expect(new Set(paths).size).toBe(sounds.length);
+		expect(paths).toHaveLength(sounds.length);
+		expect(paths[0]).toBe("/sounds/p-pat");
+		expect(paths.at(-1)).toBe("/sounds/oy-boy");
 	});
 });
 

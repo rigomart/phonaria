@@ -98,7 +98,10 @@ export default defineConfig({
 					path === "/ipa-chart/vowels" ||
 					path === "/minimal-pairs" ||
 					path === "/minimal-pairs/" ||
-					/^\/minimal-pairs\/[a-z-]+$/.test(path),
+					/^\/minimal-pairs\/[a-z-]+$/.test(path) ||
+					path === "/sounds" ||
+					path === "/sounds/" ||
+					/^\/sounds\/[a-z-]+$/.test(path),
 			},
 		}),
 		viteReact(),

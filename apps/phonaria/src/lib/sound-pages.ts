@@ -6,6 +6,7 @@ import {
 	getPhonemeType,
 	type SpellingPattern,
 	splitSpelledWord,
+	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
 import { summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
@@ -78,6 +79,20 @@ export function getPhonemeIdForSoundSlug(slug: string): EnglishPhonemeSymbolId |
 
 export function soundPagePath(phonemeId: EnglishPhonemeSymbolId): string {
 	return `${SOUNDS_PATH}/${getSoundSlug(phonemeId)}`;
+}
+
+/** The sound's page, or undefined where it has none: only en-us sounds have pages. */
+export function findSoundPagePath(
+	targetAccent: TargetAccent,
+	phonemeId: string,
+): string | undefined {
+	if (targetAccent !== "en-us" || !Object.hasOwn(SOUND_SLUGS, phonemeId)) return undefined;
+	return soundPagePath(phonemeId as EnglishPhonemeSymbolId);
+}
+
+/** Every sound's page, consonants then vowels. */
+export function listSoundPagePaths(): string[] {
+	return (Object.keys(SOUND_SLUGS) as EnglishPhonemeSymbolId[]).map(soundPagePath);
 }
 
 function getSpelling(phonemeId: EnglishPhonemeSymbolId): SpellingPattern {
