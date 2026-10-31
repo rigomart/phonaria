@@ -1,3 +1,4 @@
+import { ABOUT_PATH } from "./about/metadata";
 import { type AppFlags, flags } from "./flags";
 import { LANGUAGE_HISTORY_PATH } from "./language-history/metadata";
 import { listContrastPagePaths } from "./minimal-pairs";
@@ -11,19 +12,18 @@ const UNFLAGGED_INDEXABLE_PATHS = [
 	"/ipa-chart/consonants",
 	"/ipa-chart/vowels",
 	"/ipa-chart/frequency",
-	"/about",
 	"/credits",
 ] as const;
 
 /**
- * Indexable application paths for a build's flags. History joins only when
- * its flag is on, since the route 404s otherwise. Practice stays out of search
+ * Indexable application paths for a build's flags. About and History join
+ * only when their flags are on, since their routes 404 otherwise. Practice stays out of search
  * whether or not its flag is on. The minimal-pair pages are listed in every
  * build, since their pairs show without the `speech` flag, and so are the
  * sound pages.
  */
 export function getIndexablePaths(
-	enabled: Pick<AppFlags, "languageHistory"> = flags.snapshot(),
+	enabled: Pick<AppFlags, "about" | "languageHistory"> = flags.snapshot(),
 ): string[] {
 	return [
 		...UNFLAGGED_INDEXABLE_PATHS,
@@ -31,6 +31,7 @@ export function getIndexablePaths(
 		...listContrastPagePaths(),
 		SOUNDS_PATH,
 		...listSoundPagePaths(),
+		...(enabled.about ? [ABOUT_PATH] : []),
 		...(enabled.languageHistory ? [LANGUAGE_HISTORY_PATH] : []),
 	];
 }

@@ -18,7 +18,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair pages and speaking practice | `/minimal-pairs` and one page per contrast at `/minimal-pairs/<contrast>` (the pairs and recordings in every build); header **Minimal pairs** while `FLAG_SPEECH` is on, which also adds speaking practice to each contrast page; in every build, a sound's **All pairs for …** link under Compare with (**Practise saying …** while `FLAG_SPEECH` is on), and each contrast page links its two sounds' pages and the other contrasts with either sound. `?contrast=` links and `/practice/minimal-pairs` redirect to the contrast's page | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
 | Sound pages | `/sounds` and `/sounds/<slug>` (e.g. `/sounds/th-thin`); every chart tile and frequency row links to its sound's page, and the drawer and side panel have **Open full page** | Executable journeys below: `sound-pages` and `sound-links` |
-| About | `/about`, footer **About** (before Credits) | Executable journey below: `about` |
+| About | `/about`, footer **About** (before Credits), both behind `FLAG_ABOUT` | Executable journeys below: `about` (flag on) and `about-off` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 | Word recordings | Sound card **Compare with** and **Spelling**, Practice reveal, **Definition of …** after transcribing | Executable journey below |
 
@@ -717,7 +717,7 @@ bun run verify observe "$VERIFY_RUN" sitemap
 
 ## About
 
-`/about` says what Phonaria is, has a card for each tool that is live in production (Transcription, IPA Chart, Sounds, Minimal pairs, never Practice, History or speaking practice), and shows how a sound improves: *pick* at three stages and an example learner's sounds by stage. The [checkpoints](../scripts/about.ts) read the head (title, robots, canonical, `og:title`), the headings, the tool links, the *pick*/*peak* recordings, the 12 board sounds, the footer order and overflow; `sound-details` that a board chip opens the details; `sitemap` that `/about` is listed.
+`/about` ships dark behind `FLAG_ABOUT` (on locally, in staging and preview; off in production). It says what Phonaria is, has a card for each tool that is live in production (Transcription, IPA Chart, Sounds, Minimal pairs, never Practice, History or speaking practice), and shows how a sound improves: *pick* at three stages and an example learner's sounds by stage. The [checkpoints](../scripts/about.ts) read the head (title, robots, canonical, `og:title`), the headings, the tool links, the *pick*/*peak* recordings, the 12 board sounds, the footer order and overflow; `sound-details` that a board chip opens the details; `sitemap` that `/about` is listed.
 
 ### Executable journey
 
@@ -734,4 +734,26 @@ bun run verify observe "$VERIFY_RUN" page
 ```
 
 Then at 1280 wide, `find role button click --name "Details for /θ/"`, `wait "[data-phoneme-details]"`, `observe sound-details`; and `open /sitemap.xml`, `observe sitemap`. Wait for `$SETTLED` before screenshots: the page's entrance animation blurs the top sections until it ends. `robots` reads `noindex, follow` locally because `SITE_INDEXING_ENABLED` is unset; a production build that runs with `SITE_URL` writes `apps/phonaria/.dev.vars`, which then changes the dev server's canonical.
+
+### Flag off
+
+The flag is read when the server starts, so this needs its own run and server:
+
+```bash
+bun run verify init about-off
+FLAG_ABOUT=0 bun run verify serve "$VERIFY_RUN"
+bun run verify browser "$VERIFY_RUN" open about:blank
+bun run verify browser "$VERIFY_RUN" trace start
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/about
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('h1')"
+bun run verify observe "$VERIFY_RUN" not-found
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('footer a')"
+bun run verify observe "$VERIFY_RUN" footer-hidden
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sitemap.xml
+bun run verify observe "$VERIFY_RUN" sitemap-hidden
+```
+
+`not-found` requires HTTP 404 on `/about` (open it directly) and the shared **This page doesn't exist** h1. `footer-hidden` requires the footer links to be exactly **Credits** and **GitHub**, and no `a[href="/about"]` on the page. `sitemap-hidden` requires `/about` to be missing from the sitemap.
 

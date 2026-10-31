@@ -28,7 +28,7 @@ EVIDENCE_LOG_AUTH_TOKEN="your-write-token"
 
 The first two keys are needed when a word misses the bundled lists and must be looked up in Turso. Without them, common words can still transcribe in the browser while server lookups fail. `.env.local` is useful for build-time settings and scripts, but its secret values are not automatically copied into `.dev.vars`. Restart the dev server after editing `.dev.vars`. Both files are ignored by Git; use `.env.example` as a reference.
 
-`scripts/write-dev-vars.ts` writes public settings and preserves existing Worker secret lines during builds. It never imports secret values from the process environment. The app uses `SITE_URL` for canonical links; production builds require it. Practice, History and speech scoring default on locally and are controlled per deployed environment by `FLAG_PRACTICE`, `FLAG_LANGUAGE_HISTORY` and `FLAG_SPEECH`. When a flag is off, its route returns 404 and its header link is hidden.
+`scripts/write-dev-vars.ts` writes public settings and preserves existing Worker secret lines during builds. It never imports secret values from the process environment. The app uses `SITE_URL` for canonical links; production builds require it. Practice, History, the About page and speech scoring default on locally and are controlled per deployed environment by `FLAG_PRACTICE`, `FLAG_LANGUAGE_HISTORY`, `FLAG_ABOUT` and `FLAG_SPEECH`. When a flag is off, its route returns 404 and its header or footer link is hidden.
 
 ## Commands
 

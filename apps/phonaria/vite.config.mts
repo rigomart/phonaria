@@ -42,7 +42,7 @@ function publicBucketUrl(): string {
 
 /**
  * Worker `vars` are request-time on the server. The app shell also reads
- * `FLAG_PRACTICE`, `FLAG_LANGUAGE_HISTORY` and `FLAG_SPEECH` while hydrating, so the client bundle must see the same
+ * `FLAG_PRACTICE`, `FLAG_LANGUAGE_HISTORY`, `FLAG_ABOUT` and `FLAG_SPEECH` while hydrating, so the client bundle must see the same
  * bake-at-build value as Credits site config.
  */
 function definePublicAppFlags(): Plugin {
@@ -55,6 +55,7 @@ function definePublicAppFlags(): Plugin {
 					"process.env.FLAG_LANGUAGE_HISTORY": JSON.stringify(
 						process.env.FLAG_LANGUAGE_HISTORY ?? "",
 					),
+					"process.env.FLAG_ABOUT": JSON.stringify(process.env.FLAG_ABOUT ?? ""),
 					"process.env.FLAG_SPEECH": JSON.stringify(process.env.FLAG_SPEECH ?? ""),
 				},
 			};
@@ -91,7 +92,6 @@ export default defineConfig({
 				crawlLinks: true,
 				filter: ({ path }) =>
 					path === "/" ||
-					path === "/about" ||
 					path === "/credits" ||
 					path === "/ipa-chart" ||
 					path === "/ipa-chart/" ||

@@ -14,6 +14,7 @@ const target = {
 	expectedCanonicalOrigin: "https://phonaria.rigos.dev",
 	practiceEnabled: false,
 	languageHistoryEnabled: false,
+	aboutEnabled: false,
 	speechEnabled: false,
 	indexingEnabled: true,
 	bucketAssetsAvailable: true,

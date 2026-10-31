@@ -64,7 +64,9 @@ export const chartSections = [
 	{ href: IPA_CHART_FREQUENCY_PATH, label: "Frequency" },
 ] as const;
 
-export function getTools(flags: AppFlags): readonly Tool[] {
+export function getTools(
+	flags: Pick<AppFlags, "practice" | "languageHistory" | "speech">,
+): readonly Tool[] {
 	return tools.filter((tool) => {
 		if (tool.id === "minimal-pairs") return flags.speech;
 		if (tool.id === "practice") return flags.practice;

@@ -1,5 +1,5 @@
 import type { EnglishPhonemeSymbolId } from "@phonaria/phonetics-data";
-import { ABOUT_PAGE_DESCRIPTION, ABOUT_PAGE_TITLE, ABOUT_PATH } from "@/lib/about-metadata";
+import { ABOUT_PAGE_DESCRIPTION, ABOUT_PAGE_TITLE, ABOUT_PATH } from "@/lib/about/metadata";
 import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
 import {
 	CONSONANTS_PAGE_DESCRIPTION,

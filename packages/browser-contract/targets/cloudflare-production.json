@@ -3,6 +3,7 @@
 	"baseUrl": "https://phonaria.rigos.dev",
 	"expectedCanonicalOrigin": "https://phonaria.rigos.dev",
 	"practiceEnabled": false,
+	"aboutEnabled": false,
 	"languageHistoryEnabled": false,
 	"speechEnabled": false,
 	"indexingEnabled": true,

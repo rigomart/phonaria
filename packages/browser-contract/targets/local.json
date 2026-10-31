@@ -3,6 +3,7 @@
 	"baseUrl": "http://localhost:3000",
 	"expectedCanonicalOrigin": "http://localhost:3000",
 	"practiceEnabled": true,
+	"aboutEnabled": true,
 	"languageHistoryEnabled": true,
 	"speechEnabled": true,
 	"indexingEnabled": false,

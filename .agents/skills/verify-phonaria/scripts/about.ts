@@ -60,14 +60,13 @@ const soundDetails = observation(
 	{ open: true, theta: true },
 );
 
-const sitemap = observation(
-	() => ({
-		about: Array.from(document.querySelectorAll("loc")).some((loc) =>
-			loc.textContent?.trim().endsWith("/about"),
-		),
-	}),
-	{ about: true },
-);
+const readSitemap = () => ({
+	about: Array.from(document.querySelectorAll("loc")).some((loc) =>
+		loc.textContent?.trim().endsWith("/about"),
+	),
+});
+
+const sitemap = observation(readSitemap, { about: true });
 
 export const about = {
 	title: "About page",
@@ -77,4 +76,36 @@ export const about = {
 		"audio playback is not checked beyond the recordings rendering as buttons",
 		"prerendering is checked by the production build, outside this journey",
 	],
+} satisfies Feature;
+
+export const aboutOff = {
+	title: "About flag off",
+	checkpoints: {
+		"not-found": observation(
+			() => ({
+				path: location.pathname,
+				status: (
+					performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined
+				)?.responseStatus,
+				heading: document.querySelector("h1")?.textContent?.trim() ?? null,
+			}),
+			{ path: "/about", status: 404, heading: "This page doesn't exist" },
+		),
+		"footer-hidden": observation(
+			() => ({
+				path: location.pathname,
+				footerLinks: Array.from(document.querySelectorAll("footer a")).map((a) =>
+					a.textContent?.trim(),
+				),
+				aboutLinks: document.querySelectorAll('a[href="/about"]').length,
+			}),
+			{ path: "/", footerLinks: ["Credits", "GitHub"], aboutLinks: 0 },
+		),
+		"sitemap-hidden": observation(readSitemap, { about: false }),
+	},
+	coverageLimits: [
+		"the status comes from the navigation timing entry of the first page load, so open the page directly before observing",
+		"the server must be started with FLAG_ABOUT=0; the journey cannot tell whether it was",
+	],
+	expectedResponses: [{ path: "/about", status: 404 }],
 } satisfies Feature;
