@@ -62,7 +62,10 @@ const differentWord = (heard: readonly string[]): WordGate => ({ type: "differen
 /**
  * The rule, in order:
  *
- * 1. No speech heard: `not-heard`.
+ * 1. No speech heard: `not-heard`. A transcript that hears no speech while the
+ *    scorer scored the target counts as no transcript instead: Azure's plain
+ *    recognition answers most clips of 650–675 ms with an empty transcript though
+ *    the assessment of the same audio heard the word (#384).
  * 2. The scorer found the target word missing: `different-word`.
  * 3. The transcript holds more than one word: `different-word`.
  * 4. The transcript is one word that sounds like the target, or like the target
@@ -89,9 +92,11 @@ export function gateWord({
 	pronunciationsOf,
 	margins = WORD_GATE_MARGINS,
 }: WordGateInput): WordGate {
-	if (transcript === null || transcript?.words.length === 0) return NOT_HEARD;
+	const saysNoSpeech = transcript === null || transcript?.words.length === 0;
+	if (saysNoSpeech && !assessmentHeardWord(evidence)) return NOT_HEARD;
+	const transcribed = saysNoSpeech ? undefined : transcript;
 
-	const heard = transcript?.words ?? [];
+	const heard = transcribed?.words ?? [];
 	const isOneOtherWord =
 		heard.length === 1 &&
 		!soundsLikeTarget(heard[0], target, judgedPhonemeIds, targetAccent, pronunciationsOf);
@@ -100,14 +105,18 @@ export function gateWord({
 	const wordIsOff = (evidence.accuracy ?? 1) < margins.wordAccuracy;
 
 	if (evidence.omitted) return differentWord(instead);
-	if (!transcript) return wordIsOff ? differentWord([]) : JUDGED;
+	if (!transcribed) return wordIsOff ? differentWord([]) : JUDGED;
 	if (heard.length > 1) return differentWord(heard);
 	if (!isOneOtherWord) return JUDGED;
 
-	const isConfident = transcript.confidence >= margins.transcriptConfidence;
+	const isConfident = transcribed.confidence >= margins.transcriptConfidence;
 	const uncalledSoundIsOff =
 		lowestUncalledSoundAccuracy(evidence, judgedPhonemeIds, targetAccent) < margins.soundAccuracy;
 	return wordIsOff || (isConfident && uncalledSoundIsOff) ? differentWord(heard) : JUDGED;
+}
+
+function assessmentHeardWord(evidence: WordEvidence): boolean {
+	return !evidence.omitted && evidence.pronunciations.length > 0;
 }
 
 function soundsLikeTarget(

@@ -2,7 +2,7 @@ import { type PhonemeSymbolId, toBasePhonemeIds } from "@phonaria/phonetics-data
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
 import { describe, expect, it } from "vitest";
 import { azureEvidenceFromResponse } from "./azure/evidence";
-import { MISCUE_FIXTURES } from "./azure/fixtures/miscue";
+import { EMPTY_TRANSCRIPT_FIXTURE, MISCUE_FIXTURES } from "./azure/fixtures/miscue";
 import type { RivalScore, ScoringRequest, Transcript, WordEvidence } from "./contract";
 import { gateWord, type PronunciationLookup, type WordGateInput } from "./word-gate";
 
@@ -88,6 +88,23 @@ describe("gateWord on saved Azure responses", () => {
 
 	it("hears nothing in silence", () => {
 		expect(gateFixture("silence", JUDGED)).toEqual({ type: "not-heard" });
+	});
+
+	it("judges a word the assessment heard though the transcript came back empty", () => {
+		const bid: ScoringRequest = {
+			targetAccent: "en-us",
+			words: [{ text: "bid", acceptedPronunciations: [["B", "IX", "D"]] }],
+		};
+		const { assessment, recognition } = EMPTY_TRANSCRIPT_FIXTURE;
+		const recording = azureEvidenceFromResponse(assessment, bid, recognition);
+		expect(recording.transcript).toBeNull();
+		expect(
+			gate({
+				target: bid.words[0],
+				evidence: recording.words[0],
+				transcript: recording.transcript,
+			}),
+		).toEqual({ type: "judged" });
 	});
 });
 
@@ -252,8 +269,25 @@ describe("gateWord", () => {
 		});
 	});
 
-	it("counts an empty transcript as no speech", () => {
-		expect(gate({ evidence: good, transcript: heard(0) })).toEqual({ type: "not-heard" });
+	it("hears no speech when neither the transcript nor the scoring heard the word", () => {
+		for (const transcript of [null, heard(0)]) {
+			expect(gate({ evidence: { pronunciations: [], omitted: true }, transcript })).toEqual({
+				type: "not-heard",
+			});
+			expect(gate({ evidence: { pronunciations: [] }, transcript })).toEqual({
+				type: "not-heard",
+			});
+		}
+	});
+
+	it("reads no speech in the transcript as no transcript when the scoring heard the word", () => {
+		for (const transcript of [null, heard(0)]) {
+			expect(gate({ evidence: good, transcript })).toEqual({ type: "judged" });
+			expect(gate({ evidence: shipEvidence(0.2, [0.9, 0.9, 0.9]), transcript })).toEqual({
+				type: "different-word",
+				heard: [],
+			});
+		}
 	});
 
 	it("falls back on omission and word accuracy without a transcript", () => {

@@ -350,7 +350,9 @@ accuracy alone):
 
 The same three voices miss the target either way. Whether a learner's short recording can get the
 same empty transcript is untested, but if it can, a correct word is turned away as not heard. Filed
-as #384.
+as #384 and fixed there: the gate now reads a transcript that heard no speech as no transcript
+whenever the assessment scored the target, and keeps `not-heard` for digital silence, where the assessment
+marks the target omitted. Rerun from the cache, the fixed gate gives the table above exactly.
 
 ### What was flagged
 
