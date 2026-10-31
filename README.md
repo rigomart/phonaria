@@ -4,20 +4,10 @@
 
 ## What you can do
 
-Live on [phonaria.rigos.dev](https://phonaria.rigos.dev):
-
 - **Transcription** (`/`): turn text into IPA with stress marks. Click a sound for its details, or a word for its recording and a Wiktionary definition. When a word isn't in the dictionary, Phonaria suggests nearby spellings.
 - **IPA chart** (`/ipa-chart`): the consonants and vowels of American English, with articulation diagrams, and a Frequency page showing how often each sound comes up in everyday speech.
 - **Sound pages** (`/sounds`): a page for each sound, with how it's made, how it's spelled, example words and the sounds it's often mixed up with. The chart's sound tiles link to them.
-- **Minimal pairs** (`/minimal-pairs`): pairs of words that differ by one sound, like *ship* and *sheep*, with a page and recordings for each contrast. In production there's no nav entry yet, so reach them from a sound page.
-
-Not on phonaria.rigos.dev yet. These are built and sit behind feature flags, which are on in local development, staging and preview, and off in production:
-
-- **Speaking practice** on the minimal-pair pages (`FLAG_SPEECH`): say one word of a pair and find out which sound came through. Recordings go to Microsoft Azure for scoring and aren't kept.
-- **Practice** (`/practice`, `FLAG_PRACTICE`): build the sound sequence for five words, then compare each answer with the dictionary pronunciation.
-- **History** (`/history`, `FLAG_LANGUAGE_HISTORY`): the story of English told over a globe as you scroll, from its Indo-European ancestor to the English spoken around the world today.
-
-With their flags off, the Practice and History pages return 404 and leave the header. The [flags README](packages/flags/README.md) explains how flags are set per environment.
+- **Minimal pairs** (`/minimal-pairs`): pairs of words that differ by one sound, like *ship* and *sheep*, with a page and recordings for each contrast. Sound pages link to them.
 
 ## Run locally
 
@@ -30,7 +20,7 @@ bun run dev # http://localhost:3000
 
 Common words transcribe in the browser from bundled word lists. Other words go to a rate-limited lookup in a Turso copy of the CMU dictionary, so full transcription needs `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in `apps/phonaria/.dev.vars`. The app runs as a Cloudflare Worker, which reads that file at request time; values in `.env.local` alone don't reach it. Restart the dev server after changing `.dev.vars`.
 
-Optional keys in the same file turn on more services: `OPENROUTER_API_KEY` for context-aware spelling suggestions (transcription works without it), and the Azure Speech keys for speaking practice. The [app README](apps/phonaria/README.md) has a `.dev.vars` example and describes each service.
+`OPENROUTER_API_KEY` in the same file turns on context-aware spelling suggestions; transcription works without it. The [app README](apps/phonaria/README.md) has a full `.dev.vars` example and describes each service.
 
 ## Check the workspace
 
