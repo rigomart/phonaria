@@ -1,0 +1,15 @@
+{
+	"RecognitionStatus": "Success",
+	"Offset": 0,
+	"Duration": 6400000,
+	"DisplayText": "",
+	"NBest": [
+		{
+			"Confidence": 0,
+			"Lexical": "",
+			"ITN": "",
+			"MaskedITN": "",
+			"Display": ""
+		}
+	]
+}

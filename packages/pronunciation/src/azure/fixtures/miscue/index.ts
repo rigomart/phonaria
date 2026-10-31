@@ -7,6 +7,8 @@
 import type { AzureAssessmentResponse, AzureRecognitionResponse } from "../../response";
 import aShipAsShip from "./a-ship-as-ship.assessment.json";
 import aShip from "./a-ship.recognition.json";
+import bidAsBid from "./bid-as-bid.assessment.json";
+import bidEmpty from "./bid-empty.recognition.json";
 import kidAsShip from "./kid-as-ship.assessment.json";
 import kid from "./kid.recognition.json";
 import sheepAsShip from "./sheep-as-ship.assessment.json";
@@ -32,3 +34,13 @@ export const MISCUE_FIXTURES = {
 	"a ship": { assessment: aShipAsShip, recognition: aShip },
 	silence: { assessment: silenceAsShip, recognition: silence },
 } satisfies Record<string, MiscueFixture>;
+
+/**
+ * A short TTS *bid* from the five-voice run (#354): the assessment heard and scored
+ * the word, but plain recognition of the same audio answered `Success` with an empty
+ * transcript, as it does for most clips of 650–675 ms (#384).
+ */
+export const EMPTY_TRANSCRIPT_FIXTURE = {
+	assessment: bidAsBid,
+	recognition: bidEmpty,
+} satisfies MiscueFixture;
