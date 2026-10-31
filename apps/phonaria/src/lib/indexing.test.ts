@@ -76,6 +76,11 @@ describe("indexing helpers", () => {
 		expect(getIndexablePaths({ about: false, languageHistory: false })).not.toContain("/about");
 	});
 
+	it("leaves About out of the sitemap when FLAG_ABOUT is unset", () => {
+		process.env.SITE_URL = "https://phonaria.rigos.dev";
+		expect(getSitemapUrls()).not.toContain("https://phonaria.rigos.dev/about");
+	});
+
 	it("reads the About flag from the environment by default", () => {
 		process.env.SITE_URL = "https://phonaria.rigos.dev";
 		process.env.FLAG_ABOUT = "1";

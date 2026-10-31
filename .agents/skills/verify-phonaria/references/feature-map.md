@@ -717,11 +717,11 @@ bun run verify observe "$VERIFY_RUN" sitemap
 
 ## About
 
-`/about` ships dark behind `FLAG_ABOUT` (on locally, in staging and preview; off in production). It says what Phonaria is, has a card for each tool that is live in production (Transcription, IPA Chart, Sounds, Minimal pairs, never Practice, History or speaking practice), and shows how a sound improves: *pick* at three stages and an example learner's sounds by stage. The [checkpoints](../scripts/about.ts) read the head (title, robots, canonical, `og:title`), the headings, the tool links, the *pick*/*peak* recordings, the 12 board sounds, the footer order and overflow; `sound-details` that a board chip opens the details; `sitemap` that `/about` is listed.
+`/about` ships dark behind `FLAG_ABOUT`, which is off by default everywhere: on in staging and preview, off in production and in local dev unless the server starts with `FLAG_ABOUT=1`. It says what Phonaria is, has a card for each tool that is live in production (Transcription, IPA Chart, Sounds, Minimal pairs, never Practice, History or speaking practice), and shows how a sound improves: *pick* at three stages and an example learner's sounds by stage. The [checkpoints](../scripts/about.ts) read the head (title, robots, canonical, `og:title`), the headings, the tool links, the *pick*/*peak* recordings, the 12 board sounds, the footer order and overflow; `sound-details` that a board chip opens the details; `sitemap` that `/about` is listed.
 
 ### Executable journey
 
-After `init about`, `serve`, `open about:blank` and `trace start`, for each of `set media dark` and `set media light`:
+After `init about`, `FLAG_ABOUT=1 bun run verify serve "$VERIFY_RUN"`, `open about:blank` and `trace start`, for each of `set media dark` and `set media light`:
 
 ```bash
 HYD="Object.keys(document.querySelector('main a')||{}).some(k=>k.startsWith('__reactProps'))"
@@ -741,7 +741,7 @@ The flag is read when the server starts, so this needs its own run and server:
 
 ```bash
 bun run verify init about-off
-FLAG_ABOUT=0 bun run verify serve "$VERIFY_RUN"
+FLAG_ABOUT=0 bun run verify serve "$VERIFY_RUN"  # leaving it unset is the same
 bun run verify browser "$VERIFY_RUN" open about:blank
 bun run verify browser "$VERIFY_RUN" trace start
 bun run verify browser "$VERIFY_RUN" set viewport 1280 900

@@ -75,6 +75,7 @@ export const about = {
 		"robots and canonical are read from the dev server; production values depend on SITE_URL and indexing",
 		"audio playback is not checked beyond the recordings rendering as buttons",
 		"prerendering is checked by the production build, outside this journey",
+		"the server must be started with FLAG_ABOUT=1, since the flag is off by default; the journey cannot tell whether it was",
 	],
 } satisfies Feature;
 
@@ -105,7 +106,7 @@ export const aboutOff = {
 	},
 	coverageLimits: [
 		"the status comes from the navigation timing entry of the first page load, so open the page directly before observing",
-		"the server must be started with FLAG_ABOUT=0; the journey cannot tell whether it was",
+		"the server must be started without FLAG_ABOUT, or with FLAG_ABOUT=0; the journey cannot tell which",
 	],
 	expectedResponses: [{ path: "/about", status: 404 }],
 } satisfies Feature;

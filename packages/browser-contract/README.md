@@ -41,7 +41,7 @@ Profiles live in `targets/*.json` and are selected with `CONTRACT_TARGET`.
 | --- | --- |
 | `cloudflare-staging` | Private staging. Requires `CONTRACT_BASE_URL` and Cloudflare Access service-token env vars. Practice and speaking practice enabled. |
 | `cloudflare-production` | Public Cloudflare production site. Practice and speaking practice disabled. |
-| `local` | `http://localhost:3000`. Set `CONTRACT_START_LOCAL=1` to have Playwright start `apps/phonaria`. |
+| `local` | `http://localhost:3000`. Set `CONTRACT_START_LOCAL=1` to have Playwright start `apps/phonaria`. Expects the About page off, as on a server started without `FLAG_ABOUT`. |
 
 Required fields:
 

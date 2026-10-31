@@ -22,7 +22,8 @@ export const flags = createFlags(
 		},
 		about: {
 			envVar: "FLAG_ABOUT",
-			enabledByDefault: process.env.NODE_ENV !== "production",
+			// Off everywhere the var is unset, local dev included; set FLAG_ABOUT=1 to see it.
+			enabledByDefault: false,
 		},
 		speech: {
 			envVar: "FLAG_SPEECH",

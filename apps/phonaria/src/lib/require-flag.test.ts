@@ -34,6 +34,10 @@ describe("TanStack requireFlag", () => {
 		expect(() => requireFlag("about")).not.toThrow();
 	});
 
+	it("throws not-found when FLAG_ABOUT is unset, since About is off by default", () => {
+		expect(() => requireFlag("about")).toThrow();
+	});
+
 	it("throws not-found when FLAG_ABOUT is off", () => {
 		process.env.FLAG_ABOUT = "0";
 		expect(() => requireFlag("about")).toThrow();
