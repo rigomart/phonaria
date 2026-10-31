@@ -1,6 +1,23 @@
 # Phonaria
 
-[Phonaria](https://phonaria.rigos.dev) helps English learners explore pronunciation. It combines text-to-IPA transcription, interactive sound charts, definitions, and pronunciation guidance. Practice is available in local, staging, and preview environments; it is off in production.
+[Phonaria](https://phonaria.rigos.dev) is a web toolkit for learning to pronounce American English. Type a word or sentence to see it in IPA, then open any sound to see how it's made, how it's spelled and which sounds it gets mixed up with. There is no course to follow: start from whichever tool fits the question you have. Explanations use plain language next to the phonetic symbols.
+
+## What you can do
+
+Live on [phonaria.rigos.dev](https://phonaria.rigos.dev):
+
+- **Transcription** (`/`): turn text into IPA with stress marks. Click a sound for its details, or a word for its recording and a Wiktionary definition. When a word isn't in the dictionary, Phonaria suggests nearby spellings.
+- **IPA chart** (`/ipa-chart`): the consonants and vowels of American English, with articulation diagrams, and a Frequency page showing how often each sound comes up in everyday speech.
+- **Sound pages** (`/sounds`): a page for each sound, with how it's made, how it's spelled, example words and the sounds it's often mixed up with. The chart's sound tiles link to them.
+- **Minimal pairs** (`/minimal-pairs`): pairs of words that differ by one sound, like *ship* and *sheep*, with a page and recordings for each contrast. In production there's no nav entry yet, so reach them from a sound page.
+
+Not on phonaria.rigos.dev yet. These are built and sit behind feature flags, which are on in local development, staging and preview, and off in production:
+
+- **Speaking practice** on the minimal-pair pages (`FLAG_SPEECH`): say one word of a pair and find out which sound came through. Recordings go to Microsoft Azure for scoring and aren't kept.
+- **Practice** (`/practice`, `FLAG_PRACTICE`): build the sound sequence for five words, then compare each answer with the dictionary pronunciation.
+- **History** (`/history`, `FLAG_LANGUAGE_HISTORY`): the story of English told over a globe as you scroll, from its Indo-European ancestor to the English spoken around the world today.
+
+With their flags off, the Practice and History pages return 404 and leave the header. The [flags README](packages/flags/README.md) explains how flags are set per environment.
 
 ## Run locally
 
@@ -11,7 +28,9 @@ bun install
 bun run dev # http://localhost:3000
 ```
 
-For full transcription, add `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to `apps/phonaria/.dev.vars`. The app's Worker reads those keys at request time. Values in `.env.local` alone do not reach that Worker. Restart the dev server after changing `.dev.vars`. `OPENROUTER_API_KEY` in the same file enables context-aware spelling suggestions; transcription works without it. See [the app README](apps/phonaria/README.md) for a safe setup example.
+Common words transcribe in the browser from bundled word lists. Other words go to a rate-limited lookup in a Turso copy of the CMU dictionary, so full transcription needs `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in `apps/phonaria/.dev.vars`. The app runs as a Cloudflare Worker, which reads that file at request time; values in `.env.local` alone don't reach it. Restart the dev server after changing `.dev.vars`.
+
+Optional keys in the same file turn on more services: `OPENROUTER_API_KEY` for context-aware spelling suggestions (transcription works without it), and the Azure Speech keys for speaking practice. The [app README](apps/phonaria/README.md) has a `.dev.vars` example and describes each service.
 
 ## Check the workspace
 
@@ -22,25 +41,38 @@ bun run lint:check # read-only; bun run lint applies fixes
 bun run build
 ```
 
-Use `bun run test`: plain `bun test` starts Bun's own test runner instead of this repo's Turbo/Vitest script. The test suite includes a live Wiktionary smoke test that needs internet access. The production build also starts a local Cloudflare Worker during prerendering, so it needs permission to bind local ports.
+Use `bun run test`: plain `bun test` starts Bun's own test runner instead of this repo's Turbo and Vitest script. The suite includes a live Wiktionary smoke test that needs internet access. The production build starts a local Cloudflare Worker to prerender pages, so it needs permission to bind local ports.
 
-`bun run e2e` checks the deployed production site by default, not the local dev server. See [the browser contract README](packages/browser-contract/README.md) for target options.
+`bun run e2e` runs the browser contract against the deployed production site by default, not your local dev server. The [browser contract README](packages/browser-contract/README.md) lists the other targets.
 
-## Where things live
+## Repository layout
 
-| Path | Purpose |
+| Path | What's there |
 | --- | --- |
-| [`apps/phonaria`](apps/phonaria/README.md) | TanStack Start app and Cloudflare Worker |
-| [`packages/phonetics-data`](packages/phonetics-data/README.md) | Phoneme data, pronunciation dictionaries, and curated word lists |
+| [`apps/phonaria`](apps/phonaria/README.md) | The app: TanStack Start on Cloudflare Workers |
+| [`packages/phonetics-data`](packages/phonetics-data/README.md) | Sound data, the CMU dictionary, curated word lists and minimal pairs |
+| [`packages/pronunciation`](packages/pronunciation/README.md) | Scoring and judging which sound a learner said |
 | [`packages/ui`](packages/ui/README.md) | Shared React components and styles |
 | [`packages/flags`](packages/flags/README.md) | Environment-backed feature flags |
-| [`packages/browser-contract`](packages/browser-contract/README.md) | Playwright checks against a selected target |
-| [`packages/helper-scripts`](packages/helper-scripts/README.md) | Dictionary and word-list generation |
-| [`packages/audio-gen`](packages/audio-gen/README.md) | Pronunciation audio generation |
-| [`docs`](docs/README.md) | Product overview, decisions, and research records |
+| [`packages/browser-contract`](packages/browser-contract/README.md) | Playwright checks against a deployed site |
+| [`packages/helper-scripts`](packages/helper-scripts/README.md) | Dictionary, word-list and minimal-pair tooling |
+| [`packages/audio-gen`](packages/audio-gen/README.md) | Word recordings generated with Azure Speech |
+| [`docs`](docs/README.md) | Project overview, decisions and research records |
 
-The browser resolves common words from bundled lists. Other words use a rate-limited Worker lookup against Turso. Phoneme IDs and language-specific data come from `packages/phonetics-data`. See [the project overview](docs/project-overview.md) for the learner experience and architecture.
+All sound data comes from `packages/phonetics-data`. It also holds a Spanish sound inventory that the app's pages don't use yet. [The project overview](docs/project-overview.md) covers the learner experience and how the app is built. Releases are described in [docs/versioning.md](docs/versioning.md).
+
+## Data and credits
+
+- [CMU Pronouncing Dictionary](https://github.com/cmusphinx/cmudict) from Carnegie Mellon University for transcriptions, under its [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).
+- [Wiktionary](https://en.wiktionary.org/) for definitions (CC BY-SA 4.0).
+- [wordfreq](https://github.com/rspeer/wordfreq) by Robyn Speer for the curated word lists and sound frequencies (CC BY-SA 4.0).
+- [Wikimedia Commons](https://commons.wikimedia.org/wiki/General_phonetics) contributors for the sound recordings (CC BY-SA 3.0 and compatible licenses).
+- [Azure AI Speech](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/text-to-speech) for word recordings in Jenny, a synthetic US English voice.
+- [Jev](https://docs.typesafe.ai/api), TypeSafe's decision model, through OpenRouter, for spelling suggestions.
+- The [International Phonetic Association](https://www.internationalphoneticassociation.org/content/full-ipa-chart) for the IPA chart's symbols and layout (CC BY-SA 3.0).
+
+The [credits page](https://phonaria.rigos.dev/credits) has the full list.
 
 ## License
 
-MIT. The embedded CMU Pronouncing Dictionary retains its [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).
+Phonaria is MIT licensed, as declared in the root `package.json`. The embedded CMU Pronouncing Dictionary keeps its [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).
