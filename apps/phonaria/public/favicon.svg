@@ -1,7 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 246 256">
-	<rect width="246" height="256" rx="12" fill="#000" />
-	<path d="M45 206 90.5 50H58" fill="none" stroke="#e3e8ef" stroke-linecap="round" stroke-width="32" />
-	<path d="M201 50 155.5 206H188" fill="none" stroke="#e3e8ef" stroke-linecap="round" stroke-width="32" />
-	<path d="M142.5 37H123L71 219h19.5l52-182Z" fill="#e3e8ef" />
-	<path d="M175 37h-19.5l-52 182H123l52-182Z" fill="#e3e8ef" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+	<style>
+		.tile { fill: #161a20; }
+		.mark { fill: #eef0f3; }
+		@media (prefers-color-scheme: dark) {
+			.tile { fill: #eef0f3; }
+			.mark { fill: #161a20; }
+		}
+	</style>
+	<rect class="tile" width="32" height="32" rx="7" />
+	<path class="mark" d="M4.6 28h4.3l9.6-24h-4.3zM21 4h7v24h-9l1.6-4H24V8h-4.6z" />
 </svg>
