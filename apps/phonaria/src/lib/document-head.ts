@@ -211,6 +211,17 @@ export function buildCreditsHead(): StartHead {
 	});
 }
 
+/** Kept out of search indexes while the page is a prototype (#264). */
+export function buildAboutHead(): StartHead {
+	return buildPageHead({
+		path: "/about",
+		title: "About",
+		description:
+			"What Phonaria is, how pronunciation improves one sound at a time, and where each tool helps.",
+		robots: "noindex, follow",
+	});
+}
+
 export function buildConsonantsHead(): StartHead {
 	return buildPageHead({
 		path: IPA_CHART_CONSONANTS_PATH,
