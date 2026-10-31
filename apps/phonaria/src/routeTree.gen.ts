@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreditsRouteImport } from './routes/credits'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as LogoLabRouteImport } from './routes/logo-lab'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -43,6 +44,11 @@ const CreditsRoute = CreditsRouteImport.update({
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogoLabRoute = LogoLabRouteImport.update({
+  id: '/logo-lab',
+  path: '/logo-lab',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PracticeRoute = PracticeRouteImport.update({
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
   '/history': typeof HistoryRoute
+  '/logo-lab': typeof LogoLabRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
   '/history': typeof HistoryRoute
+  '/logo-lab': typeof LogoLabRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/credits': typeof CreditsRoute
   '/history': typeof HistoryRoute
+  '/logo-lab': typeof LogoLabRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/'
     | '/credits'
     | '/history'
+    | '/logo-lab'
     | '/practice'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/'
     | '/credits'
     | '/history'
+    | '/logo-lab'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/ipa-chart/$'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/'
     | '/credits'
     | '/history'
+    | '/logo-lab'
     | '/practice'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -269,6 +281,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreditsRoute: typeof CreditsRoute
   HistoryRoute: typeof HistoryRoute
+  LogoLabRoute: typeof LogoLabRoute
   PracticeRoute: typeof PracticeRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -307,6 +320,13 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logo-lab': {
+      id: '/logo-lab'
+      path: '/logo-lab'
+      fullPath: '/logo-lab'
+      preLoaderRoute: typeof LogoLabRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/practice': {
@@ -449,6 +469,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreditsRoute: CreditsRoute,
   HistoryRoute: HistoryRoute,
+  LogoLabRoute: LogoLabRoute,
   PracticeRoute: PracticeRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

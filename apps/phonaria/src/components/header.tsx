@@ -9,6 +9,7 @@ import {
 import { MenuIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "@/components/link";
+import { useLogoVariant } from "@/hooks/use-logo-variant";
 import { useNavIndicator } from "@/hooks/use-nav-indicator";
 import { useScrolled } from "@/hooks/use-scrolled";
 import type { AppFlags } from "@/lib/flags";
@@ -25,6 +26,8 @@ export function Header({ flags }: { flags: AppFlags }) {
 	const pathname = usePathname();
 	const scrolled = useScrolled();
 	const onChart = pathname.startsWith(IPA_CHART_INDEX_PATH);
+	// Prototype: show the wordmark beside the mark while a logo direction is chosen.
+	const { chosen: logoChosen } = useLogoVariant();
 
 	return (
 		<header
@@ -37,9 +40,10 @@ export function Header({ flags }: { flags: AppFlags }) {
 				<Link
 					href="/"
 					aria-label="Phonaria"
-					className={cn("flex items-center text-foreground", focusRing)}
+					className={cn("flex items-center gap-2 text-foreground", focusRing)}
 				>
 					<Logo className="size-5" />
+					{logoChosen && <span className="font-display text-base font-semibold">Phonaria</span>}
 				</Link>
 
 				<MainNav flags={flags} pathname={pathname} />
