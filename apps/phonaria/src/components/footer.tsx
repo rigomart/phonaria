@@ -9,6 +9,10 @@ export function Footer() {
 		<footer className="px-4 py-6">
 			<div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
 				<Logo className="size-3.5" />
+				<Link href="/about" className={linkClass}>
+					About
+				</Link>
+				<span aria-hidden>·</span>
 				<Link href="/credits" className={linkClass}>
 					Credits
 				</Link>

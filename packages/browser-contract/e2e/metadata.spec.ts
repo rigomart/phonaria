@@ -24,6 +24,12 @@ const PUBLIC_ROUTES = [
 		description: SITE_DESCRIPTION,
 	},
 	{
+		path: "/about",
+		title: "About - Phonaria",
+		description:
+			"Phonaria is a free set of tools for American English pronunciation. See what each tool does and how pronunciation improves, one sound at a time.",
+	},
+	{
 		path: "/credits",
 		title: "Credits & Sources - Phonaria",
 		description: "Credits and sources for Phonaria resources, data, and media.",

@@ -45,6 +45,8 @@ describe("Cloudflare Practice flag", () => {
 		expect(wrangler).not.toContain('"run_worker_first": true');
 		for (const route of [
 			"/",
+			"/about",
+			"/about/",
 			"/credits",
 			"/credits/",
 			"/ipa-chart",

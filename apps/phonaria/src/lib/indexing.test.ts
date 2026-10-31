@@ -28,11 +28,12 @@ describe("indexing helpers", () => {
 		process.env.SITE_URL = "https://phonaria.rigos.dev";
 		process.env.FLAG_LANGUAGE_HISTORY = "0";
 		const urls = getSitemapUrls();
-		expect(urls.slice(0, 6)).toEqual([
+		expect(urls.slice(0, 7)).toEqual([
 			"https://phonaria.rigos.dev",
 			"https://phonaria.rigos.dev/ipa-chart/consonants",
 			"https://phonaria.rigos.dev/ipa-chart/vowels",
 			"https://phonaria.rigos.dev/ipa-chart/frequency",
+			"https://phonaria.rigos.dev/about",
 			"https://phonaria.rigos.dev/credits",
 			"https://phonaria.rigos.dev/minimal-pairs",
 		]);

@@ -1,3 +1,4 @@
+import { about } from "./about";
 import type { Feature } from "./feature";
 import { languageHistory, languageHistoryOff } from "./language-history";
 import { mergerNotes } from "./merger-notes";
@@ -10,6 +11,7 @@ import { transcriptionHistory } from "./transcription-history";
 import { wordAudio } from "./word-audio";
 
 export const features: Record<string, Feature> = {
+	about,
 	"language-history": languageHistory,
 	"language-history-off": languageHistoryOff,
 	"merger-notes": mergerNotes,

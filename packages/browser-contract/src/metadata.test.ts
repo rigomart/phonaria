@@ -33,6 +33,7 @@ describe("metadata helpers", () => {
 			"https://phonaria.rigos.dev/ipa-chart/consonants",
 			"https://phonaria.rigos.dev/ipa-chart/vowels",
 			"https://phonaria.rigos.dev/ipa-chart/frequency",
+			"https://phonaria.rigos.dev/about",
 			"https://phonaria.rigos.dev/credits",
 			"https://phonaria.rigos.dev/minimal-pairs",
 			"https://phonaria.rigos.dev/sounds",

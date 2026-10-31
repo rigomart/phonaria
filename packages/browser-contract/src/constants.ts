@@ -36,6 +36,7 @@ export const INDEXABLE_PATHS = [
 	"/ipa-chart/consonants",
 	"/ipa-chart/vowels",
 	"/ipa-chart/frequency",
+	"/about",
 	"/credits",
 ] as const;
 

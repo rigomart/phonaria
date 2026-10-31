@@ -91,6 +91,7 @@ export default defineConfig({
 				crawlLinks: true,
 				filter: ({ path }) =>
 					path === "/" ||
+					path === "/about" ||
 					path === "/credits" ||
 					path === "/ipa-chart" ||
 					path === "/ipa-chart/" ||
