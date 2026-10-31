@@ -111,11 +111,26 @@ describe("extractDocumentTitle", () => {
 });
 
 describe("buildRootHead", () => {
-	it("links the browser tab icon from the Vite public root", () => {
-		expect(buildRootHead().links).toContainEqual({
+	it("links square tab icons that search engines accept, plus the SVG for browsers", () => {
+		const links = buildRootHead().links;
+		expect(links).toContainEqual({
+			rel: "icon",
+			href: "/favicon.ico",
+			sizes: "16x16 32x32 48x48",
+		});
+		expect(links).toContainEqual({
+			rel: "icon",
+			href: "/favicon-48x48.png",
+			type: "image/png",
+			sizes: "48x48",
+		});
+		expect(links).toContainEqual({
 			rel: "icon",
 			href: "/favicon.svg",
+			type: "image/svg+xml",
+			sizes: "any",
 		});
+		expect(links).toContainEqual({ rel: "apple-touch-icon", href: "/apple-touch-icon.png" });
 	});
 
 	it("keeps a title on the client when production SITE_URL is missing", () => {

@@ -1010,8 +1010,7 @@ const phoneSpin = observation(
 	},
 );
 
-// The sitemap, fetched into `window.__sitemap` by the recipe rather than opened, since opening
-// the XML makes the browser ask for a favicon the app doesn't serve.
+// The sitemap, fetched into `window.__sitemap` by the recipe rather than opened.
 const sitemapRead = () => ({
 	paths: (window as unknown as { __sitemap?: string[] }).__sitemap ?? null,
 });

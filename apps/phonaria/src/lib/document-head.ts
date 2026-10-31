@@ -49,7 +49,7 @@ type StartMetaTag = TitleTag | NamedMetaTag | PropertyMetaTag | CharsetMetaTag |
 
 export type StartHead = {
 	meta: StartMetaTag[];
-	links?: Array<{ rel: string; href: string }>;
+	links?: Array<{ rel: string; href: string; type?: string; sizes?: string }>;
 	scripts?: Array<{ type: string; children: string }>;
 };
 
@@ -149,7 +149,9 @@ export function buildRootHead(): StartHead {
 			}),
 		],
 		links: [
-			{ rel: "icon", href: "/favicon.svg" },
+			{ rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+			{ rel: "icon", href: "/favicon-48x48.png", type: "image/png", sizes: "48x48" },
+			{ rel: "icon", href: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
 			{ rel: "apple-touch-icon", href: APPLE_TOUCH_ICON_PATH },
 		],
 	};

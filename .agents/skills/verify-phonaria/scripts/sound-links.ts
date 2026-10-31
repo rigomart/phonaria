@@ -88,6 +88,4 @@ export const soundLinks = {
 		"cmd/ctrl-click and middle-click following the link are proved by the browser contract's charts spec, not here",
 		"en-us only; es-419 has no sound pages",
 	],
-	// Chrome's XML viewer asks for /favicon.ico when it shows the sitemap; the app's pages link their own icon.
-	expectedResponses: [{ path: "/favicon.ico", status: 404 }],
 } satisfies Feature;
