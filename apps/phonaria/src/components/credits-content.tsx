@@ -20,7 +20,7 @@ type Credit = {
 	licenses?: readonly Href[];
 	links: readonly Href[];
 	uses: string;
-	notes: { heading: "How Phonaria differs" | "What to keep in mind"; items: readonly string[] };
+	notes: { heading: "Differences" | "Keep in mind"; items: readonly string[] };
 };
 
 function listPhrase(items: readonly string[]): string {
@@ -50,14 +50,17 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 				"the common words on sound pages",
 				...(enabled.practice ? ["the Practice words"] : []),
 				...(enabled.soundSearch ? ["the words you can find by their sounds"] : []),
-			])} also use its pronunciations.`,
+			])} use its pronunciations too.`,
 			notes: {
-				heading: "How Phonaria differs",
+				heading: "Differences",
 				items: [
-					"The dictionary writes sounds in ARPAbet, and Phonaria converts them to IPA with its own mapping. Unstressed AH becomes /ə/ and stressed AH becomes /ʌ/. Every ER becomes /ɝ/, even unstressed, rather than /ɚ/. R becomes /ɹ/.",
-					"The dictionary has no syllable breaks. Phonaria adds them by rule, so a split can differ from the one in another dictionary.",
-					"For some words listed with both /ɑ/ and /ɔ/, such as caught and talk, Phonaria shows the /ɔ/ form first.",
-					"Phonaria doesn't guess words the dictionary lacks. It shows their letters with no sounds and may suggest a spelling.",
+					"The dictionary writes sounds in its own code. Phonaria turns that code into IPA symbols itself, so some symbols differ from other dictionaries.",
+					"The dictionary uses one code for the vowel Phonaria writes /ʌ/ in stressed syllables and /ə/ in unstressed ones.",
+					"The vowel with an r sound is written /ɝ/ in every syllable, stressed or not, and never /ɚ/.",
+					"The r sound is written /ɹ/.",
+					"The dictionary has no syllable breaks, so they're added by rule. A break can differ from another dictionary's.",
+					"For some words listed with both /ɑ/ and /ɔ/, such as caught and talk, the /ɔ/ pronunciation is the one shown first.",
+					"Words the dictionary lacks aren't guessed. They show as letters with no sounds, and you may get a spelling suggestion.",
 				],
 			},
 		},
@@ -67,12 +70,15 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 			by: "Wiktionary contributors, hosted by the Wikimedia Foundation",
 			licenses: [{ text: "CC BY-SA 4.0", url: "https://creativecommons.org/licenses/by-sa/4.0/" }],
 			links: [{ text: "Wiktionary", url: "https://en.wiktionary.org/" }],
-			uses: "Definitions in the word box after you transcribe. Phonaria fetches them from Wiktionary when you open the box.",
+			uses: "After you transcribe, the word box shows definitions fetched from Wiktionary when you open it.",
 			notes: {
-				heading: "How Phonaria differs",
+				heading: "Differences",
 				items: [
-					"Phonaria shows short excerpts of the English entries only: at most 2 meanings for each part of speech and 6 in all, with an example sentence when there is one.",
-					"Images, tables and references are removed, and the text is shown plain. Wiktionary has the full entry.",
+					"Only the English entries are shown, as short excerpts.",
+					"Each part of speech gets at most 2 meanings, with no more than 6 in all.",
+					"An example sentence comes with a meaning when there is one.",
+					"Images, tables and references are left out, and the text is plain.",
+					"The full entry is on Wiktionary.",
 				],
 			},
 		},
@@ -81,12 +87,13 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 			title: "Jev",
 			by: "TypeSafe, through OpenRouter",
 			links: [{ text: "Jev documentation", url: "https://docs.typesafe.ai/api" }],
-			uses: "When a word you type isn't in the dictionary, Jev picks the close spelling that fits your sentence, if one does.",
+			uses: "Jev is an AI model. When a word you type isn't in the dictionary, it picks the real word you most likely meant from similar spellings, if one fits your sentence.",
 			notes: {
-				heading: "What to keep in mind",
+				heading: "Keep in mind",
 				items: [
-					"Phonaria sends Jev the text around the unknown word (up to 300 characters), the unknown word and the close spellings it could be.",
-					"If Jev is unsure, Phonaria suggests nothing. If Jev is unavailable, Phonaria uses its own rule, which favors common words and may also suggest nothing.",
+					"Jev gets the text around the unknown word (up to 300 characters), the word itself and the similar real words it could be.",
+					"If Jev is unsure, you get no suggestion.",
+					"If Jev is unavailable, a built-in rule takes over. It favors common words and may also suggest nothing.",
 				],
 			},
 		},
@@ -101,12 +108,14 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					url: "https://commons.wikimedia.org/wiki/General_phonetics",
 				},
 			],
-			uses: "The recording of each sound on its card and its page. Each comes from the General phonetics gallery and was converted to Ogg. Authors and licenses for each file are on its Commons page.",
+			uses: "Each sound's card and page play a recording from the General phonetics gallery.",
 			notes: {
-				heading: "What to keep in mind",
+				heading: "Keep in mind",
 				items: [
-					"The recordings demonstrate each IPA symbol as phoneticians say it, not an American speaker saying the English sound. Some vowels can sound different from the way Americans say them.",
+					"The recordings show each IPA symbol as speech experts say it, not as an American says the English sound.",
+					"So some vowels can sound different from the way Americans say them.",
 					"Diphthongs have no recording yet.",
+					"Each recording's author and license are on its page on Wikimedia Commons.",
 				],
 			},
 		},
@@ -120,18 +129,20 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					url: "https://learn.microsoft.com/en-us/azure/ai-services/speech-service/text-to-speech",
 				},
 			],
-			uses: `The words you can play ${listPhrase([
+			uses: `You can play these words ${listPhrase([
 				"on sound cards and sound pages",
 				"in the minimal-pair lists",
 				"in the word box",
 				...(practice ? ["when you practise"] : []),
 			])}.`,
 			notes: {
-				heading: "What to keep in mind",
+				heading: "Keep in mind",
 				items: [
-					"The voice is synthetic, not a person. Phonaria generated each recording from a set pronunciation and checked it before uploading.",
+					"It's a computer voice, not a person.",
+					"Each recording follows a pronunciation chosen in advance, and each was checked before upload.",
 					"Some words have one recording for each meaning or form, such as read (present) and read (past).",
-					"The voice doesn't keep every difference Phonaria shows. It says /ɔ/ words such as caught with the /ɑ/ of father, and unstressed /ɝ/ as /ɚ/.",
+					"The voice doesn't always match the symbols shown. It says words with /ɔ/, such as caught, with the /ɑ/ of father.",
+					"Where the page shows /ɝ/ in an unstressed syllable, the voice says /ɚ/.",
 				],
 			},
 		},
@@ -145,13 +156,14 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					url: "https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-pronunciation-assessment",
 				},
 			],
-			uses: "When you practise saying a minimal pair, your recording goes to Azure AI Speech, which reports the sounds it heard. Phonaria's own rules turn that into a verdict for each sound: a match, a swap with another sound, or unclear.",
+			uses: "When you practise saying a minimal pair, your recording goes to Azure AI Speech, which reports the sounds it heard. Phonaria's own rules then decide, for each sound, whether it matched, was swapped for another sound, or was unclear.",
 			notes: {
-				heading: "What to keep in mind",
+				heading: "Keep in mind",
 				items: [
-					"Phonaria passes your recording to Azure and doesn't store it.",
-					"The checks come from a speech recognizer, not a teacher, so a verdict can be wrong.",
-					`"${EvidenceLogNotice.label}" is off unless you turn it on. With it on, ${EvidenceLogNotice.description}`,
+					"Phonaria sends your recording to Azure and doesn't store it.",
+					"The checks come from a speech recognizer, so a verdict can be wrong.",
+					`"${EvidenceLogNotice.label}" is off unless you turn it on.`,
+					`With it on, ${EvidenceLogNotice.description}`,
 				],
 			},
 		},
@@ -164,17 +176,19 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 				{ text: "Code: Apache 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0" },
 			],
 			links: [{ text: "wordfreq on GitHub", url: "https://github.com/rspeer/wordfreq" }],
-			uses: `Word frequencies, which pick ${listPhrase([
-				"the 1,000 and 10,000 most common words that transcription loads first",
-				"the common words on each sound page",
-				...(enabled.soundSearch ? ["the words you can find by their sounds"] : []),
-				"each sound's share of speech on the Frequency page",
-			])}.`,
+			uses: `Its counts of how often words are used pick the 1,000 and 10,000 most common words, which transcription loads first. They also pick ${listPhrase(
+				[
+					"the common words on each sound page",
+					...(enabled.soundSearch ? ["the words you can find by their sounds"] : []),
+				],
+			)}, and set each sound's share of speech on the Frequency page.`,
 			notes: {
-				heading: "What to keep in mind",
+				heading: "Keep in mind",
 				items: [
-					"The data is a snapshot of language up to about 2021, and its author has stopped updating it.",
-					"The shares on the Frequency page are estimates. Phonaria counts the sounds in the dictionary pronunciations of the 10,000 most common words (first form only), weighted by how often each word is used. They aren't measured from recorded speech.",
+					"The data reflects language up to about 2021. Its author has stopped updating it.",
+					"The shares on the Frequency page are estimates, not measured from recorded speech.",
+					"Each share counts the sounds in the 10,000 most common words, with each word weighted by how often it's used.",
+					"A word with more than one pronunciation counts only its first one.",
 				],
 			},
 		},
@@ -189,15 +203,18 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					url: "https://www.internationalphoneticassociation.org/content/ipa-chart",
 				},
 			],
-			uses: "The symbols, sound labels and the layout of the consonant table and vowel chart.",
+			uses: "The consonant table and vowel chart take their symbols, sound labels and layout from it.",
 			notes: {
-				heading: "How Phonaria differs",
+				heading: "Differences",
 				items: [
-					"Phonaria shows only the sounds of American English and leaves out empty rows and columns.",
-					"It adds an affricate row for /tʃ/ and /dʒ/ and a labial-velar column for /w/, which the official chart lists outside its main table.",
-					"It lists /ɹ/ as postalveolar. The official chart lists it as alveolar.",
-					"Phonaria draws its own vowel chart. It adds /ɝ/, which the official chart doesn't have, and draws each diphthong as an arrow from where it starts to where it ends.",
-					"Each vowel sits where the IPA places its symbol, not where American speakers say it. American /aɪ/, for example, often starts further back than the chart shows.",
+					"Only the sounds of American English are shown, and empty rows and columns are left out.",
+					"/tʃ/ and /dʒ/ get their own row, and /w/ its own column. The official chart lists these outside its main table.",
+					"/ɹ/ sits one column further back than on the official chart.",
+					"The vowel chart is Phonaria's own drawing.",
+					"It adds /ɝ/, which the official chart doesn't have.",
+					"Each diphthong is an arrow from where it starts to where it ends.",
+					"Each vowel sits at the official chart's spot for its symbol, not where Americans say it.",
+					"American /aɪ/, for example, often starts further back than the chart shows.",
 				],
 			},
 		},
@@ -212,12 +229,12 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					url: "https://commons.wikimedia.org/wiki/File:Voiceless_dental_fricative_articulation.svg",
 				},
 			],
-			uses: "The mouth diagrams for consonants on sound cards and sound pages, with one for each stage of /tʃ/ and /dʒ/. Vowels use Phonaria's own charts instead.",
+			uses: "Sound cards and sound pages show these diagrams for consonants, with two each for /tʃ/ and /dʒ/, one for each part of the sound. Vowels use Phonaria's own charts instead.",
 			notes: {
-				heading: "How Phonaria differs",
+				heading: "Differences",
 				items: [
-					"Phonaria changed the original drawing and made a version for each consonant.",
-					"The adapted diagrams are shared under the same license, CC BY-SA 4.0.",
+					"The original drawing was changed, and there's a version for each consonant.",
+					"Phonaria's versions are shared under the same license, CC BY-SA 4.0.",
 				],
 			},
 		},
@@ -226,13 +243,13 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 			title: "Phonaria's sound notes",
 			by: "Phonaria",
 			links: [],
-			uses: "How each sound is made, its variants, its spelling patterns, the minimal-pair lists and the notes on vowel mergers.",
+			uses: "These cover how each sound is made, its variants and its spelling patterns. They also include the minimal-pair lists and the notes on vowels many Americans say alike.",
 			notes: {
-				heading: "What to keep in mind",
+				heading: "Keep in mind",
 				items: [
-					"These are written and checked by hand for Phonaria, so they may contain mistakes.",
+					"They're written and checked by hand, so they may contain mistakes.",
 					"The minimal pairs were checked against the 10,000 most common words.",
-					"The merger notes draw on the Atlas of North American English (Labov, Ash and Boberg, 2006) and US dictionaries such as Merriam-Webster.",
+					"The notes on vowels many Americans say alike draw on the Atlas of North American English (Labov, Ash and Boberg, 2006) and US dictionaries such as Merriam-Webster.",
 				],
 			},
 		},
@@ -244,9 +261,9 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 				{ text: "Public domain", url: "https://www.naturalearthdata.com/about/terms-of-use/" },
 			],
 			links: [{ text: "Natural Earth", url: "https://www.naturalearthdata.com/" }],
-			uses: "The History page lists its own sources: each pin names the works behind it, and the main works are at the end of the page. Its globe draws land from Natural Earth.",
+			uses: "The History page lists its own sources. Each pin names the works behind it, and the main works are at the end of the page. The globe's land comes from Natural Earth.",
 			notes: {
-				heading: "What to keep in mind",
+				heading: "Keep in mind",
 				items: ["The globe's coastlines are simplified, and small islands are left out."],
 			},
 		},
@@ -277,7 +294,7 @@ function CreditSection({ credit, index }: { credit: Credit; index: number }) {
 
 			<dl className="mt-4 flex flex-col gap-3 text-sm leading-relaxed">
 				<div className="flex flex-col gap-1">
-					<dt className="font-medium">What Phonaria uses it for</dt>
+					<dt className="font-medium">Used for</dt>
 					<dd className="text-muted-foreground">{credit.uses}</dd>
 				</div>
 				<div className="flex flex-col gap-1">
@@ -336,9 +353,8 @@ export function CreditsContent({ flags }: { flags: CreditsFlags }) {
 						Credits & Sources
 					</h1>
 					<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
-						Each source below says what Phonaria uses it for and where Phonaria's version differs
-						from it. Phonaria is in beta, so these sources and the choices made with them can
-						change.
+						Phonaria's pronunciations, recordings, charts and word lists come from the sources
+						below. Phonaria is in beta, so these sources and how it uses them can change.
 					</p>
 				</div>
 
