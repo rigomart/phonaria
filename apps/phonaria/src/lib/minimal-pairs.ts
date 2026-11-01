@@ -16,8 +16,9 @@ import {
 	type PhonemeArticulation,
 	type PhonemeCategory,
 } from "@phonaria/phonetics-data";
+import { getHeadlinePair } from "@/lib/headline-pairs";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
-import { soundPagePath } from "@/lib/sound-pages";
+import { getSoundName, soundPagePath } from "@/lib/sound-pages";
 
 export interface ContrastPageSound {
 	id: EnglishPhonemeSymbolId;
@@ -32,20 +33,60 @@ export interface ContrastPageSound {
 
 export interface OtherContrast {
 	id: string;
-	/** Both sounds' IPA, in the contrast's order, as its page's title has them. */
+	/** Both sounds' IPA, in the order its page's title has them. */
 	ipas: readonly [string, string];
-	/** Its first pair. */
+	/** Its headline pair. */
 	example: readonly [string, string];
 }
 
 export interface ContrastPage {
 	id: string;
 	category: PhonemeCategory;
+	/** In the headline's order: the sound in its first word comes first. */
 	sounds: readonly [ContrastPageSound, ContrastPageSound];
-	/** Every pair in the catalog, words in the same order as `sounds`. */
+	/** Every pair in catalog order, words in the same order as `sounds`. */
 	pairs: readonly (readonly [string, string])[];
+	/** The pair people search for, e.g. ship and sheep, words in the same order as `sounds`. */
+	headline: readonly [string, string];
 	/** How the two sounds differ, e.g. "/p/ is made with the voice off. /b/ is made with the voice on. Everything else is the same." */
 	difference: string;
+}
+
+const totalPairs = EnglishPhonemeContrasts.reduce(
+	(total, contrast) => total + contrast.minimalPairs.length,
+	0,
+);
+const [shipSheep, lightRight] = [getHeadlinePair("i-ix"), getHeadlinePair("l-r")];
+
+export const MINIMAL_PAIRS_PAGE_TITLE = `Minimal pairs for American English: ${shipSheep.join(" vs ")} and more`;
+export const MINIMAL_PAIRS_PAGE_DESCRIPTION = `${totalPairs} word pairs with recordings that differ by one sound, like ${shipSheep.join(" and ")} or ${lightRight.join(" and ")}, across ${EnglishPhonemeContrasts.length} American English sound contrasts.`;
+
+function capitalize(text: string): string {
+	return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+}
+
+/** The page's h1, e.g. "/ɪ/ vs /i/: ship vs sheep". */
+export function contrastPageHeading({ sounds: [a, b], headline }: ContrastPage): string {
+	return `/${a.ipa}/ vs /${b.ipa}/: ${headline.join(" vs ")}`;
+}
+
+export function contrastPageTitle({ sounds: [a, b], headline }: ContrastPage): string {
+	return `${capitalize(headline.join(" vs "))}: /${a.ipa}/ and /${b.ipa}/ minimal pairs with audio`;
+}
+
+export function contrastPageDescription({ sounds: [a, b], pairs, headline }: ContrastPage): string {
+	const [first, second] = [headline, pairs.find(([word]) => word !== headline[0])]
+		.filter((pair) => pair !== undefined)
+		.map((pair) => pair.join(" and "));
+	const rest = pairs.length - 2;
+	const which =
+		rest > 0
+			? `${first}, ${second}, and ${rest === 1 ? "one more word pair that differs" : `${rest} more word pairs that differ`}`
+			: second
+				? `${first}, and ${second}, two word pairs that differ`
+				: `${first}, a word pair that differs`;
+	const named = (sound: ContrastPageSound) => `${getSoundName(sound.id)} /${sound.ipa}/`;
+	return `Hear the difference between ${which} only by the ${named(a)} and ${named(b)} sounds, with recordings.`;
 }
 
 export function contrastPagePath(contrastId: string): string {
@@ -58,17 +99,38 @@ export function contrastPageHref(contrastId: string, word?: string): string {
 	return word ? `${path}?${new URLSearchParams({ word })}` : path;
 }
 
+type CatalogContrast = (typeof EnglishPhonemeContrasts)[number];
+
+function headlineOrder(contrast: CatalogContrast) {
+	const headline = getHeadlinePair(contrast.id);
+	const flipped = contrast.minimalPairs.some(
+		({ words }) => words[0] === headline[1] && words[1] === headline[0],
+	);
+	const [first, second] = contrast.phonemeIds;
+	return {
+		phonemeIds: flipped ? ([second, first] as const) : ([first, second] as const),
+		orient: (words: readonly [string, string]) =>
+			flipped ? ([words[1], words[0]] as const) : words,
+		headline,
+	};
+}
+
 let pages: ReadonlyMap<string, ContrastPage> | undefined;
 
 function contrastPages(): ReadonlyMap<string, ContrastPage> {
 	pages ??= new Map(
 		EnglishPhonemeContrasts.map((contrast) => {
-			const [first, second] = contrast.phonemeIds;
+			const {
+				phonemeIds: [first, second],
+				orient,
+				headline,
+			} = headlineOrder(contrast);
 			const page: ContrastPage = {
 				id: contrast.id,
 				category: getPhonemeCategory(first),
 				sounds: [pageSound(first, contrast.id), pageSound(second, contrast.id)],
-				pairs: contrast.minimalPairs.map((pair) => pair.words),
+				pairs: contrast.minimalPairs.map((pair) => orient(pair.words)),
+				headline,
 				difference: describeDifference(first, second),
 			};
 			return [contrast.id, page];
@@ -94,11 +156,14 @@ function pageSound(id: EnglishPhonemeSymbolId, contrastId: string): ContrastPage
 		path: soundPagePath(id),
 		otherContrasts: EnglishPhonemeContrasts.filter(
 			(other) => other.id !== contrastId && other.phonemeIds.includes(id),
-		).map((other) => ({
-			id: other.id,
-			ipas: [getIpaForPhonemeId(other.phonemeIds[0]), getIpaForPhonemeId(other.phonemeIds[1])],
-			example: other.minimalPairs[0].words,
-		})),
+		).map((other) => {
+			const { phonemeIds, headline } = headlineOrder(other);
+			return {
+				id: other.id,
+				ipas: [getIpaForPhonemeId(phonemeIds[0]), getIpaForPhonemeId(phonemeIds[1])],
+				example: headline,
+			};
+		}),
 	};
 }
 

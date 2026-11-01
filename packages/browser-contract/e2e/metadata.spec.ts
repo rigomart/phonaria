@@ -1,7 +1,7 @@
 import {
+	HOME_TITLE,
 	MINIMAL_PAIR_CONTRAST_COUNT,
 	MINIMAL_PAIRS_PATH,
-	SITE_DESCRIPTION,
 	SITE_NAME,
 	SOUND_PAGE_COUNT,
 	SOUNDS_PATH,
@@ -20,8 +20,9 @@ import {
 const PUBLIC_ROUTES = [
 	{
 		path: "/",
-		title: SITE_NAME,
-		description: SITE_DESCRIPTION,
+		title: HOME_TITLE,
+		description:
+			"See how any English word or sentence is pronounced in American English, in IPA, sound by sound, with recordings. Plus an IPA chart and all 40 sounds.",
 	},
 	{
 		path: "/credits",
@@ -30,42 +31,45 @@ const PUBLIC_ROUTES = [
 	},
 	{
 		path: "/ipa-chart/consonants",
-		title: "Consonants — IPA Chart - Phonaria",
-		description: "Interactive IPA chart for American English consonants.",
+		title: "American English IPA chart: consonants - Phonaria",
+		description:
+			"All 24 consonant sounds of American English in an IPA chart, by where and how they're made. Tap one to see how it's made, its spellings and example words.",
 	},
 	{
 		path: "/ipa-chart/vowels",
-		title: "Vowels — IPA Chart - Phonaria",
-		description: "Interactive IPA chart for American English vowels.",
+		title: "American English IPA chart: vowels - Phonaria",
+		description:
+			"All 16 vowel sounds of American English in an IPA chart, by where the tongue sits. Tap one to see how it's made, its spellings and example words.",
 	},
 	{
 		path: "/ipa-chart/frequency",
-		title: "Frequency — IPA Chart - Phonaria",
-		description: "How often each American English sound comes up in everyday speech.",
+		title: "How common each American English sound is - Phonaria",
+		description:
+			"How often each of the 40 sounds of American English comes up in everyday speech. The schwa /ə/ is the most common, at 7.9%.",
 	},
 	{
 		path: "/minimal-pairs",
-		title: "Minimal pairs - Phonaria",
+		title: "Minimal pairs for American English: ship vs sheep and more - Phonaria",
 		description:
-			"Word pairs that differ by one sound, like ship and sheep, for the American English sounds learners often mix up.",
+			"254 word pairs with recordings that differ by one sound, like ship and sheep or light and right, across 27 American English sound contrasts.",
 	},
 	{
 		path: "/minimal-pairs/th-s",
-		title: "/θ/ vs /s/: minimal pairs like thin and sin - Phonaria",
+		title: "Think vs sink: /θ/ and /s/ minimal pairs with audio - Phonaria",
 		description:
-			"11 American English word pairs that differ only by /θ/ and /s/, like thin and sin, with recordings and how each sound is made.",
+			"Hear the difference between think and sink, thin and sin, and 9 more word pairs that differ only by the voiceless TH /θ/ and S /s/ sounds, with recordings.",
 	},
 	{
 		path: "/sounds",
-		title: "The sounds of American English - Phonaria",
+		title: "The 40 sounds of American English, with IPA and examples - Phonaria",
 		description:
-			"Every consonant and vowel sound of American English, each with how it's made, how it's spelled, example words and minimal pairs.",
+			"All 24 consonants and 16 vowels of American English, each with its IPA symbol, how it's made, how it's spelled, example words and minimal pairs.",
 	},
 	{
 		path: "/sounds/th-thin",
-		title: "The /θ/ sound (th in 'thin'): how to pronounce it - Phonaria",
+		title: "How to pronounce the voiceless TH sound /θ/ (as in 'thin') - Phonaria",
 		description:
-			"How to say /θ/ as in 'thin', the voiceless dental fricative: how it's made, spellings (th), minimal pairs with /t/ and /s/, and how common it is.",
+			"How to say the voiceless TH sound /θ/ in 'thin' and 'think': how it's made, how it's spelled, and minimal pairs like three vs tree and think vs sink.",
 	},
 ] as const;
 

@@ -1,6 +1,7 @@
 import type { EnglishPhonemeSymbolId } from "@phonaria/phonetics-data";
 import { ABOUT_PAGE_DESCRIPTION, ABOUT_PAGE_TITLE, ABOUT_PATH } from "@/lib/about/metadata";
 import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
+import { HOME_PAGE_DESCRIPTION, HOME_PAGE_TITLE } from "@/lib/home-metadata";
 import {
 	CONSONANTS_PAGE_DESCRIPTION,
 	CONSONANTS_PAGE_TITLE,
@@ -13,16 +14,27 @@ import {
 	VOWELS_PAGE_TITLE,
 } from "@/lib/ipa-chart-metadata";
 import {
+	buildBreadcrumbStructuredData,
+	buildWebSiteStructuredData,
+	jsonLdScript,
+	serializeJsonLd,
+} from "@/lib/json-ld";
+import {
 	LANGUAGE_HISTORY_IMAGE,
 	LANGUAGE_HISTORY_PAGE_DESCRIPTION,
 	LANGUAGE_HISTORY_PAGE_TITLE,
 	LANGUAGE_HISTORY_PATH,
 } from "@/lib/language-history/metadata";
+import { buildLanguageHistoryStructuredData } from "@/lib/language-history/structured-data";
 import {
-	buildLanguageHistoryStructuredData,
-	serializeJsonLd,
-} from "@/lib/language-history/structured-data";
-import { type ContrastPage, contrastPagePath } from "@/lib/minimal-pairs";
+	type ContrastPage,
+	contrastPageDescription,
+	contrastPageHeading,
+	contrastPagePath,
+	contrastPageTitle,
+	MINIMAL_PAIRS_PAGE_DESCRIPTION,
+	MINIMAL_PAIRS_PAGE_TITLE,
+} from "@/lib/minimal-pairs";
 import { PracticeActivity } from "@/lib/practice/activity";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import {
@@ -35,6 +47,7 @@ import {
 	SOUNDS_PAGE_DESCRIPTION,
 	SOUNDS_PAGE_TITLE,
 	SOUNDS_PATH,
+	soundHeading,
 	soundPageDescription,
 	soundPagePath,
 	soundPageTitle,
@@ -193,17 +206,17 @@ function buildPageHead({
 	};
 }
 
-export function buildHomeHead(): StartHead {
+function withStructuredData(head: StartHead, build: (siteUrl: string) => unknown): StartHead {
 	const metadata = tryGetDocumentMetadata();
-	const canonical = metadata?.siteUrl;
-	return {
-		meta: [
-			{ title: SITE_NAME },
-			{ name: "description", content: SITE_DESCRIPTION },
-			...seoMetaTags(metadata, canonical, { title: SITE_NAME, description: SITE_DESCRIPTION }),
-		],
-		links: canonical ? [{ rel: "canonical", href: canonical }] : undefined,
-	};
+	if (!metadata) return head;
+	return { ...head, scripts: [...(head.scripts ?? []), jsonLdScript(build(metadata.siteUrl))] };
+}
+
+export function buildHomeHead(): StartHead {
+	return withStructuredData(
+		buildPageHead({ path: "/", title: HOME_PAGE_TITLE, description: HOME_PAGE_DESCRIPTION }),
+		(siteUrl) => buildWebSiteStructuredData(SITE_NAME, siteUrl),
+	);
 }
 
 export function buildCreditsHead(): StartHead {
@@ -247,11 +260,19 @@ export function buildFrequencyHead(): StartHead {
 }
 
 export function buildSoundHead(phonemeId: EnglishPhonemeSymbolId): StartHead {
-	return buildPageHead({
-		path: soundPagePath(phonemeId),
-		title: soundPageTitle(phonemeId),
-		description: soundPageDescription(phonemeId),
-	});
+	const path = soundPagePath(phonemeId);
+	return withStructuredData(
+		buildPageHead({
+			path,
+			title: soundPageTitle(phonemeId),
+			description: soundPageDescription(phonemeId),
+		}),
+		(siteUrl) =>
+			buildBreadcrumbStructuredData(siteUrl, [
+				{ name: "Sounds", path: SOUNDS_PATH },
+				{ name: soundHeading(phonemeId), path },
+			]),
+	);
 }
 
 export function buildSoundsIndexHead(): StartHead {
@@ -290,20 +311,26 @@ export function buildPracticeTopicHead(topic: PracticeTopicHeadSource | undefine
 export function buildMinimalPairsHead(): StartHead {
 	return buildPageHead({
 		path: MinimalPairActivity.path,
-		title: MinimalPairActivity.name,
-		description: MinimalPairActivity.listDescription,
+		title: MINIMAL_PAIRS_PAGE_TITLE,
+		description: MINIMAL_PAIRS_PAGE_DESCRIPTION,
 	});
 }
 
 export function buildMinimalPairContrastHead(contrast: ContrastPage | undefined): StartHead {
 	if (!contrast) return buildMinimalPairsHead();
-	const [a, b] = contrast.sounds;
-	const [first, second] = contrast.pairs[0] ?? [];
-	return buildPageHead({
-		path: contrastPagePath(contrast.id),
-		title: `/${a.ipa}/ vs /${b.ipa}/: minimal pairs like ${first} and ${second}`,
-		description: `${contrast.pairs.length} American English word pairs that differ only by /${a.ipa}/ and /${b.ipa}/, like ${first} and ${second}, with recordings and how each sound is made.`,
-	});
+	const path = contrastPagePath(contrast.id);
+	return withStructuredData(
+		buildPageHead({
+			path,
+			title: contrastPageTitle(contrast),
+			description: contrastPageDescription(contrast),
+		}),
+		(siteUrl) =>
+			buildBreadcrumbStructuredData(siteUrl, [
+				{ name: MinimalPairActivity.name, path: MinimalPairActivity.path },
+				{ name: contrastPageHeading(contrast), path },
+			]),
+	);
 }
 
 /** Includes JSON-LD only when SITE_URL is set. */

@@ -1,20 +1,85 @@
 import {
 	EnglishPhonemeSpellingPatterns,
 	type EnglishPhonemeSymbolId,
-	formatPhonemeLabel,
 	getIpaForPhonemeId,
-	getPhonemeType,
+	getLanguagePhonemeCount,
 	type SpellingPattern,
 	splitSpelledWord,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
+import { getHeadlinePair } from "@/lib/headline-pairs";
 import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
-import { summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
+
+const counts = getLanguagePhonemeCount("en-us");
 
 export const SOUNDS_PATH = "/sounds";
-export const SOUNDS_PAGE_TITLE = "The sounds of American English";
-export const SOUNDS_PAGE_DESCRIPTION =
-	"Every consonant and vowel sound of American English, each with how it's made, how it's spelled, example words and minimal pairs.";
+export const SOUNDS_PAGE_HEADING = "The sounds of American English";
+export const SOUNDS_PAGE_TITLE = `The ${counts.total} sounds of American English, with IPA and examples`;
+export const SOUNDS_PAGE_DESCRIPTION = `All ${counts.consonants} consonants and ${counts.vowels} vowels of American English, each with its IPA symbol, how it's made, how it's spelled, example words and minimal pairs.`;
+
+/** Each en-us sound's everyday name, the one learners search for, as it reads mid-sentence. */
+const SOUND_NAMES = {
+	P: "P",
+	B: "B",
+	T: "T",
+	D: "D",
+	K: "K",
+	G: "G",
+	F: "F",
+	V: "V",
+	TH: "voiceless TH",
+	DH: "voiced TH",
+	S: "S",
+	Z: "Z",
+	SH: "SH",
+	ZH: "ZH",
+	H: "H",
+	M: "M",
+	N: "N",
+	NG: "NG",
+	L: "L",
+	R: "R",
+	W: "W",
+	Y: "Y",
+	CH: "CH",
+	J: "J",
+	I: "long E",
+	IX: "short I",
+	U: "long OO",
+	UX: "short OO",
+	AX: "schwa",
+	E: "short E",
+	AH: "short U",
+	O: "AW",
+	AE: "short A",
+	A: "AH",
+	ER: "ER",
+	EI: "long A",
+	OU: "long O",
+	AI: "long I",
+	AU: "OW",
+	OI: "OY",
+} as const satisfies Record<EnglishPhonemeSymbolId, string>;
+
+/** "voiceless TH", "schwa", "P": reads after "the" and before "sound". */
+export function getSoundName(phonemeId: EnglishPhonemeSymbolId): string {
+	return SOUND_NAMES[phonemeId];
+}
+
+/** The sound's heading, e.g. "Voiceless TH /θ/". */
+export function soundHeading(phonemeId: EnglishPhonemeSymbolId): string {
+	const name = getSoundName(phonemeId);
+	return `${name.charAt(0).toUpperCase()}${name.slice(1)} /${getIpaForPhonemeId(phonemeId)}/`;
+}
+
+/** The sound's heading, or undefined where it has no everyday name: only en-us sounds have one. */
+export function findSoundHeading(
+	targetAccent: TargetAccent,
+	phonemeId: string,
+): string | undefined {
+	if (targetAccent !== "en-us" || !Object.hasOwn(SOUND_NAMES, phonemeId)) return undefined;
+	return soundHeading(phonemeId as EnglishPhonemeSymbolId);
+}
 
 /** Each en-us sound's slug in its page's URL. Slugs are public: changing one breaks links to it. */
 const SOUND_SLUGS = {
@@ -117,28 +182,26 @@ export function getSoundKeyExample(phonemeId: EnglishPhonemeSymbolId) {
 }
 
 export function soundPageTitle(phonemeId: EnglishPhonemeSymbolId): string {
-	const { word, letters } = getSoundKeyExample(phonemeId);
-	return `The /${getIpaForPhonemeId(phonemeId)}/ sound (${letters} in '${word}'): how to pronounce it`;
+	const { word } = getSoundKeyExample(phonemeId);
+	return `How to pronounce the ${getSoundName(phonemeId)} sound /${getIpaForPhonemeId(phonemeId)}/ (as in '${word}')`;
 }
 
-const list = new Intl.ListFormat("en", { type: "conjunction" });
+function joinWithAnd(parts: readonly string[]): string {
+	return parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}` : parts.join("");
+}
+
+const DESCRIPTION_PAIR_LIMIT = 3;
 
 export function soundPageDescription(phonemeId: EnglishPhonemeSymbolId): string {
-	const ipa = getIpaForPhonemeId(phonemeId);
 	const { word } = getSoundKeyExample(phonemeId);
-	const kind =
-		getPhonemeType(phonemeId) === "diphthong"
-			? `a vowel that glides from /${ipa.charAt(0)}/ to /${ipa.slice(-1)}/`
-			: `the ${formatPhonemeLabel("en-us", phonemeId).toLowerCase()}`;
-	const spellings = getSpelling(phonemeId).patterns;
-	const partners = getPhonemeComparisons("en-us", phonemeId).map(
-		({ partnerIpa }) => `/${partnerIpa}/`,
-	);
-	const topics = [
-		"how it's made",
-		`spellings (${list.format(spellings)})`,
-		...(partners.length > 0 ? [`minimal pairs with ${list.format(partners)}`] : []),
-		...(summarizePhonemeFrequency("en-us", phonemeId) ? ["how common it is"] : []),
-	];
-	return `How to say /${ipa}/ as in '${word}', ${kind}: ${list.format(topics)}.`;
+	const other = getSpelling(phonemeId).examples.find((example) => example.word !== word);
+	const words = other ? `'${word}' and '${other.word}'` : `'${word}'`;
+	const pairs = getPhonemeComparisons("en-us", phonemeId)
+		.slice(0, DESCRIPTION_PAIR_LIMIT)
+		.map(({ contrastId }) => getHeadlinePair(contrastId).join(" vs "));
+	const covers =
+		pairs.length > 0
+			? `how it's made, how it's spelled, and minimal pairs like ${joinWithAnd(pairs)}`
+			: "how it's made and how it's spelled";
+	return `How to say the ${getSoundName(phonemeId)} sound /${getIpaForPhonemeId(phonemeId)}/ in ${words}: ${covers}.`;
 }

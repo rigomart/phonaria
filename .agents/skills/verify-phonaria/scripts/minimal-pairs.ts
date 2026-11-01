@@ -81,7 +81,7 @@ const contrastPage = observation(
 	{
 		path: "/minimal-pairs/th-s",
 		status: 200,
-		heading: "/θ/ vs /s/",
+		heading: "/θ/ vs /s/: think vs sink",
 		difference:
 			"/θ/ is made with the tongue between the teeth. /s/ is made with the tongue tip on the gum ridge behind the top teeth. Everything else is the same.",
 		columns: ["/θ/Voiceless dental fricative", "/s/Voiceless alveolar fricative"],
@@ -105,7 +105,7 @@ const contrastPage = observation(
 		moreContrasts: [
 			{
 				heading: "More contrasts with /θ/",
-				links: [["/θ/ vs /t/thin, tin", "/minimal-pairs/th-t"]],
+				links: [["/θ/ vs /t/three, tree", "/minimal-pairs/th-t"]],
 			},
 			{
 				heading: "More contrasts with /s/",
@@ -227,7 +227,7 @@ export const minimalPairs = {
 			},
 			{
 				path: "/minimal-pairs/i-ix",
-				heading: "/i/ vs /ɪ/",
+				heading: "/ɪ/ vs /i/: ship vs sheep",
 				word: "ship",
 				sides: [
 					["target", "ship", "ˈʃɪp", "Details for /ɪ/, the marked sound"],
@@ -307,10 +307,10 @@ export const minimalPairs = {
 					document
 						.querySelector("[data-sound-result] button[data-details-open]")
 						?.getAttribute("aria-label") ?? null,
-				cardIpa:
-					document.querySelector("[data-phoneme-details] h2")?.textContent?.split(",")[0] ?? null,
+				cardHeading:
+					document.querySelector("[data-phoneme-details] h2")?.textContent?.trim() ?? null,
 			}),
-			{ open: "Details for /i/", cardIpa: "/i/" },
+			{ open: "Details for /i/", cardHeading: "Long E /i/" },
 		),
 		denied: statusIs(
 			"Phonaria can't use your microphone. Allow microphone access for this site, then try again.",

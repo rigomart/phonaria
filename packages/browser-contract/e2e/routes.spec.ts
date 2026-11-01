@@ -1,4 +1,4 @@
-import { SITE_NAME } from "../src/constants";
+import { HOME_TITLE } from "../src/constants";
 import { expect, test } from "../src/fixtures";
 import { notFoundHeading } from "../src/locators";
 
@@ -7,7 +7,7 @@ test.describe("Application routes", () => {
 		const response = await page.goto("/");
 		expect(response?.status()).toBe(200);
 		await expect(page.getByLabel("Text to transcribe")).toBeVisible();
-		await expect(page).toHaveTitle(SITE_NAME);
+		await expect(page).toHaveTitle(HOME_TITLE);
 	});
 
 	test("permanently redirects the IPA chart entry to consonants", async ({ request }) => {

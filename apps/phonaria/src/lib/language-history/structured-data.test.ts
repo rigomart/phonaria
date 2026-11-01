@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { LANGUAGE_HISTORY_PAGE_DESCRIPTION, LANGUAGE_HISTORY_PAGE_TITLE } from "./metadata";
 import { SOURCES, STEPS } from "./story";
-import { buildLanguageHistoryStructuredData, serializeJsonLd } from "./structured-data";
+import { buildLanguageHistoryStructuredData } from "./structured-data";
 
 const SITE_URL = "https://phonaria.example.test";
 
@@ -42,18 +42,5 @@ describe("buildLanguageHistoryStructuredData", () => {
 		for (const citation of data.citation) {
 			expect(citation.url).toMatch(/^https:\/\//);
 		}
-	});
-});
-
-describe("serializeJsonLd", () => {
-	it("escapes characters that could end the script tag", () => {
-		const json = serializeJsonLd({ text: "</script><b>&\u2028" });
-		expect(json).not.toMatch(/[<>&\u2028]/);
-		expect(json).toBe('{"text":"\\u003c/script\\u003e\\u003cb\\u003e\\u0026\\u2028"}');
-	});
-
-	it("parses back to the same value", () => {
-		const value = { text: "</script>", data: buildLanguageHistoryStructuredData(SITE_URL) };
-		expect(JSON.parse(serializeJsonLd(value))).toEqual(value);
 	});
 });
