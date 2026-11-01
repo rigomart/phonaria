@@ -53,6 +53,13 @@ describe("the sound page", () => {
 		}
 	});
 
+	it("shows /t/'s variants, the flap in 'water' among them, and none for /θ/", () => {
+		const html = page("T");
+		expect(headings(html).at(-1)).toBe("Sound variants");
+		expect(html).toMatch(/>ɾ<.*A quick tap of the tongue, between vowels.*>water</);
+		expect(headings(page("TH"))).not.toContain("Sound variants");
+	});
+
 	it("links schwa to neighbouring vowels and gives it no how-it's-made sentence", () => {
 		const html = page("AX");
 		expect(headings(html)).toContain("Related sounds");
@@ -73,7 +80,13 @@ describe("the drawer", () => {
 				/>
 			</AudioManagerProvider>,
 		);
-		for (const text of ["Related sounds", "Common words", "is made with", "is the th in"]) {
+		for (const text of [
+			"Related sounds",
+			"Common words",
+			"Sound variants",
+			"is made with",
+			"is the th in",
+		]) {
 			expect(html).not.toContain(text);
 		}
 	});

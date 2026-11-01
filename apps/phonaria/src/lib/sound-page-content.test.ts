@@ -4,6 +4,7 @@ import { getPhonemeComparisons } from "./phoneme-comparisons";
 import {
 	getCommonWords,
 	getRelatedSounds,
+	getSoundVariants,
 	getVoicingPartner,
 	getVowelNeighbours,
 	howItsMade,
@@ -100,5 +101,32 @@ describe("common words", () => {
 			inside: ["something", "without", "anything", "nothing", "everything", "months"],
 			end: ["both", "health", "death", "south", "north", "month"],
 		});
+	});
+});
+
+describe("sound variants", () => {
+	it("labels each variant of /t/ in plain words, with its example words", () => {
+		expect(getSoundVariants("T")).toEqual([
+			{
+				ipa: "tʰ",
+				label: "With a puff of air, at the start of a stressed syllable",
+				words: ["top", "time"],
+			},
+			{ ipa: "ɾ", label: "A quick tap of the tongue, between vowels", words: ["water"] },
+			{ ipa: "ʔ", label: "A catch in the throat, before an n sound", words: ["button"] },
+		]);
+	});
+
+	it("has variants for the eight sounds with variant data only", () => {
+		expect(sounds.filter((id) => getSoundVariants(id).length > 0).sort()).toEqual([
+			"AE",
+			"D",
+			"ER",
+			"I",
+			"K",
+			"L",
+			"P",
+			"T",
+		]);
 	});
 });

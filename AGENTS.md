@@ -10,7 +10,7 @@
   - `PhonemeIpaMap` / `getIpaForPhonemeId()`: Core ID-to-IPA symbol map (language-agnostic)
   - Language-aware getters: `getConsonantArticulationRegistryForLanguage()`, `getLanguagePhonemeIds()`, `getLanguagePhonemeCount()`, etc.
   - `hasLanguageFeature()` / `getLanguageFeatureCapabilities()`: Feature flags per language (Spanish currently has articulations only)
-  - English-specific data: `EnglishPhonemeContrasts` (minimal-pair catalog, validated against top-10k) / `EnglishContrastsByPhonemeId`, `EnglishPhonemeAllophones`, `EnglishPhonemeSpellingPatterns`, `CmuArpaMap`
+  - English-specific data: `EnglishPhonemeContrasts` (minimal-pair catalog, validated against top-10k) / `EnglishContrastsByPhonemeId`, `EnglishPhonemeAllophones` (each variant's context labelled in plain words by `EnglishAllophoneContextLabels`), `EnglishPhonemeSpellingPatterns`, `CmuArpaMap`
   - Minimal-pair helpers: `getSinglePronunciation()`, `findSubstitution()`, `toBasePhonemeIds()`
   - `getPhonemeFrequencyRegistryForLanguage()`: each sound's share of everyday speech and its rank (en-us only, behind the `phonemeFrequency` capability)
   - `loadWordAudioManifest()`: loads an accent's word-audio manifest on demand, or `null` (en-us only, behind the `wordAudio` capability). The manifest is its own chunk, so it stays out of the app's main bundle; in the app, use `useWordAudioManifest()`

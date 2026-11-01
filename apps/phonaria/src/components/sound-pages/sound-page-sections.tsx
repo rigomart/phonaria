@@ -9,8 +9,10 @@ import { type DetailSection, getDetailSections } from "@/components/phoneme-deta
 import {
 	getCommonWords,
 	getRelatedSounds,
+	getSoundVariants,
 	howItsMade,
 	type RelatedSound,
+	type SoundVariant,
 } from "@/lib/sound-page-content";
 
 /** Puts `section` after the last of `ids` the list has, or first when it has none. */
@@ -26,7 +28,7 @@ function insertAfter(
 /**
  * The drawer's sections plus what only the page shows: a sentence on how a
  * consonant is made, related sounds after Compare with, and common words
- * after Spelling.
+ * and sound variants after Spelling.
  */
 export function getSoundPageSections(phonemeId: EnglishPhonemeSymbolId): DetailSection[] {
 	let sections = getDetailSections({ targetAccent: "en-us", phonemeId, showPageLink: false });
@@ -70,6 +72,20 @@ export function getSoundPageSections(phonemeId: EnglishPhonemeSymbolId): DetailS
 			words: groups.flatMap(({ words }) => words),
 			content: <CommonWords groups={groups} />,
 		});
+	}
+
+	const variants = getSoundVariants(phonemeId);
+	if (variants.length > 0) {
+		sections = insertAfter(
+			sections,
+			["articulation", "comparisons", "related", "spelling", "common-words"],
+			{
+				id: "variants",
+				title: "Sound variants",
+				words: variants.flatMap(({ words }) => words),
+				content: <SoundVariants variants={variants} />,
+			},
+		);
 	}
 
 	return sections;
@@ -132,5 +148,31 @@ function WordGroup({ label, words }: { label: string; words: readonly string[] }
 				))}
 			</ul>
 		</div>
+	);
+}
+
+function SoundVariants({ variants }: { variants: readonly SoundVariant[] }) {
+	return (
+		<DetailsCard className="p-3">
+			<ul className="flex flex-col divide-y divide-border overflow-hidden rounded-xl bg-background-strong shadow-xs">
+				{variants.map(({ ipa, label, words }) => (
+					<li key={ipa} className="flex items-stretch">
+						<span className="flex w-16 shrink-0 items-center justify-center border-r border-border font-display text-lg text-foreground">
+							/{ipa}/
+						</span>
+						<div className="flex min-w-0 flex-1 flex-col gap-0.5 py-2">
+							<p className="px-3 text-pretty text-sm text-foreground">{label}</p>
+							<ul className="flex flex-wrap">
+								{words.map((word) => (
+									<li key={word}>
+										<PlayableWordCell targetAccent="en-us" word={word} className="px-3 py-1" />
+									</li>
+								))}
+							</ul>
+						</div>
+					</li>
+				))}
+			</ul>
+		</DetailsCard>
 	);
 }

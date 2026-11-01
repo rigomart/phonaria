@@ -136,6 +136,38 @@ const schwaRelated = observation(
 	},
 );
 
+const tVariants = observation(
+	() => {
+		const details = document.querySelector("[data-phoneme-details]");
+		const variants = Array.from(details?.querySelectorAll("section") ?? []).find(
+			(section) => section.querySelector("h2")?.textContent?.trim() === "Sound variants",
+		);
+		return {
+			path: location.pathname,
+			variants: Array.from(variants?.querySelectorAll(":scope li:has(> span)") ?? []).map(
+				(row) => ({
+					ipa: row.querySelector(":scope > span")?.textContent?.trim(),
+					label: row.querySelector("p")?.textContent?.trim(),
+					words: Array.from(row.querySelectorAll("li")).map((li) => li.textContent?.trim()),
+				}),
+			),
+		};
+	},
+	{
+		path: "/sounds/t-top",
+		// The flap in "water" and the glottal stop in "button" are #418's examples.
+		variants: [
+			{
+				ipa: "/tʰ/",
+				label: "With a puff of air, at the start of a stressed syllable",
+				words: ["top", "time"],
+			},
+			{ ipa: "/ɾ/", label: "A quick tap of the tongue, between vowels", words: ["water"] },
+			{ ipa: "/ʔ/", label: "A catch in the throat, before an n sound", words: ["button"] },
+		],
+	},
+);
+
 const notFound = observation(
 	() => ({
 		path: location.pathname,
@@ -194,6 +226,7 @@ export const soundPages = {
 		index,
 		"sound-page": soundPage,
 		"schwa-related": schwaRelated,
+		"t-variants": tVariants,
 		"not-found": notFound,
 		"rank-line": rankLine,
 	},

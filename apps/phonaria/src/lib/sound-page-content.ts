@@ -1,11 +1,13 @@
 /**
  * What a sound's page says beyond the details it shares with the drawer, all
  * built from data the project already has: a summary line, how a consonant
- * is made, related sounds and common words. Page-only: the common-word data
+ * is made, related sounds, common words and sound variants. Page-only: the common-word data
  * stays out of the drawer's bundle.
  */
 import {
 	type ConsonantArticulation,
+	EnglishAllophoneContextLabels,
+	EnglishPhonemeAllophones,
 	type EnglishPhonemeSymbolId,
 	EnglishPhonemeSpellingPatterns,
 	getIpaForPhonemeId,
@@ -193,4 +195,22 @@ export function getRelatedSounds(phonemeId: EnglishPhonemeSymbolId): RelatedSoun
 /** Common words from the top-1k list, by where the sound falls in them. */
 export function getCommonWords(phonemeId: EnglishPhonemeSymbolId): CommonWordsForSound {
 	return EnglishCommonWords[phonemeId];
+}
+
+export interface SoundVariant {
+	ipa: string;
+	/** Where it shows up, e.g. "A quick tap of the tongue, between vowels". */
+	label: string;
+	words: readonly string[];
+}
+
+/** How the sound changes with its neighbours, for the few sounds with variant data. */
+export function getSoundVariants(phonemeId: EnglishPhonemeSymbolId): SoundVariant[] {
+	return (EnglishPhonemeAllophones[phonemeId] ?? []).map(
+		({ ipaVariant, contextKey, examples }) => ({
+			ipa: ipaVariant,
+			label: EnglishAllophoneContextLabels[contextKey],
+			words: examples.map(({ word }) => word),
+		}),
+	);
 }
