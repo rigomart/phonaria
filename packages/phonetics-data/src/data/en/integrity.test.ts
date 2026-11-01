@@ -7,12 +7,15 @@ import {
 	getLanguagePhonemeIds,
 	getLanguagePhonemeInventory,
 	parsePhonemePronunciation,
+	toBasePhonemeIds,
 	splitSpelledWord,
 } from "../../index";
 import { EnglishCmudictStatsData } from "./cmudict-stats";
+import { EnglishCommonWords } from "./common-words";
 import { EnglishCuratedTop1k } from "./curated-1k";
 import { EnglishCuratedTop10k } from "./curated-10k";
 import { EnglishPhonemeFrequencyData } from "./phoneme-frequency";
+import { EnglishWordAudio } from "./word-audio";
 
 const dictionary: CmudictPayload = dictionaryJson;
 const entries = Object.entries(dictionary.data);
@@ -228,5 +231,58 @@ describe("teaching examples", () => {
 				).toBe(true);
 			}
 		}
+	});
+});
+
+describe("common words", () => {
+	it("covers every English sound", () => {
+		expect(Object.keys(EnglishCommonWords).sort()).toEqual(
+			[...getLanguagePhonemeIds("en-us")].sort(),
+		);
+	});
+
+	it("lists top-1k words, most frequent first, where the first pronunciation has the sound", () => {
+		const rank = new Map(Object.keys(EnglishCuratedTop1k.words).map((word, i) => [word, i]));
+		const errors: string[] = [];
+		for (const [phonemeId, lists] of Object.entries(EnglishCommonWords)) {
+			for (const position of ["start", "inside", "end"] as const) {
+				const words = lists[position];
+				if (words.length > 6) errors.push(`${phonemeId} ${position}: more than 6 words`);
+				const ranks = words.map((word) => rank.get(word) ?? -1);
+				if (ranks.some((r, i) => r < 0 || (i > 0 && r < ranks[i - 1]))) {
+					errors.push(`${phonemeId} ${position}: not in the top-1k list, or out of order`);
+				}
+				for (const word of words) {
+					const sounds = toBasePhonemeIds(EnglishCuratedTop1k.words[word]?.[0] ?? "X");
+					const found =
+						position === "start"
+							? sounds[0] === phonemeId
+							: position === "end"
+								? sounds.at(-1) === phonemeId
+								: sounds.slice(1, -1).includes(phonemeId as (typeof sounds)[number]);
+					if (!found) errors.push(`${phonemeId} ${position}: ${word}`);
+				}
+			}
+		}
+		expect(errors).toEqual([]);
+	});
+
+	it("lists only words whose play button plays the pronunciation the lists read", () => {
+		const listed = new Set(
+			Object.values(EnglishCommonWords).flatMap(({ start, inside, end }) => [
+				...start,
+				...inside,
+				...end,
+			]),
+		);
+		const mismatches = Object.entries(EnglishWordAudio.forms ?? {}).flatMap(([word, forms]) => {
+			const main = forms.find(({ n }) => n === undefined);
+			const first = EnglishCuratedTop1k.words[word]?.[0];
+			if (!listed.has(word) || !main || !first) return [];
+			const same =
+				toBasePhonemeIds(main.pronunciation).join(" ") === toBasePhonemeIds(first).join(" ");
+			return same ? [] : [word];
+		});
+		expect(mismatches).toEqual([]);
 	});
 });

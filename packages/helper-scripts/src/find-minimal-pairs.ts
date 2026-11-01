@@ -24,115 +24,13 @@ import {
 	phonemeVariantToIpa,
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-10k";
+import { EditorialFlags } from "./utils/editorial-flags";
 import { ensureDirectoryForFile } from "./utils/fs";
 
 const DEFAULT_LIMIT = 40;
 const outputDir = path.resolve(__dirname, "../output");
 const jsonOutputPath = path.join(outputDir, "minimal-pair-candidates.json");
 const markdownOutputPath = path.join(outputDir, "minimal-pair-candidates.md");
-
-/**
- * Editorial hints for the reviewer, not a filter: flagged words still appear,
- * marked, so the reviewer decides. Deliberately short (a few profanities,
- * interjections, and first names that are rarely anything else); the human
- * review is the real filter and will catch plenty this list misses.
- */
-const EditorialFlags = {
-	profanity: new Set([
-		"ass",
-		"asses",
-		"asshole",
-		"bastard",
-		"bitch",
-		"bitches",
-		"bullshit",
-		"cock",
-		"crap",
-		"cunt",
-		"damn",
-		"dick",
-		"fuck",
-		"fucked",
-		"fuckin",
-		"fucking",
-		"fucks",
-		"piss",
-		"pussy",
-		"shit",
-		"shitty",
-		"tits",
-		"whore",
-	]),
-	interjection: new Set([
-		"ahh",
-		"aww",
-		"duh",
-		"hey",
-		"hmm",
-		"huh",
-		"nah",
-		"ooh",
-		"ugh",
-		"whoa",
-		"wow",
-		"yay",
-		"yeah",
-		"yep",
-	]),
-	name: new Set([
-		"adam",
-		"alex",
-		"amy",
-		"andy",
-		"ann",
-		"anne",
-		"ben",
-		"beth",
-		"brian",
-		"carl",
-		"charlie",
-		"chris",
-		"dan",
-		"dave",
-		"david",
-		"eric",
-		"fred",
-		"george",
-		"greg",
-		"harry",
-		"henry",
-		"jake",
-		"james",
-		"jane",
-		"jason",
-		"jeff",
-		"jim",
-		"joe",
-		"john",
-		"josh",
-		"kate",
-		"kevin",
-		"lisa",
-		"luke",
-		"mary",
-		"matt",
-		"michael",
-		"mike",
-		"neil",
-		"paul",
-		"pete",
-		"peter",
-		"ryan",
-		"sam",
-		"sarah",
-		"seth",
-		"steve",
-		"ted",
-		"tim",
-		"tom",
-		"tony",
-	]),
-} as const satisfies Record<string, ReadonlySet<string>>;
 
 type Position = "initial" | "medial" | "final";
 

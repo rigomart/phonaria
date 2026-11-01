@@ -3,8 +3,10 @@ import { buttonVariants } from "@phonaria/ui/components/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@/components/link";
 import { PhonemeDetailsPage } from "@/components/phoneme-details/details-page";
+import { soundSummary } from "@/lib/sound-page-content";
 import { SOUNDS_PATH } from "@/lib/sound-pages";
 import { cn } from "@/lib/utils";
+import { getSoundPageSections } from "./sound-page-sections";
 
 export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
 	return (
@@ -17,7 +19,11 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 					<ArrowLeft aria-hidden="true" />
 					All sounds
 				</Link>
-				<PhonemeDetailsPage options={{ targetAccent: "en-us", phonemeId }} />
+				<PhonemeDetailsPage
+					options={{ targetAccent: "en-us", phonemeId }}
+					summary={soundSummary(phonemeId)}
+					sections={getSoundPageSections(phonemeId)}
+				/>
 			</div>
 		</div>
 	);
