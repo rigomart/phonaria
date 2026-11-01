@@ -2,33 +2,19 @@ import { type EnglishPhonemeSymbolId, getLanguagePhonemeIds } from "@phonaria/ph
 import { describe, expect, it } from "vitest";
 import { getPhonemeComparisons } from "./phoneme-comparisons";
 import {
+	compareSounds,
+	getAllComparisons,
 	getCommonWords,
-	getRelatedSounds,
+	getNeighbourPages,
+	getSharedSpellings,
+	getSoundFamilies,
+	getSoundFeatures,
 	getSoundVariants,
 	getVoicingPartner,
 	getVowelNeighbours,
-	howItsMade,
-	soundSummary,
 } from "./sound-page-content";
 
 const sounds = getLanguagePhonemeIds("en-us") as readonly EnglishPhonemeSymbolId[];
-
-describe("the summary line", () => {
-	it("names the letters in two example words, once when they spell it the same way", () => {
-		expect(soundSummary("TH")).toBe(
-			"/θ/ is the th in 'thin' and 'think'. Its voiced partner is /ð/, the th in 'this'.",
-		);
-		expect(soundSummary("T")).toBe(
-			"/t/ is the t in 'top' and the tt in 'letter'. Its voiced partner is /d/, the d in 'day'.",
-		);
-		expect(soundSummary("AX")).toBe("/ə/ is the a in 'sofa' and the o in 'lemon'.");
-	});
-
-	it("names the voiceless partner of a voiced sound, and no partner where there is none", () => {
-		expect(soundSummary("DH")).toContain("Its voiceless partner is /θ/, the th in 'thin'.");
-		expect(soundSummary("H")).toBe("/h/ is the h in 'house' and 'hello'.");
-	});
-});
 
 describe("voicing partners", () => {
 	it("pairs the eight consonants made alike but for the voice", () => {
@@ -37,34 +23,6 @@ describe("voicing partners", () => {
 			return partner && id < partner ? [`${id}-${partner}`] : [];
 		});
 		expect(pairs.sort()).toEqual(["B-P", "CH-J", "D-T", "DH-TH", "F-V", "G-K", "S-Z", "SH-ZH"]);
-	});
-});
-
-describe("how it's made", () => {
-	it("says a consonant's place, manner and voicing in the contrast pages' words", () => {
-		expect(howItsMade("TH")).toBe(
-			"/θ/ is made with the tongue between the teeth, pushing air through a narrow gap, with the voice off.",
-		);
-	});
-
-	it("words every sound's features in plain language, with no feature names left over", () => {
-		for (const id of sounds) {
-			expect(howItsMade(id), id).not.toMatch(
-				/alveolar|dental|velar|plosive|fricative|nasal|approximant|close|open|-mid|near-|unrounded/,
-			);
-		}
-	});
-
-	it("says where the tongue and lips are for a vowel, and where a diphthong glides", () => {
-		expect(howItsMade("AX")).toBe(
-			"/ə/ is made with the tongue halfway up and in the middle, and the lips relaxed.",
-		);
-		expect(howItsMade("ER")).toBe(
-			"/ɝ/ is made with the tongue fairly low and in the middle, bunched up as for r, and the lips relaxed.",
-		);
-		expect(howItsMade("AU")).toBe(
-			"/aʊ/ starts with the tongue very low, toward the front, and glides to fairly high, toward the back, rounding the lips.",
-		);
 	});
 });
 
@@ -87,26 +45,107 @@ describe("vowel neighbours", () => {
 	});
 });
 
-describe("related sounds", () => {
-	it("links /θ/ to /ð/, its voicing partner with the same spelling", () => {
-		expect(getRelatedSounds("TH")).toEqual([
-			{ id: "DH", ipa: "ð", name: "voiced TH", word: "this", path: "/sounds/th-this" },
+describe("features", () => {
+	it("are a consonant's voice, place and manner, straight from the data", () => {
+		expect(getSoundFeatures("TH").map(({ label, value }) => [label, value])).toEqual([
+			["Voice", "voiceless"],
+			["Place", "dental"],
+			["Manner", "fricative"],
+		]);
+		expect(getSoundFeatures("L").at(-1)?.value).toBe("lateral approximant");
+	});
+
+	it("are a vowel's height, front or back, lips and tense or lax, and where a diphthong starts and ends", () => {
+		expect(getSoundFeatures("AE").map(({ value }) => value)).toEqual([
+			"near-open",
+			"front",
+			"unrounded",
+			"lax",
+		]);
+		expect(getSoundFeatures("AU").map(({ label }) => label)).toEqual(["Starts", "Ends", "Lips"]);
+	});
+});
+
+describe("comparing two sounds", () => {
+	it("sets apart the features that differ and names the shared ones once", () => {
+		expect(compareSounds("TH", "T")).toEqual({
+			differences: [
+				{ label: "Place", own: "dental", other: "alveolar" },
+				{ label: "Manner", own: "fricative", other: "plosive" },
+			],
+			shared: ["voiceless"],
+		});
+		expect(compareSounds("AE", "E")).toEqual({
+			differences: [{ label: "Height", own: "near-open", other: "open-mid" }],
+			shared: ["front", "unrounded", "lax"],
+		});
+	});
+
+	it("finds a difference for every contrast in the catalog", () => {
+		for (const id of sounds) {
+			for (const { partnerId } of getAllComparisons(id)) {
+				const { differences } = compareSounds(id, partnerId as EnglishPhonemeSymbolId);
+				expect(differences.length, `${id}-${partnerId}`).toBeGreaterThan(0);
+			}
+		}
+	});
+});
+
+describe("all comparisons", () => {
+	it("keep every pair, not just the two the drawer shows", () => {
+		const t = getAllComparisons("TH").find(({ partnerIpa }) => partnerIpa === "t");
+		expect(t?.pairs.length).toBe(14);
+		expect(getPhonemeComparisons("en-us", "TH")[0].pairs).toHaveLength(2);
+	});
+});
+
+describe("shared spellings", () => {
+	it("names the other sounds that list the same letters", () => {
+		expect(getSharedSpellings("TH")).toEqual([
+			{
+				pattern: "th",
+				others: [{ id: "DH", ipa: "ð", name: "voiced TH", word: "this", path: "/sounds/th-this" }],
+			},
+		]);
+	});
+});
+
+describe("sounds near it", () => {
+	it("gives a consonant its voicing partner, then the rest made the same way and in the same place", () => {
+		const families = getSoundFamilies("TH");
+		expect(families.map(({ label }) => label)).toEqual(["Voicing partner", "Other fricatives"]);
+		expect(families[0].sounds.map(({ ipa }) => ipa)).toEqual(["ð"]);
+		expect(families[1].sounds.map(({ ipa }) => ipa)).not.toContain("ð");
+		expect(getSoundFamilies("T").map(({ label }) => label)).toEqual([
+			"Voicing partner",
+			"Other plosives",
+			"Also alveolar",
 		]);
 	});
 
-	it("gives schwa its neighbouring vowels though it has no contrasts", () => {
-		expect(getRelatedSounds("AX").map(({ ipa }) => ipa)).toEqual(["æ", "ɝ", "ɛ", "ʌ"]);
+	it("gives schwa its neighbouring vowels and a diphthong the other diphthongs", () => {
+		expect(getSoundFamilies("AX")[0].sounds.map(({ ipa }) => ipa)).toEqual(["ɝ", "ɛ", "ʌ", "ɔ"]);
+		expect(getSoundFamilies("AI")[0]).toMatchObject({ label: "Other diphthongs" });
+		expect(getSoundFamilies("AI")[0].sounds).toHaveLength(4);
 	});
 
-	it("never lists the sound, a contrast partner, or more than four", () => {
+	it("never lists the sound itself, or a sound twice", () => {
 		for (const id of sounds) {
-			const related = getRelatedSounds(id).map((sound) => sound.id);
-			const partners = getPhonemeComparisons("en-us", id).map(({ partnerId }) => partnerId);
-			expect(related.length, id).toBeLessThanOrEqual(4);
-			expect(new Set(related).size, id).toBe(related.length);
-			expect(related, id).not.toContain(id);
-			for (const partner of partners) expect(related, id).not.toContain(partner);
+			const listed = getSoundFamilies(id).flatMap(({ sounds }) => sounds.map((s) => s.id));
+			expect(listed, id).not.toContain(id);
+			expect(new Set(listed).size, id).toBe(listed.length);
 		}
+	});
+});
+
+describe("previous and next", () => {
+	it("walk the sounds list, with nothing before the first or after the last", () => {
+		expect(getNeighbourPages("TH")).toMatchObject({
+			previous: { path: "/sounds/v-van" },
+			next: { path: "/sounds/th-this" },
+		});
+		expect(getNeighbourPages("P").previous).toBeUndefined();
+		expect(getNeighbourPages("OI").next).toBeUndefined();
 	});
 });
 

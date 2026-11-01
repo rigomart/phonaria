@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AudioManagerProvider } from "@/hooks/use-audio-manager";
-import { PhonemeDetailsPage } from "./details-page";
 import { DetailSections, getDetailSections } from "./sections";
 import { describeSound, type PhonemeDetailsOptions } from "./sound";
 import { SoundHeader } from "./sound-header";
@@ -80,32 +79,14 @@ describe("contrast links under Compare with", () => {
 	});
 });
 
-describe("the two layouts", () => {
-	it("heads the sections with h3s under the drawer's h2, stacked", () => {
+describe("the sections", () => {
+	it("head each section with an h3 under the drawer's h2, stacked", () => {
 		const html = render("TH");
 		expect(html).toContain('<div class="flex flex-col gap-6">');
 		expect(html).toMatch(
 			/<h3 [^>]*class="text-sm font-semibold text-foreground"[^>]*>How it&#x27;s made<\/h3>/,
 		);
 		expect(html).not.toContain("<h2");
-	});
-
-	it("makes the sound the page's h1 and each section an h2, in columns on wide screens", () => {
-		const html = renderToString(
-			<AudioManagerProvider>
-				<PhonemeDetailsPage
-					options={{ targetAccent: "en-us", phonemeId: "TH" }}
-					sections={getDetailSections({ targetAccent: "en-us", phonemeId: "TH" })}
-				/>
-			</AudioManagerProvider>,
-		);
-		expect(html).toMatch(/<h1 [^>]*>Voiceless TH \/θ\/<\/h1>/);
-		expect(html).toMatch(/<span class="block">Voiceless dental fricative<\/span>Consonant/);
-		expect(html).toContain("lg:grid-cols-2");
-		for (const title of ["How it&#x27;s made", "Compare with", "Spelling"]) {
-			expect(html).toMatch(new RegExp(`<h2 [^>]*>${title}</h2>`));
-		}
-		expect(html).not.toContain("<h3");
 	});
 });
 
@@ -124,19 +105,10 @@ describe("the link to the sound's own page", () => {
 		);
 	});
 
-	it("leaves it out in Practice, for an accent without pages, and on the page itself", () => {
+	it("leaves it out in Practice and for an accent without pages", () => {
 		expect(header({ targetAccent: "en-us", phonemeId: "TH", showPageLink: false })).not.toContain(
 			"Open full page",
 		);
 		expect(header({ targetAccent: "es-419", phonemeId: "S" })).not.toContain("Open full page");
-		const page = renderToString(
-			<AudioManagerProvider>
-				<PhonemeDetailsPage
-					options={{ targetAccent: "en-us", phonemeId: "TH" }}
-					sections={getDetailSections({ targetAccent: "en-us", phonemeId: "TH" })}
-				/>
-			</AudioManagerProvider>,
-		);
-		expect(page).not.toContain("Open full page");
 	});
 });

@@ -1,0 +1,10 @@
+/* Flips each child's surfaces for the bare page: cards rise to the popover colour, rows sink to the page's. */
+
+@utility raised-surface {
+	--page-background: var(--background);
+
+	& > * {
+		--background: var(--popover);
+		--background-strong: var(--page-background);
+	}
+}

@@ -6,7 +6,7 @@ import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
 import { pairSpellings } from "@/lib/spelling-pairs";
 import { Articulation } from "./articulation";
 import { ComparisonList } from "./comparisons";
-import { type DetailsLayout, DetailsLink, DetailsSection } from "./details-section";
+import { DetailsLink, DetailsSection } from "./details-section";
 import { MergerNote } from "./merger-note";
 import { getMergerNotes, getSpellingPattern, type PhonemeDetailsOptions } from "./sound";
 import { SpellingPatterns } from "./spelling";
@@ -89,32 +89,23 @@ export function getDetailSections({
 }
 
 /**
- * The sections separated by space rather than lines: stacked in a drawer, in
- * two columns on a wide page. With `voiceNote`, the synthetic-voice note
- * closes them when a section plays a word; the drawer leaves it off while its
- * sections are out of view.
+ * The sections stacked, separated by space rather than lines. With
+ * `voiceNote`, the synthetic-voice note closes them when a section plays a
+ * word; the drawer leaves it off while its sections are out of view.
  */
 export function DetailSections({
 	targetAccent,
 	sections,
 	voiceNote = true,
-	layout = "drawer",
 }: {
 	targetAccent: TargetAccent;
 	sections: readonly DetailSection[];
 	voiceNote?: boolean;
-	layout?: DetailsLayout;
 }) {
 	return (
-		<div
-			className={
-				layout === "page"
-					? "grid items-start gap-x-12 gap-y-10 lg:grid-cols-2"
-					: "flex flex-col gap-6"
-			}
-		>
+		<div className="flex flex-col gap-6">
 			{sections.map(({ id, title, action, content }) => (
-				<DetailsSection key={id} title={title} action={action} layout={layout}>
+				<DetailsSection key={id} title={title} action={action}>
 					{content}
 				</DetailsSection>
 			))}
@@ -122,7 +113,6 @@ export function DetailSections({
 				<SyntheticVoiceNote
 					targetAccent={targetAccent}
 					words={sections.flatMap(({ words = [] }) => words)}
-					className={layout === "page" ? "lg:col-span-2" : undefined}
 				/>
 			) : null}
 		</div>

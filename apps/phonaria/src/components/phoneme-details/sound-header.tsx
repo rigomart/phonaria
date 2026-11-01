@@ -48,7 +48,6 @@ export function SoundHeading({
  * On the compact level `onExpand` turns the name into a button that opens the
  * full view, and `thumbnail` previews how the sound is made.
  * `action` is the corner control (close); `titleId` labels the surrounding dialog.
- * `titleAs` makes the name the page's h1 where the details are a page of their own.
  */
 export function SoundHeader({
 	sound,
@@ -57,7 +56,6 @@ export function SoundHeader({
 	showExample = true,
 	onExpand,
 	thumbnail,
-	titleAs,
 }: {
 	sound: SoundSummary;
 	titleId: string;
@@ -66,7 +64,6 @@ export function SoundHeader({
 	showExample?: boolean;
 	onExpand?: () => void;
 	thumbnail?: ReactNode;
-	titleAs?: "h1" | "h2";
 }) {
 	const subtitle = (
 		<span className="text-sm text-muted-foreground">
@@ -115,7 +112,7 @@ export function SoundHeader({
 								/>
 							</button>
 						) : (
-							<SoundHeading sound={sound} titleId={titleId} as={titleAs} />
+							<SoundHeading sound={sound} titleId={titleId} />
 						)}
 						<p>{subtitle}</p>
 						{sound.pagePath ? (
