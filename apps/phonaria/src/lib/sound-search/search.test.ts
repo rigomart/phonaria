@@ -3,11 +3,13 @@ import { EnglishCuratedTop10k } from "@phonaria/phonetics-data/data/en/curated-1
 import { describe, expect, it } from "vitest";
 import {
 	buildExampleWords,
+	describeMatchCount,
 	buildSoundIndex,
 	formatSoundsParam,
 	MAX_PICKED_SOUNDS,
 	normalizeSoundsParam,
 	parseSoundsParam,
+	SEARCHED_WORD_COUNT,
 	searchBySounds,
 	soundsToIpa,
 } from "./search";
@@ -144,5 +146,16 @@ describe("sounds param", () => {
 
 	it("writes the sounds in IPA", () => {
 		expect(soundsToIpa(["TH", "IX", "NG", "K"])).toBe("θɪŋk");
+	});
+});
+
+describe("what the search covers", () => {
+	it("matches the size of the word list it searches", () => {
+		expect(Object.keys(EnglishCuratedTop10k.words)).toHaveLength(SEARCHED_WORD_COUNT);
+	});
+
+	it("says how many of the most common words matched", () => {
+		expect(describeMatchCount(9)).toBe("9 of the 10,000 most common English words start with");
+		expect(describeMatchCount(1)).toBe("1 of the 10,000 most common English words starts with");
 	});
 });

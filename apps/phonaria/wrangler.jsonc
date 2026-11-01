@@ -192,7 +192,7 @@
 				"FLAG_LANGUAGE_HISTORY": "0",
 				"FLAG_ABOUT": "0",
 				"FLAG_SPEECH": "0",
-				"FLAG_SOUND_SEARCH": "0"
+				"FLAG_SOUND_SEARCH": "1"
 			}
 		}
 	}

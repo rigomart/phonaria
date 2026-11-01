@@ -2,9 +2,10 @@ import { getIpaForPhonemeId, getLanguagePhonemeIds } from "@phonaria/phonetics-d
 import { Button } from "@phonaria/ui/components/button";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@phonaria/ui/components/toggle-group";
-import { useState } from "react";
-import { type SoundId, soundsToIpa } from "@/lib/sound-search/search";
+import { type ReactNode, useState } from "react";
+import { describeMatchCount, SEARCHED_WORD_COUNT, type SoundId } from "@/lib/sound-search/search";
 import { cn } from "@/lib/utils";
+import { PickedSounds } from "./sound-results";
 import { useSoundSearch } from "./use-sound-search";
 
 type Group = "consonants" | "vowels";
@@ -90,14 +91,17 @@ function SoundKey({ id }: { id: SoundId }) {
 function KeysStatus() {
 	const { sounds, status, result, retry } = useSoundSearch();
 
-	let text: string;
+	let text: ReactNode;
 	if (status === "error") text = "We couldn't load the word list.";
 	else if (!result) text = "Loading words...";
-	else if (sounds.length === 0) text = "Start with the first sound of the word.";
-	else {
-		const total = result.matches.length;
-		text = `${total.toLocaleString()} ${total === 1 ? "word starts" : "words start"} with /${soundsToIpa(sounds)}/`;
-	}
+	else if (sounds.length === 0)
+		text = `Start with the first sound of the word. Searches the ${SEARCHED_WORD_COUNT.toLocaleString("en-US")} most common English words.`;
+	else
+		text = (
+			<>
+				{describeMatchCount(result.matches.length)} <PickedSounds sounds={sounds} />
+			</>
+		);
 
 	return (
 		<div className="flex min-h-8 items-center gap-2 px-2 text-xs text-muted-foreground">

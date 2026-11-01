@@ -34,6 +34,14 @@ export type SoundSearchResult = {
 	next: ReadonlyMap<SoundId, number>;
 };
 
+/** Words in the curated top-10k list that sound search covers; a test keeps it equal to the list. */
+export const SEARCHED_WORD_COUNT = 10_000;
+
+/** "9 of the 10,000 most common English words start with", to be followed by the picked sounds. */
+export function describeMatchCount(total: number): string {
+	return `${total.toLocaleString("en-US")} of the ${SEARCHED_WORD_COUNT.toLocaleString("en-US")} most common English words ${total === 1 ? "starts" : "start"} with`;
+}
+
 /** Caps the sounds read from `?sounds=`. */
 export const MAX_PICKED_SOUNDS = 20;
 

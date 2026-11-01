@@ -2,7 +2,13 @@ import { Button } from "@phonaria/ui/components/button";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
 import { type ReactNode, useMemo } from "react";
-import { type SoundId, type SoundMatch, soundsToIpa } from "@/lib/sound-search/search";
+import {
+	describeMatchCount,
+	SEARCHED_WORD_COUNT,
+	type SoundId,
+	type SoundMatch,
+	soundsToIpa,
+} from "@/lib/sound-search/search";
 import { cn } from "@/lib/utils";
 import { useSoundSearch } from "./use-sound-search";
 
@@ -30,8 +36,8 @@ export function SoundResults({ sounds }: { sounds: readonly SoundId[] }) {
 	if (sounds.length === 0) {
 		return (
 			<Message>
-				Pick the sounds you heard, starting with the first. The words that start with them show up
-				here.
+				Pick the sounds you heard, starting with the first. Words that start with them, from the{" "}
+				{SEARCHED_WORD_COUNT.toLocaleString("en-US")} most common in English, show up here.
 			</Message>
 		);
 	}
@@ -44,17 +50,23 @@ export function SoundResults({ sounds }: { sounds: readonly SoundId[] }) {
 		);
 	}
 
-	const ipa = soundsToIpa(sounds);
 	const total = result.matches.length;
 
 	if (total === 0) {
-		return <Message>No common word starts with /{ipa}/.</Message>;
+		return (
+			<Message>
+				<span>
+					None of the {SEARCHED_WORD_COUNT.toLocaleString("en-US")} most common English words start
+					with <PickedSounds sounds={sounds} />.
+				</span>
+			</Message>
+		);
 	}
 
 	return (
 		<section aria-label="Words found" className="mx-auto w-full max-w-2xl px-4 py-4 enter-fade">
 			<p className="mb-3 px-3 text-sm text-muted-foreground">
-				{total.toLocaleString()} {total === 1 ? "word starts" : "words start"} with /{ipa}/
+				{describeMatchCount(total)} <PickedSounds sounds={sounds} />
 			</p>
 			<ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
 				{result.matches.slice(0, SHOWN_MATCHES).map((match) => (
@@ -94,6 +106,11 @@ function MatchButton({ match, picked }: { match: SoundMatch; picked: number }) {
 			</span>
 		</button>
 	);
+}
+
+/** Keeps the IPA on one line; a browser would otherwise break after the opening slash. */
+export function PickedSounds({ sounds }: { sounds: readonly SoundId[] }) {
+	return <span className="whitespace-nowrap">/{soundsToIpa(sounds)}/</span>;
 }
 
 function Message({ children }: { children: ReactNode }) {
