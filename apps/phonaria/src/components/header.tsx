@@ -1,6 +1,15 @@
 import { badgeVariants } from "@phonaria/ui/components/badge";
 import { Button } from "@phonaria/ui/components/button";
 import {
+	NavigationMenu,
+	NavigationMenuContent,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuList,
+	NavigationMenuTrigger,
+	navigationMenuTriggerStyle,
+} from "@phonaria/ui/components/navigation-menu";
+import {
 	Popover,
 	PopoverContent,
 	PopoverDescription,
@@ -20,10 +29,9 @@ import { Link } from "@/components/link";
 import { useNavIndicator } from "@/hooks/use-nav-indicator";
 import { useScrolled } from "@/hooks/use-scrolled";
 import type { AppFlags } from "@/lib/flags";
-import { IPA_CHART_INDEX_PATH } from "@/lib/ipa-chart-metadata";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
-import { chartSections, getTools, usePathname } from "./site-nav";
+import { getTools, navCurrent, soundsSections, type Tool, usePathname } from "./site-nav";
 import { ThemeSwitcher } from "./theme-switcher";
 
 const focusRing =
@@ -32,13 +40,12 @@ const focusRing =
 export function Header({ flags }: { flags: AppFlags }) {
 	const pathname = usePathname();
 	const scrolled = useScrolled();
-	const onChart = pathname.startsWith(IPA_CHART_INDEX_PATH);
 
 	return (
 		<header
 			className={cn(
 				"sticky top-0 z-40 border-b bg-background transition-[border-color] motion-reduce:transition-none",
-				scrolled || onChart ? "border-border" : "border-transparent",
+				scrolled ? "border-border" : "border-transparent",
 			)}
 		>
 			<div className="mx-auto flex h-12 w-full max-w-6xl items-center gap-6 px-4 sm:px-6">
@@ -60,8 +67,6 @@ export function Header({ flags }: { flags: AppFlags }) {
 					<MobileMenu flags={flags} />
 				</div>
 			</div>
-
-			{onChart && <ChartNav pathname={pathname} />}
 		</header>
 	);
 }
@@ -123,80 +128,90 @@ function MainNav({ flags, pathname }: { flags: AppFlags; pathname: string }) {
 	const { navRef, measured, indicator } = useNavIndicator<HTMLElement>(activeTool?.id ?? null);
 
 	return (
-		<nav
-			ref={navRef}
-			aria-label="Main"
-			className="relative hidden h-full shrink-0 items-stretch gap-5 text-sm whitespace-nowrap sm:flex"
-		>
-			{tools.map((tool) => {
-				const active = tool === activeTool;
-				return (
-					<Link
-						key={tool.id}
-						href={tool.href}
-						aria-current={active ? "page" : undefined}
-						className={cn(
-							"relative flex items-center transition-colors motion-reduce:transition-none",
-							focusRing,
-							active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-							active &&
-								!measured &&
-								"after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:rounded-full after:bg-foreground",
-						)}
-					>
-						{tool.label}
-					</Link>
-				);
-			})}
+		<NavigationMenu ref={navRef} aria-label="Main" className="hidden shrink-0 sm:flex">
+			{/* Before the list, so the items paint over it. */}
 			<span
 				{...indicator}
 				className={cn(
 					indicator.className,
-					"top-auto -bottom-px h-0.5 w-(--nav-w) translate-x-(--nav-x) rounded-full bg-foreground",
+					"h-(--nav-h) w-(--nav-w) translate-x-(--nav-x) translate-y-(--nav-y) rounded-full bg-secondary",
 				)}
 			/>
-		</nav>
+			<NavigationMenuList className="gap-1">
+				{tools.map((tool) => (
+					<NavigationMenuItem key={tool.id}>
+						<MainNavItem
+							tool={tool}
+							pathname={pathname}
+							active={tool === activeTool}
+							measured={measured}
+						/>
+					</NavigationMenuItem>
+				))}
+			</NavigationMenuList>
+		</NavigationMenu>
 	);
 }
 
-function ChartNav({ pathname }: { pathname: string }) {
-	const activeSection = chartSections.find((section) => section.href === pathname);
-	const { navRef, measured, indicator } = useNavIndicator<HTMLElement>(activeSection?.href ?? null);
+const shadeLikeIndicator =
+	"hover:bg-secondary focus:bg-secondary data-popup-open:bg-secondary data-popup-open:hover:bg-secondary";
+
+function MainNavItem({
+	tool,
+	pathname,
+	active,
+	measured,
+}: {
+	tool: Tool;
+	pathname: string;
+	active: boolean;
+	measured: boolean;
+}) {
+	const className = cn(
+		navigationMenuTriggerStyle(),
+		"px-2 md:px-3",
+		shadeLikeIndicator,
+		active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+		active && !measured && "bg-secondary",
+	);
+	const marker = active ? { "data-nav-active": "" } : {};
+	const current = navCurrent(tool, pathname);
+
+	if (tool.id !== "sounds") {
+		return (
+			<NavigationMenuLink
+				closeOnClick
+				className={className}
+				render={<Link href={tool.href} aria-current={current} {...marker} />}
+			>
+				{tool.label}
+			</NavigationMenuLink>
+		);
+	}
 
 	return (
-		<div className="border-t">
-			<nav
-				ref={navRef}
-				aria-label="IPA Chart"
-				className="relative mx-auto flex w-full max-w-6xl gap-1 px-4 py-2 text-sm sm:px-6"
-			>
-				{/* Before the links, so they paint over it. */}
-				<span
-					{...indicator}
-					className={cn(
-						indicator.className,
-						"h-(--nav-h) w-(--nav-w) translate-x-(--nav-x) translate-y-(--nav-y) rounded-full bg-secondary",
-					)}
-				/>
-				{chartSections.map((section) => {
-					const active = section === activeSection;
-					return (
-						<Link
-							key={section.href}
-							href={section.href}
-							aria-current={active ? "page" : undefined}
-							className={cn(
-								"relative rounded-full px-3 py-1 transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-								active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-								active && !measured && "bg-secondary",
-							)}
-						>
-							{section.label}
-						</Link>
-					);
-				})}
-			</nav>
-		</div>
+		<>
+			<NavigationMenuTrigger className={className} aria-current={current} {...marker}>
+				{tool.label}
+			</NavigationMenuTrigger>
+			{/* Kept mounted so the links are in the server-rendered HTML for crawlers. */}
+			<NavigationMenuContent keepMounted>
+				<ul className="grid w-48 gap-1">
+					{soundsSections.map((section) => (
+						<li key={section.href}>
+							<NavigationMenuLink
+								active={pathname === section.href}
+								closeOnClick
+								className="data-active:bg-muted"
+								render={<Link href={section.href} />}
+							>
+								{section.label}
+							</NavigationMenuLink>
+						</li>
+					))}
+				</ul>
+			</NavigationMenuContent>
+		</>
 	);
 }
 
@@ -226,12 +241,13 @@ function MobileMenu({ flags }: { flags: AppFlags }) {
 				<nav aria-label="Main" className="flex flex-col px-4 pb-6">
 					{getTools(flags).map((tool) => {
 						const active = tool.match(pathname);
+						const current = navCurrent(tool, pathname);
 						return (
 							<div key={tool.id} className="border-b last:border-b-0">
 								<Link
 									href={tool.href}
 									onClick={close}
-									aria-current={active ? "page" : undefined}
+									aria-current={current}
 									className={cn(
 										"flex items-center gap-3 py-3 text-base",
 										active ? "font-medium text-foreground" : "text-muted-foreground",
@@ -240,9 +256,9 @@ function MobileMenu({ flags }: { flags: AppFlags }) {
 									<tool.icon className="size-4" aria-hidden />
 									{tool.label}
 								</Link>
-								{tool.id === "ipa-chart" && (
-									<div className="flex gap-2 pb-3 pl-7">
-										{chartSections.map((section) => (
+								{tool.id === "sounds" && (
+									<div className="flex flex-wrap gap-2 pb-3 pl-7">
+										{soundsSections.map((section) => (
 											<Link
 												key={section.href}
 												href={section.href}

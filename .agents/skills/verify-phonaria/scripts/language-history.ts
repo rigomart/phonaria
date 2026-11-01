@@ -1384,9 +1384,9 @@ export const languageHistoryOff = {
 					'[role="region"][aria-label^="Map of where languages spread"]',
 				),
 				stops: document.querySelectorAll("[data-stop]").length,
-				navLinks: Array.from(document.querySelectorAll('nav[aria-label="Main"] a')).map((link) =>
-					link.textContent?.trim(),
-				),
+				navLinks: Array.from(
+					document.querySelectorAll('nav[aria-label="Main"] > ul > li > :is(a, button)'),
+				).map((link) => link.textContent?.trim()),
 			}),
 			{
 				path: "/history",
@@ -1394,7 +1394,7 @@ export const languageHistoryOff = {
 				heading: "This page doesn't exist",
 				map: false,
 				stops: 0,
-				navLinks: ["Transcription", "IPA Chart", "Sounds", "Minimal pairs", "Practice"],
+				navLinks: ["Transcription", "Sounds", "Minimal pairs", "Practice"],
 			},
 		),
 		"sitemap-hidden": observation(sitemapRead, {
@@ -1409,17 +1409,17 @@ export const languageHistoryOff = {
 		"nav-hidden": observation(
 			() => ({
 				path: location.pathname,
-				navLinks: Array.from(document.querySelectorAll('nav[aria-label="Main"] a')).map((link) =>
-					link.textContent?.trim(),
-				),
-				visible: Array.from(document.querySelectorAll('nav[aria-label="Main"] a')).every(
-					(link) => link.getClientRects().length > 0,
-				),
+				navLinks: Array.from(
+					document.querySelectorAll('nav[aria-label="Main"] > ul > li > :is(a, button)'),
+				).map((link) => link.textContent?.trim()),
+				visible: Array.from(
+					document.querySelectorAll('nav[aria-label="Main"] > ul > li > :is(a, button)'),
+				).every((link) => link.getClientRects().length > 0),
 				historyLinks: document.querySelectorAll('a[href="/history"]').length,
 			}),
 			{
 				path: "/",
-				navLinks: ["Transcription", "IPA Chart", "Sounds", "Minimal pairs", "Practice"],
+				navLinks: ["Transcription", "Sounds", "Minimal pairs", "Practice"],
 				visible: true,
 				historyLinks: 0,
 			},

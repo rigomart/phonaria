@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getTools } from "./site-nav";
+import { getTools, navCurrent, soundsSections } from "./site-nav";
 
 const ids = (practice: boolean, languageHistory: boolean) =>
 	getTools({ practice, languageHistory }).map((tool) => tool.id);
@@ -13,11 +13,10 @@ describe("getTools", () => {
 		expect(ids(true, false)).not.toContain("language-history");
 	});
 
-	it("always shows Sounds and Minimal pairs, after the IPA Chart and before Practice", () => {
-		expect(ids(false, false)).toEqual(["transcription", "ipa-chart", "sounds", "minimal-pairs"]);
+	it("always shows Sounds and Minimal pairs, before Practice", () => {
+		expect(ids(false, false)).toEqual(["transcription", "sounds", "minimal-pairs"]);
 		expect(ids(true, true)).toEqual([
 			"transcription",
-			"ipa-chart",
 			"sounds",
 			"minimal-pairs",
 			"practice",
@@ -26,13 +25,7 @@ describe("getTools", () => {
 	});
 
 	it("keeps the flags independent", () => {
-		expect(ids(true, false)).toEqual([
-			"transcription",
-			"ipa-chart",
-			"sounds",
-			"minimal-pairs",
-			"practice",
-		]);
+		expect(ids(true, false)).toEqual(["transcription", "sounds", "minimal-pairs", "practice"]);
 	});
 
 	it("marks Transcription active on the homepage and its results page", () => {
@@ -41,10 +34,26 @@ describe("getTools", () => {
 		expect(tool("transcription")?.match("/searchx")).toBe(false);
 	});
 
-	it("marks Sounds active on its index and every sound page", () => {
+	it("marks Sounds active on its index, every sound page and the IPA chart pages", () => {
 		expect(tool("sounds")?.match("/sounds")).toBe(true);
 		expect(tool("sounds")?.match("/sounds/th-thin")).toBe(true);
+		expect(tool("sounds")?.match("/ipa-chart/consonants")).toBe(true);
+		expect(tool("sounds")?.match("/ipa-chart/frequency")).toBe(true);
 		expect(tool("sounds")?.match("/soundsx")).toBe(false);
+		expect(tool("sounds")?.match("/ipa-chartx")).toBe(false);
+	});
+
+	it("keeps Sounds active on every page its menu links to", () => {
+		for (const section of soundsSections) expect(tool("sounds")?.match(section.href)).toBe(true);
+	});
+
+	it("marks the page an item links to as the page, and the rest of its section as current", () => {
+		const sounds = tool("sounds");
+		if (!sounds) throw new Error("Sounds is always in the nav.");
+		expect(navCurrent(sounds, "/sounds")).toBe("page");
+		expect(navCurrent(sounds, "/sounds/th-thin")).toBe("true");
+		expect(navCurrent(sounds, "/ipa-chart/vowels")).toBe("true");
+		expect(navCurrent(sounds, "/minimal-pairs")).toBeUndefined();
 	});
 
 	it("marks Minimal pairs active on its index and every contrast page", () => {

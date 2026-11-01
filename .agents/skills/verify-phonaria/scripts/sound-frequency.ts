@@ -114,10 +114,10 @@ const followedLink = observation(
 
 const menu = observation(
 	() =>
-		Array.from(document.querySelectorAll('nav[aria-label="IPA Chart"] a'))
-			.filter((link) => link.getClientRects().length > 0)
-			.map((link) => link.getAttribute("href")),
-	["/ipa-chart/consonants", "/ipa-chart/vowels", "/ipa-chart/frequency"],
+		Array.from(document.querySelectorAll('header [data-slot="navigation-menu-content"] a')).map(
+			(link) => link.getAttribute("href"),
+		),
+	["/sounds", "/ipa-chart/consonants", "/ipa-chart/vowels", "/ipa-chart/frequency"],
 );
 
 const plainCharts = observation(

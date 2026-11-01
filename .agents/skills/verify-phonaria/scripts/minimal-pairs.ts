@@ -147,9 +147,9 @@ const practiceIndex = () =>
 			heading: document.querySelector("h1")?.textContent?.trim() ?? null,
 			schwa: !!document.querySelector('a[href="/practice/schwa"]'),
 			card: !!document.querySelector('main a[href^="/minimal-pairs"]'),
-			nav: Array.from(document.querySelectorAll('nav[aria-label="Main"] a')).map((link) =>
-				link.textContent?.trim(),
-			),
+			nav: Array.from(
+				document.querySelectorAll('nav[aria-label="Main"] > ul > li > :is(a, button)'),
+			).map((link) => link.textContent?.trim()),
 			navHref:
 				document
 					.querySelector('nav[aria-label="Main"] a[href="/minimal-pairs"]')
@@ -160,7 +160,7 @@ const practiceIndex = () =>
 			heading: "Practice",
 			schwa: true,
 			card: false,
-			nav: ["Transcription", "IPA Chart", "Sounds", "Minimal pairs", "Practice", "History"],
+			nav: ["Transcription", "Sounds", "Minimal pairs", "Practice", "History"],
 			navHref: "Minimal pairs",
 		},
 	);
