@@ -28,7 +28,7 @@ EVIDENCE_LOG_AUTH_TOKEN="your-write-token"
 
 The first two keys are needed when a word misses the bundled lists and must be looked up in Turso. Without them, common words can still transcribe in the browser while server lookups fail. `.env.local` is useful for build-time settings and scripts, but its secret values are not automatically copied into `.dev.vars`. Restart the dev server after editing `.dev.vars`. Both files are ignored by Git; use `.env.example` as a reference.
 
-`scripts/write-dev-vars.ts` writes public settings and preserves existing Worker secret lines during builds. It never imports secret values from the process environment. The app uses `SITE_URL` for canonical links; production builds require it. Practice, History, the About page and speech scoring are controlled per deployed environment by `FLAG_PRACTICE`, `FLAG_LANGUAGE_HISTORY`, `FLAG_ABOUT` and `FLAG_SPEECH`. All but the About page default on locally; run `FLAG_ABOUT=1 bun run --cwd apps/phonaria dev` to see it. When a flag is off, its route returns 404 and its header or footer link is hidden.
+`scripts/write-dev-vars.ts` writes public settings and preserves existing Worker secret lines during builds. It never imports secret values from the process environment. The app uses `SITE_URL` for canonical links; production builds require it. Practice, History, the About page, speech scoring and sound search are controlled per deployed environment by `FLAG_PRACTICE`, `FLAG_LANGUAGE_HISTORY`, `FLAG_ABOUT`, `FLAG_SPEECH` and `FLAG_SOUND_SEARCH`. All but the About page default on locally; run `FLAG_ABOUT=1 bun run --cwd apps/phonaria dev` to see it. When a flag is off, its route returns 404 and its header or footer link is hidden; with `FLAG_SOUND_SEARCH` off, the Transcription input has no sound mode and ignores `?sounds=`.
 
 ## Commands
 
@@ -50,6 +50,12 @@ Staging CI uses the GitHub variables `STAGING_URL` and `WORKERS_DEV_SUBDOMAIN`. 
 ## Transcription results
 
 The homepage holds the input and examples; results open at `/search?q=` (`src/routes/search.tsx`), with the input at the top so the next search starts there. Each query is its own URL, kept out of search indexes (`noindex, follow`) and out of the sitemap and prerender. `/search` without a query sends the visitor to the homepage (307). Links shared before results moved, `/?q=hello`, redirect to `/search?q=hello` (308). Clearing the field on `/search` keeps the result until the next search; a lookup still running is dropped instead, so the field never stays disabled.
+
+## Finding a word by its sounds
+
+Behind `FLAG_SOUND_SEARCH`, the **ə** button at the start of the input switches it to finding words by their sounds ([#307](https://github.com/rigomart/phonaria/issues/307)). The learner picks en-us sounds from a panel under the field (Consonants or Vowels, a common word under each key); a key that would leave no word is disabled, so each pick narrows what can come next. On the homepage the search button opens `/search?sounds=TH-IX`; on `/search` each pick updates the list right away, and the panel floats over it. The results are the words whose pronunciation starts with the picked sounds, exact matches first and then by frequency, ignoring stress. Picking a word transcribes it at `/search?q=`.
+
+It searches the 10k word list in the browser (`src/lib/sound-search`), loaded on first use from the chunk transcription uses, so it never calls the Worker. An empty `?sounds=` is a sound search with nothing picked yet. With the flag off, `/search` ignores `sounds` and sends a search with nothing else to the homepage.
 
 ## History
 

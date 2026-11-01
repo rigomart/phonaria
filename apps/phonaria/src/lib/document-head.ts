@@ -226,11 +226,11 @@ export function buildHomeHead(): StartHead {
 }
 
 /** Marks every search page `noindex, follow`. */
-export function buildSearchHead(query: string | undefined): StartHead {
+export function buildSearchHead(search: { q?: string; sounds?: string }): StartHead {
 	return buildPageHead({
 		path: SEARCH_PATH,
-		title: searchPageTitle(query),
-		description: searchPageDescription(query),
+		title: searchPageTitle(search),
+		description: searchPageDescription(search),
 		robots: "noindex, follow",
 	});
 }

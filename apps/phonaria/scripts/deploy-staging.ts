@@ -47,6 +47,7 @@ export function deployStaging(
 		FLAG_LANGUAGE_HISTORY: baseEnv.FLAG_LANGUAGE_HISTORY ?? "1",
 		FLAG_ABOUT: baseEnv.FLAG_ABOUT ?? "1",
 		FLAG_SPEECH: baseEnv.FLAG_SPEECH ?? "1",
+		FLAG_SOUND_SEARCH: baseEnv.FLAG_SOUND_SEARCH ?? "1",
 	};
 
 	run({ command: "bun", args: ["./scripts/write-dev-vars.ts"], env });

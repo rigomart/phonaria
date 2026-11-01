@@ -29,6 +29,10 @@ export const flags = createFlags(
 			envVar: "FLAG_SPEECH",
 			enabledByDefault: process.env.NODE_ENV !== "production",
 		},
+		soundSearch: {
+			envVar: "FLAG_SOUND_SEARCH",
+			enabledByDefault: process.env.NODE_ENV !== "production",
+		},
 	},
 	{
 		// Live getter so unit tests can still flip FLAG_PRACTICE. Vite replaces
@@ -46,6 +50,9 @@ export const flags = createFlags(
 		},
 		get FLAG_SPEECH() {
 			return process.env.FLAG_SPEECH;
+		},
+		get FLAG_SOUND_SEARCH() {
+			return process.env.FLAG_SOUND_SEARCH;
 		},
 	},
 );

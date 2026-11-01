@@ -173,12 +173,18 @@ const HOME_DESCRIPTION =
 describe("buildSearchHead", () => {
 	it("names the query and keeps every search out of indexes", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
-		const head = buildSearchHead("hello world");
+		const head = buildSearchHead({ q: "hello world" });
 		expect(head.meta).toContainEqual({ title: "hello world in IPA - Phonaria" });
 		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
 		expect(head.links).toEqual([
 			{ rel: "canonical", href: "https://phonaria-staging.example.test/search" },
 		]);
+	});
+
+	it("names the sounds of a sound search in IPA", () => {
+		const head = buildSearchHead({ sounds: "TH-IX" });
+		expect(head.meta).toContainEqual({ title: "Words that start with /θɪ/ - Phonaria" });
+		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
 	});
 });
 

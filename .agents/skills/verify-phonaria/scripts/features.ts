@@ -7,6 +7,7 @@ import { minimalPairs, minimalPairsOff } from "./minimal-pairs";
 import { frequencyPage, soundFrequency } from "./sound-frequency";
 import { soundLinks } from "./sound-links";
 import { soundPages } from "./sound-pages";
+import { soundSearch, soundSearchOff } from "./sound-search";
 import { transcription } from "./transcription";
 import { transcriptionHistory } from "./transcription-history";
 import { wordAudio } from "./word-audio";
@@ -24,6 +25,8 @@ export const features: Record<string, Feature> = {
 	"frequency-page": frequencyPage,
 	"sound-links": soundLinks,
 	"sound-pages": soundPages,
+	"sound-search": soundSearch,
+	"sound-search-off": soundSearchOff,
 	transcription,
 	"transcription-history": transcriptionHistory,
 	"word-audio": wordAudio,

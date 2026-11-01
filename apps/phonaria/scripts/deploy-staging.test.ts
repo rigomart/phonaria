@@ -27,6 +27,7 @@ describe("deployStaging", () => {
 					FLAG_LANGUAGE_HISTORY: "1",
 					FLAG_ABOUT: "1",
 					FLAG_SPEECH: "1",
+					FLAG_SOUND_SEARCH: "1",
 				},
 			},
 			{
@@ -40,6 +41,7 @@ describe("deployStaging", () => {
 					FLAG_LANGUAGE_HISTORY: "1",
 					FLAG_ABOUT: "1",
 					FLAG_SPEECH: "1",
+					FLAG_SOUND_SEARCH: "1",
 				},
 			},
 			{
@@ -53,6 +55,7 @@ describe("deployStaging", () => {
 					FLAG_LANGUAGE_HISTORY: "1",
 					FLAG_ABOUT: "1",
 					FLAG_SPEECH: "1",
+					FLAG_SOUND_SEARCH: "1",
 				},
 			},
 			{
@@ -66,6 +69,7 @@ describe("deployStaging", () => {
 					FLAG_LANGUAGE_HISTORY: "1",
 					FLAG_ABOUT: "1",
 					FLAG_SPEECH: "1",
+					FLAG_SOUND_SEARCH: "1",
 				},
 			},
 		]);
