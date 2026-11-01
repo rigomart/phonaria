@@ -20,6 +20,11 @@ export const flags = createFlags(
 			envVar: "FLAG_LANGUAGE_HISTORY",
 			enabledByDefault: process.env.NODE_ENV !== "production",
 		},
+		about: {
+			envVar: "FLAG_ABOUT",
+			// Off everywhere the var is unset, local dev included; set FLAG_ABOUT=1 to see it.
+			enabledByDefault: false,
+		},
 		speech: {
 			envVar: "FLAG_SPEECH",
 			enabledByDefault: process.env.NODE_ENV !== "production",
@@ -35,6 +40,9 @@ export const flags = createFlags(
 		},
 		get FLAG_LANGUAGE_HISTORY() {
 			return process.env.FLAG_LANGUAGE_HISTORY;
+		},
+		get FLAG_ABOUT() {
+			return process.env.FLAG_ABOUT;
 		},
 		get FLAG_SPEECH() {
 			return process.env.FLAG_SPEECH;

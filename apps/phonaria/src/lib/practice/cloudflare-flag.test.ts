@@ -35,6 +35,12 @@ describe("Cloudflare Practice flag", () => {
 		expect(envVarsBlock("production")).toContain('"FLAG_LANGUAGE_HISTORY": "0"');
 	});
 
+	it("enables About on staging and preview and keeps production dark", () => {
+		expect(envVarsBlock("staging")).toContain('"FLAG_ABOUT": "1"');
+		expect(envVarsBlock("preview")).toContain('"FLAG_ABOUT": "1"');
+		expect(envVarsBlock("production")).toContain('"FLAG_ABOUT": "0"');
+	});
+
 	it("enables speech scoring on staging and preview and keeps production off", () => {
 		expect(envVarsBlock("staging")).toContain('"FLAG_SPEECH": "1"');
 		expect(envVarsBlock("preview")).toContain('"FLAG_SPEECH": "1"');
@@ -45,6 +51,8 @@ describe("Cloudflare Practice flag", () => {
 		expect(wrangler).not.toContain('"run_worker_first": true');
 		for (const route of [
 			"/",
+			"/about",
+			"/about/",
 			"/credits",
 			"/credits/",
 			"/ipa-chart",

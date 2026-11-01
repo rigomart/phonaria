@@ -38,6 +38,7 @@ jobs:
           SITE_INDEXING_ENABLED: "1"
           FLAG_PRACTICE: "0"
           FLAG_LANGUAGE_HISTORY: "0"
+          FLAG_ABOUT: "0"
           FLAG_SPEECH: "0"
           TURSO_DATABASE_URL: libsql://ci-placeholder.turso.io
           TURSO_AUTH_TOKEN: ci-placeholder

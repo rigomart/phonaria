@@ -8,6 +8,7 @@ const target = {
 	expectedCanonicalOrigin: "https://phonaria.rigos.dev",
 	practiceEnabled: false,
 	languageHistoryEnabled: false,
+	aboutEnabled: false,
 	speechEnabled: false,
 	indexingEnabled: true,
 	bucketAssetsAvailable: true,
@@ -38,6 +39,13 @@ describe("metadata helpers", () => {
 			"https://phonaria.rigos.dev/sounds",
 		]);
 		expect(expectedSitemapUrls(target).join(" ")).not.toContain("practice");
+	});
+
+	it("adds About to the sitemap set only where its flag is on", () => {
+		expect(expectedSitemapUrls(target)).not.toContain("https://phonaria.rigos.dev/about");
+		expect(expectedSitemapUrls({ ...target, aboutEnabled: true })).toContain(
+			"https://phonaria.rigos.dev/about",
+		);
 	});
 
 	it("adds History to the sitemap set only where its flag is on", () => {

@@ -43,6 +43,22 @@ export function skipUnlessLanguageHistoryDisabled(): void {
 	);
 }
 
+export function skipUnlessAboutEnabled(): void {
+	const target = getTarget();
+	test.skip(
+		!target.aboutEnabled,
+		`About is disabled on ${target.name}, so enabled-route assertions do not apply.`,
+	);
+}
+
+export function skipUnlessAboutDisabled(): void {
+	const target = getTarget();
+	test.skip(
+		target.aboutEnabled,
+		`About is enabled on ${target.name}, so disabled-route assertions do not apply.`,
+	);
+}
+
 export function skipUnlessSpeechEnabled(): void {
 	const target = getTarget();
 	test.skip(

@@ -1,14 +1,23 @@
 import { Link } from "@/components/link";
+import type { AppFlags } from "@/lib/flags";
 import { Logo } from "./logo";
 
 const linkClass =
 	"rounded-sm transition-colors motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-export function Footer() {
+export function Footer({ flags }: { flags: Pick<AppFlags, "about"> }) {
 	return (
 		<footer className="px-4 py-6">
 			<div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
 				<Logo className="size-3.5" />
+				{flags.about && (
+					<>
+						<Link href="/about" className={linkClass}>
+							About
+						</Link>
+						<span aria-hidden>·</span>
+					</>
+				)}
 				<Link href="/credits" className={linkClass}>
 					Credits
 				</Link>

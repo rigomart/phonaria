@@ -4,6 +4,7 @@
 	"requiresBaseUrlOverride": true,
 	"expectedCanonicalOrigin": "",
 	"practiceEnabled": true,
+	"aboutEnabled": true,
 	"languageHistoryEnabled": true,
 	"speechEnabled": true,
 	"indexingEnabled": false,

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { ABOUT_PAGE_DESCRIPTION } from "@/lib/about/metadata";
 import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
 import {
 	CONSONANTS_PAGE_DESCRIPTION,
@@ -22,6 +23,7 @@ import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import { SOUNDS_PAGE_DESCRIPTION, soundPageDescription, soundPageTitle } from "@/lib/sound-pages";
 import {
 	buildConsonantsHead,
+	buildAboutHead,
 	buildCreditsHead,
 	buildFrequencyHead,
 	buildHomeHead,
@@ -184,6 +186,22 @@ describe("buildHomeHead", () => {
 		expect(meta).toContainEqual({
 			property: "og:image",
 			content: "https://phonaria-staging.example.test/opengraph-image.jpg",
+		});
+	});
+});
+
+describe("buildAboutHead", () => {
+	it("is indexable with its canonical and social card when indexing is on", () => {
+		process.env.SITE_URL = "https://phonaria.rigos.dev";
+		process.env.SITE_INDEXING_ENABLED = "1";
+		const { meta, links } = buildAboutHead();
+		expect(links).toEqual([{ rel: "canonical", href: "https://phonaria.rigos.dev/about" }]);
+		expect(meta).toContainEqual({ name: "robots", content: "index, follow" });
+		expect(meta).toContainEqual({ name: "description", content: ABOUT_PAGE_DESCRIPTION });
+		expect(meta).toContainEqual({ property: "og:title", content: "About" });
+		expect(meta).toContainEqual({
+			property: "og:url",
+			content: "https://phonaria.rigos.dev/about",
 		});
 	});
 });

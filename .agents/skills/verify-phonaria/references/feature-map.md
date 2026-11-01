@@ -18,6 +18,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair pages and speaking practice | `/minimal-pairs` and one page per contrast at `/minimal-pairs/<contrast>` (the pairs and recordings in every build); header **Minimal pairs** while `FLAG_SPEECH` is on, which also adds speaking practice to each contrast page; in every build, a sound's **All pairs for …** link under Compare with (**Practise saying …** while `FLAG_SPEECH` is on), and each contrast page links its two sounds' pages and the other contrasts with either sound. `?contrast=` links and `/practice/minimal-pairs` redirect to the contrast's page | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
 | Sound pages | `/sounds` and `/sounds/<slug>` (e.g. `/sounds/th-thin`); every chart tile and frequency row links to its sound's page, and the drawer and side panel have **Open full page** | Executable journeys below: `sound-pages` and `sound-links` |
+| About | `/about`, footer **About** (before Credits), both behind `FLAG_ABOUT` | Executable journeys below: `about` (flag on) and `about-off` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 | Word recordings | Sound card **Compare with** and **Spelling**, Practice reveal, **Definition of …** after transcribing | Executable journey below |
 
@@ -713,3 +714,46 @@ bun run verify observe "$VERIFY_RUN" sitemap
 ```
 
 `consonant-tile`, `frequency-row` and `vowel-tile` require the path to stay on the chart, the open sound's tile to be an `<a>` with its sound's `href`, the details titled for that sound, and **Open full page** pointing at the same page (`vowel-tile` reads it in the side panel). `open-full-page` requires `/sounds/th-thin` with one h1. `sitemap` requires `/sounds` and 40 sound pages. Click the tile only after `$HYD` passes: before hydration the tile is a plain link and the click goes to the sound's page. On wide screens, `capture` (a full-page screenshot) closes the compact card, whatever its trigger, so take `screenshot` of the viewport while the card is open.
+
+## About
+
+`/about` ships dark behind `FLAG_ABOUT`, which is off by default everywhere: on in staging and preview, off in production and in local dev unless the server starts with `FLAG_ABOUT=1`. It says what Phonaria is, has a card for each tool that is live in production (Transcription, IPA Chart, Sounds, Minimal pairs, never Practice, History or speaking practice), and shows how a sound improves: *pick* at three stages and an example learner's sounds by stage. The [checkpoints](../scripts/about.ts) read the head (title, robots, canonical, `og:title`), the headings, the tool links, the *pick*/*peak* recordings, the 12 board sounds, the footer order and overflow; `sound-details` that a board chip opens the details; `sitemap` that `/about` is listed.
+
+### Executable journey
+
+After `init about`, `FLAG_ABOUT=1 bun run verify serve "$VERIFY_RUN"`, `open about:blank` and `trace start`, for each of `set media dark` and `set media light`:
+
+```bash
+HYD="Object.keys(document.querySelector('main a')||{}).some(k=>k.startsWith('__reactProps'))"
+SETTLED="document.getAnimations().every(a=>a.playState!=='running')"
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900   # then again at 390 844
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/about
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+bun run verify observe "$VERIFY_RUN" page
+```
+
+Then at 1280 wide, `find role button click --name "Details for /θ/"`, `wait "[data-phoneme-details]"`, `observe sound-details`; and `open /sitemap.xml`, `observe sitemap`. Wait for `$SETTLED` before screenshots: the page's entrance animation blurs the top sections until it ends. `robots` reads `noindex, follow` locally because `SITE_INDEXING_ENABLED` is unset; a production build that runs with `SITE_URL` writes `apps/phonaria/.dev.vars`, which then changes the dev server's canonical.
+
+### Flag off
+
+The flag is read when the server starts, so this needs its own run and server:
+
+```bash
+bun run verify init about-off
+FLAG_ABOUT=0 bun run verify serve "$VERIFY_RUN"  # leaving it unset is the same
+bun run verify browser "$VERIFY_RUN" open about:blank
+bun run verify browser "$VERIFY_RUN" trace start
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/about
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('h1')"
+bun run verify observe "$VERIFY_RUN" not-found
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('footer a')"
+bun run verify observe "$VERIFY_RUN" footer-hidden
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sitemap.xml
+bun run verify observe "$VERIFY_RUN" sitemap-hidden
+```
+
+`not-found` requires HTTP 404 on `/about` (open it directly) and the shared **This page doesn't exist** h1. `footer-hidden` requires the footer links to be exactly **Credits** and **GitHub**, and no `a[href="/about"]` on the page. `sitemap-hidden` requires `/about` to be missing from the sitemap.
+

@@ -8,6 +8,8 @@
 		"html_handling": "drop-trailing-slash",
 		"run_worker_first": [
 			"/",
+			"/about",
+			"/about/",
 			"/credits",
 			"/credits/",
 			"/ipa-chart",
@@ -104,6 +106,7 @@
 				"SITE_INDEXING_ENABLED": "0",
 				"FLAG_PRACTICE": "1",
 				"FLAG_LANGUAGE_HISTORY": "1",
+				"FLAG_ABOUT": "1",
 				"FLAG_SPEECH": "1"
 			}
 		},
@@ -141,6 +144,7 @@
 				"SITE_INDEXING_ENABLED": "0",
 				"FLAG_PRACTICE": "1",
 				"FLAG_LANGUAGE_HISTORY": "1",
+				"FLAG_ABOUT": "1",
 				"FLAG_SPEECH": "1"
 			}
 		},
@@ -183,6 +187,7 @@
 				"SITE_INDEXING_ENABLED": "1",
 				"FLAG_PRACTICE": "0",
 				"FLAG_LANGUAGE_HISTORY": "0",
+				"FLAG_ABOUT": "0",
 				"FLAG_SPEECH": "0"
 			}
 		}

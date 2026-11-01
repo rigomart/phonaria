@@ -68,6 +68,7 @@ describe("loadTargetFromEnv", () => {
 				expectedCanonicalOrigin: "https://example.test",
 				practiceEnabled: false,
 				languageHistoryEnabled: false,
+				aboutEnabled: false,
 				speechEnabled: false,
 				indexingEnabled: false,
 				bucketAssetsAvailable: true,

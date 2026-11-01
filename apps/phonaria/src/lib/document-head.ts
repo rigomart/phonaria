@@ -1,4 +1,5 @@
 import type { EnglishPhonemeSymbolId } from "@phonaria/phonetics-data";
+import { ABOUT_PAGE_DESCRIPTION, ABOUT_PAGE_TITLE, ABOUT_PATH } from "@/lib/about/metadata";
 import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
 import {
 	CONSONANTS_PAGE_DESCRIPTION,
@@ -210,6 +211,14 @@ export function buildCreditsHead(): StartHead {
 		path: "/credits",
 		title: CREDITS_PAGE_TITLE,
 		description: CREDITS_PAGE_DESCRIPTION,
+	});
+}
+
+export function buildAboutHead(): StartHead {
+	return buildPageHead({
+		path: ABOUT_PATH,
+		title: ABOUT_PAGE_TITLE,
+		description: ABOUT_PAGE_DESCRIPTION,
 	});
 }
 

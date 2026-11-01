@@ -6,6 +6,7 @@ afterEach(() => {
 	delete process.env.SITE_URL;
 	delete process.env.SITE_INDEXING_ENABLED;
 	delete process.env.FLAG_LANGUAGE_HISTORY;
+	delete process.env.FLAG_ABOUT;
 });
 
 describe("indexing helpers", () => {
@@ -27,6 +28,7 @@ describe("indexing helpers", () => {
 	it("lists the indexable application URLs and omits Practice", () => {
 		process.env.SITE_URL = "https://phonaria.rigos.dev";
 		process.env.FLAG_LANGUAGE_HISTORY = "0";
+		process.env.FLAG_ABOUT = "0";
 		const urls = getSitemapUrls();
 		expect(urls.slice(0, 6)).toEqual([
 			"https://phonaria.rigos.dev",
@@ -40,8 +42,8 @@ describe("indexing helpers", () => {
 	});
 
 	it("lists every contrast page, with or without speaking practice", () => {
-		const contrastPaths = getIndexablePaths({ languageHistory: false }).filter((path) =>
-			path.startsWith("/minimal-pairs/"),
+		const contrastPaths = getIndexablePaths({ about: false, languageHistory: false }).filter(
+			(path) => path.startsWith("/minimal-pairs/"),
 		);
 		expect(contrastPaths).toHaveLength(EnglishPhonemeContrasts.length);
 		expect(contrastPaths).toContain("/minimal-pairs/th-s");
@@ -49,7 +51,7 @@ describe("indexing helpers", () => {
 	});
 
 	it("lists /sounds and every sound page", () => {
-		const paths = getIndexablePaths({ languageHistory: false });
+		const paths = getIndexablePaths({ about: false, languageHistory: false });
 		expect(paths).toContain("/sounds");
 		const soundPaths = paths.filter((path) => path.startsWith("/sounds/"));
 		expect(soundPaths).toHaveLength(getLanguagePhonemeIds("en-us").length);
@@ -57,8 +59,8 @@ describe("indexing helpers", () => {
 	});
 
 	it("adds History only when its flag is on", () => {
-		expect(getIndexablePaths({ languageHistory: true })).toContain("/history");
-		expect(getIndexablePaths({ languageHistory: false })).not.toContain("/history");
+		expect(getIndexablePaths({ about: false, languageHistory: true })).toContain("/history");
+		expect(getIndexablePaths({ about: false, languageHistory: false })).not.toContain("/history");
 	});
 
 	it("reads the History flag from the environment by default", () => {
@@ -67,5 +69,23 @@ describe("indexing helpers", () => {
 		expect(getSitemapUrls()).toContain("https://phonaria.rigos.dev/history");
 		process.env.FLAG_LANGUAGE_HISTORY = "0";
 		expect(getSitemapUrls()).not.toContain("https://phonaria.rigos.dev/history");
+	});
+
+	it("adds About only when its flag is on", () => {
+		expect(getIndexablePaths({ about: true, languageHistory: false })).toContain("/about");
+		expect(getIndexablePaths({ about: false, languageHistory: false })).not.toContain("/about");
+	});
+
+	it("leaves About out of the sitemap when FLAG_ABOUT is unset", () => {
+		process.env.SITE_URL = "https://phonaria.rigos.dev";
+		expect(getSitemapUrls()).not.toContain("https://phonaria.rigos.dev/about");
+	});
+
+	it("reads the About flag from the environment by default", () => {
+		process.env.SITE_URL = "https://phonaria.rigos.dev";
+		process.env.FLAG_ABOUT = "1";
+		expect(getSitemapUrls()).toContain("https://phonaria.rigos.dev/about");
+		process.env.FLAG_ABOUT = "0";
+		expect(getSitemapUrls()).not.toContain("https://phonaria.rigos.dev/about");
 	});
 });

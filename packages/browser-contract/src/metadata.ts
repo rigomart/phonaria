@@ -2,6 +2,7 @@ import type { APIRequestContext, APIResponse } from "@playwright/test";
 import {
 	type ContractTarget,
 	INDEXABLE_PATHS,
+	ABOUT_PATH,
 	LANGUAGE_HISTORY_PATH,
 	MINIMAL_PAIRS_PATH,
 	SOUNDS_PATH,
@@ -46,9 +47,13 @@ export function expectedRobots(target: ContractTarget): string {
 
 /** Every indexable URL but the contrast and sound pages, which are counted separately. */
 export function expectedSitemapUrls(target: ContractTarget): string[] {
-	const paths = target.languageHistoryEnabled
-		? [...INDEXABLE_PATHS, MINIMAL_PAIRS_PATH, SOUNDS_PATH, LANGUAGE_HISTORY_PATH]
-		: [...INDEXABLE_PATHS, MINIMAL_PAIRS_PATH, SOUNDS_PATH];
+	const paths = [
+		...INDEXABLE_PATHS,
+		MINIMAL_PAIRS_PATH,
+		SOUNDS_PATH,
+		...(target.aboutEnabled ? [ABOUT_PATH] : []),
+		...(target.languageHistoryEnabled ? [LANGUAGE_HISTORY_PATH] : []),
+	];
 	return paths.map((path) => expectedCanonical(target, path));
 }
 

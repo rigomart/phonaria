@@ -20,6 +20,8 @@ export interface ContractTarget {
 	expectedCanonicalOrigin: string;
 	practiceEnabled: boolean;
 	languageHistoryEnabled: boolean;
+	/** `FLAG_ABOUT`: the About page and its footer link. */
+	aboutEnabled: boolean;
 	/** `FLAG_SPEECH`: speaking practice on the minimal-pair pages. */
 	speechEnabled: boolean;
 	indexingEnabled: boolean;
@@ -41,6 +43,9 @@ export const INDEXABLE_PATHS = [
 
 /** Indexed only on targets where its flag is on, since the route 404s otherwise. */
 export const LANGUAGE_HISTORY_PATH = "/history";
+
+/** Indexed only on targets where `FLAG_ABOUT` is on, like History. */
+export const ABOUT_PATH = "/about";
 
 /** The minimal-pair index, indexed on every target, and one page per catalog contrast under it. */
 export const MINIMAL_PAIRS_PATH = "/minimal-pairs";

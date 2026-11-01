@@ -5,6 +5,7 @@ describe("TanStack requireFlag", () => {
 	afterEach(() => {
 		delete process.env.FLAG_PRACTICE;
 		delete process.env.FLAG_LANGUAGE_HISTORY;
+		delete process.env.FLAG_ABOUT;
 		delete process.env.FLAG_SPEECH;
 	});
 
@@ -26,6 +27,20 @@ describe("TanStack requireFlag", () => {
 	it("throws not-found when FLAG_LANGUAGE_HISTORY is off", () => {
 		process.env.FLAG_LANGUAGE_HISTORY = "0";
 		expect(() => requireFlag("languageHistory")).toThrow();
+	});
+
+	it("allows About when FLAG_ABOUT is on", () => {
+		process.env.FLAG_ABOUT = "1";
+		expect(() => requireFlag("about")).not.toThrow();
+	});
+
+	it("throws not-found when FLAG_ABOUT is unset, since About is off by default", () => {
+		expect(() => requireFlag("about")).toThrow();
+	});
+
+	it("throws not-found when FLAG_ABOUT is off", () => {
+		process.env.FLAG_ABOUT = "0";
+		expect(() => requireFlag("about")).toThrow();
 	});
 
 	it("allows minimal-pair speaking when FLAG_SPEECH is on, even with Practice off", () => {
