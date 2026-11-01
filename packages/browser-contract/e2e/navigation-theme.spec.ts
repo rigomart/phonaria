@@ -1,21 +1,23 @@
 import { expect, test } from "../src/fixtures";
+import { waitForHydration } from "../src/hydration";
 
 test.describe("Navigation and theme", () => {
 	test("moves between transcription, charts, credits, and home", async ({ page }) => {
 		await page.goto("/");
 		await expect(page.getByLabel("Text to transcribe")).toBeVisible();
 
-		// The header's IPA Chart link opens the consonant chart; chart pages show section tabs.
-		await expect(async () => {
-			await page.getByRole("link", { name: "IPA Chart", exact: true }).click();
-			await expect(page).toHaveURL(/\/ipa-chart\/consonants$/, { timeout: 1_000 });
-		}).toPass({ timeout: 10_000 });
+		const sounds = page.getByRole("button", { name: "Sounds", exact: true });
+		const openSounds = async (link: string) => {
+			await waitForHydration(sounds);
+			await sounds.click();
+			await page.getByRole("link", { name: link, exact: true }).click();
+		};
+		await openSounds("Consonant chart");
+		await expect(page).toHaveURL(/\/ipa-chart\/consonants$/);
 		await expect(page.getByRole("heading", { name: "Consonants" })).toBeVisible();
 
-		await expect(async () => {
-			await page.getByRole("link", { name: "Vowels", exact: true }).click();
-			await expect(page).toHaveURL(/\/ipa-chart\/vowels$/, { timeout: 1_000 });
-		}).toPass({ timeout: 15_000 });
+		await openSounds("Vowel chart");
+		await expect(page).toHaveURL(/\/ipa-chart\/vowels$/);
 
 		await page.getByRole("link", { name: "Credits" }).click();
 		await expect(page).toHaveURL(/\/credits$/);

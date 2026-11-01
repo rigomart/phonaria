@@ -4,7 +4,6 @@ import {
 	AudioLines,
 	BookOpen,
 	Globe,
-	Grid3x3,
 	type LucideIcon,
 	Volume2,
 } from "lucide-react";
@@ -21,7 +20,7 @@ import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { SOUNDS_PATH } from "@/lib/sound-pages";
 
 export type Tool = {
-	id: "transcription" | "ipa-chart" | "sounds" | "minimal-pairs" | "practice" | "language-history";
+	id: "transcription" | "sounds" | "minimal-pairs" | "practice" | "language-history";
 	href: string;
 	label: string;
 	icon: LucideIcon;
@@ -38,18 +37,14 @@ const tools: readonly Tool[] = [
 		match: (pathname) => pathname === "/" || pathname === SEARCH_PATH,
 	},
 	{
-		id: "ipa-chart",
-		href: IPA_CHART_CONSONANTS_PATH,
-		label: "IPA Chart",
-		icon: Grid3x3,
-		match: (pathname) => pathname.startsWith(IPA_CHART_INDEX_PATH),
-	},
-	{
 		id: "sounds",
 		href: SOUNDS_PATH,
 		label: "Sounds",
 		icon: Volume2,
-		match: (pathname) => pathname === SOUNDS_PATH || pathname.startsWith(`${SOUNDS_PATH}/`),
+		match: (pathname) =>
+			[SOUNDS_PATH, IPA_CHART_INDEX_PATH].some(
+				(path) => pathname === path || pathname.startsWith(`${path}/`),
+			),
 	},
 	{
 		id: "minimal-pairs",
@@ -75,11 +70,22 @@ const tools: readonly Tool[] = [
 	},
 ];
 
-export const chartSections = [
-	{ href: IPA_CHART_CONSONANTS_PATH, label: "Consonants" },
-	{ href: IPA_CHART_VOWELS_PATH, label: "Vowels" },
-	{ href: IPA_CHART_FREQUENCY_PATH, label: "Frequency" },
+/** Pages under the Sounds nav item, in menu order. */
+export const soundsSections = [
+	{ href: SOUNDS_PATH, label: "All sounds" },
+	{ href: IPA_CHART_CONSONANTS_PATH, label: "Consonant chart" },
+	{ href: IPA_CHART_VOWELS_PATH, label: "Vowel chart" },
+	{ href: IPA_CHART_FREQUENCY_PATH, label: "How common" },
 ] as const;
+
+/**
+ * `aria-current` for a nav item: "page" on the page it links to, "true" elsewhere
+ * in its section (a sound's page, a chart under Sounds).
+ */
+export function navCurrent(tool: Tool, pathname: string): "page" | "true" | undefined {
+	if (pathname === tool.href) return "page";
+	return tool.match(pathname) ? "true" : undefined;
+}
 
 export function getTools(flags: Pick<AppFlags, "practice" | "languageHistory">): readonly Tool[] {
 	return tools.filter((tool) => {

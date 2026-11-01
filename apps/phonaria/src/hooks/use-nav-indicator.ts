@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 type Placement = { left: number; top: number; width: number; height: number };
 
 /**
- * One indicator that slides to a nav's active link (`aria-current="page"`), so
+ * One indicator that slides to a nav's active item (`data-nav-active`), so
  * switching sections reads as one motion instead of a jump.
  *
- * Until it has measured, `measured` is false and the active link should draw its
+ * Until it has measured, `measured` is false and the active item should draw its
  * own indicator: the server render and pre-hydration paint stay correct without
  * JavaScript. The first placement is instant; only later moves slide.
  *
@@ -23,13 +23,18 @@ export function useNavIndicator<T extends HTMLElement>(activeKey: string | null)
 		const nav = navRef.current;
 		if (!nav || activeKey === null) return;
 		const measure = () => {
-			const active = nav.querySelector<HTMLElement>('[aria-current="page"]');
+			const active = nav.querySelector<HTMLElement>("[data-nav-active]");
 			if (!active) return;
+			// Not offsetLeft: NavigationMenuItem's relative <li> is each item's offsetParent.
+			const box = nav.getBoundingClientRect();
+			const item = active.getBoundingClientRect();
+			const hidden = item.width === 0;
+			if (hidden) return;
 			const next = {
-				left: active.offsetLeft,
-				top: active.offsetTop,
-				width: active.offsetWidth,
-				height: active.offsetHeight,
+				left: item.left - box.left,
+				top: item.top - box.top,
+				width: item.width,
+				height: item.height,
 			};
 			setPlacement((current) => (current && samePlacement(current, next) ? current : next));
 		};
@@ -37,7 +42,7 @@ export function useNavIndicator<T extends HTMLElement>(activeKey: string | null)
 		// Links change width as fonts load and the nav reflows at breakpoints.
 		const observer = new ResizeObserver(measure);
 		observer.observe(nav);
-		for (const link of nav.children) observer.observe(link);
+		for (const child of nav.children) observer.observe(child);
 		return () => observer.disconnect();
 	}, [activeKey]);
 

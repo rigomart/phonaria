@@ -10,15 +10,16 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Other pronunciation variants | Transcribe a word, **Show other pronunciations of hello** | Not exercised |
 | Word definitions | Transcribe, **Definition of hello** | Not exercised; requires Worker/Wiktionary |
 | Spelling suggestions and server lookup | `/`, words outside the bundled lists | Not exercised; server lookup needs Turso |
-| Consonant chart | `/ipa-chart/consonants`, header **IPA Chart** → **Consonants** | Not exercised beyond the sound-frequency check that it stays unshaded |
+| Consonant chart | `/ipa-chart/consonants`, header **Sounds** menu → **Consonant chart** | Not exercised beyond the sound-frequency check that it stays unshaded |
 | Vowel chart | `/ipa-chart/vowels`, **Show diphthongs** | Not exercised |
-| Frequency | `/ipa-chart/frequency`, header **IPA Chart** → **Frequency** tab | Executable journey below |
+| Frequency | `/ipa-chart/frequency`, header **Sounds** menu → **How common** | Executable journey below |
 | Sound card "Frequency" and "Spelling" | Any sound, or **Details for /h/** after transcribing | Executable journey below |
 | Sound card merger notes | `/ipa-chart/vowels`, /ɔ/, /æ/ or /ɛ/, then **Full details for …** (wide screens) or **More about …** (phones) | Executable journey below |
 | History | `/history`, header **History** (behind `FLAG_LANGUAGE_HISTORY`) | Executable journeys below: `language-history` (flag on) and `language-history-off` |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair pages and speaking practice | `/minimal-pairs` and one page per contrast at `/minimal-pairs/<contrast>` (the pairs and recordings in every build); header **Minimal pairs** in every build; `FLAG_SPEECH` adds speaking practice to each contrast page; in every build, a sound's **All pairs for …** link on each face-off card under Compare with (**Practise saying …** while `FLAG_SPEECH` is on), and each contrast page links its two sounds' pages and the other contrasts with either sound. `?contrast=` links and `/practice/minimal-pairs` redirect to the contrast's page | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
 | Sound pages | `/sounds` and `/sounds/<slug>` (e.g. `/sounds/th-thin`); every chart tile and frequency row links to its sound's page, and the drawer and side panel have **Open full page** | Executable journeys below: `sound-pages` and `sound-links` |
+| Sounds menu in the header | header **Sounds** (a menu button), active on `/sounds`, `/sounds/<slug>` and `/ipa-chart/*`; its menu links **All sounds**, **Consonant chart**, **Vowel chart**, **How common**; the same four as pills under **Sounds** in the phone menu | Executable journey below: `sounds-nav` |
 | Document head after an in-app move | `/sounds/th-thin`, then its link to `/minimal-pairs/th-t` (production build) | Executable journey below |
 | About | `/about`, footer **About** (before Credits), both behind `FLAG_ABOUT` | Executable journeys below: `about` (flag on) and `about-off` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
@@ -303,7 +304,7 @@ bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname === '/ipa-char
 bun run verify observe "$VERIFY_RUN" followed-link
 ```
 
-`ranking` requires the "How common each sound is" heading, no tabs or comparison chart, no category legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and 40 distinct frequency shades without category labels. `page-card` requires the /ð/ row marked open (`data-details-open`), "Common", "11th most common" of 40 with 3 of 4 meter bars lit (3.1%) and no link on the Frequency page itself, and the pattern `th` paired with "this, mother", both `th` emphasized. `menu` requires the header's three IPA Chart tabs, which show on every chart page. `plain-charts` requires the consonant chart without any switch. `result-card` requires the /h/ panel from a transcription result to show "Less common", "29th most common" of 40 with 2 of 4 meter bars lit (1.35% in `phoneme-frequency.json`), the block linking to the Frequency page, and the pattern `h` paired with "house, hello"; `followed-link` requires that link to open the Frequency page.
+`ranking` requires the "How common each sound is" heading, no tabs or comparison chart, no category legend, 40 rows led by /ə/, /t/, /n/ and ending with /ʒ/, and 40 distinct frequency shades without category labels. `page-card` requires the /ð/ row marked open (`data-details-open`), "Common", "11th most common" of 40 with 3 of 4 meter bars lit (3.1%) and no link on the Frequency page itself, and the pattern `th` paired with "this, mother", both `th` emphasized. `menu` requires the header's Sounds menu to hold links to `/sounds` and the three chart pages; the menu stays mounted while closed, so the links are there on a fresh load without opening it. `plain-charts` requires the consonant chart without any switch. `result-card` requires the /h/ panel from a transcription result to show "Less common", "29th most common" of 40 with 2 of 4 meter bars lit (1.35% in `phoneme-frequency.json`), the block linking to the Frequency page, and the pattern `h` paired with "house, hello"; `followed-link` requires that link to open the Frequency page.
 
 Clicking a sound whose card or panel is already open closes it; clicking another sound while the panel is open swaps the panel to it. Review screenshots in both themes and at a narrow width. The unavailable-accent path has no route and is covered by unit tests.
 
@@ -396,7 +397,7 @@ bun run verify observe "$VERIFY_RUN" next-word
 bun run verify observe "$VERIFY_RUN" card-link
 ```
 
-`nav` requires the main nav to read Transcription, IPA Chart, Sounds, **Minimal pairs** (to `/minimal-pairs`), Practice, History, and the Practice index to list Schwa with no minimal-pairs card. `redirect` requires the old `/practice/minimal-pairs?contrast=i-ix&word=ship` to land on `/minimal-pairs/i-ix?word=ship`. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 links to contrast pages, the first named **pat and bat**. `word` requires the **/ɪ/ vs /i/: ship vs sheep** h1 at `/minimal-pairs/i-ix`, the target card *ship* `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound** beside the partner card *sheep* `ˈʃip` with /i/ marked, **Hear ship**, **Hear sheep** and **Record** buttons, the privacy line, no card marked heard and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences and visible buttons, `match` with the *ship* card marked heard and `swapped` with the *sheep* card marked and a second **Hear sheep** in the result; the others mark no card and the wrong-word ones name no sound; `every-sound` requires the swapped sentence above a **Sound by sound** row of three tiles: /ʃ/ `match` "/ʃ/ sounded right", /ɪ/ `swapped` with the marked /ɪ/ and the heard /i/ as buttons and "/ɪ/ sounded like /i/", and /p/ `unclear` "/p/ wasn't clear". `heard-card` requires the heard /i/ tile button to be the open trigger and the card's heading to read **Long E /i/**. Each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, on the same contrast page, with no result showing. `card-link` requires the /ɪ/ sound's full view to link **Practise saying /ɪ/ and /i/** to `/minimal-pairs/i-ix`.
+`nav` requires the main nav to read Transcription, Sounds, **Minimal pairs** (to `/minimal-pairs`), Practice, History, and the Practice index to list Schwa with no minimal-pairs card. `redirect` requires the old `/practice/minimal-pairs?contrast=i-ix&word=ship` to land on `/minimal-pairs/i-ix?word=ship`. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 links to contrast pages, the first named **pat and bat**. `word` requires the **/ɪ/ vs /i/: ship vs sheep** h1 at `/minimal-pairs/i-ix`, the target card *ship* `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound** beside the partner card *sheep* `ˈʃip` with /i/ marked, **Hear ship**, **Hear sheep** and **Record** buttons, the privacy line, no card marked heard and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences and visible buttons, `match` with the *ship* card marked heard and `swapped` with the *sheep* card marked and a second **Hear sheep** in the result; the others mark no card and the wrong-word ones name no sound; `every-sound` requires the swapped sentence above a **Sound by sound** row of three tiles: /ʃ/ `match` "/ʃ/ sounded right", /ɪ/ `swapped` with the marked /ɪ/ and the heard /i/ as buttons and "/ɪ/ sounded like /i/", and /p/ `unclear` "/p/ wasn't clear". `heard-card` requires the heard /i/ tile button to be the open trigger and the card's heading to read **Long E /i/**. Each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, on the same contrast page, with no result showing. `card-link` requires the /ɪ/ sound's full view to link **Practise saying /ɪ/ and /i/** to `/minimal-pairs/i-ix`.
 
 ### Flag off
 
@@ -649,7 +650,7 @@ js readSitemap ""
 bun run verify observe "$VERIFY_RUN" sitemap-hidden
 ```
 
-`not-found` requires, on `/history`, HTTP status 404 (from the navigation timing entry, so the page must be opened directly, not reached by a link), the shared **This page doesn't exist** h1, no map region or pins, and main nav labels exactly **Transcription**, **IPA Chart**, **Sounds**, **Minimal pairs**, **Practice**. `nav-hidden` requires the same labels on `/`, all visible, and no `a[href="/history"]` anywhere in the page. Practice is on in local dev unless `FLAG_PRACTICE=0` (checked: a dev server started with only `FLAG_LANGUAGE_HISTORY=0` shows all three). The journey cannot tell whether the server really had the flag off; it only sees its effects. `sitemap-hidden` requires the fetched sitemap to list the same pages without `/history`.
+`not-found` requires, on `/history`, HTTP status 404 (from the navigation timing entry, so the page must be opened directly, not reached by a link), the shared **This page doesn't exist** h1, no map region or pins, and main nav labels exactly **Transcription**, **Sounds**, **Minimal pairs**, **Practice**. `nav-hidden` requires the same labels on `/`, all visible, and no `a[href="/history"]` anywhere in the page. Practice is on in local dev unless `FLAG_PRACTICE=0` (checked: a dev server started with only `FLAG_LANGUAGE_HISTORY=0` shows all three). The journey cannot tell whether the server really had the flag off; it only sees its effects. `sitemap-hidden` requires the fetched sitemap to list the same pages without `/history`.
 
 ### Limits
 
@@ -853,3 +854,70 @@ bun run verify observe "$VERIFY_RUN" after-move
 ```
 
 `direct` requires one canonical, one `og:url` and one breadcrumb list, all for `/sounds/th-thin`. `after-move` requires the marker still set (no full load), the contrast page's title, and one canonical, one `og:url` and one breadcrumb list, all for `/minimal-pairs/th-t`. The link is clicked by its `href` because its name depends on `FLAG_SPEECH` (**All pairs for /θ/ and /t/** off, **Practise saying /θ/ and /t/** on). The build writes `apps/phonaria/.dev.vars`; delete it afterwards so the dev server's canonical goes back to its default.
+
+## Sounds menu in the header
+
+The header's main nav is a shadcn navigation menu (Base UI `NavigationMenu`). Transcription, Minimal pairs, Practice and History are links. **Sounds** is a button that opens a menu (on hover or click) with four links: **All sounds** (`/sounds`), **Consonant chart** (`/ipa-chart/consonants`), **Vowel chart** (`/ipa-chart/vowels`) and **How common** (`/ipa-chart/frequency`). Sounds is the active item (`data-nav-active`, with the sliding pill behind it) on `/sounds`, every `/sounds/<slug>` and every `/ipa-chart/*` page. A top-level item has `aria-current="page"` on the page it links to and `aria-current="true"` elsewhere in its section, in the header and the phone menu alike (the Sounds button links nowhere itself, so it is `true` on every Sounds page but `/sounds`, where it is `page`). In the menu, the current page's link has `aria-current="page"` and is shaded; on a sound's own page no link is current. Following a link closes the menu. There is no row of tabs under the header. The menu's content is kept mounted, so the server-rendered HTML holds all four links for crawlers (check with `curl -s http://127.0.0.1:3000/ipa-chart/vowels`); once the menu has been opened and closed on the client, the links leave the DOM until it opens again. Below `sm` the nav is replaced by the phone menu, which lists the same four links as pills under **Sounds**. The URLs did not move.
+
+The [checkpoints](../scripts/sounds-nav.ts) read the main nav's top-level items (`nav[aria-label="Main"] > ul > li > a, button`), which one is active and which has `aria-current`, whether a `nav[aria-label="Sounds"]` tab row exists, whether the menu content is visible, its links, which is current and which is shaded, whether it fits in the viewport, page overflow, and in the phone menu the items, the pills and whether each pill fits. Expected values use the local default flags (Practice and History on).
+
+### Executable journey
+
+After `init sounds-nav`, `serve`, `open about:blank` and `trace start`:
+
+```bash
+O=http://127.0.0.1:3000
+HYD="Object.keys(document.querySelector('header nav a')||{}).some(k=>k.startsWith('__reactProps'))"
+SETTLED="document.getAnimations().length===0"
+OPEN="!!document.querySelector('[data-slot=navigation-menu-content]')?.getClientRects().length"
+bun run verify browser "$VERIFY_RUN" set viewport 1280 800
+for pair in "/ home" "/sounds index" "/ipa-chart/consonants consonants" "/sounds/th-thin sound-page"; do
+  set -- $pair
+  bun run verify browser "$VERIFY_RUN" open "$O$1"
+  bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+  [ "$2" = home ] || bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+  bun run verify observe "$VERIFY_RUN" "$2"
+done
+bun run verify browser "$VERIFY_RUN" find role button click --name "Sounds"
+bun run verify browser "$VERIFY_RUN" wait --fn "$OPEN"
+bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+bun run verify observe "$VERIFY_RUN" menu-on-sound-page
+bun run verify browser "$VERIFY_RUN" press Escape
+bun run verify browser "$VERIFY_RUN" open "$O/ipa-chart/vowels"
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Sounds"
+bun run verify browser "$VERIFY_RUN" wait --fn "$OPEN"
+bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+bun run verify observe "$VERIFY_RUN" menu-open
+bun run verify browser "$VERIFY_RUN" press Escape
+bun run verify browser "$VERIFY_RUN" wait --fn "!($OPEN)"
+bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+bun run verify observe "$VERIFY_RUN" menu-closed
+bun run verify browser "$VERIFY_RUN" press Enter
+bun run verify browser "$VERIFY_RUN" wait --fn "$OPEN"
+bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+bun run verify observe "$VERIFY_RUN" keyboard-open
+bun run verify browser "$VERIFY_RUN" press Escape
+bun run verify browser "$VERIFY_RUN" wait --fn "!($OPEN)"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Sounds"
+bun run verify browser "$VERIFY_RUN" wait --fn "$OPEN"
+bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+bun run verify browser "$VERIFY_RUN" find role link click --name "How common"
+bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname==='/ipa-chart/frequency' && !($OPEN)"
+bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+bun run verify observe "$VERIFY_RUN" followed-link
+bun run verify browser "$VERIFY_RUN" set viewport 640 800
+bun run verify browser "$VERIFY_RUN" open "$O/ipa-chart/frequency"
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+bun run verify observe "$VERIFY_RUN" narrow
+bun run verify browser "$VERIFY_RUN" set viewport 390 844
+bun run verify browser "$VERIFY_RUN" open "$O/ipa-chart/vowels"
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Open menu"
+bun run verify browser "$VERIFY_RUN" wait '[role="dialog"] nav'
+bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
+bun run verify observe "$VERIFY_RUN" mobile-menu
+```
+
+The home page animates without end, so the loop skips the settled wait there. The menu is first opened on `/sounds/th-thin`, the loop's last page. Every desktop checkpoint requires the main nav to read Transcription, Sounds, Minimal pairs, Practice, History, no tab row and no page overflow. `home` requires **Transcription** active with `aria-current="page"`. `index` requires **Sounds** active with `aria-current="page"`; `consonants` and `sound-page` require it active with `aria-current="true"`. Each is the only item with `aria-current`, and the menu is closed. `menu-on-sound-page` requires the open menu on `/sounds/th-thin` to list the four links in order with none current or shaded, inside the viewport. `menu-open` and `keyboard-open` (opened with Enter on the focused button) require the same on `/ipa-chart/vowels` with **Vowel chart** current and shaded. `menu-closed` requires Escape to close it. `followed-link` requires the menu's **How common** link to open `/ipa-chart/frequency` and close the menu. `narrow` repeats the closed state at 640 wide, the narrowest width with the desktop nav. `mobile-menu` requires the open phone menu on `/ipa-chart/vowels` to list the same five items with only **Sounds** current (`true`), the four links as pills under **Sounds** with **Vowel chart** current, and every pill inside the viewport. Review the screenshots in both themes.
