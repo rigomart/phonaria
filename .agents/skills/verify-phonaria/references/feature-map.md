@@ -257,7 +257,7 @@ bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/vowels
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 # For each of o-note (ɔ, "Open-mid back rounded vowel (ɔ)"), ae-note (æ), e-note (ɛ), no-note (ɑ):
 bun run verify browser "$VERIFY_RUN" find role button click --name "Open-mid back rounded vowel (ɔ)" --exact
-bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /ɔ/"   # mobile: "More about /ɔ/"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /ɔ/"   # mobile: "More about AW /ɔ/"
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 # Scroll the last section into view so the screenshot shows the note.
 bun run verify observe "$VERIFY_RUN" o-note
@@ -613,7 +613,7 @@ v wait 1500   # on mobile a tap right after hydration can close the drawer
 v find role button click --name "Close front unrounded vowel (i)" --exact
 v wait --fn "!!document.querySelector('[data-phoneme-details]')"
 v wait 700
-v find role button click --name "Full details for /i/"   # mobile: "More about /i/: Close front unrounded vowel"
+v find role button click --name "Full details for /i/"   # mobile: "More about Long E /i/"
 v wait --fn "!!document.querySelector('[data-phoneme-details] button[aria-label=\"Hear seat\"]:not([aria-disabled])')"
 v network requests > "$VERIFY_RUN/network-after-card.json"    # must list it
 v wait 1500
