@@ -651,7 +651,7 @@ Playback is proven by the `playing` state, set on the media element's `playing` 
 
 ## Sound pages
 
-Target accent: American English (`en-us`). `/sounds` lists every sound, consonants then vowels, each a link to `/sounds/<slug>`; a sound's page is the details drawer's content laid out as a page. Slugs and titles are the ones reviewed in [#392](https://github.com/rigomart/phonaria/issues/392). The [checkpoints](../scripts/sound-pages.ts) read the list's groups and links, the sound page's title, canonical link, h1, section headings, rank and spelling words, the not-found heading, and where the rank sentence and **See ranking** link fall at phone width.
+Target accent: American English (`en-us`). `/sounds` lists every sound, consonants then vowels, each a link to `/sounds/<slug>`; a sound's page is the details drawer's content laid out as a page, plus page-only text: a summary line, a how-it's-made sentence, Related sounds, Common words, and Sound variants for the eight sounds with variant data. Slugs and titles are the ones reviewed in [#392](https://github.com/rigomart/phonaria/issues/392). The [checkpoints](../scripts/sound-pages.ts) read the list's groups and links, the sound page's title, canonical link, h1, section headings, rank and spelling words, the not-found heading, and where the rank sentence and **See ranking** link fall at phone width.
 
 ### Executable journey
 
@@ -666,6 +666,12 @@ bun run verify observe "$VERIFY_RUN" index
 bun run verify browser "$VERIFY_RUN" find role link click --name "/θ/ as in thin" --exact
 bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname==='/sounds/th-thin' && !!document.querySelector('[data-phoneme-details]')"
 bun run verify observe "$VERIFY_RUN" sound-page
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds/schwa
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" schwa-related
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds/t-top
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" t-variants
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds/nope
 bun run verify observe "$VERIFY_RUN" not-found
 bun run verify browser "$VERIFY_RUN" set viewport 390 844
@@ -674,7 +680,7 @@ bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify observe "$VERIFY_RUN" rank-line
 ```
 
-`index` requires 24 consonant and 16 vowel links, 40 distinct, from `/sounds/p-pat` to `/sounds/oy-boy`. `sound-page` requires the /θ/ title, a canonical `/sounds/th-thin`, one h1, the sections How it's made, Compare with and Spelling, and the **All sounds** link. `not-found` requires the app's 404 page; its 404 response is expected. `rank-line` requires the rank sentence on one line with **See ranking** off that line and no horizontal overflow. To check the text is server-rendered, `curl` a sound page and look for its description and spellings. Review screenshots in both themes.
+`index` requires 24 consonant and 16 vowel links, 40 distinct, from `/sounds/p-pat` to `/sounds/oy-boy`. `sound-page` requires the /θ/ title, a canonical `/sounds/th-thin`, one h1, the sections How it's made, Compare with, Related sounds, Spelling and Common words with /θ/, the **All sounds** link, and the page-only text of [#418](https://github.com/rigomart/phonaria/issues/418): the summary line, the how-it's-made sentence, one related link to `/sounds/th-this`, and the three common-word lists. `schwa-related` requires /ə/'s Related sounds to link /æ/, /ɝ/, /ɛ/ and /ʌ/. `t-variants` requires /t/'s Sound variants: /tʰ/ in top and time, the flap /ɾ/ in water, and /ʔ/ in button, each with its label; the /θ/ page has none. `not-found` requires the app's 404 page; its 404 response is expected. `rank-line` requires the rank sentence on one line with **See ranking** off that line and no horizontal overflow. To check the text is server-rendered, `curl` a sound page and look for its description and spellings; #418 expects `/sounds/th-thin`'s body text, tags stripped, to run to about 150 words or more (it was 87 before). Review screenshots in both themes.
 
 ## Chart tiles and Open full page
 

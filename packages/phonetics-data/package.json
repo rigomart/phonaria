@@ -10,6 +10,7 @@
 		"./languages/en/practice": "./src/languages/en/practice.ts",
 		"./data/en/curated-1k": "./src/data/en/curated-1k.ts",
 		"./data/en/curated-10k": "./src/data/en/curated-10k.ts",
+		"./data/en/common-words": "./src/data/en/common-words.ts",
 		"./data/en/word-audio": "./src/data/en/word-audio.ts"
 	},
 	"packageManager": "bun@1.3.2",

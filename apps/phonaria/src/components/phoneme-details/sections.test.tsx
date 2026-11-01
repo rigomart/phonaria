@@ -93,7 +93,10 @@ describe("the two layouts", () => {
 	it("makes the sound the page's h1 and each section an h2, in columns on wide screens", () => {
 		const html = renderToString(
 			<AudioManagerProvider>
-				<PhonemeDetailsPage options={{ targetAccent: "en-us", phonemeId: "TH" }} />
+				<PhonemeDetailsPage
+					options={{ targetAccent: "en-us", phonemeId: "TH" }}
+					sections={getDetailSections({ targetAccent: "en-us", phonemeId: "TH" })}
+				/>
 			</AudioManagerProvider>,
 		);
 		expect(html).toMatch(/<h1 [^>]*>Voiceless TH \/θ\/<\/h1>/);
@@ -128,7 +131,10 @@ describe("the link to the sound's own page", () => {
 		expect(header({ targetAccent: "es-419", phonemeId: "S" })).not.toContain("Open full page");
 		const page = renderToString(
 			<AudioManagerProvider>
-				<PhonemeDetailsPage options={{ targetAccent: "en-us", phonemeId: "TH" }} />
+				<PhonemeDetailsPage
+					options={{ targetAccent: "en-us", phonemeId: "TH" }}
+					sections={getDetailSections({ targetAccent: "en-us", phonemeId: "TH" })}
+				/>
 			</AudioManagerProvider>,
 		);
 		expect(page).not.toContain("Open full page");

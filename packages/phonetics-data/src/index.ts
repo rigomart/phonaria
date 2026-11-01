@@ -49,7 +49,7 @@ export type { CmudictPayload, CmudictStatsPayload, PhonemeFrequencyPayload } fro
 export { type MergerNoteSegment, splitMergerNoteText } from "./formatters/merger-note";
 export { formatPhonemeLabel } from "./formatters/phoneme-label";
 export { type SpelledWordSegment, splitSpelledWord } from "./formatters/spelled-word";
-export { EnglishPhonemeAllophones } from "./languages/en/allophones";
+export { EnglishAllophoneContextLabels, EnglishPhonemeAllophones } from "./languages/en/allophones";
 export {
 	CmuArpaMap,
 	type CmuArpaToken,

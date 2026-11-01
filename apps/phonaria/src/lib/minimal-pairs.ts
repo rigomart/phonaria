@@ -17,6 +17,7 @@ import {
 	type PhonemeCategory,
 } from "@phonaria/phonetics-data";
 import { getHeadlinePair } from "@/lib/headline-pairs";
+import { describeConsonant } from "@/lib/plain-articulation";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { getSoundName, soundPagePath } from "@/lib/sound-pages";
 
@@ -176,28 +177,6 @@ function articulation(id: EnglishPhonemeSymbolId): PhonemeArticulation {
 	)[id];
 }
 
-const CONSONANT_WORDS: Record<string, string> = {
-	voiced: "with the voice on",
-	voiceless: "with the voice off",
-	bilabial: "with both lips",
-	labiodental: "with the top teeth on the lower lip",
-	dental: "with the tongue between the teeth",
-	alveolar: "with the tongue tip on the gum ridge behind the top teeth",
-	postalveolar: "with the tongue just behind the gum ridge",
-	palatal: "with the middle of the tongue raised to the roof of the mouth",
-	velar: "with the back of the tongue raised",
-	"labial-velar": "with rounded lips and the back of the tongue raised",
-	glottal: "in the throat",
-	plosive: "stopping the air and releasing it",
-	fricative: "pushing air through a narrow gap",
-	affricate: "stopping the air and releasing it as a hiss",
-	nasal: "sending air through the nose",
-	approximant: "letting air flow smoothly",
-	"lateral-approximant": "letting air flow past the sides of the tongue",
-	tap: "tapping the tongue once",
-	trill: "letting the tongue vibrate",
-};
-
 const HEIGHTS_CLOSE_TO_OPEN = [
 	"close",
 	"near-close",
@@ -217,11 +196,7 @@ function describeConsonants(
 	const keys = (["place", "manner", "voicing"] as const).filter(
 		(key) => a.features[key] !== b.features[key],
 	);
-	const made = (ipa: string, { features }: ConsonantArticulation) => {
-		const words = keys.map((key) => CONSONANT_WORDS[features[key]] ?? features[key]);
-		return `/${ipa}/ is made ${keys[0] === "manner" ? "by " : ""}${words.join(", ")}.`;
-	};
-	const sentences = [made(firstIpa, a), made(secondIpa, b)];
+	const sentences = [describeConsonant(firstIpa, a, keys), describeConsonant(secondIpa, b, keys)];
 	if (keys.length < 3) sentences.push("Everything else is the same.");
 	return sentences.join(" ");
 }

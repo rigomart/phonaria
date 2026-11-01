@@ -16,6 +16,7 @@
 		"cmudict-to-json": "tsx src/cmudict-to-json.ts",
 		"cmudict-stats": "tsx src/cmudict-stats.ts",
 		"find-minimal-pairs": "tsx src/find-minimal-pairs.ts",
+		"generate-common-words": "tsx src/generate-common-words.ts",
 		"cmudict-to-sqlite": "bun src/cmudict-to-sqlite.ts"
 	},
 	"dependencies": {

@@ -1,0 +1,887 @@
+{
+	"meta": {
+		"source": "Curated top-1k list 2.0.0, first pronunciation of each word",
+		"limit": 6,
+		"license": "CC-BY-SA-4.0",
+		"attribution": "Derived from wordfreq (Robyn Speer, CC-BY-SA 4.0) incorporating data from Google Books Ngrams, OpenSubtitles, SUBTLEX (Brysbaert et al.), and Wikipedia. Pronunciations from CMUDict (Public Domain)."
+	},
+	"phonemes": {
+		"P": {
+			"start": [
+				"people",
+				"part",
+				"place",
+				"please",
+				"put",
+				"play"
+			],
+			"inside": [
+				"people",
+				"company",
+				"support",
+				"open",
+				"important",
+				"happy"
+			],
+			"end": [
+				"up",
+				"help",
+				"keep",
+				"group",
+				"top",
+				"stop"
+			]
+		},
+		"B": {
+			"start": [
+				"be",
+				"by",
+				"but",
+				"been",
+				"back",
+				"because"
+			],
+			"inside": [
+				"about",
+				"number",
+				"public",
+				"maybe",
+				"able",
+				"problem"
+			],
+			"end": [
+				"job",
+				"club"
+			]
+		},
+		"T": {
+			"start": [
+				"to",
+				"time",
+				"two",
+				"too",
+				"take",
+				"team"
+			],
+			"inside": [
+				"its",
+				"after",
+				"into",
+				"still",
+				"state",
+				"between"
+			],
+			"end": [
+				"that",
+				"it",
+				"at",
+				"not",
+				"but",
+				"just"
+			]
+		},
+		"D": {
+			"start": [
+				"do",
+				"did",
+				"day",
+				"down",
+				"does",
+				"during"
+			],
+			"inside": [
+				"under",
+				"already",
+				"today",
+				"including",
+				"order",
+				"children"
+			],
+			"end": [
+				"and",
+				"had",
+				"would",
+				"good",
+				"could",
+				"said"
+			]
+		},
+		"K": {
+			"start": [
+				"can",
+				"could",
+				"come",
+				"keep",
+				"company",
+				"called"
+			],
+			"inside": [
+				"because",
+				"school",
+				"next",
+				"second",
+				"looking",
+				"making"
+			],
+			"end": [
+				"like",
+				"make",
+				"think",
+				"back",
+				"work",
+				"take"
+			]
+		},
+		"G": {
+			"start": [
+				"get",
+				"good",
+				"go",
+				"going",
+				"got",
+				"great"
+			],
+			"inside": [
+				"again",
+				"against",
+				"together",
+				"ago",
+				"single",
+				"example"
+			],
+			"end": [
+				"big",
+				"league",
+				"dog"
+			]
+		},
+		"F": {
+			"start": [
+				"for",
+				"from",
+				"first",
+				"find",
+				"found",
+				"feel"
+			],
+			"inside": [
+				"after",
+				"before",
+				"left",
+				"different",
+				"information",
+				"often"
+			],
+			"end": [
+				"if",
+				"off",
+				"life",
+				"enough",
+				"half",
+				"myself"
+			]
+		},
+		"V": {
+			"start": [
+				"very",
+				"video",
+				"view",
+				"value",
+				"various",
+				"vote"
+			],
+			"inside": [
+				"over",
+				"even",
+				"never",
+				"every",
+				"ever",
+				"having"
+			],
+			"end": [
+				"of",
+				"have",
+				"love",
+				"give",
+				"believe",
+				"five"
+			]
+		},
+		"TH": {
+			"start": [
+				"think",
+				"through",
+				"three",
+				"things",
+				"thing",
+				"thought"
+			],
+			"inside": [
+				"something",
+				"without",
+				"anything",
+				"nothing",
+				"everything",
+				"months"
+			],
+			"end": [
+				"both",
+				"health",
+				"death",
+				"south",
+				"north",
+				"month"
+			]
+		},
+		"DH": {
+			"start": [
+				"the",
+				"that",
+				"this",
+				"they",
+				"their",
+				"there"
+			],
+			"inside": [
+				"other",
+				"another",
+				"together",
+				"within",
+				"others",
+				"either"
+			],
+			"end": [
+				"with"
+			]
+		},
+		"S": {
+			"start": [
+				"so",
+				"some",
+				"see",
+				"said",
+				"still",
+				"say"
+			],
+			"inside": [
+				"just",
+				"also",
+				"first",
+				"most",
+				"last",
+				"best"
+			],
+			"end": [
+				"this",
+				"its",
+				"us",
+				"since",
+				"house",
+				"place"
+			]
+		},
+		"Z": {
+			"start": [],
+			"inside": [
+				"used",
+				"business",
+				"music",
+				"season",
+				"using",
+				"president"
+			],
+			"end": [
+				"is",
+				"was",
+				"as",
+				"his",
+				"has",
+				"these"
+			]
+		},
+		"SH": {
+			"start": [
+				"she",
+				"should",
+				"show",
+				"sure",
+				"short",
+				"shows"
+			],
+			"inside": [
+				"national",
+				"information",
+				"social",
+				"international",
+				"special",
+				"education"
+			],
+			"end": [
+				"wish"
+			]
+		},
+		"ZH": {
+			"start": [],
+			"inside": [
+				"usually",
+				"decision",
+				"version"
+			],
+			"end": []
+		},
+		"H": {
+			"start": [
+				"have",
+				"he",
+				"his",
+				"has",
+				"who",
+				"had"
+			],
+			"inside": [
+				"behind",
+				"perhaps"
+			],
+			"end": []
+		},
+		"M": {
+			"start": [
+				"my",
+				"me",
+				"more",
+				"make",
+				"most",
+				"much"
+			],
+			"inside": [
+				"something",
+				"family",
+				"someone",
+				"number",
+				"company",
+				"government"
+			],
+			"end": [
+				"from",
+				"time",
+				"some",
+				"them",
+				"him",
+				"home"
+			]
+		},
+		"N": {
+			"start": [
+				"not",
+				"no",
+				"new",
+				"now",
+				"know",
+				"need"
+			],
+			"inside": [
+				"and",
+				"only",
+				"into",
+				"any",
+				"want",
+				"many"
+			],
+			"end": [
+				"in",
+				"on",
+				"an",
+				"one",
+				"can",
+				"when"
+			]
+		},
+		"NG": {
+			"start": [],
+			"inside": [
+				"think",
+				"things",
+				"thank",
+				"thanks",
+				"single",
+				"thinking"
+			],
+			"end": [
+				"being",
+				"going",
+				"long",
+				"something",
+				"during",
+				"thing"
+			]
+		},
+		"L": {
+			"start": [
+				"like",
+				"life",
+				"last",
+				"love",
+				"long",
+				"look"
+			],
+			"inside": [
+				"also",
+				"only",
+				"really",
+				"world",
+				"always",
+				"help"
+			],
+			"end": [
+				"all",
+				"will",
+				"people",
+				"well",
+				"still",
+				"while"
+			]
+		},
+		"R": {
+			"start": [
+				"really",
+				"right",
+				"real",
+				"run",
+				"research",
+				"room"
+			],
+			"inside": [
+				"from",
+				"very",
+				"years",
+				"great",
+				"through",
+				"part"
+			],
+			"end": [
+				"for",
+				"are",
+				"or",
+				"your",
+				"more",
+				"their"
+			]
+		},
+		"W": {
+			"start": [
+				"with",
+				"was",
+				"we",
+				"one",
+				"will",
+				"what"
+			],
+			"inside": [
+				"between",
+				"always",
+				"someone",
+				"away",
+				"everyone",
+				"anyone"
+			],
+			"end": []
+		},
+		"Y": {
+			"start": [
+				"you",
+				"your",
+				"year",
+				"years",
+				"used",
+				"yet"
+			],
+			"inside": [
+				"few",
+				"music",
+				"human",
+				"community",
+				"future",
+				"million"
+			],
+			"end": []
+		},
+		"CH": {
+			"start": [
+				"change",
+				"children",
+				"check",
+				"child",
+				"chance",
+				"church"
+			],
+			"inside": [
+				"actually",
+				"question",
+				"future",
+				"questions",
+				"picture",
+				"natural"
+			],
+			"end": [
+				"which",
+				"much",
+				"such",
+				"each",
+				"research",
+				"watch"
+			]
+		},
+		"J": {
+			"start": [
+				"just",
+				"job",
+				"general"
+			],
+			"inside": [
+				"major",
+				"education",
+				"energy",
+				"project",
+				"original",
+				"management"
+			],
+			"end": [
+				"change",
+				"large",
+				"age",
+				"college",
+				"average",
+				"page"
+			]
+		},
+		"I": {
+			"start": [
+				"even",
+				"each",
+				"either",
+				"easy",
+				"east",
+				"eat"
+			],
+			"inside": [
+				"people",
+				"these",
+				"here",
+				"need",
+				"being",
+				"between"
+			],
+			"end": [
+				"be",
+				"he",
+				"we",
+				"me",
+				"she",
+				"only"
+			]
+		},
+		"U": {
+			"start": [],
+			"inside": [
+				"used",
+				"school",
+				"doing",
+				"group",
+				"including",
+				"music"
+			],
+			"end": [
+				"to",
+				"you",
+				"do",
+				"who",
+				"new",
+				"into"
+			]
+		},
+		"IX": {
+			"start": [
+				"in",
+				"is",
+				"it",
+				"if",
+				"its",
+				"into"
+			],
+			"inside": [
+				"with",
+				"this",
+				"his",
+				"will",
+				"which",
+				"been"
+			],
+			"end": []
+		},
+		"UX": {
+			"start": [],
+			"inside": [
+				"would",
+				"good",
+				"could",
+				"should",
+				"look",
+				"during"
+			],
+			"end": []
+		},
+		"AX": {
+			"start": [
+				"and",
+				"about",
+				"another",
+				"again",
+				"against",
+				"away"
+			],
+			"inside": [
+				"people",
+				"little",
+				"family",
+				"second",
+				"company",
+				"different"
+			],
+			"end": [
+				"the",
+				"area",
+				"idea",
+				"data",
+				"media"
+			]
+		},
+		"E": {
+			"start": [
+				"any",
+				"every",
+				"end",
+				"ever",
+				"anything",
+				"everything"
+			],
+			"inside": [
+				"when",
+				"their",
+				"there",
+				"get",
+				"them",
+				"then"
+			],
+			"end": []
+		},
+		"AH": {
+			"start": [
+				"of",
+				"up",
+				"other",
+				"us",
+				"under",
+				"others"
+			],
+			"inside": [
+				"but",
+				"from",
+				"one",
+				"just",
+				"what",
+				"some"
+			],
+			"end": []
+		},
+		"O": {
+			"start": [
+				"or",
+				"all",
+				"also",
+				"off",
+				"always",
+				"already"
+			],
+			"inside": [
+				"for",
+				"your",
+				"more",
+				"because",
+				"before",
+				"long"
+			],
+			"end": [
+				"law",
+				"saw"
+			]
+		},
+		"AE": {
+			"start": [
+				"as",
+				"at",
+				"an",
+				"after",
+				"am",
+				"actually"
+			],
+			"inside": [
+				"that",
+				"have",
+				"can",
+				"has",
+				"had",
+				"than"
+			],
+			"end": []
+		},
+		"A": {
+			"start": [
+				"on",
+				"are",
+				"art",
+				"article",
+				"army"
+			],
+			"inside": [
+				"was",
+				"not",
+				"want",
+				"got",
+				"part",
+				"lot"
+			],
+			"end": []
+		},
+		"ER": {
+			"start": [
+				"around",
+				"early",
+				"original",
+				"earth"
+			],
+			"inside": [
+				"first",
+				"work",
+				"world",
+				"every",
+				"different",
+				"government"
+			],
+			"end": [
+				"were",
+				"her",
+				"other",
+				"our",
+				"after",
+				"over"
+			]
+		},
+		"EI": {
+			"start": [
+				"able",
+				"age"
+			],
+			"inside": [
+				"make",
+				"made",
+				"take",
+				"great",
+				"same",
+				"state"
+			],
+			"end": [
+				"they",
+				"way",
+				"may",
+				"day",
+				"say",
+				"away"
+			]
+		},
+		"OU": {
+			"start": [
+				"only",
+				"over",
+				"old",
+				"own",
+				"open",
+				"okay"
+			],
+			"inside": [
+				"most",
+				"going",
+				"those",
+				"home",
+				"both",
+				"told"
+			],
+			"end": [
+				"so",
+				"no",
+				"also",
+				"know",
+				"go",
+				"show"
+			]
+		},
+		"AI": {
+			"start": [
+				"idea",
+				"eyes"
+			],
+			"inside": [
+				"like",
+				"time",
+				"right",
+				"life",
+				"while",
+				"find"
+			],
+			"end": [
+				"by",
+				"my",
+				"why",
+				"high",
+				"try",
+				"guy"
+			]
+		},
+		"AU": {
+			"start": [
+				"out",
+				"our",
+				"hours",
+				"outside",
+				"hour"
+			],
+			"inside": [
+				"about",
+				"down",
+				"around",
+				"house",
+				"without",
+				"found"
+			],
+			"end": [
+				"how",
+				"now"
+			]
+		},
+		"OI": {
+			"start": [
+				"oil"
+			],
+			"inside": [
+				"point",
+				"points",
+				"choice",
+				"voice",
+				"boys"
+			],
+			"end": [
+				"boy",
+				"enjoy"
+			]
+		}
+	}
+}

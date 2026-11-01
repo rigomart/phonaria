@@ -174,11 +174,26 @@ export function getSoundKeyExample(phonemeId: EnglishPhonemeSymbolId) {
 	const word = getSoundSlug(phonemeId).split("-").at(-1);
 	const example = examples.find((candidate) => candidate.word === word) ?? examples[0];
 	if (!example) throw new Error(`/${getIpaForPhonemeId(phonemeId)}/ has no spelling examples.`);
-	const letters = splitSpelledWord(example.spelled)
+	return { word: example.word, spelled: example.spelled, letters: spelledLetters(example.spelled) };
+}
+
+function spelledLetters(spelled: string): string {
+	return splitSpelledWord(spelled)
 		.filter(({ highlighted }) => highlighted)
 		.map(({ text }) => text)
 		.join("-");
-	return { word: example.word, spelled: example.spelled, letters };
+}
+
+/** The key example and the first other spelling example, if any: "thin", then "think". */
+export function getSoundExamples(phonemeId: EnglishPhonemeSymbolId) {
+	const key = getSoundKeyExample(phonemeId);
+	const other = getSpelling(phonemeId).examples.find((example) => example.word !== key.word);
+	return other
+		? ([
+				key,
+				{ word: other.word, spelled: other.spelled, letters: spelledLetters(other.spelled) },
+			] as const)
+		: ([key] as const);
 }
 
 export function soundPageTitle(phonemeId: EnglishPhonemeSymbolId): string {
@@ -193,9 +208,9 @@ function joinWithAnd(parts: readonly string[]): string {
 const DESCRIPTION_PAIR_LIMIT = 3;
 
 export function soundPageDescription(phonemeId: EnglishPhonemeSymbolId): string {
-	const { word } = getSoundKeyExample(phonemeId);
-	const other = getSpelling(phonemeId).examples.find((example) => example.word !== word);
-	const words = other ? `'${word}' and '${other.word}'` : `'${word}'`;
+	const words = getSoundExamples(phonemeId)
+		.map(({ word }) => `'${word}'`)
+		.join(" and ");
 	const pairs = getPhonemeComparisons("en-us", phonemeId)
 		.slice(0, DESCRIPTION_PAIR_LIMIT)
 		.map(({ contrastId }) => getHeadlinePair(contrastId).join(" vs "));

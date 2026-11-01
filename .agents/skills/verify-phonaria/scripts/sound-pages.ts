@@ -47,9 +47,12 @@ const index = observation(
 const soundPage = observation(
 	() => {
 		const details = document.querySelector("[data-phoneme-details]");
-		const spelling = Array.from(details?.querySelectorAll("section") ?? []).find(
-			(section) => section.querySelector("h2")?.textContent?.trim() === "Spelling",
-		);
+		const section = (title: string) =>
+			Array.from(details?.querySelectorAll("section") ?? []).find(
+				(candidate) => candidate.querySelector("h2")?.textContent?.trim() === title,
+			);
+		const spelling = section("Spelling");
+		const common = section("Common words with /θ/");
 		return {
 			path: location.pathname,
 			title: document.title,
@@ -66,6 +69,19 @@ const soundPage = observation(
 				word.textContent?.trim(),
 			),
 			back: document.querySelector('main a[href="/sounds"]')?.textContent?.trim() ?? null,
+			paragraphs: Array.from(details?.querySelectorAll("p") ?? [])
+				.map((p) => p.textContent?.trim() ?? "")
+				.filter((text) => text.startsWith("/θ/ is ")),
+			related: Array.from(section("Related sounds")?.querySelectorAll("a") ?? []).map((a) => ({
+				href: a.getAttribute("href"),
+				text: a.textContent?.trim(),
+			})),
+			commonWords: Array.from(common?.querySelectorAll("h3") ?? []).map((h) => ({
+				label: h.textContent?.trim(),
+				words: Array.from(h.nextElementSibling?.querySelectorAll("li") ?? []).map((li) =>
+					li.textContent?.trim(),
+				),
+			})),
 		};
 	},
 	{
@@ -73,10 +89,82 @@ const soundPage = observation(
 		title: "How to pronounce the voiceless TH sound /θ/ (as in 'thin') - Phonaria",
 		canonical: "http://localhost:3000/sounds/th-thin",
 		h1: ["Voiceless TH /θ/"],
-		sections: ["How it's made", "Compare with", "Spelling"],
+		sections: [
+			"How it's made",
+			"Compare with",
+			"Related sounds",
+			"Spelling",
+			"Common words with /θ/",
+		],
 		rank: "38th most common of 40 sounds",
 		spellingWords: ["thin", "think"],
 		back: "All sounds",
+		// Text from #418's expected result.
+		paragraphs: [
+			"/θ/ is the th in 'thin' and 'think'. Its voiced partner is /ð/, the th in 'this'.",
+			"/θ/ is made with the tongue between the teeth, pushing air through a narrow gap, with the voice off.",
+		],
+		related: [{ href: "/sounds/th-this", text: "/ð/voiced TH, as in 'this'" }],
+		commonWords: [
+			{
+				label: "At the start",
+				words: ["think", "through", "three", "things", "thing", "thought"],
+			},
+			{
+				label: "Inside",
+				words: ["something", "without", "anything", "nothing", "everything", "months"],
+			},
+			{ label: "At the end", words: ["both", "health", "death", "south", "north", "month"] },
+		],
+	},
+);
+
+const schwaRelated = observation(
+	() => {
+		const details = document.querySelector("[data-phoneme-details]");
+		const related = Array.from(details?.querySelectorAll("section") ?? []).find(
+			(section) => section.querySelector("h2")?.textContent?.trim() === "Related sounds",
+		);
+		return {
+			path: location.pathname,
+			related: Array.from(related?.querySelectorAll("a") ?? []).map((a) => a.getAttribute("href")),
+		};
+	},
+	{
+		path: "/sounds/schwa",
+		related: ["/sounds/ae-cat", "/sounds/er-her", "/sounds/eh-red", "/sounds/uh-cup"],
+	},
+);
+
+const tVariants = observation(
+	() => {
+		const details = document.querySelector("[data-phoneme-details]");
+		const variants = Array.from(details?.querySelectorAll("section") ?? []).find(
+			(section) => section.querySelector("h2")?.textContent?.trim() === "Sound variants",
+		);
+		return {
+			path: location.pathname,
+			variants: Array.from(variants?.querySelectorAll(":scope li:has(> span)") ?? []).map(
+				(row) => ({
+					ipa: row.querySelector(":scope > span")?.textContent?.trim(),
+					label: row.querySelector("p")?.textContent?.trim(),
+					words: Array.from(row.querySelectorAll("li")).map((li) => li.textContent?.trim()),
+				}),
+			),
+		};
+	},
+	{
+		path: "/sounds/t-top",
+		// The flap in "water" and the glottal stop in "button" are #418's examples.
+		variants: [
+			{
+				ipa: "/tʰ/",
+				label: "With a puff of air, at the start of a stressed syllable",
+				words: ["top", "time"],
+			},
+			{ ipa: "/ɾ/", label: "A quick tap of the tongue, between vowels", words: ["water"] },
+			{ ipa: "/ʔ/", label: "A catch in the throat, before an n sound", words: ["button"] },
+		],
 	},
 );
 
@@ -137,6 +225,8 @@ export const soundPages = {
 	checkpoints: {
 		index,
 		"sound-page": soundPage,
+		"schwa-related": schwaRelated,
+		"t-variants": tVariants,
 		"not-found": notFound,
 		"rank-line": rankLine,
 	},
