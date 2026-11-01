@@ -12,5 +12,6 @@ export const MinimalPairActivity = {
 		"Word pairs that differ by one sound, like ship and sheep, for the American English sounds learners often mix up.",
 	description:
 		"Two words that differ by one sound, like ship and sheep. Say one and find out which came through.",
-	privacyNotice: "Recordings go to Microsoft for checking and aren't kept.",
+	speechCheckNotice:
+		"Microsoft checks your recording, and Phonaria doesn't keep it. The check can mishear you.",
 } as const;

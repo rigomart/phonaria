@@ -1,6 +1,5 @@
 import { Autocomplete, AutocompleteInput } from "@phonaria/ui/components/autocomplete";
 import { Button } from "@phonaria/ui/components/button";
-import { ButtonGroup } from "@phonaria/ui/components/button-group";
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -25,7 +24,6 @@ import {
 import { TRANSCRIPTION_INPUT_MAX_LENGTH } from "@/lib/transcription/search";
 import { cn } from "@/lib/utils";
 import { CopyButton } from "./display/copy-button";
-import { TranscriptionInfoButton } from "./display/info-button";
 import { HistoryPopup } from "./history-popup";
 
 const CHARACTER_COUNT_VISIBLE_FROM = 0.8;
@@ -265,10 +263,7 @@ export function G2PInputForm({
 							className="shrink-0 enter-fade"
 							style={enterDelay(transcriptionResult.words.length * 40 + 200)}
 						>
-							<ButtonGroup>
-								<TranscriptionInfoButton />
-								<CopyButton result={transcriptionResult} />
-							</ButtonGroup>
+							<CopyButton result={transcriptionResult} />
 						</div>
 					) : null}
 					{transcriptionResult ? <SpellingSuggestionLine /> : null}

@@ -11,7 +11,6 @@ import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { IpaSequence } from "@/components/transcription/display/ipa-sequence";
 import { WordAudioButton } from "@/components/word-audio-button";
 import { useWavRecorder } from "@/hooks/use-wav-recorder";
-import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { sendEvidenceLog } from "@/lib/speech/evidence-log";
 import {
 	currentConsentGrant,
@@ -37,6 +36,7 @@ import { EvidenceLogSetting } from "./evidence-log-setting";
 import { RecordButton } from "./record-button";
 import { SoundResults } from "./sound-results";
 import { SpeakingStatus } from "./speaking-result";
+import { SpeechCheckNote } from "./speech-check-note";
 
 function useWordSyllables(word: string): TranscribedSyllable[] | null | undefined {
 	const [loaded, setLoaded] = useState<{ word: string; syllables: TranscribedSyllable[] | null }>();
@@ -244,9 +244,7 @@ export function SpeakingRound({
 
 			<div className="mx-auto flex w-full max-w-sm flex-col items-center">
 				<RecordButton getMeter={getMeter} onRecord={record} onStop={stop} view={view} />
-				<p className="mt-3 text-center text-muted-foreground text-xs">
-					{MinimalPairActivity.privacyNotice}
-				</p>
+				<SpeechCheckNote className="mt-3 text-center" />
 				<div aria-atomic="true" aria-live="polite" className="w-full">
 					<SpeakingStatus prompt={prompt} view={view} />
 				</div>

@@ -3,7 +3,7 @@ import {
 	getIpaForPhonemeId,
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
-import { Link } from "@/components/link";
+import { Disclaimer } from "@/components/disclaimer";
 import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import { SpelledWord } from "@/components/spelled-word";
 import { FREQUENCY_PAGE_HEADING } from "@/lib/ipa-chart-metadata";
@@ -37,15 +37,23 @@ export function FrequencyContent() {
 						<RankingRow key={sound.phonemeId} sound={sound} index={index} />
 					))}
 				</ol>
-				<p className="text-xs text-muted-foreground enter-fade enter-delay-250">
-					Based on how often words are used in everyday English (wordfreq).{" "}
-					<Link
-						href="/credits"
-						className="rounded-sm underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-					>
-						Sources
-					</Link>
-				</p>
+				<Disclaimer
+					className="enter-fade enter-delay-250"
+					title="How the shares are estimated"
+					points={[
+						"Phonaria takes the 10,000 most common English words and counts the sounds in each word's dictionary pronunciation.",
+						"Each word is weighted by how often it's used, according to wordfreq.",
+						"Only a word's first listed pronunciation counts.",
+						"People shorten and blend words when they talk, so the shares in real speech differ.",
+					]}
+					sources={[
+						{ key: "wordfreq", label: "wordfreq" },
+						{ key: "cmu", label: "CMU Pronouncing Dictionary" },
+					]}
+				>
+					These shares are estimated from how often words are used, not measured from recorded
+					speech.
+				</Disclaimer>
 			</div>
 		</div>
 	);

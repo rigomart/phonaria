@@ -1,4 +1,12 @@
+import { badgeVariants } from "@phonaria/ui/components/badge";
 import { Button } from "@phonaria/ui/components/button";
+import {
+	Popover,
+	PopoverContent,
+	PopoverDescription,
+	PopoverTitle,
+	PopoverTrigger,
+} from "@phonaria/ui/components/popover";
 import {
 	Sheet,
 	SheetContent,
@@ -34,13 +42,16 @@ export function Header({ flags }: { flags: AppFlags }) {
 			)}
 		>
 			<div className="mx-auto flex h-12 w-full max-w-6xl items-center gap-6 px-4 sm:px-6">
-				<Link
-					href="/"
-					aria-label="Phonaria"
-					className={cn("flex items-center text-foreground", focusRing)}
-				>
-					<Logo className="size-5" />
-				</Link>
+				<div className="flex shrink-0 items-center gap-2">
+					<Link
+						href="/"
+						aria-label="Phonaria"
+						className={cn("flex items-center text-foreground", focusRing)}
+					>
+						<Logo className="size-5" />
+					</Link>
+					<BetaBadge flags={flags} />
+				</div>
 
 				<MainNav flags={flags} pathname={pathname} />
 
@@ -52,6 +63,57 @@ export function Header({ flags }: { flags: AppFlags }) {
 
 			{onChart && <ChartNav pathname={pathname} />}
 		</header>
+	);
+}
+
+export function betaNotice(flags: Pick<AppFlags, "speech">): string {
+	return flags.speech
+		? "It's still changing, and pronunciations, scores and notes can be wrong."
+		: "It's still changing, and pronunciations and notes can be wrong.";
+}
+
+const ISSUES_URL = "https://github.com/rigomart/phonaria/issues";
+
+const popoverLink =
+	"rounded-sm text-foreground underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+function BetaBadge({ flags }: { flags: AppFlags }) {
+	const [open, setOpen] = useState(false);
+	const closeOnNavigate = () => setOpen(false);
+	return (
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger
+				className={cn(
+					badgeVariants({ variant: "outline" }),
+					"cursor-pointer text-muted-foreground hover:bg-muted hover:text-foreground",
+				)}
+			>
+				<span className="sr-only">About the </span>Beta
+			</PopoverTrigger>
+			<PopoverContent align="start" className="gap-3">
+				<div className="flex flex-col gap-1">
+					<PopoverTitle className="font-display text-sm font-semibold">
+						Phonaria is in beta
+					</PopoverTitle>
+					<PopoverDescription className="text-xs sm:text-sm">
+						{betaNotice(flags)}
+					</PopoverDescription>
+				</div>
+				<div className="flex flex-col gap-1.5 text-xs sm:text-sm">
+					<Link href="/credits" onClick={closeOnNavigate} className={cn("w-fit", popoverLink)}>
+						Where the data comes from
+					</Link>
+					<a
+						href={ISSUES_URL}
+						target="_blank"
+						rel="noopener noreferrer"
+						className={cn("w-fit", popoverLink)}
+					>
+						Report a problem<span className="sr-only"> (opens in a new tab)</span>
+					</a>
+				</div>
+			</PopoverContent>
+		</Popover>
 	);
 }
 

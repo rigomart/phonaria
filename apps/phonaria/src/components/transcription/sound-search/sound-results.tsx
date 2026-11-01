@@ -2,6 +2,7 @@ import { Button } from "@phonaria/ui/components/button";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { RotateCcw } from "lucide-react";
 import { type ReactNode, useMemo } from "react";
+import { Disclaimer } from "@/components/disclaimer";
 import {
 	describeMatchCount,
 	SEARCHED_WORD_COUNT,
@@ -59,6 +60,7 @@ export function SoundResults({ sounds }: { sounds: readonly SoundId[] }) {
 					None of the {SEARCHED_WORD_COUNT.toLocaleString("en-US")} most common English words start
 					with <PickedSounds sounds={sounds} />.
 				</span>
+				<SoundSearchNote />
 			</Message>
 		);
 	}
@@ -80,6 +82,7 @@ export function SoundResults({ sounds }: { sounds: readonly SoundId[] }) {
 					Showing the {SHOWN_MATCHES} most common. Add a sound to narrow it down.
 				</p>
 			) : null}
+			<SoundSearchNote className="mt-4 text-center" />
 		</section>
 	);
 }
@@ -111,6 +114,22 @@ function MatchButton({ match, picked }: { match: SoundMatch; picked: number }) {
 /** Keeps the IPA on one line; a browser would otherwise break after the opening slash. */
 export function PickedSounds({ sounds }: { sounds: readonly SoundId[] }) {
 	return <span className="whitespace-nowrap">/{soundsToIpa(sounds)}/</span>;
+}
+
+function SoundSearchNote({ className }: { className?: string }) {
+	return (
+		<Disclaimer
+			className={className}
+			title="How words are matched"
+			points={[
+				"Phonaria uses the CMU Pronouncing Dictionary, which lists General American pronunciations.",
+				"If you heard a word said another way, it may show under other sounds, or not at all.",
+			]}
+			sources={[{ key: "cmu", label: "CMU Pronouncing Dictionary" }]}
+		>
+			Words are matched by their US dictionary pronunciations.
+		</Disclaimer>
+	);
 }
 
 function Message({ children }: { children: ReactNode }) {

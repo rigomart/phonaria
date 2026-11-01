@@ -215,9 +215,12 @@ export const minimalPairs = {
 					record: Array.from(document.querySelectorAll("button")).some(
 						(button) => button.textContent?.trim() === "Record",
 					),
-					privacy: Array.from(document.querySelectorAll("main p")).some(
-						(p) =>
-							p.textContent?.trim() === "Recordings go to Microsoft for checking and aren't kept.",
+					privacy: Array.from(document.querySelectorAll("main p")).some((p) =>
+						p.textContent
+							?.trim()
+							.startsWith(
+								"Microsoft checks your recording, and Phonaria doesn't keep it. The check can mishear you.",
+							),
 					),
 					status:
 						document
