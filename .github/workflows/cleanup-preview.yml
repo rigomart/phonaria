@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [main]
     types: [closed]
+    paths-ignore:
+      - .release-please-manifest.json
+      - CHANGELOG.md
+      - package.json
 
 concurrency:
   group: preview-${{ github.event.pull_request.number }}
@@ -13,6 +17,7 @@ permissions: {}
 
 jobs:
   cleanup:
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     runs-on: ubuntu-latest
     permissions:
       deployments: write
