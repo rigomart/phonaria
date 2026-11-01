@@ -24,7 +24,7 @@ export function getContentSecurityPolicy(): string {
 	].join("; ");
 }
 
-export const STRICT_TRANSPORT_SECURITY = "max-age=86400";
+export const STRICT_TRANSPORT_SECURITY = "max-age=31536000";
 
 /** Vite content-hashes everything under this path, so it is safe to cache forever. */
 export const HASHED_ASSET_CACHE_CONTROL = "public, max-age=31536000, immutable";

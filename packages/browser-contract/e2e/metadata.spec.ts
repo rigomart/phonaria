@@ -81,9 +81,9 @@ test.describe("Metadata, robots, and sitemap", () => {
 		});
 	}
 
-	test("serves pages in American English over HTTPS-only for a day", async ({ request }) => {
+	test("serves pages in American English over HTTPS-only for a year", async ({ request }) => {
 		const { response, html } = await fetchDocument(request, "/");
-		expect(response.headers()["strict-transport-security"]).toBe("max-age=86400");
+		expect(response.headers()["strict-transport-security"]).toBe("max-age=31536000");
 		expect(html).toMatch(/<html lang="en-US"/);
 	});
 
