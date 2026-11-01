@@ -35,6 +35,12 @@ describe("getTools", () => {
 		]);
 	});
 
+	it("marks Transcription active on the homepage and its results page", () => {
+		expect(tool("transcription")?.match("/")).toBe(true);
+		expect(tool("transcription")?.match("/search")).toBe(true);
+		expect(tool("transcription")?.match("/searchx")).toBe(false);
+	});
+
 	it("marks Sounds active on its index and every sound page", () => {
 		expect(tool("sounds")?.match("/sounds")).toBe(true);
 		expect(tool("sounds")?.match("/sounds/th-thin")).toBe(true);

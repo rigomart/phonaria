@@ -4,7 +4,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 
 | Feature | Entry point | Coverage here |
 | --- | --- | --- |
-| Common-word transcription | `/`, header **Transcription** | Executable journey below |
+| Common-word transcription | `/`, header **Transcription**; results open at `/search?q=` (old `/?q=` links redirect there) | Executable journey below |
 | Transcription history | `/`, focus the input once this browser has a transcription | Executable journey below |
 | Other pronunciation variants | Transcribe a word, **Show other pronunciations of hello** | Not exercised |
 | Word definitions | Transcribe, **Definition of hello** | Not exercised; requires Worker/Wiktionary |
@@ -96,7 +96,7 @@ bun run verify observe "$VERIFY_RUN" escape
 
 For an alternate local port or an explicit deployed run, replace the default URL in `open` with the origin recorded in `run.json`. Skip `serve` for deployed runs. Every checkpoint also asserts that the actual page origin matches the recorded target.
 
-`submitted` and `restored` require both primary IPAs, input/query `hello world`, enabled visible Copy, and no page alerts. `details` requires the /h/ trigger marked open (`data-details-open`), **Voiceless glottal fricative**, exactly one visible play button labelled **Play /h/** before any audio interaction, and the diagram element visible. No second play control may be visible. The click on **Details for /h/** opens the compact card; **Full details for /h/** opens the side panel with the diagram. `cleared` and `escape` require empty input, absent `q`, input focus, no IPA/copy/clear controls, and restored example chips. `draft` proves Escape was tested on a nonempty focused field.
+`empty` requires the homepage (`/`) with no query. `submitted` and `restored` require `/search`, both primary IPAs, input/query `hello world`, enabled visible Copy, and no page alerts. `details` requires the /h/ trigger marked open (`data-details-open`), **Voiceless glottal fricative**, exactly one visible play button labelled **Play /h/** before any audio interaction, and the diagram element visible. No second play control may be visible. The click on **Details for /h/** opens the compact card; **Full details for /h/** opens the side panel with the diagram. `cleared` and `escape` require an empty, focused input on `/search` with `q` and the result kept (Copy still there, no Clear button, no example chips): clearing the field on the results page doesn't drop the result. `draft` proves Escape was tested on a nonempty focused field.
 
 Each observation saves `<checkpoint>-<unique-id>.png`, `<checkpoint>-<unique-id>.snapshot.json`, and its expected/actual values plus evidence paths in `run.json`. Repeated observations retain separate artifacts. Review those images and `diagnostics.json`, then finish with an accurate review note. Evidence is kept under ignored `test-results/verification/`; retain or copy a particular report outside that ignored folder when permanent storage is requested.
 
@@ -115,7 +115,7 @@ Use `init frequency-page` for a focused check of `/ipa-chart/frequency`. Open th
 
 ## Transcription history
 
-Recent transcriptions are saved in this browser's `localStorage` (`transcription-history`) and shown in a list under the input. There is no header button or panel. The list opens when the focused field is empty (newest first, at most 8) or when typed text matches saved entries. It stays closed while the field holds the text whose result is showing. Each row shows the text and its IPA. Picking a row (click, or arrows then Enter) submits it.
+Recent transcriptions are saved in this browser's `localStorage` (`transcription-history`) and shown in a list under the input, on the homepage and on `/search`. There is no header button or panel. The list opens when the focused field is empty (newest first, at most 8) or when typed text matches saved entries. It stays closed while the field holds the text whose result is showing. Each row shows the text and its IPA. Picking a row (click, or arrows then Enter) submits it.
 
 The [checkpoints](../scripts/transcription-history.ts) read the input, URL, focus, the listbox and its option texts, the IPA under **Hello world**, whether a header **History** button exists, and the stored entry texts. Expected `hə.ˈloʊ ˈwɝld` is the stored copy format of the transcription journey's grounded **hello world** IPA (`.` for syllables). Base UI hides the rest of the page from the accessibility tree while the list is open, so close it with Escape before clicking page controls such as the example chips.
 
@@ -139,15 +139,16 @@ bun run verify browser "$VERIFY_RUN" trace start
 bun run verify browser "$VERIFY_RUN" set viewport 1280 720
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+ON_HOMEPAGE="location.pathname==='/' && $HYD"
 bun run verify browser "$VERIFY_RUN" find role button click --name "Hello world" --exact
 bun run verify browser "$VERIFY_RUN" wait --fn "new URL(location.href).searchParams.get('q')==='Hello world' && $DONE"
-bun run verify browser "$VERIFY_RUN" find role button click --name "Clear text" --exact
-bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[role=listbox]')"
-bun run verify browser "$VERIFY_RUN" press Escape
-bun run verify browser "$VERIFY_RUN" wait --fn "!document.querySelector('[role=listbox]')"
+bun run verify browser "$VERIFY_RUN" find role link click --name "Transcription" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "$ON_HOMEPAGE"
 bun run verify browser "$VERIFY_RUN" find role button click --name "She chose well" --exact
 bun run verify browser "$VERIFY_RUN" wait --fn "new URL(location.href).searchParams.get('q')==='She chose well' && $DONE"
-bun run verify browser "$VERIFY_RUN" find role button click --name "Clear text" --exact
+bun run verify browser "$VERIFY_RUN" find role link click --name "Transcription" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "$ON_HOMEPAGE"
+bun run verify browser "$VERIFY_RUN" find label "Text to transcribe" click
 bun run verify browser "$VERIFY_RUN" wait --fn "document.querySelectorAll('[role=option]').length===2"
 bun run verify observe "$VERIFY_RUN" recent
 
@@ -169,7 +170,9 @@ bun run verify browser "$VERIFY_RUN" find label "Text to transcribe" click
 bun run verify browser "$VERIFY_RUN" wait 400
 bun run verify observe "$VERIFY_RUN" no-list-for-result
 
-bun run verify browser "$VERIFY_RUN" find role button click --name "Clear text" --exact
+bun run verify browser "$VERIFY_RUN" find role link click --name "Transcription" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "$ON_HOMEPAGE"
+bun run verify browser "$VERIFY_RUN" find label "Text to transcribe" click
 bun run verify browser "$VERIFY_RUN" wait --fn "document.querySelectorAll('[role=option]').length===2"
 bun run verify browser "$VERIFY_RUN" press ArrowDown
 bun run verify browser "$VERIFY_RUN" press Shift+Delete
@@ -183,7 +186,7 @@ bun run verify browser "$VERIFY_RUN" wait --fn "!document.querySelector('[role=l
 bun run verify observe "$VERIFY_RUN" emptied
 ```
 
-The first ArrowDown opens the list on the empty field and the second highlights the newest entry. `recent` requires both entries newest first, the **Hello world** IPA, input focus, no header button, and both entries stored. `filtered` and `escape-closes` prove the list narrows to text matches and that the first Escape only closes it. `escape-clears` requires an empty, focused field with the list still closed. `picked` requires the picked text submitted to `?q=`. The field is disabled while transcribing, so it is unfocused there. `no-list-for-result` requires the list to stay closed when the field is focused again. `removed` requires the highlighted entry gone from the list and storage. `footer-focus` requires Tab to reach **Clear history** with the list open. `emptied` requires empty storage and a closed list with focus back in the field.
+Results open on `/search`, which has no example chips, so the journey returns to the homepage with the **Transcription** link between searches; the list checks run there, where there is no `q`. The first ArrowDown opens the list on the empty field and the second highlights the newest entry. `recent` requires both entries newest first, the **Hello world** IPA, input focus, no header button, and both entries stored. `filtered` and `escape-closes` prove the list narrows to text matches and that the first Escape only closes it. `escape-clears` requires an empty, focused field with the list still closed. `picked` requires the picked text submitted to `?q=`. The field is disabled while transcribing, so it is unfocused there. `no-list-for-result` requires the list to stay closed when the field is focused again. `removed` requires the highlighted entry gone from the list and storage. `footer-focus` requires Tab to reach **Clear history** with the list open. `emptied` requires empty storage and a closed list with focus back in the field.
 
 ### Limits
 

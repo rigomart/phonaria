@@ -27,6 +27,7 @@ import {
 	buildCreditsHead,
 	buildFrequencyHead,
 	buildHomeHead,
+	buildSearchHead,
 	buildLanguageHistoryHead,
 	buildMinimalPairContrastHead,
 	buildMinimalPairsHead,
@@ -168,6 +169,18 @@ describe("buildRootHead", () => {
 const HOME_TITLE = "English to IPA transcription for American English";
 const HOME_DESCRIPTION =
 	"See how any English word or sentence is pronounced in American English, in IPA, sound by sound, with recordings. Plus an IPA chart and all 40 sounds.";
+
+describe("buildSearchHead", () => {
+	it("names the query and keeps every search out of indexes", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const head = buildSearchHead("hello world");
+		expect(head.meta).toContainEqual({ title: "hello world in IPA - Phonaria" });
+		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
+		expect(head.links).toEqual([
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/search" },
+		]);
+	});
+});
 
 describe("buildHomeHead", () => {
 	it("keeps the home title on the client when production SITE_URL is missing", () => {

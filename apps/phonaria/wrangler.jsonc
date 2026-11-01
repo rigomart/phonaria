@@ -8,6 +8,7 @@
 		"html_handling": "drop-trailing-slash",
 		"run_worker_first": [
 			"/",
+			"/search",
 			"/about",
 			"/about/",
 			"/credits",

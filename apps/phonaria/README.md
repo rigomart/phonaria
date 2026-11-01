@@ -47,6 +47,10 @@ Deploy workflows pass Worker secrets from GitHub Actions secrets through `script
 
 Staging CI uses the GitHub variables `STAGING_URL` and `WORKERS_DEV_SUBDOMAIN`. `STAGING_URL` must point to `https://phonaria-staging.<subdomain>.workers.dev`; the staging origin check rejects a URL for another Worker before deployment.
 
+## Transcription results
+
+The homepage holds the input and examples; results open at `/search?q=` (`src/routes/search.tsx`), with the input at the top so the next search starts there. Each query is its own URL, kept out of search indexes (`noindex, follow`) and out of the sitemap and prerender. `/search` without a query sends the visitor to the homepage (307). Links shared before results moved, `/?q=hello`, redirect to `/search?q=hello` (308). Clearing the field on `/search` keeps the result until the next search; a lookup still running is dropped instead, so the field never stays disabled.
+
 ## History
 
 `/history` tells the story of English as a scrolling story over a globe, from its Indo-European ancestor to the English used around the world today. Story data, sources, camera framing and card placement are in `src/lib/language-history/story.ts`, with the research notes behind every stop in [`docs/research/language-history`](../../docs/research/language-history/). The UI is in `src/components/language-history`: the globe is drawn on a canvas with `d3-geo`'s orthographic projection, and pins are buttons placed over it.
