@@ -58,5 +58,5 @@ git commit -m "ci: fix workflow"
 - Tags use the format `phonaria-v${version}` (for example, `phonaria-v0.5.0`).
 - Only the root `package.json` carries the version; workspace packages keep their own.
 - Versioning restarted at 0.5.0 when release-please replaced semantic-release; the older tags and
-  Releases were removed from GitHub. `bootstrap-sha` in the config starts the first changelog at
-  the last semantic-release version (0.20.0, #195) and is ignored after that release; delete it then.
+  Releases were removed from GitHub. The 0.5.0 changelog covers everything since the last
+  semantic-release version (0.20.0, #195).
