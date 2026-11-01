@@ -1,5 +1,6 @@
 import { about, aboutOff } from "./about";
 import type { Feature } from "./feature";
+import { headNavigation } from "./head-navigation";
 import { languageHistory, languageHistoryOff } from "./language-history";
 import { mergerNotes } from "./merger-notes";
 import { minimalPairs, minimalPairsOff } from "./minimal-pairs";
@@ -13,6 +14,7 @@ import { wordAudio } from "./word-audio";
 export const features: Record<string, Feature> = {
 	about,
 	"about-off": aboutOff,
+	"head-navigation": headNavigation,
 	"language-history": languageHistory,
 	"language-history-off": languageHistoryOff,
 	"merger-notes": mergerNotes,

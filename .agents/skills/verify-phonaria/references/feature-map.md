@@ -18,6 +18,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair pages and speaking practice | `/minimal-pairs` and one page per contrast at `/minimal-pairs/<contrast>` (the pairs and recordings in every build); header **Minimal pairs** in every build; `FLAG_SPEECH` adds speaking practice to each contrast page; in every build, a sound's **All pairs for …** link under Compare with (**Practise saying …** while `FLAG_SPEECH` is on), and each contrast page links its two sounds' pages and the other contrasts with either sound. `?contrast=` links and `/practice/minimal-pairs` redirect to the contrast's page | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
 | Sound pages | `/sounds` and `/sounds/<slug>` (e.g. `/sounds/th-thin`); every chart tile and frequency row links to its sound's page, and the drawer and side panel have **Open full page** | Executable journeys below: `sound-pages` and `sound-links` |
+| Document head after an in-app move | `/sounds/th-thin`, then its link to `/minimal-pairs/th-t` (production build) | Executable journey below |
 | About | `/about`, footer **About** (before Credits), both behind `FLAG_ABOUT` | Executable journeys below: `about` (flag on) and `about-off` |
 | Credits and theme | `/credits`, footer **Credits**, header **Theme** button (cycles System, Light, Dark) | Not exercised |
 | Word recordings | Sound card **Compare with** and **Spelling**, Practice reveal, **Definition of …** after transcribing | Executable journey below |
@@ -763,3 +764,25 @@ bun run verify observe "$VERIFY_RUN" sitemap-hidden
 
 `not-found` requires HTTP 404 on `/about` (open it directly) and the shared **This page doesn't exist** h1. `footer-hidden` requires the footer links to be exactly **Credits** and **GitHub**, and no `a[href="/about"]` on the page. `sitemap-hidden` requires `/about` to be missing from the sitemap.
 
+
+## Document head after an in-app move
+
+The canonical link, `og:url` and JSON-LD come from `SITE_URL`, and route `head()` runs again in the browser on every in-app move, so the head must describe the new page without a full load ([#425](https://github.com/rigomart/phonaria/issues/425)). The [checkpoints](../scripts/head-navigation.ts) read the path, the title, every canonical link, `og:url` and `BreadcrumbList`'s item paths, how many origins those URLs use, and a marker set before the click that a full page load would clear.
+
+### Executable journey
+
+Dev doesn't show the bug: there the client falls back to `http://localhost:3000` for `SITE_URL`. Build with the CI production env (`CLOUDFLARE_ENV=production SITE_URL=https://phonaria.rigos.dev SITE_INDEXING_ENABLED=1`, flags off, placeholder `TURSO_*`; see `.github/workflows/pull_request.yml`), serve it with `bunx vite preview --host 127.0.0.1 --port 3000 --strictPort` from `apps/phonaria` instead of `verify serve`, then after `init head-navigation`, `open about:blank` and `trace start`:
+
+```bash
+HYD="Object.keys(document.querySelector('main a')||{}).some(k=>k.startsWith('__reactProps'))"
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds/th-thin
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" direct
+bun run verify browser "$VERIFY_RUN" eval "window.__setBeforeMove = true"
+bun run verify browser "$VERIFY_RUN" click 'main a[href="/minimal-pairs/th-t"]'
+bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname==='/minimal-pairs/th-t' && !!document.querySelector('h1')"
+bun run verify observe "$VERIFY_RUN" after-move
+```
+
+`direct` requires one canonical, one `og:url` and one breadcrumb list, all for `/sounds/th-thin`. `after-move` requires the marker still set (no full load), the contrast page's title, and one canonical, one `og:url` and one breadcrumb list, all for `/minimal-pairs/th-t`. The link is clicked by its `href` because its name depends on `FLAG_SPEECH` (**All pairs for /θ/ and /t/** off, **Practise saying /θ/ and /t/** on). The build writes `apps/phonaria/.dev.vars`; delete it afterwards so the dev server's canonical goes back to its default.

@@ -63,6 +63,30 @@ function definePublicAppFlags(): Plugin {
 	};
 }
 
+/**
+ * Route `head()` reruns in the browser on in-app navigation, where Worker vars
+ * don't exist; the Worker still reads them at request time.
+ */
+function defineClientSiteMetadata(): Plugin {
+	return {
+		name: "define-client-site-metadata",
+		configEnvironment(name) {
+			if (name !== "client") return;
+			return {
+				define: {
+					"process.env.SITE_URL": JSON.stringify(process.env.SITE_URL ?? ""),
+					"process.env.SITE_INDEXING_ENABLED": JSON.stringify(
+						process.env.SITE_INDEXING_ENABLED ?? "",
+					),
+					"process.env.GOOGLE_SITE_VERIFICATION": JSON.stringify(
+						process.env.GOOGLE_SITE_VERIFICATION ?? "",
+					),
+				},
+			};
+		},
+	};
+}
+
 export default defineConfig({
 	server: {
 		port: 3000,
@@ -85,6 +109,7 @@ export default defineConfig({
 		stubCurated10kOnSsr(),
 		cloudflare({ viteEnvironment: { name: "ssr" } }),
 		definePublicAppFlags(),
+		defineClientSiteMetadata(),
 		tanstackStart({
 			srcDirectory: "src",
 			prerender: {

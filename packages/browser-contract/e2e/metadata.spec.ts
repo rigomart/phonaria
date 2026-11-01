@@ -7,6 +7,7 @@ import {
 	SOUNDS_PATH,
 } from "../src/constants";
 import { expect, test } from "../src/fixtures";
+import { waitForHydration } from "../src/hydration";
 import {
 	canonicalHref,
 	documentTitle,
@@ -84,6 +85,38 @@ test.describe("Metadata, robots, and sitemap", () => {
 			expect(metaContent(html, "robots")).toBe(expectedRobots(target));
 		});
 	}
+
+	test(
+		"moves the canonical link, og:url and breadcrumbs with an in-app navigation",
+		{ tag: "@smoke" },
+		async ({ page, target }) => {
+			const to = "/minimal-pairs/th-t";
+			await page.goto("/sounds/th-thin");
+			const link = page.getByRole("region", { name: "Compare with" }).locator(`a[href="${to}"]`);
+			await waitForHydration(link);
+			await page.evaluate(() => Object.assign(window, { inAppMove: true }));
+			await link.click();
+			await expect(page).toHaveTitle(
+				"Three vs tree: /θ/ and /t/ minimal pairs with audio - Phonaria",
+			);
+			expect(await page.evaluate(() => "inAppMove" in window)).toBe(true);
+
+			const canonical = expectedCanonical(target, to);
+			await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", canonical);
+			await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+			await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", canonical);
+			await expect(page.locator('meta[property="og:url"]')).toHaveCount(1);
+			const lastBreadcrumbs = await page
+				.locator('script[type="application/ld+json"]')
+				.evaluateAll((scripts) =>
+					scripts
+						.map((script) => JSON.parse(script.textContent ?? ""))
+						.filter((data) => data["@type"] === "BreadcrumbList")
+						.map((data) => data.itemListElement.at(-1).item),
+				);
+			expect(lastBreadcrumbs).toEqual([canonical]);
+		},
+	);
 
 	test("serves pages in American English over HTTPS-only for a year", async ({ request }) => {
 		const { response, html } = await fetchDocument(request, "/");
