@@ -219,7 +219,7 @@ export const minimalPairs = {
 						p.textContent
 							?.trim()
 							.startsWith(
-								"Microsoft checks your recording, and Phonaria doesn't keep it. The check can mishear you.",
+								"We don't keep your recording. Microsoft checks it, and the check can be wrong.",
 							),
 					),
 					status:

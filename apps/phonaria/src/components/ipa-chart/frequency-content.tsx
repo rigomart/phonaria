@@ -39,20 +39,18 @@ export function FrequencyContent() {
 				</ol>
 				<Disclaimer
 					className="enter-fade enter-delay-250"
-					title="How the shares are estimated"
+					title="About these percentages"
 					points={[
-						"Phonaria takes the 10,000 most common English words and counts the sounds in each word's dictionary pronunciation.",
-						"Each word is weighted by how often it's used, according to wordfreq.",
-						"Only a word's first listed pronunciation counts.",
-						"People shorten and blend words when they talk, so the shares in real speech differ.",
+						"We take the 10,000 most common English words.",
+						"We count the sounds in each word, using the CMU Pronouncing Dictionary, which lists US English pronunciations.",
+						"If a word has more than one pronunciation, we use only the first.",
+						"Common words count more. A word used twice as often as another counts twice as much.",
+						"We learn how often each word is used from wordfreq, a word list.",
+						"In real speech, people shorten words and join them together, so the percentages would be different.",
 					]}
-					sources={[
-						{ key: "wordfreq", label: "wordfreq" },
-						{ key: "cmu", label: "CMU Pronouncing Dictionary" },
-					]}
+					source="wordfreq"
 				>
-					These shares are estimated from how often words are used, not measured from recorded
-					speech.
+					We estimate these percentages from how often words are used, not from recorded speech.
 				</Disclaimer>
 			</div>
 		</div>

@@ -68,8 +68,8 @@ export function Header({ flags }: { flags: AppFlags }) {
 
 export function betaNotice(flags: Pick<AppFlags, "speech">): string {
 	return flags.speech
-		? "It's still changing, and pronunciations, scores and notes can be wrong."
-		: "It's still changing, and pronunciations and notes can be wrong.";
+		? "The app is still changing. Pronunciations, scores and notes can be wrong."
+		: "The app is still changing. Pronunciations and notes can be wrong.";
 }
 
 const ISSUES_URL = "https://github.com/rigomart/phonaria/issues";
@@ -78,10 +78,8 @@ const popoverLink =
 	"rounded-sm text-foreground underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 function BetaBadge({ flags }: { flags: AppFlags }) {
-	const [open, setOpen] = useState(false);
-	const closeOnNavigate = () => setOpen(false);
 	return (
-		<Popover open={open} onOpenChange={setOpen}>
+		<Popover>
 			<PopoverTrigger
 				className={cn(
 					badgeVariants({ variant: "outline" }),
@@ -99,19 +97,14 @@ function BetaBadge({ flags }: { flags: AppFlags }) {
 						{betaNotice(flags)}
 					</PopoverDescription>
 				</div>
-				<div className="flex flex-col gap-1.5 text-xs sm:text-sm">
-					<Link href="/credits" onClick={closeOnNavigate} className={cn("w-fit", popoverLink)}>
-						Where the data comes from
-					</Link>
-					<a
-						href={ISSUES_URL}
-						target="_blank"
-						rel="noopener noreferrer"
-						className={cn("w-fit", popoverLink)}
-					>
-						Report a problem<span className="sr-only"> (opens in a new tab)</span>
-					</a>
-				</div>
+				<a
+					href={ISSUES_URL}
+					target="_blank"
+					rel="noopener noreferrer"
+					className={cn("w-fit text-xs sm:text-sm", popoverLink)}
+				>
+					Report a problem<span className="sr-only"> (opens in a new tab)</span>
+				</a>
 			</PopoverContent>
 		</Popover>
 	);
