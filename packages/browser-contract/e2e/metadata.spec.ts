@@ -81,6 +81,19 @@ test.describe("Metadata, robots, and sitemap", () => {
 		});
 	}
 
+	test("serves pages in American English over HTTPS-only for a year", async ({ request }) => {
+		const { response, html } = await fetchDocument(request, "/");
+		expect(response.headers()["strict-transport-security"]).toBe("max-age=31536000");
+		expect(html).toMatch(/<html lang="en-US"/);
+	});
+
+	test("titles a not-found page without a social card", async ({ request }) => {
+		const { response, html } = await fetchDocument(request, "/sounds/nope");
+		expect(response.status()).toBe(404);
+		expect(documentTitle(html)).toBe(`Page not found - ${SITE_NAME}`);
+		expect(html).not.toMatch(/(property|name)="(og|twitter):/);
+	});
+
 	test(
 		"keeps robots.txt crawlable and only links the sitemap when indexing is on",
 		{ tag: "@smoke" },

@@ -1,6 +1,6 @@
 import { createMiddleware, createStart } from "@tanstack/react-start";
 import { setResponseHeader } from "@tanstack/react-start/server";
-import { getContentSecurityPolicy } from "@/lib/security-headers";
+import { getContentSecurityPolicy, STRICT_TRANSPORT_SECURITY } from "@/lib/security-headers";
 
 const MAIN_SITE_ORIGIN = "https://phonaria.rigos.dev";
 const LEGACY_HOSTNAME = "phonaria-lab.rigos.dev";
@@ -51,9 +51,11 @@ const securityHeaders = createMiddleware().server(async ({ next }) => {
 	const result = await next();
 	const policy = getContentSecurityPolicy();
 	setResponseHeader("Content-Security-Policy", policy);
+	setResponseHeader("Strict-Transport-Security", STRICT_TRANSPORT_SECURITY);
 	const response = "response" in result ? result.response : undefined;
 	if (response instanceof Response) {
 		response.headers.set("Content-Security-Policy", policy);
+		response.headers.set("Strict-Transport-Security", STRICT_TRANSPORT_SECURITY);
 	}
 	return result;
 });

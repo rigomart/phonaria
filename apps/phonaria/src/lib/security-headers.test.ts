@@ -25,6 +25,7 @@ describe("getContentSecurityPolicy", () => {
 		const file = formatCloudflareHeadersFile();
 		expect(file.startsWith("/*\n")).toBe(true);
 		expect(file).toContain(`Content-Security-Policy: ${getContentSecurityPolicy()}`);
+		expect(file).toContain("Strict-Transport-Security: max-age=31536000\n");
 	});
 
 	it("caches hashed assets immutably so warm loads do not revalidate them", () => {

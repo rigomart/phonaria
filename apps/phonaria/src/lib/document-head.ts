@@ -136,18 +136,18 @@ export function extractDocumentTitle(matches: readonly MatchWithMeta[]): string 
 	return SITE_NAME;
 }
 
-export function buildRootHead(): StartHead {
+export const NOT_FOUND_PAGE_TITLE = "Page not found";
+
+/** Fallback tags for every page, and the whole head of a not-found page. */
+export function buildRootHead({ notFound = false }: { notFound?: boolean } = {}): StartHead {
 	const metadata = tryGetDocumentMetadata();
 	return {
 		meta: [
 			{ charSet: "utf-8" },
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
-			{ title: SITE_NAME },
+			{ title: notFound ? formatDocumentTitle(NOT_FOUND_PAGE_TITLE) : SITE_NAME },
 			{ name: "description", content: metadata?.description ?? SITE_DESCRIPTION },
-			...seoMetaTags(metadata, metadata?.siteUrl, {
-				title: SITE_NAME,
-				description: metadata?.description ?? SITE_DESCRIPTION,
-			}),
+			...(metadata ? crawlerMetaTags(metadata) : []),
 		],
 		links: [
 			{ rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },
@@ -280,7 +280,7 @@ export function buildPracticeTopicHead(topic: PracticeTopicHeadSource | undefine
 	}
 	return buildPageHead({
 		path: `/practice/${topic.id}`,
-		title: `${topic.display.name} — Practice`,
+		title: `${topic.display.name} - Practice`,
 		description: topic.display.blurb,
 		robots: PRACTICE_ROBOTS,
 	});
@@ -348,10 +348,7 @@ function seoMetaTags(
 	if (!metadata || !canonical) return [];
 	const imageUrl = `${metadata.siteUrl}${image.path}`;
 	return [
-		{
-			name: "robots",
-			content: robots ?? (metadata.indexingEnabled ? "index, follow" : "noindex, follow"),
-		},
+		...crawlerMetaTags(metadata, robots),
 		{ property: "og:type", content: ogType },
 		{ property: "og:title", content: title },
 		{ property: "og:description", content: description },
@@ -366,6 +363,15 @@ function seoMetaTags(
 		{ name: "twitter:description", content: description },
 		{ name: "twitter:image", content: imageUrl },
 		...(image.alt ? [{ name: "twitter:image:alt", content: image.alt }] : []),
+	];
+}
+
+function crawlerMetaTags(metadata: DocumentMetadata, robots?: string): StartMetaTag[] {
+	return [
+		{
+			name: "robots",
+			content: robots ?? (metadata.indexingEnabled ? "index, follow" : "noindex, follow"),
+		},
 		...(metadata.googleSiteVerification
 			? [{ name: "google-site-verification", content: metadata.googleSiteVerification }]
 			: []),

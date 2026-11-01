@@ -11,8 +11,10 @@ import { fontStylesheets } from "@/lib/fonts";
 import appCss from "@/styles.css?url";
 
 export const Route = createRootRoute({
-	head: () => {
-		const head = buildRootHead();
+	head: ({ matches }) => {
+		const head = buildRootHead({
+			notFound: matches.some((match) => match._notFound || match.status === "notFound"),
+		});
 		return {
 			...head,
 			links: [{ rel: "stylesheet", href: appCss }, ...fontStylesheets, ...(head.links ?? [])],
@@ -36,7 +38,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: ReactNode }) {
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang="en-US" suppressHydrationWarning>
 			<head>
 				<HeadContent />
 			</head>
