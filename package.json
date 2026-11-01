@@ -1,14 +1,10 @@
 {
 	"name": "phonaria",
-	"version": "0.0.1",
+	"version": "0.4.0",
 	"author": "Miguel Rodriguez",
 	"devDependencies": {
-		"@semantic-release/commit-analyzer": "^13.0.1",
-		"@semantic-release/github": "^12.0.6",
-		"@semantic-release/release-notes-generator": "^14.1.0",
 		"oxfmt": "^0.72.0",
 		"oxlint": "^1.87.0",
-		"semantic-release": "^25.0.3",
 		"turbo": "^2.5.6",
 		"typescript": "^5.9.2"
 	},
@@ -36,9 +32,7 @@
 		"e2e": "bun --cwd packages/browser-contract e2e",
 		"e2e:smoke": "bun --cwd packages/browser-contract e2e:smoke",
 		"e2e:cloudflare": "CONTRACT_TARGET=cloudflare-staging bun --cwd packages/browser-contract e2e",
-		"e2e:baseline": "CONTRACT_TARGET=cloudflare-production bun --cwd packages/browser-contract e2e:baseline",
-		"release": "semantic-release",
-		"release:dry": "semantic-release --dry-run"
+		"e2e:baseline": "CONTRACT_TARGET=cloudflare-production bun --cwd packages/browser-contract e2e:baseline"
 	},
 	"workspaces": [
 		"packages/*",

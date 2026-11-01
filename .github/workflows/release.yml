@@ -1,0 +1,48 @@
+name: Release
+
+# release-please opens its Release PR with GITHUB_TOKEN, which starts no workflows, so the PR
+# gets no `ci` check. The `checks` job runs CI before the deploy instead.
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      created: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v5
+
+  checks:
+    needs: release-please
+    if: needs.release-please.outputs.created == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/pull_request.yml
+
+  deploy:
+    needs: [release-please, checks]
+    permissions:
+      contents: read
+      deployments: write
+    uses: ./.github/workflows/production.yml
+    with:
+      ref: ${{ needs.release-please.outputs.tag }}
+    secrets: inherit

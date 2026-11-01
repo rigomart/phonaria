@@ -1,38 +1,42 @@
 # Versioning
 
-Phonaria uses [Semantic Release](https://semantic-release.gitbook.io/semantic-release/) for
-automated tags and GitHub Releases.
+Phonaria releases with [release-please](https://github.com/googleapis/release-please). A release
+is a production deploy: merging the Release PR tags the version, publishes the GitHub Release and
+deploys that tag to `phonaria.rigos.dev`.
 
 ## How It Works
 
 ```text
-Conventional Commits → main → CI passes → manual Release workflow → Tag + GitHub Release
+Conventional Commits → main → Release PR updates → merge it → tag + GitHub Release + production deploy
 ```
 
-1. **Development**: Work on feature branches using conventional commits.
-2. **Preview**: PRs get a protected Cloudflare preview Worker from `preview.yml`.
-3. **Merge**: Merge PRs into `main`.
-4. **CI**: The `CI` workflow must pass for that `main` push.
-5. **Release**: Run the `Release` workflow from the Actions tab (manual `workflow_dispatch`).
-   Auto-release after CI remains paused; it can be restored whenever the team wants it.
-6. **Deploy**: Staging deploys on every `main` merge from `staging.yml`. Production is a manual
-	`Production` workflow run against `phonaria.rigos.dev`; the former
-	`phonaria-lab.rigos.dev` hostname redirects to it.
+1. **Development**: Work on feature branches using conventional commits. PRs get a protected
+   Cloudflare preview Worker from `preview.yml`.
+2. **Merge**: Merge PRs into `main`. Staging deploys every `main` merge from `staging.yml`.
+3. **Release PR**: `release.yml` opens or updates one PR titled `chore(main): release phonaria X.Y.Z`.
+   It bumps the root `package.json` version, the manifest and `CHANGELOG.md`, so the PR shows the
+   next version and its notes before anything ships.
+4. **Release**: Merge the Release PR when you want to ship. The same `release.yml` run creates the
+   `phonaria-vX.Y.Z` tag and GitHub Release, runs `CI` on it, then calls `production.yml` on that
+   tag.
+
+The bot opens the Release PR with `GITHUB_TOKEN`, which starts no workflows, so the PR never gets
+the required `ci` check. Merge it with the ruleset bypass ("Merge without waiting for requirements
+to be met", or `gh pr merge --admin`). CI still runs before anything deploys.
+
+To redeploy without a new release, run the `Production` workflow from the Actions tab.
 
 ## Conventional Commits
 
-Use these commit prefixes to control version bumps:
+Use these commit prefixes to control version bumps. Below 1.0, a breaking change bumps the minor
+version (`bump-minor-pre-major`).
 
 ```bash
 # Patch release (0.5.0 → 0.5.1) - Bug fixes
 git commit -m "fix: resolve sitemap issue"
-git commit -m "fix(seo): correct meta tags"
 
-# Minor release (0.5.0 → 0.6.0) - New features
+# Minor release (0.5.0 → 0.6.0) - New features, and breaking changes before 1.0
 git commit -m "feat: add find-by-sound page"
-git commit -m "feat(ui): implement dark mode"
-
-# Major release (0.5.0 → 1.0.0) - Breaking changes
 git commit -m "feat!: redesign API structure"
 
 # No version bump
@@ -41,21 +45,18 @@ git commit -m "chore: update dependencies"
 git commit -m "ci: fix workflow"
 ```
 
-## Creating a Release
-
-1. Write conventional commits in your PRs.
-2. Merge PRs to `main`.
-3. Wait for CI to pass.
-4. In GitHub Actions, run the `Release` workflow on `main` to publish the tag and GitHub Release.
-
 ## Files
 
-- `.releaserc.json` - Semantic Release configuration
-- `.github/workflows/release-semantic.yml` - Release workflow (manual `workflow_dispatch`)
+- `release-please-config.json`: release-please configuration
+- `.release-please-manifest.json`: the last released version, updated by each Release PR
+- `.github/workflows/release.yml`: runs release-please and the production deploy
+- `CHANGELOG.md`: written by release-please. `*.md` is in oxfmt's `ignorePatterns`, so CI's format
+  check leaves it alone.
 
 ## Notes
 
-- Tags use format `phonaria-v${version}` (for example, `phonaria-v0.5.0`).
-- Git tags and GitHub Releases are the source of truth for released versions.
-- Package `version` fields are not auto-bumped by the release workflow.
-- Changelog is tracked in GitHub Releases (no committed `CHANGELOG.md` file).
+- Tags use the format `phonaria-v${version}` (for example, `phonaria-v0.5.0`).
+- Only the root `package.json` carries the version; workspace packages keep their own.
+- Versioning restarted at 0.5.0 when release-please replaced semantic-release; the older tags and
+  Releases were removed from GitHub. `bootstrap-sha` in the config starts the first changelog at
+  the last semantic-release version (0.20.0, #195) and is ignored after that release; delete it then.
