@@ -14,6 +14,7 @@ import { SpellingSuggestionLine } from "@/components/transcription/spelling-sugg
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import { useCurrentTranscription } from "@/hooks/use-transcribe";
 import { useTranscriptionHistory } from "@/hooks/use-transcription-history";
+import { SEARCH_PATH } from "@/lib/home-metadata";
 import { enterDelay } from "@/lib/motion";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
 import {
@@ -49,12 +50,19 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 	const [historyOpen, setHistoryOpen] = useState(false);
 	const highlightedEntry = useRef<TranscriptionHistoryEntry | undefined>(undefined);
 
+	const firstRenderedText = useRef(inputText);
+
 	useLayoutEffect(() => {
 		// A fill or autofill can write the field before React attaches onChange.
 		// React keeps that DOM value. Copy it only into an empty draft: a shared
 		// ?q= or a restored submission may already own the store.
 		const current = inputRef.current?.value ?? "";
-		if (current.length > 0 && useG2PStore.getState().draftText.length === 0) {
+		const writtenByFirstRender = current === firstRenderedText.current;
+		if (
+			current.length > 0 &&
+			!writtenByFirstRender &&
+			useG2PStore.getState().draftText.length === 0
+		) {
 			setDraftText(current);
 		}
 	}, [setDraftText]);
@@ -165,9 +173,14 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 	};
 
 	return (
-		// method="get" lets Enter and a click on the button reach /?q= before React hydrates.
+		// method="get" lets Enter and a click on the button reach /search?q= before React hydrates.
 		// aria-disabled (not disabled) keeps both from being swallowed while the draft is empty.
-		<form method="get" action="/" onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
+		<form
+			method="get"
+			action={SEARCH_PATH}
+			onSubmit={handleSubmit}
+			className="flex w-full flex-col gap-2"
+		>
 			<div className="flex w-full flex-row gap-2">
 				<Autocomplete
 					items={suggestions}

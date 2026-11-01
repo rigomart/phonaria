@@ -1,7 +1,13 @@
 import type { EnglishPhonemeSymbolId } from "@phonaria/phonetics-data";
 import { ABOUT_PAGE_DESCRIPTION, ABOUT_PAGE_TITLE, ABOUT_PATH } from "@/lib/about/metadata";
 import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-metadata";
-import { HOME_PAGE_DESCRIPTION, HOME_PAGE_TITLE } from "@/lib/home-metadata";
+import {
+	HOME_PAGE_DESCRIPTION,
+	HOME_PAGE_TITLE,
+	SEARCH_PATH,
+	searchPageDescription,
+	searchPageTitle,
+} from "@/lib/home-metadata";
 import {
 	CONSONANTS_PAGE_DESCRIPTION,
 	CONSONANTS_PAGE_TITLE,
@@ -217,6 +223,16 @@ export function buildHomeHead(): StartHead {
 		buildPageHead({ path: "/", title: HOME_PAGE_TITLE, description: HOME_PAGE_DESCRIPTION }),
 		(siteUrl) => buildWebSiteStructuredData(SITE_NAME, siteUrl),
 	);
+}
+
+/** Marks every search page `noindex, follow`. */
+export function buildSearchHead(query: string | undefined): StartHead {
+	return buildPageHead({
+		path: SEARCH_PATH,
+		title: searchPageTitle(query),
+		description: searchPageDescription(query),
+		robots: "noindex, follow",
+	});
 }
 
 export function buildCreditsHead(): StartHead {

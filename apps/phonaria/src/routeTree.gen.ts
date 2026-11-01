@@ -15,6 +15,7 @@ import { Route as CreditsRouteImport } from './routes/credits'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as IpaChartIndexRouteImport } from './routes/ipa-chart/index'
 import { Route as IpaChartSplatRouteImport } from './routes/ipa-chart/$'
@@ -59,6 +60,11 @@ const PracticeRoute = PracticeRouteImport.update({
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   id: '/robots.txt',
   path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/history': typeof HistoryRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/credits': typeof CreditsRoute
   '/history': typeof HistoryRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
@@ -190,6 +198,7 @@ export interface FileRoutesById {
   '/history': typeof HistoryRoute
   '/practice': typeof PracticeRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ipa-chart/$': typeof IpaChartSplatRoute
   '/ipa-chart/consonants': typeof IpaChartConsonantsRoute
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/practice'
     | '/robots.txt'
+    | '/search'
     | '/sitemap.xml'
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/credits'
     | '/history'
     | '/robots.txt'
+    | '/search'
     | '/sitemap.xml'
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/practice'
     | '/robots.txt'
+    | '/search'
     | '/sitemap.xml'
     | '/ipa-chart/$'
     | '/ipa-chart/consonants'
@@ -284,6 +296,7 @@ export interface RootRouteChildren {
   HistoryRoute: typeof HistoryRoute
   PracticeRoute: typeof PracticeRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   IpaChartSplatRoute: typeof IpaChartSplatRoute
   IpaChartConsonantsRoute: typeof IpaChartConsonantsRoute
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/robots.txt'
       fullPath: '/robots.txt'
       preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -472,6 +492,7 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryRoute: HistoryRoute,
   PracticeRoute: PracticeRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
+  SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   IpaChartSplatRoute: IpaChartSplatRoute,
   IpaChartConsonantsRoute: IpaChartConsonantsRoute,

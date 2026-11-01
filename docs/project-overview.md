@@ -4,7 +4,7 @@ Phonaria is a pronunciation toolkit for people learning English. Learners can st
 
 ## Learner tools
 
-- **Transcription:** Enter text to see IPA with stress marks. Common words resolve from two browser word lists; other words go through a rate-limited Worker lookup against Turso. Learners can open sound details, audio, and definitions from the result.
+- **Transcription:** Enter text on the homepage to see IPA with stress marks on its own results page, `/search?q=`. Common words resolve from two browser word lists; other words go through a rate-limited Worker lookup against Turso. Learners can open sound details, audio, and definitions from the result.
 - **IPA charts:** Browse English consonants and vowels, with articulation diagrams and descriptions. The underlying phoneme data also includes a Spanish inventory and articulation data.
 - **Practice:** Build and review sound sequences. It is on by default locally, enabled by `FLAG_PRACTICE` in staging and preview, and off in production.
 - **Minimal-pair practice:** Say a word such as *ship*, shown beside *sheep*, and hear back which sound came through. It is its own tool in the main nav at `/minimal-pairs`, and each pair in a sound's details links to it. Saying a word is behind `FLAG_SPEECH`, on in staging and preview and off in production; the pairs and recordings show in every build.

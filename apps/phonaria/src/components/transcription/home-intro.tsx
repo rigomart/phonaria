@@ -5,12 +5,9 @@ import {
 } from "@phonaria/phonetics-data";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@/components/link";
-import { useCurrentTranscription } from "@/hooks/use-transcribe";
 import { IPA_CHART_CONSONANTS_PATH } from "@/lib/ipa-chart-metadata";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { SOUNDS_PATH } from "@/lib/sound-pages";
-import { useG2PStore } from "@/lib/transcription/g2p-store";
-import { shouldShowTranscriptionEmptyState } from "@/lib/transcription/search";
 import { cn } from "@/lib/utils";
 import { PhonemeDetailsButton } from "./display/clickable-phoneme";
 import { prefersReducedMotion } from "./display/ipa-morph";
@@ -51,7 +48,6 @@ const EASING = "cubic-bezier(0.2, 0, 0, 1)";
 const SWEEP_START = SETTLE_AT + 400;
 const SWEEP_STAGGER = 70;
 const SWEEP_MS = 900;
-const FOLD_MS = 500;
 
 /**
  * `waiting` lasts until hydration and the IPA font, so the morph measures
@@ -82,37 +78,8 @@ function whenFontsReady(): Promise<void> {
 	);
 }
 
-/** Unmounts after folding, so only the result's phoneme buttons stay on the page. */
-export function HomeIntro({ query }: { query: string | undefined }) {
-	const { data: result } = useCurrentTranscription();
-	const lookupError = useG2PStore((s) => s.lookupError);
-	const open = shouldShowTranscriptionEmptyState({
-		q: query,
-		hasResult: Boolean(result),
-		hasError: lookupError !== null,
-	});
-	const [folding, setFolding] = useState(false);
-
-	useEffect(() => {
-		if (open) return;
-		setFolding(true);
-		const timer = window.setTimeout(() => setFolding(false), FOLD_MS);
-		return () => window.clearTimeout(timer);
-	}, [open]);
-
-	return (
-		<div
-			inert={!open}
-			className={cn(
-				"grid w-full transition-[grid-template-rows,opacity] duration-500 ease-out motion-reduce:transition-none",
-				open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-			)}
-		>
-			<div className="min-h-0 overflow-hidden">
-				{open || folding ? <NamePronunciation /> : null}
-			</div>
-		</div>
-	);
+export function HomeIntro() {
+	return <NamePronunciation />;
 }
 
 function NamePronunciation() {

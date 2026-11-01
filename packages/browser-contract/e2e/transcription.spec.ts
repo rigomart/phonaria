@@ -28,6 +28,10 @@ function searchQuery(page: { url: () => string }) {
 	return new URL(page.url()).searchParams.get("q");
 }
 
+function pathname(page: { url: () => string }) {
+	return new URL(page.url()).pathname;
+}
+
 test.describe("Transcription", () => {
 	test(
 		"transcribes a known phrase and exposes copy plus phoneme details",
@@ -122,14 +126,25 @@ test.describe("Transcription", () => {
 		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toBeVisible();
 		await page.getByRole("button", { name: "Hello world", exact: true }).click();
 		await expect.poll(() => searchQuery(page)).toBe("Hello world");
+		expect(pathname(page)).toBe("/search");
 		await expect(textToTranscribe(page)).toHaveValue("Hello world");
 		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
 			timeout: 20_000,
 		});
 	});
 
-	test("opens a shared query and clears it", async ({ page }) => {
+	test("opens a link shared before results moved to /search", async ({ page }) => {
 		await page.goto(`/?q=${KNOWN_WORD}`);
+		await expect.poll(() => pathname(page)).toBe("/search");
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
+		await expect(textToTranscribe(page)).toHaveValue(KNOWN_WORD);
+		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
+			timeout: 20_000,
+		});
+	});
+
+	test("opens a shared search and clears the field, keeping the result", async ({ page }) => {
+		await page.goto(`/search?q=${KNOWN_WORD}`);
 		const input = textToTranscribe(page);
 		await expect(input).toHaveValue(KNOWN_WORD);
 		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible({
@@ -141,14 +156,15 @@ test.describe("Transcription", () => {
 		await clearTranscription(page).click();
 		await expect(input).toHaveValue("");
 		await expect(input).toBeFocused();
-		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toBeVisible();
-		await expect.poll(() => searchQuery(page)).toBeNull();
+		await expect(page.getByText(KNOWN_WORD, { exact: true }).first()).toBeVisible();
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
 
-		await input.fill(KNOWN_WORD);
+		await input.fill("world");
+		await input.press("Escape");
 		await input.press("Escape");
 		await expect(input).toHaveValue("");
 		await expect(input).toBeFocused();
-		await expect.poll(() => searchQuery(page)).toBeNull();
+		await expect.poll(() => searchQuery(page)).toBe(KNOWN_WORD);
 	});
 
 	test("pushes a history entry per submission and restores it on back", async ({ page }) => {
@@ -174,6 +190,7 @@ test.describe("Transcription", () => {
 		await expect(input).toHaveValue(KNOWN_WORD);
 
 		await page.getByRole("link", { name: "Transcription" }).click();
+		await expect.poll(() => pathname(page)).toBe("/");
 		await expect.poll(() => searchQuery(page)).toBeNull();
 		await expect(input).toHaveValue("");
 		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toBeVisible();
@@ -229,7 +246,7 @@ test.describe("Transcription", () => {
 	});
 
 	test("clears a punctuation-only query when the Transcription link drops q", async ({ page }) => {
-		await page.goto("/?q=!!!");
+		await page.goto("/search?q=!!!");
 		const input = textToTranscribe(page);
 		await expect(input).toHaveValue("!!!");
 		await expect(page.getByRole("button", { name: "Hello world", exact: true })).toHaveCount(0);

@@ -27,6 +27,7 @@ const clientFiles = [
 	"src/components/transcription/display/clickable-phoneme.tsx",
 	"src/components/phoneme-details/phoneme-details.tsx",
 	"src/routes/index.tsx",
+	"src/routes/search.tsx",
 ];
 
 const forbidden = [

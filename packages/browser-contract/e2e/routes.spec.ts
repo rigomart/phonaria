@@ -10,6 +10,29 @@ test.describe("Application routes", () => {
 		await expect(page).toHaveTitle(HOME_TITLE);
 	});
 
+	test("permanently redirects a shared /?q= link to its search", async ({ request }) => {
+		const response = await request.get("/?q=hello", { maxRedirects: 0 });
+		expect(response.status()).toBe(308);
+		expect(response.headers().location).toBe("/search?q=hello");
+	});
+
+	test("keeps a shared query that looks like JSON as the same text", async ({ request }) => {
+		const response = await request.get("/?q=%22null%22", { maxRedirects: 0 });
+		expect(response.status()).toBe(308);
+		expect(response.headers().location).toBe("/search?q=%22null%22");
+	});
+
+	test("sends a search with nothing to look up back to the homepage", async ({ request }) => {
+		const response = await request.get("/search", { maxRedirects: 0 });
+		expect(response.status()).toBe(307);
+		expect(response.headers().location).toBe("/");
+	});
+
+	test("keeps search results out of indexes", async ({ page }) => {
+		await page.goto("/search?q=hello");
+		await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, follow");
+	});
+
 	test("permanently redirects the IPA chart entry to consonants", async ({ request }) => {
 		const response = await request.get("/ipa-chart", { maxRedirects: 0 });
 		expect(response.status()).toBe(308);

@@ -9,6 +9,7 @@ import {
 	Volume2,
 } from "lucide-react";
 import type { AppFlags } from "@/lib/flags";
+import { SEARCH_PATH } from "@/lib/home-metadata";
 import {
 	IPA_CHART_CONSONANTS_PATH,
 	IPA_CHART_FREQUENCY_PATH,
@@ -34,7 +35,7 @@ const tools: readonly Tool[] = [
 		href: "/",
 		label: "Transcription",
 		icon: AudioLines,
-		match: (pathname) => pathname === "/",
+		match: (pathname) => pathname === "/" || pathname === SEARCH_PATH,
 	},
 	{
 		id: "ipa-chart",

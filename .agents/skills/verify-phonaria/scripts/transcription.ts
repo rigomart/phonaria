@@ -7,6 +7,7 @@ const empty = observation(
 		const input = document.querySelector<HTMLInputElement>('[aria-label="Text to transcribe"]');
 		return {
 			input: input?.value ?? null,
+			path: location.pathname,
 			query: new URL(location.href).searchParams.get("q"),
 			tokens: document.querySelectorAll("[data-ipa-token]").length,
 			example: Array.from(document.querySelectorAll("button")).some(
@@ -15,7 +16,7 @@ const empty = observation(
 			),
 		};
 	},
-	{ input: "", query: null, tokens: 0, example: true },
+	{ input: "", path: "/", query: null, tokens: 0, example: true },
 );
 
 const result = observation(
@@ -24,6 +25,7 @@ const result = observation(
 		const copy = document.querySelector<HTMLButtonElement>('[aria-label="Copy IPA transcription"]');
 		return {
 			input: input?.value ?? null,
+			path: location.pathname,
 			query: new URL(location.href).searchParams.get("q"),
 			words: ["hello", "world"].map((word) => {
 				const button = document.querySelector(`[aria-label="Definition of ${word}"]`);
@@ -45,6 +47,7 @@ const result = observation(
 	},
 	{
 		input: "hello world",
+		path: "/search",
 		query: "hello world",
 		words: [
 			{ word: "hello", visible: true, ipa: "hə·ˈloʊ" },
@@ -80,7 +83,8 @@ const cleared = observation(
 			input: input?.value ?? null,
 			query: new URL(location.href).searchParams.get("q"),
 			focused: !!input && document.activeElement === input,
-			tokens: document.querySelectorAll("[data-ipa-token]").length,
+			path: location.pathname,
+			resultShown: document.querySelectorAll("[data-ipa-token]").length > 0,
 			copyAbsent: !document.querySelector('[aria-label="Copy IPA transcription"]'),
 			clearAbsent: !document.querySelector('[aria-label="Clear text"]'),
 			example: Array.from(document.querySelectorAll("button")).some(
@@ -91,12 +95,13 @@ const cleared = observation(
 	},
 	{
 		input: "",
-		query: null,
+		query: "hello world",
 		focused: true,
-		tokens: 0,
-		copyAbsent: true,
+		path: "/search",
+		resultShown: true,
+		copyAbsent: false,
 		clearAbsent: true,
-		example: true,
+		example: false,
 	},
 );
 
@@ -109,7 +114,7 @@ const draft = observation(
 			focused: !!input && document.activeElement === input,
 		};
 	},
-	{ input: "hello", query: null, focused: true },
+	{ input: "hello", query: "hello world", focused: true },
 );
 
 export const transcription = {

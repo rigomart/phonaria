@@ -1,9 +1,3 @@
-/**
- * Home-route search for transcription. `q` is the submitted text.
- *
- * TanStack Router merges this result onto the parsed search, so `q` is always
- * returned. An omitted key would leave a blank `?q=` in place.
- */
 export const TRANSCRIPTION_INPUT_MAX_LENGTH = 200;
 
 export type TranscriptionSearch = {
@@ -31,6 +25,10 @@ export function normalizeTranscriptionQuery(value: unknown): string | undefined 
 	return text.length === 0 ? undefined : text;
 }
 
+/**
+ * TanStack Router merges this result onto the parsed search, so every key is
+ * always returned. An omitted key would leave a blank `?q=` in place.
+ */
 export function validateTranscriptionSearch(search: Record<string, unknown>): TranscriptionSearch {
 	return { q: normalizeTranscriptionQuery(search.q) };
 }
