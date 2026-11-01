@@ -651,7 +651,7 @@ Playback is proven by the `playing` state, set on the media element's `playing` 
 
 ## Sound pages
 
-Target accent: American English (`en-us`). `/sounds` lists every sound, consonants then vowels, each a link to `/sounds/<slug>`; a sound's page is the details drawer's content laid out as a page, plus page-only text: a summary line, a how-it's-made sentence for consonants, Related sounds, Common words, and Sound variants for the eight sounds with variant data. Slugs and titles are the ones reviewed in [#392](https://github.com/rigomart/phonaria/issues/392). The [checkpoints](../scripts/sound-pages.ts) read the list's groups and links, the sound page's title, canonical link, h1, section headings, rank and spelling words, the not-found heading, and where the rank sentence and **See ranking** link fall at phone width.
+Target accent: American English (`en-us`). `/sounds` lists every sound, consonants then vowels, each a link to `/sounds/<slug>`; a sound's page is the details drawer's content laid out as a page, plus page-only text: a summary line, a how-it's-made sentence, Related sounds, Common words, and Sound variants for the eight sounds with variant data. Slugs and titles are the ones reviewed in [#392](https://github.com/rigomart/phonaria/issues/392). The [checkpoints](../scripts/sound-pages.ts) read the list's groups and links, the sound page's title, canonical link, h1, section headings, rank and spelling words, the not-found heading, and where the rank sentence and **See ranking** link fall at phone width.
 
 ### Executable journey
 

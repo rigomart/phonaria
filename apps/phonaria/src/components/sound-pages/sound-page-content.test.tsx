@@ -60,13 +60,15 @@ describe("the sound page", () => {
 		expect(headings(page("TH"))).not.toContain("Sound variants");
 	});
 
-	it("links schwa to neighbouring vowels and gives it no how-it's-made sentence", () => {
+	it("links schwa to neighbouring vowels and says how it's made", () => {
 		const html = page("AX");
 		expect(headings(html)).toContain("Related sounds");
 		for (const slug of ["ae-cat", "er-her", "eh-red", "uh-cup"]) {
 			expect(html).toContain(`href="/sounds/${slug}"`);
 		}
-		expect(html).not.toContain("is made with");
+		expect(html).toContain(
+			"/ə/ is made with the tongue halfway up and in the middle, and the lips relaxed.",
+		);
 	});
 });
 

@@ -47,8 +47,24 @@ describe("how it's made", () => {
 		);
 	});
 
-	it("leaves vowels out", () => {
-		expect(howItsMade("AX")).toBeUndefined();
+	it("words every sound's features in plain language, with no feature names left over", () => {
+		for (const id of sounds) {
+			expect(howItsMade(id), id).not.toMatch(
+				/alveolar|dental|velar|plosive|fricative|nasal|approximant|close|open|-mid|near-|unrounded/,
+			);
+		}
+	});
+
+	it("says where the tongue and lips are for a vowel, and where a diphthong glides", () => {
+		expect(howItsMade("AX")).toBe(
+			"/ə/ is made with the tongue halfway up and in the middle, and the lips relaxed.",
+		);
+		expect(howItsMade("ER")).toBe(
+			"/ɝ/ is made with the tongue fairly low and in the middle, bunched up as for r, and the lips relaxed.",
+		);
+		expect(howItsMade("AU")).toBe(
+			"/aʊ/ starts with the tongue very low, toward the front, and glides to fairly high, toward the back, rounding the lips.",
+		);
 	});
 });
 

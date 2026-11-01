@@ -26,29 +26,27 @@ function insertAfter(
 }
 
 /**
- * The drawer's sections plus what only the page shows: a sentence on how a
- * consonant is made, related sounds after Compare with, and common words
+ * The drawer's sections plus what only the page shows: a sentence on how
+ * the sound is made, related sounds after Compare with, and common words
  * and sound variants after Spelling.
  */
 export function getSoundPageSections(phonemeId: EnglishPhonemeSymbolId): DetailSection[] {
 	let sections = getDetailSections({ targetAccent: "en-us", phonemeId, showPageLink: false });
 
 	const made = howItsMade(phonemeId);
-	if (made) {
-		sections = sections.map((section) =>
-			section.id === "articulation"
-				? {
-						...section,
-						content: (
-							<div className="flex flex-col gap-3">
-								{section.content}
-								<p className="text-pretty text-sm text-muted-foreground">{made}</p>
-							</div>
-						),
-					}
-				: section,
-		);
-	}
+	sections = sections.map((section) =>
+		section.id === "articulation"
+			? {
+					...section,
+					content: (
+						<div className="flex flex-col gap-3">
+							{section.content}
+							<p className="text-pretty text-sm text-muted-foreground">{made}</p>
+						</div>
+					),
+				}
+			: section,
+	);
 
 	const related = getRelatedSounds(phonemeId);
 	if (related.length > 0) {

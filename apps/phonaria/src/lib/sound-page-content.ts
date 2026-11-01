@@ -1,9 +1,3 @@
-/**
- * What a sound's page says beyond the details it shares with the drawer, all
- * built from data the project already has: a summary line, how a consonant
- * is made, related sounds, common words and sound variants. Page-only: the common-word data
- * stays out of the drawer's bundle.
- */
 import {
 	type ConsonantArticulation,
 	EnglishAllophoneContextLabels,
@@ -20,7 +14,7 @@ import {
 	EnglishCommonWords,
 } from "@phonaria/phonetics-data/data/en/common-words";
 import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
-import { describeConsonant } from "@/lib/plain-articulation";
+import { describeConsonant, describeVowel } from "@/lib/plain-articulation";
 import {
 	getSoundExamples,
 	getSoundKeyExample,
@@ -56,15 +50,11 @@ export function getVoicingPartner(
 	});
 }
 
-/** "the th in 'thin'" */
 function inWord({ letters, word }: { letters: string; word: string }): string {
 	return `the ${letters} in '${word}'`;
 }
 
-/**
- * "/θ/ is the th in 'thin' and 'think'. Its voiced partner is /ð/, the th in
- * 'this'." The words are the ones the page's description uses.
- */
+/** "/θ/ is the th in 'thin' and 'think'. Its voiced partner is /ð/, the th in 'this'." */
 export function soundSummary(phonemeId: EnglishPhonemeSymbolId): string {
 	const [key, other] = getSoundExamples(phonemeId);
 	const spelled = !other
@@ -84,19 +74,16 @@ export function soundSummary(phonemeId: EnglishPhonemeSymbolId): string {
 }
 
 /**
- * How the sound is made in one plain sentence, the contrast pages' wording:
- * "/θ/ is made with the tongue between the teeth, pushing air through a
- * narrow gap, with the voice off." Undefined for vowels.
+ * How the sound is made, in one sentence: "/θ/ is made with the tongue
+ * between the teeth, pushing air through a narrow gap, with the voice off."
  */
-export function howItsMade(phonemeId: EnglishPhonemeSymbolId): string | undefined {
+export function howItsMade(phonemeId: EnglishPhonemeSymbolId): string {
 	const own = articulation(phonemeId);
-	return own.category === "consonant"
-		? describeConsonant(getIpaForPhonemeId(phonemeId), own)
-		: undefined;
+	const ipa = getIpaForPhonemeId(phonemeId);
+	return own.category === "consonant" ? describeConsonant(ipa, own) : describeVowel(ipa, own);
 }
 
-// The simple vowel chart teachers draw: high, mid or low, and front, central or back.
-const HEIGHT_ROWS: Record<string, number> = {
+const SIMPLE_CHART_ROWS: Record<string, number> = {
 	close: 0,
 	"near-close": 0,
 	"close-mid": 1,
@@ -105,16 +92,23 @@ const HEIGHT_ROWS: Record<string, number> = {
 	"near-open": 2,
 	open: 2,
 };
-const BACKNESS_COLUMNS: Record<string, number> = {
+const SIMPLE_CHART_COLUMNS: Record<string, number> = {
 	front: 0,
 	"near-front": 0,
 	central: 1,
 	"near-back": 2,
 	back: 2,
 };
-// The full IPA scale, to put the nearest neighbours first.
-const HEIGHT_STEPS = ["close", "near-close", "close-mid", "mid", "open-mid", "near-open", "open"];
-const BACKNESS_STEPS = ["front", "near-front", "central", "near-back", "back"];
+const IPA_HEIGHT_SCALE = [
+	"close",
+	"near-close",
+	"close-mid",
+	"mid",
+	"open-mid",
+	"near-open",
+	"open",
+];
+const IPA_BACKNESS_SCALE = ["front", "near-front", "central", "near-back", "back"];
 
 /**
  * Plain vowels (not diphthongs) one step from this one on the simple vowel
@@ -125,31 +119,36 @@ export function getVowelNeighbours(phonemeId: EnglishPhonemeSymbolId): EnglishPh
 	const own = articulation(phonemeId);
 	if (own.category !== "vowel" || own.vowelType !== "monophthong") return [];
 	const { height, backness } = own.features;
-	const distance = (other: { height: string; backness: string }) =>
-		Math.abs(HEIGHT_STEPS.indexOf(other.height) - HEIGHT_STEPS.indexOf(height)) +
-		Math.abs(BACKNESS_STEPS.indexOf(other.backness) - BACKNESS_STEPS.indexOf(backness));
+	const ipaDistance = (other: { height: string; backness: string }) =>
+		Math.abs(IPA_HEIGHT_SCALE.indexOf(other.height) - IPA_HEIGHT_SCALE.indexOf(height)) +
+		Math.abs(IPA_BACKNESS_SCALE.indexOf(other.backness) - IPA_BACKNESS_SCALE.indexOf(backness));
 	return PHONEME_IDS.flatMap((id) => {
 		const other = articulation(id);
 		if (id === phonemeId || other.category !== "vowel" || other.vowelType !== "monophthong") {
 			return [];
 		}
 		const steps =
-			Math.abs(HEIGHT_ROWS[other.features.height] - HEIGHT_ROWS[height]) +
-			Math.abs(BACKNESS_COLUMNS[other.features.backness] - BACKNESS_COLUMNS[backness]);
-		return steps <= 1 ? [{ id, distance: distance(other.features) }] : [];
+			Math.abs(SIMPLE_CHART_ROWS[other.features.height] - SIMPLE_CHART_ROWS[height]) +
+			Math.abs(SIMPLE_CHART_COLUMNS[other.features.backness] - SIMPLE_CHART_COLUMNS[backness]);
+		return steps <= 1 ? [{ id, distance: ipaDistance(other.features) }] : [];
 	})
 		.sort((a, b) => a.distance - b.distance)
 		.map(({ id }) => id);
 }
 
-/** Sounds whose main spelling, the first in the spelling data, is this sound's: /θ/ and /ð/ (th). */
+function mainSpelling(phonemeId: EnglishPhonemeSymbolId): string | undefined {
+	return (
+		EnglishPhonemeSpellingPatterns as Record<
+			EnglishPhonemeSymbolId,
+			{ patterns: readonly string[] }
+		>
+	)[phonemeId].patterns[0];
+}
+
+/** /θ/ and /ð/ (th). */
 function getSameSpelling(phonemeId: EnglishPhonemeSymbolId): EnglishPhonemeSymbolId[] {
-	const patterns = EnglishPhonemeSpellingPatterns as Record<
-		EnglishPhonemeSymbolId,
-		{ patterns: readonly string[] }
-	>;
-	const main = patterns[phonemeId].patterns[0];
-	return PHONEME_IDS.filter((id) => id !== phonemeId && patterns[id].patterns[0] === main);
+	const main = mainSpelling(phonemeId);
+	return PHONEME_IDS.filter((id) => id !== phonemeId && mainSpelling(id) === main);
 }
 
 export interface RelatedSound {
