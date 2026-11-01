@@ -1,11 +1,17 @@
 name: Preview
 
 # Deploys each PR to its own protected Worker. cleanup-preview.yml removes it on close.
+# release-please's Release PRs get no preview: they only bump the version and changelog.
+# paths-ignore keeps them from starting a run; the job's branch check catches any that still do.
 
 on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - .release-please-manifest.json
+      - CHANGELOG.md
+      - package.json
 
 concurrency:
   group: preview-${{ github.event.pull_request.number }}
@@ -13,6 +19,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
