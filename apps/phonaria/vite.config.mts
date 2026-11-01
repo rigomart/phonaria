@@ -42,7 +42,7 @@ function publicBucketUrl(): string {
 
 /**
  * Worker `vars` are request-time on the server. The app shell also reads
- * `FLAG_PRACTICE`, `FLAG_LANGUAGE_HISTORY`, `FLAG_ABOUT` and `FLAG_SPEECH` while hydrating, so the client bundle must see the same
+ * `FLAG_PRACTICE`, `FLAG_LANGUAGE_HISTORY`, `FLAG_ABOUT`, `FLAG_SPEECH` and `FLAG_SOUND_SEARCH` while hydrating, so the client bundle must see the same
  * bake-at-build value as Credits site config.
  */
 function definePublicAppFlags(): Plugin {
@@ -57,6 +57,7 @@ function definePublicAppFlags(): Plugin {
 					),
 					"process.env.FLAG_ABOUT": JSON.stringify(process.env.FLAG_ABOUT ?? ""),
 					"process.env.FLAG_SPEECH": JSON.stringify(process.env.FLAG_SPEECH ?? ""),
+					"process.env.FLAG_SOUND_SEARCH": JSON.stringify(process.env.FLAG_SOUND_SEARCH ?? ""),
 				},
 			};
 		},

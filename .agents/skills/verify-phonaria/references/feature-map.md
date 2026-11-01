@@ -6,6 +6,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | --- | --- | --- |
 | Common-word transcription | `/`, header **Transcription**; results open at `/search?q=` (old `/?q=` links redirect there) | Executable journey below |
 | Transcription history | `/`, focus the input once this browser has a transcription | Executable journey below |
+| Find a word by its sounds | `/` or `/search`, the **ə** button at the start of the input; results at `/search?sounds=TH-IX` (behind `FLAG_SOUND_SEARCH`) | Executable journeys below: `sound-search` (flag on) and `sound-search-off` |
 | Other pronunciation variants | Transcribe a word, **Show other pronunciations of hello** | Not exercised |
 | Word definitions | Transcribe, **Definition of hello** | Not exercised; requires Worker/Wiktionary |
 | Spelling suggestions and server lookup | `/`, words outside the bundled lists | Not exercised; server lookup needs Turso |
@@ -191,6 +192,69 @@ Results open on `/search`, which has no example chips, so the journey returns to
 ### Limits
 
 Desktop Chromium only. It does not check the phone list height, the row × button with a pointer or touch, the rest of the footer focus order (Shift+Tab back to the field, Tab out to submit, Escape), or cross-tab sync.
+
+## Find a word by its sounds
+
+Behind `FLAG_SOUND_SEARCH`. The **ə** button (**Find a word by its sounds**) at the start of the input switches it to sound mode and opens a panel of sound keys under the field. Each key shows a sound and a common word; keys that would leave no word are disabled. The picked sounds show between slashes in the field. On the homepage they stay there until **Find words** (the button beside the field, or Enter) opens `/search?sounds=`; on `/search` each pick updates `?sounds=` and the words found right away. **Done**, the chevron (**Show sound keys** / **Hide sound keys**), Escape or a click outside closes the panel. Picking a word opens its transcription at `/search?q=`.
+
+The [checkpoints](../scripts/sound-search.ts) read the path and URL, the toggle's pressed state, the field text, the panel and its visible keys, four expected results, the text input and page overflow. Expected words are English facts: thick, thin, thing and theory follow /θɪ/ with /k/, /n/, /ŋ/ and /ɹ/; "this" starts with /ð/, and no word starts with /ŋ/.
+
+### Controls
+
+| User control | CLI locator |
+| --- | --- |
+| Mode toggle | `find label "Find a word by its sounds" click` |
+| Panel | `[role="dialog"]` named **Sound keys**; the chevron in the field opens and closes it |
+| A key | `find role button click --name "/θ/, as in think"`; vowels are on the **Vowels** toggle |
+| Search | **Find words** |
+| Remove a sound | **Remove the last sound**, **Clear sounds** |
+| A word found | the buttons in `section[aria-label="Words found"]` |
+
+### Executable journey (flag on)
+
+Desktop viewport 1280 × 900. After `init sound-search` and `serve`:
+
+```bash
+HYD="Object.keys(document.querySelector('[aria-label=\"Text to transcribe\"]')||{}).some(k=>k.startsWith('__reactProps'))"
+OPEN="document.querySelectorAll('[role=dialog] button[aria-label^=\"/\"]:not([disabled])').length>0"
+RES="document.querySelectorAll('section[aria-label=\"Words found\"] li').length>0"
+bun run verify browser "$VERIFY_RUN" open about:blank
+bun run verify browser "$VERIFY_RUN" trace start
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" text-mode
+bun run verify browser "$VERIFY_RUN" find label "Find a word by its sounds" click
+bun run verify browser "$VERIFY_RUN" wait --fn "$OPEN"
+bun run verify observe "$VERIFY_RUN" opened
+bun run verify browser "$VERIFY_RUN" find role button click --name "/θ/, as in think"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Vowels" --exact
+bun run verify browser "$VERIFY_RUN" eval "([...document.querySelectorAll('[role=dialog] button')].find(x=>x.getAttribute('aria-label')?.startsWith('/ɪ/')).click(),1)"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Consonants" --exact
+bun run verify observe "$VERIFY_RUN" picked
+bun run verify browser "$VERIFY_RUN" find role button click --name "Find words" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname==='/search' && $RES"
+bun run verify observe "$VERIFY_RUN" searched
+bun run verify browser "$VERIFY_RUN" find role button click --name "Remove the last sound" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "new URL(location.href).searchParams.get('sounds')==='TH' && $RES"
+bun run verify observe "$VERIFY_RUN" live
+bun run verify browser "$VERIFY_RUN" eval "([...document.querySelectorAll('section[aria-label=\"Words found\"] li button')].find(x=>x.querySelector('span')?.textContent==='think').click(),1)"
+bun run verify browser "$VERIFY_RUN" wait --fn "document.querySelectorAll('[data-ipa-token]').length>0"
+bun run verify observe "$VERIFY_RUN" opened-word
+bun run verify browser "$VERIFY_RUN" back
+bun run verify browser "$VERIFY_RUN" wait --fn "new URL(location.href).searchParams.get('sounds')==='TH' && $RES"
+bun run verify observe "$VERIFY_RUN" back
+```
+
+`text-mode` requires the toggle, unpressed, at the start of an empty text field on the homepage. `opened` requires the homepage URL unchanged, the 24 consonant keys with only /ŋ/ disabled, and no results. `picked` requires /θɪ/ in the field, only k, n, ŋ and ɹ enabled among the consonants, still on the homepage with no results. `searched` requires `/search?sounds=TH-IX` with the panel closed and the four words. `live` requires removing a sound to update `?sounds=TH` and the words without a search. `opened-word` requires `/search?q=think` in text mode with the field holding it. `back` requires Back to return to the sound search in sound mode.
+
+### Flag off
+
+Start the server with `FLAG_SOUND_SEARCH=0` and open `/search?sounds=TH-IX`; `sound-search-off`'s `no-toggle` requires it to land on the homepage with the text field, no toggle and no sound field.
+
+### Limits
+
+Chromium only. It does not check the Vowels keys' enabled state, Backspace or Escape in the panel, a failed word-list load, or phone layout.
 
 ## Sound frequency
 

@@ -9,7 +9,7 @@ import {
 } from "@phonaria/ui/components/input-group";
 import { Spinner } from "@phonaria/ui/components/spinner";
 import { SendHorizontal, X } from "lucide-react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SpellingSuggestionLine } from "@/components/transcription/spelling-suggestion-line";
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import { useCurrentTranscription } from "@/hooks/use-transcribe";
@@ -33,9 +33,13 @@ const CHARACTER_COUNT_WARNING_FROM = 0.9;
 
 interface G2PInputFormProps {
 	maxLength?: number;
+	leading?: ReactNode;
 }
 
-export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2PInputFormProps) {
+export function G2PInputForm({
+	maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH,
+	leading,
+}: G2PInputFormProps) {
 	const inputText = useG2PStore((state) => state.draftText);
 	const setDraftText = useG2PStore((state) => state.setDraftText);
 	const { submit, clear, isPending } = useSubmitTranscription();
@@ -197,6 +201,7 @@ export function G2PInputForm({ maxLength = TRANSCRIPTION_INPUT_MAX_LENGTH }: G2P
 					disabled={isPending}
 				>
 					<InputGroup ref={inputGroupRef} className="h-10 flex-1">
+						{leading ? <InputGroupAddon align="inline-start">{leading}</InputGroupAddon> : null}
 						<AutocompleteInput
 							ref={inputRef}
 							render={<InputGroupInput />}

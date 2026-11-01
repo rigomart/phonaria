@@ -25,6 +25,31 @@ describe("validateTranscriptionSearch", () => {
 		expect("q" in validateTranscriptionSearch({ q: "   " })).toBe(true);
 	});
 
+	it("keeps the picked sounds, dropping unknown IDs, while sound search is on", () => {
+		expect(validateTranscriptionSearch(defaultParseSearch("?sounds=TH-XX-IX")).sounds).toBe(
+			"TH-IX",
+		);
+		expect(validateTranscriptionSearch(defaultParseSearch("?sounds=")).sounds).toBe("");
+		expect(validateTranscriptionSearch({}).sounds).toBeUndefined();
+		expect("sounds" in validateTranscriptionSearch({})).toBe(true);
+	});
+
+	it("keeps one search at a time, a text query over sounds", () => {
+		expect(validateTranscriptionSearch({ q: "hello", sounds: "TH" })).toEqual({
+			q: "hello",
+			sounds: undefined,
+		});
+	});
+
+	it("ignores sounds while FLAG_SOUND_SEARCH is off", () => {
+		process.env.FLAG_SOUND_SEARCH = "0";
+		try {
+			expect(validateTranscriptionSearch({ sounds: "TH-IX" }).sounds).toBeUndefined();
+		} finally {
+			delete process.env.FLAG_SOUND_SEARCH;
+		}
+	});
+
 	it("cuts text down to the input limit instead of rejecting it", () => {
 		const text = `  ${"a".repeat(TRANSCRIPTION_INPUT_MAX_LENGTH + 40)}`;
 		expect(validateTranscriptionSearch({ q: text }).q).toBe(

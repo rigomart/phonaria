@@ -108,7 +108,8 @@
 				"FLAG_PRACTICE": "1",
 				"FLAG_LANGUAGE_HISTORY": "1",
 				"FLAG_ABOUT": "1",
-				"FLAG_SPEECH": "1"
+				"FLAG_SPEECH": "1",
+				"FLAG_SOUND_SEARCH": "1"
 			}
 		},
 		"preview": {
@@ -146,7 +147,8 @@
 				"FLAG_PRACTICE": "1",
 				"FLAG_LANGUAGE_HISTORY": "1",
 				"FLAG_ABOUT": "1",
-				"FLAG_SPEECH": "1"
+				"FLAG_SPEECH": "1",
+				"FLAG_SOUND_SEARCH": "1"
 			}
 		},
 		"production": {
@@ -189,7 +191,8 @@
 				"FLAG_PRACTICE": "0",
 				"FLAG_LANGUAGE_HISTORY": "0",
 				"FLAG_ABOUT": "0",
-				"FLAG_SPEECH": "0"
+				"FLAG_SPEECH": "0",
+				"FLAG_SOUND_SEARCH": "0"
 			}
 		}
 	}

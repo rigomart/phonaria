@@ -9,9 +9,9 @@ import { transcribeWordsFromStart } from "@/server/transcribe";
 export const Route = createFileRoute("/search")({
 	validateSearch: validateTranscriptionSearch,
 	beforeLoad: ({ search }) => {
-		if (search.q === undefined) redirect("/");
+		if (search.q === undefined && search.sounds === undefined) redirect("/");
 	},
-	head: ({ match }) => buildSearchHead(match.search.q),
+	head: ({ match }) => buildSearchHead(match.search),
 	component: SearchRoute,
 });
 

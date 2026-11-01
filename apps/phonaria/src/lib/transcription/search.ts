@@ -1,7 +1,11 @@
+import { flags } from "@/lib/flags";
+import { normalizeSoundsParam } from "@/lib/sound-search/search";
+
 export const TRANSCRIPTION_INPUT_MAX_LENGTH = 200;
 
 export type TranscriptionSearch = {
 	q?: string;
+	sounds?: string;
 };
 
 export type TranscriptionSearchSyncAction =
@@ -26,11 +30,18 @@ export function normalizeTranscriptionQuery(value: unknown): string | undefined 
 }
 
 /**
+ * `sounds` is the picked sounds as `TH-IX`, or empty before any is picked (`FLAG_SOUND_SEARCH`).
+ *
  * TanStack Router merges this result onto the parsed search, so every key is
  * always returned. An omitted key would leave a blank `?q=` in place.
  */
 export function validateTranscriptionSearch(search: Record<string, unknown>): TranscriptionSearch {
-	return { q: normalizeTranscriptionQuery(search.q) };
+	const q = normalizeTranscriptionQuery(search.q);
+	const sounds =
+		q === undefined && flags.isEnabled("soundSearch")
+			? normalizeSoundsParam(search.sounds)
+			: undefined;
+	return { q, sounds };
 }
 
 /**

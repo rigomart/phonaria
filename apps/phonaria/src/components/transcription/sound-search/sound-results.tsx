@@ -1,0 +1,105 @@
+import { Button } from "@phonaria/ui/components/button";
+import { Spinner } from "@phonaria/ui/components/spinner";
+import { RotateCcw } from "lucide-react";
+import { type ReactNode, useMemo } from "react";
+import { type SoundId, type SoundMatch, soundsToIpa } from "@/lib/sound-search/search";
+import { cn } from "@/lib/utils";
+import { useSoundSearch } from "./use-sound-search";
+
+const SHOWN_MATCHES = 60;
+
+/** Stays while the input switches to text, until the next search. */
+export function SoundResults({ sounds }: { sounds: readonly SoundId[] }) {
+	const { status, find, retry } = useSoundSearch();
+	const result = useMemo(() => find(sounds), [find, sounds]);
+
+	if (status === "error") {
+		return (
+			<Message>
+				<span role="alert">
+					We couldn't load the word list. Check your connection and try again.
+				</span>
+				<Button variant="outline" size="sm" onClick={retry}>
+					<RotateCcw data-icon="inline-start" />
+					Try again
+				</Button>
+			</Message>
+		);
+	}
+
+	if (sounds.length === 0) {
+		return (
+			<Message>
+				Pick the sounds you heard, starting with the first. The words that start with them show up
+				here.
+			</Message>
+		);
+	}
+
+	if (!result) {
+		return (
+			<Message>
+				<Spinner />
+			</Message>
+		);
+	}
+
+	const ipa = soundsToIpa(sounds);
+	const total = result.matches.length;
+
+	if (total === 0) {
+		return <Message>No common word starts with /{ipa}/.</Message>;
+	}
+
+	return (
+		<section aria-label="Words found" className="mx-auto w-full max-w-2xl px-4 py-4 enter-fade">
+			<p className="mb-3 px-3 text-sm text-muted-foreground">
+				{total.toLocaleString()} {total === 1 ? "word starts" : "words start"} with /{ipa}/
+			</p>
+			<ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+				{result.matches.slice(0, SHOWN_MATCHES).map((match) => (
+					<li key={match.word}>
+						<MatchButton match={match} picked={sounds.length} />
+					</li>
+				))}
+			</ul>
+			{total > SHOWN_MATCHES ? (
+				<p className="mt-4 text-center text-xs text-muted-foreground">
+					Showing the {SHOWN_MATCHES} most common. Add a sound to narrow it down.
+				</p>
+			) : null}
+		</section>
+	);
+}
+
+function MatchButton({ match, picked }: { match: SoundMatch; picked: number }) {
+	const { openWord } = useSoundSearch();
+	const matched = soundsToIpa(match.pronunciation.slice(0, picked));
+	const rest = soundsToIpa(match.pronunciation.slice(picked));
+
+	return (
+		<button
+			type="button"
+			onClick={() => openWord(match.word)}
+			aria-label={`${match.word}, /${matched}${rest}/${match.exact ? ", exact match" : ""}`}
+			className={cn(
+				"flex w-full items-baseline justify-between gap-2 rounded-lg border bg-background px-3 py-2 text-left transition-colors hover:border-primary",
+				match.exact && "border-primary",
+			)}
+		>
+			<span className="truncate font-medium">{match.word}</span>
+			<span className="shrink-0 text-sm text-muted-foreground">
+				/<span className="text-foreground">{matched}</span>
+				{rest}/
+			</span>
+		</button>
+	);
+}
+
+function Message({ children }: { children: ReactNode }) {
+	return (
+		<div className="mx-auto flex max-w-md flex-col items-center gap-3 px-4 pt-6 pb-8 text-center text-sm text-muted-foreground enter-fade">
+			{children}
+		</div>
+	);
+}

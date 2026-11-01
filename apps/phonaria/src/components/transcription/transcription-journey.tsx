@@ -1,13 +1,16 @@
 import { useSearch } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import { TranscriptionProvider } from "@/hooks/use-transcribe";
 import { useRecordTranscriptionHistory } from "@/hooks/use-transcription-history";
+import { parseSoundsParam } from "@/lib/sound-search/search";
 import type { TranscribeWordsFn } from "@/lib/transcription/g2p-store";
 import type { ChooseSpellingInContextFn } from "@/lib/transcription/spelling-context";
+import { Composer } from "./composer";
 import { TranscriptionDisplay } from "./display";
 import { EmptyState } from "./display/empty-state";
-import { G2PInputForm } from "./g2p-input-form";
 import { HomeIntro } from "./home-intro";
+import { SoundResults } from "./sound-search/sound-results";
+import { SoundSearchProvider, useSoundSearch } from "./sound-search/use-sound-search";
 import { TranscriptionSearchSync } from "./transcription-search-sync";
 
 type JourneyProps = {
@@ -18,8 +21,10 @@ type JourneyProps = {
 function Journey({
 	transcribeWords,
 	chooseSpellingInContext,
+	live,
 	children,
 }: JourneyProps & {
+	live: boolean;
 	children: ReactNode;
 }) {
 	useRecordTranscriptionHistory();
@@ -28,7 +33,7 @@ function Journey({
 			transcribeWords={transcribeWords}
 			chooseSpellingInContext={chooseSpellingInContext}
 		>
-			{children}
+			<SoundSearchProvider live={live}>{children}</SoundSearchProvider>
 		</TranscriptionProvider>
 	);
 }
@@ -36,34 +41,44 @@ function Journey({
 /** Arriving here drops any result left in the store. */
 export function HomeJourney(props: JourneyProps) {
 	return (
-		<Journey {...props}>
+		<Journey {...props} live={false}>
 			<TranscriptionSearchSync query={undefined} />
 			<div className="flex flex-1 flex-col items-center pt-[8vh]">
 				<HomeIntro />
 
 				<div className="w-full max-w-2xl px-4 enter-rise enter-delay-60">
-					<G2PInputForm />
+					<Composer />
 				</div>
 
-				<EmptyState />
+				<HomeBelowInput />
 			</div>
 		</Journey>
 	);
 }
 
+function HomeBelowInput() {
+	const { mode } = useSoundSearch();
+	return mode === "sounds" ? null : <EmptyState />;
+}
+
 export function SearchJourney(props: JourneyProps) {
-	const { q } = useSearch({ from: "/search" });
+	const { q, sounds } = useSearch({ from: "/search" });
+	const pickedSounds = useMemo(() => parseSoundsParam(sounds), [sounds]);
 
 	return (
-		<Journey {...props}>
+		<Journey {...props} live>
 			<TranscriptionSearchSync query={q} />
 			<div className="flex flex-1 flex-col items-center pt-6 md:pt-10">
 				<div className="w-full max-w-2xl px-4">
-					<G2PInputForm />
+					<Composer />
 				</div>
 
 				<div className="w-full min-h-0">
-					<TranscriptionDisplay targetAccent="en-us" query={q} />
+					{sounds !== undefined ? (
+						<SoundResults sounds={pickedSounds} />
+					) : (
+						<TranscriptionDisplay targetAccent="en-us" query={q} />
+					)}
 				</div>
 			</div>
 		</Journey>
