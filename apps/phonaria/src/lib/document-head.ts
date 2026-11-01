@@ -119,8 +119,8 @@ function isMissingSiteUrlError(error: unknown): boolean {
 }
 
 /**
- * Worker bindings are not available in the Start client bundle. Production
- * `head()` still needs a title when SITE_URL is unset there. Any other
+ * The browser sees SITE_URL only as baked in at build time (see
+ * `vite.config.mts`); without it, `head()` there still needs a title. Any other
  * `getDocumentMetadata()` failure — including a malformed SITE_URL on the
  * server — is rethrown.
  */

@@ -9,6 +9,7 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
+import { clientSiteDefines, readWranglerVars } from "./scripts/client-site-env";
 
 const appRoot = path.dirname(fileURLToPath(import.meta.url));
 const curated10kStub = new URL("./src/lib/phoneme-lookup/curated-10k.ssr-stub.ts", import.meta.url)
@@ -63,6 +64,24 @@ function definePublicAppFlags(): Plugin {
 	};
 }
 
+/**
+ * Route `head()` reruns in the browser on in-app navigation, where Worker vars
+ * don't exist; the Worker still reads them at request time.
+ */
+function defineClientSiteMetadata(): Plugin {
+	return {
+		name: "define-client-site-metadata",
+		configEnvironment(name) {
+			if (name !== "client") return;
+			const workerVars = readWranglerVars(
+				path.join(appRoot, "wrangler.jsonc"),
+				process.env.CLOUDFLARE_ENV,
+			);
+			return { define: clientSiteDefines(process.env, workerVars) };
+		},
+	};
+}
+
 export default defineConfig({
 	server: {
 		port: 3000,
@@ -85,6 +104,7 @@ export default defineConfig({
 		stubCurated10kOnSsr(),
 		cloudflare({ viteEnvironment: { name: "ssr" } }),
 		definePublicAppFlags(),
+		defineClientSiteMetadata(),
 		tanstackStart({
 			srcDirectory: "src",
 			prerender: {

@@ -22,7 +22,7 @@ adapter.
 | Command | What it does |
 | --- | --- |
 | `bun run e2e` | Contract against `CONTRACT_TARGET`, defaulting to Cloudflare production |
-| `bun run e2e:smoke` | Focused deployed checks for transcription (client and server), charts/media, Practice flag, a minimal-pair page without speaking practice, a sound page, landing page, headers, and accessibility |
+| `bun run e2e:smoke` | Focused deployed checks for transcription (client and server), charts/media, Practice flag, a minimal-pair page without speaking practice, a sound page, the head after an in-app move, landing page, headers, and accessibility |
 | `bun run e2e:cloudflare` | Contract against Cloudflare staging (`CONTRACT_BASE_URL` + Access token) |
 | `bun run e2e:baseline` | Tagged page-load and transcription timing collection |
 | `CONTRACT_WRITE_BASELINE=1 bun run e2e:baseline` | Also write `baselines/<target>.json` |
