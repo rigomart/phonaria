@@ -15,7 +15,6 @@ export function jsonLdScript(data: unknown) {
 	return { type: "application/ld+json", children: serializeJsonLd(data) };
 }
 
-/** schema.org `WebSite`, for the home page. */
 export function buildWebSiteStructuredData(name: string, url: string) {
 	return { "@context": "https://schema.org", "@type": "WebSite", name, url };
 }

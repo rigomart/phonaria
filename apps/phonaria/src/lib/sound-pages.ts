@@ -186,7 +186,6 @@ export function soundPageTitle(phonemeId: EnglishPhonemeSymbolId): string {
 	return `How to pronounce the ${getSoundName(phonemeId)} sound /${getIpaForPhonemeId(phonemeId)}/ (as in '${word}')`;
 }
 
-/** Commas, then "and" before the last, as in "a, b and c". */
 function joinWithAnd(parts: readonly string[]): string {
 	return parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}` : parts.join("");
 }

@@ -206,7 +206,6 @@ function buildPageHead({
 	};
 }
 
-/** Adds JSON-LD built from SITE_URL, only when it is set. */
 function withStructuredData(head: StartHead, build: (siteUrl: string) => unknown): StartHead {
 	const metadata = tryGetDocumentMetadata();
 	if (!metadata) return head;
@@ -216,7 +215,6 @@ function withStructuredData(head: StartHead, build: (siteUrl: string) => unknown
 export function buildHomeHead(): StartHead {
 	return withStructuredData(
 		buildPageHead({ path: "/", title: HOME_PAGE_TITLE, description: HOME_PAGE_DESCRIPTION }),
-		// The home page's canonical is the bare site URL.
 		(siteUrl) => buildWebSiteStructuredData(SITE_NAME, siteUrl),
 	);
 }

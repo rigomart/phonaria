@@ -1,10 +1,6 @@
 import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
 
-/**
- * The pair people search for, where it isn't the catalog's first. Picked here
- * so the validated catalog keeps its order. Each must be one of its
- * contrast's pairs; the words may be in either order.
- */
+/** The pair people search for, where it isn't the catalog's first (#414, decision 8). The words may be in either order. */
 const HEADLINE_PAIRS: Readonly<Record<string, readonly [string, string]>> = {
 	"i-ix": ["ship", "sheep"],
 	"th-s": ["think", "sink"],

@@ -101,11 +101,6 @@ export function contrastPageHref(contrastId: string, word?: string): string {
 
 type CatalogContrast = (typeof EnglishPhonemeContrasts)[number];
 
-/**
- * The contrast's sounds in its headline's order. The catalog's order stands
- * unless the headline's first word is the catalog's second, as ship (/ɪ/)
- * against the catalog's /i/ first.
- */
 function headlineOrder(contrast: CatalogContrast) {
 	const headline = getHeadlinePair(contrast.id);
 	const flipped = contrast.minimalPairs.some(
