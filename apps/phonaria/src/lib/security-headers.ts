@@ -24,6 +24,8 @@ export function getContentSecurityPolicy(): string {
 	].join("; ");
 }
 
+export const STRICT_TRANSPORT_SECURITY = "max-age=86400";
+
 /** Vite content-hashes everything under this path, so it is safe to cache forever. */
 export const HASHED_ASSET_CACHE_CONTROL = "public, max-age=31536000, immutable";
 
@@ -32,5 +34,5 @@ export const HASHED_ASSET_CACHE_CONTROL = "public, max-age=31536000, immutable";
  * hashed assets are not revalidated on every warm load.
  */
 export function formatCloudflareHeadersFile(policy: string = getContentSecurityPolicy()): string {
-	return `/*\n  Content-Security-Policy: ${policy}\n\n/assets/*\n  Cache-Control: ${HASHED_ASSET_CACHE_CONTROL}\n`;
+	return `/*\n  Content-Security-Policy: ${policy}\n  Strict-Transport-Security: ${STRICT_TRANSPORT_SECURITY}\n\n/assets/*\n  Cache-Control: ${HASHED_ASSET_CACHE_CONTROL}\n`;
 }

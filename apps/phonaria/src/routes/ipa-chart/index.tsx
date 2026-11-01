@@ -4,6 +4,6 @@ import { redirect } from "@/lib/navigation";
 
 export const Route = createFileRoute("/ipa-chart/")({
 	beforeLoad: () => {
-		redirect(IPA_CHART_CONSONANTS_PATH);
+		redirect(IPA_CHART_CONSONANTS_PATH, 308);
 	},
 });

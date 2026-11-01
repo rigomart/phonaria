@@ -145,11 +145,22 @@ describe("buildRootHead", () => {
 		});
 	});
 
-	it("adds canonical SEO tags when SITE_URL is set", () => {
+	it("sends robots but no social tags, so a page without its own head shares no card", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
-		expect(buildRootHead().meta).toContainEqual({
-			property: "og:url",
-			content: "https://phonaria-staging.example.test",
+		const { meta } = buildRootHead();
+		expect(meta).toContainEqual({ name: "robots", content: "noindex, follow" });
+		expect(meta).not.toContainEqual(
+			expect.objectContaining({ property: expect.stringMatching(/^og:/) }),
+		);
+		expect(meta).not.toContainEqual(
+			expect.objectContaining({ name: expect.stringMatching(/^twitter:/) }),
+		);
+	});
+
+	it("titles a not-found page", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		expect(buildRootHead({ notFound: true }).meta).toContainEqual({
+			title: "Page not found - Phonaria",
 		});
 	});
 });
@@ -398,7 +409,7 @@ describe("buildPracticeTopicHead", () => {
 		expect(topic).toBeDefined();
 		const head = buildPracticeTopicHead(topic);
 		expect(head.meta).toContainEqual({
-			title: practiceDocumentTitle(`${topic?.display.name} — Practice`),
+			title: `${topic?.display.name} - Practice - ${SITE_NAME}`,
 		});
 		expect(head.meta).toContainEqual({
 			name: "description",
