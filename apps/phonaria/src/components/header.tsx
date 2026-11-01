@@ -64,7 +64,7 @@ function MainNav({ flags, pathname }: { flags: AppFlags; pathname: string }) {
 		<nav
 			ref={navRef}
 			aria-label="Main"
-			className="relative hidden h-full items-stretch gap-5 text-sm sm:flex"
+			className="relative hidden h-full shrink-0 items-stretch gap-5 text-sm whitespace-nowrap sm:flex"
 		>
 			{tools.map((tool) => {
 				const active = tool === activeTool;
