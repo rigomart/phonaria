@@ -13,5 +13,5 @@ export const MinimalPairActivity = {
 	description:
 		"Two words that differ by one sound, like ship and sheep. Say one and find out which came through.",
 	speechCheckNotice:
-		"Microsoft checks your recording, and Phonaria doesn't keep it. The check can mishear you.",
+		"We don't keep your recording. Microsoft checks it, and the check can be wrong.",
 } as const;

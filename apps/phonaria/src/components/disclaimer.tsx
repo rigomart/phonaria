@@ -29,7 +29,7 @@ export function Disclaimer({
 	children,
 	title,
 	points,
-	sources = [],
+	source,
 	className,
 }: {
 	/** One plain sentence of inline content: the note renders as a `<p>`. */
@@ -37,8 +37,8 @@ export function Disclaimer({
 	/** Heads the details, and names the More button for screen readers. */
 	title: string;
 	points: readonly ReactNode[];
-	/** Where the data comes from, linked to its entry on the Credits page. */
-	sources?: readonly { key: CreditKey; label: string }[];
+	/** The Credits entry the Sources link opens. */
+	source?: CreditKey;
 	className?: string;
 }) {
 	return (
@@ -55,18 +55,14 @@ export function Disclaimer({
 							<li key={index}>{point}</li>
 						))}
 					</ul>
-					{sources.length > 0 ? (
-						<p className="text-xs text-muted-foreground">
-							Sources:{" "}
-							{sources.map((source, index) => (
-								<span key={source.key}>
-									{index > 0 ? ", " : null}
-									<Link to="/credits" hash={source.key} className={textLink}>
-										{source.label}
-									</Link>
-								</span>
-							))}
-						</p>
+					{source ? (
+						<Link
+							to="/credits"
+							hash={source}
+							className={cn("w-fit text-xs text-muted-foreground", textLink)}
+						>
+							Sources
+						</Link>
 					) : null}
 				</PopoverContent>
 			</Popover>

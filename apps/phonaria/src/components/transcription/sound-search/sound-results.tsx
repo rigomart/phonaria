@@ -120,14 +120,15 @@ function SoundSearchNote({ className }: { className?: string }) {
 	return (
 		<Disclaimer
 			className={className}
-			title="How words are matched"
+			title="About these matches"
 			points={[
-				"Phonaria uses the CMU Pronouncing Dictionary, which lists General American pronunciations.",
-				"If you heard a word said another way, it may show under other sounds, or not at all.",
+				"Sounds come from the CMU Pronouncing Dictionary, which lists US English pronunciations.",
+				"Its pronunciations follow one common US accent.",
+				"If you heard a word said a different way, it may start with different sounds here, or not show up at all.",
 			]}
-			sources={[{ key: "cmu", label: "CMU Pronouncing Dictionary" }]}
+			source="cmu"
 		>
-			Words are matched by their US dictionary pronunciations.
+			We look up the sounds you pick in a US dictionary.
 		</Disclaimer>
 	);
 }

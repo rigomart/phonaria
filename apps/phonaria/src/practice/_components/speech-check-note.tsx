@@ -5,13 +5,14 @@ export function SpeechCheckNote({ className }: { className?: string }) {
 	return (
 		<Disclaimer
 			className={className}
-			title="How your recording is checked"
+			title="About this check"
 			points={[
-				"Your recording goes to Microsoft Azure AI Speech, which scores each sound and writes down the word it heard.",
-				"Background noise or a quiet microphone can make the check mishear you. If a result seems wrong, try again.",
-				"Phonaria keeps your results only if you turn on sharing below.",
+				"Your recording goes to Microsoft's speech service, Azure AI Speech.",
+				"It scores each sound and writes down the word it heard.",
+				"Background noise or a low microphone volume can make it hear the wrong word or sound. If a result looks wrong, try again.",
+				"We keep your results only if you turn on the sharing switch below.",
 			]}
-			sources={[{ key: "speech-scoring", label: "Microsoft Azure AI Speech" }]}
+			source="speech-scoring"
 		>
 			{MinimalPairActivity.speechCheckNotice}
 		</Disclaimer>
