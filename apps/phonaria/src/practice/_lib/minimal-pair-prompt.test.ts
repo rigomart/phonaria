@@ -1,5 +1,6 @@
 import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
+import { contrastPageHeading, getContrastPage } from "@/lib/minimal-pairs";
 import {
 	drawWord,
 	listContrastOptions,
@@ -10,20 +11,34 @@ import {
 const getContrastOption = (id: string) => listContrastOptions().find((option) => option.id === id);
 
 describe("listContrastOptions", () => {
-	it("offers every catalog contrast with its two sounds and first pair", () => {
+	it("offers every catalog contrast with its two sounds and headline pair", () => {
 		const options = listContrastOptions();
 		expect(options).toHaveLength(EnglishPhonemeContrasts.length);
 		expect(getContrastOption("i-ix")).toEqual({
 			id: "i-ix",
 			category: "vowel",
 			sounds: [
-				{ id: "I", ipa: "i" },
 				{ id: "IX", ipa: "ɪ" },
+				{ id: "I", ipa: "i" },
 			],
-			example: ["seat", "sit"],
+			example: ["ship", "sheep"],
 		});
 		expect(getContrastOption("p-b")?.category).toBe("consonant");
 		expect(getContrastOption("ai-ei")?.category).toBe("vowel");
+	});
+
+	it("shows each contrast's headline pair, words and sounds in the order its page has them", () => {
+		for (const { id } of EnglishPhonemeContrasts) {
+			const page = getContrastPage(id);
+			const option = getContrastOption(id);
+			if (!page || !option) throw new Error(`Missing page or row for ${id}.`);
+			const [a, b] = option.sounds;
+			const [first, second] = option.example;
+			expect(`/${a.ipa}/ vs /${b.ipa}/: ${first} vs ${second}`, id).toBe(contrastPageHeading(page));
+		}
+		expect(getContrastOption("th-t")?.example).toEqual(["three", "tree"]);
+		expect(getContrastOption("th-s")?.example).toEqual(["think", "sink"]);
+		expect(getContrastOption("l-r")?.example).toEqual(["light", "right"]);
 	});
 });
 
