@@ -3,6 +3,7 @@ import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import { describe, expect, it } from "vitest";
 import { getHeadlinePair } from "./headline-pairs";
 import {
+	contrastPageDescription,
 	contrastPageHeading,
 	contrastPageHref,
 	getContrastPage,
@@ -119,5 +120,32 @@ describe("headline pairs", () => {
 				expect(getWordAudioPath(EnglishWordAudio, "en-us", word), `${id}: ${word}`).not.toBeNull();
 			}
 		}
+	});
+});
+
+describe("contrast page descriptions", () => {
+	const describeContrast = (id: string) => {
+		const page = getContrastPage(id);
+		return page && contrastPageDescription(page);
+	};
+
+	it("counts the pairs past the two it names", () => {
+		expect(describeContrast("th-s")).toBe(
+			"Hear the difference between think and sink, thin and sin, and 9 more word pairs that differ only by the voiceless TH /θ/ and S /s/ sounds, with recordings.",
+		);
+	});
+
+	it("says one more pair, in the singular, for a contrast with three", () => {
+		expect(getContrastPage("ch-j")?.pairs).toHaveLength(3);
+		expect(describeContrast("ch-j")).toBe(
+			"Hear the difference between rich and ridge, batch and badge, and one more word pair that differs only by the CH /tʃ/ and J /dʒ/ sounds, with recordings.",
+		);
+	});
+
+	it("names both pairs of a contrast with two", () => {
+		expect(getContrastPage("dh-z")?.pairs).toHaveLength(2);
+		expect(describeContrast("dh-z")).toMatch(
+			/^Hear the difference between \w+ and \w+, and \w+ and \w+, two word pairs that differ only by the voiced TH \/ð\/ and Z \/z\/ sounds, with recordings\.$/,
+		);
 	});
 });

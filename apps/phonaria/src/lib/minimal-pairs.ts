@@ -81,7 +81,7 @@ export function contrastPageDescription({ sounds: [a, b], pairs, headline }: Con
 	const rest = pairs.length - 2;
 	const which =
 		rest > 0
-			? `${first}, ${second}, and ${rest} more word ${rest === 1 ? "pair" : "pairs"} that differ`
+			? `${first}, ${second}, and ${rest === 1 ? "one more word pair that differs" : `${rest} more word pairs that differ`}`
 			: second
 				? `${first}, and ${second}, two word pairs that differ`
 				: `${first}, a word pair that differs`;
