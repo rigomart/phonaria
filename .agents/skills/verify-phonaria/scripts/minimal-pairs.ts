@@ -140,7 +140,7 @@ const unknownContrast = observation(
 	{ path: "/minimal-pairs/th-zz", status: 404, heading: "This page doesn't exist" },
 );
 
-const practiceIndex = (expectedNav: boolean) =>
+const practiceIndex = () =>
 	observation(
 		() => ({
 			path: location.pathname,
@@ -160,17 +160,15 @@ const practiceIndex = (expectedNav: boolean) =>
 			heading: "Practice",
 			schwa: true,
 			card: false,
-			nav: expectedNav
-				? ["Transcription", "IPA Chart", "Minimal pairs", "Practice", "History"]
-				: ["Transcription", "IPA Chart", "Practice", "History"],
-			navHref: expectedNav ? "Minimal pairs" : null,
+			nav: ["Transcription", "IPA Chart", "Sounds", "Minimal pairs", "Practice", "History"],
+			navHref: "Minimal pairs",
 		},
 	);
 
 export const minimalPairs = {
 	title: "Minimal-pair speaking practice",
 	checkpoints: {
-		nav: practiceIndex(true),
+		nav: practiceIndex(),
 		redirect: observation(() => ({ path: location.pathname, search: location.search }), {
 			path: "/minimal-pairs/i-ix",
 			search: "?word=ship",
@@ -380,7 +378,7 @@ export const minimalPairsOff = {
 		"contrast-page": contrastPage,
 		"unknown-contrast": unknownContrast,
 		"sound-page-links": soundPageContrastLinks,
-		"nav-hidden": practiceIndex(false),
+		nav: practiceIndex(),
 	},
 	coverageLimits: [
 		"The journey sees only the flag's effects; it cannot tell how the server was started.",

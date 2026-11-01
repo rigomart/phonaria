@@ -1394,7 +1394,7 @@ export const languageHistoryOff = {
 				heading: "This page doesn't exist",
 				map: false,
 				stops: 0,
-				navLinks: ["Transcription", "IPA Chart", "Practice"],
+				navLinks: ["Transcription", "IPA Chart", "Sounds", "Minimal pairs", "Practice"],
 			},
 		),
 		"sitemap-hidden": observation(sitemapRead, {
@@ -1419,7 +1419,7 @@ export const languageHistoryOff = {
 			}),
 			{
 				path: "/",
-				navLinks: ["Transcription", "IPA Chart", "Practice"],
+				navLinks: ["Transcription", "IPA Chart", "Sounds", "Minimal pairs", "Practice"],
 				visible: true,
 				historyLinks: 0,
 			},
