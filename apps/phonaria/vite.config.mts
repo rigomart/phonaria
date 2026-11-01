@@ -9,7 +9,6 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
-import { clientSiteDefines, readWranglerVars } from "./scripts/client-site-env";
 
 const appRoot = path.dirname(fileURLToPath(import.meta.url));
 const curated10kStub = new URL("./src/lib/phoneme-lookup/curated-10k.ssr-stub.ts", import.meta.url)
@@ -73,11 +72,17 @@ function defineClientSiteMetadata(): Plugin {
 		name: "define-client-site-metadata",
 		configEnvironment(name) {
 			if (name !== "client") return;
-			const workerVars = readWranglerVars(
-				path.join(appRoot, "wrangler.jsonc"),
-				process.env.CLOUDFLARE_ENV,
-			);
-			return { define: clientSiteDefines(process.env, workerVars) };
+			return {
+				define: {
+					"process.env.SITE_URL": JSON.stringify(process.env.SITE_URL ?? ""),
+					"process.env.SITE_INDEXING_ENABLED": JSON.stringify(
+						process.env.SITE_INDEXING_ENABLED ?? "",
+					),
+					"process.env.GOOGLE_SITE_VERIFICATION": JSON.stringify(
+						process.env.GOOGLE_SITE_VERIFICATION ?? "",
+					),
+				},
+			};
 		},
 	};
 }
