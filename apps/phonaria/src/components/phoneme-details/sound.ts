@@ -11,7 +11,7 @@ import {
 	type TargetAccent,
 } from "@phonaria/phonetics-data";
 import { summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
-import { findSoundPagePath } from "@/lib/sound-pages";
+import { findSoundHeading, findSoundPagePath } from "@/lib/sound-pages";
 
 /** What a host decides about the details view. Practice hosts switch the answer-revealing parts off. */
 export interface PhonemeDetailsOptions {
@@ -53,14 +53,19 @@ export function describeSound({
 }: PhonemeDetailsOptions) {
 	const type = getPhonemeType(phonemeId);
 	const ipa = getIpaForPhonemeId(phonemeId);
+	// Diphthong labels run to a dozen words; where the glide starts and ends says the same plainly.
+	const technical =
+		type === "diphthong"
+			? `Glides from /${ipa.charAt(0)}/ to /${ipa.slice(-1)}/`
+			: formatPhonemeLabel(targetAccent, phonemeId);
+	const heading = findSoundHeading(targetAccent, phonemeId);
 	return {
 		targetAccent,
 		ipa,
-		// Diphthong labels run to a dozen words; where the glide starts and ends says the same plainly.
-		name:
-			type === "diphthong"
-				? `Glides from /${ipa.charAt(0)}/ to /${ipa.slice(-1)}/`
-				: formatPhonemeLabel(targetAccent, phonemeId),
+		/** The heading: the everyday name with the symbol ("Voiceless TH /θ/") where the sound has one, else the technical label. */
+		name: heading ?? technical,
+		/** The technical label, shown under an everyday name; undefined where `name` is already it. */
+		label: heading ? technical : undefined,
 		typeLabel: TYPE_LABELS[type],
 		/** Diphthongs have no recordings yet. */
 		audioPath: type === "diphthong" ? null : `/audio/phonemes/${phonemeId}.ogg`,

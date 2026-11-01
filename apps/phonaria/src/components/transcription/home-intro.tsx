@@ -1,6 +1,14 @@
-import { type EnglishPhonemeSymbolId, getIpaForPhonemeId } from "@phonaria/phonetics-data";
+import {
+	type EnglishPhonemeSymbolId,
+	getIpaForPhonemeId,
+	getLanguagePhonemeCount,
+} from "@phonaria/phonetics-data";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Link } from "@/components/link";
 import { useCurrentTranscription } from "@/hooks/use-transcribe";
+import { IPA_CHART_CONSONANTS_PATH } from "@/lib/ipa-chart-metadata";
+import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
+import { SOUNDS_PATH } from "@/lib/sound-pages";
 import { useG2PStore } from "@/lib/transcription/g2p-store";
 import { shouldShowTranscriptionEmptyState } from "@/lib/transcription/search";
 import { cn } from "@/lib/utils";
@@ -25,6 +33,10 @@ const NAME_PRONUNCIATION = [
 const NAME_IPA = NAME_PRONUNCIATION.map(
 	(segment) => `${"stressed" in segment ? "ˈ" : ""}${getIpaForPhonemeId(segment.phonemeId)}`,
 ).join("");
+
+const SOUND_COUNT = getLanguagePhonemeCount("en-us").total;
+const INTRO_LINK_CLASS =
+	"rounded-sm text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none";
 
 // Milliseconds. MORPH_START waits out the name's 700 ms entrance.
 const MORPH_START = 900;
@@ -155,6 +167,23 @@ function NamePronunciation() {
 				))}
 				<Slash phase={phase} className="left-full" />
 			</figure>
+
+			<p className="mt-6 max-w-md text-center text-pretty text-sm text-muted-foreground enter-fade enter-delay-300">
+				Type any English word or sentence to see how it's pronounced in American English, in IPA. To
+				look up one sound, open the{" "}
+				<Link href={IPA_CHART_CONSONANTS_PATH} className={INTRO_LINK_CLASS}>
+					IPA chart
+				</Link>{" "}
+				or{" "}
+				<Link href={SOUNDS_PATH} className={INTRO_LINK_CLASS}>
+					all {SOUND_COUNT} sounds
+				</Link>
+				. To hear sounds that are easy to mix up, try{" "}
+				<Link href={MinimalPairActivity.path} className={INTRO_LINK_CLASS}>
+					minimal pairs
+				</Link>
+				.
+			</p>
 		</section>
 	);
 }

@@ -55,8 +55,7 @@ export const MINIMAL_PAIR_CONTRAST_COUNT = 27;
 export const SOUNDS_PATH = "/sounds";
 export const SOUND_PAGE_COUNT = 40;
 
-export const SITE_NAME = "Phonaria";
-export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";
+export const HOME_TITLE = "English to IPA transcription for American English - Phonaria";
 
 export const LOOKUP_ERROR_COPY = {
 	wordlist: "We couldn't load the word list. Check your connection and try again.",

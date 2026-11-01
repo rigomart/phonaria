@@ -1,5 +1,6 @@
 import { getLanguagePhonemeCount, type TargetAccent } from "@phonaria/phonetics-data";
 import { ScrollArea, ScrollBar } from "@phonaria/ui/components/scroll-area";
+import { CONSONANTS_PAGE_HEADING } from "@/lib/ipa-chart-metadata";
 import { ConsonantChart } from "./consonant-chart";
 
 const targetAccent = "en-us" satisfies TargetAccent;
@@ -10,7 +11,7 @@ export function ConsonantsContent() {
 		<div className="flex flex-1 flex-col items-center bg-background p-4 sm:p-6 space-y-6">
 			<div className="w-full max-w-5xl flex flex-col gap-1">
 				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display enter-rise">
-					Consonants
+					{CONSONANTS_PAGE_HEADING}
 				</h1>
 				<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
 					{phonemeCounts.consonants} American English consonant sounds. Click any sound for details

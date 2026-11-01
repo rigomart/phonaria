@@ -79,6 +79,7 @@ function CardContent({
 					<div className="flex min-w-0 flex-col gap-1">
 						<SoundHeading sound={sound} titleId={titleId} />
 						<p className="text-sm text-muted-foreground">
+							{sound.label ? <span className="block">{sound.label}</span> : null}
 							{sound.typeLabel}
 							{sound.frequency && !frequencyBeside ? (
 								<>

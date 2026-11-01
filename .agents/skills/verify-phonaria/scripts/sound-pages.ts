@@ -33,7 +33,7 @@ const index = observation(
 	},
 	{
 		path: "/sounds",
-		title: "The sounds of American English - Phonaria",
+		title: "The 40 sounds of American English, with IPA and examples - Phonaria",
 		heading: "The sounds of American English",
 		groups: [
 			{ title: "Consonants", count: 24, first: "/sounds/p-pat", last: "/sounds/j-jeep" },
@@ -70,9 +70,9 @@ const soundPage = observation(
 	},
 	{
 		path: "/sounds/th-thin",
-		title: "The /θ/ sound (th in 'thin'): how to pronounce it - Phonaria",
+		title: "How to pronounce the voiceless TH sound /θ/ (as in 'thin') - Phonaria",
 		canonical: "http://localhost:3000/sounds/th-thin",
-		h1: ["/θ/, Voiceless dental fricative"],
+		h1: ["Voiceless TH /θ/"],
 		sections: ["How it's made", "Compare with", "Spelling"],
 		rank: "38th most common of 40 sounds",
 		spellingWords: ["thin", "think"],

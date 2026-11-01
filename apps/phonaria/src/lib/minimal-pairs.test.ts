@@ -1,6 +1,13 @@
-import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
+import { EnglishPhonemeContrasts, getWordAudioPath } from "@phonaria/phonetics-data";
+import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
 import { describe, expect, it } from "vitest";
-import { contrastPageHref, getContrastPage, listContrastPagePaths } from "./minimal-pairs";
+import { getHeadlinePair } from "./headline-pairs";
+import {
+	contrastPageHeading,
+	contrastPageHref,
+	getContrastPage,
+	listContrastPagePaths,
+} from "./minimal-pairs";
 
 describe("contrast pages", () => {
 	it("has one page per catalog contrast, at its ID, in catalog order", () => {
@@ -25,7 +32,7 @@ describe("contrast pages", () => {
 		expect(th?.path).toBe("/sounds/th-thin");
 		expect(s?.path).toBe("/sounds/s-sun");
 		expect(th?.otherContrasts).toEqual([
-			{ id: "th-t", ipas: ["θ", "t"], example: ["thin", "tin"] },
+			{ id: "th-t", ipas: ["θ", "t"], example: ["three", "tree"] },
 		]);
 		expect(s?.otherContrasts.map(({ id }) => id)).toEqual(["s-z", "s-sh"]);
 	});
@@ -63,7 +70,7 @@ describe("how the two sounds differ", () => {
 
 	it("compares vowels by how open the mouth is, where the tongue sits and the lips", () => {
 		expect(difference("i-ix")).toBe(
-			"Compared with /i/, /ɪ/ is said with the mouth more open and the tongue further back.",
+			"Compared with /ɪ/, /i/ is said with the mouth less open and the tongue further forward.",
 		);
 		expect(difference("ux-ah")).toBe(
 			"Compared with /ʊ/, /ʌ/ is said with the mouth more open, the tongue further back and the lips relaxed.",
@@ -79,6 +86,38 @@ describe("how the two sounds differ", () => {
 	it("compares every contrast in the catalog rather than falling back to the two labels", () => {
 		for (const { id } of EnglishPhonemeContrasts) {
 			expect(difference(id), id).toMatch(/ is made |^Compared with /);
+		}
+	});
+});
+
+describe("headline pairs", () => {
+	it("leads each page with its headline pair, and names first the sound in its first word", () => {
+		const page = getContrastPage("i-ix");
+		expect(page?.headline).toEqual(["ship", "sheep"]);
+		expect(page?.sounds.map(({ ipa }) => ipa)).toEqual(["ɪ", "i"]);
+		expect(page?.pairs[0]).toEqual(["sit", "seat"]);
+		expect(page && contrastPageHeading(page)).toBe("/ɪ/ vs /i/: ship vs sheep");
+	});
+
+	it("keeps the catalog's sound order and first pair where the map has no entry", () => {
+		const page = getContrastPage("p-b");
+		expect(page?.headline).toEqual(["pat", "bat"]);
+		expect(page?.sounds.map(({ ipa }) => ipa)).toEqual(["p", "b"]);
+	});
+
+	it("picks a pair from its own contrast for every contrast", () => {
+		for (const contrast of EnglishPhonemeContrasts) {
+			const page = getContrastPage(contrast.id);
+			const pairs = page?.pairs.map((pair) => pair.join(" ")) ?? [];
+			expect(pairs, contrast.id).toContain(page?.headline.join(" "));
+		}
+	});
+
+	it("has a recording of both words of every headline pair, so 'with audio' stays true", () => {
+		for (const { id } of EnglishPhonemeContrasts) {
+			for (const word of getHeadlinePair(id)) {
+				expect(getWordAudioPath(EnglishWordAudio, "en-us", word), `${id}: ${word}`).not.toBeNull();
+			}
 		}
 	});
 });

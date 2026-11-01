@@ -7,13 +7,15 @@ import { notFoundHeading } from "../src/locators";
 const CHART_PATH = "/ipa-chart/consonants";
 const TH_TILE = "Voiceless dental fricative (θ)";
 const TH_PAGE = "/sounds/th-thin";
-const TH_HEADING = "/θ/, Voiceless dental fricative";
+const TH_HEADING = "Voiceless TH /θ/";
 
 test.describe("Sound pages", () => {
 	test("serves a sound's page", { tag: "@smoke" }, async ({ page }) => {
 		const response = await page.goto(TH_PAGE);
 		expect(response?.status()).toBe(200);
-		await expect(page).toHaveTitle("The /θ/ sound (th in 'thin'): how to pronounce it - Phonaria");
+		await expect(page).toHaveTitle(
+			"How to pronounce the voiceless TH sound /θ/ (as in 'thin') - Phonaria",
+		);
 		await expect(page.getByRole("heading", { level: 1, name: TH_HEADING })).toBeVisible();
 		await expect(page.getByRole("link", { name: "All sounds" })).toHaveAttribute(
 			"href",
@@ -54,7 +56,7 @@ test.describe("Sound pages", () => {
 async function openDetails(page: Page, tile: Locator) {
 	await waitForHydration(tile);
 	await tile.click();
-	await expect(page.getByRole("dialog", { name: /Voiceless dental fricative$/ })).toBeVisible();
+	await expect(page.getByRole("dialog", { name: /Voiceless TH \/θ\/$/ })).toBeVisible();
 	await expect(page).toHaveURL(new RegExp(`${CHART_PATH}$`));
 }
 
@@ -80,7 +82,7 @@ test.describe("Chart tiles link to sound pages", () => {
 		await page.getByRole("button", { name: "Full details for /θ/" }).click();
 
 		await page.getByRole("button", { name: "Voiced dental fricative (ð)" }).click();
-		await expect(page.getByRole("dialog", { name: /Voiced dental fricative$/ })).toBeVisible();
+		await expect(page.getByRole("dialog", { name: /Voiced TH \/ð\/$/ })).toBeVisible();
 		await expect(page.getByRole("link", { name: "Open full page" })).toHaveAttribute(
 			"href",
 			"/sounds/th-this",
@@ -117,7 +119,7 @@ test.describe("Chart tiles link to sound pages", () => {
 		await waitForHydration(tile);
 		await tile.focus();
 		await page.keyboard.press("Enter");
-		await expect(page.getByRole("dialog", { name: /Voiceless dental fricative$/ })).toBeVisible();
+		await expect(page.getByRole("dialog", { name: /Voiceless TH \/θ\/$/ })).toBeVisible();
 		await expect(page).toHaveURL(new RegExp(`${CHART_PATH}$`));
 	});
 
@@ -147,7 +149,7 @@ test.describe("Chart tiles link to sound pages", () => {
 			const tile = page.getByRole("button", { name: TH_TILE });
 			await waitForHydration(tile);
 			await tile.tap();
-			await expect(page.getByRole("dialog", { name: /Voiceless dental fricative$/ })).toBeVisible();
+			await expect(page.getByRole("dialog", { name: /Voiceless TH \/θ\/$/ })).toBeVisible();
 			await expect(page).toHaveURL(new RegExp(`${CHART_PATH}$`));
 
 			await page.getByRole("link", { name: "Open full page" }).tap();

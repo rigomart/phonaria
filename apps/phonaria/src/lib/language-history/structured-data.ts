@@ -44,16 +44,3 @@ export function buildLanguageHistoryStructuredData(siteUrl: string) {
 		})),
 	};
 }
-
-const SCRIPT_UNSAFE = /[<>&\u2028\u2029]/g;
-
-/**
- * JSON for an inline `<script type="application/ld+json">`. Escaping `<` keeps a
- * `</script>` inside a string from closing the tag; the escapes parse back unchanged.
- */
-export function serializeJsonLd(data: unknown): string {
-	return JSON.stringify(data).replace(
-		SCRIPT_UNSAFE,
-		(char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}`,
-	);
-}

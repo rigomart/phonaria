@@ -1,4 +1,5 @@
 import { getLanguagePhonemeCount, type TargetAccent } from "@phonaria/phonetics-data";
+import { VOWELS_PAGE_HEADING } from "@/lib/ipa-chart-metadata";
 import { getDiphthongEntries, getMonophthongEntries } from "@/lib/ipa-chart/vowel-chart-data";
 import { VowelChart } from "./vowel-chart";
 
@@ -15,7 +16,7 @@ export function VowelsContent() {
 			<div className="w-full p-4 sm:p-6 max-w-5xl space-y-6">
 				<div className="flex flex-col gap-1">
 					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display enter-rise">
-						Vowels
+						{VOWELS_PAGE_HEADING}
 					</h1>
 					<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
 						{phonemeCounts.diphthongs > 0

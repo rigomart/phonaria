@@ -165,17 +165,21 @@ describe("buildRootHead", () => {
 	});
 });
 
+const HOME_TITLE = "English to IPA transcription for American English";
+const HOME_DESCRIPTION =
+	"See how any English word or sentence is pronounced in American English, in IPA, sound by sound, with recordings. Plus an IPA chart and all 40 sounds.";
+
 describe("buildHomeHead", () => {
-	it("keeps the site title on the client when production SITE_URL is missing", () => {
+	it("keeps the home title on the client when production SITE_URL is missing", () => {
 		vi.stubEnv("NODE_ENV", "production");
 		vi.stubGlobal("window", {} as Window);
 		const head = buildHomeHead();
-		expect(head.meta).toContainEqual({ title: SITE_NAME });
-		expect(head.meta).toContainEqual({
-			name: "description",
-			content: SITE_DESCRIPTION,
-		});
+		expect(head.meta).toEqual([
+			{ title: `${HOME_TITLE} - Phonaria` },
+			{ name: "description", content: HOME_DESCRIPTION },
+		]);
 		expect(head.links).toBeUndefined();
+		expect(head.scripts).toBeUndefined();
 	});
 
 	it("adds the home canonical when SITE_URL is set", () => {
@@ -186,17 +190,30 @@ describe("buildHomeHead", () => {
 		]);
 	});
 
-	it("uses the site name and description for social cards", () => {
+	it("uses the home title and description for social cards", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		const { meta } = buildHomeHead();
 		expect(meta).toContainEqual({ property: "og:type", content: "website" });
-		expect(meta).toContainEqual({ property: "og:title", content: SITE_NAME });
-		expect(meta).toContainEqual({ property: "og:description", content: SITE_DESCRIPTION });
-		expect(meta).toContainEqual({ name: "twitter:title", content: SITE_NAME });
-		expect(meta).toContainEqual({ name: "twitter:description", content: SITE_DESCRIPTION });
+		expect(meta).toContainEqual({ property: "og:title", content: HOME_TITLE });
+		expect(meta).toContainEqual({ property: "og:description", content: HOME_DESCRIPTION });
+		expect(meta).toContainEqual({ name: "twitter:title", content: HOME_TITLE });
+		expect(meta).toContainEqual({ name: "twitter:description", content: HOME_DESCRIPTION });
 		expect(meta).toContainEqual({
 			property: "og:image",
 			content: "https://phonaria-staging.example.test/opengraph-image.jpg",
+		});
+	});
+
+	it("describes the site as a WebSite at the home canonical", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const { scripts } = buildHomeHead();
+		expect(scripts).toHaveLength(1);
+		expect(scripts?.[0]?.type).toBe("application/ld+json");
+		expect(JSON.parse(scripts?.[0]?.children ?? "")).toEqual({
+			"@context": "https://schema.org",
+			"@type": "WebSite",
+			name: "Phonaria",
+			url: "https://phonaria-staging.example.test",
 		});
 	});
 });
@@ -325,6 +342,36 @@ describe("buildVowelsHead", () => {
 	});
 });
 
+describe("chart heads", () => {
+	it("use the words people search for, with counts from the data", () => {
+		const titleAndDescription = ({ meta }: { meta: unknown[] }) => meta.slice(0, 2);
+		expect(titleAndDescription(buildConsonantsHead())).toEqual([
+			{ title: "American English IPA chart: consonants - Phonaria" },
+			{
+				name: "description",
+				content:
+					"All 24 consonant sounds of American English in an IPA chart, by where and how they're made. Tap one to see how it's made, its spellings and example words.",
+			},
+		]);
+		expect(titleAndDescription(buildVowelsHead())).toEqual([
+			{ title: "American English IPA chart: vowels - Phonaria" },
+			{
+				name: "description",
+				content:
+					"All 16 vowel sounds of American English in an IPA chart, by where the tongue sits. Tap one to see how it's made, its spellings and example words.",
+			},
+		]);
+		expect(titleAndDescription(buildFrequencyHead())).toEqual([
+			{ title: "How common each American English sound is - Phonaria" },
+			{
+				name: "description",
+				content:
+					"How often each of the 40 sounds of American English comes up in everyday speech. The schwa /ə/ is the most common, at 7.9%.",
+			},
+		]);
+	});
+});
+
 describe("buildSoundHead", () => {
 	it("keeps the sound's title and description on the client when production SITE_URL is missing", () => {
 		vi.stubEnv("NODE_ENV", "production");
@@ -341,7 +388,7 @@ describe("buildSoundHead", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		const { meta, links } = buildSoundHead("TH");
 		expect(meta).toContainEqual({
-			title: "The /θ/ sound (th in 'thin'): how to pronounce it - Phonaria",
+			title: "How to pronounce the voiceless TH sound /θ/ (as in 'thin') - Phonaria",
 		});
 		expect(meta).toContainEqual({ property: "og:title", content: soundPageTitle("TH") });
 		expect(meta).toContainEqual({
@@ -362,6 +409,29 @@ describe("buildSoundHead", () => {
 		process.env.SITE_INDEXING_ENABLED = "1";
 		expect(buildSoundHead("AX").meta).toContainEqual({ name: "robots", content: "index, follow" });
 	});
+
+	it("places the sound under Sounds in a breadcrumb", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const { scripts } = buildSoundHead("TH");
+		expect(JSON.parse(scripts?.[0]?.children ?? "")).toEqual({
+			"@context": "https://schema.org",
+			"@type": "BreadcrumbList",
+			itemListElement: [
+				{
+					"@type": "ListItem",
+					position: 1,
+					name: "Sounds",
+					item: "https://phonaria-staging.example.test/sounds",
+				},
+				{
+					"@type": "ListItem",
+					position: 2,
+					name: "Voiceless TH /θ/",
+					item: "https://phonaria-staging.example.test/sounds/th-thin",
+				},
+			],
+		});
+	});
 });
 
 describe("buildSoundsIndexHead", () => {
@@ -369,7 +439,12 @@ describe("buildSoundsIndexHead", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		const { meta, links } = buildSoundsIndexHead();
 		expect(meta).toContainEqual({
-			title: "The sounds of American English - Phonaria",
+			title: "The 40 sounds of American English, with IPA and examples - Phonaria",
+		});
+		expect(meta).toContainEqual({
+			name: "description",
+			content:
+				"All 24 consonants and 16 vowels of American English, each with its IPA symbol, how it's made, how it's spelled, example words and minimal pairs.",
 		});
 		expect(meta).toContainEqual({ name: "description", content: SOUNDS_PAGE_DESCRIPTION });
 		expect(links).toEqual([
@@ -427,7 +502,15 @@ describe("buildMinimalPairsHead", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		process.env.SITE_INDEXING_ENABLED = "1";
 		const head = buildMinimalPairsHead();
-		expect(head.meta).toContainEqual({ title: formatDocumentTitle("Minimal pairs") });
+		expect(head.meta).toContainEqual({
+			title: "Minimal pairs for American English: ship vs sheep and more - Phonaria",
+		});
+		expect(head.meta).toContainEqual({
+			name: "description",
+			content:
+				"254 word pairs with recordings that differ by one sound, like ship and sheep or light and right, across 27 American English sound contrasts.",
+		});
+		expect(head.scripts).toBeUndefined();
 		expect(head.meta).toContainEqual({ name: "robots", content: "index, follow" });
 		expect(head.links).toEqual([
 			{ rel: "canonical", href: "https://phonaria-staging.example.test/minimal-pairs" },
@@ -436,17 +519,17 @@ describe("buildMinimalPairsHead", () => {
 });
 
 describe("buildMinimalPairContrastHead", () => {
-	it("names the contrast and its first pair, and is indexable at the contrast's path", () => {
+	it("leads with the headline pair, and is indexable at the contrast's path", () => {
 		process.env.SITE_URL = "https://phonaria-staging.example.test";
 		process.env.SITE_INDEXING_ENABLED = "1";
 		const head = buildMinimalPairContrastHead(getContrastPage("th-s"));
 		expect(head.meta).toContainEqual({
-			title: formatDocumentTitle("/θ/ vs /s/: minimal pairs like thin and sin"),
+			title: "Think vs sink: /θ/ and /s/ minimal pairs with audio - Phonaria",
 		});
 		expect(head.meta).toContainEqual({
 			name: "description",
 			content:
-				"11 American English word pairs that differ only by /θ/ and /s/, like thin and sin, with recordings and how each sound is made.",
+				"Hear the difference between think and sink, thin and sin, and 9 more word pairs that differ only by the voiceless TH /θ/ and S /s/ sounds, with recordings.",
 		});
 		expect(head.meta).toContainEqual({ name: "robots", content: "index, follow" });
 		expect(head.links).toEqual([
@@ -459,9 +542,41 @@ describe("buildMinimalPairContrastHead", () => {
 		vi.stubGlobal("window", {} as Window);
 		const head = buildMinimalPairContrastHead(getContrastPage("p-b"));
 		expect(head.meta).toContainEqual({
-			title: formatDocumentTitle("/p/ vs /b/: minimal pairs like pat and bat"),
+			title: "Pat vs bat: /p/ and /b/ minimal pairs with audio - Phonaria",
 		});
 		expect(head.links).toBeUndefined();
+		expect(head.scripts).toBeUndefined();
+	});
+
+	it("names first the sound in the headline's first word", () => {
+		const head = buildMinimalPairContrastHead(getContrastPage("i-ix"));
+		expect(head.meta).toContainEqual({
+			title: "Ship vs sheep: /ɪ/ and /i/ minimal pairs with audio - Phonaria",
+		});
+		expect(head.meta).toContainEqual({
+			name: "description",
+			content:
+				"Hear the difference between ship and sheep, sit and seat, and 13 more word pairs that differ only by the short I /ɪ/ and long E /i/ sounds, with recordings.",
+		});
+	});
+
+	it("places the contrast under Minimal pairs in a breadcrumb", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const { scripts } = buildMinimalPairContrastHead(getContrastPage("i-ix"));
+		expect(JSON.parse(scripts?.[0]?.children ?? "").itemListElement).toEqual([
+			{
+				"@type": "ListItem",
+				position: 1,
+				name: "Minimal pairs",
+				item: "https://phonaria-staging.example.test/minimal-pairs",
+			},
+			{
+				"@type": "ListItem",
+				position: 2,
+				name: "/ɪ/ vs /i/: ship vs sheep",
+				item: "https://phonaria-staging.example.test/minimal-pairs/i-ix",
+			},
+		]);
 	});
 });
 

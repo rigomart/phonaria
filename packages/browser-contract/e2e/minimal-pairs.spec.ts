@@ -67,7 +67,9 @@ test.describe("A contrast page with speaking practice off", () => {
 		async ({ page }) => {
 			const response = await page.goto("/minimal-pairs/th-s");
 			expect(response?.status()).toBe(200);
-			await expect(page.getByRole("heading", { level: 1, name: "/θ/ vs /s/" })).toBeVisible();
+			await expect(
+				page.getByRole("heading", { level: 1, name: "/θ/ vs /s/: think vs sink" }),
+			).toBeVisible();
 			const pairs = page.getByRole("table", { name: "Minimal pairs for /θ/ and /s/" });
 			await expect(pairs.locator("tbody tr")).toHaveCount(11);
 			for (const word of ["think", "sink", "tenth", "tense"]) {

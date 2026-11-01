@@ -6,7 +6,7 @@ import {
 import { useId } from "react";
 import { Link } from "@/components/link";
 import { SpelledWord } from "@/components/spelled-word";
-import { getSoundKeyExample, SOUNDS_PAGE_TITLE, soundPagePath } from "@/lib/sound-pages";
+import { getSoundKeyExample, SOUNDS_PAGE_HEADING, soundPagePath } from "@/lib/sound-pages";
 
 const GROUPS = [
 	{ title: "Consonants", sounds: getLanguagePhonemeIds("en-us", "consonants") },
@@ -19,7 +19,7 @@ export function SoundsContent() {
 			<div className="w-full max-w-4xl space-y-8 p-4 sm:p-6">
 				<div className="flex flex-col gap-1">
 					<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display enter-rise">
-						{SOUNDS_PAGE_TITLE}
+						{SOUNDS_PAGE_HEADING}
 					</h1>
 					<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
 						Pick a sound to see how it's made, how it's spelled, and words to practice it with.

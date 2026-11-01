@@ -5,10 +5,13 @@ import {
 } from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import {
+	findSoundHeading,
 	findSoundPagePath,
 	getPhonemeIdForSoundSlug,
+	getSoundName,
 	getSoundSlug,
 	listSoundPagePaths,
+	soundHeading,
 	soundPageDescription,
 	soundPagePath,
 	soundPageTitle,
@@ -75,37 +78,61 @@ describe("sound slugs", () => {
 	});
 });
 
-describe("soundPageTitle", () => {
-	it("names the sound by its symbol and the letters that spell it in the slug's word", () => {
-		expect(soundPageTitle("TH")).toBe("The /θ/ sound (th in 'thin'): how to pronounce it");
-		expect(soundPageTitle("DH")).toBe("The /ð/ sound (th in 'this'): how to pronounce it");
+describe("sound names", () => {
+	it("gives every en-us sound a heading with its everyday name and symbol", () => {
+		for (const phonemeId of sounds) {
+			expect(soundHeading(phonemeId)).toMatch(/^[A-Z][A-Za-z ]* \/.+\/$/);
+		}
 	});
 
-	it("joins split spellings with a hyphen, as the patterns write them", () => {
-		expect(soundPageTitle("AI")).toBe("The /aɪ/ sound (i-e in 'time'): how to pronounce it");
+	it("uses the names the spec lists", () => {
+		expect(soundHeading("TH")).toBe("Voiceless TH /θ/");
+		expect(soundHeading("DH")).toBe("Voiced TH /ð/");
+		expect(soundHeading("AX")).toBe("Schwa /ə/");
+		expect(soundHeading("I")).toBe("Long E /i/");
+		expect(soundHeading("O")).toBe("AW /ɔ/");
+		expect(soundHeading("P")).toBe("P /p/");
+		expect(getSoundName("AE")).toBe("short A");
+	});
+
+	it("names only en-us sounds", () => {
+		expect(findSoundHeading("en-us", "TH")).toBe("Voiceless TH /θ/");
+		expect(findSoundHeading("es-419", "S")).toBeUndefined();
+		expect(findSoundHeading("en-us", "EE")).toBeUndefined();
+	});
+});
+
+describe("soundPageTitle", () => {
+	it("names the sound, its symbol and the word in its slug", () => {
+		expect(soundPageTitle("TH")).toBe("How to pronounce the voiceless TH sound /θ/ (as in 'thin')");
+		expect(soundPageTitle("AI")).toBe("How to pronounce the long I sound /aɪ/ (as in 'time')");
 	});
 
 	it("uses the first spelling example when the slug has no word", () => {
-		expect(soundPageTitle("AX")).toBe("The /ə/ sound (a in 'sofa'): how to pronounce it");
+		expect(soundPageTitle("AX")).toBe("How to pronounce the schwa sound /ə/ (as in 'sofa')");
 	});
 });
 
 describe("soundPageDescription", () => {
-	it("says what the sound is and what its page covers", () => {
+	it("names two example words and each contrast's headline pair", () => {
 		expect(soundPageDescription("TH")).toBe(
-			"How to say /θ/ as in 'thin', the voiceless dental fricative: how it's made, spellings (th), minimal pairs with /t/ and /s/, and how common it is.",
+			"How to say the voiceless TH sound /θ/ in 'thin' and 'think': how it's made, how it's spelled, and minimal pairs like three vs tree and think vs sink.",
+		);
+		expect(soundPageDescription("IX")).toBe(
+			"How to say the short I sound /ɪ/ in 'sit' and 'big': how it's made, how it's spelled, and minimal pairs like ship vs sheep.",
 		);
 	});
 
-	it("describes a diphthong by its glide", () => {
-		expect(soundPageDescription("AI")).toMatch(
-			/^How to say \/aɪ\/ as in 'time', a vowel that glides from \/a\/ to \/ɪ\/: /,
-		);
+	it("lists at most three pairs", () => {
+		for (const phonemeId of sounds) {
+			const pairs = soundPageDescription(phonemeId).match(/ vs /g) ?? [];
+			expect(pairs.length, phonemeId).toBeLessThanOrEqual(3);
+		}
 	});
 
 	it("leaves minimal pairs out for a sound without contrasts", () => {
 		expect(soundPageDescription("H")).toBe(
-			"How to say /h/ as in 'house', the voiceless glottal fricative: how it's made, spellings (h), and how common it is.",
+			"How to say the H sound /h/ in 'house' and 'hello': how it's made and how it's spelled.",
 		);
 	});
 });

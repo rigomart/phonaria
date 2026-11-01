@@ -11,7 +11,12 @@ import { Link as AppLink } from "@/components/link";
 import { PlayableWordCell } from "@/components/phoneme-details/playable-word";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { flags } from "@/lib/flags";
-import { type ContrastPage, type ContrastPageSound, contrastPagePath } from "@/lib/minimal-pairs";
+import {
+	type ContrastPage,
+	type ContrastPageSound,
+	contrastPageHeading,
+	contrastPagePath,
+} from "@/lib/minimal-pairs";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
 import { cn } from "@/lib/utils";
 import { MinimalPairPractice } from "./minimal-pair-practice";
@@ -106,7 +111,7 @@ export function ContrastPageView({ page, word }: { page: ContrastPage; word?: st
 					All pairs
 				</Link>
 				<h1 className="font-bold font-display text-3xl tracking-tight sm:text-4xl enter-rise">
-					/{a.ipa}/ vs /{b.ipa}/
+					{contrastPageHeading(page)}
 				</h1>
 				<p className="max-w-xl text-pretty text-muted-foreground text-sm enter-rise enter-delay-40">
 					{page.difference}

@@ -96,7 +96,8 @@ describe("the two layouts", () => {
 				<PhonemeDetailsPage options={{ targetAccent: "en-us", phonemeId: "TH" }} />
 			</AudioManagerProvider>,
 		);
-		expect(html).toMatch(/<h1 [^>]*>.*Voiceless dental fricative<\/h1>/);
+		expect(html).toMatch(/<h1 [^>]*>Voiceless TH \/θ\/<\/h1>/);
+		expect(html).toMatch(/<span class="block">Voiceless dental fricative<\/span>Consonant/);
 		expect(html).toContain("lg:grid-cols-2");
 		for (const title of ["How it&#x27;s made", "Compare with", "Spelling"]) {
 			expect(html).toMatch(new RegExp(`<h2 [^>]*>${title}</h2>`));
