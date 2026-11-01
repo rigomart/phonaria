@@ -1,5 +1,13 @@
 import { useLocation } from "@tanstack/react-router";
-import { AudioLines, BookOpen, Globe, Grid3x3, type LucideIcon, Mic } from "lucide-react";
+import {
+	ArrowLeftRight,
+	AudioLines,
+	BookOpen,
+	Globe,
+	Grid3x3,
+	type LucideIcon,
+	Volume2,
+} from "lucide-react";
 import type { AppFlags } from "@/lib/flags";
 import {
 	IPA_CHART_CONSONANTS_PATH,
@@ -9,9 +17,10 @@ import {
 } from "@/lib/ipa-chart-metadata";
 import { LANGUAGE_HISTORY_PATH } from "@/lib/language-history/metadata";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
+import { SOUNDS_PATH } from "@/lib/sound-pages";
 
 export type Tool = {
-	id: "transcription" | "ipa-chart" | "minimal-pairs" | "practice" | "language-history";
+	id: "transcription" | "ipa-chart" | "sounds" | "minimal-pairs" | "practice" | "language-history";
 	href: string;
 	label: string;
 	icon: LucideIcon;
@@ -35,10 +44,17 @@ const tools: readonly Tool[] = [
 		match: (pathname) => pathname.startsWith(IPA_CHART_INDEX_PATH),
 	},
 	{
+		id: "sounds",
+		href: SOUNDS_PATH,
+		label: "Sounds",
+		icon: Volume2,
+		match: (pathname) => pathname === SOUNDS_PATH || pathname.startsWith(`${SOUNDS_PATH}/`),
+	},
+	{
 		id: "minimal-pairs",
 		href: MinimalPairActivity.path,
 		label: MinimalPairActivity.name,
-		icon: Mic,
+		icon: ArrowLeftRight,
 		match: (pathname) =>
 			pathname === MinimalPairActivity.path || pathname.startsWith(`${MinimalPairActivity.path}/`),
 	},
@@ -64,11 +80,8 @@ export const chartSections = [
 	{ href: IPA_CHART_FREQUENCY_PATH, label: "Frequency" },
 ] as const;
 
-export function getTools(
-	flags: Pick<AppFlags, "practice" | "languageHistory" | "speech">,
-): readonly Tool[] {
+export function getTools(flags: Pick<AppFlags, "practice" | "languageHistory">): readonly Tool[] {
 	return tools.filter((tool) => {
-		if (tool.id === "minimal-pairs") return flags.speech;
 		if (tool.id === "practice") return flags.practice;
 		if (tool.id === "language-history") return flags.languageHistory;
 		return true;
