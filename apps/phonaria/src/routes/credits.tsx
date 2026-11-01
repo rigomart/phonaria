@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CreditsContent } from "@/components/credits-content";
 import { buildCreditsHead } from "@/lib/document-head";
+import { flags } from "@/lib/flags";
 
 export const Route = createFileRoute("/credits")({
 	head: () => buildCreditsHead(),
@@ -8,5 +9,5 @@ export const Route = createFileRoute("/credits")({
 });
 
 function CreditsRoute() {
-	return <CreditsContent />;
+	return <CreditsContent flags={flags.snapshot()} />;
 }
