@@ -203,7 +203,7 @@ const rankLine = observation(
 			/^\S+ most common of \d+ sounds$/.test(span.textContent?.trim() ?? ""),
 		);
 		const share = Array.from(details?.querySelectorAll("span") ?? []).find((span) =>
-			/^· \S+ of speech$/.test(span.textContent?.trim() ?? ""),
+			/^· about \S+ of speech$/.test(span.textContent?.trim() ?? ""),
 		);
 		const lines = (node: Element | undefined) => {
 			if (!node) return null;
@@ -234,7 +234,7 @@ const rankLine = observation(
 		width: 390,
 		rank: "26th most common of 40 sounds",
 		rankLines: 1,
-		share: "· 1.7% of speech",
+		share: "· about 1.7% of speech",
 		shareLines: 1,
 		overflow: false,
 	},

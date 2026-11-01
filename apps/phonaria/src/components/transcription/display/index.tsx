@@ -10,6 +10,7 @@ import { type LookupErrorKind, useG2PStore } from "@/lib/transcription/g2p-store
 import { shouldShowTranscriptionEmptyState } from "@/lib/transcription/search";
 import type { TranscribedWord, TranscriptionResult } from "@/lib/types/g2p";
 import { EmptyState } from "./empty-state";
+import { TranscriptionNote } from "./transcription-note";
 import { VariantStack } from "./variant-stack";
 import { WordDefinitionPopover } from "./word-definition-popover";
 
@@ -97,13 +98,14 @@ function TranscriptionResults({
 			</div>
 
 			<div
-				className="mt-6 flex justify-center enter-fade"
+				className="mt-6 flex flex-col items-center gap-2 text-center enter-fade"
 				style={enterDelay(result.words.length * 40 + 200)}
 			>
 				<p className="text-xs text-muted-foreground">
 					Click a word for its meaning · click a sound for how to say it
 					{hasVariants ? " · open the stack under a word for other pronunciations" : null}
 				</p>
+				<TranscriptionNote />
 			</div>
 		</div>
 	);

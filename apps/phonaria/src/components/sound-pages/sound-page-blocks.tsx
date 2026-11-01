@@ -75,7 +75,7 @@ export function FrequencyFact({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId
 				{` most common of ${frequency.count} sounds`}
 			</span>
 			<span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-				{`· ${formatPercentage(frequency.percentage)} of speech`}
+				{`· about ${formatPercentage(frequency.percentage)} of speech`}
 				<ArrowRight
 					aria-hidden="true"
 					className="size-3 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
