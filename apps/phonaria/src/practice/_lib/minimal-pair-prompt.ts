@@ -8,11 +8,11 @@ import {
 	EnglishPhonemeContrasts,
 	findSubstitution,
 	getIpaForPhonemeId,
-	getPhonemeCategory,
 	type PhonemeCategory,
 	type PhonemeContrast,
 	type PhonemeSymbolId,
 } from "@phonaria/phonetics-data";
+import { getContrastPage } from "@/lib/minimal-pairs";
 import { CatalogWordPronunciations } from "@/lib/speech/catalog-pronunciations";
 
 export interface ContrastSound {
@@ -24,7 +24,7 @@ export interface ContrastOption {
 	id: string;
 	category: PhonemeCategory;
 	sounds: readonly [ContrastSound, ContrastSound];
-	/** The contrast's first pair, words in the same order as `sounds`. */
+	/** The pair its contrast page leads with, words in the same order as `sounds`. */
 	example: readonly [string, string];
 }
 
@@ -52,15 +52,20 @@ function findContrast(contrastId: string): PhonemeContrast<"en-us"> | undefined 
 	return EnglishPhonemeContrasts.find((contrast) => contrast.id === contrastId);
 }
 
-/** Catalog order, which groups consonants before vowels. */
+/**
+ * Catalog order, which groups consonants before vowels. Sounds and example come
+ * from each contrast's page, so a row shows what its page leads with.
+ */
 export function listContrastOptions(): ContrastOption[] {
-	return EnglishPhonemeContrasts.map((contrast) => {
-		const [first, second] = contrast.phonemeIds;
+	return EnglishPhonemeContrasts.map(({ id }) => {
+		const page = getContrastPage(id);
+		if (!page) throw new Error(`No page for contrast "${id}".`);
+		const [first, second] = page.sounds;
 		return {
-			id: contrast.id,
-			category: getPhonemeCategory(first),
-			sounds: [contrastSound(first), contrastSound(second)],
-			example: contrast.minimalPairs[0].words,
+			id,
+			category: page.category,
+			sounds: [contrastSound(first.id), contrastSound(second.id)],
+			example: page.headline,
 		};
 	});
 }

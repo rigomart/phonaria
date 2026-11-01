@@ -11,7 +11,7 @@ test.describe("Minimal-pair pages", () => {
 		await expect(page.locator('main a[href^="/minimal-pairs/"]')).toHaveCount(
 			MINIMAL_PAIR_CONTRAST_COUNT,
 		);
-		await expect(page.getByRole("link", { name: "thin and sin" })).toHaveAttribute(
+		await expect(page.getByRole("link", { name: "think and sink" })).toHaveAttribute(
 			"href",
 			"/minimal-pairs/th-s",
 		);

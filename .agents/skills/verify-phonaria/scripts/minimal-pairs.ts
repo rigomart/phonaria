@@ -182,7 +182,7 @@ export const minimalPairs = {
 				first: document
 					.querySelector('main a[href^="/minimal-pairs/"]')
 					?.getAttribute("aria-label"),
-				seatSit: !!document.querySelector('a[aria-label="seat and sit"]'),
+				shipSheep: !!document.querySelector('a[aria-label="ship and sheep"]'),
 			}),
 			{
 				path: "/minimal-pairs",
@@ -190,7 +190,7 @@ export const minimalPairs = {
 				groups: ["Consonants", "Vowels"],
 				contrasts: 27,
 				first: "pat and bat",
-				seatSit: true,
+				shipSheep: true,
 			},
 		),
 		word: observation(
