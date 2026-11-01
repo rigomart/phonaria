@@ -29,46 +29,61 @@ function headings(html: string) {
 }
 
 describe("the sound page", () => {
-	it("adds a summary, how a consonant is made, related sounds and common words", () => {
+	it("makes the sound its h1 and lists the sections in learning order", () => {
 		const html = page("TH");
-		expect(html).toContain(
-			"/θ/ is the th in 'thin' and 'think'. Its voiced partner is /ð/, the th in 'this'.",
-		);
-		expect(html).toContain(
-			"/θ/ is made with the tongue between the teeth, pushing air through a narrow gap, with the voice off.",
-		);
+		expect(html.match(/<h1 /g)).toHaveLength(1);
+		expect(html).toMatch(/<h1 [^>]*>Voiceless TH \/θ\/<\/h1>/);
 		expect(headings(html)).toEqual([
 			"How it's made",
 			"Compare with",
-			"Related sounds",
 			"Spelling",
 			"Common words with /θ/",
+			"Sounds near it",
 		]);
-		expect(html).toMatch(/<a href="\/sounds\/th-this"[^>]*>.*voiced TH, as in 'this'/);
-		for (const label of ["At the start", "Inside", "At the end"]) {
-			expect(html).toMatch(new RegExp(`<h3 [^>]*>${label}</h3>`));
-		}
+	});
+
+	it("sets each similar sound face to face, with only the features that differ", () => {
+		const html = page("TH");
+		expect(html).toMatch(/aria-label="How \/θ\/ and \/t\/ differ"/);
+		expect(html).toMatch(
+			/<dt [^>]*>Place<\/dt><dd [^>]*>.*\/θ\/: .*dental<\/dd><dd [^>]*>.*\/t\/: .*alveolar<\/dd>/,
+		);
+		expect(html).toMatch(
+			/<dt [^>]*>Manner<\/dt><dd [^>]*>.*fricative<\/dd><dd [^>]*>.*plosive<\/dd>/,
+		);
+		expect(html).toContain(">Both voiceless<");
+		expect(html).toContain(">Both voiceless, fricative<");
+		expect(html).toContain(">Show all 14<");
+		expect(html).toMatch(
+			/<a href="\/minimal-pairs\/th-t"[^>]*>(All pairs for|Practise saying) \/θ\/ and \/t\//,
+		);
+		expect(html).toContain(">Can you hear it?<");
+	});
+
+	it("says which other sounds the same letters spell, and links the sounds near it", () => {
+		const html = page("TH");
+		expect(html).toContain(">The same letters also spell<");
+		expect(html).toMatch(/aria-label="\/ð\/ voiced TH, as in this"/);
+		expect(html).toMatch(
+			/rel="prev"[^>]*href="\/sounds\/v-van"|href="\/sounds\/v-van"[^>]*rel="prev"/,
+		);
 		for (const word of ["think", "something", "month"]) {
 			expect(html).toContain(`>${word}<`);
 		}
 	});
 
-	it("shows /t/'s variants, the flap in 'water' among them, and none for /θ/", () => {
-		const html = page("T");
-		expect(headings(html).at(-1)).toBe("Sound variants");
-		expect(html).toMatch(/>ɾ<.*A quick tap of the tongue, between vowels.*>water</);
-		expect(headings(page("TH"))).not.toContain("Sound variants");
+	it("groups /æ/'s variants and its merger note under How it changes, and gives /θ/ none", () => {
+		const html = page("AE");
+		expect(headings(html)).toContain("How it changes");
+		expect(html).toContain(">Mary, marry and merry<");
+		expect(html).toMatch(/>æː<.*Longer before a voiced sound/);
+		expect(headings(page("TH"))).not.toContain("How it changes");
 	});
 
-	it("links schwa to neighbouring vowels and says how it's made", () => {
-		const html = page("AX");
-		expect(headings(html)).toContain("Related sounds");
-		for (const slug of ["ae-cat", "er-her", "eh-red", "uh-cup"]) {
-			expect(html).toContain(`href="/sounds/${slug}"`);
-		}
-		expect(html).toContain(
-			"/ə/ is made with the tongue halfway up and in the middle, and the lips relaxed.",
-		);
+	it("leaves out the drawer's how-to sentence and the link to the page itself", () => {
+		const html = page("TH");
+		expect(html).not.toContain("is made with the tongue");
+		expect(html).not.toContain("Open full page");
 	});
 });
 
@@ -83,11 +98,11 @@ describe("the drawer", () => {
 			</AudioManagerProvider>,
 		);
 		for (const text of [
-			"Related sounds",
+			"Sounds near it",
 			"Common words",
-			"Sound variants",
-			"is made with",
-			"is the th in",
+			"How it changes",
+			"Can you hear it?",
+			"The same letters also spell",
 		]) {
 			expect(html).not.toContain(text);
 		}
@@ -102,7 +117,7 @@ describe("the drawer", () => {
 			"details-card.tsx",
 		]) {
 			const source = readFileSync(path.join(dir, file), "utf8");
-			expect(source, file).not.toMatch(/common-words|sound-page-content|sound-page-sections/);
+			expect(source, file).not.toMatch(/common-words|sound-page-content|sound-page-blocks/);
 		}
 	});
 });

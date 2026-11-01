@@ -18,5 +18,5 @@ export const Route = createFileRoute("/sounds/$slug")({
 function SoundRoute() {
 	const { slug } = Route.useParams();
 	const phonemeId = getPhonemeIdForSoundSlug(slug);
-	return phonemeId ? <SoundPageContent phonemeId={phonemeId} /> : null;
+	return phonemeId ? <SoundPageContent key={phonemeId} phonemeId={phonemeId} /> : null;
 }

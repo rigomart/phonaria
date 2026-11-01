@@ -67,8 +67,7 @@ export function describeSound({
 		/** The technical label, shown under an everyday name; undefined where `name` is already it. */
 		label: heading ? technical : undefined,
 		typeLabel: TYPE_LABELS[type],
-		/** Diphthongs have no recordings yet. */
-		audioPath: type === "diphthong" ? null : `/audio/phonemes/${phonemeId}.ogg`,
+		audioPath: phonemeAudioPath(phonemeId),
 		/** The first spelling example, e.g. top as "[t]op"; spelling data, so it follows `showSpellings`. */
 		example: showSpellings ? getSpellingPattern(targetAccent, phonemeId)?.examples[0] : undefined,
 		/** Rank and share of speech among all sounds, or null when the accent has no frequency data. */
@@ -77,6 +76,11 @@ export function describeSound({
 		/** The sound's own page, where the host allows the link and the accent has pages. */
 		pagePath: showPageLink ? findSoundPagePath(targetAccent, phonemeId) : undefined,
 	};
+}
+
+/** The sound's own recording, or null: diphthongs have no recordings yet. */
+export function phonemeAudioPath(phonemeId: LanguagePhonemeId<TargetAccent>): string | null {
+	return getPhonemeType(phonemeId) === "diphthong" ? null : `/audio/phonemes/${phonemeId}.ogg`;
 }
 
 export function getSpellingPattern(

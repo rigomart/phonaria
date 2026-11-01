@@ -69,12 +69,15 @@ const soundPage = observation(
 				word.textContent?.trim(),
 			),
 			back: document.querySelector('main a[href="/sounds"]')?.textContent?.trim() ?? null,
-			paragraphs: Array.from(details?.querySelectorAll("p") ?? [])
-				.map((p) => p.textContent?.trim() ?? "")
-				.filter((text) => text.startsWith("/θ/ is ")),
-			related: Array.from(section("Related sounds")?.querySelectorAll("a") ?? []).map((a) => ({
-				href: a.getAttribute("href"),
-				text: a.textContent?.trim(),
+			howTo: (details?.textContent ?? "").includes("is made with the tongue"),
+			differences: Array.from(
+				details?.querySelectorAll('dl[aria-label="How /θ/ and /t/ differ"] > div') ?? [],
+			).map((row) => Array.from(row.children).map((cell) => cell.textContent?.trim())),
+			near: Array.from(section("Sounds near it")?.querySelectorAll("h3") ?? []).map((h) => ({
+				label: h.textContent?.trim(),
+				links: Array.from(h.nextElementSibling?.querySelectorAll("a") ?? []).map((a) =>
+					a.getAttribute("href"),
+				),
 			})),
 			commonWords: Array.from(common?.querySelectorAll("h3") ?? []).map((h) => ({
 				label: h.textContent?.trim(),
@@ -92,19 +95,34 @@ const soundPage = observation(
 		sections: [
 			"How it's made",
 			"Compare with",
-			"Related sounds",
 			"Spelling",
 			"Common words with /θ/",
+			"Sounds near it",
 		],
 		rank: "38th most common of 40 sounds",
 		spellingWords: ["thin", "think"],
 		back: "All sounds",
-		// Text from #418's expected result.
-		paragraphs: [
-			"/θ/ is the th in 'thin' and 'think'. Its voiced partner is /ð/, the th in 'this'.",
-			"/θ/ is made with the tongue between the teeth, pushing air through a narrow gap, with the voice off.",
+		howTo: false,
+		// Term first for screen readers, each value named by its sound.
+		differences: [
+			["Place", "/θ/: dental", "/t/: alveolar"],
+			["Manner", "/θ/: fricative", "/t/: plosive"],
 		],
-		related: [{ href: "/sounds/th-this", text: "/ð/voiced TH, as in 'this'" }],
+		near: [
+			{ label: "Voicing partner", links: ["/sounds/th-this"] },
+			{
+				label: "Other fricatives",
+				links: [
+					"/sounds/f-fan",
+					"/sounds/v-van",
+					"/sounds/s-sun",
+					"/sounds/z-zoo",
+					"/sounds/sh-shop",
+					"/sounds/zh-vision",
+					"/sounds/h-house",
+				],
+			},
+		],
 		commonWords: [
 			{
 				label: "At the start",
@@ -119,20 +137,21 @@ const soundPage = observation(
 	},
 );
 
-const schwaRelated = observation(
+const schwaNear = observation(
 	() => {
 		const details = document.querySelector("[data-phoneme-details]");
-		const related = Array.from(details?.querySelectorAll("section") ?? []).find(
-			(section) => section.querySelector("h2")?.textContent?.trim() === "Related sounds",
+		const near = Array.from(details?.querySelectorAll("section") ?? []).find(
+			(section) => section.querySelector("h2")?.textContent?.trim() === "Sounds near it",
 		);
 		return {
 			path: location.pathname,
-			related: Array.from(related?.querySelectorAll("a") ?? []).map((a) => a.getAttribute("href")),
+			near: Array.from(near?.querySelectorAll("a") ?? []).map((a) => a.getAttribute("href")),
 		};
 	},
 	{
 		path: "/sounds/schwa",
-		related: ["/sounds/ae-cat", "/sounds/er-her", "/sounds/eh-red", "/sounds/uh-cup"],
+		// Plain vowels one step away on the simple vowel chart, nearest on the IPA chart first.
+		near: ["/sounds/er-her", "/sounds/eh-red", "/sounds/uh-cup", "/sounds/aw-saw"],
 	},
 );
 
@@ -140,7 +159,7 @@ const tVariants = observation(
 	() => {
 		const details = document.querySelector("[data-phoneme-details]");
 		const variants = Array.from(details?.querySelectorAll("section") ?? []).find(
-			(section) => section.querySelector("h2")?.textContent?.trim() === "Sound variants",
+			(section) => section.querySelector("h2")?.textContent?.trim() === "How it changes",
 		);
 		return {
 			path: location.pathname,
@@ -183,8 +202,8 @@ const rankLine = observation(
 		const rank = Array.from(details?.querySelectorAll("span") ?? []).find((span) =>
 			/^\S+ most common of \d+ sounds$/.test(span.textContent?.trim() ?? ""),
 		);
-		const link = Array.from(details?.querySelectorAll("a") ?? []).find(
-			(a) => a.textContent?.trim() === "See ranking",
+		const share = Array.from(details?.querySelectorAll("span") ?? []).find((span) =>
+			/^· \S+ of speech$/.test(span.textContent?.trim() ?? ""),
 		);
 		const lines = (node: Element | undefined) => {
 			if (!node) return null;
@@ -201,13 +220,13 @@ const rankLine = observation(
 			}
 			return count;
 		};
-		const box = rank?.getBoundingClientRect();
-		const linkBox = link?.getBoundingClientRect();
 		return {
 			width: window.innerWidth,
 			rank: rank?.textContent?.trim() ?? null,
 			rankLines: lines(rank),
-			linkBesideRank: box && linkBox ? linkBox.top < box.bottom && linkBox.bottom > box.top : null,
+			share: share?.textContent?.trim() ?? null,
+			// The share keeps its arrow on its own line, never an arrow alone.
+			shareLines: lines(share),
 			overflow: document.documentElement.scrollWidth > window.innerWidth,
 		};
 	},
@@ -215,7 +234,8 @@ const rankLine = observation(
 		width: 390,
 		rank: "26th most common of 40 sounds",
 		rankLines: 1,
-		linkBesideRank: false,
+		share: "· 1.7% of speech",
+		shareLines: 1,
 		overflow: false,
 	},
 );
@@ -225,7 +245,7 @@ export const soundPages = {
 	checkpoints: {
 		index,
 		"sound-page": soundPage,
-		"schwa-related": schwaRelated,
+		"schwa-near": schwaNear,
 		"t-variants": tVariants,
 		"not-found": notFound,
 		"rank-line": rankLine,
