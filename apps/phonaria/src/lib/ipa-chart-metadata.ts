@@ -18,6 +18,7 @@ export const VOWELS_PAGE_HEADING = "American English vowels";
 export const VOWELS_PAGE_DESCRIPTION = `All ${counts.vowels} vowel sounds of American English in an IPA chart, by where the tongue sits. Tap one to see how it's made, its spellings and example words.`;
 
 export const FREQUENCY_PAGE_TITLE = "How common each American English sound is";
+export const FREQUENCY_PAGE_HEADING = "How common each sound is";
 export const FREQUENCY_PAGE_DESCRIPTION = describeFrequencyPage();
 
 function describeFrequencyPage(): string {

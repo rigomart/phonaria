@@ -6,6 +6,7 @@ import {
 import { Link } from "@/components/link";
 import { PhonemeDetailsTrigger } from "@/components/phoneme-details/phoneme-details";
 import { SpelledWord } from "@/components/spelled-word";
+import { FREQUENCY_PAGE_HEADING } from "@/lib/ipa-chart-metadata";
 import { enterDelay, stagger } from "@/lib/motion";
 import {
 	formatOrdinal,
@@ -29,7 +30,7 @@ export function FrequencyContent() {
 		<div className="flex flex-1 flex-col items-center bg-background">
 			<div className="w-full max-w-3xl space-y-6 p-4 sm:p-6">
 				<h1 className="text-xl sm:text-2xl font-bold tracking-tight font-display enter-rise">
-					Frequency
+					{FREQUENCY_PAGE_HEADING}
 				</h1>
 				<ol className="flex flex-col">
 					{ranked.map((sound, index) => (
