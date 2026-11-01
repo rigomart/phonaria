@@ -32,7 +32,7 @@ const ranking = observation(
 	},
 	{
 		path: "/ipa-chart/frequency",
-		heading: "Frequency",
+		heading: "How common each American English sound is",
 		tabs: 0,
 		comparisonChart: false,
 		legend: [],
@@ -109,7 +109,7 @@ const followedLink = observation(
 		path: location.pathname,
 		heading: document.querySelector("h1")?.textContent?.trim() ?? null,
 	}),
-	{ path: "/ipa-chart/frequency", heading: "Frequency" },
+	{ path: "/ipa-chart/frequency", heading: "How common each American English sound is" },
 );
 
 const menu = observation(
