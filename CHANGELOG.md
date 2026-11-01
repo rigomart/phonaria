@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.6.0](https://github.com/rigomart/phonaria/compare/phonaria-v0.5.0...phonaria-v0.6.0) (2026-11-01)
+
+
+### Features
+
+* **app:** find a word by its sounds, behind FLAG_SOUND_SEARCH ([#438](https://github.com/rigomart/phonaria/issues/438)) ([4cc0e50](https://github.com/rigomart/phonaria/commit/4cc0e5042e2a8015af1a9d24862ca043f4751caf)), closes [#307](https://github.com/rigomart/phonaria/issues/307)
+* **app:** open transcription results on their own page, /search ([#437](https://github.com/rigomart/phonaria/issues/437)) ([c7e6c21](https://github.com/rigomart/phonaria/commit/c7e6c218ee23f3c9720e0d18b21ff352b8b43ce5))
+* **app:** redesign sound pages as pages of their own ([#436](https://github.com/rigomart/phonaria/issues/436)) ([d870bb3](https://github.com/rigomart/phonaria/commit/d870bb3cd77b1449487405d3213c19815ab20481))
+
+
+### Bug Fixes
+
+* **app:** head the frequency chart page with what it shows ([#431](https://github.com/rigomart/phonaria/issues/431)) ([233c11a](https://github.com/rigomart/phonaria/commit/233c11a86e1f0d8f108ab55590a36d8446cbcd4a)), closes [#426](https://github.com/rigomart/phonaria/issues/426)
+* **app:** keep canonical, og:url and JSON-LD in step with in-app navigation ([#434](https://github.com/rigomart/phonaria/issues/434)) ([7560a20](https://github.com/rigomart/phonaria/commit/7560a205a208a063a9a398867526794f09b10877)), closes [#425](https://github.com/rigomart/phonaria/issues/425)
+* **app:** show each contrast's headline pair on the minimal-pairs index ([#432](https://github.com/rigomart/phonaria/issues/432)) ([0c4118a](https://github.com/rigomart/phonaria/commit/0c4118a7b8e7befb3e5dae4cf7bc1b92765fb0d7)), closes [#427](https://github.com/rigomart/phonaria/issues/427)
+
 ## [0.5.0](https://github.com/rigomart/phonaria/compare/phonaria-v0.4.0...phonaria-v0.5.0) (2026-11-01)
 
 
