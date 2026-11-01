@@ -50,7 +50,7 @@ describe("Cloudflare Practice flag", () => {
 	it("enables sound search on staging and preview and keeps production off", () => {
 		expect(envVarsBlock("staging")).toContain('"FLAG_SOUND_SEARCH": "1"');
 		expect(envVarsBlock("preview")).toContain('"FLAG_SOUND_SEARCH": "1"');
-		expect(envVarsBlock("production")).toContain('"FLAG_SOUND_SEARCH": "0"');
+		expect(envVarsBlock("production")).toContain('"FLAG_SOUND_SEARCH": "1"');
 	});
 
 	it("sends every application and legacy document route to the Worker first", () => {

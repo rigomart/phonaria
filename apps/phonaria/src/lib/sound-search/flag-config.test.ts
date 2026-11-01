@@ -13,8 +13,8 @@ describe("FLAG_SOUND_SEARCH build configuration", () => {
 	it.each([
 		[".github/workflows/staging.yml", "1"],
 		[".github/workflows/preview.yml", "1"],
-		[".github/workflows/production.yml", "0"],
-		[".github/workflows/pull_request.yml", "0"],
+		[".github/workflows/production.yml", "1"],
+		[".github/workflows/pull_request.yml", "1"],
 	])("%s builds with the flag set to %s", (workflow, value) => {
 		expect(read(workflow)).toContain(`FLAG_SOUND_SEARCH: "${value}"`);
 	});

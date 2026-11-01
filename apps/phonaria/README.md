@@ -55,7 +55,7 @@ The homepage holds the input and examples; results open at `/search?q=` (`src/ro
 
 Behind `FLAG_SOUND_SEARCH`, the **ə** button at the start of the input switches it to finding words by their sounds ([#307](https://github.com/rigomart/phonaria/issues/307)). The learner picks en-us sounds from a panel under the field (Consonants or Vowels, a common word under each key); a key that would leave no word is disabled, so each pick narrows what can come next. On the homepage the search button opens `/search?sounds=TH-IX`; on `/search` each pick updates the list right away, and the panel floats over it. The results are the words whose pronunciation starts with the picked sounds, exact matches first and then by frequency, ignoring stress. Picking a word transcribes it at `/search?q=`.
 
-It searches the 10k word list in the browser (`src/lib/sound-search`), loaded on first use from the chunk transcription uses, so it never calls the Worker. An empty `?sounds=` is a sound search with nothing picked yet. With the flag off, `/search` ignores `sounds` and sends a search with nothing else to the homepage.
+It searches the 10k word list in the browser (`src/lib/sound-search`), and tells the learner so in the key panel and above the words found. The list is loaded on first use from the chunk transcription uses, so it never calls the Worker. An empty `?sounds=` is a sound search with nothing picked yet. With the flag off, `/search` ignores `sounds` and sends a search with nothing else to the homepage.
 
 ## History
 
