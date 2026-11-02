@@ -1,4 +1,4 @@
-import { geoGraticule, geoOrthographic, geoPath } from "d3-geo";
+import { geoOrthographic, geoPath } from "d3-geo";
 import type { LineString, MultiLineString, Polygon } from "geojson";
 import type { Camera } from "@/lib/language-history/camera";
 import { type LandShape, mayBeVisible } from "@/lib/language-history/land";
@@ -82,8 +82,7 @@ export type GlobeScene = {
 
 /** Globe radius in CSS pixels past which the fine coastline is drawn (coarse errs by about 1.5 px here). */
 const FINE_LAND_RADIUS = 420;
-// Sampled every degree, since the projection draws straight lines between points.
-const GRATICULE = geoGraticule().step([30, 30]).precision(1)() as MultiLineString;
+const GRATICULE = graticule(30);
 /** The graticule shows on the whole globe and fades out by this zoom. */
 const GRATICULE_ZOOM = { full: 1.2, gone: 2.5 };
 const ROUTE_WIDTH = { past: 1.5, current: 2.25 };
@@ -97,6 +96,27 @@ const LIMB_START = 0.7;
 const AREA_STEPS = 40;
 
 const MAX_PIXEL_RATIO = 2;
+
+/**
+ * Meridians and parallels every `step` degrees, one point per degree because
+ * the projection's resampling is off and it joins points with straight lines.
+ * Meridians on multiples of 90° reach the poles; the rest stop at 80° so the
+ * poles stay clear.
+ */
+export function graticule(step: number): MultiLineString {
+	const span = (from: number, to: number) =>
+		Array.from({ length: to - from + 1 }, (_, i) => from + i);
+	const meridians = [];
+	for (let lon = -180; lon < 180; lon += step) {
+		const top = lon % 90 === 0 ? 90 : 80;
+		meridians.push(span(-top, top).map((lat): [number, number] => [lon, lat]));
+	}
+	const parallels = [];
+	for (let lat = -90 + step; lat < 90; lat += step) {
+		parallels.push(span(-180, 180).map((lon): [number, number] => [lon, lat]));
+	}
+	return { type: "MultiLineString", coordinates: [...meridians, ...parallels] };
+}
 
 /** The capped pixel ratio and the backing size in device pixels. */
 export function backingStore(cssWidth: number, cssHeight: number, devicePixelRatio: number) {
