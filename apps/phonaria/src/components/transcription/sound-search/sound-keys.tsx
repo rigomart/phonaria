@@ -92,7 +92,7 @@ function KeysStatus() {
 	const { sounds, status, result, retry } = useSoundSearch();
 
 	let text: ReactNode;
-	if (status === "error") text = "We couldn't load the word list.";
+	if (status === "error") text = "The word list didn't load.";
 	else if (!result) text = "Loading words...";
 	else if (sounds.length === 0)
 		text = `Start with the first sound of the word. Searches the ${SEARCHED_WORD_COUNT.toLocaleString("en-US")} most common English words.`;

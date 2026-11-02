@@ -41,16 +41,16 @@ export function FrequencyContent() {
 					className="enter-fade enter-delay-250"
 					title="About these percentages"
 					points={[
-						"We take the 10,000 most common English words.",
-						"We count the sounds in each word, using the CMU Pronouncing Dictionary, which lists US English pronunciations.",
-						"If a word has more than one pronunciation, we use only the first.",
+						"The count uses the 10,000 most common English words.",
+						"Each word's sounds come from the CMU Pronouncing Dictionary, which lists US English pronunciations.",
+						"If a word has more than one pronunciation, only the first counts.",
 						"Common words count more. A word used twice as often as another counts twice as much.",
-						"We learn how often each word is used from wordfreq, a word list.",
+						"How often each word is used comes from wordfreq, a word list.",
 						"In real speech, people shorten words and join them together, so the percentages would be different.",
 					]}
 					source="wordfreq"
 				>
-					We estimate these percentages from how often words are used, not from recorded speech.
+					These percentages are estimates from how often words are used, not from recorded speech.
 				</Disclaimer>
 			</div>
 		</div>

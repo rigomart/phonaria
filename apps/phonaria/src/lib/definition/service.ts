@@ -19,7 +19,7 @@ export type LookupDefinitionDependencies = {
 const WIKTIONARY_DEFINITION_ORIGIN = "https://en.wiktionary.org";
 const WIKTIONARY_USER_AGENT = "Phonaria/1.0 (https://phonaria.rigos.dev; mirdor.dev@gmail.com)";
 const LOOKUP_TIMEOUT_MS = 10_000;
-const UNAVAILABLE_MESSAGE = "We couldn't load that definition. Please try again.";
+const UNAVAILABLE_MESSAGE = "That definition didn't load. Please try again.";
 
 function validationError(message: string): DefinitionServiceResult {
 	return { ok: false, error: new DefinitionError("validation", message) };

@@ -8,11 +8,11 @@ export function TranscriptionNote({ className }: { className?: string }) {
 			points={[
 				"Sounds come from the CMU Pronouncing Dictionary, which lists US English pronunciations.",
 				"Its pronunciations follow one common US accent. People in the US and elsewhere may say a word differently.",
-				"Words that aren't in the dictionary show as \"Not found\". We don't guess how they sound.",
-				'If a word shows as "Not found", we may send what you typed to an AI model to suggest a spelling.',
+				'Words that aren\'t in the dictionary show as "Not found", with no guess at how they sound.',
+				'If a word shows as "Not found", what you typed may be sent to an AI model to suggest a spelling.',
 				"The AI model is Jev, used through OpenRouter.",
-				"We add the syllable breaks and IPA symbols ourselves. Mistakes in them are ours.",
-				"When you click a word, its meanings come from Wiktionary. We show only a few.",
+				"The syllable breaks and IPA symbols are added afterwards, not taken from the dictionary, so mistakes in them aren't the dictionary's.",
+				"When you click a word, its meanings come from Wiktionary. Only a few show.",
 			]}
 			source="cmu"
 		>

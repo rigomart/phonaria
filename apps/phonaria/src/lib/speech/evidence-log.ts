@@ -16,7 +16,7 @@ export const EVIDENCE_LOG_RETENTION_DAYS = 90;
 export const EvidenceLogNotice = {
 	label: "Share results to improve the checks",
 	description:
-		"Phonaria keeps the word, its scores and whether you tried again, for 90 days. Never your recording, and no words outside the practice list.",
+		"The word, its scores and whether you tried again are kept for 90 days. Never your recording, and no words outside the practice list.",
 } as const;
 
 /**

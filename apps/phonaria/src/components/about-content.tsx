@@ -159,7 +159,7 @@ export function AboutContent() {
 				</section>
 
 				<p className="border-t pt-6 text-sm text-muted-foreground">
-					The data and recordings Phonaria uses are listed on the{" "}
+					The sources of the data and recordings are listed on the{" "}
 					<Link href="/credits" className={linkClass}>
 						Credits
 					</Link>{" "}

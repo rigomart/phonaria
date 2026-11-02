@@ -15,9 +15,9 @@ import { VariantStack } from "./variant-stack";
 import { WordDefinitionPopover } from "./word-definition-popover";
 
 const LOOKUP_ERROR_COPY: Record<LookupErrorKind, string> = {
-	wordlist: "We couldn't load the word list. Check your connection and try again.",
-	service: "We couldn't reach the lookup service. Please try again.",
-	unknown: "We couldn't finish transcribing that. Please try again.",
+	wordlist: "The word list didn't load. Check your connection and try again.",
+	service: "The lookup service didn't respond. Please try again.",
+	unknown: "Something went wrong while transcribing that. Please try again.",
 };
 
 interface WordColumnProps {

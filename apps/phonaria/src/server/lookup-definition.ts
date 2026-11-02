@@ -40,6 +40,6 @@ export async function lookupDefinitionFromStart(input: {
 		return await lookupDefinitionFn({ data: input });
 	} catch (error) {
 		if (error instanceof Error) throw error;
-		throw new Error("We couldn't load that definition. Please try again.");
+		throw new Error("That definition didn't load. Please try again.");
 	}
 }

@@ -71,9 +71,9 @@ const initialSessionState = {
 	sessionError: null,
 } satisfies Partial<PracticeSessionState>;
 
-const SESSION_DRAW_FAILED = "We couldn't put a session together for this topic. Please try again.";
+const SESSION_DRAW_FAILED = "A session for this topic couldn't be put together. Please try again.";
 const SESSION_SCORE_FAILED =
-	"We couldn't score this session. Your answers are still here — try submitting again.";
+	"This session couldn't be scored. Your answers are still here — try submitting again.";
 
 const initialState = {
 	...initialSessionState,

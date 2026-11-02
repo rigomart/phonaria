@@ -317,7 +317,7 @@ test.describe("Transcription", () => {
 		await expect(page.getByText(/greeting/i).first()).toBeVisible({ timeout: 15_000 });
 		await expect(page.getByText(/Hello, everyone/i)).toBeVisible();
 		await expect(page.getByText("Definitions from Wiktionary")).toBeVisible();
-		await expect(page.getByText("We couldn't load that definition")).toHaveCount(0);
+		await expect(page.getByText("That definition didn't load")).toHaveCount(0);
 		await expect(page.getByRole("button", { name: "Retry" })).toHaveCount(0);
 	});
 });

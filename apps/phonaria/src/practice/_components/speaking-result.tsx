@@ -24,8 +24,7 @@ import type { MinimalPairPrompt } from "../_lib/minimal-pair-prompt";
 import type { SpeakingFailure, SpeakingOutcome, SpeakingView } from "../_lib/speaking-attempt";
 
 export const FAILURE_MESSAGES: Record<SpeakingFailure, string> = {
-	denied:
-		"Phonaria can't use your microphone. Allow microphone access for this site, then try again.",
+	denied: "Microphone access is blocked. Allow it for this site, then try again.",
 	unsupported:
 		"Recording isn't available here. Check that a microphone is connected, or try another browser.",
 	rate_limited: "That's a lot of recordings in a short time. Wait a minute, then try again.",
@@ -131,7 +130,7 @@ function OutcomePanel({
 		case "not-heard":
 			return (
 				<Panel icon={Ear} tone="neutral">
-					We didn't catch anything. Check your microphone and try again.
+					Nothing came through. Check your microphone and try again.
 				</Panel>
 			);
 		case "different-word":
@@ -174,7 +173,7 @@ function DifferentWordPanel({
 	if (heard.length > 1) {
 		return (
 			<Panel icon={CircleHelp} tone="neutral">
-				We heard "{heard.join(" ")}". Say just {word} on its own.
+				The check heard "{heard.join(" ")}". Say just {word} on its own.
 			</Panel>
 		);
 	}
