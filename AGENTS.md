@@ -61,3 +61,4 @@ Styling Guidelines:
 ## Learning Experience Principles
 - Toolbox over coursework: allow learners to enter through any feature and combine tools as needed.
 - Approachable language: keep explanations plain to demystify IPA, minimal pairs, and articulation terms.
+- Voice: make the thing being talked about the subject of the sentence ("Your recording isn't kept after", "The word list didn't load", "Each word's sounds come from the CMU Pronouncing Dictionary"). When a sentence needs a place, say "here" or "this app". Use the name Phonaria to name the product ("Phonaria is in beta").
