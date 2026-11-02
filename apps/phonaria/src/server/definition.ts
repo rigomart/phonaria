@@ -61,7 +61,7 @@ export async function lookupDefinitionOnWorker(
 	} catch {
 		const error = new DefinitionError(
 			"retryable",
-			"We couldn't load that definition. Please try again.",
+			"That definition didn't load. Please try again.",
 		);
 		log({
 			level: "error",

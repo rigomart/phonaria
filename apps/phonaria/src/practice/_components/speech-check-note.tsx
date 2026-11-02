@@ -10,7 +10,7 @@ export function SpeechCheckNote({ className }: { className?: string }) {
 				"Your recording goes to Microsoft's speech service, Azure AI Speech.",
 				"It scores each sound and writes down the word it heard.",
 				"Background noise or a low microphone volume can make it hear the wrong word or sound. If a result looks wrong, try again.",
-				"We keep your results only if you turn on the sharing switch below.",
+				"Your results are kept only if you turn on the sharing switch below.",
 			]}
 			source="speech-scoring"
 		>

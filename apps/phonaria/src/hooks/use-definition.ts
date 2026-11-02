@@ -23,7 +23,7 @@ function errorState(error: unknown): DefinitionViewState {
 	const message =
 		error instanceof Error && error.message.trim().length > 0
 			? error.message
-			: "We couldn't load that definition. Please try again.";
+			: "That definition didn't load. Please try again.";
 	return { status: "error", groups: [], errorMessage: message };
 }
 

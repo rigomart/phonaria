@@ -6,7 +6,7 @@ import type { TopicDefinition } from "@/lib/practice/topics/types";
 import type { PoolStatus } from "../_store/practice-session-store";
 
 const POOL_LOAD_FAILED =
-	"We couldn't load the words for this topic. Check your connection and try again.";
+	"The words for this topic didn't load. Check your connection and try again.";
 
 interface StartScreenProps {
 	topic: TopicDefinition;

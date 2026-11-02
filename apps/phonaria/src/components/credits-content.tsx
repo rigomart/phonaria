@@ -54,8 +54,8 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 			notes: {
 				heading: "Differences",
 				items: [
-					"The dictionary writes sounds in its own code. Phonaria turns that code into IPA symbols itself, so some symbols differ from other dictionaries.",
-					"The dictionary uses one code for the vowel Phonaria writes /ʌ/ in stressed syllables and /ə/ in unstressed ones.",
+					"The dictionary writes sounds in its own code. That code is turned into IPA symbols here, so some symbols differ from other dictionaries.",
+					"The dictionary uses one code for the vowel written here as /ʌ/ in stressed syllables and /ə/ in unstressed ones.",
 					"The vowel with an r sound is written /ɝ/ in every syllable, stressed or not, and never /ɚ/.",
 					"The r sound is written /ɹ/.",
 					"The dictionary has no syllable breaks, so they're added by rule. A break can differ from another dictionary's.",
@@ -156,14 +156,14 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					url: "https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-pronunciation-assessment",
 				},
 			],
-			uses: "When you practise saying a minimal pair, your recording goes to Azure AI Speech, which reports the sounds it heard. Phonaria's own rules then decide, for each sound, whether it matched, was swapped for another sound, or was unclear.",
+			uses: "When you practise saying a minimal pair, your recording goes to Azure AI Speech, which reports the sounds it heard. Rules in this app, not Azure, then decide, for each sound, whether it matched, was swapped for another sound, or was unclear.",
 			notes: {
 				heading: "Keep in mind",
 				items: [
-					"Phonaria sends your recording to Azure and doesn't store it.",
+					"Your recording goes to Azure for the check and isn't kept after.",
 					"The checks come from a speech recognizer, so a verdict can be wrong.",
 					`"${EvidenceLogNotice.label}" is off unless you turn it on.`,
-					`With it on, ${EvidenceLogNotice.description}`,
+					`When it's on: ${EvidenceLogNotice.description}`,
 				],
 			},
 		},
@@ -354,7 +354,7 @@ export function CreditsContent({ flags }: { flags: CreditsFlags }) {
 					</h1>
 					<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
 						Phonaria's pronunciations, recordings, charts and word lists come from the sources
-						below. Phonaria is in beta, so these sources and how it uses them can change.
+						below. Phonaria is in beta, so these sources and how they're used can change.
 					</p>
 				</div>
 

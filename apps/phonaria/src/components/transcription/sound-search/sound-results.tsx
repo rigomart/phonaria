@@ -23,9 +23,7 @@ export function SoundResults({ sounds }: { sounds: readonly SoundId[] }) {
 	if (status === "error") {
 		return (
 			<Message>
-				<span role="alert">
-					We couldn't load the word list. Check your connection and try again.
-				</span>
+				<span role="alert">The word list didn't load. Check your connection and try again.</span>
 				<Button variant="outline" size="sm" onClick={retry}>
 					<RotateCcw data-icon="inline-start" />
 					Try again
@@ -128,7 +126,7 @@ function SoundSearchNote({ className }: { className?: string }) {
 			]}
 			source="cmu"
 		>
-			We look up the sounds you pick in a US dictionary.
+			The words come from a US dictionary.
 		</Disclaimer>
 	);
 }

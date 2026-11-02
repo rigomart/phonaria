@@ -127,10 +127,7 @@ describe("lookupDefinitionOnWorker", () => {
 	it("throws service errors after the rate limiter allows the request", async () => {
 		const lookupDefinition = vi.fn(async () => ({
 			ok: false as const,
-			error: new DefinitionError(
-				"retryable",
-				"We couldn't load that definition. Please try again.",
-			),
+			error: new DefinitionError("retryable", "That definition didn't load. Please try again."),
 		}));
 		const log = vi.fn();
 

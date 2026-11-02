@@ -81,7 +81,7 @@ describe("CreditsContent", () => {
 		expect(body).toContain("the words you can find by their sounds");
 		expect(body).toContain("when you practise");
 		expect(body).toContain("your recording goes to Azure AI Speech");
-		expect(body).toContain("doesn't store it");
+		expect(body).toContain("isn't kept after");
 		expect(body).toContain("Natural Earth");
 	});
 

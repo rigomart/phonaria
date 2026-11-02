@@ -13,5 +13,5 @@ export const MinimalPairActivity = {
 	description:
 		"Two words that differ by one sound, like ship and sheep. Say one and find out which came through.",
 	speechCheckNotice:
-		"We don't keep your recording. Microsoft checks it, and the check can be wrong.",
+		"Your recording goes to Microsoft for the check and isn't kept after. The check can be wrong.",
 } as const;

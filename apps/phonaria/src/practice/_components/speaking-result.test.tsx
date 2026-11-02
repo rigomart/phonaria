@@ -106,13 +106,13 @@ describe("SpeakingStatus", () => {
 
 	it("says when nothing was heard", () => {
 		expect(text(render({ phase: "outcome", outcome: { verdict: "not-heard" } }))).toBe(
-			"We didn't catch anything. Check your microphone and try again.",
+			"Nothing came through. Check your microphone and try again.",
 		);
 	});
 
 	it("says what came through instead of the word, without judging a sound", () => {
 		for (const [heard, message] of [
-			[["the", "ship", "is"], 'We heard "the ship is". Say just ship on its own.'],
+			[["the", "ship", "is"], 'The check heard "the ship is". Say just ship on its own.'],
 			[["ships"], "That sounded like ships, not ship. Try again with just the word."],
 			[[], "That didn't sound like ship or sheep. Try again."],
 		] as const) {
