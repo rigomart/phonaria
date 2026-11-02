@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.0](https://github.com/rigomart/phonaria/compare/phonaria-v0.6.0...phonaria-v0.7.0) (2026-11-02)
+
+
+### Features
+
+* **app:** add a beta label and notes on output that can be wrong ([#442](https://github.com/rigomart/phonaria/issues/442)) ([0eb2690](https://github.com/rigomart/phonaria/commit/0eb2690cfdd2c1dc0e6b2e3b0557c9bdf7866713))
+* **app:** merge the IPA chart into a Sounds menu in the header ([#444](https://github.com/rigomart/phonaria/issues/444)) ([79549ae](https://github.com/rigomart/phonaria/commit/79549aeb4cc6aa422657620aa1a8b49affe2872d))
+* **app:** say what each Credits source is used for and where Phonaria differs ([#441](https://github.com/rigomart/phonaria/issues/441)) ([3e87a4e](https://github.com/rigomart/phonaria/commit/3e87a4e385e17f3ab48677943bc0445f730a0ed7))
+* **app:** turn on sound search everywhere and say it covers the 10,000 most common words ([#439](https://github.com/rigomart/phonaria/issues/439)) ([0526e1e](https://github.com/rigomart/phonaria/commit/0526e1ecce9a13529d758ef9a170f27b0598f370))
+
+
+### Bug Fixes
+
+* **app:** draw the History globe's meridians as curves, not straight chords ([#445](https://github.com/rigomart/phonaria/issues/445)) ([5ef9e3b](https://github.com/rigomart/phonaria/commit/5ef9e3b0fb4e050104ecc89084be384bf41f5fa9))
+* **app:** rewrite the beta popover and disclaimer copy in plain words ([#443](https://github.com/rigomart/phonaria/issues/443)) ([13d6955](https://github.com/rigomart/phonaria/commit/13d695540453a85c5d954832876dde8574d90f6a))
+* **app:** write the app's copy without "we" ([#446](https://github.com/rigomart/phonaria/issues/446)) ([f37e548](https://github.com/rigomart/phonaria/commit/f37e5483c296610d521c14f15f66dd92243c8d58))
+
 ## [0.6.0](https://github.com/rigomart/phonaria/compare/phonaria-v0.5.0...phonaria-v0.6.0) (2026-11-01)
 
 
