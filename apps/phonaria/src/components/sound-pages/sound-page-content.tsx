@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { type ReactNode, useId } from "react";
 import { Link } from "@/components/link";
 import { Articulation } from "@/components/phoneme-details/articulation";
+import { RecordingCredit } from "@/components/phoneme-details/recording-credit";
 import { describeSound, getSpellingPattern } from "@/components/phoneme-details/sound";
 import { SoundHeading } from "@/components/phoneme-details/sound-header";
 import { SoundTile } from "@/components/phoneme-details/sound-tile";
@@ -74,12 +75,15 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 						<ArrowLeft aria-hidden="true" />
 						All sounds
 					</Link>
-					<header className="flex items-start gap-4">
-						<SoundTile ipa={sound.ipa} audioPath={sound.audioPath} />
-						<div className="flex min-w-0 flex-col gap-1">
-							<SoundHeading sound={sound} titleId={titleId} as="h1" />
-							<p className="text-sm text-muted-foreground">{sound.label ?? sound.typeLabel}</p>
+					<header className="flex flex-col gap-3">
+						<div className="flex items-start gap-4">
+							<SoundTile ipa={sound.ipa} audioPath={sound.audioPath} />
+							<div className="flex min-w-0 flex-col gap-1">
+								<SoundHeading sound={sound} titleId={titleId} as="h1" />
+								<p className="text-sm text-muted-foreground">{sound.label ?? sound.typeLabel}</p>
+							</div>
 						</div>
+						<RecordingCredit phonemeId={phonemeId} />
 					</header>
 					<KeyWords phonemeId={phonemeId} />
 					<section aria-labelledby={`${titleId}-made`} className="flex flex-col gap-3">

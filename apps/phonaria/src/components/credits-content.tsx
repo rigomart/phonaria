@@ -100,8 +100,14 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 		{
 			key: "phoneme-audio",
 			title: "Sound recordings",
-			by: "Wikimedia Commons contributors, including Dvortygirl, Peter Isotalo, Denelson83 and Erutuon",
-			licenses: [{ text: "CC BY-SA 3.0+", url: "https://creativecommons.org/licenses/by-sa/3.0/" }],
+			by: "Wikimedia Commons contributors, including Peter Isotalo, Denelson83, Dvortygirl, Erutuon and Octane",
+			licenses: [
+				{ text: "CC BY-SA 3.0", url: "https://creativecommons.org/licenses/by-sa/3.0/" },
+				{
+					text: "Public domain (/dʒ/)",
+					url: "https://commons.wikimedia.org/wiki/File:Voiced_palato-alveolar_affricate.ogg",
+				},
+			],
 			links: [
 				{
 					text: "General phonetics gallery",
@@ -115,7 +121,7 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					"The recordings show each IPA symbol as speech experts say it, not as an American says the English sound.",
 					"So some vowels can sound different from the way Americans say them.",
 					"Diphthongs have no recording yet.",
-					"Each recording's author and license are on its page on Wikimedia Commons.",
+					"Each recording's author and license are on its sound's page, and on its file page on Wikimedia Commons.",
 				],
 			},
 		},

@@ -12,6 +12,7 @@ import {
 	getSpellingPatternRegistryForLanguage,
 	hasLanguageFeature,
 	isPhonemeInLanguage,
+	PhonemeRecordingSourceMap,
 	TARGET_ACCENTS,
 } from "./index";
 
@@ -85,6 +86,7 @@ it.each([
 	["spelling patterns", () => getSpellingPatternRegistryForLanguage("en-us")],
 	["phoneme frequency", () => getPhonemeFrequencyRegistryForLanguage("en-us")],
 	["merger notes", () => getMergerNoteRegistryForLanguage("en-us")],
+	["recording sources", () => PhonemeRecordingSourceMap],
 ] as const)("protects all nested %s data shared with later callers", (_name, getData) => {
 	const before = structuredClone(getData());
 	expectProtected(getData());
