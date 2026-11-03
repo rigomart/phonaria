@@ -1,7 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
 // Expected slugs are the ones reviewed in #392 (PR #399); the "Open full page"
 // link is the one #394 asks for.
 

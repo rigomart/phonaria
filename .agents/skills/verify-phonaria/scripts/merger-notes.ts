@@ -1,7 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
 // Expected copy is the wording approved in issue #365, with /r/ written as the app's /ɹ/.
 
 function readNotes() {

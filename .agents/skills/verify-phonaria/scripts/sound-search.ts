@@ -1,8 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
-//
 // Expected words are English facts, not app output: thick, thin, thing and
 // theory start with /θɪ/ followed by /k/, /n/, /ŋ/ and /ɹ/; "this" starts with /ð/;
 // no English word starts with /ŋ/.

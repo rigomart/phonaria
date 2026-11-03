@@ -1,7 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
 // Expected copy comes from issues #332, #334 and #344; the IPA for ship (SH IX1 P) and sheep (SH I1 P)
 // from the curated dictionary.
 

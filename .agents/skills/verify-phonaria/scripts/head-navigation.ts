@@ -1,7 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
 // The steps and expected values are the ones #425 reports: the head after an
 // in-app move must describe the new page, as it does on a direct load.
 

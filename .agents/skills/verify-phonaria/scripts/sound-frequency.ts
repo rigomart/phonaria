@@ -1,7 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
 // Expected ranks and shares come from docs/research/issue-287-phoneme-frequency.md.
 
 const ranking = observation(
