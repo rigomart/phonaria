@@ -1,4 +1,4 @@
-import { MAX_DEFINITION_WORD_LENGTH } from "./contract";
+import { MAX_DEFINITION_WORD_LENGTH, WIKTIONARY_SITE_URL } from "./contract";
 
 const SURROUNDING_PUNCTUATION = /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu;
 const ALLOWED_LOOKUP_WORD = /^[\p{L}\p{N}'-]+$/u;
@@ -16,4 +16,10 @@ export function isLookupableDefinitionWord(word: string): boolean {
 	return (
 		word.length > 0 && word.length <= MAX_DEFINITION_WORD_LENGTH && ALLOWED_LOOKUP_WORD.test(word)
 	);
+}
+
+/** The word's English entry on Wiktionary, for the same form its definition is looked up by. */
+export function buildWiktionaryEntryUrl(word: string): string {
+	const entry = normalizeDefinitionWord(word) || word;
+	return `${WIKTIONARY_SITE_URL}wiki/${encodeURIComponent(entry)}#English`;
 }
