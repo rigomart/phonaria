@@ -122,7 +122,6 @@ function MainNav({ flags, pathname }: { flags: AppFlags; pathname: string }) {
 
 	return (
 		<NavigationMenu ref={navRef} aria-label="Main" className="hidden shrink-0 sm:flex">
-			{/* Before the list, so the items paint over it. */}
 			<span
 				{...indicator}
 				className={cn(
@@ -187,7 +186,6 @@ function MainNavItem({
 			<NavigationMenuTrigger className={className} aria-current={current} {...marker}>
 				{tool.label}
 			</NavigationMenuTrigger>
-			{/* Kept mounted so the links are in the server-rendered HTML for crawlers. */}
 			<NavigationMenuContent keepMounted>
 				<ul className="grid w-48 gap-1">
 					{soundsSections.map((section) => (
