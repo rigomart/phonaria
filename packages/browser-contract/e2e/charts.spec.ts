@@ -16,7 +16,7 @@ test.describe("IPA charts", () => {
 		const tile = page.getByRole("button", { name: CONSONANT_BUTTON_NAME });
 		await waitForHydration(tile);
 		await tile.click();
-		await expect(page.getByRole("dialog", { name: /Voiceless bilabial plosive$/ })).toBeVisible();
+		await expect(page.getByRole("dialog", { name: "P /p/", exact: true })).toBeVisible();
 		await expect(page).toHaveURL(/\/ipa-chart\/consonants$/);
 	});
 
@@ -27,7 +27,7 @@ test.describe("IPA charts", () => {
 		await expect(page.locator("[data-diphthong]")).toHaveCount(0);
 
 		await expect(async () => {
-			await page.getByText("Show diphthongs").click();
+			await page.getByRole("button", { name: "Diphthongs", exact: true }).click();
 			await expect(page.locator("[data-diphthong]").first()).toBeVisible({ timeout: 1_000 });
 		}).toPass({ timeout: 10_000 });
 	});

@@ -28,7 +28,8 @@ const PUBLIC_ROUTES = [
 	{
 		path: "/credits",
 		title: "Credits & Sources - Phonaria",
-		description: "Credits and sources for Phonaria resources, data, and media.",
+		description:
+			"The sources behind Phonaria's dictionary, recordings, charts and word lists: what each is used for, its license, and where Phonaria's version differs.",
 	},
 	{
 		path: "/ipa-chart/consonants",

@@ -78,7 +78,7 @@ test.describe("A contrast page with speaking practice off", () => {
 					"idle",
 				);
 			}
-			await expect(page.getByRole("button", { name: "Record" })).toHaveCount(0);
+			await expect(page.getByRole("button", { name: "Record", exact: true })).toHaveCount(0);
 			await expect(page.getByRole("heading", { name: "Say a word" })).toHaveCount(0);
 		},
 	);
@@ -92,7 +92,7 @@ test.describe("A contrast page with speaking practice on", () => {
 	test("adds practice on one of the contrast's words above the pairs", async ({ page }) => {
 		await page.goto("/minimal-pairs/th-s");
 		await expect(page.getByRole("heading", { name: "Say a word" })).toBeVisible();
-		await expect(page.getByRole("button", { name: "Record" })).toBeVisible();
+		await expect(page.getByRole("button", { name: "Record", exact: true })).toBeVisible();
 		await expect(page).toHaveURL(/\/minimal-pairs\/th-s\?word=\w+/);
 		await expect(
 			page.getByRole("table", { name: "Minimal pairs for /θ/ and /s/" }).getByRole("button", {
