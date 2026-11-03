@@ -4,8 +4,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { runInNewContext } from "node:vm";
+import ts from "typescript";
 import { observation } from "./feature";
-import { getFeature } from "./features";
+import { features, getFeature } from "./features";
 import {
 	assessRun,
 	commandFailureMessage,
@@ -64,6 +65,42 @@ test("typed observations execute in an isolated browser context", () => {
 		origin: "http://127.0.0.1:3000",
 		state: { input: "", query: null, tokens: 0, example: true },
 	});
+});
+
+test("every checkpoint reads only browser globals, since it runs in the page after serialization", () => {
+	const fileName = "reads.js";
+	const reads: { id: string; end: number }[] = [];
+	let text = "";
+	for (const [feature, { checkpoints }] of Object.entries(features)) {
+		for (const [checkpoint, { read }] of Object.entries(checkpoints)) {
+			text += `void (${read.toString()});\n`;
+			reads.push({ id: `${feature}/${checkpoint}`, end: text.length });
+		}
+	}
+	const options: ts.CompilerOptions = {
+		allowJs: true,
+		checkJs: true,
+		noEmit: true,
+		target: ts.ScriptTarget.ES2022,
+		lib: ["lib.es2022.d.ts", "lib.dom.d.ts", "lib.dom.iterable.d.ts"],
+		types: [],
+	};
+	const host = ts.createCompilerHost(options);
+	const getSourceFile = host.getSourceFile;
+	host.getSourceFile = (name, ...rest) =>
+		name === fileName
+			? ts.createSourceFile(name, text, ts.ScriptTarget.ES2022)
+			: getSourceFile(name, ...rest);
+	const program = ts.createProgram([fileName], options, host);
+	const unresolved = program
+		.getSemanticDiagnostics(program.getSourceFile(fileName))
+		.map((diagnostic) => ({
+			start: diagnostic.start ?? 0,
+			message: ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"),
+		}))
+		.filter(({ message }) => /^(Cannot find name|No value exists in scope)/.test(message))
+		.map(({ start, message }) => `${reads.find((read) => start < read.end)?.id}: ${message}`);
+	assert.deepEqual(unresolved, []);
 });
 
 test("repeating a checkpoint keeps both snapshots", () => {

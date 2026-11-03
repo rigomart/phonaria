@@ -1,8 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
-
 function readHeader() {
 	const label = (item: Element) => item.firstChild?.textContent?.trim() ?? "";
 	const nav = document.querySelector('header nav[aria-label="Main"]');
