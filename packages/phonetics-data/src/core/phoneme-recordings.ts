@@ -254,11 +254,11 @@ export const PhonemeRecordingSourceMap: Readonly<
 		sha1: "3a86a7280d6dfd28e6d123fff0be61134010c972",
 	},
 	U: {
-		title: "File:Close back unrounded vowel.ogg",
-		pageUrl: "https://commons.wikimedia.org/wiki/File:Close_back_unrounded_vowel.ogg",
+		title: "File:Close back rounded vowel.ogg",
+		pageUrl: "https://commons.wikimedia.org/wiki/File:Close_back_rounded_vowel.ogg",
 		authors: ["Denelson83"],
 		license: CC_BY_SA_3,
-		sha1: "fd21d4e105075953cd5e897f38152753cfd47d70",
+		sha1: "ec885fb9088c69e0ceed6c41cec7deb86dce4275",
 	},
 	UX: {
 		title: "File:Near-close near-back rounded vowel.ogg",

@@ -115,11 +115,11 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					url: "https://commons.wikimedia.org/wiki/General_phonetics",
 				},
 			],
-			uses: "Each sound's card and page play a recording from the General phonetics gallery.",
+			uses: "Each sound's card and page play a recording from Wikimedia Commons. All but /ɝ/ come from the General phonetics gallery.",
 			notes: {
 				heading: "Keep in mind",
 				items: [
-					"The recordings show each IPA symbol as speech experts say it, not as an American says the English sound.",
+					"The gallery's recordings show each IPA symbol as speech experts say it, not as an American says the English sound.",
 					"So some vowels can sound different from the way Americans say them.",
 					"Diphthongs have no recording yet.",
 					"Each recording's author and license are on its sound's page, and on its file page on Wikimedia Commons.",
