@@ -43,6 +43,12 @@ export type {
 	PhonemeArticulation,
 	VowelType,
 } from "./core/phoneme-articulations";
+export {
+	getPhonemeRecordingSource,
+	type PhonemeRecordingSource,
+	PhonemeRecordingSourceMap,
+	type RecordingLicense,
+} from "./core/phoneme-recordings";
 export { type PhonemeCategory, TARGET_ACCENTS, type TargetAccent } from "./core/types";
 export type { CuratedWordData } from "./data/en/curated-1k";
 export type { CmudictPayload, CmudictStatsPayload, PhonemeFrequencyPayload } from "./dict/types";

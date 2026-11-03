@@ -7,7 +7,7 @@ import { useState } from "react";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { WordAudioForms } from "@/components/word-audio-forms";
 import { useDefinition } from "@/hooks/use-definition";
-import { WIKTIONARY_SITE_URL } from "@/lib/definition/contract";
+import { buildWiktionaryEntryUrl } from "@/lib/definition/word";
 import { cn } from "@/lib/utils";
 
 type WordDefinitionPopoverProps = {
@@ -18,12 +18,12 @@ type WordDefinitionPopoverProps = {
 	pronunciation: string;
 };
 
-function Attribution() {
+function Attribution({ word }: { word: string }) {
 	return (
 		<p className="text-xs text-muted-foreground">
 			Definitions from{" "}
 			<a
-				href={WIKTIONARY_SITE_URL}
+				href={buildWiktionaryEntryUrl(word)}
 				target="_blank"
 				rel="noopener noreferrer"
 				className="underline underline-offset-2 hover:text-foreground"
@@ -111,7 +111,7 @@ export function DefinitionBody({
 						))
 					: null}
 
-				<Attribution />
+				<Attribution word={word} />
 			</div>
 		</div>
 	);

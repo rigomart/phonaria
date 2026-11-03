@@ -57,6 +57,14 @@ afterEach(() => {
 	vi.unstubAllEnvs();
 });
 
+describe("word popover attribution", () => {
+	it("links to the word's own Wiktionary entry", () => {
+		expect(popover("seat", "ˈsit", "S I1 T")).toContain(
+			'href="https://en.wiktionary.org/wiki/seat#English"',
+		);
+	});
+});
+
 describe("word popover (#378)", () => {
 	it("heads the selected variant and plays its recording first", () => {
 		const html = popover("read", "ˈɹɛd", "R E1 D");

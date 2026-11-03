@@ -107,6 +107,7 @@ Run before merging package changes:
 - Spanish currently ships core inventory + articulatory data.
 - English currently provides CMU/ARPABET mappings, spelling patterns, allophones (with a plain label per context in `EnglishAllophoneContextLabels`, shown on the sound pages), contrasts, merger notes, and curated dictionary datasets.
 - Merger notes (`getMergerNoteRegistryForLanguage`) explain vowel mergers on the sounds they affect: cot–caught on `O`, Mary–marry–merry on `AE` and `E`. In a note's text, `*word*` marks an example word and `/ipa/` a sound; `splitMergerNoteText()` splits it for display. Sources are in `docs/research/us-vowel-mergers.md`.
+- `getPhonemeRecordingSource` (in `src/core/phoneme-recordings.ts`) gives the Wikimedia Commons file each sound's recording came from. It is keyed by phoneme ID, since a recording is of an IPA symbol rather than of one language. Each entry was matched by the SHA-1 of the published copy against the file's Commons history. The /ʌ/ and /ɛ/ recordings are earlier versions of their files.
 - Selectors return `null` for not-yet-implemented language features instead of widening types with placeholder data.
 
 Inventories, counts, capabilities, and feature registries returned by selectors

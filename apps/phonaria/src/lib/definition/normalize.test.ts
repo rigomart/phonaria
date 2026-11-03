@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { MAX_SENSES_PER_POS, MAX_SENSES_TOTAL } from "./contract";
 import { capDefinitionSenses, parseWiktionaryPayload, stripDefinitionHtml } from "./normalize";
-import { isLookupableDefinitionWord, normalizeDefinitionWord } from "./word";
+import {
+	buildWiktionaryEntryUrl,
+	isLookupableDefinitionWord,
+	normalizeDefinitionWord,
+} from "./word";
 
 describe("normalizeDefinitionWord", () => {
 	it("lowercases and trims", () => {
@@ -503,5 +507,20 @@ describe("capDefinitionSenses", () => {
 			},
 		]);
 		expect(groups[0]?.senses).toHaveLength(MAX_SENSES_PER_POS);
+	});
+});
+
+describe("buildWiktionaryEntryUrl", () => {
+	it("links the English section of the entry for the word as looked up", () => {
+		expect(buildWiktionaryEntryUrl("World,")).toBe("https://en.wiktionary.org/wiki/world#English");
+	});
+
+	it("encodes the word", () => {
+		expect(buildWiktionaryEntryUrl("don\u2019t")).toBe(
+			"https://en.wiktionary.org/wiki/don't#English",
+		);
+		expect(buildWiktionaryEntryUrl("café")).toBe(
+			"https://en.wiktionary.org/wiki/caf%C3%A9#English",
+		);
 	});
 });
