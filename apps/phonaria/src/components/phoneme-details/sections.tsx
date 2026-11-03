@@ -89,18 +89,18 @@ export function getDetailSections({
 }
 
 /**
- * The sections stacked, separated by space rather than lines. With
- * `voiceNote`, the synthetic-voice note closes them when a section plays a
- * word; the drawer leaves it off while its sections are out of view.
+ * The sections stacked, separated by space rather than lines. The
+ * synthetic-voice note closes them when a section, or one of `extraWords`
+ * the surface plays elsewhere (the drawer's example word), has a recording.
  */
 export function DetailSections({
 	targetAccent,
 	sections,
-	voiceNote = true,
+	extraWords = [],
 }: {
 	targetAccent: TargetAccent;
 	sections: readonly DetailSection[];
-	voiceNote?: boolean;
+	extraWords?: readonly string[];
 }) {
 	return (
 		<div className="flex flex-col gap-6">
@@ -109,12 +109,10 @@ export function DetailSections({
 					{content}
 				</DetailsSection>
 			))}
-			{voiceNote ? (
-				<SyntheticVoiceNote
-					targetAccent={targetAccent}
-					words={sections.flatMap(({ words = [] }) => words)}
-				/>
-			) : null}
+			<SyntheticVoiceNote
+				targetAccent={targetAccent}
+				words={[...extraWords, ...sections.flatMap(({ words = [] }) => words)]}
+			/>
 		</div>
 	);
 }
