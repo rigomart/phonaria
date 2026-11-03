@@ -43,27 +43,30 @@ export function SoundHeading({
  * symbol plays the sound, the example word plays the word. Both levels
  * open with it, so the sound keeps its shape when the details expand.
  *
- * Where it shows the example word, the synthetic-voice note closes it.
+ * Where it shows the example word, the synthetic-voice note closes it, unless
+ * `voiceNote` is off because the host closes its sections with one note for all.
  *
- * On the compact level `onExpand` turns the name into a button that opens the
- * full view, and `thumbnail` previews how the sound is made.
- * `action` is the corner control (close); `titleId` labels the surrounding dialog.
+ * On the drawer's compact level `onExpand` turns the name into a button that
+ * opens the full view; it keeps the heading's size, so nothing moves when the
+ * drawer expands. `action` is the corner control (close); `titleId` labels the
+ * surrounding dialog.
  */
 export function SoundHeader({
 	sound,
 	titleId,
 	action,
 	showExample = true,
+	voiceNote = showExample,
 	onExpand,
-	thumbnail,
 }: {
 	sound: SoundSummary;
 	titleId: string;
 	action?: ReactNode;
 	/** Off in the full view: its Spelling section pairs every example word with its spelling. */
 	showExample?: boolean;
+	/** The synthetic-voice note for the example word; on wherever the example shows by default. */
+	voiceNote?: boolean;
 	onExpand?: () => void;
-	thumbnail?: ReactNode;
 }) {
 	const subtitle = (
 		<span className="text-sm text-muted-foreground">
@@ -79,13 +82,8 @@ export function SoundHeader({
 			) : null}
 		</span>
 	);
-	const compact = Boolean(thumbnail);
 	const frequency = sound.frequency ? (
-		<SoundFrequency
-			frequency={sound.frequency}
-			showLink={sound.showFrequencyLink}
-			stacked={compact}
-		/>
+		<SoundFrequency frequency={sound.frequency} showLink={sound.showFrequencyLink} />
 	) : null;
 
 	return (
@@ -122,15 +120,8 @@ export function SoundHeader({
 				</div>
 				{action}
 			</div>
-			{thumbnail ? (
-				<div className="flex items-stretch gap-4">
-					<div className="w-44 shrink-0">{thumbnail}</div>
-					<div className="min-w-0 flex-1">{frequency}</div>
-				</div>
-			) : (
-				frequency
-			)}
-			{showExample && sound.example ? (
+			{frequency}
+			{voiceNote && showExample && sound.example ? (
 				<SyntheticVoiceNote targetAccent={sound.targetAccent} words={[sound.example.word]} />
 			) : null}
 		</div>

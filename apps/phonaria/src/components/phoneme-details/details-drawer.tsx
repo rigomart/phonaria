@@ -2,6 +2,7 @@ import { Button } from "@phonaria/ui/components/button";
 import { Drawer, DrawerClose, DrawerContent } from "@phonaria/ui/components/drawer";
 import { XIcon } from "lucide-react";
 import {
+	type FocusEvent,
 	type KeyboardEvent,
 	useEffect,
 	useId,
@@ -11,7 +12,6 @@ import {
 	useState,
 } from "react";
 import { cn } from "@/lib/utils";
-import { ArticulationThumbnail } from "./articulation-thumbnail";
 import { type DetailsPayload, drawerHandle } from "./context";
 import { DetailSections, getDetailSections } from "./sections";
 import { describeSound } from "./sound";
@@ -20,12 +20,17 @@ import { SoundHeader, soundTitleTarget } from "./sound-header";
 /** The full-height snap point: as tall as the content, capped by the drawer's max height. */
 const FULL = 1;
 
+/** The compact level stops at this share of the screen, so the top of the page stays in view. */
+const PEEK_MAX_SHARE = 0.55;
+
 /**
- * Phones and tablets: one bottom drawer with two levels. It opens at a compact
- * snap point that shows the sound header, a preview of how it's made, and its
- * audio, leaving the top of the page in view. Dragging it up, or tapping the
- * sound's name, snaps it to full height, where the sections scroll under the
- * pinned header.
+ * Phones and tablets: one bottom drawer with two levels. Both levels lay out
+ * the same sheet; the compact one is a peek at its top: the sound header and
+ * as much of "How it's made" as fits, leaving the top of the page in view.
+ * Dragging it up, or tapping the sound's name, uncovers the rest at full
+ * height, where the sections scroll under the pinned header. Nothing in the
+ * sheet changes size between the levels, so it follows the finger without
+ * shifting when it snaps.
  *
  * Non-modal, so tapping another sound in view swaps the drawer's content;
  * tapping anywhere else closes it. The keyboard stays inside: Tab wraps around
@@ -38,10 +43,10 @@ export function DetailsDrawer({
 	onTriggerChange: (triggerId: string | null) => void;
 }) {
 	const [expanded, setExpanded] = useState(false);
-	const [compactHeight, setCompactHeight] = useState(0);
+	const [peekHeight, setPeekHeight] = useState(0);
 	const snapPoints = useMemo(
-		() => (compactHeight > 0 ? [`${compactHeight}px`, FULL] : undefined),
-		[compactHeight],
+		() => (peekHeight > 0 ? [`${peekHeight}px`, FULL] : undefined),
+		[peekHeight],
 	);
 
 	return (
@@ -64,7 +69,7 @@ export function DetailsDrawer({
 						payload={payload}
 						expanded={expanded}
 						onExpand={() => setExpanded(true)}
-						onCompactHeightChange={setCompactHeight}
+						onPeekHeightChange={setPeekHeight}
 					/>
 				) : null
 			}
@@ -76,12 +81,12 @@ function DrawerSheet({
 	payload,
 	expanded,
 	onExpand,
-	onCompactHeightChange,
+	onPeekHeightChange,
 }: {
 	payload: DetailsPayload;
 	expanded: boolean;
 	onExpand: () => void;
-	onCompactHeightChange: (height: number) => void;
+	onPeekHeightChange: (height: number) => void;
 }) {
 	const titleId = useId();
 	const sound = describeSound(payload.options);
@@ -95,19 +100,36 @@ function DrawerSheet({
 	// offset turn into bottom padding without the drawer growing with it.
 	const [height, setHeight] = useState<number>();
 
+	// The sheet lays out the same at both levels, so these hold across a snap
+	// and change only with the content (a new sound, a diagram loading).
 	useLayoutEffect(() => {
 		if (!content || !summary) return;
 		const measure = () => {
 			setHeight(content.offsetHeight);
-			// Expanded, the summary drops its preview; the compact snap keeps the height it had.
-			if (!expanded) onCompactHeightChange(summary.offsetHeight);
+			// The peek ends with the first section, "How it's made", or at its cap.
+			const first = sectionsRef.current?.querySelector("section");
+			const firstEnd = first
+				? first.getBoundingClientRect().bottom - content.getBoundingClientRect().top
+				: summary.offsetHeight;
+			const cap = window.innerHeight * PEEK_MAX_SHARE;
+			onPeekHeightChange(Math.round(Math.max(summary.offsetHeight, Math.min(firstEnd, cap))));
 		};
 		measure();
 		const observer = new ResizeObserver(measure);
 		observer.observe(content);
 		observer.observe(summary);
-		return () => observer.disconnect();
-	}, [content, summary, expanded, onCompactHeightChange]);
+		window.addEventListener("resize", measure);
+		return () => {
+			observer.disconnect();
+			window.removeEventListener("resize", measure);
+		};
+	}, [content, summary, onPeekHeightChange]);
+
+	// Tabbing into the part below the peek opens the full view, so the
+	// focused control is never cut off. Taps on what's in view stay put.
+	const expandOnKeyboardFocus = (event: FocusEvent<HTMLElement>) => {
+		if (!expanded && event.target.matches(":focus-visible")) onExpand();
+	};
 
 	const wasExpanded = useRef(expanded);
 	useEffect(() => {
@@ -117,7 +139,7 @@ function DrawerSheet({
 		if (!root) return;
 		if (!expanded) {
 			root.scrollTop = 0;
-			// Dragged down to compact: the sections went inert and took focus with them.
+			// Dragged down to compact: the sheet went back to its top, so focus below the peek goes to the name.
 			const active = document.activeElement;
 			if (collapsed && (active === document.body || sectionsRef.current?.contains(active))) {
 				soundTitleTarget(titleId)?.focus({ preventScroll: true });
@@ -149,11 +171,7 @@ function DrawerSheet({
 				<div ref={setContent}>
 					<div
 						ref={setSummary}
-						className={cn(
-							"sticky top-0 z-10 flex flex-col gap-4 bg-popover px-5 pt-3",
-							// Compact, the summary ends at the bottom of the screen.
-							expanded ? "pb-4" : "pb-safe-4",
-						)}
+						className="sticky top-0 z-10 flex flex-col gap-4 bg-popover px-5 pt-3 pb-4"
 					>
 						<span
 							aria-hidden="true"
@@ -162,16 +180,9 @@ function DrawerSheet({
 						<SoundHeader
 							sound={sound}
 							titleId={titleId}
-							showExample={!expanded}
+							// The sections close with one note that covers the example word too.
+							voiceNote={false}
 							onExpand={expanded ? undefined : onExpand}
-							thumbnail={
-								expanded ? undefined : (
-									<ArticulationThumbnail
-										targetAccent={payload.options.targetAccent}
-										phonemeId={payload.options.phonemeId}
-									/>
-								)
-							}
 							action={
 								<DrawerClose
 									render={<Button variant="secondary" size="icon" className="size-11 shrink-0" />}
@@ -182,12 +193,11 @@ function DrawerSheet({
 							}
 						/>
 					</div>
-					{/* Compact, the sections are clipped out of view, so they are out of reach too. */}
-					<div ref={sectionsRef} inert={!expanded} className="px-5 pb-safe-6">
+					<div ref={sectionsRef} onFocus={expandOnKeyboardFocus} className="px-5 pb-safe-6">
 						<DetailSections
 							targetAccent={payload.options.targetAccent}
 							sections={sections}
-							voiceNote={expanded}
+							extraWords={sound.example ? [sound.example.word] : []}
 						/>
 					</div>
 				</div>
