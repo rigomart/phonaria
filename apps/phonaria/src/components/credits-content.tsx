@@ -1,5 +1,6 @@
 import { Badge } from "@phonaria/ui/components/badge";
 import { ExternalLink } from "lucide-react";
+import type { CreditKey } from "@/components/disclaimer";
 import type { AppFlags } from "@/lib/flags";
 import { enterDelay, stagger } from "@/lib/motion";
 import { EvidenceLogNotice } from "@/lib/speech/evidence-log";
@@ -13,8 +14,8 @@ export type CreditsFlags = Pick<
 type Href = { text: string; url: string };
 
 type Credit = {
-	/** Also the section's `id`. Other surfaces link to `/credits#<key>`, so keys stay stable. */
-	key: string;
+	/** Also the section's `id`. */
+	key: CreditKey;
 	title: string;
 	by: string;
 	licenses?: readonly Href[];

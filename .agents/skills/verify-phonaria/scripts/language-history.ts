@@ -1,8 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
-//
 // Expected values are literals taken from the story data in
 // apps/phonaria/src/lib/language-history/story.ts and from the product requirements:
 // 11 steps, 9 places, 8 spread routes, 9 main works. Routes drawn by step are cumulative:

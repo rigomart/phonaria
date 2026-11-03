@@ -19,7 +19,8 @@ export type CreditKey =
 	| "wordfreq"
 	| "ipa-chart"
 	| "diagrams"
-	| "phonetic-data";
+	| "phonetic-data"
+	| "history";
 
 const textLink =
 	"rounded-sm underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";

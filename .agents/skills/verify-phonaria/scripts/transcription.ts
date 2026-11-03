@@ -1,7 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
 const empty = observation(
 	() => {
 		const input = document.querySelector<HTMLInputElement>('[aria-label="Text to transcribe"]');

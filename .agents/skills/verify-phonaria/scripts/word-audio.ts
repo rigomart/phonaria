@@ -1,7 +1,5 @@
 import { type Feature, observation } from "./feature";
 
-// These functions run in the browser after serialization. Keep their dependencies
-// inside the function body and read only rendered DOM and browser state.
 // The /i/ words are the catalog's seat/sit and sheep/ship pairs and its spelling examples.
 
 const readSoundCard = () => {
