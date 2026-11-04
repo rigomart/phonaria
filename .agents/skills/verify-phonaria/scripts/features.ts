@@ -1,4 +1,5 @@
 import { about, aboutOff } from "./about";
+import { detailsScroll } from "./details-scroll";
 import type { Feature } from "./feature";
 import { headNavigation } from "./head-navigation";
 import { languageHistory, languageHistoryOff } from "./language-history";
@@ -16,6 +17,7 @@ import { wordAudio } from "./word-audio";
 export const features: Record<string, Feature> = {
 	about,
 	"about-off": aboutOff,
+	"details-scroll": detailsScroll,
 	"head-navigation": headNavigation,
 	"language-history": languageHistory,
 	"language-history-off": languageHistoryOff,
