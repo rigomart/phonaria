@@ -24,7 +24,7 @@ export interface DetailSection {
 /**
  * The full view's sections, most hands-on first: how the sound is made, what
  * it gets confused with, how it is spelled, and any vowel merger it is part of
- * (how common it is sits in the header). Sections without
+ * (how common it is sits above them, under the header). Sections without
  * data, or switched off by the host, are left out here, at the source, so the
  * "More about" summary and the full view always list the same things.
  */

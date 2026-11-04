@@ -46,7 +46,7 @@ export type PhonemeFrequencySummary = {
 	relativeShare: number;
 };
 
-/** How common one sound is, for the details header, or null when the accent has no frequency data. */
+/** How common one sound is, for the sound details, or null when the accent has no frequency data. */
 export function summarizePhonemeFrequency(
 	targetAccent: TargetAccent,
 	phonemeId: PhonemeSymbolId,

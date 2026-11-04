@@ -13,6 +13,7 @@ import {
 } from "react";
 import { cn } from "@/lib/utils";
 import { type DetailsPayload, drawerHandle } from "./context";
+import { SoundFrequency } from "./frequency";
 import { DetailSections, getDetailSections } from "./sections";
 import { describeSound } from "./sound";
 import { SoundHeader, soundTitleTarget } from "./sound-header";
@@ -25,12 +26,12 @@ const PEEK_MAX_SHARE = 0.55;
 
 /**
  * Phones and tablets: one bottom drawer with two levels. Both levels lay out
- * the same sheet; the compact one is a peek at its top: the sound header and
- * as much of "How it's made" as fits, leaving the top of the page in view.
- * Dragging it up, or tapping the sound's name, uncovers the rest at full
- * height, where the sections scroll under the pinned header. Nothing in the
- * sheet changes size between the levels, so it follows the finger without
- * shifting when it snaps.
+ * the same sheet; the compact one is a peek at its top: the sound header, how
+ * common the sound is, and as much of "How it's made" as fits, leaving the top
+ * of the page in view. Dragging it up, or tapping the sound's name, uncovers
+ * the rest at full height, where everything below the header scrolls under
+ * it. Nothing in the sheet changes size between the levels, so it follows the
+ * finger without shifting when it snaps.
  *
  * Non-modal, so tapping another sound in view swaps the drawer's content;
  * tapping anywhere else closes it. The keyboard stays inside: Tab wraps around
@@ -106,13 +107,17 @@ function DrawerSheet({
 		if (!content || !summary) return;
 		const measure = () => {
 			setHeight(content.offsetHeight);
-			// The peek ends with the first section, "How it's made", or at its cap.
-			const first = sectionsRef.current?.querySelector("section");
-			const firstEnd = first
-				? first.getBoundingClientRect().bottom - content.getBoundingClientRect().top
+			const top = content.getBoundingClientRect().top;
+			const sections = sectionsRef.current;
+			const sectionsStart = sections
+				? sections.getBoundingClientRect().top - top
 				: summary.offsetHeight;
+			const firstSection = sections?.querySelector("section");
+			const firstSectionEnd = firstSection
+				? firstSection.getBoundingClientRect().bottom - top
+				: sectionsStart;
 			const cap = window.innerHeight * PEEK_MAX_SHARE;
-			onPeekHeightChange(Math.round(Math.max(summary.offsetHeight, Math.min(firstEnd, cap))));
+			onPeekHeightChange(Math.round(Math.max(sectionsStart, Math.min(firstSectionEnd, cap))));
 		};
 		measure();
 		const observer = new ResizeObserver(measure);
@@ -193,6 +198,11 @@ function DrawerSheet({
 							}
 						/>
 					</div>
+					{sound.frequency ? (
+						<div className="px-5 pb-4">
+							<SoundFrequency frequency={sound.frequency} showLink={sound.showFrequencyLink} />
+						</div>
+					) : null}
 					<div ref={sectionsRef} onFocus={expandOnKeyboardFocus} className="px-5 pb-safe-6">
 						<DetailSections
 							targetAccent={payload.options.targetAccent}

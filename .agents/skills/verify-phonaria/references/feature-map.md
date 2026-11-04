@@ -14,6 +14,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Vowel chart | `/ipa-chart/vowels`, **Show diphthongs** | Not exercised |
 | Frequency | `/ipa-chart/frequency`, header **Sounds** menu → **How common** | Executable journey below |
 | Sound card "Frequency" and "Spelling" | Any sound, or **Details for /h/** after transcribing | Executable journey below |
+| What stays pinned while the full details scroll | Any sound, then **Full details for …** (wide screens) or **More about …** (phones) | Executable journey below: `details-scroll` |
 | Sound card merger notes | `/ipa-chart/vowels`, /ɔ/, /æ/ or /ɛ/, then **Full details for …** (wide screens) or **More about …** (phones) | Executable journey below |
 | History | `/history`, header **History** (behind `FLAG_LANGUAGE_HISTORY`) | Executable journeys below: `language-history` (flag on) and `language-history-off` |
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
@@ -337,6 +338,46 @@ bun run verify browser "$VERIFY_RUN" press Escape
 ### Limits
 
 The note words have no recordings, so playback is not exercised. es-419 has no notes and no route renders its details; unit tests cover it.
+
+## What stays pinned while the details scroll
+
+Target accent: American English (`en-us`). In the side panel and the drawer, only the sound's identity (tile, name, type, **Open full page** and the close button) stays pinned while the details scroll. How common the sound is sits just below it and scrolls away with the sections. The drawer's compact level still shows it. The [checkpoints](../scripts/details-scroll.ts) find the details scroller (the one with `overscroll-behavior: contain`) and read whether the name and the close button share a sticky header at its top, whether the frequency row ("… most common of 40 sounds") is inside a sticky element, and whether that row is in view below the header.
+
+`panel-top` and `drawer-compact` require the header pinned with the close button in it, and the frequency row unpinned and in view (in the drawer, within the part above the screen's bottom edge). `panel-scrolled` and `drawer-scrolled` require the same header after a 320 px scroll, with the frequency row scrolled out of view under it.
+
+### Executable journey
+
+The journey takes viewport screenshots and no trace, for the same reason as the merger-notes journey. Run each layout in light and dark. After `init details-scroll`, `serve` and `open about:blank`:
+
+```bash
+HYD="Object.keys(document.querySelector('main button[aria-label]')||{}).some(k=>k.startsWith('__reactProps'))"
+SCROLL="(() => { const d = [...document.querySelectorAll('[data-phoneme-details]')].find(n => getComputedStyle(n).overscrollBehaviorY === 'contain'); d.scrollTop = 320; return d.scrollTop; })()"
+# Desktop: the side panel.
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/consonants
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Voiceless alveolar fricative (s)" --exact
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /s/"
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
+bun run verify observe "$VERIFY_RUN" panel-top
+bun run verify browser "$VERIFY_RUN" eval "$SCROLL"
+bun run verify observe "$VERIFY_RUN" panel-scrolled
+# Phone: the drawer. Open the page fresh and wait about 1.5 s after hydration before the tap.
+bun run verify browser "$VERIFY_RUN" set viewport 390 844
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/consonants
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify browser "$VERIFY_RUN" wait 1500
+bun run verify browser "$VERIFY_RUN" find role button click --name "Voiceless alveolar fricative (s)" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
+bun run verify browser "$VERIFY_RUN" wait 1200   # let the sheet finish sliding up
+bun run verify observe "$VERIFY_RUN" drawer-compact
+bun run verify browser "$VERIFY_RUN" find role button click --name "More about S /s/" --exact
+bun run verify browser "$VERIFY_RUN" wait 1200
+bun run verify browser "$VERIFY_RUN" eval "$SCROLL"
+bun run verify observe "$VERIFY_RUN" drawer-scrolled
+```
+
+To check that the drawer keeps its layout while it expands, measure from the scroller's top to the first section's heading at both levels: the distance must not change. The drawer is expanded with its name button, not a touch drag.
 
 ## Minimal-pair speaking practice
 
