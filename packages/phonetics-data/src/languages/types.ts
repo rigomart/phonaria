@@ -5,19 +5,20 @@ import type { LanguagePhonemeId } from "./inventories";
 
 export type AllophoneExample = {
 	readonly word: string;
-	readonly phonemic: string;
 };
 
 export type PhonemeAllophoneContextKey =
-	| "stressed-onset-aspirated"
-	| "after-s-onset-unaspirated"
-	| "vowel-to-vowel-flap"
-	| "t-before-syllabic-n-glottal"
-	| "coda-dark-l"
-	| "pre-voiced-coda-lengthened"
-	| "pre-voiceless-coda-shorter"
-	| "stressed-r-colored"
-	| "unstressed-r-colored";
+	| "aspirated"
+	| "unaspirated-after-s"
+	| "flap"
+	| "glottal-stop"
+	| "syllabic-n"
+	| "dark-l"
+	| "syllabic-l"
+	/** Examples come in pairs: the longer word, then one with the voice off after the vowel. */
+	| "longer-before-voice-on"
+	| "raised-before-m-n"
+	| "weak-r-vowel";
 
 export type PhonemeAllophone = {
 	readonly ipaVariant: string;

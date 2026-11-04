@@ -20,17 +20,22 @@ type VariantRule = {
  */
 const VARIANT_RULES: Partial<Record<PhonemeAllophoneContextKey, VariantRule>> = {
 	// Scorers report the flap as RX (ɾ), or as /d/ or /t/ when they have no flap symbol.
-	"vowel-to-vowel-flap": {
+	// The flap needs a weak vowel next, but the phoneme IDs carry no stress, so this
+	// also accepts it before a strong one, as in *attack*.
+	flap: {
 		appliesAt: (phonemeIds, position) =>
-			isVowel(phonemeIds[position - 1]) && isVowel(phonemeIds[position + 1]),
+			isVowel(phonemeIds[position + 1]) &&
+			(isVowel(phonemeIds[position - 1]) ||
+				(phonemeIds[position - 1] === "R" && isVowel(phonemeIds[position - 2]))),
 		heardAs: { T: ["RX", "D"], D: ["RX", "T"] },
 	},
-	// Unaspirated after /s/, the /p/ of *spin* and the /k/ of *skate* sound like /b/ and /ɡ/.
-	// Word-initial only: no English word starts with /sb/ or /sɡ/, but inside a word
-	// voicing after /s/ is a contrast (*discussed* and *disgust*).
-	"after-s-onset-unaspirated": {
+	// Unaspirated after /s/, the /p/ of *spin*, the /t/ of *stop* and the /k/ of *sky*
+	// sound like /b/, /d/ and /ɡ/. Word-initial only: no English word starts with /sb/,
+	// /sd/ or /sɡ/, but inside a word voicing after /s/ is a contrast (*discussed* and
+	// *disgust*).
+	"unaspirated-after-s": {
 		appliesAt: (phonemeIds, position) => position === 1 && phonemeIds[0] === "S",
-		heardAs: { P: ["B"], K: ["G"] },
+		heardAs: { P: ["B"], T: ["D"], K: ["G"] },
 	},
 };
 

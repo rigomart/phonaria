@@ -172,15 +172,24 @@ const tVariants = observation(
 	},
 	{
 		path: "/sounds/t-top",
-		// The flap in "water" and the glottal stop in "button" are #418's examples.
 		variants: [
 			{
 				ipa: "tʰ",
-				label: "With a puff of air, at the start of a stressed syllable",
-				words: ["top", "time"],
+				label: "With a puff of air, at the start of a word or of the part said loudest",
+				words: ["top", "attack"],
 			},
-			{ ipa: "ɾ", label: "A quick tap of the tongue, between vowels", words: ["water"] },
-			{ ipa: "ʔ", label: "A catch in the throat, before an n sound", words: ["button"] },
+			{ ipa: "t", label: "Without the puff of air, after s", words: ["stop", "stay"] },
+			{
+				ipa: "ɾ",
+				label: "A quick tap of the tongue, after a vowel or r and before a vowel said softly",
+				words: ["water", "city", "party"],
+			},
+			{
+				ipa: "ʔ",
+				label:
+					"Often cut off with a catch in the throat, before a consonant or at the end of a sentence",
+				words: ["button", "football"],
+			},
 		],
 	},
 );

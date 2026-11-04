@@ -10,6 +10,7 @@ import {
 	toBasePhonemeIds,
 	splitSpelledWord,
 } from "../../index";
+import type { PhonemeAllophoneContextKey } from "../../languages/types";
 import { EnglishCmudictStatsData } from "./cmudict-stats";
 import { EnglishCommonWords } from "./common-words";
 import { EnglishCuratedTop1k } from "./curated-1k";
@@ -222,7 +223,9 @@ describe("teaching examples", () => {
 			for (const example of examples) {
 				const variants = dictionary.data[example.word.toUpperCase()] ?? [];
 				expect(variants.length, example.word).toBeGreaterThan(0);
-				expect(example.phonemic.trim().length, example.word).toBeGreaterThan(0);
+				if ("phonemic" in example) {
+					expect(example.phonemic.trim().length, example.word).toBeGreaterThan(0);
+				}
 				expect(
 					variants.some((variant) =>
 						variant.split(" ").some((token) => token.replace(/[012]$/, "") === id),
@@ -230,6 +233,102 @@ describe("teaching examples", () => {
 					`${id}: ${example.word} does not contain the sound it illustrates`,
 				).toBe(true);
 			}
+		}
+	});
+});
+
+describe("allophone examples", () => {
+	const vowelIds = new Set<string>(getLanguagePhonemeInventory("en-us").vowels);
+	const recorded = new Set(EnglishWordAudio.words);
+	const voiceOnConsonants = new Set(["B", "D", "G", "V", "DH", "Z", "ZH", "J"]);
+	const voiceOffConsonants = new Set(["P", "T", "K", "F", "TH", "S", "SH", "CH"]);
+
+	type Sound = { id: string; stress: number | undefined };
+	const soundsOf = (word: string): Sound[] => {
+		const [first] = dictionary.data[word.toUpperCase()] ?? [];
+		if (!first) throw new Error(`${word} is not in the dictionary`);
+		return parsePhonemePronunciation(first).map((token) => {
+			const stress = /[012]$/.exec(token)?.[0];
+			return {
+				id: stress ? token.slice(0, -1) : token,
+				stress: stress ? Number(stress) : undefined,
+			};
+		});
+	};
+	const isVowel = (sound?: Sound) => sound !== undefined && vowelIds.has(sound.id);
+	const isWeakVowel = (sound?: Sound) => isVowel(sound) && sound?.stress === 0;
+	const endsInWeakN = (sounds: Sound[], at: number) =>
+		sounds[at]?.id === "AX" &&
+		sounds[at]?.stress === 0 &&
+		sounds[at + 1]?.id === "N" &&
+		at + 2 === sounds.length;
+	const afterVowelOrR = (sounds: Sound[], at: number) =>
+		isVowel(sounds[at - 1]) || (sounds[at - 1]?.id === "R" && isVowel(sounds[at - 2]));
+
+	const fitsContext: Record<
+		PhonemeAllophoneContextKey,
+		(sounds: Sound[], at: number, word: string) => boolean
+	> = {
+		aspirated: (sounds, at) =>
+			isVowel(sounds[at + 1]) &&
+			(at === 0 || (sounds[at + 1]?.stress ?? 0) > 0) &&
+			sounds[at - 1]?.id !== "S",
+		"unaspirated-after-s": (sounds, at, word) =>
+			at === 1 && sounds[0]?.id === "S" && word.startsWith("s") && isVowel(sounds[2]),
+		flap: (sounds, at) =>
+			afterVowelOrR(sounds, at) && isWeakVowel(sounds[at + 1]) && !endsInWeakN(sounds, at + 1),
+		"glottal-stop": (sounds, at) =>
+			afterVowelOrR(sounds, at) &&
+			(endsInWeakN(sounds, at + 1) ||
+				(sounds[at + 1] !== undefined &&
+					!isVowel(sounds[at + 1]) &&
+					!["R", "W", "Y"].includes(sounds[at + 1]?.id ?? ""))),
+		"syllabic-n": (sounds, at) =>
+			at === sounds.length - 1 &&
+			endsInWeakN(sounds, at - 1) &&
+			["T", "D", "S", "Z"].includes(sounds[at - 2]?.id ?? ""),
+		"dark-l": (sounds, at) =>
+			isVowel(sounds[at - 1]) && sounds[at - 1]?.id !== "AX" && !isVowel(sounds[at + 1]),
+		"syllabic-l": (sounds, at, word) =>
+			at === sounds.length - 1 &&
+			isWeakVowel(sounds[at - 1]) &&
+			sounds[at - 1]?.id === "AX" &&
+			!isVowel(sounds[at - 2]) &&
+			word.endsWith("le"),
+		"longer-before-voice-on": (sounds, at) =>
+			sounds.filter(isVowel).length === 1 && at === sounds.length - 2,
+		"raised-before-m-n": (sounds, at, word) =>
+			(sounds[at]?.stress ?? 0) > 0 &&
+			["M", "N"].includes(sounds[at + 1]?.id ?? "") &&
+			/a[mn]/.test(word),
+		"weak-r-vowel": (sounds, at) => sounds[at]?.stress === 0,
+	};
+
+	const examples = Object.entries(EnglishPhonemeAllophones).flatMap(([id, allophones]) =>
+		(allophones ?? []).flatMap(({ contextKey, examples }) =>
+			examples.map(({ word }, index) => ({ id, contextKey, word, index, count: examples.length })),
+		),
+	);
+
+	it.each(examples)("$id $contextKey: $word fits its context", ({ id, contextKey, word }) => {
+		const sounds = soundsOf(word);
+		const at = sounds.map((sound) => sound.id).lastIndexOf(id);
+		expect(at, `${word} has no ${id}`).toBeGreaterThanOrEqual(0);
+		expect(fitsContext[contextKey](sounds, at, word)).toBe(true);
+	});
+
+	it.each(examples)("$id $contextKey: $word has a recording", ({ word }) => {
+		expect(recorded.has(word)).toBe(true);
+	});
+
+	it("pairs each longer vowel with the same vowel before a consonant with the voice off", () => {
+		const pairs = examples.filter(({ contextKey }) => contextKey === "longer-before-voice-on");
+		expect(pairs.length).toBeGreaterThan(0);
+		for (const { id, word, index, count } of pairs) {
+			expect(count, id).toBe(2);
+			const last = soundsOf(word).at(-1)?.id ?? "";
+			const expected = index === 0 ? voiceOnConsonants : voiceOffConsonants;
+			expect(expected.has(last), `${id}: ${word} ends in ${last}`).toBe(true);
 		}
 	});
 });

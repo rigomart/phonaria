@@ -323,6 +323,24 @@ describe("judgeWord on allowed en-us variants", () => {
 		).toEqual({ type: "match" });
 	});
 
+	it("matches the flapped /t/ of party, after r, heard as /d/", () => {
+		expect(
+			verdictAt(3, [
+				scored("P", 1),
+				scored("A", 1),
+				scored("R", 1),
+				heardAs("T", "D"),
+				scored("I", 1),
+			]),
+		).toEqual({ type: "match" });
+	});
+
+	it("matches the unaspirated /t/ of stop heard as /d/", () => {
+		expect(
+			verdictAt(1, [scored("S", 1), heardAs("T", "D"), scored("A", 1), scored("P", 1)]),
+		).toEqual({ type: "match" });
+	});
+
 	it("matches the unaspirated /k/ of skate heard as /ɡ/", () => {
 		expect(
 			verdictAt(1, [scored("S", 1), heardAs("K", "G"), scored("EI", 1), scored("T", 1)]),
@@ -395,45 +413,37 @@ describe("judgeWord on allowed en-us variants", () => {
 
 	it("handles every en-us allophone: by a variant rule, or as the phoneme itself", () => {
 		const reportedAs: Record<string, readonly PhonemeSymbolId[]> = {
-			"T vowel-to-vowel-flap": ["RX", "D"],
-			"D vowel-to-vowel-flap": ["RX", "T"],
-			"P after-s-onset-unaspirated": ["B"],
-			"K after-s-onset-unaspirated": ["G"],
-			// The glottal stop has no phoneme to be heard as, but button's /t/ is between vowels too.
-			"T t-before-syllabic-n-glottal": ["RX", "D"],
-		};
-		const examples: Record<string, readonly PhonemeSymbolId[]> = {
-			pin: ["P", "IX", "N"],
-			spin: ["S", "P", "IX", "N"],
-			top: ["T", "A", "P"],
-			time: ["T", "AI", "M"],
-			water: ["W", "O", "T", "ER"],
-			button: ["B", "AH", "T", "AX", "N"],
-			cat: ["K", "AE", "T"],
-			skate: ["S", "K", "EI", "T"],
-			ladder: ["L", "AE", "D", "ER"],
-			ball: ["B", "O", "L"],
-			seed: ["S", "I", "D"],
-			seat: ["S", "I", "T"],
-			bad: ["B", "AE", "D"],
-			bat: ["B", "AE", "T"],
-			bird: ["B", "ER", "D"],
+			"P spin": ["B"],
+			"P speak": ["B"],
+			"T stop": ["D"],
+			"T stay": ["D"],
+			"K school": ["G"],
+			"K sky": ["G"],
+			"T water": ["RX", "D"],
+			"T city": ["RX", "D"],
+			"T party": ["RX", "D"],
+			"D ladder": ["RX", "T"],
+			"D body": ["RX", "T"],
+			"D order": ["RX", "T"],
+			// Without stress, the /t/ of attack and button looks like a flap's: between vowels.
+			"T attack": ["RX", "D"],
+			"T button": ["RX", "D"],
 		};
 		for (const [phonemeId, allophones] of Object.entries(EnglishPhonemeAllophones)) {
-			for (const {
-				contextKey,
-				examples: [{ word }],
-			} of allophones ?? []) {
-				const pronunciation = examples[word];
-				expect(pronunciation, word).toBeDefined();
-				const position = pronunciation.indexOf(phonemeId as PhonemeSymbolId);
-				const variants = [...allowedVariants("en-us", pronunciation, position)];
-				expect(variants, `${phonemeId} ${contextKey} in ${word}`).toEqual(
-					reportedAs[`${phonemeId} ${contextKey}`] ?? [],
-				);
+			for (const { examples } of allophones ?? []) {
+				for (const { word } of examples) {
+					const [first] = EnglishCuratedTop10k.words[word] ?? [];
+					expect(first, word).toBeDefined();
+					const pronunciation = toBasePhonemeIds(first ?? "");
+					const position = pronunciation.lastIndexOf(phonemeId as PhonemeSymbolId);
+					const variants = [...allowedVariants("en-us", pronunciation, position)];
+					expect(variants, `${phonemeId} in ${word}`).toEqual(
+						reportedAs[`${phonemeId} ${word}`] ?? [],
+					);
+				}
 			}
 		}
-		// /p/ and /k/ after /s/ only start a word: inside one, voicing is a contrast.
+		// /p/, /t/ and /k/ after /s/ only start a word: inside one, voicing is a contrast.
 		const discussed: PhonemeSymbolId[] = ["D", "IX", "S", "K", "AH", "S", "T"];
 		const disperse: PhonemeSymbolId[] = ["D", "IX", "S", "P", "ER", "S"];
 		expect([...allowedVariants("en-us", discussed, 3)], "K in discussed").toEqual([]);

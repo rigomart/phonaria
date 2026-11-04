@@ -1,4 +1,8 @@
-import { type EnglishPhonemeSymbolId, getLanguagePhonemeIds } from "@phonaria/phonetics-data";
+import {
+	type EnglishPhonemeSymbolId,
+	getLanguagePhonemeIds,
+	isVowelPhoneme,
+} from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import { getPhonemeComparisons } from "./phoneme-comparisons";
 import {
@@ -164,24 +168,35 @@ describe("sound variants", () => {
 		expect(getSoundVariants("T")).toEqual([
 			{
 				ipa: "tʰ",
-				label: "With a puff of air, at the start of a stressed syllable",
-				words: ["top", "time"],
+				label: "With a puff of air, at the start of a word or of the part said loudest",
+				words: ["top", "attack"],
 			},
-			{ ipa: "ɾ", label: "A quick tap of the tongue, between vowels", words: ["water"] },
-			{ ipa: "ʔ", label: "A catch in the throat, before an n sound", words: ["button"] },
+			{ ipa: "t", label: "Without the puff of air, after s", words: ["stop", "stay"] },
+			{
+				ipa: "ɾ",
+				label: "A quick tap of the tongue, after a vowel or r and before a vowel said softly",
+				words: ["water", "city", "party"],
+			},
+			{
+				ipa: "ʔ",
+				label:
+					"Often cut off with a catch in the throat, before a consonant or at the end of a sentence",
+				words: ["button", "football"],
+			},
 		]);
 	});
 
-	it("has variants for the eight sounds with variant data only", () => {
-		expect(sounds.filter((id) => getSoundVariants(id).length > 0).sort()).toEqual([
-			"AE",
-			"D",
-			"ER",
-			"I",
-			"K",
-			"L",
-			"P",
-			"T",
-		]);
+	it("gives every vowel but the schwa a variant, and the consonants that change most", () => {
+		expect(sounds.filter((id) => getSoundVariants(id).length > 0).sort()).toEqual(
+			[
+				...sounds.filter((id) => id !== "AX" && isVowelPhoneme(id)),
+				"D",
+				"K",
+				"L",
+				"N",
+				"P",
+				"T",
+			].sort(),
+		);
 	});
 });
