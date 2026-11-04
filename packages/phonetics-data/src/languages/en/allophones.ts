@@ -1,124 +1,170 @@
 import { deepFreeze } from "../../shared/readonly";
 import type { EnglishPhonemeSymbolId } from "../inventories";
-import type { PhonemeAllophone, PhonemeAllophoneContextKey } from "../types";
+import type { AllophoneContextLabel, PhonemeAllophone, PhonemeAllophoneContextKey } from "../types";
+
+const longerBeforeVoiceOn = (ipaVariant: string, longer: string, shorter: string) =>
+	({
+		ipaVariant,
+		contextKey: "longer-before-voice-on",
+		examples: [{ word: longer }, { word: shorter }],
+	}) as const;
 
 const phonemeAllophonesData = {
-	// Voiceless plosives: aspiration vs s-clusters; plus key /t/ variants
 	P: [
 		{
 			ipaVariant: "pʰ",
-			contextKey: "stressed-onset-aspirated",
-			examples: [{ word: "pin", phonemic: "pɪn" }],
+			contextKey: "aspirated",
+			examples: [{ word: "pin" }, { word: "support" }],
 		},
 		{
 			ipaVariant: "p",
-			contextKey: "after-s-onset-unaspirated",
-			examples: [{ word: "spin", phonemic: "spɪn" }],
+			contextKey: "unaspirated-after-s",
+			examples: [{ word: "spin" }, { word: "speak" }],
 		},
 	],
 	T: [
 		{
 			ipaVariant: "tʰ",
-			contextKey: "stressed-onset-aspirated",
-			examples: [
-				{ word: "top", phonemic: "tɑp" },
-				{ word: "time", phonemic: "taɪm" },
-			],
+			contextKey: "aspirated",
+			examples: [{ word: "top" }, { word: "attack" }],
+		},
+		{
+			ipaVariant: "t",
+			contextKey: "unaspirated-after-s",
+			examples: [{ word: "stop" }, { word: "stay" }],
 		},
 		{
 			ipaVariant: "ɾ",
-			contextKey: "vowel-to-vowel-flap",
-			examples: [{ word: "water", phonemic: "ˈwɔtɝ" }],
+			contextKey: "flap",
+			examples: [{ word: "water" }, { word: "city" }, { word: "party" }],
 		},
 		{
 			ipaVariant: "ʔ",
-			contextKey: "t-before-syllabic-n-glottal",
-			examples: [{ word: "button", phonemic: "ˈbʌtən" }],
+			contextKey: "glottal-stop",
+			examples: [{ word: "button" }, { word: "football" }],
 		},
 	],
 	K: [
 		{
 			ipaVariant: "kʰ",
-			contextKey: "stressed-onset-aspirated",
-			examples: [{ word: "cat", phonemic: "kæt" }],
+			contextKey: "aspirated",
+			examples: [{ word: "cat" }, { word: "become" }],
 		},
 		{
 			ipaVariant: "k",
-			contextKey: "after-s-onset-unaspirated",
-			examples: [{ word: "skate", phonemic: "skeɪt" }],
+			contextKey: "unaspirated-after-s",
+			examples: [{ word: "school" }, { word: "sky" }],
 		},
 	],
 	D: [
 		{
 			ipaVariant: "ɾ",
-			contextKey: "vowel-to-vowel-flap",
-			examples: [{ word: "ladder", phonemic: "ˈlædɝ" }],
+			contextKey: "flap",
+			examples: [{ word: "ladder" }, { word: "body" }, { word: "order" }],
 		},
 	],
-
-	// Common assimilations & syllabic consonants
+	N: [
+		{
+			ipaVariant: "n̩",
+			contextKey: "syllabic-n",
+			examples: [{ word: "button" }, { word: "garden" }, { word: "person" }],
+		},
+	],
 	L: [
 		{
 			ipaVariant: "ɫ",
-			contextKey: "coda-dark-l",
-			examples: [{ word: "ball", phonemic: "bɔl" }],
+			contextKey: "dark-l",
+			examples: [{ word: "feel" }, { word: "ball" }, { word: "milk" }],
+		},
+		{
+			ipaVariant: "l̩",
+			contextKey: "syllabic-l",
+			examples: [{ word: "people" }, { word: "little" }, { word: "able" }],
 		},
 	],
 
-	// Vowel length cue before voiced vs voiceless codas
-	I: [
-		{
-			ipaVariant: "iː",
-			contextKey: "pre-voiced-coda-lengthened",
-			examples: [{ word: "seed", phonemic: "sid" }],
-		},
-		{
-			ipaVariant: "i",
-			contextKey: "pre-voiceless-coda-shorter",
-			examples: [{ word: "seat", phonemic: "sit" }],
-		},
-	],
+	I: [longerBeforeVoiceOn("iː", "seed", "seat")],
+	IX: [longerBeforeVoiceOn("ɪː", "kid", "kit")],
+	U: [longerBeforeVoiceOn("uː", "lose", "loose")],
+	UX: [longerBeforeVoiceOn("ʊː", "could", "cook")],
+	E: [longerBeforeVoiceOn("ɛː", "bed", "bet")],
+	AH: [longerBeforeVoiceOn("ʌː", "bug", "buck")],
+	O: [longerBeforeVoiceOn("ɔː", "laws", "loss")],
 	AE: [
 		{
-			ipaVariant: "æː",
-			contextKey: "pre-voiced-coda-lengthened",
-			examples: [{ word: "bad", phonemic: "bæd" }],
+			ipaVariant: "eə",
+			contextKey: "raised-before-m-n",
+			examples: [{ word: "man" }, { word: "hand" }, { word: "family" }],
 		},
-		{
-			ipaVariant: "æ",
-			contextKey: "pre-voiceless-coda-shorter",
-			examples: [{ word: "bat", phonemic: "bæt" }],
-		},
+		longerBeforeVoiceOn("æː", "bad", "bat"),
 	],
-
-	// R-colored vowel stress variants
+	A: [longerBeforeVoiceOn("ɑː", "god", "got")],
 	ER: [
 		{
-			ipaVariant: "ɝ",
-			contextKey: "stressed-r-colored",
-			examples: [{ word: "bird", phonemic: "bɝd" }],
-		},
-		{
 			ipaVariant: "ɚ",
-			contextKey: "unstressed-r-colored",
-			examples: [{ word: "water", phonemic: "ˈwɔtɚ" }],
+			contextKey: "weak-r-vowel",
+			examples: [{ word: "after" }, { word: "never" }, { word: "number" }],
 		},
+		longerBeforeVoiceOn("ɝː", "heard", "hurt"),
 	],
+	EI: [longerBeforeVoiceOn("eɪː", "save", "safe")],
+	OU: [longerBeforeVoiceOn("oʊː", "code", "coat")],
+	AI: [longerBeforeVoiceOn("aɪː", "prize", "price")],
+	AU: [longerBeforeVoiceOn("aʊː", "loud", "out")],
+	OI: [longerBeforeVoiceOn("ɔɪː", "noise", "voice")],
 } as const satisfies Partial<Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>>;
 
 export const EnglishPhonemeAllophones: Readonly<
 	Partial<Record<EnglishPhonemeSymbolId, ReadonlyArray<PhonemeAllophone>>>
 > = deepFreeze(phonemeAllophonesData);
 
-/** Where each sound variant shows up, in plain words, as its label on a sound's page. */
+/**
+ * What each sound variant sounds like and when it happens, as its label on a
+ * sound's page. Written for learners whose first language isn't English: literal
+ * words, no figures of speech.
+ */
 export const EnglishAllophoneContextLabels = deepFreeze({
-	"stressed-onset-aspirated": "With a puff of air, at the start of a stressed syllable",
-	"after-s-onset-unaspirated": "Without the puff of air, after s",
-	"vowel-to-vowel-flap": "A quick tap of the tongue, between vowels",
-	"t-before-syllabic-n-glottal": "A catch in the throat, before an n sound",
-	"coda-dark-l": "With the back of the tongue raised, at the end of a syllable",
-	"pre-voiced-coda-lengthened": "Longer before a voiced sound like /d/",
-	"pre-voiceless-coda-shorter": "Shorter before a voiceless sound like /t/",
-	"stressed-r-colored": "In a stressed syllable",
-	"unstressed-r-colored": "In an unstressed syllable",
-} as const satisfies Record<PhonemeAllophoneContextKey, string>);
+	aspirated: {
+		sound: "A short burst of air comes out after the sound. You can feel it on your hand.",
+		when: "at the start of a word, or at the start of a stressed syllable.",
+	},
+	"unaspirated-after-s": {
+		sound: "No burst of air, so it sounds closer to b, d or g.",
+		when: "right after s at the start of a word.",
+	},
+	flap: {
+		sound: "Sounds like a very quick d: the tongue taps the roof of the mouth once.",
+		when: "after a vowel or r, if the next vowel is not stressed.",
+	},
+	"glottal-stop": {
+		sound: "No t sound. The air stops in the throat for a moment instead.",
+		when: "before a consonant, as in button and football, and often at the end of a sentence.",
+	},
+	"syllabic-n": {
+		sound:
+			'No vowel before the n. The n alone makes the last syllable, so button sounds like "butn".',
+		when: "after t, d, s or z at the end of a word.",
+	},
+	"dark-l": {
+		sound:
+			"A deeper l. The tip of the tongue touches behind the top teeth, and the back of the tongue rises at the same time.",
+		when: "after a vowel, at the end of a word or before a consonant.",
+	},
+	"syllabic-l": {
+		sound: "No vowel before the l. The l alone makes the last syllable.",
+		when: "at the end of a word after a consonant, often spelled -le.",
+	},
+	"longer-before-voice-on": {
+		sound:
+			"The vowel is longer in the first word than in the second. Listeners use this to tell the two words apart.",
+		when: "longer before a consonant with the voice on (d, z, v), shorter before one with the voice off (t, s, f).",
+	},
+	"raised-before-m-n": {
+		sound: "Starts closer to the e in bed, then moves toward ə, the a in sofa.",
+		when: "right before m or n.",
+	},
+	"weak-r-vowel": {
+		sound: "Shorter and quieter than the vowel in her.",
+		when: "in an unstressed syllable, often -er at the end of a word.",
+	},
+} as const satisfies Record<PhonemeAllophoneContextKey, AllophoneContextLabel>);

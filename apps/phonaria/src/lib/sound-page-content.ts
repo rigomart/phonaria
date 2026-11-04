@@ -280,17 +280,19 @@ export function getCommonWords(phonemeId: EnglishPhonemeSymbolId): CommonWordsFo
 
 export interface SoundVariant {
 	ipa: string;
-	/** Where it shows up, e.g. "A quick tap of the tongue, between vowels". */
-	label: string;
+	/** What the listener hears. */
+	sound: string;
+	/** When it happens. */
+	when: string;
 	words: readonly string[];
 }
 
-/** How the sound changes with its neighbours, for the few sounds with variant data. */
+/** How the sound changes with its neighbours, for the sounds with variant data. */
 export function getSoundVariants(phonemeId: EnglishPhonemeSymbolId): SoundVariant[] {
 	return (EnglishPhonemeAllophones[phonemeId] ?? []).map(
 		({ ipaVariant, contextKey, examples }) => ({
 			ipa: ipaVariant,
-			label: EnglishAllophoneContextLabels[contextKey],
+			...EnglishAllophoneContextLabels[contextKey],
 			words: examples.map(({ word }) => word),
 		}),
 	);

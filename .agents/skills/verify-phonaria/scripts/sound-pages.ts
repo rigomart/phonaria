@@ -164,7 +164,9 @@ const tVariants = observation(
 			variants: Array.from(variants?.querySelectorAll(":scope li:has(> span)") ?? []).map(
 				(row) => ({
 					ipa: row.querySelector(":scope > span")?.textContent?.trim(),
-					label: row.querySelector("p")?.textContent?.trim(),
+					text: Array.from(row.querySelectorAll(":scope > div > p")).map((p) =>
+						p.textContent?.trim(),
+					),
 					words: Array.from(row.querySelectorAll("li")).map((li) => li.textContent?.trim()),
 				}),
 			),
@@ -172,15 +174,39 @@ const tVariants = observation(
 	},
 	{
 		path: "/sounds/t-top",
-		// The flap in "water" and the glottal stop in "button" are #418's examples.
 		variants: [
 			{
 				ipa: "tʰ",
-				label: "With a puff of air, at the start of a stressed syllable",
-				words: ["top", "time"],
+				text: [
+					"A short burst of air comes out after the sound. You can feel it on your hand.",
+					"When: at the start of a word, or at the start of a stressed syllable.",
+				],
+				words: ["top", "attack"],
 			},
-			{ ipa: "ɾ", label: "A quick tap of the tongue, between vowels", words: ["water"] },
-			{ ipa: "ʔ", label: "A catch in the throat, before an n sound", words: ["button"] },
+			{
+				ipa: "t",
+				text: [
+					"No burst of air, so it sounds closer to b, d or g.",
+					"When: right after s at the start of a word.",
+				],
+				words: ["stop", "stay"],
+			},
+			{
+				ipa: "ɾ",
+				text: [
+					"Sounds like a very quick d: the tongue taps the roof of the mouth once.",
+					"When: after a vowel or r, if the next vowel is not stressed.",
+				],
+				words: ["water", "city", "party"],
+			},
+			{
+				ipa: "ʔ",
+				text: [
+					"No t sound. The air stops in the throat for a moment instead.",
+					"When: before a consonant, as in button and football, and often at the end of a sentence.",
+				],
+				words: ["button", "football"],
+			},
 		],
 	},
 );

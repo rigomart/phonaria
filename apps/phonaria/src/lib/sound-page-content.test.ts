@@ -1,4 +1,8 @@
-import { type EnglishPhonemeSymbolId, getLanguagePhonemeIds } from "@phonaria/phonetics-data";
+import {
+	type EnglishPhonemeSymbolId,
+	getLanguagePhonemeIds,
+	isVowelPhoneme,
+} from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import { getPhonemeComparisons } from "./phoneme-comparisons";
 import {
@@ -160,28 +164,46 @@ describe("common words", () => {
 });
 
 describe("sound variants", () => {
-	it("labels each variant of /t/ in plain words, with its example words", () => {
+	it("says what each variant of /t/ sounds like and when, with its example words", () => {
 		expect(getSoundVariants("T")).toEqual([
 			{
 				ipa: "tʰ",
-				label: "With a puff of air, at the start of a stressed syllable",
-				words: ["top", "time"],
+				sound: "A short burst of air comes out after the sound. You can feel it on your hand.",
+				when: "at the start of a word, or at the start of a stressed syllable.",
+				words: ["top", "attack"],
 			},
-			{ ipa: "ɾ", label: "A quick tap of the tongue, between vowels", words: ["water"] },
-			{ ipa: "ʔ", label: "A catch in the throat, before an n sound", words: ["button"] },
+			{
+				ipa: "t",
+				sound: "No burst of air, so it sounds closer to b, d or g.",
+				when: "right after s at the start of a word.",
+				words: ["stop", "stay"],
+			},
+			{
+				ipa: "ɾ",
+				sound: "Sounds like a very quick d: the tongue taps the roof of the mouth once.",
+				when: "after a vowel or r, if the next vowel is not stressed.",
+				words: ["water", "city", "party"],
+			},
+			{
+				ipa: "ʔ",
+				sound: "No t sound. The air stops in the throat for a moment instead.",
+				when: "before a consonant, as in button and football, and often at the end of a sentence.",
+				words: ["button", "football"],
+			},
 		]);
 	});
 
-	it("has variants for the eight sounds with variant data only", () => {
-		expect(sounds.filter((id) => getSoundVariants(id).length > 0).sort()).toEqual([
-			"AE",
-			"D",
-			"ER",
-			"I",
-			"K",
-			"L",
-			"P",
-			"T",
-		]);
+	it("gives every vowel but the schwa a variant, and the consonants that change most", () => {
+		expect(sounds.filter((id) => getSoundVariants(id).length > 0).sort()).toEqual(
+			[
+				...sounds.filter((id) => id !== "AX" && isVowelPhoneme(id)),
+				"D",
+				"K",
+				"L",
+				"N",
+				"P",
+				"T",
+			].sort(),
+		);
 	});
 });
