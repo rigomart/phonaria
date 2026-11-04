@@ -4,7 +4,6 @@ import { SpelledWord } from "@/components/spelled-word";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { cn } from "@/lib/utils";
 import { DetailsLink } from "./details-section";
-import { SoundFrequency } from "./frequency";
 import { PlayableWord } from "./playable-word";
 import type { SoundSummary } from "./sound";
 import { SoundTile } from "./sound-tile";
@@ -39,9 +38,10 @@ export function SoundHeading({
 
 /**
  * What the sound is and what it sounds like: symbol, name, type with an
- * example word, a link to the sound's own page, and how common it is. The
- * symbol plays the sound, the example word plays the word. Both levels
- * open with it, so the sound keeps its shape when the details expand.
+ * example word and a link to the sound's own page. The symbol plays the
+ * sound, the example word plays the word. Both levels open with it, so the
+ * sound keeps its shape when the details expand. Hosts show how common the
+ * sound is below it.
  *
  * Where it shows the example word, the synthetic-voice note closes it, unless
  * `voiceNote` is off because the host closes its sections with one note for all.
@@ -82,10 +82,6 @@ export function SoundHeader({
 			) : null}
 		</span>
 	);
-	const frequency = sound.frequency ? (
-		<SoundFrequency frequency={sound.frequency} showLink={sound.showFrequencyLink} />
-	) : null;
-
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex items-start gap-2">
@@ -120,7 +116,6 @@ export function SoundHeader({
 				</div>
 				{action}
 			</div>
-			{frequency}
 			{voiceNote && showExample && sound.example ? (
 				<SyntheticVoiceNote targetAccent={sound.targetAccent} words={[sound.example.word]} />
 			) : null}

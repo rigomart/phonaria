@@ -3,6 +3,7 @@ import { Drawer, DrawerClose, DrawerContent } from "@phonaria/ui/components/draw
 import { XIcon } from "lucide-react";
 import { useId } from "react";
 import { type DetailsPayload, focusTrigger } from "./context";
+import { SoundFrequency } from "./frequency";
 import { DetailSections, getDetailSections } from "./sections";
 import { describeSound } from "./sound";
 import { SoundHeader } from "./sound-header";
@@ -37,6 +38,7 @@ export function DetailsPanel({
 
 function PanelContent({ payload }: { payload: DetailsPayload }) {
 	const titleId = useId();
+	const sound = describeSound(payload.options);
 
 	return (
 		<DrawerContent
@@ -54,7 +56,7 @@ function PanelContent({ payload }: { payload: DetailsPayload }) {
 			>
 				<div className="sticky top-0 z-10 bg-popover p-5 pb-4">
 					<SoundHeader
-						sound={describeSound(payload.options)}
+						sound={sound}
 						titleId={titleId}
 						showExample={false}
 						action={
@@ -67,6 +69,11 @@ function PanelContent({ payload }: { payload: DetailsPayload }) {
 						}
 					/>
 				</div>
+				{sound.frequency ? (
+					<div className="px-5 pb-4">
+						<SoundFrequency frequency={sound.frequency} showLink={sound.showFrequencyLink} />
+					</div>
+				) : null}
 				<div className="px-5 pb-6">
 					<DetailSections
 						targetAccent={payload.options.targetAccent}

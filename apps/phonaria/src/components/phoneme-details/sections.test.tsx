@@ -112,3 +112,17 @@ describe("the link to the sound's own page", () => {
 		expect(header({ targetAccent: "es-419", phonemeId: "S" })).not.toContain("Open full page");
 	});
 });
+
+describe("the header the panel and drawer pin", () => {
+	it("leaves how common the sound is to scroll with the sections", () => {
+		const html = renderToString(
+			<AudioManagerProvider>
+				<SoundHeader
+					sound={describeSound({ targetAccent: "en-us", phonemeId: "TH" })}
+					titleId="title"
+				/>
+			</AudioManagerProvider>,
+		);
+		expect(html).not.toContain("most common");
+	});
+});
