@@ -372,7 +372,12 @@ export function buildLanguageHistoryHead(): StartHead {
 }
 
 /** Served from `public/`. Social cards need an absolute URL, built from SITE_URL. */
-const SITE_IMAGE: SocialImage = { path: "/opengraph-image.jpg", width: 1200, height: 630 };
+const SITE_IMAGE: SocialImage = {
+	path: "/opengraph-image.jpg",
+	width: 1200,
+	height: 630,
+	alt: "English to IPA, sound by sound: the word enough as /ɪˈnʌf/, each sound with the letters that spell it",
+};
 const APPLE_TOUCH_ICON_PATH = "/apple-touch-icon.png";
 
 type SocialTagsInput = {

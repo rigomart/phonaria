@@ -292,7 +292,18 @@ describe("buildCreditsHead", () => {
 			property: "og:url",
 			content: "https://phonaria-staging.example.test/credits",
 		});
-		expect(meta).not.toContainEqual(expect.objectContaining({ property: "og:image:alt" }));
+		expect(meta).toContainEqual({
+			property: "og:image",
+			content: "https://phonaria-staging.example.test/opengraph-image.jpg",
+		});
+		expect(meta).toContainEqual({
+			property: "og:image:alt",
+			content: expect.stringContaining("English to IPA"),
+		});
+		expect(meta).toContainEqual({
+			name: "twitter:image:alt",
+			content: expect.stringContaining("English to IPA"),
+		});
 	});
 });
 
