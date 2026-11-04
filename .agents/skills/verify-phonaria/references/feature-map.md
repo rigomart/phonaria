@@ -357,7 +357,7 @@ bun run verify browser "$VERIFY_RUN" set viewport 1280 900
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/consonants
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify browser "$VERIFY_RUN" find role button click --name "Voiceless alveolar fricative (s)" --exact
-bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /s/"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for s"
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 bun run verify observe "$VERIFY_RUN" panel-top
 bun run verify browser "$VERIFY_RUN" eval "$SCROLL"
@@ -371,7 +371,7 @@ bun run verify browser "$VERIFY_RUN" find role button click --name "Voiceless al
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 bun run verify browser "$VERIFY_RUN" wait 1200   # let the sheet finish sliding up
 bun run verify observe "$VERIFY_RUN" drawer-compact
-bun run verify browser "$VERIFY_RUN" find role button click --name "More about S /s/" --exact
+bun run verify browser "$VERIFY_RUN" find role button click --name "More about S s" --exact
 bun run verify browser "$VERIFY_RUN" wait 1200
 bun run verify browser "$VERIFY_RUN" eval "$SCROLL"
 bun run verify observe "$VERIFY_RUN" drawer-scrolled

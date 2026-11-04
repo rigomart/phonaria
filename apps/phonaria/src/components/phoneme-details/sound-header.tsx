@@ -94,7 +94,7 @@ export function SoundHeader({
 							<button
 								type="button"
 								onClick={onExpand}
-								aria-label={`More about ${sound.label ? sound.name : `/${sound.ipa}/: ${sound.name}`}`}
+								aria-label={`More about ${sound.label ? sound.name : `${sound.ipa}: ${sound.name}`}`}
 								className="group/expand -mx-2 -my-1 flex cursor-pointer items-center gap-1 self-start rounded-lg px-2 py-1 text-left outline-none transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 							>
 								<span id={titleId} className={TITLE_CLASS}>
