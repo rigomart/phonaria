@@ -280,7 +280,10 @@ export function getCommonWords(phonemeId: EnglishPhonemeSymbolId): CommonWordsFo
 
 export interface SoundVariant {
 	ipa: string;
-	label: string;
+	/** What the listener hears. */
+	sound: string;
+	/** When it happens. */
+	when: string;
 	words: readonly string[];
 }
 
@@ -289,7 +292,7 @@ export function getSoundVariants(phonemeId: EnglishPhonemeSymbolId): SoundVarian
 	return (EnglishPhonemeAllophones[phonemeId] ?? []).map(
 		({ ipaVariant, contextKey, examples }) => ({
 			ipa: ipaVariant,
-			label: EnglishAllophoneContextLabels[contextKey],
+			...EnglishAllophoneContextLabels[contextKey],
 			words: examples.map(({ word }) => word),
 		}),
 	);

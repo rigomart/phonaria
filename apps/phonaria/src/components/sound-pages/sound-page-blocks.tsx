@@ -221,13 +221,14 @@ function SoundVariants({ variants }: { variants: readonly SoundVariant[] }) {
 	return (
 		<DetailsCard className="p-3">
 			<ul className="flex flex-col divide-y divide-border overflow-hidden rounded-xl bg-background-strong shadow-xs">
-				{variants.map(({ ipa, label, words }) => (
+				{variants.map(({ ipa, sound, when, words }) => (
 					<li key={ipa} className="flex items-stretch">
 						<span className="flex w-16 shrink-0 items-center justify-center border-r border-border font-display text-lg text-foreground">
 							{ipa}
 						</span>
 						<div className="flex min-w-0 flex-1 flex-col gap-0.5 py-2">
-							<p className="px-3 text-pretty text-sm text-foreground">{label}</p>
+							<p className="px-3 text-pretty text-sm text-foreground">{sound}</p>
+							<p className="px-3 text-pretty text-sm text-muted-foreground">When: {when}</p>
 							<ul className="flex flex-wrap">
 								{words.map((word) => (
 									<li key={word}>

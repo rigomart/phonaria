@@ -20,6 +20,12 @@ export type PhonemeAllophoneContextKey =
 	| "raised-before-m-n"
 	| "weak-r-vowel";
 
+/** A variant's label: what the listener hears, then when it happens. */
+export type AllophoneContextLabel = {
+	readonly sound: string;
+	readonly when: string;
+};
+
 export type PhonemeAllophone = {
 	readonly ipaVariant: string;
 	readonly contextKey: PhonemeAllophoneContextKey;

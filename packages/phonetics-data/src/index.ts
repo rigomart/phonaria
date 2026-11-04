@@ -117,6 +117,7 @@ export {
 	SpanishPhonemeInventory,
 } from "./languages/inventories";
 export type {
+	AllophoneContextLabel,
 	AllophoneExample,
 	LanguagePhonemeAllophoneRegistry,
 	LanguagePhonemeContrastRegistry,

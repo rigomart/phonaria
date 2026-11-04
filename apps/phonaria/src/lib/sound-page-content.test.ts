@@ -164,23 +164,30 @@ describe("common words", () => {
 });
 
 describe("sound variants", () => {
-	it("labels each variant of /t/ in plain words, with its example words", () => {
+	it("says what each variant of /t/ sounds like and when, with its example words", () => {
 		expect(getSoundVariants("T")).toEqual([
 			{
 				ipa: "tʰ",
-				label: "With a puff of air, at the start of a word or of the part said loudest",
+				sound: "A short burst of air comes out after the sound. You can feel it on your hand.",
+				when: "at the start of a word, or at the start of a stressed syllable.",
 				words: ["top", "attack"],
 			},
-			{ ipa: "t", label: "Without the puff of air, after s", words: ["stop", "stay"] },
+			{
+				ipa: "t",
+				sound: "No burst of air, so it sounds closer to b, d or g.",
+				when: "right after s at the start of a word.",
+				words: ["stop", "stay"],
+			},
 			{
 				ipa: "ɾ",
-				label: "A quick tap of the tongue, after a vowel or r and before a vowel said softly",
+				sound: "Sounds like a very quick d: the tongue taps the roof of the mouth once.",
+				when: "after a vowel or r, if the next vowel is not stressed.",
 				words: ["water", "city", "party"],
 			},
 			{
 				ipa: "ʔ",
-				label:
-					"Often cut off with a catch in the throat, before a consonant or at the end of a sentence",
+				sound: "No t sound. The air stops in the throat for a moment instead.",
+				when: "before a consonant, as in button and football, and often at the end of a sentence.",
 				words: ["button", "football"],
 			},
 		]);

@@ -76,8 +76,8 @@ describe("the sound page", () => {
 		const html = page("AE");
 		expect(headings(html)).toContain("How it changes");
 		expect(html).toContain(">Mary, marry and merry<");
-		expect(html).toMatch(/>eə<.*before m or n/);
-		expect(html).toMatch(/>æː<.*Held longer before a consonant with the voice on/);
+		expect(html).toMatch(/>eə<.*Starts closer to the e in bed.*When: <!-- -->right before m or n/);
+		expect(html).toMatch(/>æː<.*The vowel is longer in the first word than in the second/);
 		expect(headings(page("TH"))).not.toContain("How it changes");
 	});
 
