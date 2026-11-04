@@ -38,7 +38,7 @@ const index = observation(
 			{ title: "Vowels", count: 16, first: "/sounds/ee-seed", last: "/sounds/oy-boy" },
 		],
 		uniqueLinks: 40,
-		thLabel: "/θ/ as in thin",
+		thLabel: "θ as in thin",
 	},
 );
 
@@ -50,7 +50,7 @@ const soundPage = observation(
 				(candidate) => candidate.querySelector("h2")?.textContent?.trim() === title,
 			);
 		const spelling = section("Spelling");
-		const common = section("Common words with /θ/");
+		const common = section("Common words with θ");
 		return {
 			path: location.pathname,
 			title: document.title,
@@ -69,7 +69,7 @@ const soundPage = observation(
 			back: document.querySelector('main a[href="/sounds"]')?.textContent?.trim() ?? null,
 			howTo: (details?.textContent ?? "").includes("is made with the tongue"),
 			differences: Array.from(
-				details?.querySelectorAll('dl[aria-label="How /θ/ and /t/ differ"] > div') ?? [],
+				details?.querySelectorAll('dl[aria-label="How θ and t differ"] > div') ?? [],
 			).map((row) => Array.from(row.children).map((cell) => cell.textContent?.trim())),
 			near: Array.from(section("Sounds near it")?.querySelectorAll("h3") ?? []).map((h) => ({
 				label: h.textContent?.trim(),
@@ -89,12 +89,12 @@ const soundPage = observation(
 		path: "/sounds/th-thin",
 		title: "How to pronounce the voiceless TH sound /θ/ (as in 'thin') - Phonaria",
 		canonical: "http://localhost:3000/sounds/th-thin",
-		h1: ["Voiceless TH /θ/"],
+		h1: ["Voiceless TH θ"],
 		sections: [
 			"How it's made",
 			"Compare with",
 			"Spelling",
-			"Common words with /θ/",
+			"Common words with θ",
 			"Sounds near it",
 		],
 		rank: "38th most common of 40 sounds",
@@ -103,8 +103,8 @@ const soundPage = observation(
 		howTo: false,
 		// Term first for screen readers, each value named by its sound.
 		differences: [
-			["Place", "/θ/: dental", "/t/: alveolar"],
-			["Manner", "/θ/: fricative", "/t/: plosive"],
+			["Place", "θ: dental", "t: alveolar"],
+			["Manner", "θ: fricative", "t: plosive"],
 		],
 		near: [
 			{ label: "Voicing partner", links: ["/sounds/th-this"] },
@@ -175,12 +175,12 @@ const tVariants = observation(
 		// The flap in "water" and the glottal stop in "button" are #418's examples.
 		variants: [
 			{
-				ipa: "/tʰ/",
+				ipa: "tʰ",
 				label: "With a puff of air, at the start of a stressed syllable",
 				words: ["top", "time"],
 			},
-			{ ipa: "/ɾ/", label: "A quick tap of the tongue, between vowels", words: ["water"] },
-			{ ipa: "/ʔ/", label: "A catch in the throat, before an n sound", words: ["button"] },
+			{ ipa: "ɾ", label: "A quick tap of the tongue, between vowels", words: ["water"] },
+			{ ipa: "ʔ", label: "A catch in the throat, before an n sound", words: ["button"] },
 		],
 	},
 );

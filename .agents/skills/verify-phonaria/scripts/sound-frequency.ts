@@ -81,7 +81,7 @@ function readCard() {
 // The meter lights one bar per band step: /ð/ 3.1% is Common, 3 of 4 (issue-287 record);
 // /h/ 1.35% is Less common, 2 of 4 (phoneme-frequency.json).
 const pageCard = observation(readCard, {
-	openTrigger: "/ð/ as in this: 11th, 3.1%",
+	openTrigger: "ð as in this: 11th, 3.1%",
 	band: "Common",
 	rank: "11th most common",
 	of: "40",
@@ -92,7 +92,7 @@ const pageCard = observation(readCard, {
 });
 
 const resultCard = observation(readCard, {
-	openTrigger: "Details for /h/",
+	openTrigger: "Details for h",
 	band: "Less common",
 	rank: "29th most common",
 	of: "40",

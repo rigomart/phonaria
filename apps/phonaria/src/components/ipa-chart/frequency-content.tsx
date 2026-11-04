@@ -78,7 +78,7 @@ function RankingRow({
 				render={
 					<a
 						href={soundPagePath(sound.phonemeId)}
-						aria-label={`/${ipa}/ as in ${example.word}: ${formatOrdinal(sound.rank)}, ${share}`}
+						aria-label={`${ipa} as in ${example.word}: ${formatOrdinal(sound.rank)}, ${share}`}
 						className="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-details-open:bg-accent motion-reduce:transition-none"
 					/>
 				}

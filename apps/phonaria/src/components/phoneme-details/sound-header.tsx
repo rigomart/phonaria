@@ -30,7 +30,7 @@ export function SoundHeading({
 			tabIndex={-1}
 			className={cn(TITLE_CLASS, "outline-none", Heading === "h1" && "text-2xl sm:text-3xl")}
 		>
-			{sound.label ? null : <span className="sr-only">/{sound.ipa}/, </span>}
+			{sound.label ? null : <span className="sr-only">{sound.ipa}, </span>}
 			{sound.name}
 		</Heading>
 	);

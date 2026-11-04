@@ -62,7 +62,7 @@ const details = observation(
 			!!document.querySelector(selector)?.getClientRects().length;
 		return {
 			open: !!document
-				.querySelector('[aria-label="Details for /h/"]')
+				.querySelector('[aria-label="Details for h"]')
 				?.hasAttribute("data-details-open"),
 			label: document.body.innerText.includes("Voiceless glottal fricative"),
 			playControls: Array.from(document.querySelectorAll('button[aria-label^="Play"]'))
@@ -71,7 +71,7 @@ const details = observation(
 			diagram: visible('img[alt="Voiceless glottal fricative articulation"]'),
 		};
 	},
-	{ open: true, label: true, playControls: ["Play /h/"], diagram: true },
+	{ open: true, label: true, playControls: ["Play h"], diagram: true },
 );
 
 const cleared = observation(

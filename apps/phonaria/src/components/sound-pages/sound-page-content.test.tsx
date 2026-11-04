@@ -32,21 +32,21 @@ describe("the sound page", () => {
 	it("makes the sound its h1 and lists the sections in learning order", () => {
 		const html = page("TH");
 		expect(html.match(/<h1 /g)).toHaveLength(1);
-		expect(html).toMatch(/<h1 [^>]*>Voiceless TH \/θ\/<\/h1>/);
+		expect(html).toMatch(/<h1 [^>]*>Voiceless TH θ<\/h1>/);
 		expect(headings(html)).toEqual([
 			"How it's made",
 			"Compare with",
 			"Spelling",
-			"Common words with /θ/",
+			"Common words with θ",
 			"Sounds near it",
 		]);
 	});
 
 	it("sets each similar sound face to face, with only the features that differ", () => {
 		const html = page("TH");
-		expect(html).toMatch(/aria-label="How \/θ\/ and \/t\/ differ"/);
+		expect(html).toMatch(/aria-label="How θ and t differ"/);
 		expect(html).toMatch(
-			/<dt [^>]*>Place<\/dt><dd [^>]*>.*\/θ\/: .*dental<\/dd><dd [^>]*>.*\/t\/: .*alveolar<\/dd>/,
+			/<dt [^>]*>Place<\/dt><dd [^>]*>.*θ: .*dental<\/dd><dd [^>]*>.*t: .*alveolar<\/dd>/,
 		);
 		expect(html).toMatch(
 			/<dt [^>]*>Manner<\/dt><dd [^>]*>.*fricative<\/dd><dd [^>]*>.*plosive<\/dd>/,
@@ -63,7 +63,7 @@ describe("the sound page", () => {
 	it("says which other sounds the same letters spell, and links the sounds near it", () => {
 		const html = page("TH");
 		expect(html).toContain(">The same letters also spell<");
-		expect(html).toMatch(/aria-label="\/ð\/ voiced TH, as in this"/);
+		expect(html).toMatch(/aria-label="ð voiced TH, as in this"/);
 		expect(html).toMatch(
 			/rel="prev"[^>]*href="\/sounds\/v-van"|href="\/sounds\/v-van"[^>]*rel="prev"/,
 		);

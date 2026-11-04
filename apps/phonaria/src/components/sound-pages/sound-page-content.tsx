@@ -49,7 +49,7 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 	}
 	if (groups.length > 0) {
 		sections.push({
-			title: `Common words with /${getIpaForPhonemeId(phonemeId)}/`,
+			title: `Common words with ${getIpaForPhonemeId(phonemeId)}`,
 			content: <CommonWords groups={groups} />,
 		});
 	}

@@ -140,7 +140,7 @@ function SoundLink({ sound }: { sound: SoundRef }) {
 			href={sound.path}
 			className="inline-flex items-baseline gap-1.5 rounded-lg px-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 		>
-			<span className="font-display text-base text-foreground">/{sound.ipa}/</span>
+			<span className="font-display text-base text-foreground">{sound.ipa}</span>
 			{sound.word}
 		</Link>
 	);
@@ -223,7 +223,7 @@ function SoundVariants({ variants }: { variants: readonly SoundVariant[] }) {
 				{variants.map(({ ipa, label, words }) => (
 					<li key={ipa} className="flex items-stretch">
 						<span className="flex w-16 shrink-0 items-center justify-center border-r border-border font-display text-lg text-foreground">
-							/{ipa}/
+							{ipa}
 						</span>
 						<div className="flex min-w-0 flex-1 flex-col gap-0.5 py-2">
 							<p className="px-3 text-pretty text-sm text-foreground">{label}</p>
@@ -266,10 +266,10 @@ function FamilyGroup({ label, sounds }: { label: string; sounds: readonly SoundR
 					<li key={sound.id}>
 						<Link
 							href={sound.path}
-							aria-label={`/${sound.ipa}/ ${sound.name}, as in ${sound.word}`}
+							aria-label={`${sound.ipa} ${sound.name}, as in ${sound.word}`}
 							className="flex items-baseline gap-1.5 rounded-xl bg-background-strong px-3 py-1.5 text-sm text-muted-foreground shadow-xs transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 						>
-							<span className="font-display text-base text-foreground">/{sound.ipa}/</span>
+							<span className="font-display text-base text-foreground">{sound.ipa}</span>
 							{sound.word}
 						</Link>
 					</li>
@@ -311,7 +311,7 @@ function NeighbourLink({ sound, direction }: { sound: SoundRef; direction: "prev
 					{direction === "previous" ? "Previous sound" : "Next sound"}
 				</span>
 				<span className="truncate text-sm text-foreground">
-					<span className="font-display">/{sound.ipa}/</span> {sound.name}
+					<span className="font-display">{sound.ipa}</span> {sound.name}
 				</span>
 			</span>
 		</Link>

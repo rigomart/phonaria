@@ -63,10 +63,10 @@ function SoundLink({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
 	return (
 		<Link
 			href={soundPagePath(phonemeId)}
-			aria-label={`/${ipa}/ as in ${example.word}`}
+			aria-label={`${ipa} as in ${example.word}`}
 			className="flex flex-col gap-1 rounded-xl bg-card px-3 py-2.5 text-card-foreground ring-1 ring-border transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 		>
-			<span className="font-display text-2xl leading-none">/{ipa}/</span>
+			<span className="font-display text-2xl leading-none">{ipa}</span>
 			<span className="text-sm text-muted-foreground">
 				as in <SpelledWord spelled={example.spelled} />
 			</span>

@@ -32,7 +32,7 @@ describe("a contrast page", () => {
 	it("lists every pair under its two sounds without speaking practice", () => {
 		vi.stubEnv("FLAG_SPEECH", "0");
 		const html = render();
-		expect(html).toMatch(/<h1 [^>]*>\/θ\/ vs \/s\/: think vs sink<\/h1>/);
+		expect(html).toMatch(/<h1 [^>]*>θ vs s: think vs sink<\/h1>/);
 		expect(html).toContain(
 			"/θ/ is made with the tongue between the teeth. /s/ is made with the tongue tip on the gum ridge behind the top teeth. Everything else is the same.",
 		);
@@ -48,11 +48,11 @@ describe("a contrast page", () => {
 	it("links both sounds to their pages and to the other contrasts with each", () => {
 		vi.stubEnv("FLAG_SPEECH", "0");
 		const html = render();
-		expect(html).toMatch(/<a [^>]*href="\/sounds\/th-thin"[^>]*>\/<!-- -->θ<!-- -->\/<\/a>/);
-		expect(html).toMatch(/<a [^>]*href="\/sounds\/s-sun"[^>]*>\/<!-- -->s<!-- -->\/<\/a>/);
-		expect(html).toContain("More contrasts with /<!-- -->θ<!-- -->/");
+		expect(html).toMatch(/<a [^>]*href="\/sounds\/th-thin"[^>]*>θ<\/a>/);
+		expect(html).toMatch(/<a [^>]*href="\/sounds\/s-sun"[^>]*>s<\/a>/);
+		expect(html).toContain("More contrasts with <!-- -->θ</h2>");
 		expect(html).toMatch(/<a [^>]*href="\/minimal-pairs\/th-t"[^>]*>.*θ.* vs .*t.*three.*tree/);
-		expect(html).toContain("More contrasts with /<!-- -->s<!-- -->/");
+		expect(html).toContain("More contrasts with <!-- -->s</h2>");
 		for (const id of ["s-z", "s-sh"]) expect(html).toContain(`href="/minimal-pairs/${id}"`);
 		expect(html).not.toContain('href="/minimal-pairs/th-s"');
 	});

@@ -36,7 +36,7 @@ export function getCardWords({
 }
 
 /**
- * The card's words as play buttons under a label ("Compare with /t/" or "Hear
+ * The card's words as play buttons under a label ("Compare with t" or "Hear
  * it in"), with the synthetic-voice note folded into an info mark beside it.
  */
 export function CardWordList({
@@ -60,7 +60,7 @@ export function CardWordList({
 						<>
 							Compare with{" "}
 							<span className="font-display text-base whitespace-nowrap text-foreground">
-								/{cardWords.partnerIpa}/
+								{cardWords.partnerIpa}
 							</span>
 						</>
 					) : (
@@ -70,9 +70,7 @@ export function CardWordList({
 				<SyntheticVoiceInfo targetAccent={targetAccent} words={words} />
 			</div>
 			<ul
-				aria-label={
-					cardWords.kind === "pair" ? `/${ipa}/ versus /${cardWords.partnerIpa}/` : undefined
-				}
+				aria-label={cardWords.kind === "pair" ? `${ipa} versus ${cardWords.partnerIpa}` : undefined}
 				className="flex flex-col gap-1.5"
 			>
 				{cardWords.kind === "pair" ? (
@@ -127,7 +125,7 @@ function PairWord({ word, ipa }: { word: string; ipa: string }) {
 	return (
 		<span className="flex items-baseline gap-2">
 			{word}
-			<span className="font-display text-xs text-muted-foreground">/{ipa}/</span>
+			<span className="font-display text-xs text-muted-foreground">{ipa}</span>
 		</span>
 	);
 }

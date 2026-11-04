@@ -30,22 +30,22 @@ test.describe("Minimal-pair pages", () => {
 		page,
 	}) => {
 		await page.goto("/minimal-pairs/th-s");
-		const pairs = page.getByRole("table", { name: "Minimal pairs for /θ/ and /s/" });
-		await expect(pairs.getByRole("link", { name: /^\/θ\// })).toHaveAttribute(
+		const pairs = page.getByRole("table", { name: "Minimal pairs for θ and s" });
+		await expect(pairs.getByRole("link", { name: "θ", exact: true })).toHaveAttribute(
 			"href",
 			"/sounds/th-thin",
 		);
-		await expect(pairs.getByRole("link", { name: /^\/s\// })).toHaveAttribute(
+		await expect(pairs.getByRole("link", { name: "s", exact: true })).toHaveAttribute(
 			"href",
 			"/sounds/s-sun",
 		);
-		const moreWithTh = page.getByRole("region", { name: "More contrasts with /θ/" });
-		await expect(moreWithTh.getByRole("link", { name: /^\/θ\/ vs \/t\// })).toHaveAttribute(
+		const moreWithTh = page.getByRole("region", { name: "More contrasts with θ" });
+		await expect(moreWithTh.getByRole("link", { name: /^θ vs t\s*three, tree$/ })).toHaveAttribute(
 			"href",
 			"/minimal-pairs/th-t",
 		);
 		await expect(
-			page.getByRole("region", { name: "More contrasts with /s/" }).getByRole("link"),
+			page.getByRole("region", { name: "More contrasts with s" }).getByRole("link"),
 		).toHaveCount(2);
 	});
 
@@ -68,9 +68,9 @@ test.describe("A contrast page with speaking practice off", () => {
 			const response = await page.goto("/minimal-pairs/th-s");
 			expect(response?.status()).toBe(200);
 			await expect(
-				page.getByRole("heading", { level: 1, name: "/θ/ vs /s/: think vs sink" }),
+				page.getByRole("heading", { level: 1, name: "θ vs s: think vs sink" }),
 			).toBeVisible();
-			const pairs = page.getByRole("table", { name: "Minimal pairs for /θ/ and /s/" });
+			const pairs = page.getByRole("table", { name: "Minimal pairs for θ and s" });
 			await expect(pairs.locator("tbody tr")).toHaveCount(11);
 			for (const word of ["think", "sink", "tenth", "tense"]) {
 				await expect(pairs.getByRole("button", { name: `Hear ${word}` })).toHaveAttribute(
@@ -95,7 +95,7 @@ test.describe("A contrast page with speaking practice on", () => {
 		await expect(page.getByRole("button", { name: "Record", exact: true })).toBeVisible();
 		await expect(page).toHaveURL(/\/minimal-pairs\/th-s\?word=\w+/);
 		await expect(
-			page.getByRole("table", { name: "Minimal pairs for /θ/ and /s/" }).getByRole("button", {
+			page.getByRole("table", { name: "Minimal pairs for θ and s" }).getByRole("button", {
 				name: "Hear think",
 			}),
 		).toBeVisible();

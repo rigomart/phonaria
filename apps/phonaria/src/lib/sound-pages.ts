@@ -66,10 +66,10 @@ export function getSoundName(phonemeId: EnglishPhonemeSymbolId): string {
 	return SOUND_NAMES[phonemeId];
 }
 
-/** The sound's heading, e.g. "Voiceless TH /θ/". */
+/** The sound's heading, e.g. "Voiceless TH θ". */
 export function soundHeading(phonemeId: EnglishPhonemeSymbolId): string {
 	const name = getSoundName(phonemeId);
-	return `${name.charAt(0).toUpperCase()}${name.slice(1)} /${getIpaForPhonemeId(phonemeId)}/`;
+	return `${name.charAt(0).toUpperCase()}${name.slice(1)} ${getIpaForPhonemeId(phonemeId)}`;
 }
 
 /** The sound's heading, or undefined where it has no everyday name: only en-us sounds have one. */

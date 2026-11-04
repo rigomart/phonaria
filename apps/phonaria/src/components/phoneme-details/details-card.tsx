@@ -112,7 +112,7 @@ function CardContent({
 				</div>
 				<Button variant="secondary" onClick={onExpand} className="w-full justify-between">
 					<span>
-						Full details<span className="sr-only"> for /{sound.ipa}/</span>
+						Full details<span className="sr-only"> for {sound.ipa}</span>
 					</span>
 					<ArrowRight aria-hidden="true" />
 				</Button>

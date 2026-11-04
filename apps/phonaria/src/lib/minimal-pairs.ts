@@ -66,9 +66,9 @@ function capitalize(text: string): string {
 	return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 }
 
-/** The page's h1, e.g. "/ɪ/ vs /i/: ship vs sheep". */
+/** The page's h1, e.g. "ɪ vs i: ship vs sheep". */
 export function contrastPageHeading({ sounds: [a, b], headline }: ContrastPage): string {
-	return `/${a.ipa}/ vs /${b.ipa}/: ${headline.join(" vs ")}`;
+	return `${a.ipa} vs ${b.ipa}: ${headline.join(" vs ")}`;
 }
 
 export function contrastPageTitle({ sounds: [a, b], headline }: ContrastPage): string {

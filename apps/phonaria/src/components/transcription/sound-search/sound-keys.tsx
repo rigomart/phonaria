@@ -77,7 +77,7 @@ function SoundKey({ id }: { id: SoundId }) {
 			type="button"
 			onClick={() => add(id)}
 			disabled={!canPick}
-			aria-label={`/${symbol}/${example ? `, as in ${example}` : ""}${result ? `, ${count} ${count === 1 ? "word" : "words"}` : ""}`}
+			aria-label={`${symbol}${example ? `, as in ${example}` : ""}${result ? `, ${count} ${count === 1 ? "word" : "words"}` : ""}`}
 			className="flex h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl leading-none transition-colors outline-none hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring active:bg-muted disabled:pointer-events-none disabled:opacity-40"
 		>
 			<span className="text-lg">{symbol}</span>

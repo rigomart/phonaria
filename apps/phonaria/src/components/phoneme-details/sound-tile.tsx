@@ -25,7 +25,7 @@ export function SoundTile({ ipa, audioPath }: { ipa: string; audioPath?: string 
 	return (
 		<button
 			type="button"
-			aria-label={`Play /${ipa}/`}
+			aria-label={`Play ${ipa}`}
 			title="Play"
 			data-status={status}
 			onClick={() => {
