@@ -26,7 +26,7 @@ function PairTable({ page }: { page: ContrastPage }) {
 	return (
 		<table className="w-full table-fixed border-separate border-spacing-x-2 border-spacing-y-1.5">
 			<caption className="sr-only">
-				Minimal pairs for /{a.ipa}/ and /{b.ipa}/
+				Minimal pairs for {a.ipa} and {b.ipa}
 			</caption>
 			<thead>
 				<tr>
@@ -36,7 +36,7 @@ function PairTable({ page }: { page: ContrastPage }) {
 								className="block w-fit rounded-sm font-display text-xl underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 								href={sound.path}
 							>
-								/{sound.ipa}/
+								{sound.ipa}
 							</AppLink>
 							<span className="block truncate text-muted-foreground text-xs">{sound.label}</span>
 						</th>
@@ -72,7 +72,7 @@ function OtherContrasts({ sound }: { sound: ContrastPageSound }) {
 	return (
 		<section aria-labelledby={headingId} className="flex flex-col gap-3">
 			<h2 className="font-display font-semibold" id={headingId}>
-				More contrasts with /{sound.ipa}/
+				More contrasts with {sound.ipa}
 			</h2>
 			<ul className="divide-y divide-border overflow-hidden rounded-xl border border-border">
 				{sound.otherContrasts.map(({ id, ipas: [a, b], example: [first, second] }) => (
@@ -82,7 +82,7 @@ function OtherContrasts({ sound }: { sound: ContrastPageSound }) {
 							href={contrastPagePath(id)}
 						>
 							<span className="shrink-0 font-display text-lg">
-								/{a}/ vs /{b}/
+								{a} vs {b}
 							</span>
 							<span className="min-w-0 flex-1 truncate text-muted-foreground text-sm">
 								{first}, {second}

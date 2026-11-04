@@ -79,24 +79,24 @@ describe("sound slugs", () => {
 });
 
 describe("sound names", () => {
-	it("gives every en-us sound a heading with its everyday name and symbol", () => {
+	it("gives every en-us sound a heading with its everyday name alone", () => {
 		for (const phonemeId of sounds) {
-			expect(soundHeading(phonemeId)).toMatch(/^[A-Z][A-Za-z ]* \/.+\/$/);
+			expect(soundHeading(phonemeId)).toMatch(/^[A-Z][A-Za-z ]*$/);
 		}
 	});
 
 	it("uses the names the spec lists", () => {
-		expect(soundHeading("TH")).toBe("Voiceless TH /θ/");
-		expect(soundHeading("DH")).toBe("Voiced TH /ð/");
-		expect(soundHeading("AX")).toBe("Schwa /ə/");
-		expect(soundHeading("I")).toBe("Long E /i/");
-		expect(soundHeading("O")).toBe("AW /ɔ/");
-		expect(soundHeading("P")).toBe("P /p/");
+		expect(soundHeading("TH")).toBe("Voiceless TH");
+		expect(soundHeading("DH")).toBe("Voiced TH");
+		expect(soundHeading("AX")).toBe("Schwa");
+		expect(soundHeading("I")).toBe("Long E");
+		expect(soundHeading("O")).toBe("AW");
+		expect(soundHeading("P")).toBe("P");
 		expect(getSoundName("AE")).toBe("short A");
 	});
 
 	it("names only en-us sounds", () => {
-		expect(findSoundHeading("en-us", "TH")).toBe("Voiceless TH /θ/");
+		expect(findSoundHeading("en-us", "TH")).toBe("Voiceless TH");
 		expect(findSoundHeading("es-419", "S")).toBeUndefined();
 		expect(findSoundHeading("en-us", "EE")).toBeUndefined();
 	});

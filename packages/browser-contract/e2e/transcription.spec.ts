@@ -49,7 +49,7 @@ test.describe("Transcription", () => {
 			await expect(copyTranscription(page)).toBeEnabled();
 
 			await page
-				.getByRole("button", { name: /^Details for \// })
+				.getByRole("button", { name: /^Details for / })
 				.first()
 				.click();
 			await expect(page.getByRole("button", { name: /^Play / }).first()).toBeVisible();
@@ -104,7 +104,7 @@ test.describe("Transcription", () => {
 		await expect(page.getByText(SPELLING_CORRECTION, { exact: true }).first()).toBeVisible({
 			timeout: 20_000,
 		});
-		await expect(page.getByRole("button", { name: /^Details for \// }).first()).toBeVisible();
+		await expect(page.getByRole("button", { name: /^Details for / }).first()).toBeVisible();
 		await expect(spellingSuggestion(page)).toHaveCount(0);
 	});
 

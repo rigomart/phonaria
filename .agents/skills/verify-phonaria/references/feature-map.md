@@ -13,7 +13,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Consonant chart | `/ipa-chart/consonants`, header **Sounds** menu → **Consonant chart** | Not exercised beyond the sound-frequency check that it stays unshaded |
 | Vowel chart | `/ipa-chart/vowels`, **Show diphthongs** | Not exercised |
 | Frequency | `/ipa-chart/frequency`, header **Sounds** menu → **How common** | Executable journey below |
-| Sound card "Frequency" and "Spelling" | Any sound, or **Details for /h/** after transcribing | Executable journey below |
+| Sound card "Frequency" and "Spelling" | Any sound, or **Details for h** after transcribing | Executable journey below |
 | What stays pinned while the full details scroll | Any sound, then **Full details for …** (wide screens) or **More about …** (phones) | Executable journey below: `details-scroll` |
 | Sound card merger notes | `/ipa-chart/vowels`, /ɔ/, /æ/ or /ɛ/, then **Full details for …** (wide screens) or **More about …** (phones) | Executable journey below |
 | History | `/history`, header **History** (behind `FLAG_LANGUAGE_HISTORY`) | Executable journeys below: `language-history` (flag on) and `language-history-off` |
@@ -51,7 +51,7 @@ The maintained [TypeScript checkpoints](../scripts/transcription.ts) pair typed,
 | Clear | `find role button ... --name "Clear text" --exact` |
 | Copy | Accessible name **Copy IPA transcription** |
 | Word labels | **Definition of hello**, **Definition of world** |
-| Sound details | **Details for /h/**, then **Full details for /h/** for the full view |
+| Sound details | **Details for h**, then **Full details for h** for the full view |
 | Empty-state example | Button **Hello world** |
 
 Enter submits when the input is focused. Escape clears a nonempty focused input. When the history list under the input is open, the first Escape closes it and the second clears. Escape while a popup is focused can close the popup instead; explicitly focus the input for the clear check.
@@ -75,8 +75,8 @@ bun run verify browser "$VERIFY_RUN" find role button click --name "Transcribe t
 bun run verify browser "$VERIFY_RUN" snapshot -i
 bun run verify observe "$VERIFY_RUN" submitted
 
-bun run verify browser "$VERIFY_RUN" find role button click --name "Details for /h/" --exact
-bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /h/"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Details for h" --exact
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for h"
 bun run verify browser "$VERIFY_RUN" snapshot -i
 bun run verify observe "$VERIFY_RUN" details
 
@@ -99,7 +99,7 @@ bun run verify observe "$VERIFY_RUN" escape
 
 For an alternate local port or an explicit deployed run, replace the default URL in `open` with the origin recorded in `run.json`. Skip `serve` for deployed runs. Every checkpoint also asserts that the actual page origin matches the recorded target.
 
-`empty` requires the homepage (`/`) with no query. `submitted` and `restored` require `/search`, both primary IPAs, input/query `hello world`, enabled visible Copy, and no page alerts. `details` requires the /h/ trigger marked open (`data-details-open`), **Voiceless glottal fricative**, exactly one visible play button labelled **Play /h/** before any audio interaction, and the diagram element visible. No second play control may be visible. The click on **Details for /h/** opens the compact card; **Full details for /h/** opens the side panel with the diagram. `cleared` and `escape` require an empty, focused input on `/search` with `q` and the result kept (Copy still there, no Clear button, no example chips): clearing the field on the results page doesn't drop the result. `draft` proves Escape was tested on a nonempty focused field.
+`empty` requires the homepage (`/`) with no query. `submitted` and `restored` require `/search`, both primary IPAs, input/query `hello world`, enabled visible Copy, and no page alerts. `details` requires the /h/ trigger marked open (`data-details-open`), **Voiceless glottal fricative**, exactly one visible play button labelled **Play h** before any audio interaction, and the diagram element visible. No second play control may be visible. The click on **Details for h** opens the compact card; **Full details for h** opens the side panel with the diagram. `cleared` and `escape` require an empty, focused input on `/search` with `q` and the result kept (Copy still there, no Clear button, no example chips): clearing the field on the results page doesn't drop the result. `draft` proves Escape was tested on a nonempty focused field.
 
 Each observation saves `<checkpoint>-<unique-id>.png`, `<checkpoint>-<unique-id>.snapshot.json`, and its expected/actual values plus evidence paths in `run.json`. Repeated observations retain separate artifacts. Review those images and `diagnostics.json`, then finish with an accurate review note. Evidence is kept under ignored `test-results/verification/`; retain or copy a particular report outside that ignored folder when permanent storage is requested.
 
@@ -207,7 +207,7 @@ The [checkpoints](../scripts/sound-search.ts) read the path and URL, the toggle'
 | --- | --- |
 | Mode toggle | `find label "Find a word by its sounds" click` |
 | Panel | `[role="dialog"]` named **Sound keys**; the chevron in the field opens and closes it |
-| A key | `find role button click --name "/θ/, as in think"`; vowels are on the **Vowels** toggle |
+| A key | `find role button click --name "θ, as in think"`; vowels are on the **Vowels** toggle |
 | Search | **Find words** |
 | Remove a sound | **Remove the last sound**, **Clear sounds** |
 | A word found | the buttons in `section[aria-label="Words found"]` |
@@ -229,9 +229,9 @@ bun run verify observe "$VERIFY_RUN" text-mode
 bun run verify browser "$VERIFY_RUN" find label "Find a word by its sounds" click
 bun run verify browser "$VERIFY_RUN" wait --fn "$OPEN"
 bun run verify observe "$VERIFY_RUN" opened
-bun run verify browser "$VERIFY_RUN" find role button click --name "/θ/, as in think"
+bun run verify browser "$VERIFY_RUN" find role button click --name "θ, as in think"
 bun run verify browser "$VERIFY_RUN" find role button click --name "Vowels" --exact
-bun run verify browser "$VERIFY_RUN" eval "([...document.querySelectorAll('[role=dialog] button')].find(x=>x.getAttribute('aria-label')?.startsWith('/ɪ/')).click(),1)"
+bun run verify browser "$VERIFY_RUN" eval "([...document.querySelectorAll('[role=dialog] button')].find(x=>x.getAttribute('aria-label')?.startsWith('ɪ,')).click(),1)"
 bun run verify browser "$VERIFY_RUN" find role button click --name "Consonants" --exact
 bun run verify observe "$VERIFY_RUN" picked
 bun run verify browser "$VERIFY_RUN" find role button click --name "Find words" --exact
@@ -268,8 +268,8 @@ Interact only after the page hydrates. On a cold dev server, an early click can 
 
 | User control | CLI locator |
 | --- | --- |
-| A ranked sound | `find role button click --name "/ð/ as in this: 11th, 3.1%" --exact` (rank and share) |
-| Full details | `find role button click --name "Full details for /ð/"` (the compact card's last button) |
+| A ranked sound | `find role button click --name "ð as in this: 11th, 3.1%" --exact` (rank and share) |
+| Full details | `find role button click --name "Full details for ð"` (the compact card's last button) |
 | Frequency link | `find role link click --name "Less common: 29th most common of 40 sounds. See all sounds by frequency" --exact` |
 
 ### Executable journey
@@ -284,8 +284,8 @@ bun run verify browser "$VERIFY_RUN" set viewport 1280 900
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/frequency
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify observe "$VERIFY_RUN" ranking
-bun run verify browser "$VERIFY_RUN" find role button click --name "/ð/ as in this: 11th, 3.1%" --exact
-bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /ð/"
+bun run verify browser "$VERIFY_RUN" find role button click --name "ð as in this: 11th, 3.1%" --exact
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for ð"
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 bun run verify observe "$VERIFY_RUN" page-card
 
@@ -296,8 +296,8 @@ bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/conson
 bun run verify observe "$VERIFY_RUN" plain-charts
 
 bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/?q=hello"
-bun run verify browser "$VERIFY_RUN" find role button click --name "Details for /h/" --exact
-bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /h/"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Details for h" --exact
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for h"
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 bun run verify observe "$VERIFY_RUN" result-card
 bun run verify browser "$VERIFY_RUN" find role link click --name "Less common: 29th most common of 40 sounds. See all sounds by frequency" --exact
@@ -327,7 +327,7 @@ bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/vowels
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 # For each of o-note (ɔ, "Open-mid back rounded vowel (ɔ)"), ae-note (æ), e-note (ɛ), no-note (ɑ):
 bun run verify browser "$VERIFY_RUN" find role button click --name "Open-mid back rounded vowel (ɔ)" --exact
-bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /ɔ/"   # mobile: "More about AW /ɔ/"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for ɔ"   # mobile: "More about AW"
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 # Scroll the last section into view so the screenshot shows the note.
 bun run verify observe "$VERIFY_RUN" o-note
@@ -357,7 +357,7 @@ bun run verify browser "$VERIFY_RUN" set viewport 1280 900
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/consonants
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify browser "$VERIFY_RUN" find role button click --name "Voiceless alveolar fricative (s)" --exact
-bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /s/"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for s"
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 bun run verify observe "$VERIFY_RUN" panel-top
 bun run verify browser "$VERIFY_RUN" eval "$SCROLL"
@@ -371,7 +371,7 @@ bun run verify browser "$VERIFY_RUN" find role button click --name "Voiceless al
 bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-phoneme-details] section h3')"
 bun run verify browser "$VERIFY_RUN" wait 1200   # let the sheet finish sliding up
 bun run verify observe "$VERIFY_RUN" drawer-compact
-bun run verify browser "$VERIFY_RUN" find role button click --name "More about S /s/" --exact
+bun run verify browser "$VERIFY_RUN" find role button click --name "More about S" --exact
 bun run verify browser "$VERIFY_RUN" wait 1200
 bun run verify browser "$VERIFY_RUN" eval "$SCROLL"
 bun run verify observe "$VERIFY_RUN" drawer-scrolled
@@ -381,7 +381,7 @@ To check that the drawer keeps its layout while it expands, measure from the scr
 
 ## Minimal-pair speaking practice
 
-Target accent: American English (`en-us`). The learner picks a contrast on `/minimal-pairs` and lands on its page, `/minimal-pairs/<contrast>`, headed by its two sounds and its headline pair (h1 "/ɪ/ vs /i/: ship vs sheep") and how they differ, with every pair of the contrast listed below in a table. With `FLAG_SPEECH` on, the page also gets a word from one of its pairs shown beside the pair's other word, kept in `?word=`, records it, and the page checks that the recording holds the word with `gateWord`, then judges every sound with `judgeWord`, on the evidence from `POST /api/speech/score`. The result leads with the contrast sound's sentence in the live region; under it, outside the live region, a **Sound by sound** row has one tile per sound (`[data-sound-result="match|swapped|unclear"]`) with the sound's glyph, the heard sound beside it for a swap, an icon and a sentence such as "/ɪ/ sounded like /i/" (the sound's name is screen-reader text). Every glyph opens the sound card. Expected copy comes from [#332](https://github.com/rigomart/phonaria/issues/332), [#334](https://github.com/rigomart/phonaria/issues/334) and [#344](https://github.com/rigomart/phonaria/issues/344); the IPA for *ship* (`SH IX1 P`) is `ˈʃɪp` and for *sheep* (`SH I1 P`) `ˈʃip`, from the curated dictionary. The word to say is the word in the card marked `data-side="target"`; its partner is in `data-side="partner"`, and after an attempt the word that came through carries `data-heard`. The [checkpoints](../scripts/minimal-pairs.ts) read the page heading, the IPA tokens, the marked sound's label, the visible buttons, the sentence in the result live region and the sound-by-sound tiles.
+Target accent: American English (`en-us`). The learner picks a contrast on `/minimal-pairs` and lands on its page, `/minimal-pairs/<contrast>`, headed by its two sounds and its headline pair (h1 "ɪ vs i: ship vs sheep") and how they differ, with every pair of the contrast listed below in a table. With `FLAG_SPEECH` on, the page also gets a word from one of its pairs shown beside the pair's other word, kept in `?word=`, records it, and the page checks that the recording holds the word with `gateWord`, then judges every sound with `judgeWord`, on the evidence from `POST /api/speech/score`. The result leads with the contrast sound's sentence in the live region; under it, outside the live region, a **Sound by sound** row has one tile per sound (`[data-sound-result="match|swapped|unclear"]`) with the sound's glyph, the heard sound beside it for a swap, an icon and a sentence such as "ɪ sounded like i" (the sound's name is screen-reader text). Every glyph opens the sound card. Expected copy comes from [#332](https://github.com/rigomart/phonaria/issues/332), [#334](https://github.com/rigomart/phonaria/issues/334) and [#344](https://github.com/rigomart/phonaria/issues/344); the IPA for *ship* (`SH IX1 P`) is `ˈʃɪp` and for *sheep* (`SH I1 P`) `ˈʃip`, from the curated dictionary. The word to say is the word in the card marked `data-side="target"`; its partner is in `data-side="partner"`, and after an attempt the word that came through carries `data-heard`. The [checkpoints](../scripts/minimal-pairs.ts) read the page heading, the IPA tokens, the marked sound's label, the visible buttons, the sentence in the result live region and the sound-by-sound tiles.
 
 Live scoring needs `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` in `apps/phonaria/.dev.vars`; without them the route answers 503 and `match`, `swapped`, `not-heard`, `random-word`, `added-sounds` and `phrase` are **blocked**. Never print the key. Each recorded attempt is two live Azure calls (assessment and plain recognition), so the journey costs twelve.
 
@@ -395,7 +395,7 @@ Headless Chromium has no microphone. The journey's `fakeMic` helper replaces `na
 | A contrast | `find label "ship and sheep" click` (named by its headline pair) |
 | Record, Stop, Try again, Next word | `find role button click --name "Record"` (and so on) |
 | Play either word of the pair | `find role button click --name "Hear ship"`, `"Hear sheep"` (a swap adds a second **Hear sheep** in the result) |
-| A sound in the sound-by-sound row | `find role button click --name "Details for /i/"` (a heard sound; the IPA display above has its own **Details for** buttons, so scope to `[data-sound-result]` when the label repeats) |
+| A sound in the sound-by-sound row | `find role button click --name "Details for i"` (a heard sound; the IPA display above has its own **Details for** buttons, so scope to `[data-sound-result]` when the label repeats) |
 
 ### Executable journey (flag on)
 
@@ -426,7 +426,7 @@ js fakeMic @/path/to/a-ship.wav; # click Try again  -> observe phrase
 js fakeMic @/path/to/ship.ogg; js stubVowel '{ "targetScore": 0.6, "rival": "I", "rivalScore": 0.62 }'  # Try again -> observe close-call
 js stubVowel '{ "targetScore": 0.2, "rival": "E", "rivalScore": 0.9 }'  # click Try again -> observe other-sound
 js stubSounds '[{ "phonemeId": "SH", "targetScore": 0.9 }, { "phonemeId": "IX", "targetScore": 0.02, "rival": "I", "rivalScore": 1 }, { "phonemeId": "P", "targetScore": 0.2 }]'  # Try again -> observe every-sound
-# Click the heard /i/ in the row ([data-sound-result] button "Details for /i/") -> observe heard-card, then press Escape
+# Click the heard /i/ in the row ([data-sound-result] button "Details for i") -> observe heard-card, then press Escape
 js failMic '"NotAllowedError"';  # click Try again  -> observe denied
 js failMic '"NotFoundError"';    # click Try again  -> observe unsupported
 js fakeMic @/path/to/ship.ogg; js failRoute 429  # Try again -> observe rate-limited
@@ -434,11 +434,11 @@ js failRoute 503                 # click Try again  -> observe unavailable
 js failRoute 502                 # click Try again  -> observe scoring-failed
 # Click Next word, wait for a new target word, then:
 bun run verify observe "$VERIFY_RUN" next-word
-# Open /ipa-chart/vowels, the /ɪ/ sound, then "Full details for /ɪ/", then:
+# Open /ipa-chart/vowels, the /ɪ/ sound, then "Full details for ɪ", then:
 bun run verify observe "$VERIFY_RUN" card-link
 ```
 
-`nav` requires the main nav to read Transcription, Sounds, **Minimal pairs** (to `/minimal-pairs`), Practice, History, and the Practice index to list Schwa with no minimal-pairs card. `redirect` requires the old `/practice/minimal-pairs?contrast=i-ix&word=ship` to land on `/minimal-pairs/i-ix?word=ship`. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 links to contrast pages, the first named **pat and bat**. `word` requires the **/ɪ/ vs /i/: ship vs sheep** h1 at `/minimal-pairs/i-ix`, the target card *ship* `ˈʃɪp` with /ɪ/ labelled **Details for /ɪ/, the marked sound** beside the partner card *sheep* `ˈʃip` with /i/ marked, **Hear ship**, **Hear sheep** and **Record** buttons, the privacy line, no card marked heard and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences and visible buttons, `match` with the *ship* card marked heard and `swapped` with the *sheep* card marked and a second **Hear sheep** in the result; the others mark no card and the wrong-word ones name no sound; `every-sound` requires the swapped sentence above a **Sound by sound** row of three tiles: /ʃ/ `match` "/ʃ/ sounded right", /ɪ/ `swapped` with the marked /ɪ/ and the heard /i/ as buttons and "/ɪ/ sounded like /i/", and /p/ `unclear` "/p/ wasn't clear". `heard-card` requires the heard /i/ tile button to be the open trigger and the card's heading to read **Long E /i/**. Each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, on the same contrast page, with no result showing. `card-link` requires the /ɪ/ sound's full view to link **Practise saying /ɪ/ and /i/** to `/minimal-pairs/i-ix`.
+`nav` requires the main nav to read Transcription, Sounds, **Minimal pairs** (to `/minimal-pairs`), Practice, History, and the Practice index to list Schwa with no minimal-pairs card. `redirect` requires the old `/practice/minimal-pairs?contrast=i-ix&word=ship` to land on `/minimal-pairs/i-ix?word=ship`. `picker` requires the **Minimal pairs** h1, **Consonants** and **Vowels** groups and 27 links to contrast pages, the first named **pat and bat**. `word` requires the **ɪ vs i: ship vs sheep** h1 at `/minimal-pairs/i-ix`, the target card *ship* `ˈʃɪp` with /ɪ/ labelled **Details for ɪ, the marked sound** beside the partner card *sheep* `ˈʃip` with /i/ marked, **Hear ship**, **Hear sheep** and **Record** buttons, the privacy line, no card marked heard and an empty result. `match`, `swapped`, `not-heard`, `random-word`, `added-sounds`, `phrase`, `close-call` and `other-sound` require their exact sentences and visible buttons, `match` with the *ship* card marked heard and `swapped` with the *sheep* card marked and a second **Hear sheep** in the result; the others mark no card and the wrong-word ones name no sound; `every-sound` requires the swapped sentence above a **Sound by sound** row of three tiles: /ʃ/ `match` "ʃ sounded right", /ɪ/ `swapped` with the marked /ɪ/ and the heard /i/ as buttons and "ɪ sounded like i", and /p/ `unclear` "p wasn't clear". `heard-card` requires the heard /i/ tile button to be the open trigger and the card's heading to read **Long E**. Each failure checkpoint requires its one-line message. `next-word` requires another i-ix word, matching the URL, on the same contrast page, with no result showing. `card-link` requires the /ɪ/ sound's full view to link **Practise saying /ɪ/ and /i/** to `/minimal-pairs/i-ix`.
 
 ### Flag off
 
@@ -457,7 +457,7 @@ bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/practice
 bun run verify observe "$VERIFY_RUN" nav
 ```
 
-`contrast-page` requires HTTP 200 with the **/θ/ vs /s/: think vs sink** h1, the line "/θ/ is made with the tongue between the teeth. /s/ is made with the tongue tip on the gum ridge behind the top teeth. Everything else is the same.", columns headed /θ/ and /s/ with their labels, the catalog's 11 th-s pairs in order (thin–sin first, tenth–tense last) with **Hear think** and **Hear sink** buttons in the table, an **All pairs** link, the column headings linked to `/sounds/th-thin` and `/sounds/s-sun`, **More contrasts with /θ/** linking **/θ/ vs /t/** (three, tree) to `/minimal-pairs/th-t` and **More contrasts with /s/** linking **/s/ vs /z/** (price, prize) and **/s/ vs /ʃ/** (see, she), and no **Record** button; `sound-page-links` requires the /θ/ page's Compare with cards to link **All pairs for /θ/ and /t/** and **All pairs for /θ/ and /s/** to their contrast pages; `unknown-contrast` requires HTTP 404 with the shared **This page doesn't exist** h1; `nav` requires the same main nav as with the flag on, **Minimal pairs** included, and the Practice index to list Schwa without a minimal-pairs card.
+`contrast-page` requires HTTP 200 with the **θ vs s: think vs sink** h1, the line "/θ/ is made with the tongue between the teeth. /s/ is made with the tongue tip on the gum ridge behind the top teeth. Everything else is the same.", columns headed θ and s with their labels, the catalog's 11 th-s pairs in order (thin–sin first, tenth–tense last) with **Hear think** and **Hear sink** buttons in the table, an **All pairs** link, the column headings linked to `/sounds/th-thin` and `/sounds/s-sun`, **More contrasts with θ** linking **θ vs t** (three, tree) to `/minimal-pairs/th-t` and **More contrasts with s** linking **s vs z** (price, prize) and **s vs ʃ** (see, she), and no **Record** button; `sound-page-links` requires the /θ/ page's Compare with cards to link **All pairs for /θ/ and /t/** and **All pairs for /θ/ and /s/** to their contrast pages; `unknown-contrast` requires HTTP 404 with the shared **This page doesn't exist** h1; `nav` requires the same main nav as with the flag on, **Minimal pairs** included, and the Practice index to list Schwa without a minimal-pairs card.
 
 ### Limits
 
@@ -723,7 +723,7 @@ v wait 1500   # on mobile a tap right after hydration can close the drawer
 v find role button click --name "Close front unrounded vowel (i)" --exact
 v wait --fn "!!document.querySelector('[data-phoneme-details]')"
 v wait 700
-v find role button click --name "Full details for /i/"   # mobile: "More about Long E /i/"
+v find role button click --name "Full details for i"   # mobile: "More about Long E"
 v wait --fn "!!document.querySelector('[data-phoneme-details] button[aria-label=\"Hear seat\"]:not([aria-disabled])')"
 v network requests > "$VERIFY_RUN/network-after-card.json"    # must list it
 v wait 1500
@@ -773,7 +773,7 @@ bun run verify browser "$VERIFY_RUN" set viewport 1280 900
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify observe "$VERIFY_RUN" index
-bun run verify browser "$VERIFY_RUN" find role link click --name "/θ/ as in thin" --exact
+bun run verify browser "$VERIFY_RUN" find role link click --name "Voiceless TH, as in thin" --exact
 bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname==='/sounds/th-thin' && !!document.querySelector('[data-phoneme-details]')"
 bun run verify observe "$VERIFY_RUN" sound-page
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds/schwa
@@ -790,7 +790,7 @@ bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify observe "$VERIFY_RUN" rank-line
 ```
 
-`index` requires 24 consonant and 16 vowel links, 40 distinct, from `/sounds/p-pat` to `/sounds/oy-boy`. `sound-page` requires the /θ/ title, a canonical `/sounds/th-thin`, one h1, the sections How it's made, Compare with, Spelling, Common words with /θ/ and Sounds near it, the **All sounds** link, no how-to sentence, the /θ/–/t/ differences (dental vs alveolar place, fricative vs plosive manner), its voicing partner /ð/ and the other fricatives under Sounds near it, and the three common-word lists. `schwa-near` requires /ə/'s Sounds near it to link /ɝ/, /ɛ/, /ʌ/ and /ɔ/. `t-variants` requires /t/'s How it changes: /tʰ/ in top and time, the flap /ɾ/ in water, and /ʔ/ in button, each with its label; the /θ/ page has none. `not-found` requires the app's 404 page; its 404 response is expected. `rank-line` requires the rank on one line, the share of speech with its arrow on one line, and no horizontal overflow. To check the text is server-rendered, `curl` a sound page and look for its description and spellings. Review screenshots in both themes.
+`index` requires 24 consonant and 16 vowel links, 40 distinct, from `/sounds/p-pat` to `/sounds/oy-boy`. `sound-page` requires the /θ/ title, a canonical `/sounds/th-thin`, one h1, the sections How it's made, Compare with, Spelling, Common words with θ and Sounds near it, the **All sounds** link, no how-to sentence, the /θ/–/t/ differences (dental vs alveolar place, fricative vs plosive manner), its voicing partner /ð/ and the other fricatives under Sounds near it, and the three common-word lists. `schwa-near` requires /ə/'s Sounds near it to link /ɝ/, /ɛ/, /ʌ/ and /ɔ/. `t-variants` requires /t/'s How it changes: /tʰ/ in top and time, the flap /ɾ/ in water, and /ʔ/ in button, each with its label; the /θ/ page has none. `not-found` requires the app's 404 page; its 404 response is expected. `rank-line` requires the rank on one line, the share of speech with its arrow on one line, and no horizontal overflow. To check the text is server-rendered, `curl` a sound page and look for its description and spellings. Review screenshots in both themes.
 
 ## Chart tiles and Open full page
 
@@ -814,8 +814,8 @@ bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname==='/sounds/th-
 bun run verify observe "$VERIFY_RUN" open-full-page
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/frequency
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
-bun run verify browser "$VERIFY_RUN" scrollintoview '[aria-label^="/ʃ/ as in shop:"]'
-bun run verify browser "$VERIFY_RUN" click '[aria-label^="/ʃ/ as in shop:"]'
+bun run verify browser "$VERIFY_RUN" scrollintoview '[aria-label^="ʃ as in shop:"]'
+bun run verify browser "$VERIFY_RUN" click '[aria-label^="ʃ as in shop:"]'
 bun run verify browser "$VERIFY_RUN" wait "[data-phoneme-details]"
 bun run verify observe "$VERIFY_RUN" frequency-row
 bun run verify browser "$VERIFY_RUN" set viewport 1280 900
@@ -823,7 +823,7 @@ bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/ipa-chart/vowels
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify browser "$VERIFY_RUN" click '[aria-label^="Near-open front unrounded"]'
 bun run verify browser "$VERIFY_RUN" wait "[data-phoneme-details]"
-bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for /æ/"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Full details for æ"
 bun run verify observe "$VERIFY_RUN" vowel-tile
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sitemap.xml
 bun run verify observe "$VERIFY_RUN" sitemap
@@ -849,7 +849,7 @@ bun run verify browser "$VERIFY_RUN" wait --fn "$SETTLED"
 bun run verify observe "$VERIFY_RUN" page
 ```
 
-Then at 1280 wide, `find role button click --name "Details for /θ/"`, `wait "[data-phoneme-details]"`, `observe sound-details`; and `open /sitemap.xml`, `observe sitemap`. Wait for `$SETTLED` before screenshots: the page's entrance animation blurs the top sections until it ends. `robots` reads `noindex, follow` locally because `SITE_INDEXING_ENABLED` is unset; a production build that runs with `SITE_URL` writes `apps/phonaria/.dev.vars`, which then changes the dev server's canonical.
+Then at 1280 wide, `find role button click --name "Details for θ"`, `wait "[data-phoneme-details]"`, `observe sound-details`; and `open /sitemap.xml`, `observe sitemap`. Wait for `$SETTLED` before screenshots: the page's entrance animation blurs the top sections until it ends. `robots` reads `noindex, follow` locally because `SITE_INDEXING_ENABLED` is unset; a production build that runs with `SITE_URL` writes `apps/phonaria/.dev.vars`, which then changes the dev server's canonical.
 
 ### Flag off
 

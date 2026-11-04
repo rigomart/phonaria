@@ -13,7 +13,7 @@ const TITLE_CLASS = "font-display text-lg leading-snug font-semibold tracking-ti
 /**
  * The sound's name as the heading of the container that shows it: an h2 in a
  * drawer or panel, the h1 of a page of its own. A technical label alone gets
- * its symbol read first; an everyday name already ends with it.
+ * its symbol read first; an everyday name stands alone, its symbol in the tile.
  */
 export function SoundHeading({
 	sound,
@@ -30,7 +30,7 @@ export function SoundHeading({
 			tabIndex={-1}
 			className={cn(TITLE_CLASS, "outline-none", Heading === "h1" && "text-2xl sm:text-3xl")}
 		>
-			{sound.label ? null : <span className="sr-only">/{sound.ipa}/, </span>}
+			{sound.label ? null : <span className="sr-only">{sound.ipa}, </span>}
 			{sound.name}
 		</Heading>
 	);
@@ -94,7 +94,7 @@ export function SoundHeader({
 							<button
 								type="button"
 								onClick={onExpand}
-								aria-label={`More about ${sound.label ? sound.name : `/${sound.ipa}/: ${sound.name}`}`}
+								aria-label={`More about ${sound.label ? sound.name : `${sound.ipa}: ${sound.name}`}`}
 								className="group/expand -mx-2 -my-1 flex cursor-pointer items-center gap-1 self-start rounded-lg px-2 py-1 text-left outline-none transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 							>
 								<span id={titleId} className={TITLE_CLASS}>

@@ -20,7 +20,7 @@ export function ClickablePhoneme({ targetAccent, phoneme, marked = false }: Clic
 		return (
 			<span
 				className="text-2xl md:text-4xl rounded-lg px-1.5 py-1 opacity-70 underline decoration-dotted underline-offset-4"
-				title={`/${phoneme.symbol}/ - not found in phoneme database`}
+				title={`${phoneme.symbol} - not found in phoneme database`}
 			>
 				{phoneme.symbol}
 			</span>
@@ -72,9 +72,7 @@ export function PhonemeDetailsButton({
 						"data-details-open:bg-secondary data-details-open:text-primary",
 						className,
 					)}
-					aria-label={
-						marked ? `Details for /${symbol}/, the marked sound` : `Details for /${symbol}/`
-					}
+					aria-label={marked ? `Details for ${symbol}, the marked sound` : `Details for ${symbol}`}
 				/>
 			}
 		>

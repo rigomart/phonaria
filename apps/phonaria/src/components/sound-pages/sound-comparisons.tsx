@@ -65,7 +65,7 @@ function FaceOff({
 				<div className="flex flex-col gap-1">
 					{differences.length > 0 ? (
 						<dl
-							aria-label={`How /${ipa}/ and /${comparison.partnerIpa}/ differ`}
+							aria-label={`How ${ipa} and ${comparison.partnerIpa} differ`}
 							className="flex flex-col gap-1"
 						>
 							{differences.map(({ label, own, other }) => (
@@ -78,11 +78,11 @@ function FaceOff({
 										{label}
 									</dt>
 									<dd className="col-start-1 row-start-1 font-display text-lg font-semibold text-foreground">
-										<span className="sr-only">{`/${ipa}/: `}</span>
+										<span className="sr-only">{`${ipa}: `}</span>
 										{own}
 									</dd>
 									<dd className="col-start-3 row-start-1 text-right font-display text-lg font-semibold text-foreground">
-										<span className="sr-only">{`/${comparison.partnerIpa}/: `}</span>
+										<span className="sr-only">{`${comparison.partnerIpa}: `}</span>
 										{other}
 									</dd>
 								</div>
@@ -97,7 +97,7 @@ function FaceOff({
 				</div>
 			) : null}
 			<ul
-				aria-label={`/${ipa}/ versus /${comparison.partnerIpa}/`}
+				aria-label={`${ipa} versus ${comparison.partnerIpa}`}
 				className="flex flex-col divide-y divide-border overflow-hidden rounded-xl bg-background-strong shadow-xs"
 			>
 				{pairs.map(({ words: [own, other] }) => (
@@ -257,7 +257,7 @@ function ListenAndPick({
 										{state === "wrong" ? <X aria-hidden="true" className="size-4" /> : null}
 									</span>
 									<span className="font-display text-xs text-muted-foreground">
-										/{round.ipas[index]}/
+										{round.ipas[index]}
 									</span>
 								</button>
 							);

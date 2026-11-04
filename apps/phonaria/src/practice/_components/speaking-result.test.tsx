@@ -28,6 +28,11 @@ function text(html: string) {
 		.replace(/&quot;/g, '"');
 }
 
+/** The sounds the text names, each set in the IPA face. */
+function sounds(html: string) {
+	return [...html.matchAll(/<span class="font-display">([^<]+)<\/span>/g)].map(([, ipa]) => ipa);
+}
+
 beforeEach(() => {
 	vi.stubEnv("PUBLIC_BUCKET_URL", "https://assets.example");
 });
@@ -39,7 +44,7 @@ afterEach(() => {
 describe("SpeakingStatus", () => {
 	it("confirms a match", () => {
 		const html = render({ phase: "outcome", outcome: { verdict: "match", sounds: [] } });
-		expect(text(html)).toBe("Your /ɪ/ sounded right. That's ship.");
+		expect(text(html)).toBe("Your ɪ sounded right. That's ship.");
 		expect(html).not.toContain("<button");
 	});
 
@@ -63,7 +68,7 @@ describe("SpeakingStatus", () => {
 				],
 			},
 		});
-		expect(text(html)).toBe("Your /ɪ/ sounded right.");
+		expect(text(html)).toBe("Your ɪ sounded right.");
 	});
 
 	it("names the heard sound and the word it makes, with a button to hear it", () => {
@@ -76,7 +81,7 @@ describe("SpeakingStatus", () => {
 				sounds: [],
 			},
 		});
-		expect(text(html)).toContain("Your /ɪ/ sounded like /i/, which makes sheep.");
+		expect(text(html)).toContain("Your ɪ sounded like i, which makes sheep.");
 		expect(html).toContain('aria-label="Hear sheep"');
 	});
 
@@ -85,15 +90,15 @@ describe("SpeakingStatus", () => {
 			phase: "outcome",
 			outcome: { verdict: "swapped", heard: { id: "E", ipa: "ɛ" }, heardWord: null, sounds: [] },
 		});
-		expect(text(html)).toBe("Your /ɪ/ sounded like /ɛ/.");
+		expect(text(html)).toBe("Your ɪ sounded like ɛ.");
 		expect(html).not.toContain("<button");
 	});
 
 	it("says why it couldn't tell, never that the learner was wrong", () => {
 		for (const [reason, message] of [
 			["no-evidence", "Didn't catch the word. Try again a little closer to the mic."],
-			["close-call", "Somewhere between /ɪ/ and /i/. Try again and make it a clear /ɪ/."],
-			["other-sound", "That didn't sound clearly like /ɪ/ or /i/. Try again."],
+			["close-call", "Somewhere between ɪ and i. Try again and make it a clear ɪ."],
+			["other-sound", "That didn't sound clearly like ɪ or i. Try again."],
 		] as const) {
 			const html = render({
 				phase: "outcome",
@@ -118,7 +123,7 @@ describe("SpeakingStatus", () => {
 		] as const) {
 			const html = render({ phase: "outcome", outcome: { verdict: "different-word", heard } });
 			expect(text(html)).toBe(message);
-			expect(text(html)).not.toMatch(/\/[^/ ]+\//);
+			expect(sounds(html)).toEqual([]);
 			expect(html).not.toContain("<button");
 		}
 	});
@@ -128,7 +133,7 @@ describe("SpeakingStatus", () => {
 			phase: "outcome",
 			outcome: { verdict: "unclear", reason: "other-sound", sounds: [] },
 		});
-		expect(text(html).match(/\/[^/ ]+\//g)).toEqual(["/ɪ/", "/i/"]);
+		expect(sounds(html)).toEqual(["ɪ", "i"]);
 	});
 
 	it.each(Object.entries(FAILURE_MESSAGES))(
@@ -150,7 +155,7 @@ describe("SpeakingStatus", () => {
 		expect(render({ phase: "ready" })).toBe("");
 		expect(text(render({ phase: "recording" }))).toBe("Listening. Say ship.");
 		const scoring = render({ phase: "scoring" });
-		expect(text(scoring)).toBe("Checking your /ɪ/…");
+		expect(text(scoring)).toBe("Checking your ɪ…");
 		expect(scoring, "the sentence is one flex item, so the gap can't split it").toMatch(
 			/<\/svg><span>Checking your .*…<\/span><\/p>$/,
 		);

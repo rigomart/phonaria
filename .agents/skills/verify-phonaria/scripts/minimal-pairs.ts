@@ -79,10 +79,10 @@ const contrastPage = observation(
 	{
 		path: "/minimal-pairs/th-s",
 		status: 200,
-		heading: "/θ/ vs /s/: think vs sink",
+		heading: "θ vs s: think vs sink",
 		difference:
 			"/θ/ is made with the tongue between the teeth. /s/ is made with the tongue tip on the gum ridge behind the top teeth. Everything else is the same.",
-		columns: ["/θ/Voiceless dental fricative", "/s/Voiceless alveolar fricative"],
+		columns: ["θVoiceless dental fricative", "sVoiceless alveolar fricative"],
 		pairs: [
 			["thin", "sin"],
 			["thing", "sing"],
@@ -102,14 +102,14 @@ const contrastPage = observation(
 		soundLinks: ["/sounds/th-thin", "/sounds/s-sun"],
 		moreContrasts: [
 			{
-				heading: "More contrasts with /θ/",
-				links: [["/θ/ vs /t/three, tree", "/minimal-pairs/th-t"]],
+				heading: "More contrasts with θ",
+				links: [["θ vs tthree, tree", "/minimal-pairs/th-t"]],
 			},
 			{
-				heading: "More contrasts with /s/",
+				heading: "More contrasts with s",
 				links: [
-					["/s/ vs /z/price, prize", "/minimal-pairs/s-z"],
-					["/s/ vs /ʃ/see, she", "/minimal-pairs/s-sh"],
+					["s vs zprice, prize", "/minimal-pairs/s-z"],
+					["s vs ʃsee, she", "/minimal-pairs/s-sh"],
 				],
 			},
 		],
@@ -228,11 +228,11 @@ export const minimalPairs = {
 			},
 			{
 				path: "/minimal-pairs/i-ix",
-				heading: "/ɪ/ vs /i/: ship vs sheep",
+				heading: "ɪ vs i: ship vs sheep",
 				word: "ship",
 				sides: [
-					["target", "ship", "ˈʃɪp", "Details for /ɪ/, the marked sound"],
-					["partner", "sheep", "ˈʃip", "Details for /i/, the marked sound"],
+					["target", "ship", "ˈʃɪp", "Details for ɪ, the marked sound"],
+					["partner", "sheep", "ˈʃip", "Details for i, the marked sound"],
 				],
 				heard: null,
 				hear: [true, true],
@@ -244,13 +244,13 @@ export const minimalPairs = {
 		match: observation(readAttempt, {
 			word: "ship",
 			heard: "target",
-			status: "Your /ɪ/ sounded right. That's ship.",
+			status: "Your ɪ sounded right. That's ship.",
 			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		swapped: observation(readAttempt, {
 			word: "ship",
 			heard: "partner",
-			status: "Your /ɪ/ sounded like /i/, which makes sheep.",
+			status: "Your ɪ sounded like i, which makes sheep.",
 			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "Hear sheep"],
 		}),
 		"not-heard": observation(readAttempt, {
@@ -280,26 +280,26 @@ export const minimalPairs = {
 		"close-call": observation(readAttempt, {
 			word: "ship",
 			heard: null,
-			status: "Somewhere between /ɪ/ and /i/. Try again and make it a clear /ɪ/.",
+			status: "Somewhere between ɪ and i. Try again and make it a clear ɪ.",
 			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		"other-sound": observation(readAttempt, {
 			word: "ship",
 			heard: null,
-			status: "That didn't sound clearly like /ɪ/ or /i/. Try again.",
+			status: "That didn't sound clearly like ɪ or i. Try again.",
 			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
 		}),
 		"every-sound": observation(readSounds, {
-			status: "Your /ɪ/ sounded like /i/, which makes sheep.",
+			status: "Your ɪ sounded like i, which makes sheep.",
 			heading: "Sound by sound",
 			sounds: [
-				{ verdict: "match", buttons: ["Details for /ʃ/"], sentence: "/ʃ/ sounded right" },
+				{ verdict: "match", buttons: ["Details for ʃ"], sentence: "ʃ sounded right" },
 				{
 					verdict: "swapped",
-					buttons: ["Details for /ɪ/, the marked sound", "Details for /i/"],
-					sentence: "/ɪ/ sounded like /i/",
+					buttons: ["Details for ɪ, the marked sound", "Details for i"],
+					sentence: "ɪ sounded like i",
 				},
-				{ verdict: "unclear", buttons: ["Details for /p/"], sentence: "/p/ wasn't clear" },
+				{ verdict: "unclear", buttons: ["Details for p"], sentence: "p wasn't clear" },
 			],
 		}),
 		"heard-card": observation(
@@ -311,7 +311,7 @@ export const minimalPairs = {
 				cardHeading:
 					document.querySelector("[data-phoneme-details] h2")?.textContent?.trim() ?? null,
 			}),
-			{ open: "Details for /i/", cardHeading: "Long E /i/" },
+			{ open: "Details for i", cardHeading: "Long E" },
 		),
 		denied: statusIs(
 			"Phonaria can't use your microphone. Allow microphone access for this site, then try again.",

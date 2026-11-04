@@ -35,14 +35,16 @@ test.describe("Accessibility", () => {
 	test("has no serious axe violations on a minimal-pair contrast page", async ({ page }) => {
 		await page.goto("/minimal-pairs/th-s");
 		await expect(
-			page.getByRole("heading", { level: 1, name: "/θ/ vs /s/: think vs sink" }),
+			page.getByRole("heading", { level: 1, name: "θ vs s: think vs sink" }),
 		).toBeVisible();
 		await expectNoAxeViolations(page);
 	});
 
 	test("has no serious axe violations on a sound page", async ({ page }) => {
 		await page.goto("/sounds/th-thin");
-		await expect(page.getByRole("heading", { level: 1, name: "Voiceless TH /θ/" })).toBeVisible();
+		await expect(
+			page.getByRole("heading", { level: 1, name: "Voiceless TH", exact: true }),
+		).toBeVisible();
 		await expectNoAxeViolations(page);
 	});
 

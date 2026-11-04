@@ -97,7 +97,7 @@ describe("headline pairs", () => {
 		expect(page?.headline).toEqual(["ship", "sheep"]);
 		expect(page?.sounds.map(({ ipa }) => ipa)).toEqual(["ɪ", "i"]);
 		expect(page?.pairs[0]).toEqual(["sit", "seat"]);
-		expect(page && contrastPageHeading(page)).toBe("/ɪ/ vs /i/: ship vs sheep");
+		expect(page && contrastPageHeading(page)).toBe("ɪ vs i: ship vs sheep");
 	});
 
 	it("keeps the catalog's sound order and first pair where the map has no entry", () => {

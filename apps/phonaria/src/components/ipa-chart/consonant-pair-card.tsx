@@ -94,7 +94,7 @@ function ConsonantButton({
 			</TooltipTrigger>
 			<TooltipContent side="top" align="center">
 				<div className="max-w-56 text-pretty text-xs leading-snug font-medium">
-					/{phoneme.symbol}/ - {label}
+					{phoneme.symbol} - {label}
 				</div>
 			</TooltipContent>
 		</Tooltip>

@@ -73,19 +73,14 @@ describe("SoundResults", () => {
 			"swapped",
 			"swapped",
 		]);
-		const sentences = [
-			"/s/ sounded right",
-			"/l/ wasn't clear",
-			"/i/ sounded like /ɪ/",
-			"/p/ sounded like /k/",
-		];
+		const sentences = ["s sounded right", "l wasn't clear", "i sounded like ɪ", "p sounded like k"];
 		items.forEach((item, index) => expect(text(item)).toContain(sentences[index]));
 	});
 
 	it("names the sound in every sentence for screen readers, beside its glyph", () => {
 		for (const item of tiles(render(mixedView))) {
 			expect(item).toMatch(
-				/<span class="sr-only"><span class="font-display">\/[^/]+\/<\/span> <\/span>/,
+				/<span class="sr-only"><span class="font-display">[^<]+<\/span> <\/span>/,
 			);
 		}
 	});
@@ -94,15 +89,15 @@ describe("SoundResults", () => {
 		const html = render(mixedView);
 		const labels = [...html.matchAll(/aria-label="([^"]+)"/g)].map(([, label]) => label);
 		expect(labels).toEqual([
-			"Details for /s/",
-			"Details for /l/",
-			"Details for /i/, the marked sound",
-			"Details for /ɪ/",
-			"Details for /p/",
-			"Details for /k/",
+			"Details for s",
+			"Details for l",
+			"Details for i, the marked sound",
+			"Details for ɪ",
+			"Details for p",
+			"Details for k",
 		]);
 		const [, , swapped] = tiles(html);
-		expect(swapped).toMatch(/Details for \/i\/.*<svg[^>]*aria-hidden="true".*Details for \/ɪ\//);
+		expect(swapped).toMatch(/Details for i.*<svg[^>]*aria-hidden="true".*Details for ɪ/);
 	});
 
 	it("draws an unclear sound as a neutral note and never words a verdict as a mistake", () => {
@@ -115,7 +110,7 @@ describe("SoundResults", () => {
 
 	it("names the word another swapped sound makes, leaving the contrast sound's to the result", () => {
 		const html = render(mixedView);
-		expect(text(html)).toContain("Your /p/ sounded like /k/, which makes sleek.");
+		expect(text(html)).toContain("Your p sounded like k, which makes sleek.");
 		expect(text(html)).not.toContain("which makes slip");
 	});
 

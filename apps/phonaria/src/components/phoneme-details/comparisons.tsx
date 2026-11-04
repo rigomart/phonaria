@@ -44,10 +44,10 @@ export function ComparisonList({
 				return (
 					<DetailsCard key={contrastId} className="flex flex-col gap-3 p-3">
 						<p className="flex items-baseline gap-2 px-1">
-							<span className="font-display text-xl leading-none">/{partnerIpa}/</span>
+							<span className="font-display text-xl leading-none">{partnerIpa}</span>
 							<span className="truncate text-xs text-muted-foreground">{partnerName}</span>
 						</p>
-						<ul aria-label={`/${ipa}/ versus /${partnerIpa}/`} className="flex flex-col gap-1.5">
+						<ul aria-label={`${ipa} versus ${partnerIpa}`} className="flex flex-col gap-1.5">
 							{pairs.map(({ words: [own, partner] }) => (
 								<li key={`${own}-${partner}`} className="grid grid-cols-2 gap-2">
 									<PlayableWordCell

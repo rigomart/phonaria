@@ -34,7 +34,7 @@ describe("listContrastOptions", () => {
 			if (!page || !option) throw new Error(`Missing page or row for ${id}.`);
 			const [a, b] = option.sounds;
 			const [first, second] = option.example;
-			expect(`/${a.ipa}/ vs /${b.ipa}/: ${first} vs ${second}`, id).toBe(contrastPageHeading(page));
+			expect(`${a.ipa} vs ${b.ipa}: ${first} vs ${second}`, id).toBe(contrastPageHeading(page));
 		}
 		expect(getContrastOption("th-t")?.example).toEqual(["three", "tree"]);
 		expect(getContrastOption("th-s")?.example).toEqual(["think", "sink"]);

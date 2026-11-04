@@ -62,7 +62,7 @@ export function describeSound({
 	return {
 		targetAccent,
 		ipa,
-		/** The heading: the everyday name with the symbol ("Voiceless TH /θ/") where the sound has one, else the technical label. */
+		/** The heading: the everyday name ("Voiceless TH", "T") where the sound has one, else the technical label. */
 		name: heading ?? technical,
 		/** The technical label, shown under an everyday name; undefined where `name` is already it. */
 		label: heading ? technical : undefined,

@@ -70,7 +70,7 @@ export function Word({ children }: { children: ReactNode }) {
 }
 
 export function Sound({ ipa }: { ipa: string }) {
-	return <span className="font-display">/{ipa}/</span>;
+	return <span className="font-display">{ipa}</span>;
 }
 
 function OutcomePanel({
