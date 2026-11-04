@@ -6,7 +6,12 @@ import {
 import { useId } from "react";
 import { Link } from "@/components/link";
 import { SpelledWord } from "@/components/spelled-word";
-import { getSoundKeyExample, SOUNDS_PAGE_HEADING, soundPagePath } from "@/lib/sound-pages";
+import {
+	getSoundKeyExample,
+	SOUNDS_PAGE_HEADING,
+	soundHeading,
+	soundPagePath,
+} from "@/lib/sound-pages";
 
 const GROUPS = [
 	{ title: "Consonants", sounds: getLanguagePhonemeIds("en-us", "consonants") },
@@ -60,13 +65,17 @@ function SoundGroup({
 function SoundLink({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
 	const ipa = getIpaForPhonemeId(phonemeId);
 	const example = getSoundKeyExample(phonemeId);
+	const name = soundHeading(phonemeId);
 	return (
 		<Link
 			href={soundPagePath(phonemeId)}
-			aria-label={`${ipa} as in ${example.word}`}
+			aria-label={`${name}, as in ${example.word}`}
 			className="flex flex-col gap-1 rounded-xl bg-card px-3 py-2.5 text-card-foreground ring-1 ring-border transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 		>
-			<span className="font-display text-2xl leading-none">{ipa}</span>
+			<span className="flex items-baseline justify-between gap-2">
+				<span className="font-display text-2xl leading-none">{ipa}</span>
+				<span className="truncate text-xs font-medium text-muted-foreground">{name}</span>
+			</span>
 			<span className="text-sm text-muted-foreground">
 				as in <SpelledWord spelled={example.spelled} />
 			</span>

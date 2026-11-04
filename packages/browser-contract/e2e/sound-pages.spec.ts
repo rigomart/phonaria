@@ -7,7 +7,7 @@ import { notFoundHeading } from "../src/locators";
 const CHART_PATH = "/ipa-chart/consonants";
 const TH_TILE = "Voiceless dental fricative (θ)";
 const TH_PAGE = "/sounds/th-thin";
-const TH_HEADING = "Voiceless TH θ";
+const TH_HEADING = "Voiceless TH";
 
 test.describe("Sound pages", () => {
 	test("serves a sound's page", { tag: "@smoke" }, async ({ page }) => {
@@ -16,7 +16,9 @@ test.describe("Sound pages", () => {
 		await expect(page).toHaveTitle(
 			"How to pronounce the voiceless TH sound /θ/ (as in 'thin') - Phonaria",
 		);
-		await expect(page.getByRole("heading", { level: 1, name: TH_HEADING })).toBeVisible();
+		await expect(
+			page.getByRole("heading", { level: 1, name: TH_HEADING, exact: true }),
+		).toBeVisible();
 		await expect(page.getByRole("link", { name: "All sounds" })).toHaveAttribute(
 			"href",
 			SOUNDS_PATH,
@@ -40,7 +42,10 @@ test.describe("Sound pages", () => {
 		const response = await page.goto(SOUNDS_PATH);
 		expect(response?.status()).toBe(200);
 		await expect(page.locator('main a[href^="/sounds/"]')).toHaveCount(SOUND_PAGE_COUNT);
-		await expect(page.getByRole("link", { name: "θ as in thin" })).toHaveAttribute("href", TH_PAGE);
+		await expect(page.getByRole("link", { name: "Voiceless TH, as in thin" })).toHaveAttribute(
+			"href",
+			TH_PAGE,
+		);
 	});
 
 	test("returns not-found for an unknown sound", async ({ page }) => {
@@ -53,7 +58,7 @@ test.describe("Sound pages", () => {
 async function openDetails(page: Page, tile: Locator) {
 	await waitForHydration(tile);
 	await tile.click();
-	await expect(page.getByRole("dialog", { name: /Voiceless TH θ$/ })).toBeVisible();
+	await expect(page.getByRole("dialog", { name: "Voiceless TH", exact: true })).toBeVisible();
 	await expect(page).toHaveURL(new RegExp(`${CHART_PATH}$`));
 }
 
@@ -79,7 +84,7 @@ test.describe("Chart tiles link to sound pages", () => {
 		await page.getByRole("button", { name: "Full details for θ" }).click();
 
 		await page.getByRole("button", { name: "Voiced dental fricative (ð)" }).click();
-		await expect(page.getByRole("dialog", { name: /Voiced TH ð$/ })).toBeVisible();
+		await expect(page.getByRole("dialog", { name: "Voiced TH", exact: true })).toBeVisible();
 		await expect(page.getByRole("link", { name: "Open full page" })).toHaveAttribute(
 			"href",
 			"/sounds/th-this",
@@ -116,7 +121,7 @@ test.describe("Chart tiles link to sound pages", () => {
 		await waitForHydration(tile);
 		await tile.focus();
 		await page.keyboard.press("Enter");
-		await expect(page.getByRole("dialog", { name: /Voiceless TH θ$/ })).toBeVisible();
+		await expect(page.getByRole("dialog", { name: "Voiceless TH", exact: true })).toBeVisible();
 		await expect(page).toHaveURL(new RegExp(`${CHART_PATH}$`));
 	});
 
@@ -132,7 +137,9 @@ test.describe("Chart tiles link to sound pages", () => {
 
 			const [newTab] = await Promise.all([context.waitForEvent("page"), tile.click(click)]);
 			await expect(newTab).toHaveURL(new RegExp(`${TH_PAGE}$`));
-			await expect(newTab.getByRole("heading", { level: 1, name: TH_HEADING })).toBeVisible();
+			await expect(
+				newTab.getByRole("heading", { level: 1, name: TH_HEADING, exact: true }),
+			).toBeVisible();
 			await expect(page).toHaveURL(new RegExp(`${CHART_PATH}$`));
 			await expect(page.getByRole("dialog")).toHaveCount(0);
 		});
@@ -146,12 +153,14 @@ test.describe("Chart tiles link to sound pages", () => {
 			const tile = page.getByRole("button", { name: TH_TILE });
 			await waitForHydration(tile);
 			await tile.tap();
-			await expect(page.getByRole("dialog", { name: /Voiceless TH θ$/ })).toBeVisible();
+			await expect(page.getByRole("dialog", { name: "Voiceless TH", exact: true })).toBeVisible();
 			await expect(page).toHaveURL(new RegExp(`${CHART_PATH}$`));
 
 			await page.getByRole("link", { name: "Open full page" }).tap();
 			await expect(page).toHaveURL(new RegExp(`${TH_PAGE}$`));
-			await expect(page.getByRole("heading", { level: 1, name: TH_HEADING })).toBeVisible();
+			await expect(
+				page.getByRole("heading", { level: 1, name: TH_HEADING, exact: true }),
+			).toBeVisible();
 		});
 	});
 });

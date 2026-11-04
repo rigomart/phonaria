@@ -25,7 +25,7 @@ describe("buildBreadcrumbStructuredData", () => {
 		expect(
 			buildBreadcrumbStructuredData(SITE_URL, [
 				{ name: "Sounds", path: "/sounds" },
-				{ name: "Voiceless TH θ", path: "/sounds/th-thin" },
+				{ name: "Voiceless TH /θ/", path: "/sounds/th-thin" },
 			]),
 		).toEqual({
 			"@context": "https://schema.org",
@@ -35,7 +35,7 @@ describe("buildBreadcrumbStructuredData", () => {
 				{
 					"@type": "ListItem",
 					position: 2,
-					name: "Voiceless TH θ",
+					name: "Voiceless TH /θ/",
 					item: `${SITE_URL}/sounds/th-thin`,
 				},
 			],

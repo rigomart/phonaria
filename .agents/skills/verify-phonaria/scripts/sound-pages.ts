@@ -38,7 +38,7 @@ const index = observation(
 			{ title: "Vowels", count: 16, first: "/sounds/ee-seed", last: "/sounds/oy-boy" },
 		],
 		uniqueLinks: 40,
-		thLabel: "θ as in thin",
+		thLabel: "Voiceless TH, as in thin",
 	},
 );
 
@@ -89,7 +89,7 @@ const soundPage = observation(
 		path: "/sounds/th-thin",
 		title: "How to pronounce the voiceless TH sound /θ/ (as in 'thin') - Phonaria",
 		canonical: "http://localhost:3000/sounds/th-thin",
-		h1: ["Voiceless TH θ"],
+		h1: ["Voiceless TH"],
 		sections: [
 			"How it's made",
 			"Compare with",

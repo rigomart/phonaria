@@ -20,7 +20,7 @@ import {
 	type SoundRef,
 	type SoundVariant,
 } from "@/lib/sound-page-content";
-import { getSoundExamples } from "@/lib/sound-pages";
+import { getSoundExamples, soundHeading } from "@/lib/sound-pages";
 import { cn } from "@/lib/utils";
 
 const ACCENT = "en-us" as const;
@@ -138,6 +138,7 @@ function SoundLink({ sound }: { sound: SoundRef }) {
 	return (
 		<Link
 			href={sound.path}
+			aria-label={`${soundHeading(sound.id)}, as in ${sound.word}`}
 			className="inline-flex items-baseline gap-1.5 rounded-lg px-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 		>
 			<span className="font-display text-base text-foreground">{sound.ipa}</span>
@@ -266,7 +267,7 @@ function FamilyGroup({ label, sounds }: { label: string; sounds: readonly SoundR
 					<li key={sound.id}>
 						<Link
 							href={sound.path}
-							aria-label={`${sound.ipa} ${sound.name}, as in ${sound.word}`}
+							aria-label={`${soundHeading(sound.id)}, as in ${sound.word}`}
 							className="flex items-baseline gap-1.5 rounded-xl bg-background-strong px-3 py-1.5 text-sm text-muted-foreground shadow-xs transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 						>
 							<span className="font-display text-base text-foreground">{sound.ipa}</span>
@@ -296,23 +297,29 @@ export function PreviousNext({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId 
 
 function NeighbourLink({ sound, direction }: { sound: SoundRef; direction: "previous" | "next" }) {
 	const Arrow = direction === "previous" ? ArrowLeft : ArrowRight;
+	const which = direction === "previous" ? "Previous" : "Next";
+	const name = soundHeading(sound.id);
 	return (
 		<Link
 			href={sound.path}
 			rel={direction === "previous" ? "prev" : "next"}
+			aria-label={`${which} sound: ${name}`}
 			className={cn(
-				"flex min-w-0 flex-1 items-center gap-3 rounded-2xl bg-background px-4 py-3 transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
+				"group/neighbour flex min-w-0 flex-1 items-center gap-3 rounded-2xl bg-background px-4 py-3 transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
 				direction === "next" && "flex-row-reverse text-right",
 			)}
 		>
-			<Arrow aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+			{/* On a phone the glyph box and "Previous"/"Next" carry the direction, leaving the name room. */}
+			<Arrow aria-hidden="true" className="hidden size-4 shrink-0 text-muted-foreground sm:block" />
+			<span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary font-display text-xl leading-none text-foreground transition-colors group-hover/neighbour:bg-background motion-reduce:transition-none">
+				{sound.ipa}
+			</span>
 			<span className="flex min-w-0 flex-col">
-				<span className="text-xs text-muted-foreground">
-					{direction === "previous" ? "Previous sound" : "Next sound"}
+				<span className="whitespace-nowrap text-xs text-muted-foreground">
+					{which}
+					<span className="hidden sm:inline"> sound</span>
 				</span>
-				<span className="truncate text-sm text-foreground">
-					<span className="font-display">{sound.ipa}</span> {sound.name}
-				</span>
+				<span className="truncate text-sm font-medium text-foreground">{name}</span>
 			</span>
 		</Link>
 	);

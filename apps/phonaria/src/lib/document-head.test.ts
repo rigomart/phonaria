@@ -445,7 +445,7 @@ describe("buildSoundHead", () => {
 				{
 					"@type": "ListItem",
 					position: 2,
-					name: "Voiceless TH θ",
+					name: "Voiceless TH /θ/",
 					item: "https://phonaria-staging.example.test/sounds/th-thin",
 				},
 			],
@@ -592,7 +592,7 @@ describe("buildMinimalPairContrastHead", () => {
 			{
 				"@type": "ListItem",
 				position: 2,
-				name: "ɪ vs i: ship vs sheep",
+				name: "/ɪ/ vs /i/: ship vs sheep",
 				item: "https://phonaria-staging.example.test/minimal-pairs/i-ix",
 			},
 		]);

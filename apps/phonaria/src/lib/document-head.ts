@@ -35,7 +35,7 @@ import { buildLanguageHistoryStructuredData } from "@/lib/language-history/struc
 import {
 	type ContrastPage,
 	contrastPageDescription,
-	contrastPageHeading,
+	contrastBreadcrumbName,
 	contrastPagePath,
 	contrastPageTitle,
 	MINIMAL_PAIRS_PAGE_DESCRIPTION,
@@ -53,7 +53,7 @@ import {
 	SOUNDS_PAGE_DESCRIPTION,
 	SOUNDS_PAGE_TITLE,
 	SOUNDS_PATH,
-	soundHeading,
+	soundBreadcrumbName,
 	soundPageDescription,
 	soundPagePath,
 	soundPageTitle,
@@ -286,7 +286,7 @@ export function buildSoundHead(phonemeId: EnglishPhonemeSymbolId): StartHead {
 		(siteUrl) =>
 			buildBreadcrumbStructuredData(siteUrl, [
 				{ name: "Sounds", path: SOUNDS_PATH },
-				{ name: soundHeading(phonemeId), path },
+				{ name: soundBreadcrumbName(phonemeId), path },
 			]),
 	);
 }
@@ -344,7 +344,7 @@ export function buildMinimalPairContrastHead(contrast: ContrastPage | undefined)
 		(siteUrl) =>
 			buildBreadcrumbStructuredData(siteUrl, [
 				{ name: MinimalPairActivity.name, path: MinimalPairActivity.path },
-				{ name: contrastPageHeading(contrast), path },
+				{ name: contrastBreadcrumbName(contrast), path },
 			]),
 	);
 }

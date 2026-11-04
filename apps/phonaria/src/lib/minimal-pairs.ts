@@ -71,6 +71,11 @@ export function contrastPageHeading({ sounds: [a, b], headline }: ContrastPage):
 	return `${a.ipa} vs ${b.ipa}: ${headline.join(" vs ")}`;
 }
 
+/** The page's name in its breadcrumb, e.g. "/ɪ/ vs /i/: ship vs sheep": plain text, so it marks the symbols as the title does. */
+export function contrastBreadcrumbName({ sounds: [a, b], headline }: ContrastPage): string {
+	return `/${a.ipa}/ vs /${b.ipa}/: ${headline.join(" vs ")}`;
+}
+
 export function contrastPageTitle({ sounds: [a, b], headline }: ContrastPage): string {
 	return `${capitalize(headline.join(" vs "))}: /${a.ipa}/ and /${b.ipa}/ minimal pairs with audio`;
 }

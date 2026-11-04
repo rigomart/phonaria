@@ -16,7 +16,7 @@ test.describe("IPA charts", () => {
 		const tile = page.getByRole("button", { name: CONSONANT_BUTTON_NAME });
 		await waitForHydration(tile);
 		await tile.click();
-		await expect(page.getByRole("dialog", { name: "P p", exact: true })).toBeVisible();
+		await expect(page.getByRole("dialog", { name: "P", exact: true })).toBeVisible();
 		await expect(page).toHaveURL(/\/ipa-chart\/consonants$/);
 	});
 

@@ -27,7 +27,7 @@ const consonantTile = observation(readOpenTile, {
 	tag: "a",
 	label: "Voiceless dental fricative (θ)",
 	href: "/sounds/th-thin",
-	title: "Voiceless TH θ",
+	title: "Voiceless TH",
 	pageLink: "/sounds/th-thin",
 });
 
@@ -36,7 +36,7 @@ const vowelTile = observation(readOpenTile, {
 	tag: "a",
 	label: "Near-open front unrounded vowel (æ)",
 	href: "/sounds/ae-cat",
-	title: "Short A æ",
+	title: "Short A",
 	pageLink: "/sounds/ae-cat",
 });
 
@@ -45,7 +45,7 @@ const frequencyRow = observation(readOpenTile, {
 	tag: "a",
 	label: "ʃ as in shop: 33rd, 0.8%",
 	href: "/sounds/sh-shop",
-	title: "SH ʃ",
+	title: "SH",
 	pageLink: "/sounds/sh-shop",
 });
 
@@ -55,7 +55,7 @@ const fullPage = observation(
 		h1: Array.from(document.querySelectorAll("h1")).map((h) => h.textContent?.trim()),
 		details: document.querySelectorAll("[data-phoneme-details]").length,
 	}),
-	{ path: "/sounds/th-thin", h1: ["Voiceless TH θ"], details: 1 },
+	{ path: "/sounds/th-thin", h1: ["Voiceless TH"], details: 1 },
 );
 
 const sitemap = observation(

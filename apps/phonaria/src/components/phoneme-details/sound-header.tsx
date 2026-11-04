@@ -13,7 +13,7 @@ const TITLE_CLASS = "font-display text-lg leading-snug font-semibold tracking-ti
 /**
  * The sound's name as the heading of the container that shows it: an h2 in a
  * drawer or panel, the h1 of a page of its own. A technical label alone gets
- * its symbol read first; an everyday name already ends with it.
+ * its symbol read first; an everyday name stands alone, its symbol in the tile.
  */
 export function SoundHeading({
 	sound,

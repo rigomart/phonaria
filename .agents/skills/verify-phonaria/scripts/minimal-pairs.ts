@@ -311,7 +311,7 @@ export const minimalPairs = {
 				cardHeading:
 					document.querySelector("[data-phoneme-details] h2")?.textContent?.trim() ?? null,
 			}),
-			{ open: "Details for i", cardHeading: "Long E i" },
+			{ open: "Details for i", cardHeading: "Long E" },
 		),
 		denied: statusIs(
 			"Phonaria can't use your microphone. Allow microphone access for this site, then try again.",
