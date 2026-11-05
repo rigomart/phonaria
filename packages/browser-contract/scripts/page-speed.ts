@@ -13,6 +13,7 @@ import {
 	PAGE_SPEED_CATEGORIES,
 	PAGE_SPEED_PAGES,
 	PAGE_SPEED_RUNS,
+	PAGE_SPEED_SKIPPED_AUDITS,
 	type PageSpeedRow,
 	readRun,
 	renderSummary,
@@ -49,25 +50,29 @@ if (process.env.GITHUB_STEP_SUMMARY) {
 console.log(summary);
 
 async function measure(path: string, run: number): Promise<RunOutcome> {
-	const chrome = await chromeLauncher.launch({
-		chromeFlags: ["--headless=new", "--no-sandbox"],
-	});
+	let chrome: chromeLauncher.LaunchedChrome | undefined;
+	let result: Awaited<ReturnType<typeof lighthouse>>;
 	try {
-		const result = await lighthouse(`${origin}${path}`, {
+		chrome = await chromeLauncher.launch({ chromeFlags: ["--headless=new", "--no-sandbox"] });
+		result = await lighthouse(`${origin}${path}`, {
 			port: chrome.port,
 			logLevel: "error",
 			onlyCategories: [...PAGE_SPEED_CATEGORIES],
+			skipAudits: PAGE_SPEED_SKIPPED_AUDITS,
 			extraHeaders: headers,
 		});
-		if (!result) return { ok: false, problem: "Lighthouse returned no result" };
-		const outcome = readRun(result.lhr, origin);
-		saveReports(path, run, result.lhr);
-		return outcome;
 	} catch (error) {
 		return { ok: false, problem: `run failed: ${describe(error)}` };
 	} finally {
-		chrome.kill();
+		chrome?.kill();
 	}
+	if (!result) return { ok: false, problem: "Lighthouse returned no result" };
+	try {
+		saveReports(path, run, result.lhr);
+	} catch (error) {
+		console.log(`::warning::Couldn't save the ${path} run ${run} report: ${describe(error)}`);
+	}
+	return readRun(result.lhr, origin);
 }
 
 function saveReports(path: string, run: number, lhr: Parameters<typeof withoutRequestHeaders>[0]) {
@@ -86,6 +91,6 @@ function saveReports(path: string, run: number, lhr: Parameters<typeof withoutRe
 }
 
 function describe(error: unknown): string {
-	const message = error instanceof Error ? error.message : String(error);
+	const message = (error instanceof Error ? error.message : String(error)).replace(/\s+/g, " ");
 	return containsAny(message, headerValues) ? "an error that mentioned the Access token" : message;
 }

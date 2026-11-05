@@ -97,7 +97,9 @@ median Performance, SEO and Accessibility scores, largest contentful paint,
 layout shift and total blocking time to `summary.md` (and to
 `GITHUB_STEP_SUMMARY` when set), plus every run's JSON and HTML report, in
 `PAGE_SPEED_OUT_DIR` (default `page-speed-reports/`). Chrome must be
-installed.
+installed. SEO leaves out Lighthouse's crawlability check: previews are
+`noindex` on purpose, and that one check would hold every SEO score at
+about 66.
 
 The preview workflow runs it after the smoke checks and uploads the reports
 as the `page-speed-reports` artifact. It is report only: it exits 0 whatever

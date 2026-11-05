@@ -11,6 +11,9 @@ export const PAGE_SPEED_RUNS = 3;
 
 export const PAGE_SPEED_CATEGORIES = ["performance", "seo", "accessibility"] as const;
 
+/** Previews are noindex on purpose, so this audit would hold every SEO score at about 66. */
+export const PAGE_SPEED_SKIPPED_AUDITS = ["is-crawlable"];
+
 export interface PageSpeedRun {
 	performance: number | null;
 	seo: number | null;
@@ -86,7 +89,7 @@ export function renderSummary(rows: PageSpeedRow[], origin: string, runsPerPage:
 	const lines = [
 		`### Page speed (median of ${runsPerPage} runs, mobile)`,
 		"",
-		`Lighthouse against ${origin}. Report only: these numbers never fail the check.`,
+		`Lighthouse against ${origin}. Report only: these numbers never fail the check. SEO leaves out the crawlability check, since previews aren't meant to be indexed.`,
 		"",
 		"| Page | Performance | SEO | Accessibility | LCP | CLS | TBT |",
 		"| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
