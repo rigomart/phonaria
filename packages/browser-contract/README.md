@@ -88,6 +88,28 @@ Transcription is two lanes in `baselines/<target>.json`:
 
 Do not combine those samples into one median.
 
+## Page speed
+
+`bun run page-speed` runs Lighthouse with its default mobile settings, three
+times each, against `/`, `/sounds/th-thin`, `/minimal-pairs/p-b` and
+`/ipa-chart/vowels` on `CONTRACT_TARGET`. It writes a table of each page's
+median Performance, SEO and Accessibility scores, largest contentful paint,
+layout shift and total blocking time to `summary.md` (and to
+`GITHUB_STEP_SUMMARY` when set), plus every run's JSON and HTML report, in
+`PAGE_SPEED_OUT_DIR` (default `page-speed-reports/`). Chrome must be
+installed.
+
+The preview workflow runs it after the smoke checks and uploads the reports
+as the `page-speed-reports` artifact. It is report only: it exits 0 whatever
+the numbers are, and the step is `continue-on-error`.
+
+On a `cloudflare-access` target, Lighthouse sends the Access service token
+as request headers. Lighthouse copies those headers into the report's
+settings, so the script removes them before saving and skips any report
+that still holds a token value. A run that ends anywhere but the target's
+origin, such as the Access login page, doesn't count toward the medians and
+is noted under the table.
+
 ## Adding a target
 
 1. Copy an existing `targets/*.json` file.
