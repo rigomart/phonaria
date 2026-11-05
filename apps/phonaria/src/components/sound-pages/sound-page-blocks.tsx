@@ -1,6 +1,6 @@
 import type { EnglishPhonemeSymbolId } from "@phonaria/phonetics-data";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { type ReactNode, useId } from "react";
+import { type CSSProperties, type ReactNode, useId } from "react";
 import { Link } from "@/components/link";
 import { DetailsCard } from "@/components/phoneme-details/details-section";
 import { MergerNote } from "@/components/phoneme-details/merger-note";
@@ -25,11 +25,19 @@ import { cn } from "@/lib/utils";
 
 const ACCENT = "en-us" as const;
 
-/** A titled block of the page, its title an h2 under the sound's h1. */
-export function PageSection({ title, children }: { title: string; children: ReactNode }) {
+/** A titled block of the page, its title an h2 under the sound's h1. It rises in after `style`'s `--enter-delay`. */
+export function PageSection({
+	title,
+	style,
+	children,
+}: {
+	title: string;
+	style?: CSSProperties;
+	children: ReactNode;
+}) {
 	const headingId = useId();
 	return (
-		<section aria-labelledby={headingId} className="flex flex-col gap-3">
+		<section aria-labelledby={headingId} className="flex flex-col gap-3 enter-rise" style={style}>
 			<h2
 				id={headingId}
 				className="font-display text-xl font-semibold tracking-tight text-foreground"

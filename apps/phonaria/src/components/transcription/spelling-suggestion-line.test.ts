@@ -47,13 +47,12 @@ describe("SpellingSuggestionSlot", () => {
 		expect(html).not.toContain("<button");
 	});
 
-	it("fades the offer in", () => {
+	it("rises the offer in with the shared entrance", () => {
 		const html = renderToStaticMarkup(
 			createElement(SpellingSuggestionSlot, { suggestion, onAccept: () => {} }),
 		);
 
-		expect(html).toMatch(/animate-in[^"]*fade-in/);
-		expect(html).toContain("motion-reduce:animate-none");
+		expect(html).toContain("enter-rise");
 		expect(html).toContain("Did you mean ");
 	});
 });

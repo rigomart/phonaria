@@ -6,6 +6,7 @@ import {
 import { useId } from "react";
 import { Link } from "@/components/link";
 import { SpelledWord } from "@/components/spelled-word";
+import { enterDelay, stagger } from "@/lib/motion";
 import {
 	getSoundKeyExample,
 	SOUNDS_PAGE_HEADING,
@@ -14,9 +15,11 @@ import {
 } from "@/lib/sound-pages";
 
 const GROUPS = [
-	{ title: "Consonants", sounds: getLanguagePhonemeIds("en-us", "consonants") },
-	{ title: "Vowels", sounds: getLanguagePhonemeIds("en-us", "vowels") },
+	{ title: "Consonants", sounds: getLanguagePhonemeIds("en-us", "consonants"), start: 80 },
+	{ title: "Vowels", sounds: getLanguagePhonemeIds("en-us", "vowels"), start: 160 },
 ] as const;
+
+const CARD_STEP = 8;
 
 export function SoundsContent() {
 	return (
@@ -41,19 +44,29 @@ export function SoundsContent() {
 function SoundGroup({
 	title,
 	sounds,
+	start,
 }: {
 	title: string;
 	sounds: readonly EnglishPhonemeSymbolId[];
+	start: number;
 }) {
 	const titleId = useId();
 	return (
-		<section aria-labelledby={titleId} className="flex flex-col gap-3 enter-rise enter-delay-80">
-			<h2 id={titleId} className="font-display text-lg font-semibold tracking-tight">
+		<section aria-labelledby={titleId} className="flex flex-col gap-3">
+			<h2
+				id={titleId}
+				className="font-display text-lg font-semibold tracking-tight enter-rise"
+				style={enterDelay(start)}
+			>
 				{title}
 			</h2>
 			<ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
-				{sounds.map((phonemeId) => (
-					<li key={phonemeId}>
+				{sounds.map((phonemeId, index) => (
+					<li
+						key={phonemeId}
+						className="enter-scale"
+						style={enterDelay(stagger(index, { start: start + 20, step: CARD_STEP }))}
+					>
 						<SoundLink phonemeId={phonemeId} />
 					</li>
 				))}
