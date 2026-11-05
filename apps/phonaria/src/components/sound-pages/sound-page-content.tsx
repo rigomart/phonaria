@@ -9,6 +9,7 @@ import { describeSound, getSpellingPattern } from "@/components/phoneme-details/
 import { SoundHeading } from "@/components/phoneme-details/sound-header";
 import { SoundTile } from "@/components/phoneme-details/sound-tile";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
+import { enterDelay, stagger } from "@/lib/motion";
 import { getAllComparisons, getSoundFamilies, getSoundVariants } from "@/lib/sound-page-content";
 import { getSoundExamples, SOUNDS_PATH } from "@/lib/sound-pages";
 import { pairSpellings } from "@/lib/spelling-pairs";
@@ -67,7 +68,7 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 				data-phoneme-details
 				className="flex w-full max-w-6xl flex-col gap-10 p-4 sm:p-6 lg:flex-row lg:items-start"
 			>
-				<div className="flex flex-col gap-5 rounded-3xl bg-popover p-5 lg:sticky lg:top-18 lg:max-h-[calc(100svh-6rem)] lg:w-96 lg:shrink-0 lg:overflow-y-auto">
+				<div className="flex flex-col gap-5 rounded-3xl bg-popover p-5 enter-rise lg:sticky lg:top-18 lg:max-h-[calc(100svh-6rem)] lg:w-96 lg:shrink-0 lg:overflow-y-auto">
 					<Link
 						href={SOUNDS_PATH}
 						className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "-ml-2.5 self-start")}
@@ -96,13 +97,19 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 					<FrequencyFact phonemeId={phonemeId} />
 				</div>
 				<div className="raised-surface flex min-w-0 flex-1 flex-col gap-12">
-					{sections.map(({ title, content }) => (
-						<PageSection key={title} title={title}>
+					{sections.map(({ title, content }, index) => (
+						<PageSection
+							key={title}
+							title={title}
+							style={enterDelay(stagger(index, { start: 80, step: 60, cap: 2 }))}
+						>
 							{content}
 						</PageSection>
 					))}
-					<SyntheticVoiceNote targetAccent={ACCENT} words={pageWords(phonemeId)} />
-					<PreviousNext phonemeId={phonemeId} />
+					<div className="flex flex-col gap-12 enter-rise enter-delay-200">
+						<SyntheticVoiceNote targetAccent={ACCENT} words={pageWords(phonemeId)} />
+						<PreviousNext phonemeId={phonemeId} />
+					</div>
 				</div>
 			</article>
 		</div>

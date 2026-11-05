@@ -111,7 +111,12 @@ export function SoundInputForm({ leading }: { leading: ReactNode }) {
 							aria-expanded={open}
 							onClick={() => setOpen(!open)}
 						>
-							<ChevronDown className={cn("transition-transform", open && "rotate-180")} />
+							<ChevronDown
+								className={cn(
+									"transition-transform motion-reduce:transition-none",
+									open && "rotate-180",
+								)}
+							/>
 						</InputGroupButton>
 					</InputGroupAddon>
 				</InputGroup>

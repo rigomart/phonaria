@@ -51,10 +51,7 @@ export function SpellingSuggestionSlot({
 	return (
 		<div className="flex min-w-0 flex-1 items-center" aria-live="polite">
 			{suggestion ? (
-				<div
-					key={suggestion.suggestedText}
-					className="max-w-full animate-in fade-in slide-in-from-top-1 duration-300 motion-reduce:animate-none"
-				>
+				<div key={suggestion.suggestedText} className="max-w-full enter-rise">
 					<SpellingSuggestionLineControl
 						suggestion={suggestion}
 						onAccept={onAccept}
