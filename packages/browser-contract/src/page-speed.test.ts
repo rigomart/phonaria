@@ -3,11 +3,13 @@ import { resolve } from "node:path";
 import type { Result as LighthouseResult } from "lighthouse";
 import { describe, expect, it } from "vitest";
 import {
+	buildMedians,
 	containsAny,
 	median,
 	readRun,
 	renderSummary,
 	reportBaseName,
+	runSourceFromEnv,
 	summarizePage,
 	withoutRequestHeaders,
 } from "./page-speed";
@@ -109,6 +111,90 @@ describe("renderSummary", () => {
 	});
 });
 
+describe("runSourceFromEnv", () => {
+	it("prefers the pull request's head commit and number", () => {
+		expect(
+			runSourceFromEnv({ PAGE_SPEED_COMMIT: "abc", PAGE_SPEED_PR: "469", GITHUB_SHA: "merge" }),
+		).toEqual({ commit: "abc", pullRequest: 469 });
+	});
+
+	it("falls back to GITHUB_SHA, and to nothing for a local run", () => {
+		expect(runSourceFromEnv({ GITHUB_SHA: "merge" })).toEqual({
+			commit: "merge",
+			pullRequest: null,
+		});
+		expect(runSourceFromEnv({ PAGE_SPEED_COMMIT: "", PAGE_SPEED_PR: "" })).toEqual({
+			commit: null,
+			pullRequest: null,
+		});
+		expect(runSourceFromEnv({ PAGE_SPEED_PR: "not a number" }).pullRequest).toBeNull();
+	});
+});
+
+describe("buildMedians", () => {
+	const slower = lhr({
+		categories: { performance: { score: 0.8 }, seo: { score: 1 }, accessibility: { score: 0.96 } },
+		audits: {
+			"largest-contentful-paint": { numericValue: 3000 },
+			"cumulative-layout-shift": { numericValue: 0.1 },
+			"total-blocking-time": { numericValue: 300 },
+		},
+	});
+	const rows = [
+		summarizePage("/", [
+			readRun(lhr(), ORIGIN),
+			readRun(slower, ORIGIN),
+			readRun(lhr({ finalDisplayedUrl: "https://team.example.com/" }), ORIGIN),
+			readRun(lhr(), ORIGIN),
+		]),
+		summarizePage("/ipa-chart/vowels", [{ ok: false, problem: "run failed: boom" }]),
+	];
+	const source = { commit: "abc123", pullRequest: 469 };
+
+	it("holds each metric's median and its per-run values, with where they came from", () => {
+		const medians = buildMedians(rows, ORIGIN, 4, source);
+		expect(medians).toMatchObject({ commit: "abc123", pullRequest: 469, origin: ORIGIN });
+		const home = medians.pages[0];
+		expect(home.validRuns).toBe(3);
+		expect(home.metrics.performance).toEqual({ median: 91, runs: [91, 80, 91] });
+		expect(home.metrics.lcpMs).toEqual({ median: 2100, runs: [2100, 3000, 2100] });
+		expect(home.metrics.cls.runs).toEqual([0.012, 0.1, 0.012]);
+		expect(Object.keys(home.metrics)).toEqual([
+			"performance",
+			"seo",
+			"accessibility",
+			"lcpMs",
+			"cls",
+			"tbtMs",
+		]);
+	});
+
+	it("keeps a page with no counted runs, with null medians and the reason", () => {
+		const empty = buildMedians(rows, ORIGIN, 4, source).pages[1];
+		expect(empty.metrics.performance).toEqual({ median: null, runs: [] });
+		expect(empty.problems).toEqual(["run failed: boom"]);
+	});
+
+	it("takes its medians from the rows the summary table prints", () => {
+		const { performance, seo, accessibility, lcpMs, cls, tbtMs } = buildMedians(
+			rows,
+			ORIGIN,
+			4,
+			source,
+		).pages[0].metrics;
+		expect(renderSummary(rows, ORIGIN, 4)).toContain(
+			`| \`/\` | ${performance.median} | ${seo.median} | ${accessibility.median} | ${(lcpMs.median! / 1000).toFixed(1)} s | ${cls.median!.toFixed(2)} | ${tbtMs.median} ms |`,
+		);
+	});
+
+	it("never holds a token value or request headers", () => {
+		const runs = [readRun(lhr(), ORIGIN)];
+		const json = JSON.stringify(buildMedians([summarizePage("/", runs)], ORIGIN, 1, source));
+		expect(containsAny(json, ["s3cret"])).toBe(false);
+		expect(json).not.toMatch(/header/i);
+	});
+});
+
 describe("withoutRequestHeaders", () => {
 	it("drops the request headers Lighthouse copies into the report", () => {
 		const clean = withoutRequestHeaders(lhr());
@@ -142,6 +228,18 @@ describe("preview workflow", () => {
 		const upload = workflow.slice(workflow.indexOf("- name: Upload page-speed reports"));
 		expect(measure.split("- name:")[1]).toContain("continue-on-error: true");
 		expect(upload.split("- name:")[1]).toContain("continue-on-error: true");
+	});
+
+	it("keeps the page-speed reports as long as GitHub allows", () => {
+		const upload = workflow.slice(workflow.indexOf("- name: Upload page-speed reports"));
+		expect(upload.split("- name:")[1]).toContain("retention-days: 90");
+	});
+
+	it("tells the page-speed step which commit and pull request it measures", () => {
+		const measure = workflow.slice(workflow.indexOf("- name: Measure page speed"));
+		const step = measure.split("- name:")[1];
+		expect(step).toContain("PAGE_SPEED_COMMIT: ${{ github.event.pull_request.head.sha }}");
+		expect(step).toContain("PAGE_SPEED_PR: ${{ github.event.pull_request.number }}");
 	});
 
 	it("measures only after the smoke checks", () => {

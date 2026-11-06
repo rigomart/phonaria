@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 /**
  * Runs Lighthouse with its default mobile settings against a few pages of a
- * deployed target and writes a summary table plus every run's report.
+ * deployed target and writes a summary table, a medians file with the numbers
+ * behind it, and every run's report.
  * Report only: it exits 0 whatever the numbers are, so it never fails a check.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -9,6 +10,7 @@ import { join, resolve } from "node:path";
 import * as chromeLauncher from "chrome-launcher";
 import lighthouse, { generateReport } from "lighthouse";
 import {
+	buildMedians,
 	containsAny,
 	PAGE_SPEED_CATEGORIES,
 	PAGE_SPEED_PAGES,
@@ -19,6 +21,7 @@ import {
 	renderSummary,
 	reportBaseName,
 	type RunOutcome,
+	runSourceFromEnv,
 	summarizePage,
 	withoutRequestHeaders,
 } from "../src/page-speed";
@@ -48,6 +51,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
 	writeFileSync(process.env.GITHUB_STEP_SUMMARY, summary, { flag: "a" });
 }
 console.log(summary);
+saveMedians(rows);
 
 async function measure(path: string, run: number): Promise<RunOutcome> {
 	let chrome: chromeLauncher.LaunchedChrome | undefined;
@@ -73,6 +77,20 @@ async function measure(path: string, run: number): Promise<RunOutcome> {
 		console.log(`::warning::Couldn't save the ${path} run ${run} report: ${describe(error)}`);
 	}
 	return readRun(result.lhr, origin);
+}
+
+function saveMedians(rows: PageSpeedRow[]) {
+	try {
+		const medians = buildMedians(rows, origin, PAGE_SPEED_RUNS, runSourceFromEnv(process.env));
+		const json = JSON.stringify(medians, null, 2);
+		if (containsAny(json, headerValues)) {
+			console.log("::warning::Skipped saving the medians: they still held the Access token.");
+			return;
+		}
+		writeFileSync(join(outDir, "medians.json"), `${json}\n`);
+	} catch (error) {
+		console.log(`::warning::Couldn't save the medians: ${describe(error)}`);
+	}
 }
 
 function saveReports(path: string, run: number, lhr: Parameters<typeof withoutRequestHeaders>[0]) {

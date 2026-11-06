@@ -142,6 +142,8 @@ jobs:
           CONTRACT_BASE_URL: ${{ steps.origin.outputs.url }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
           PAGE_SPEED_OUT_DIR: ${{ github.workspace }}/page-speed-reports
+          PAGE_SPEED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          PAGE_SPEED_PR: ${{ github.event.pull_request.number }}
         run: bun --cwd packages/browser-contract page-speed
 
       - name: Upload page-speed reports
@@ -152,6 +154,9 @@ jobs:
           name: page-speed-reports
           path: page-speed-reports
           if-no-files-found: ignore
+          # The repository's retention setting can't be read with our token, so set
+          # the longest this repository allows: #464 reads the spread across ~20 PRs.
+          retention-days: 90
 
       - name: Upload Worker metrics
         if: always()
