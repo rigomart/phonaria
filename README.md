@@ -65,4 +65,4 @@ The [credits page](https://phonaria.rigos.dev/credits) has the full list.
 
 ## License
 
-Phonaria is MIT licensed, as declared in the root `package.json`. The embedded CMU Pronouncing Dictionary keeps its [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).
+Phonaria is [MIT licensed](LICENSE). The embedded CMU Pronouncing Dictionary keeps its [BSD-3-Clause license](CMUdict-BSD-3-LICENSE.md).
