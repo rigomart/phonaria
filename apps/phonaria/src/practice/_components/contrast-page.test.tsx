@@ -18,12 +18,12 @@ afterEach(() => {
 	vi.unstubAllEnvs();
 });
 
-function render() {
+function render(word?: string) {
 	const page = getContrastPage("th-s");
 	if (!page) throw new Error("th-s is in the catalog");
 	return renderToString(
 		<AudioManagerProvider>
-			<ContrastPageView page={page} word="think" />
+			<ContrastPageView page={page} word={word} />
 		</AudioManagerProvider>,
 	);
 }
@@ -31,7 +31,7 @@ function render() {
 describe("a contrast page", () => {
 	it("lists every pair under its two sounds without speaking practice", () => {
 		vi.stubEnv("FLAG_SPEECH", "0");
-		const html = render();
+		const html = render("think");
 		expect(html).toMatch(/<h1 [^>]*>θ vs s: think vs sink<\/h1>/);
 		expect(html).toContain(
 			"/θ/ is made with the tongue between the teeth. /s/ is made with the tongue tip on the gum ridge behind the top teeth. Everything else is the same.",
@@ -47,7 +47,7 @@ describe("a contrast page", () => {
 
 	it("links both sounds to their pages and to the other contrasts with each", () => {
 		vi.stubEnv("FLAG_SPEECH", "0");
-		const html = render();
+		const html = render("think");
 		expect(html).toMatch(/<a [^>]*href="\/sounds\/th-thin"[^>]*>θ<\/a>/);
 		expect(html).toMatch(/<a [^>]*href="\/sounds\/s-sun"[^>]*>s<\/a>/);
 		expect(html).toContain("More contrasts with <!-- -->θ</h2>");
@@ -59,9 +59,17 @@ describe("a contrast page", () => {
 
 	it("adds speaking practice on the contrast's words where speech is on", () => {
 		vi.stubEnv("FLAG_SPEECH", "1");
-		const html = render();
+		const html = render("think");
 		expect(html).toContain("Say a word");
 		expect(html).toContain("Record");
 		expect(html).toContain(">think<");
+		expect(html).not.toContain('class="invisible"');
+	});
+
+	it("renders a hidden round above the pairs while no word is drawn yet", () => {
+		vi.stubEnv("FLAG_SPEECH", "1");
+		const html = render();
+		expect(html).toMatch(/<div class="invisible" inert="">.*Say a word.*Record/s);
+		expect(html.indexOf('class="invisible"')).toBeLessThan(html.indexOf('id="contrast-pairs"'));
 	});
 });
