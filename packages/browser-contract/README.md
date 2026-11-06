@@ -95,15 +95,29 @@ times each, against `/`, `/sounds/th-thin`, `/minimal-pairs/p-b` and
 `/ipa-chart/vowels` on `CONTRACT_TARGET`. It writes a table of each page's
 median Performance, SEO and Accessibility scores, largest contentful paint,
 layout shift and total blocking time to `summary.md` (and to
-`GITHUB_STEP_SUMMARY` when set), plus every run's JSON and HTML report, in
+`GITHUB_STEP_SUMMARY` when set), a `medians.json` file with the numbers
+behind that table, plus every run's JSON and HTML report, in
 `PAGE_SPEED_OUT_DIR` (default `page-speed-reports/`). Chrome must be
 installed. SEO leaves out Lighthouse's crawlability check: previews are
 `noindex` on purpose, and that one check would hold every SEO score at
 about 66.
 
 The preview workflow runs it after the smoke checks and uploads the reports
-as the `page-speed-reports` artifact. It is report only: it exits 0 whatever
-the numbers are, and the step is `continue-on-error`.
+as the `page-speed-reports` artifact, kept for 90 days, the longest GitHub
+allows. It is report only: it exits 0 whatever the numbers are, and the step
+is `continue-on-error`.
+
+`medians.json` holds the pull request's number and head commit
+(`PAGE_SPEED_PR` and `PAGE_SPEED_COMMIT`, which the workflow sets; both are
+`null` for a local run). The preview itself is built from that commit merged
+into `main`, so its tree can differ. The file also holds the origin, and one entry per
+page. Each page has `validRuns`, the `problems` that kept runs out, and
+`metrics`: for each of `performance`, `seo`, `accessibility`, `lcpMs`, `cls`
+and `tbtMs`, the `median` and the `runs` values that counted, in run order.
+Scores are 0 to 100, `lcpMs` and `tbtMs` are milliseconds, and `cls` has no
+unit. The table and the file come from the same rows, so they always match,
+though the table rounds. The file never holds request headers or a token
+value.
 
 On a `cloudflare-access` target, Lighthouse sends the Access service token
 as request headers. Lighthouse copies those headers into the report's

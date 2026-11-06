@@ -23,12 +23,23 @@ export interface PageSpeedRun {
 	tbtMs: number | null;
 }
 
+export const PAGE_SPEED_METRICS = [
+	"performance",
+	"seo",
+	"accessibility",
+	"lcpMs",
+	"cls",
+	"tbtMs",
+] as const satisfies ReadonlyArray<keyof PageSpeedRun>;
+
 export type RunOutcome = { ok: true; metrics: PageSpeedRun } | { ok: false; problem: string };
 
 export interface PageSpeedRow {
 	path: string;
 	validRuns: number;
 	median: PageSpeedRun;
+	/** The runs that counted, in run order. */
+	runs: PageSpeedRun[];
 	problems: string[];
 }
 
@@ -65,6 +76,7 @@ export function summarizePage(path: string, outcomes: RunOutcome[]): PageSpeedRo
 	return {
 		path,
 		validRuns: runs.length,
+		runs,
 		median: {
 			performance: pick("performance"),
 			seo: pick("seo"),
@@ -110,6 +122,74 @@ export function renderSummary(rows: PageSpeedRow[], origin: string, runsPerPage:
 	if (notes.length > 0) lines.push("", ...notes);
 	lines.push("", "The full reports are in this run's `page-speed-reports` artifact.");
 	return `${lines.join("\n")}\n`;
+}
+
+export interface PageSpeedMetric {
+	median: number | null;
+	/** One value per run that counted, in run order. */
+	runs: Array<number | null>;
+}
+
+export interface PageSpeedMedians {
+	/**
+	 * The pull request's head commit, or null outside GitHub Actions. The preview
+	 * is built from that commit merged into main, so the tree can differ.
+	 */
+	commit: string | null;
+	/** The pull request number, or null outside a pull request run. */
+	pullRequest: number | null;
+	origin: string;
+	runsPerPage: number;
+	pages: Array<{
+		path: string;
+		validRuns: number;
+		problems: string[];
+		/** Scores are 0–100, LCP and TBT are milliseconds, CLS is unitless. */
+		metrics: Record<keyof PageSpeedRun, PageSpeedMetric>;
+	}>;
+}
+
+export interface RunSource {
+	commit: string | null;
+	pullRequest: number | null;
+}
+
+/**
+ * Reads which commit and pull request a run belongs to. PAGE_SPEED_COMMIT and
+ * PAGE_SPEED_PR take the workflow's pull request head and number; without
+ * them, GITHUB_SHA is the best guess, and a local run has neither.
+ */
+export function runSourceFromEnv(env: Record<string, string | undefined>): RunSource {
+	const pullRequest = Number(env.PAGE_SPEED_PR);
+	return {
+		commit: env.PAGE_SPEED_COMMIT || env.GITHUB_SHA || null,
+		pullRequest: Number.isInteger(pullRequest) && pullRequest > 0 ? pullRequest : null,
+	};
+}
+
+/** Reshapes the rows the summary table prints, so the file and the table share one set of numbers. */
+export function buildMedians(
+	rows: PageSpeedRow[],
+	origin: string,
+	runsPerPage: number,
+	source: RunSource,
+): PageSpeedMedians {
+	return {
+		...source,
+		origin,
+		runsPerPage,
+		pages: rows.map((row) => ({
+			path: row.path,
+			validRuns: row.validRuns,
+			problems: row.problems,
+			metrics: Object.fromEntries(
+				PAGE_SPEED_METRICS.map((key) => [
+					key,
+					{ median: row.median[key], runs: row.runs.map((run) => run[key]) },
+				]),
+			) as PageSpeedMedians["pages"][number]["metrics"],
+		})),
+	};
 }
 
 /**
