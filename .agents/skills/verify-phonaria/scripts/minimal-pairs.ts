@@ -19,7 +19,9 @@ const readAttempt = () => ({
 	status:
 		document.querySelector('[aria-live="polite"][aria-atomic="true"] p')?.textContent?.trim() ??
 		null,
+	// The pairs table below the round has its own Hear buttons.
 	buttons: Array.from(document.querySelectorAll("main button"))
+		.filter((button) => !button.closest('section[aria-labelledby="contrast-pairs"]'))
 		.filter((button) => button.getClientRects().length > 0)
 		.map((button) => button.getAttribute("aria-label") ?? button.textContent?.trim())
 		.filter((label) => label && !label.startsWith("Details for")),
@@ -217,7 +219,7 @@ export const minimalPairs = {
 						p.textContent
 							?.trim()
 							.startsWith(
-								"We don't keep your recording. Microsoft checks it, and the check can be wrong.",
+								"Your recording goes to Microsoft for the check and isn't kept after. The check can be wrong.",
 							),
 					),
 					status:
@@ -245,49 +247,56 @@ export const minimalPairs = {
 			word: "ship",
 			heard: "target",
 			status: "Your ɪ sounded right. That's ship.",
-			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "More: About this check"],
 		}),
 		swapped: observation(readAttempt, {
 			word: "ship",
 			heard: "partner",
 			status: "Your ɪ sounded like i, which makes sheep.",
-			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "Hear sheep"],
+			buttons: [
+				"Next word",
+				"Hear ship",
+				"Hear sheep",
+				"Try again",
+				"More: About this check",
+				"Hear sheep",
+			],
 		}),
 		"not-heard": observation(readAttempt, {
 			word: "ship",
 			heard: null,
-			status: "We didn't catch anything. Check your microphone and try again.",
-			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
+			status: "Nothing came through. Check your microphone and try again.",
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "More: About this check"],
 		}),
 		"random-word": observation(readAttempt, {
 			word: "ship",
 			heard: null,
 			status: "That sounded like kid, not ship. Try again with just the word.",
-			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "More: About this check"],
 		}),
 		"added-sounds": observation(readAttempt, {
 			word: "ship",
 			heard: null,
 			status: "That sounded like ships, not ship. Try again with just the word.",
-			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "More: About this check"],
 		}),
 		phrase: observation(readAttempt, {
 			word: "ship",
 			heard: null,
-			status: 'We heard "a ship". Say just ship on its own.',
-			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
+			status: 'The check heard "a ship". Say just ship on its own.',
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "More: About this check"],
 		}),
 		"close-call": observation(readAttempt, {
 			word: "ship",
 			heard: null,
 			status: "Somewhere between ɪ and i. Try again and make it a clear ɪ.",
-			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "More: About this check"],
 		}),
 		"other-sound": observation(readAttempt, {
 			word: "ship",
 			heard: null,
 			status: "That didn't sound clearly like ɪ or i. Try again.",
-			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again"],
+			buttons: ["Next word", "Hear ship", "Hear sheep", "Try again", "More: About this check"],
 		}),
 		"every-sound": observation(readSounds, {
 			status: "Your ɪ sounded like i, which makes sheep.",
@@ -313,9 +322,7 @@ export const minimalPairs = {
 			}),
 			{ open: "Details for i", cardHeading: "Long E" },
 		),
-		denied: statusIs(
-			"Phonaria can't use your microphone. Allow microphone access for this site, then try again.",
-		),
+		denied: statusIs("Microphone access is blocked. Allow it for this site, then try again."),
 		unsupported: statusIs(
 			"Recording isn't available here. Check that a microphone is connected, or try another browser.",
 		),
