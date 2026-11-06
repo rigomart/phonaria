@@ -115,10 +115,19 @@ export function drawWord(
 	return pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))] ?? null;
 }
 
+/**
+ * A word from the URL's search. The router parses each value as JSON, so the
+ * pair word "true" in `?word=true` arrives as a boolean.
+ */
+export function searchWord(value: unknown): string | undefined {
+	if (typeof value === "string") return value;
+	return typeof value === "boolean" || typeof value === "number" ? String(value) : undefined;
+}
+
 /** Drops an unknown contrast, and a word that isn't in the contrast's pairs. */
 export function validateMinimalPairSearch(search: Record<string, unknown>): MinimalPairSearch {
 	const contrast = typeof search.contrast === "string" ? search.contrast : undefined;
 	if (!contrast || !findContrast(contrast)) return {};
-	const word = typeof search.word === "string" ? search.word : undefined;
+	const word = searchWord(search.word);
 	return word && promptFor(contrast, word) ? { contrast, word } : { contrast };
 }

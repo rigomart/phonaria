@@ -5,6 +5,7 @@ import {
 	drawWord,
 	listContrastOptions,
 	promptFor,
+	searchWord,
 	validateMinimalPairSearch,
 } from "./minimal-pair-prompt";
 
@@ -115,5 +116,22 @@ describe("validateMinimalPairSearch", () => {
 		});
 		expect(validateMinimalPairSearch({ contrast: "nope", word: "ship" })).toEqual({});
 		expect(validateMinimalPairSearch({ contrast: 3 })).toEqual({});
+	});
+
+	it("keeps the word true, which the router parses as a boolean", () => {
+		expect(validateMinimalPairSearch({ contrast: "th-t", word: true })).toEqual({
+			contrast: "th-t",
+			word: "true",
+		});
+	});
+});
+
+describe("searchWord", () => {
+	it("reads a word the router parsed as a boolean or number back as text", () => {
+		expect(searchWord("ship")).toBe("ship");
+		expect(searchWord(true)).toBe("true");
+		expect(searchWord(3)).toBe("3");
+		expect(searchWord(undefined)).toBeUndefined();
+		expect(searchWord({ a: 1 })).toBeUndefined();
 	});
 });
