@@ -6,6 +6,7 @@ import {
 	buildMedians,
 	containsAny,
 	median,
+	PAGE_SPEED_PAGES,
 	readRun,
 	renderSummary,
 	reportBaseName,
@@ -63,6 +64,16 @@ describe("readRun", () => {
 	it("rejects a run Lighthouse reported an error for", () => {
 		const outcome = readRun(lhr({ runtimeError: { code: "NO_FCP", message: "" } }), ORIGIN);
 		expect(outcome).toEqual({ ok: false, problem: "Lighthouse error NO_FCP" });
+	});
+});
+
+describe("readRun with a query", () => {
+	it("counts a run whose final URL carries a query", () => {
+		const outcome = readRun(
+			lhr({ finalDisplayedUrl: `${ORIGIN}/minimal-pairs/p-b?word=pet` }),
+			ORIGIN,
+		);
+		expect(outcome.ok).toBe(true);
 	});
 });
 
@@ -214,6 +225,21 @@ describe("reportBaseName", () => {
 	it("names reports after the page and run", () => {
 		expect(reportBaseName("/", 1)).toBe("home-run-1");
 		expect(reportBaseName("/minimal-pairs/p-b", 3)).toBe("minimal-pairs-p-b-run-3");
+	});
+
+	it("leaves the query out of the name", () => {
+		expect(reportBaseName("/minimal-pairs/p-b?word=pet", 2)).toBe("minimal-pairs-p-b-run-2");
+	});
+
+	it("gives every measured page a name with no characters artifact uploads refuse", () => {
+		for (const path of PAGE_SPEED_PAGES) {
+			expect(reportBaseName(path, 1)).toMatch(/^[a-z0-9-]+$/);
+		}
+	});
+
+	it("measures the minimal-pair page with one fixed word", () => {
+		const pages = PAGE_SPEED_PAGES.filter((path) => path.startsWith("/minimal-pairs/"));
+		expect(pages).toEqual(["/minimal-pairs/p-b?word=pet"]);
 	});
 });
 
