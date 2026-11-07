@@ -4,7 +4,9 @@ import {
 	ASSET_BUCKET_ORIGIN,
 	formatCloudflareHeadersFile,
 	getContentSecurityPolicy,
+	getSecurityHeaders,
 	HASHED_ASSET_CACHE_CONTROL,
+	PERMISSIONS_POLICY,
 } from "./security-headers";
 
 describe("getContentSecurityPolicy", () => {
@@ -26,11 +28,37 @@ describe("getContentSecurityPolicy", () => {
 		expect(file.startsWith("/*\n")).toBe(true);
 		expect(file).toContain(`Content-Security-Policy: ${getContentSecurityPolicy()}`);
 		expect(file).toContain("Strict-Transport-Security: max-age=31536000\n");
+		expect(file).toContain("  X-Content-Type-Options: nosniff\n");
+		expect(file).toContain("  Referrer-Policy: strict-origin-when-cross-origin\n");
+		expect(file).toContain("  Permissions-Policy: microphone=(self), camera=(), geolocation=()\n");
+	});
+
+	it("writes every shared security header for prerendered pages", () => {
+		const pageRules = formatCloudflareHeadersFile().split("\n\n")[0];
+		expect(pageRules).toBe(
+			["/*", ...getSecurityHeaders().map(([name, value]) => `  ${name}: ${value}`)].join("\n"),
+		);
 	});
 
 	it("caches hashed assets immutably so warm loads do not revalidate them", () => {
 		const file = formatCloudflareHeadersFile();
 		expect(file).toContain(`/assets/*\n  Cache-Control: ${HASHED_ASSET_CACHE_CONTROL}`);
 		expect(HASHED_ASSET_CACHE_CONTROL).toContain("immutable");
+	});
+});
+
+describe("getSecurityHeaders", () => {
+	it("lists the headers every response carries", () => {
+		expect(Object.fromEntries(getSecurityHeaders())).toEqual({
+			"Content-Security-Policy": getContentSecurityPolicy(),
+			"Strict-Transport-Security": "max-age=31536000",
+			"X-Content-Type-Options": "nosniff",
+			"Referrer-Policy": "strict-origin-when-cross-origin",
+			"Permissions-Policy": PERMISSIONS_POLICY,
+		});
+	});
+
+	it("lets the microphone run on this origin only and turns off camera and location", () => {
+		expect(PERMISSIONS_POLICY).toBe("microphone=(self), camera=(), geolocation=()");
 	});
 });

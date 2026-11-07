@@ -90,6 +90,7 @@ export async function transcribeWordsOnWorker(
 			details: {
 				kind: result.error.kind,
 				retryable: result.error.retryable,
+				...(result.reason ? { reason: result.reason } : {}),
 			},
 		});
 		throw result.error;

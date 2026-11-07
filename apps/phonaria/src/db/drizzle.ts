@@ -5,7 +5,38 @@ import * as schema from "./schema";
 
 export type AppDatabase = LibSQLDatabase<typeof schema>;
 
-export type LibsqlClientFactory = (config: { url: string; authToken?: string }) => Client;
+/** The part of `fetch` the libsql HTTP client calls. */
+export type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+
+export type LibsqlClientFactory = (config: {
+	url: string;
+	authToken?: string;
+	fetch?: FetchLike;
+}) => Client;
+
+/**
+ * How long one Turso HTTP request may take before it is aborted. Without a
+ * limit a hung request keeps the transcription input disabled for good; the
+ * abort surfaces as a retryable lookup failure instead.
+ */
+export const TURSO_REQUEST_TIMEOUT_MS = 5000;
+
+/**
+ * `fetch` that gives up after `timeoutMs`, keeping any signal the caller
+ * passed. The libsql HTTP client calls it with a `Request`, so that request's
+ * own signal counts too.
+ */
+export function createTimeoutFetch(
+	timeoutMs: number,
+	baseFetch: FetchLike = (input, init) => globalThis.fetch(input, init),
+): FetchLike {
+	return (input, init) => {
+		const incoming = init?.signal ?? (input instanceof Request ? input.signal : undefined);
+		const timeout = AbortSignal.timeout(timeoutMs);
+		const signal = incoming ? AbortSignal.any([incoming, timeout]) : timeout;
+		return baseFetch(input, { ...init, signal });
+	};
+}
 
 function statementSql(stmt: InStatement): string {
 	return typeof stmt === "string" ? stmt : stmt.sql;
@@ -54,12 +85,18 @@ function wrapReadOnly(client: Client): void {
 
 export function createDatabase(
 	config: DatabaseConfig,
-	options: { readOnly?: boolean; createClient?: LibsqlClientFactory } = {},
+	options: {
+		readOnly?: boolean;
+		createClient?: LibsqlClientFactory;
+		requestTimeoutMs?: number;
+	} = {},
 ): AppDatabase {
 	const openClient = options.createClient ?? createClient;
 	const client = openClient({
 		url: config.url,
 		authToken: config.authToken,
+		// Only the HTTP transport (the Worker's `@libsql/client/web`) uses it.
+		fetch: createTimeoutFetch(options.requestTimeoutMs ?? TURSO_REQUEST_TIMEOUT_MS),
 	});
 
 	if (options.readOnly) {

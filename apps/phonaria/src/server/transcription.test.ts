@@ -1,6 +1,12 @@
+import { createClient as createWebClient } from "@libsql/client/web";
 import { describe, expect, it, vi } from "vitest";
+import { createDatabase } from "@/db/drizzle";
 import type { G2PWord } from "@/lib/g2p/model";
 import { TranscriptionError } from "@/lib/transcription/contract";
+import {
+	TRANSCRIPTION_DATABASE_MESSAGE,
+	TRANSCRIPTION_RETRYABLE_MESSAGE,
+} from "@/lib/transcription/service";
 import { type TranscriptionWorkerEnv, transcribeWordsOnWorker } from "./transcription";
 
 function word(value: string): G2PWord {
@@ -129,29 +135,40 @@ describe("transcribeWordsOnWorker", () => {
 		expect(processWords).not.toHaveBeenCalled();
 	});
 
-	it("logs a sanitized database failure and does not include credentials", async () => {
+	it("logs why the database failed, without the learner's words or credentials", async () => {
 		const processWords = vi.fn(async () => {
-			throw new Error("SQLITE_ERROR: no such table: words");
+			throw Object.assign(new Error('Failed query: select "word" from "words"\nparams: AARDVARK'), {
+				query: 'select "word" from "words"',
+				params: ["AARDVARK"],
+				cause: new Error("SQLITE_ERROR: no such table: words (libsql://db-example.turso.io)"),
+			});
 		});
 		const log = vi.fn();
 
-		await expect(
-			transcribeWordsOnWorker({ words: ["aardvark"] }, allowingEnv(), {
-				processWords,
-				log,
-			}),
-		).rejects.toBeInstanceOf(TranscriptionError);
+		const failure = transcribeWordsOnWorker({ words: ["aardvark"] }, allowingEnv(), {
+			processWords,
+			log,
+		});
+		await expect(failure).rejects.toBeInstanceOf(TranscriptionError);
+		await expect(failure).rejects.toMatchObject({
+			kind: "database",
+			message: TRANSCRIPTION_DATABASE_MESSAGE,
+		});
 
 		expect(log).toHaveBeenCalledWith({
 			level: "error",
 			message: "transcription_failed",
-			details: { kind: "database", retryable: true },
+			details: {
+				kind: "database",
+				retryable: true,
+				reason: "Error: SQLITE_ERROR: no such table: words ([url]",
+			},
 		});
 		const payload = JSON.stringify(log.mock.calls[0]?.[0]);
-		expect(payload).not.toMatch(/aardvark/);
+		expect(payload).not.toMatch(/aardvark/i);
 		expect(payload).not.toMatch(/TURSO_/);
 		expect(payload).not.toMatch(/libsql:\/\//);
-		expect(payload).not.toMatch(/SQLITE_ERROR/);
+		expect(payload).not.toMatch(/select/i);
 	});
 
 	it("maps missing Worker Turso bindings to a database error", async () => {
@@ -190,7 +207,59 @@ describe("transcribeWordsOnWorker", () => {
 		expect(log).toHaveBeenCalledWith({
 			level: "error",
 			message: "transcription_failed",
-			details: { kind: "retryable", retryable: true },
+			details: {
+				kind: "retryable",
+				retryable: true,
+				reason: "Error: fetch failed: network timeout",
+			},
+		});
+	});
+
+	it("gives up on a Turso request that hangs and reports a retryable failure", async () => {
+		const hangingFetch = vi.fn(
+			(_input: RequestInfo | URL, init?: RequestInit) =>
+				new Promise<Response>((_resolve, reject) => {
+					init?.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+				}),
+		);
+		vi.stubGlobal("fetch", hangingFetch);
+		const log = vi.fn();
+
+		try {
+			await expect(
+				transcribeWordsOnWorker(
+					{ words: ["aardvark"] },
+					allowingEnv({
+						TURSO_DATABASE_URL: "libsql://db-example.turso.io",
+						TURSO_AUTH_TOKEN: "token",
+					}),
+					{
+						openDatabase: (config) =>
+							createDatabase(config, {
+								readOnly: true,
+								createClient: createWebClient,
+								requestTimeoutMs: 20,
+							}),
+						log,
+					},
+				),
+			).rejects.toMatchObject({
+				kind: "retryable",
+				retryable: true,
+				message: TRANSCRIPTION_RETRYABLE_MESSAGE,
+			});
+		} finally {
+			vi.unstubAllGlobals();
+		}
+
+		expect(hangingFetch).toHaveBeenCalled();
+		expect(log).toHaveBeenCalledWith({
+			level: "error",
+			message: "transcription_failed",
+			details: expect.objectContaining({
+				kind: "retryable",
+				reason: expect.stringMatching(/^TimeoutError/),
+			}),
 		});
 	});
 });

@@ -1,7 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import type { G2PWord } from "@/lib/g2p/model";
 import { MAX_TRANSCRIPTION_WORDS } from "./contract";
-import { transcribeWords } from "./service";
+import {
+	TRANSCRIPTION_DATABASE_MESSAGE,
+	TRANSCRIPTION_RETRYABLE_MESSAGE,
+	transcribeWords,
+} from "./service";
 
 function word(value: string, source: G2PWord["source"] = "cmudict"): G2PWord {
 	return {
@@ -78,7 +82,79 @@ describe("transcribeWords", () => {
 		if (!result.ok) {
 			expect(result.error.kind).toBe("database");
 			expect(result.error.retryable).toBe(true);
-			expect(result.error.message).toMatch(/SQLITE_ERROR/);
+			expect(result.error.message).toBe(TRANSCRIPTION_DATABASE_MESSAGE);
+			expect(result.reason).toBe("Error: SQLITE_ERROR: no such table: words");
+		}
+	});
+
+	it("keeps the query and the learner's words out of the error and its reason", async () => {
+		const processWords = vi.fn(async () => {
+			const cause = Object.assign(new Error("SQLITE_ERROR: no such table: words"), {
+				code: "SQLITE_ERROR",
+			});
+			throw Object.assign(
+				new Error('Failed query: select "word" from "words" where "word" in (?)\nparams: AARDVARK'),
+				{ query: 'select "word" from "words" where "word" in (?)', params: ["AARDVARK"], cause },
+			);
+		});
+
+		const result = await transcribeWords({ words: ["aardvark"] }, { processWords });
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.kind).toBe("database");
+			expect(result.error.message).toBe(TRANSCRIPTION_DATABASE_MESSAGE);
+			expect(Object.values(result.error).join(" ")).not.toMatch(/AARDVARK|select|SQLITE/i);
+			expect(result.reason).toBe("Error: SQLITE_ERROR: no such table: words");
+			expect(result.reason).not.toMatch(/AARDVARK|select/i);
+		}
+	});
+
+	it("treats a timeout inside Drizzle's wrapper as retryable", async () => {
+		const processWords = vi.fn(async () => {
+			const cause = new DOMException("The operation was aborted due to timeout", "TimeoutError");
+			throw Object.assign(new Error("Failed query: select 1\nparams: busy"), {
+				query: "select 1",
+				params: ["busy"],
+				cause,
+			});
+		});
+
+		const result = await transcribeWords({ words: ["busy"] }, { processWords });
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.kind).toBe("retryable");
+			expect(result.error.message).toBe(TRANSCRIPTION_RETRYABLE_MESSAGE);
+			expect(result.reason).toBe("TimeoutError: The operation was aborted due to timeout");
+		}
+	});
+
+	it("does not treat a learner's word in Drizzle's message as a transient failure", async () => {
+		const processWords = vi.fn(async () => {
+			throw Object.assign(new Error("Failed query: select 1\nparams: unavailable"), {
+				query: "select 1",
+				params: ["unavailable"],
+				cause: new Error("SQLITE_ERROR: no such table: words"),
+			});
+		});
+
+		const result = await transcribeWords({ words: ["unavailable"] }, { processWords });
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) expect(result.error.kind).toBe("database");
+	});
+
+	it("drops URLs from the reason", async () => {
+		const processWords = vi.fn(async () => {
+			throw new Error("fetch failed: https://db-example.turso.io/v2/pipeline unreachable");
+		});
+
+		const result = await transcribeWords({ words: ["hello"] }, { processWords });
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.reason).toBe("Error: fetch failed: [url] unreachable");
 		}
 	});
 
@@ -93,6 +169,7 @@ describe("transcribeWords", () => {
 		if (!result.ok) {
 			expect(result.error.kind).toBe("retryable");
 			expect(result.error.retryable).toBe(true);
+			expect(result.error.message).toBe(TRANSCRIPTION_RETRYABLE_MESSAGE);
 		}
 	});
 

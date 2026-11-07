@@ -68,6 +68,7 @@ describe("drizzle module load", () => {
 		expect(createClient).toHaveBeenCalledWith({
 			url: "libsql://lab.example",
 			authToken: "token",
+			fetch: expect.any(Function),
 		});
 	});
 
@@ -86,6 +87,58 @@ describe("drizzle module load", () => {
 			}
 			const cause = error.cause instanceof Error ? error.cause.message : "";
 			return /read-only/i.test(error.message) || /read-only/i.test(cause);
+		});
+	});
+});
+
+describe("createTimeoutFetch", () => {
+	function hangingFetch() {
+		return vi.fn(
+			(_input: RequestInfo | URL, init?: RequestInit) =>
+				new Promise<Response>((_resolve, reject) => {
+					init?.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+				}),
+		);
+	}
+
+	it("gives Turso five seconds per request", async () => {
+		const { TURSO_REQUEST_TIMEOUT_MS } = await import("./drizzle");
+		expect(TURSO_REQUEST_TIMEOUT_MS).toBe(5000);
+	});
+
+	it("aborts a request that takes longer than the timeout", async () => {
+		const { createTimeoutFetch } = await import("./drizzle");
+		const base = hangingFetch();
+
+		await expect(
+			createTimeoutFetch(10, base)(new Request("https://db.example/v2/pipeline")),
+		).rejects.toMatchObject({ name: "TimeoutError" });
+	});
+
+	it("keeps the abort signal the request already carries", async () => {
+		const { createTimeoutFetch } = await import("./drizzle");
+		const base = hangingFetch();
+		const controller = new AbortController();
+		const pending = createTimeoutFetch(
+			60_000,
+			base,
+		)(new Request("https://db.example/v2/pipeline", { signal: controller.signal }));
+
+		controller.abort(new Error("caller gave up"));
+
+		await expect(pending).rejects.toThrow("caller gave up");
+	});
+
+	it("passes a response through when it arrives in time", async () => {
+		const { createTimeoutFetch } = await import("./drizzle");
+		const response = new Response("ok");
+		const base = vi.fn(async () => response);
+
+		await expect(createTimeoutFetch(1000, base)("https://db.example/v2/pipeline")).resolves.toBe(
+			response,
+		);
+		expect(base).toHaveBeenCalledWith("https://db.example/v2/pipeline", {
+			signal: expect.any(AbortSignal),
 		});
 	});
 });

@@ -34,4 +34,9 @@ export class TranscriptionError extends Error {
 
 export type TranscriptionServiceResult =
 	| { ok: true; words: TranscriptionWordsOutput }
-	| { ok: false; error: TranscriptionError };
+	| {
+			ok: false;
+			error: TranscriptionError;
+			/** The lookup's own error, sanitized, for the Worker log. Never sent to the browser. */
+			reason?: string;
+	  };
