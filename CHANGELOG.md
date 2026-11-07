@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.7.0](https://github.com/rigomart/phonaria/compare/phonaria-v0.6.0...phonaria-v0.7.0) (2026-11-07)
+
+
+### Features
+
+* **app:** add a beta label and notes on output that can be wrong ([#442](https://github.com/rigomart/phonaria/issues/442)) ([0eb2690](https://github.com/rigomart/phonaria/commit/0eb2690cfdd2c1dc0e6b2e3b0557c9bdf7866713))
+* **app:** link Wiktionary entries and credit each sound recording's Commons source ([#449](https://github.com/rigomart/phonaria/issues/449)) ([1b3354c](https://github.com/rigomart/phonaria/commit/1b3354cc371880eb2e1fe9f5e6ce35eedbac8bf8))
+* **app:** merge the IPA chart into a Sounds menu in the header ([#444](https://github.com/rigomart/phonaria/issues/444)) ([79549ae](https://github.com/rigomart/phonaria/commit/79549aeb4cc6aa422657620aa1a8b49affe2872d))
+* **app:** redraw the site's social card with the Cut logo and describe it ([#454](https://github.com/rigomart/phonaria/issues/454)) ([c8f7be5](https://github.com/rigomart/phonaria/commit/c8f7be5aa455109265d7fae9187db7a71d8c2eeb))
+* **app:** reveal the sounds pages in reading order like the rest of the app ([#466](https://github.com/rigomart/phonaria/issues/466)) ([ec2d544](https://github.com/rigomart/phonaria/commit/ec2d544246ba9d5ace7ef3566e69553413f4f8d9))
+* **app:** say what each Credits source is used for and where Phonaria differs ([#441](https://github.com/rigomart/phonaria/issues/441)) ([3e87a4e](https://github.com/rigomart/phonaria/commit/3e87a4e385e17f3ab48677943bc0445f730a0ed7))
+* **app:** turn on sound search everywhere and say it covers the 10,000 most common words ([#439](https://github.com/rigomart/phonaria/issues/439)) ([0526e1e](https://github.com/rigomart/phonaria/commit/0526e1ecce9a13529d758ef9a170f27b0598f370))
+* **phonetics-data:** rewrite the sound variants in plain words and cover the ones learners need most ([#455](https://github.com/rigomart/phonaria/issues/455)) ([c712962](https://github.com/rigomart/phonaria/commit/c7129628520ab9c5e0593c4b5bc39952e5d24903))
+
+
+### Bug Fixes
+
+* **app:** credit the /u/ recording's new Commons file and say where each recording comes from ([#451](https://github.com/rigomart/phonaria/issues/451)) ([44d7988](https://github.com/rigomart/phonaria/commit/44d79889b1006e24ba5c0579727aa41374f837f5))
+* **app:** draw the History globe's meridians as curves, not straight chords ([#445](https://github.com/rigomart/phonaria/issues/445)) ([5ef9e3b](https://github.com/rigomart/phonaria/commit/5ef9e3b0fb4e050104ecc89084be384bf41f5fa9))
+* **app:** hold the speaking round's space so contrast pages don't shift their pairs ([#471](https://github.com/rigomart/phonaria/issues/471)) ([9d9f93c](https://github.com/rigomart/phonaria/commit/9d9f93cbd5acb58de41ac3e8f0faa2003c2d5548)), closes [#468](https://github.com/rigomart/phonaria/issues/468)
+* **app:** keep the pair word "true" when a link opens a contrast page with it ([#472](https://github.com/rigomart/phonaria/issues/472)) ([953873f](https://github.com/rigomart/phonaria/commit/953873f713f5884931d9ee424b1bfd42c6df18d4))
+* **app:** keep the phone details drawer's layout steady while it expands ([#447](https://github.com/rigomart/phonaria/issues/447)) ([a4e672e](https://github.com/rigomart/phonaria/commit/a4e672e3fca06360127b1e0e0241efef20a22489))
+* **app:** let the sound's frequency scroll with the details instead of staying pinned ([#453](https://github.com/rigomart/phonaria/issues/453)) ([422b270](https://github.com/rigomart/phonaria/commit/422b2702c78e93fc4141368975328fc4a60bf39d))
+* **app:** rewrite the beta popover and disclaimer copy in plain words ([#443](https://github.com/rigomart/phonaria/issues/443)) ([13d6955](https://github.com/rigomart/phonaria/commit/13d695540453a85c5d954832876dde8574d90f6a))
+* **app:** show single sounds without /…/ and split a sound's name from its symbol ([#452](https://github.com/rigomart/phonaria/issues/452)) ([a3de282](https://github.com/rigomart/phonaria/commit/a3de2827a27323aebc049e2325de0a897fab91ba))
+* **app:** write the app's copy without "we" ([#446](https://github.com/rigomart/phonaria/issues/446)) ([f37e548](https://github.com/rigomart/phonaria/commit/f37e5483c296610d521c14f15f66dd92243c8d58))
+* **verify:** match the minimal-pair journey to the current contrast page ([#473](https://github.com/rigomart/phonaria/issues/473)) ([40aa71d](https://github.com/rigomart/phonaria/commit/40aa71de457e22f0a09e8e5055df2be3f136c8c9))
+
+
+### Performance Improvements
+
+* **app:** start entrance fades at 1% opacity so their text counts toward LCP ([#474](https://github.com/rigomart/phonaria/issues/474)) ([4c58aea](https://github.com/rigomart/phonaria/commit/4c58aeafb24a01b6b89980cf43775e20f196163e))
+
 ## [0.6.0](https://github.com/rigomart/phonaria/compare/phonaria-v0.5.0...phonaria-v0.6.0) (2026-11-01)
 
 
