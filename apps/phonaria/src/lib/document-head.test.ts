@@ -213,6 +213,7 @@ describe("buildSearchHead", () => {
 		expect(head.meta).toContainEqual({ title: "Words that start with /θɪ/ - Phonaria" });
 		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
 		expect(head.links).toBeUndefined();
+		expect(head.meta).not.toContainEqual(expect.objectContaining({ property: "og:url" }));
 	});
 });
 

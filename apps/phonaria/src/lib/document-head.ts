@@ -4,7 +4,6 @@ import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-meta
 import {
 	HOME_PAGE_DESCRIPTION,
 	HOME_PAGE_TITLE,
-	SEARCH_PATH,
 	searchPageDescription,
 	searchPageTitle,
 } from "@/lib/home-metadata";
@@ -157,13 +156,9 @@ export function extractDocumentTitle(matches: readonly MatchWithMeta[]): string 
 
 export const NOT_FOUND_PAGE_TITLE = "Page not found";
 
-/** Robots for a page that stays out of search indexes but whose links are still worth following. */
 const NOINDEX_ROBOTS = "noindex, follow";
 
-/**
- * Fallback tags for every page, and the whole head of a not-found page: kept
- * out of indexes, with no canonical, since its URL is not a page.
- */
+/** Fallback tags for every page, and the whole head of a not-found page. */
 export function buildRootHead({ notFound = false }: { notFound?: boolean } = {}): StartHead {
 	const metadata = tryGetDocumentMetadata();
 	return {
@@ -184,16 +179,11 @@ export function buildRootHead({ notFound = false }: { notFound?: boolean } = {})
 }
 
 type PageHeadInput = {
-	path: string;
+	/** Left out for a page with no canonical link or `og:url`. */
+	path?: string;
 	title: string;
 	description: string;
 	robots?: string;
-	/**
-	 * Whether `path` is the page's canonical URL, sent as its canonical link and
-	 * `og:url`. Defaults to true; pages whose URL also carries a query that
-	 * `path` leaves out set it to false and send neither.
-	 */
-	canonical?: boolean;
 	/** Defaults to `website`. */
 	ogType?: OpenGraphType;
 	/** Defaults to the site-wide card. */
@@ -205,17 +195,12 @@ function buildPageHead({
 	title,
 	description,
 	robots,
-	canonical: hasCanonical = true,
 	ogType,
 	image,
 }: PageHeadInput): StartHead {
 	const metadata = tryGetDocumentMetadata();
 	const canonical =
-		metadata && hasCanonical
-			? path === "/"
-				? metadata.siteUrl
-				: `${metadata.siteUrl}${path}`
-			: undefined;
+		metadata && path ? (path === "/" ? metadata.siteUrl : `${metadata.siteUrl}${path}`) : undefined;
 	return {
 		meta: [
 			{ title: formatDocumentTitle(title) },
@@ -240,18 +225,14 @@ export function buildHomeHead(): StartHead {
 }
 
 /**
- * Marks every search page `noindex, follow`, with no canonical and no
- * `og:url`: each query is its own page, none of them indexed, and `/search`
- * alone redirects home. A link preview then falls back to the URL it fetched,
- * query included.
+ * Marks every search page `noindex, follow`, with no canonical or `og:url`; a
+ * link preview falls back to the fetched URL, query included.
  */
 export function buildSearchHead(search: { q?: string; sounds?: string }): StartHead {
 	return buildPageHead({
-		path: SEARCH_PATH,
 		title: searchPageTitle(search),
 		description: searchPageDescription(search),
 		robots: NOINDEX_ROBOTS,
-		canonical: false,
 	});
 }
 
@@ -320,7 +301,7 @@ export function buildSoundsIndexHead(): StartHead {
 }
 
 /** Practice stays out of search indexes even when the feature flag is on. */
-const PRACTICE_ROBOTS = "noindex, follow";
+const PRACTICE_ROBOTS = NOINDEX_ROBOTS;
 
 export function buildPracticeIndexHead(): StartHead {
 	return buildPageHead({
@@ -438,7 +419,7 @@ function crawlerMetaTags(metadata: DocumentMetadata, robots?: string): StartMeta
 	return [
 		{
 			name: "robots",
-			content: robots ?? (metadata.indexingEnabled ? "index, follow" : "noindex, follow"),
+			content: robots ?? (metadata.indexingEnabled ? "index, follow" : NOINDEX_ROBOTS),
 		},
 		...(metadata.googleSiteVerification
 			? [{ name: "google-site-verification", content: metadata.googleSiteVerification }]

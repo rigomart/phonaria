@@ -119,7 +119,7 @@ test.describe("Metadata, robots, and sitemap", () => {
 		},
 	);
 
-	test("sends a search page no canonical or og:url", async ({ request }) => {
+	test("sends a search page no canonical or og:url", { tag: "@smoke" }, async ({ request }) => {
 		const { response, html } = await fetchDocument(request, "/search?q=hello%20world");
 		expect(response.status()).toBe(200);
 		expect(metaContent(html, "robots")).toBe("noindex, follow");
@@ -167,14 +167,18 @@ test.describe("Metadata, robots, and sitemap", () => {
 		expect(html).not.toMatch(/(property|name)="(og|twitter):/);
 	});
 
-	test("keeps a not-found page out of indexes, without a canonical", async ({ request }) => {
-		for (const path of ["/sounds/nope", "/minimal-pairs/nope", "/does-not-exist"]) {
-			const { response, html } = await fetchDocument(request, path);
-			expect(response.status()).toBe(404);
-			expect(metaContent(html, "robots")).toBe("noindex, follow");
-			expect(canonicalHref(html)).toBeUndefined();
-		}
-	});
+	test(
+		"keeps a not-found page out of indexes, without a canonical",
+		{ tag: "@smoke" },
+		async ({ request }) => {
+			for (const path of ["/sounds/nope", "/minimal-pairs/nope", "/does-not-exist"]) {
+				const { response, html } = await fetchDocument(request, path);
+				expect(response.status()).toBe(404);
+				expect(metaContent(html, "robots")).toBe("noindex, follow");
+				expect(canonicalHref(html)).toBeUndefined();
+			}
+		},
+	);
 
 	test(
 		"keeps robots.txt crawlable and only links the sitemap when indexing is on",
