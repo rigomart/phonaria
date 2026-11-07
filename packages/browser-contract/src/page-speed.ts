@@ -1,9 +1,13 @@
 import type { Result as LighthouseResult } from "lighthouse";
 
+/**
+ * The contrast page picks a pair word at random unless the URL names one, so
+ * it is measured with `?word=pet`: every run then measures the same pair.
+ */
 export const PAGE_SPEED_PAGES = [
 	"/",
 	"/sounds/th-thin",
-	"/minimal-pairs/p-b",
+	"/minimal-pairs/p-b?word=pet",
 	"/ipa-chart/vowels",
 ] as const;
 
@@ -204,8 +208,10 @@ export function containsAny(text: string, secrets: string[]): boolean {
 	return secrets.some((secret) => secret.length > 0 && text.includes(secret));
 }
 
+/** The query stays out of the name: artifact uploads refuse `?` in file names. */
 export function reportBaseName(path: string, run: number): string {
-	const slug = path === "/" ? "home" : path.replace(/^\//, "").replaceAll("/", "-");
+	const route = path.split("?")[0];
+	const slug = route === "/" ? "home" : route.replace(/^\//, "").replaceAll("/", "-");
 	return `${slug}-run-${run}`;
 }
 

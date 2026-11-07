@@ -91,13 +91,16 @@ Do not combine those samples into one median.
 ## Page speed
 
 `bun run page-speed` runs Lighthouse with its default mobile settings, three
-times each, against `/`, `/sounds/th-thin`, `/minimal-pairs/p-b` and
-`/ipa-chart/vowels` on `CONTRACT_TARGET`. It writes a table of each page's
+times each, against `/`, `/sounds/th-thin`, `/minimal-pairs/p-b?word=pet` and
+`/ipa-chart/vowels` on `CONTRACT_TARGET`. The contrast page picks a pair word
+at random unless the URL names one, so the check names `pet` to measure the
+same pair in every run. It writes a table of each page's
 median Performance, SEO and Accessibility scores, largest contentful paint,
 layout shift and total blocking time to `summary.md` (and to
 `GITHUB_STEP_SUMMARY` when set), a `medians.json` file with the numbers
 behind that table, plus every run's JSON and HTML report, in
-`PAGE_SPEED_OUT_DIR` (default `page-speed-reports/`). Chrome must be
+`PAGE_SPEED_OUT_DIR` (default `page-speed-reports/`). Report names come from
+the route alone, so they never hold the query. Chrome must be
 installed. SEO leaves out Lighthouse's crawlability check: previews are
 `noindex` on purpose, and that one check would hold every SEO score at
 about 66.
