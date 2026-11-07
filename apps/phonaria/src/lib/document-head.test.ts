@@ -164,6 +164,17 @@ describe("buildRootHead", () => {
 			title: "Page not found - Phonaria",
 		});
 	});
+
+	it("keeps a not-found page out of indexes, without a canonical, even when indexing is on", () => {
+		process.env.SITE_URL = "https://phonaria.rigos.dev";
+		process.env.SITE_INDEXING_ENABLED = "1";
+		const { meta, links } = buildRootHead({ notFound: true });
+		expect(meta.filter((tag) => "name" in tag && tag.name === "robots")).toEqual([
+			{ name: "robots", content: "noindex, follow" },
+		]);
+		expect(links).not.toContainEqual(expect.objectContaining({ rel: "canonical" }));
+		expect(buildRootHead().meta).toContainEqual({ name: "robots", content: "index, follow" });
+	});
 });
 
 const HOME_TITLE = "English to IPA transcription for American English";
@@ -172,19 +183,36 @@ const HOME_DESCRIPTION =
 
 describe("buildSearchHead", () => {
 	it("names the query and keeps every search out of indexes", () => {
-		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		process.env.SITE_URL = "https://phonaria.rigos.dev";
+		process.env.SITE_INDEXING_ENABLED = "1";
 		const head = buildSearchHead({ q: "hello world" });
 		expect(head.meta).toContainEqual({ title: "hello world in IPA - Phonaria" });
 		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
-		expect(head.links).toEqual([
-			{ rel: "canonical", href: "https://phonaria-staging.example.test/search" },
-		]);
+	});
+
+	it("sends no canonical or og:url, so none points at /search, which redirects home", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const head = buildSearchHead({ q: "hello world" });
+		expect(head.links).toBeUndefined();
+		expect(head.meta).not.toContainEqual(expect.objectContaining({ property: "og:url" }));
+	});
+
+	it("still shares a card titled with the query", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		const { meta } = buildSearchHead({ q: "hello world" });
+		expect(meta).toContainEqual({ property: "og:title", content: "hello world in IPA" });
+		expect(meta).toContainEqual({ name: "twitter:card", content: "summary_large_image" });
+		expect(meta).toContainEqual({
+			property: "og:image",
+			content: "https://phonaria-staging.example.test/opengraph-image.jpg",
+		});
 	});
 
 	it("names the sounds of a sound search in IPA", () => {
 		const head = buildSearchHead({ sounds: "TH-IX" });
 		expect(head.meta).toContainEqual({ title: "Words that start with /θɪ/ - Phonaria" });
 		expect(head.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
+		expect(head.links).toBeUndefined();
 	});
 });
 

@@ -119,6 +119,41 @@ test.describe("Metadata, robots, and sitemap", () => {
 		},
 	);
 
+	test("sends a search page no canonical or og:url", async ({ request }) => {
+		const { response, html } = await fetchDocument(request, "/search?q=hello%20world");
+		expect(response.status()).toBe(200);
+		expect(metaContent(html, "robots")).toBe("noindex, follow");
+		expect(canonicalHref(html)).toBeUndefined();
+		expect(html).not.toMatch(/property="og:url"/);
+	});
+
+	test("drops the canonical link and og:url on an in-app move to a search, and restores them on Back", async ({
+		page,
+		target,
+	}) => {
+		await page.goto("/");
+		const example = page.getByRole("button", { name: "Hello world", exact: true });
+		await waitForHydration(example);
+		const canonical = expectedCanonical(target, "/");
+		await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", canonical);
+		await page.evaluate(() => Object.assign(window, { inAppMove: true }));
+
+		await example.click();
+		await expect(page).toHaveTitle("Hello world in IPA - Phonaria");
+		expect(await page.evaluate(() => "inAppMove" in window)).toBe(true);
+		await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+		await expect(page.locator('meta[property="og:url"]')).toHaveCount(0);
+		await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, follow");
+
+		await page.goBack();
+		await expect(page).toHaveTitle(HOME_TITLE);
+		expect(await page.evaluate(() => "inAppMove" in window)).toBe(true);
+		await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", canonical);
+		await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+		await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", canonical);
+		await expect(page.locator('meta[property="og:url"]')).toHaveCount(1);
+	});
+
 	test("serves pages in American English over HTTPS-only for a year", async ({ request }) => {
 		const { response, html } = await fetchDocument(request, "/");
 		expect(response.headers()["strict-transport-security"]).toBe("max-age=31536000");
@@ -130,6 +165,15 @@ test.describe("Metadata, robots, and sitemap", () => {
 		expect(response.status()).toBe(404);
 		expect(documentTitle(html)).toBe(`Page not found - ${SITE_NAME}`);
 		expect(html).not.toMatch(/(property|name)="(og|twitter):/);
+	});
+
+	test("keeps a not-found page out of indexes, without a canonical", async ({ request }) => {
+		for (const path of ["/sounds/nope", "/minimal-pairs/nope", "/does-not-exist"]) {
+			const { response, html } = await fetchDocument(request, path);
+			expect(response.status()).toBe(404);
+			expect(metaContent(html, "robots")).toBe("noindex, follow");
+			expect(canonicalHref(html)).toBeUndefined();
+		}
 	});
 
 	test(

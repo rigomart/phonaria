@@ -157,7 +157,13 @@ export function extractDocumentTitle(matches: readonly MatchWithMeta[]): string 
 
 export const NOT_FOUND_PAGE_TITLE = "Page not found";
 
-/** Fallback tags for every page, and the whole head of a not-found page. */
+/** Robots for a page that stays out of search indexes but whose links are still worth following. */
+const NOINDEX_ROBOTS = "noindex, follow";
+
+/**
+ * Fallback tags for every page, and the whole head of a not-found page: kept
+ * out of indexes, with no canonical, since its URL is not a page.
+ */
 export function buildRootHead({ notFound = false }: { notFound?: boolean } = {}): StartHead {
 	const metadata = tryGetDocumentMetadata();
 	return {
@@ -166,7 +172,7 @@ export function buildRootHead({ notFound = false }: { notFound?: boolean } = {})
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
 			{ title: notFound ? formatDocumentTitle(NOT_FOUND_PAGE_TITLE) : SITE_NAME },
 			{ name: "description", content: metadata?.description ?? SITE_DESCRIPTION },
-			...(metadata ? crawlerMetaTags(metadata) : []),
+			...(metadata ? crawlerMetaTags(metadata, notFound ? NOINDEX_ROBOTS : undefined) : []),
 		],
 		links: [
 			{ rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },
@@ -182,6 +188,12 @@ type PageHeadInput = {
 	title: string;
 	description: string;
 	robots?: string;
+	/**
+	 * Whether `path` is the page's canonical URL, sent as its canonical link and
+	 * `og:url`. Defaults to true; pages whose URL also carries a query that
+	 * `path` leaves out set it to false and send neither.
+	 */
+	canonical?: boolean;
 	/** Defaults to `website`. */
 	ogType?: OpenGraphType;
 	/** Defaults to the site-wide card. */
@@ -193,15 +205,17 @@ function buildPageHead({
 	title,
 	description,
 	robots,
+	canonical: hasCanonical = true,
 	ogType,
 	image,
 }: PageHeadInput): StartHead {
 	const metadata = tryGetDocumentMetadata();
-	const canonical = metadata
-		? path === "/"
-			? metadata.siteUrl
-			: `${metadata.siteUrl}${path}`
-		: undefined;
+	const canonical =
+		metadata && hasCanonical
+			? path === "/"
+				? metadata.siteUrl
+				: `${metadata.siteUrl}${path}`
+			: undefined;
 	return {
 		meta: [
 			{ title: formatDocumentTitle(title) },
@@ -225,13 +239,19 @@ export function buildHomeHead(): StartHead {
 	);
 }
 
-/** Marks every search page `noindex, follow`. */
+/**
+ * Marks every search page `noindex, follow`, with no canonical and no
+ * `og:url`: each query is its own page, none of them indexed, and `/search`
+ * alone redirects home. A link preview then falls back to the URL it fetched,
+ * query included.
+ */
 export function buildSearchHead(search: { q?: string; sounds?: string }): StartHead {
 	return buildPageHead({
 		path: SEARCH_PATH,
 		title: searchPageTitle(search),
 		description: searchPageDescription(search),
-		robots: "noindex, follow",
+		robots: NOINDEX_ROBOTS,
+		canonical: false,
 	});
 }
 
@@ -393,7 +413,7 @@ function seoMetaTags(
 	canonical: string | undefined,
 	{ title, description, robots, ogType = "website", image = SITE_IMAGE }: SocialTagsInput,
 ): StartMetaTag[] {
-	if (!metadata || !canonical) return [];
+	if (!metadata) return [];
 	const imageUrl = `${metadata.siteUrl}${image.path}`;
 	return [
 		...crawlerMetaTags(metadata, robots),
@@ -401,7 +421,7 @@ function seoMetaTags(
 		{ property: "og:title", content: title },
 		{ property: "og:description", content: description },
 		{ property: "og:site_name", content: metadata.siteName },
-		{ property: "og:url", content: canonical },
+		...(canonical ? [{ property: "og:url", content: canonical }] : []),
 		{ property: "og:image", content: imageUrl },
 		{ property: "og:image:width", content: String(image.width) },
 		{ property: "og:image:height", content: String(image.height) },
