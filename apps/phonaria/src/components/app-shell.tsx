@@ -1,3 +1,4 @@
+import { useRouter } from "@tanstack/react-router";
 import { type ReactNode, useEffect } from "react";
 import {
 	focusMainContent,
@@ -12,8 +13,9 @@ import { PhonemeDetailsProvider } from "./phoneme-details/phoneme-details";
 
 /** Shared application chrome for the TanStack Start route tree. */
 export function AppShell({ flags, children }: { flags: AppFlags; children: ReactNode }) {
+	const router = useRouter();
 	useFocusOnNavigation();
-	useEffect(() => listenForStaleDeploy(), []);
+	useEffect(() => listenForStaleDeploy(router), [router]);
 
 	return (
 		<PhonemeDetailsProvider>

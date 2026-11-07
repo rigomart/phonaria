@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
 	listenForStaleDeploy,
+	type PageChangeEvents,
 	reloadOnceForStaleDeploy,
 	STALE_DEPLOY_RELOAD_KEY,
 	STALE_DEPLOY_RELOAD_WINDOW_MS,
@@ -80,29 +81,58 @@ describe("reloadOnceForStaleDeploy", () => {
 describe("listenForStaleDeploy", () => {
 	const preloadError = () => new Event("vite:preloadError", { cancelable: true });
 
-	it("reloads instead of letting the import fail", () => {
-		const target = new EventTarget();
-		const reloadOnce = vi.fn(() => true);
-		listenForStaleDeploy(target, reloadOnce);
-		const event = preloadError();
-		target.dispatchEvent(event);
-		expect(reloadOnce).toHaveBeenCalledOnce();
-		expect(event.defaultPrevented).toBe(true);
-	});
+	function fakeRouter() {
+		type Listener = Parameters<PageChangeEvents["subscribe"]>[1];
+		const listeners = new Set<Listener>();
+		const router: PageChangeEvents = {
+			subscribe: (_eventType, listener) => {
+				listeners.add(listener);
+				return () => listeners.delete(listener);
+			},
+		};
+		const navigate = (publicHref: string, pathChanged = true) => {
+			for (const listener of listeners) listener({ pathChanged, toLocation: { publicHref } });
+		};
+		return { router, navigate };
+	}
 
-	it("lets the import fail when the guard says no", () => {
+	it("lets the import fail and leaves the page as it is", () => {
 		const target = new EventTarget();
-		listenForStaleDeploy(target, () => false);
+		const loadOnce = vi.fn(() => true);
+		listenForStaleDeploy(fakeRouter().router, target, loadOnce);
 		const event = preloadError();
 		target.dispatchEvent(event);
 		expect(event.defaultPrevented).toBe(false);
+		expect(loadOnce).not.toHaveBeenCalled();
+	});
+
+	it("loads the next page in full", () => {
+		const target = new EventTarget();
+		const { router, navigate } = fakeRouter();
+		const loadOnce = vi.fn((_href: string) => true);
+		listenForStaleDeploy(router, target, loadOnce);
+		target.dispatchEvent(preloadError());
+		navigate("/search?q=hello%20world", false);
+		expect(loadOnce, "a query-only change keeps the page").not.toHaveBeenCalled();
+		navigate("/credits");
+		expect(loadOnce).toHaveBeenCalledExactlyOnceWith("/credits");
+	});
+
+	it("doesn't load in full when no chunk failed", () => {
+		const { router, navigate } = fakeRouter();
+		const loadOnce = vi.fn(() => true);
+		listenForStaleDeploy(router, new EventTarget(), loadOnce);
+		navigate("/credits");
+		expect(loadOnce).not.toHaveBeenCalled();
 	});
 
 	it("stops listening on cleanup", () => {
 		const target = new EventTarget();
-		const reloadOnce = vi.fn(() => true);
-		listenForStaleDeploy(target, reloadOnce)();
+		const { router, navigate } = fakeRouter();
+		const loadOnce = vi.fn(() => true);
+		listenForStaleDeploy(router, target, loadOnce)();
 		target.dispatchEvent(preloadError());
-		expect(reloadOnce).not.toHaveBeenCalled();
+		navigate("/credits");
+		expect(loadOnce).not.toHaveBeenCalled();
 	});
 });

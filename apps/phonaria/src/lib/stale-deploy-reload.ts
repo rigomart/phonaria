@@ -1,7 +1,8 @@
 /**
  * A tab opened before a deploy asks for chunks the new build no longer serves.
- * Reloading once picks up the new build. The reload time is kept in
- * sessionStorage so a chunk missing for another reason can't loop the tab.
+ * Once one fails, the tab reloads on its next move to another page, so nothing
+ * on the page it's on is lost. The reload time is kept in sessionStorage so a
+ * chunk missing for another reason can't loop the tab.
  *
  * TanStack Router's lazy route components make their own one reload, under
  * their own sessionStorage key, so a route whose chunk keeps failing can
@@ -43,29 +44,54 @@ export function reloadOnceForStaleDeploy({
 	return true;
 }
 
-export function reloadPageOnceForStaleDeploy(): boolean {
+/** Loads `href` in full, once, under the same guard as `reloadOnceForStaleDeploy`. */
+export function loadPageOnceForStaleDeploy(href: string): boolean {
 	let storage: Storage | null = null;
 	try {
 		storage = globalThis.sessionStorage;
 	} catch {
 		// Blocked storage throws on access; without it the guard can't hold.
 	}
-	return reloadOnceForStaleDeploy({ storage, reload: () => globalThis.location.reload() });
+	const { location } = globalThis;
+	return reloadOnceForStaleDeploy({
+		storage,
+		reload: () => {
+			// Back and Forward have already set the address; a link has not yet.
+			if (location.pathname + location.search + location.hash === href) location.reload();
+			else location.assign(href);
+		},
+	});
 }
+
+/** The router's page-change events, as `listenForStaleDeploy` uses them. */
+export type PageChangeEvents = {
+	subscribe(
+		eventType: "onBeforeNavigate",
+		listener: (event: { pathChanged: boolean; toLocation: { publicHref: string } }) => void,
+	): () => void;
+};
 
 /**
  * Listens for Vite's `vite:preloadError`, fired in a build when a chunk fails
- * to load, whether a route's or a feature's (the 10k word list), and reloads
- * instead of letting the import fail. When the guard says no, the import fails
- * as usual. Returns the cleanup.
+ * to load, whether a route's or a feature's (the 10k word list). The import
+ * fails as usual. The next move to another path then loads that page in full
+ * instead. Returns the cleanup.
  */
 export function listenForStaleDeploy(
+	router: PageChangeEvents,
 	target: EventTarget = window,
-	reloadOnce: () => boolean = reloadPageOnceForStaleDeploy,
+	loadOnce: (href: string) => boolean = loadPageOnceForStaleDeploy,
 ): () => void {
-	const onPreloadError = (event: Event) => {
-		if (reloadOnce()) event.preventDefault();
+	let stale = false;
+	const onPreloadError = () => {
+		stale = true;
 	};
 	target.addEventListener("vite:preloadError", onPreloadError);
-	return () => target.removeEventListener("vite:preloadError", onPreloadError);
+	const stopPageChanges = router.subscribe("onBeforeNavigate", (event) => {
+		if (stale && event.pathChanged) loadOnce(event.toLocation.publicHref);
+	});
+	return () => {
+		target.removeEventListener("vite:preloadError", onPreloadError);
+		stopPageChanges();
+	};
 }
