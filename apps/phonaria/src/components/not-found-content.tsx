@@ -3,11 +3,7 @@ import { Home } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "@/components/link";
 
-/**
- * A page that stands in for one that can't be shown: a short label, a
- * heading, a line on why, and the ways out. The not-found and error pages
- * share it, inside the app's header and footer.
- */
+/** A page that stands in for one that can't be shown, shared by the not-found and error pages. */
 export function StatusPage({
 	label,
 	title,
@@ -17,7 +13,6 @@ export function StatusPage({
 	label: string;
 	title: string;
 	description: string;
-	/** The ways out, under the description. */
 	children: ReactNode;
 }) {
 	return (
@@ -50,7 +45,7 @@ export function BackHomeLink() {
 
 /**
  * Shared 404 body. Serves both unknown URLs and the flag gate's not-found
- * outcome, so the copy stays neutral — a gated route must not read as
+ * outcome, so the copy stays neutral: a gated route must not read as
  * "coming soon".
  */
 export function NotFoundContent() {

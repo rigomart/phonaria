@@ -1,20 +1,13 @@
 /**
- * A tab opened before a deploy still asks for the old build's chunks, which
- * the new deploy no longer serves, so the next page or feature it opens fails
- * to load. Reloading once picks up the new build. The time of that reload is
- * kept in sessionStorage so a chunk that is missing for any other reason can't
- * send the tab into a reload loop: a second failure soon after goes on to the
- * error page, or to the feature's own "didn't load" message.
+ * A tab opened before a deploy asks for chunks the new build no longer serves.
+ * Reloading once picks up the new build. The reload time is kept in
+ * sessionStorage so a chunk missing for another reason can't loop the tab.
  *
- * TanStack Router's lazy route components also reload once by themselves when
- * their chunk is missing at render time, with their own sessionStorage key,
- * so the error page doesn't reload again: by the time a route's chunk error
- * reaches it, one reload has already happened. A chunk that keeps failing can
- * therefore cost a route two reloads, one from each guard, before the error
- * page shows; a stale tab is fixed by the first.
+ * TanStack Router's lazy route components make their own one reload, under
+ * their own sessionStorage key, so a route whose chunk keeps failing can
+ * reload twice before the error page shows.
  */
 
-/** The sessionStorage key holding when this tab last reloaded for a missing chunk. */
 export const STALE_DEPLOY_RELOAD_KEY = "stale-deploy-reload";
 
 /** How long after one reload another failure counts as the same one. */
@@ -50,7 +43,6 @@ export function reloadOnceForStaleDeploy({
 	return true;
 }
 
-/** `reloadOnceForStaleDeploy` with this tab's sessionStorage and location. */
 export function reloadPageOnceForStaleDeploy(): boolean {
 	let storage: Storage | null = null;
 	try {

@@ -3,10 +3,9 @@ import { RotateCw } from "lucide-react";
 import { BackHomeLink, StatusPage } from "./not-found-content";
 
 /**
- * Shown when a page fails to render or its code fails to load. The error
- * itself stays out of the copy: it means nothing to a learner. A chunk lost
- * to a newer deploy has already had its one reload by the time it lands here
- * (see `src/lib/stale-deploy-reload.ts`), so this page doesn't reload again.
+ * Shown when a page fails to render or its code fails to load. A chunk lost to
+ * a newer deploy has already had its one reload by the time it lands here (see
+ * `src/lib/stale-deploy-reload.ts`), so this page doesn't reload by itself.
  */
 export function ErrorContent() {
 	return (

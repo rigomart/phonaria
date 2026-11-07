@@ -34,9 +34,8 @@ export function AppShell({ flags, children }: { flags: AppFlags; children: React
 }
 
 /**
- * The first stop for the Tab key, hidden until focused: it moves focus past
- * the header to the page's content. Without JavaScript the link's fragment
- * does the same; with it, the address keeps no `#main-content`.
+ * Moves focus past the header. The click handler keeps `#main-content` out of
+ * the address; without JavaScript the fragment does the same job.
  */
 function SkipLink() {
 	return (
