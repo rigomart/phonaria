@@ -75,7 +75,7 @@ function CardContent({
 		>
 			<div data-phoneme-details className="flex flex-col gap-4 p-4">
 				<div className="flex items-start gap-4">
-					<SoundTile ipa={sound.ipa} audioPath={sound.audioPath} />
+					<SoundTile ipa={sound.ipa} name={sound.name} audioPath={sound.audioPath} />
 					<div className="flex min-w-0 flex-col gap-1">
 						<SoundHeading sound={sound} titleId={titleId} />
 						<p className="text-sm text-muted-foreground">

@@ -71,7 +71,7 @@ const details = observation(
 			diagram: visible('img[alt="Voiceless glottal fricative articulation"]'),
 		};
 	},
-	{ open: true, label: true, playControls: ["Play h"], diagram: true },
+	{ open: true, label: true, playControls: ["Play H"], diagram: true },
 );
 
 const cleared = observation(

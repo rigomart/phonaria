@@ -10,6 +10,7 @@ import { Spinner } from "@phonaria/ui/components/spinner";
 import { SendHorizontal, X } from "lucide-react";
 import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SpellingSuggestionLine } from "@/components/transcription/spelling-suggestion-line";
+import { isMainContentFocus } from "@/hooks/use-focus-on-navigation";
 import { useSubmitTranscription } from "@/hooks/use-submit-transcription";
 import { useCurrentTranscription } from "@/hooks/use-transcribe";
 import { useTranscriptionHistory } from "@/hooks/use-transcription-history";
@@ -85,7 +86,8 @@ export function G2PInputForm({
 			const hasFocusedControl =
 				active instanceof HTMLElement &&
 				active !== document.body &&
-				active !== document.documentElement;
+				active !== document.documentElement &&
+				!isMainContentFocus(active);
 
 			if (!hasFocusedControl && event.key.length === 1) {
 				inputRef.current?.focus();

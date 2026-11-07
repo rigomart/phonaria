@@ -86,7 +86,7 @@ export function SoundHeader({
 		<div className="flex flex-col gap-4">
 			<div className="flex items-start gap-2">
 				<div className="flex min-w-0 flex-1 items-start gap-4">
-					<SoundTile ipa={sound.ipa} audioPath={sound.audioPath} />
+					<SoundTile ipa={sound.ipa} name={sound.name} audioPath={sound.audioPath} />
 					<div className="flex min-w-0 flex-1 flex-col gap-1">
 						{onExpand ? (
 							// A button holds no heading, so the name is a plain label here; the dialog

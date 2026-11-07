@@ -78,7 +78,7 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 					</Link>
 					<header className="flex flex-col gap-3">
 						<div className="flex items-start gap-4">
-							<SoundTile ipa={sound.ipa} audioPath={sound.audioPath} />
+							<SoundTile ipa={sound.ipa} name={sound.name} audioPath={sound.audioPath} />
 							<div className="flex min-w-0 flex-col gap-1">
 								<SoundHeading sound={sound} titleId={titleId} as="h1" />
 								<p className="text-sm text-muted-foreground">{sound.label ?? sound.typeLabel}</p>

@@ -46,7 +46,7 @@ test.describe("IPA charts", () => {
 		const tile = page.getByRole("button", { name: CONSONANT_BUTTON_NAME });
 		await waitForHydration(tile);
 		await tile.click();
-		await expect(page.getByLabel("Play p", { exact: true })).toBeEnabled();
+		await expect(page.getByLabel("Play P", { exact: true })).toBeEnabled();
 		await page.getByRole("button", { name: "Full details for p", exact: true }).click();
 		await expect(
 			page.getByRole("img", { name: "Voiceless bilabial plosive articulation" }),

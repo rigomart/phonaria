@@ -7,8 +7,21 @@ import { cn } from "@/lib/utils";
 const tileClass =
 	"relative flex h-16 min-w-16 shrink-0 items-center justify-center rounded-2xl bg-background px-3 font-display text-4xl leading-none text-foreground";
 
-/** The sound's symbol. With a recording the whole tile plays it. */
-export function SoundTile({ ipa, audioPath }: { ipa: string; audioPath?: string | null }) {
+/**
+ * The sound's symbol. With a recording the whole tile plays it, and its label
+ * says the sound's name ("Play Voiceless TH"), which a screen reader reads
+ * better than the symbol.
+ */
+export function SoundTile({
+	ipa,
+	name,
+	audioPath,
+}: {
+	ipa: string;
+	/** The sound's name as its heading shows it, e.g. "Voiceless TH" or "T". */
+	name: string;
+	audioPath?: string | null;
+}) {
 	const src = audioPath ? buildPublicAssetUrl(audioPath) : null;
 	const { play, status } = useAudioManager(src ?? "");
 
@@ -25,7 +38,7 @@ export function SoundTile({ ipa, audioPath }: { ipa: string; audioPath?: string 
 	return (
 		<button
 			type="button"
-			aria-label={`Play ${ipa}`}
+			aria-label={`Play ${name}`}
 			title="Play"
 			data-status={status}
 			onClick={() => {

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { renderToString } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { SoundTile } from "@/components/phoneme-details/sound-tile";
 import { AudioManagerProvider } from "@/hooks/use-audio-manager";
 import { PreviousNext, SoundFamilies, Spelling } from "./sound-page-blocks";
@@ -20,6 +20,10 @@ function linkTag(html: string, href: string) {
 }
 
 describe("a sound's name beside its symbol", () => {
+	afterEach(() => {
+		vi.unstubAllEnvs();
+	});
+
 	it("lists each sound with its symbol, its name as a small label and its key word", () => {
 		const html = renderToString(<SoundsContent />);
 		expect(linkTag(html, "/sounds/t-top")).toContain('aria-label="T, as in top"');
@@ -54,9 +58,20 @@ describe("a sound's name beside its symbol", () => {
 	it("names the symbol of a sound with no recording, since its heading doesn't", () => {
 		const html = renderToString(
 			<AudioManagerProvider>
-				<SoundTile ipa="ɔɪ" audioPath={null} />
+				<SoundTile ipa="ɔɪ" name="OY" audioPath={null} />
 			</AudioManagerProvider>,
 		);
 		expect(html).toContain('role="img" aria-label="ɔɪ"');
+	});
+
+	it("names the sound, not its symbol, on the button that plays it", () => {
+		vi.stubEnv("PUBLIC_BUCKET_URL", "https://assets.example");
+		const html = renderToString(
+			<AudioManagerProvider>
+				<SoundTile ipa="θ" name="Voiceless TH" audioPath="/audio/phonemes/TH.ogg" />
+			</AudioManagerProvider>,
+		);
+		expect(html).toContain('aria-label="Play Voiceless TH"');
+		expect(html).not.toContain('aria-label="Play θ"');
 	});
 });
