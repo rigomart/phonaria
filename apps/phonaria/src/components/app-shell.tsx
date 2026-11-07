@@ -22,11 +22,7 @@ export function AppShell({ flags, children }: { flags: AppFlags; children: React
 			<div className="min-h-screen flex flex-col">
 				<SkipLink />
 				<Header flags={flags} />
-				<main
-					id={MAIN_CONTENT_ID}
-					tabIndex={-1}
-					className="flex-1 flex min-h-0 flex-col outline-none"
-				>
+				<main id={MAIN_CONTENT_ID} className="flex-1 flex min-h-0 flex-col outline-none">
 					{children}
 				</main>
 				<Footer flags={flags} />

@@ -5,20 +5,33 @@ import { useEffect } from "react";
 export const MAIN_CONTENT_ID = "main-content";
 
 /**
- * Moves focus to the main content: the page's h1, else `<main>` itself. Neither
- * is a control, so each takes focus through `tabindex="-1"`, and the page
- * doesn't scroll to it.
+ * Moves focus to the main content: the page's h1, else `<main>` itself, without
+ * scrolling to it.
  */
 export function focusMainContent({ preferHeading = true } = {}): void {
 	const main = document.getElementById(MAIN_CONTENT_ID);
 	if (!main) return;
 	const heading = preferHeading ? main.querySelector<HTMLElement>("h1") : null;
-	if (heading) {
-		if (!heading.hasAttribute("tabindex")) heading.setAttribute("tabindex", "-1");
-		heading.focus({ preventScroll: true });
-		if (document.activeElement === heading) return;
+	if (heading && focusUntilBlur(heading)) return;
+	focusUntilBlur(main);
+}
+
+/**
+ * Focuses an element that isn't a control through a `tabindex="-1"` that lasts
+ * until it loses focus. Left in place, a click on any text inside it would focus
+ * it, and the next Tab would start from its top instead of from the click.
+ */
+function focusUntilBlur(element: HTMLElement): boolean {
+	const added = !element.hasAttribute("tabindex");
+	if (added) element.setAttribute("tabindex", "-1");
+	element.focus({ preventScroll: true });
+	const focused = document.activeElement === element;
+	if (added && focused) {
+		element.addEventListener("blur", () => element.removeAttribute("tabindex"), { once: true });
+	} else if (added) {
+		element.removeAttribute("tabindex");
 	}
-	main.focus({ preventScroll: true });
+	return focused;
 }
 
 /**
