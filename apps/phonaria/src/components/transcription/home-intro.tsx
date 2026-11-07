@@ -104,8 +104,8 @@ function NamePronunciation() {
 				Phonaria
 			</h1>
 
-			{/* CSS, so it plays before hydration. */}
-			<figure className="relative flex items-start pb-8 animate-in fade-in blur-in-sm slide-in-from-bottom-2 duration-700 ease-out motion-reduce:animate-none">
+			{/* CSS, so it plays before hydration. fade-in-1 starts at 1%, not 0: Chrome skips opacity-0 text for LCP. */}
+			<figure className="relative flex items-start pb-8 animate-in fade-in-1 blur-in-sm slide-in-from-bottom-2 duration-700 ease-out motion-reduce:animate-none">
 				<figcaption className="sr-only">Phonaria is pronounced /{NAME_IPA}/</figcaption>
 				<Slash phase={phase} className="right-full" />
 				{NAME_PRONUNCIATION.map((segment, index) => (
