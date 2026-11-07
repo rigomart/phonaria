@@ -1,4 +1,5 @@
 import type { AppDatabase } from "@/db/drizzle";
+import { describeLookupFailure } from "@/lib/transcription/lookup-failure";
 import { generateOneSlipVariants } from "@/lib/transcription/spelling-suggestion";
 import { findExistingCmudictWords, lookupManyCmudict } from "./cmudict";
 import type { G2PWord } from "./model";
@@ -44,7 +45,7 @@ export async function processWords(
 	try {
 		return await attachSpellingNeighbours(results, options.db);
 	} catch (error) {
-		console.error("transcription: spelling neighbour lookup failed", error);
+		console.error("transcription: spelling neighbour lookup failed", describeLookupFailure(error));
 		return results;
 	}
 }

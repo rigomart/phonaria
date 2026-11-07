@@ -161,7 +161,7 @@ describe("transcribeWordsOnWorker", () => {
 			details: {
 				kind: "database",
 				retryable: true,
-				reason: "Error: SQLITE_ERROR: no such table: words ([url]",
+				reason: "Error: SQLITE_ERROR: no such table: words ([url])",
 			},
 		});
 		const payload = JSON.stringify(log.mock.calls[0]?.[0]);

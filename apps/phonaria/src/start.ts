@@ -47,7 +47,7 @@ const legacyRedirects = createMiddleware().server(({ request, next }) => {
 	return getLegacyRedirectResponse(request) ?? next();
 });
 
-const securityHeaders = createMiddleware().server(async ({ next }) => {
+export const securityHeaders = createMiddleware().server(async ({ next }) => {
 	const result = await next();
 	const headers = getSecurityHeaders();
 	for (const [name, value] of headers) {
@@ -63,10 +63,10 @@ const securityHeaders = createMiddleware().server(async ({ next }) => {
 });
 
 /**
- * Passing our own `requestMiddleware` replaces TanStack Start's default list,
- * which is only its CSRF check, so it is added back here. Server functions
- * must come from this origin (`Sec-Fetch-Site: same-origin`, else a matching
- * `Origin` or `Referer`); page requests and API routes are not checked.
+ * TanStack Start adds its own CSRF check only when the app has no start
+ * instance, so it is added back here with TanStack's default filter. Server
+ * functions must come from this origin (`Sec-Fetch-Site: same-origin`, else a
+ * matching `Origin` or `Referer`); page requests and API routes are not checked.
  */
 export const serverFunctionCsrf = createCsrfMiddleware({
 	filter: (ctx) => ctx.handlerType === "serverFn",

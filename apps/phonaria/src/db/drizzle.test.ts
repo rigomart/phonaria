@@ -101,11 +101,6 @@ describe("createTimeoutFetch", () => {
 		);
 	}
 
-	it("gives Turso five seconds per request", async () => {
-		const { TURSO_REQUEST_TIMEOUT_MS } = await import("./drizzle");
-		expect(TURSO_REQUEST_TIMEOUT_MS).toBe(5000);
-	});
-
 	it("aborts a request that takes longer than the timeout", async () => {
 		const { createTimeoutFetch } = await import("./drizzle");
 		const base = hangingFetch();

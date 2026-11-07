@@ -26,17 +26,10 @@ export function getContentSecurityPolicy(): string {
 
 export const STRICT_TRANSPORT_SECURITY = "max-age=31536000";
 
-/**
- * Practice records the learner's microphone on this origin only. Nothing here
- * uses the camera or location. Copying IPA uses `clipboard-write`, which is
- * left at the browser default (this origin).
- */
+/** `clipboard-write` is left at the browser default (this origin), which copying IPA needs. */
 export const PERMISSIONS_POLICY = "microphone=(self), camera=(), geolocation=()";
 
-/**
- * Every security header, in the order they are written. The request
- * middleware and the `_headers` file both read this list.
- */
+/** Read by both the request middleware and the `_headers` file. */
 export function getSecurityHeaders(
 	policy: string = getContentSecurityPolicy(),
 ): ReadonlyArray<readonly [name: string, value: string]> {

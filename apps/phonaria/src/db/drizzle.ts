@@ -5,7 +5,6 @@ import * as schema from "./schema";
 
 export type AppDatabase = LibSQLDatabase<typeof schema>;
 
-/** The part of `fetch` the libsql HTTP client calls. */
 export type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
 export type LibsqlClientFactory = (config: {
@@ -14,11 +13,7 @@ export type LibsqlClientFactory = (config: {
 	fetch?: FetchLike;
 }) => Client;
 
-/**
- * How long one Turso HTTP request may take before it is aborted. Without a
- * limit a hung request keeps the transcription input disabled for good; the
- * abort surfaces as a retryable lookup failure instead.
- */
+/** A Turso HTTP request past this limit is aborted and surfaces as a retryable lookup failure. */
 export const TURSO_REQUEST_TIMEOUT_MS = 5000;
 
 /**
@@ -95,7 +90,7 @@ export function createDatabase(
 	const client = openClient({
 		url: config.url,
 		authToken: config.authToken,
-		// Only the HTTP transport (the Worker's `@libsql/client/web`) uses it.
+		// libsql uses it for `libsql:` and `http(s):` URLs, and ignores it for `file:` and WebSocket ones.
 		fetch: createTimeoutFetch(options.requestTimeoutMs ?? TURSO_REQUEST_TIMEOUT_MS),
 	});
 

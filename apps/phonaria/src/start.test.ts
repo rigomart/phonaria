@@ -1,7 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
+import { getSecurityHeaders } from "@/lib/security-headers";
 import * as startModule from "./start";
 
-const { resolveLegacyRedirect, serverFunctionCsrf, startInstance } = startModule;
+const { setResponseHeader } = vi.hoisted(() => ({ setResponseHeader: vi.fn() }));
+vi.mock("@tanstack/react-start/server", () => ({ setResponseHeader }));
+
+const { resolveLegacyRedirect, securityHeaders, serverFunctionCsrf, startInstance } = startModule;
 
 type CsrfServer = (ctx: {
 	request: Request;
@@ -29,10 +33,39 @@ async function runCsrf(
 	return { result, next };
 }
 
+type HeadersServer = (ctx: {
+	next: () => Promise<{ response?: Response }>;
+}) => Promise<{ response?: Response }>;
+
+describe("security headers middleware", () => {
+	it("writes every security header to the response and to the response context", async () => {
+		setResponseHeader.mockClear();
+		const response = new Response("Forbidden", { status: 403 });
+		const server = securityHeaders.options.server as unknown as HeadersServer;
+
+		await server({ next: async () => ({ response }) });
+
+		const expected = getSecurityHeaders();
+		expect(expected.map(([name]) => name)).toEqual([
+			"Content-Security-Policy",
+			"Strict-Transport-Security",
+			"X-Content-Type-Options",
+			"Referrer-Policy",
+			"Permissions-Policy",
+		]);
+		for (const [name, value] of expected) {
+			expect(response.headers.get(name), name).toBe(value);
+			expect(setResponseHeader).toHaveBeenCalledWith(name, value);
+		}
+	});
+});
+
 describe("server function CSRF check", () => {
-	it("runs as request middleware, since a custom list drops TanStack Start's default", async () => {
+	it("runs right after the headers middleware, since a start instance drops TanStack Start's default", async () => {
 		const options = await startInstance.getOptions();
-		expect(options.requestMiddleware).toContain(serverFunctionCsrf);
+		const middleware: unknown[] = [...(options.requestMiddleware ?? [])];
+		expect(middleware.indexOf(serverFunctionCsrf)).toBe(middleware.indexOf(securityHeaders) + 1);
+		expect(middleware.at(-1)).toBe(serverFunctionCsrf);
 		expect(Symbol.for("tanstack-start:csrf-middleware") in serverFunctionCsrf).toBe(true);
 	});
 

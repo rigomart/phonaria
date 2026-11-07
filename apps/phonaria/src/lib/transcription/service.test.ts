@@ -112,7 +112,7 @@ describe("transcribeWords", () => {
 
 	it("treats a timeout inside Drizzle's wrapper as retryable", async () => {
 		const processWords = vi.fn(async () => {
-			const cause = new DOMException("The operation was aborted due to timeout", "TimeoutError");
+			const cause = new DOMException("The operation was cancelled", "TimeoutError");
 			throw Object.assign(new Error("Failed query: select 1\nparams: busy"), {
 				query: "select 1",
 				params: ["busy"],
@@ -126,8 +126,19 @@ describe("transcribeWords", () => {
 		if (!result.ok) {
 			expect(result.error.kind).toBe("retryable");
 			expect(result.error.message).toBe(TRANSCRIPTION_RETRYABLE_MESSAGE);
-			expect(result.reason).toBe("TimeoutError: The operation was aborted due to timeout");
+			expect(result.reason).toBe("TimeoutError: The operation was cancelled");
 		}
+	});
+
+	it("treats an aborted request as retryable by its error name alone", async () => {
+		const processWords = vi.fn(async () => {
+			throw new DOMException("The user aborted a request", "AbortError");
+		});
+
+		const result = await transcribeWords({ words: ["hello"] }, { processWords });
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) expect(result.error.kind).toBe("retryable");
 	});
 
 	it("does not treat a learner's word in Drizzle's message as a transient failure", async () => {

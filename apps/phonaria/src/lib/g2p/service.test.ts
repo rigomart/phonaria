@@ -142,7 +142,10 @@ describe("processWords (tier 3 — DB lookup)", () => {
 	});
 
 	it("keeps fallback pronunciations when the optional neighbour lookup fails", async () => {
-		const failure = new Error("neighbour lookup unavailable");
+		const failure = Object.assign(
+			new Error('Failed query: select "word" from "words" where "word" in (?)\nparams: RECEIVE'),
+			{ params: ["RECEIVE"], cause: new Error("neighbour lookup unavailable") },
+		);
 		const chain = {
 			from: vi.fn().mockReturnThis(),
 			where: vi.fn().mockResolvedValueOnce([]).mockRejectedValueOnce(failure),
@@ -158,7 +161,7 @@ describe("processWords (tier 3 — DB lookup)", () => {
 		expect(result[0]?.spellingNeighbours).toBeUndefined();
 		expect(consoleError).toHaveBeenCalledWith(
 			"transcription: spelling neighbour lookup failed",
-			failure,
+			"Error: neighbour lookup unavailable",
 		);
 	});
 
