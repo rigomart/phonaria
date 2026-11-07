@@ -49,7 +49,7 @@ Staging CI uses the GitHub variables `STAGING_URL` and `WORKERS_DEV_SUBDOMAIN`. 
 
 ## Transcription results
 
-The homepage holds the input and examples; results open at `/search?q=` (`src/routes/search.tsx`), with the input at the top so the next search starts there. Each query is its own URL, kept out of search indexes (`noindex, follow`) and out of the sitemap and prerender. `/search` without a query sends the visitor to the homepage (307). Links shared before results moved, `/?q=hello`, redirect to `/search?q=hello` (308). Clearing the field on `/search` keeps the result until the next search; a lookup still running is dropped instead, so the field never stays disabled.
+The homepage holds the input and examples; results open at `/search?q=` (`src/routes/search.tsx`), with the input at the top so the next search starts there. Each query is its own URL, kept out of search indexes (`noindex, follow`) and out of the sitemap and prerender, with no canonical link or `og:url`. `/search` without a query sends the visitor to the homepage (307). Links shared before results moved, `/?q=hello`, redirect to `/search?q=hello` (308). Clearing the field on `/search` keeps the result until the next search; a lookup still running is dropped instead, so the field never stays disabled.
 
 ## Finding a word by its sounds
 

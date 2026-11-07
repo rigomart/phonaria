@@ -4,7 +4,6 @@ import { CREDITS_PAGE_DESCRIPTION, CREDITS_PAGE_TITLE } from "@/lib/credits-meta
 import {
 	HOME_PAGE_DESCRIPTION,
 	HOME_PAGE_TITLE,
-	SEARCH_PATH,
 	searchPageDescription,
 	searchPageTitle,
 } from "@/lib/home-metadata";
@@ -157,6 +156,8 @@ export function extractDocumentTitle(matches: readonly MatchWithMeta[]): string 
 
 export const NOT_FOUND_PAGE_TITLE = "Page not found";
 
+const NOINDEX_ROBOTS = "noindex, follow";
+
 /** Fallback tags for every page, and the whole head of a not-found page. */
 export function buildRootHead({ notFound = false }: { notFound?: boolean } = {}): StartHead {
 	const metadata = tryGetDocumentMetadata();
@@ -166,7 +167,7 @@ export function buildRootHead({ notFound = false }: { notFound?: boolean } = {})
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
 			{ title: notFound ? formatDocumentTitle(NOT_FOUND_PAGE_TITLE) : SITE_NAME },
 			{ name: "description", content: metadata?.description ?? SITE_DESCRIPTION },
-			...(metadata ? crawlerMetaTags(metadata) : []),
+			...(metadata ? crawlerMetaTags(metadata, notFound ? NOINDEX_ROBOTS : undefined) : []),
 		],
 		links: [
 			{ rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },
@@ -178,7 +179,8 @@ export function buildRootHead({ notFound = false }: { notFound?: boolean } = {})
 }
 
 type PageHeadInput = {
-	path: string;
+	/** Left out for a page with no canonical link or `og:url`. */
+	path?: string;
 	title: string;
 	description: string;
 	robots?: string;
@@ -197,11 +199,8 @@ function buildPageHead({
 	image,
 }: PageHeadInput): StartHead {
 	const metadata = tryGetDocumentMetadata();
-	const canonical = metadata
-		? path === "/"
-			? metadata.siteUrl
-			: `${metadata.siteUrl}${path}`
-		: undefined;
+	const canonical =
+		metadata && path ? (path === "/" ? metadata.siteUrl : `${metadata.siteUrl}${path}`) : undefined;
 	return {
 		meta: [
 			{ title: formatDocumentTitle(title) },
@@ -225,13 +224,15 @@ export function buildHomeHead(): StartHead {
 	);
 }
 
-/** Marks every search page `noindex, follow`. */
+/**
+ * Marks every search page `noindex, follow`, with no canonical or `og:url`; a
+ * link preview falls back to the fetched URL, query included.
+ */
 export function buildSearchHead(search: { q?: string; sounds?: string }): StartHead {
 	return buildPageHead({
-		path: SEARCH_PATH,
 		title: searchPageTitle(search),
 		description: searchPageDescription(search),
-		robots: "noindex, follow",
+		robots: NOINDEX_ROBOTS,
 	});
 }
 
@@ -300,7 +301,7 @@ export function buildSoundsIndexHead(): StartHead {
 }
 
 /** Practice stays out of search indexes even when the feature flag is on. */
-const PRACTICE_ROBOTS = "noindex, follow";
+const PRACTICE_ROBOTS = NOINDEX_ROBOTS;
 
 export function buildPracticeIndexHead(): StartHead {
 	return buildPageHead({
@@ -393,7 +394,7 @@ function seoMetaTags(
 	canonical: string | undefined,
 	{ title, description, robots, ogType = "website", image = SITE_IMAGE }: SocialTagsInput,
 ): StartMetaTag[] {
-	if (!metadata || !canonical) return [];
+	if (!metadata) return [];
 	const imageUrl = `${metadata.siteUrl}${image.path}`;
 	return [
 		...crawlerMetaTags(metadata, robots),
@@ -401,7 +402,7 @@ function seoMetaTags(
 		{ property: "og:title", content: title },
 		{ property: "og:description", content: description },
 		{ property: "og:site_name", content: metadata.siteName },
-		{ property: "og:url", content: canonical },
+		...(canonical ? [{ property: "og:url", content: canonical }] : []),
 		{ property: "og:image", content: imageUrl },
 		{ property: "og:image:width", content: String(image.width) },
 		{ property: "og:image:height", content: String(image.height) },
@@ -418,7 +419,7 @@ function crawlerMetaTags(metadata: DocumentMetadata, robots?: string): StartMeta
 	return [
 		{
 			name: "robots",
-			content: robots ?? (metadata.indexingEnabled ? "index, follow" : "noindex, follow"),
+			content: robots ?? (metadata.indexingEnabled ? "index, follow" : NOINDEX_ROBOTS),
 		},
 		...(metadata.googleSiteVerification
 			? [{ name: "google-site-verification", content: metadata.googleSiteVerification }]
