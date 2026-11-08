@@ -73,6 +73,12 @@ export function SearchJourney(props: JourneyProps) {
 					<Composer />
 				</div>
 
+				<noscript>
+					<p className="w-full max-w-2xl px-4 pt-6 text-center text-sm text-muted-foreground text-pretty">
+						Results here are built in the browser, so they need JavaScript. Turn it on to see them.
+					</p>
+				</noscript>
+
 				<div className="w-full min-h-0">
 					{sounds !== undefined ? (
 						<SoundResults sounds={pickedSounds} />

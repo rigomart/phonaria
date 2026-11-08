@@ -29,6 +29,7 @@ import { Link } from "@/components/link";
 import { useNavIndicator } from "@/hooks/use-nav-indicator";
 import { useScrolled } from "@/hooks/use-scrolled";
 import type { AppFlags } from "@/lib/flags";
+import { ISSUES_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { getTools, navCurrent, soundsSections, type Tool, usePathname } from "./site-nav";
@@ -76,8 +77,6 @@ export function betaNotice(flags: Pick<AppFlags, "speech">): string {
 		? "The app is still changing. Pronunciations, scores and notes can be wrong."
 		: "The app is still changing. Pronunciations and notes can be wrong.";
 }
-
-const ISSUES_URL = "https://github.com/rigomart/phonaria/issues";
 
 const popoverLink =
 	"rounded-sm text-foreground underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";

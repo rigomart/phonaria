@@ -13,6 +13,8 @@
 export const SITE_NAME = "Phonaria";
 export const SITE_DESCRIPTION = "Pronunciation tools for exploring speech sounds and IPA.";
 
+export const ISSUES_URL = "https://github.com/rigomart/phonaria/issues";
+
 const DEV_SITE_URL = "http://localhost:3000";
 
 export type DocumentMetadata = {

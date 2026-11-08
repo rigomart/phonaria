@@ -23,4 +23,13 @@ describe("Footer", () => {
 		expect(html).not.toContain('href="/about"');
 		expect(html).toContain('href="/credits"');
 	});
+
+	it("links to the issue tracker to report a problem, in a new tab", () => {
+		const html = renderToString(<Footer flags={{ about: false }} />);
+		const link = html.match(
+			/<a [^>]*href="https:\/\/github.com\/rigomart\/phonaria\/issues"[^>]*>(.*?)<\/a>/,
+		);
+		expect(link?.[0]).toContain('target="_blank"');
+		expect(link?.[1]).toBe('Report a problem<span class="sr-only"> (opens in a new tab)</span>');
+	});
 });

@@ -16,7 +16,7 @@ import { markDifference } from "@/lib/mark-difference";
 import { contrastPagePath } from "@/lib/minimal-pairs";
 import type { PhonemeComparison } from "@/lib/phoneme-comparisons";
 import { compareSounds, getAllComparisons } from "@/lib/sound-page-content";
-import { getSoundKeyExample } from "@/lib/sound-pages";
+import { getSoundKeyExample, soundHeading } from "@/lib/sound-pages";
 import { cn } from "@/lib/utils";
 
 const ACCENT = "en-us" as const;
@@ -151,7 +151,11 @@ function FaceOff({
 function Side({ phonemeId, end = false }: { phonemeId: EnglishPhonemeSymbolId; end?: boolean }) {
 	return (
 		<div className={cn("flex items-center gap-3", end && "flex-row-reverse text-right")}>
-			<SoundTile ipa={getIpaForPhonemeId(phonemeId)} audioPath={phonemeAudioPath(phonemeId)} />
+			<SoundTile
+				ipa={getIpaForPhonemeId(phonemeId)}
+				name={soundHeading(phonemeId)}
+				audioPath={phonemeAudioPath(phonemeId)}
+			/>
 			<span className="text-sm text-muted-foreground">
 				as in{" "}
 				<span className="font-medium text-foreground">{getSoundKeyExample(phonemeId).word}</span>
