@@ -1,6 +1,6 @@
-import { createMiddleware, createStart } from "@tanstack/react-start";
+import { createCsrfMiddleware, createMiddleware, createStart } from "@tanstack/react-start";
 import { setResponseHeader } from "@tanstack/react-start/server";
-import { getContentSecurityPolicy, STRICT_TRANSPORT_SECURITY } from "@/lib/security-headers";
+import { getSecurityHeaders } from "@/lib/security-headers";
 
 const MAIN_SITE_ORIGIN = "https://phonaria.rigos.dev";
 const LEGACY_HOSTNAME = "phonaria-lab.rigos.dev";
@@ -47,19 +47,31 @@ const legacyRedirects = createMiddleware().server(({ request, next }) => {
 	return getLegacyRedirectResponse(request) ?? next();
 });
 
-const securityHeaders = createMiddleware().server(async ({ next }) => {
+export const securityHeaders = createMiddleware().server(async ({ next }) => {
 	const result = await next();
-	const policy = getContentSecurityPolicy();
-	setResponseHeader("Content-Security-Policy", policy);
-	setResponseHeader("Strict-Transport-Security", STRICT_TRANSPORT_SECURITY);
+	const headers = getSecurityHeaders();
+	for (const [name, value] of headers) {
+		setResponseHeader(name, value);
+	}
 	const response = "response" in result ? result.response : undefined;
 	if (response instanceof Response) {
-		response.headers.set("Content-Security-Policy", policy);
-		response.headers.set("Strict-Transport-Security", STRICT_TRANSPORT_SECURITY);
+		for (const [name, value] of headers) {
+			response.headers.set(name, value);
+		}
 	}
 	return result;
 });
 
+/**
+ * TanStack Start adds its own CSRF check only when the app has no start
+ * instance, so it is added back here with TanStack's default filter. Server
+ * functions must come from this origin (`Sec-Fetch-Site: same-origin`, else a
+ * matching `Origin` or `Referer`); page requests and API routes are not checked.
+ */
+export const serverFunctionCsrf = createCsrfMiddleware({
+	filter: (ctx) => ctx.handlerType === "serverFn",
+});
+
 export const startInstance = createStart(() => ({
-	requestMiddleware: [legacyRedirects, securityHeaders],
+	requestMiddleware: [legacyRedirects, securityHeaders, serverFunctionCsrf],
 }));

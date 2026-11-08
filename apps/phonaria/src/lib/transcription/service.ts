@@ -4,6 +4,7 @@ import {
 	type TranscriptionServiceResult,
 	transcriptionWordsInputSchema,
 } from "./contract";
+import { describeLookupFailure, isRetryableLookupFailure } from "./lookup-failure";
 
 export { TranscriptionError } from "./contract";
 
@@ -11,24 +12,26 @@ export type TranscribeWordsDependencies = {
 	processWords?: typeof defaultProcessWords;
 };
 
-const RETRYABLE_FAILURE =
-	/timeout|network|econnreset|econnrefused|enotfound|fetch failed|503|429|busy|unavailable|temporar/i;
+/** Fixed text for the browser; a lookup's own error can hold SQL and the learner's words. */
+export const TRANSCRIPTION_RETRYABLE_MESSAGE =
+	"The pronunciation lookup didn't respond. Please try again.";
+export const TRANSCRIPTION_DATABASE_MESSAGE = "The pronunciation lookup failed. Please try again.";
 
 function validationError(message: string): TranscriptionServiceResult {
 	return { ok: false, error: new TranscriptionError("validation", message) };
 }
 
-function mapProcessError(error: unknown): TranscriptionError {
+function mapProcessError(error: unknown): { error: TranscriptionError; reason?: string } {
 	if (error instanceof TranscriptionError) {
-		return error;
+		return { error };
 	}
 
-	const message = error instanceof Error ? error.message : "Transcription lookup failed";
-	if (RETRYABLE_FAILURE.test(message)) {
-		return new TranscriptionError("retryable", message);
+	const reason = describeLookupFailure(error);
+	if (isRetryableLookupFailure(error)) {
+		return { error: new TranscriptionError("retryable", TRANSCRIPTION_RETRYABLE_MESSAGE), reason };
 	}
 
-	return new TranscriptionError("database", message);
+	return { error: new TranscriptionError("database", TRANSCRIPTION_DATABASE_MESSAGE), reason };
 }
 
 /**
@@ -50,6 +53,6 @@ export async function transcribeWords(
 		const words = await process(parsed.data.words);
 		return { ok: true, words };
 	} catch (error) {
-		return { ok: false, error: mapProcessError(error) };
+		return { ok: false, ...mapProcessError(error) };
 	}
 }

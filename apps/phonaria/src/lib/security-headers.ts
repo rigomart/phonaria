@@ -26,13 +26,32 @@ export function getContentSecurityPolicy(): string {
 
 export const STRICT_TRANSPORT_SECURITY = "max-age=31536000";
 
+/** `clipboard-write` is left at the browser default (this origin), which copying IPA needs. */
+export const PERMISSIONS_POLICY = "microphone=(self), camera=(), geolocation=()";
+
+/** Read by both the request middleware and the `_headers` file. */
+export function getSecurityHeaders(
+	policy: string = getContentSecurityPolicy(),
+): ReadonlyArray<readonly [name: string, value: string]> {
+	return [
+		["Content-Security-Policy", policy],
+		["Strict-Transport-Security", STRICT_TRANSPORT_SECURITY],
+		["X-Content-Type-Options", "nosniff"],
+		["Referrer-Policy", "strict-origin-when-cross-origin"],
+		["Permissions-Policy", PERMISSIONS_POLICY],
+	];
+}
+
 /** Vite content-hashes everything under this path, so it is safe to cache forever. */
 export const HASHED_ASSET_CACHE_CONTROL = "public, max-age=31536000, immutable";
 
 /**
- * Cloudflare Static Assets `_headers` file so prerendered HTML keeps CSP and
- * hashed assets are not revalidated on every warm load.
+ * Cloudflare Static Assets `_headers` file so prerendered HTML keeps the
+ * security headers and hashed assets are not revalidated on every warm load.
  */
 export function formatCloudflareHeadersFile(policy: string = getContentSecurityPolicy()): string {
-	return `/*\n  Content-Security-Policy: ${policy}\n  Strict-Transport-Security: ${STRICT_TRANSPORT_SECURITY}\n\n/assets/*\n  Cache-Control: ${HASHED_ASSET_CACHE_CONTROL}\n`;
+	const headers = getSecurityHeaders(policy)
+		.map(([name, value]) => `  ${name}: ${value}\n`)
+		.join("");
+	return `/*\n${headers}\n/assets/*\n  Cache-Control: ${HASHED_ASSET_CACHE_CONTROL}\n`;
 }
