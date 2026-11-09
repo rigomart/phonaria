@@ -20,6 +20,7 @@ This map describes how to reach features, not a claim that all features pass. Th
 | Practice | `/practice`, header **Practice** | Not exercised; controlled by `FLAG_PRACTICE` |
 | Minimal-pair pages and speaking practice | `/minimal-pairs` and one page per contrast at `/minimal-pairs/<contrast>` (the pairs and recordings in every build); header **Minimal pairs** in every build; `FLAG_SPEECH` adds speaking practice to each contrast page; in every build, a sound's **All pairs for …** link on each face-off card under Compare with (**Practise saying …** while `FLAG_SPEECH` is on), and each contrast page links its two sounds' pages and the other contrasts with either sound. `?contrast=` links and `/practice/minimal-pairs` redirect to the contrast's page | Executable journeys below: `minimal-pairs` (flag on) and `minimal-pairs-off` |
 | Sound pages | `/sounds` and `/sounds/<slug>` (e.g. `/sounds/th-thin`); every chart tile and frequency row links to its sound's page, and the drawer and side panel have **Open full page** | Executable journeys below: `sound-pages` and `sound-links` |
+| Word pages | `/words/<word>` for each word in `packages/phonetics-data/data/en/word-pages.json` (`/words/enough`); other words 404, a capitalized slug redirects to the lowercase one; listed in `/sitemap.xml` | Executable journey below: `word-pages` |
 | Sounds menu in the header | header **Sounds** (a menu button), active on `/sounds`, `/sounds/<slug>` and `/ipa-chart/*`; its menu links **All sounds**, **Consonant chart**, **Vowel chart**, **How common**; the same four as pills under **Sounds** in the phone menu | Executable journey below: `sounds-nav` |
 | Document head after an in-app move | `/sounds/th-thin`, then its link to `/minimal-pairs/th-t` (production build) | Executable journey below |
 | About | `/about`, footer **About** (before Credits), both behind `FLAG_ABOUT` | Executable journeys below: `about` (flag on) and `about-off` |
@@ -791,6 +792,41 @@ bun run verify observe "$VERIFY_RUN" rank-line
 ```
 
 `index` requires 24 consonant and 16 vowel links, 40 distinct, from `/sounds/p-pat` to `/sounds/oy-boy`. `sound-page` requires the /θ/ title, a canonical `/sounds/th-thin`, one h1, the sections How it's made, Compare with, Spelling, Common words with θ and Sounds near it, the **All sounds** link, no how-to sentence, the /θ/–/t/ differences (dental vs alveolar place, fricative vs plosive manner), its voicing partner /ð/ and the other fricatives under Sounds near it, and the three common-word lists. `schwa-near` requires /ə/'s Sounds near it to link /ɝ/, /ɛ/, /ʌ/ and /ɔ/. `t-variants` requires /t/'s How it changes: tʰ in top and attack, t in stop and stay, the flap ɾ in water, city and party, and ʔ in button and football, each with what it sounds like and when; the /θ/ page has none. `not-found` requires the app's 404 page; its 404 response is expected. `rank-line` requires the rank on one line, the share of speech with its arrow on one line, and no horizontal overflow. To check the text is server-rendered, `curl` a sound page and look for its description and spellings. Review screenshots in both themes.
+
+## Word pages
+
+Target accent: American English (`en-us`). Each word in the first batch (#458) has a page at `/words/<word>`, server-rendered on request: an h1 and title aimed at "X in IPA" and "X phonetic transcription", a play button per recorded form, the letters split over the sounds they spell (each sound a link to its sound page), each spelling that is rare for its sound with its share and other words spelled that way, the minimal pairs the word is in (only when the catalog has some), and a Wiktionary link. Pages are indexable and in the sitemap; `/words/<other>` is the app's 404. The [checkpoints](../scripts/word-pages.ts) read /words/enough's status, title, canonical, headings, recordings, letters and sound links, its rare spelling and the words beside it, and the Wiktionary link; /words/either's two recorded forms; /words/know's minimal pair; the sitemap; the 404; the capitalized redirect; and /words/colonel at phone width.
+
+### Executable journey
+
+After `init word-pages`, `serve`, `open about:blank` and `trace start`:
+
+```bash
+HYD="Object.keys(document.querySelector('main a, main button')||{}).some(k=>k.startsWith('__react'))"
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/words/enough
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" enough
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/words/either
+bun run verify browser "$VERIFY_RUN" wait --fn "document.querySelectorAll('main header button').length===2"
+bun run verify observe "$VERIFY_RUN" forms
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/words/know
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" pairs
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sitemap.xml
+bun run verify observe "$VERIFY_RUN" sitemap
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/words/zzzz
+bun run verify observe "$VERIFY_RUN" not-found
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/words/Enough
+bun run verify browser "$VERIFY_RUN" wait --fn "location.pathname==='/words/enough'"
+bun run verify observe "$VERIFY_RUN" capitalized
+bun run verify browser "$VERIFY_RUN" set viewport 390 844
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/words/colonel
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" phone
+```
+
+`enough` requires a 200, the h1 "Enough in IPA: /ɪˈnʌf/", the title "Enough in IPA: /ɪˈnʌf/, phonetic transcription and audio - Phonaria", its canonical, the sections Letters and sounds and An unusual spelling and no minimal pairs, one recording, e /ɪ/, n /n/, ou /ʌ/, gh /f/ each linking its sound page, gh named as spelling /f/ with tough, laugh and laughing beside it, the Wiktionary entry and no horizontal overflow. `forms` requires either's main recording and its "also said" form. `pairs` requires know–now linking to `/minimal-pairs/ou-au`. `sitemap` requires enough and colonel, and neither will nor `/search`. `not-found` requires the 404 page; its 404 response is expected. `capitalized` requires `/words/Enough` to land on `/words/enough`. `phone` requires colonel's h1 and no overflow at 390 px. Review screenshots in both themes.
 
 ## Chart tiles and Open full page
 

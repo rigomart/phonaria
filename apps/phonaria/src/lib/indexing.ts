@@ -5,6 +5,7 @@ import { listContrastPagePaths } from "./minimal-pairs";
 import { MinimalPairActivity } from "./practice/minimal-pair-activity";
 import { getSiteUrl, isIndexingEnabled } from "./site";
 import { listSoundPagePaths, SOUNDS_PATH } from "./sound-pages";
+import { listWordPagePaths } from "./word-pages";
 
 /** `/ipa-chart` only redirects, so it is not listed. */
 const UNFLAGGED_INDEXABLE_PATHS = [
@@ -20,7 +21,7 @@ const UNFLAGGED_INDEXABLE_PATHS = [
  * only when their flags are on, since their routes 404 otherwise. Practice stays out of search
  * whether or not its flag is on. The minimal-pair pages are listed in every
  * build, since their pairs show without the `speech` flag, and so are the
- * sound pages.
+ * sound pages and the word pages.
  */
 export function getIndexablePaths(
 	enabled: Pick<AppFlags, "about" | "languageHistory"> = flags.snapshot(),
@@ -31,6 +32,7 @@ export function getIndexablePaths(
 		...listContrastPagePaths(),
 		SOUNDS_PATH,
 		...listSoundPagePaths(),
+		...listWordPagePaths(),
 		...(enabled.about ? [ABOUT_PATH] : []),
 		...(enabled.languageHistory ? [LANGUAGE_HISTORY_PATH] : []),
 	];

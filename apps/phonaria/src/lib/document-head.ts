@@ -292,6 +292,24 @@ export function buildSoundHead(phonemeId: EnglishPhonemeSymbolId): StartHead {
 	);
 }
 
+/**
+ * A word page: indexable, with breadcrumbs from the homepage, where Transcription lives.
+ * Takes the page's text rather than the word's data, which stays in the route's chunk.
+ */
+export function buildWordHead(
+	page: { path: string; name: string; title: string; description: string } | undefined,
+): StartHead {
+	if (!page) return { meta: [] };
+	return withStructuredData(
+		buildPageHead({ path: page.path, title: page.title, description: page.description }),
+		(siteUrl) =>
+			buildBreadcrumbStructuredData(siteUrl, [
+				{ name: "Transcription", path: "/" },
+				{ name: page.name, path: page.path },
+			]),
+	);
+}
+
 export function buildSoundsIndexHead(): StartHead {
 	return buildPageHead({
 		path: SOUNDS_PATH,
