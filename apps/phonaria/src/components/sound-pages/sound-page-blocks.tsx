@@ -1,5 +1,5 @@
 import type { EnglishPhonemeSymbolId } from "@phonaria/phonetics-data";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { type CSSProperties, type ReactNode, useId } from "react";
 import { Link } from "@/components/link";
 import { DetailsCard } from "@/components/phoneme-details/details-section";
@@ -7,6 +7,7 @@ import { MergerNote } from "@/components/phoneme-details/merger-note";
 import { PlayableWord, PlayableWordCell } from "@/components/phoneme-details/playable-word";
 import { getMergerNotes } from "@/components/phoneme-details/sound";
 import { SpelledWord } from "@/components/spelled-word";
+import { WordAudioButton } from "@/components/word-audio-button";
 import { IPA_CHART_FREQUENCY_PATH } from "@/lib/ipa-chart-metadata";
 import { formatPercentage, summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
 import {
@@ -21,6 +22,7 @@ import {
 } from "@/lib/sound-page-content";
 import { getSoundExamples, soundHeading } from "@/lib/sound-pages";
 import { cn } from "@/lib/utils";
+import { findWordPagePath } from "@/lib/word-pages";
 import { SpellingShares } from "./spelling-shares";
 
 const ACCENT = "en-us" as const;
@@ -162,7 +164,7 @@ export function commonWordGroups(phonemeId: EnglishPhonemeSymbolId) {
 	].filter(({ words }) => words.length > 0);
 }
 
-/** Common words from the top-1k list, grouped by where the sound falls. */
+/** Common words from the top-1k list, grouped by where the sound falls. A word with its own page links to it. */
 export function CommonWords({
 	groups,
 }: {
@@ -188,17 +190,53 @@ function WordGroup({ label, words }: { label: string; words: readonly string[] }
 				aria-labelledby={labelId}
 				className="flex flex-wrap overflow-hidden rounded-xl bg-background-strong shadow-xs"
 			>
-				{words.map((word) => (
-					<li key={word}>
-						<PlayableWordCell
-							targetAccent={ACCENT}
-							word={word}
-							className="h-full px-3 py-1.5 text-foreground"
-						/>
-					</li>
-				))}
+				{words.map((word) => {
+					const page = findWordPagePath(word);
+					return (
+						<li key={word}>
+							{page ? (
+								<WordPageCell word={word} href={page} />
+							) : (
+								<PlayableWordCell
+									targetAccent={ACCENT}
+									word={word}
+									className="h-full px-3 py-1.5 text-foreground"
+								/>
+							)}
+						</li>
+					);
+				})}
 			</ul>
 		</div>
+	);
+}
+
+const CELL_PART =
+	"flex items-center py-1.5 outline-none transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring motion-reduce:transition-none";
+
+function WordPageCell({ word, href }: { word: string; href: string }) {
+	return (
+		<span className="flex h-full items-stretch text-sm">
+			<Link
+				href={href}
+				className={cn(
+					CELL_PART,
+					"pl-3 pr-0.5 text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground",
+				)}
+			>
+				{word}
+			</Link>
+			<WordAudioButton
+				targetAccent={ACCENT}
+				word={word}
+				className={cn(
+					CELL_PART,
+					"pl-0.5 pr-3 text-muted-foreground hover:text-foreground data-[status=loading]:animate-pulse data-[status=playing]:bg-secondary data-[status=playing]:text-foreground motion-reduce:data-[status=loading]:animate-none",
+				)}
+			>
+				<Volume2 aria-hidden="true" className="size-3 shrink-0" />
+			</WordAudioButton>
+		</span>
 	);
 }
 

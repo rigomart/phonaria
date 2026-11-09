@@ -2,13 +2,15 @@ import type { TargetAccent } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Spinner } from "@phonaria/ui/components/spinner";
-import { RotateCcw } from "lucide-react";
+import { ArrowRight, RotateCcw } from "lucide-react";
 import { useState } from "react";
+import { Link } from "@/components/link";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { WordAudioForms } from "@/components/word-audio-forms";
 import { useDefinition } from "@/hooks/use-definition";
 import { buildWiktionaryEntryUrl } from "@/lib/definition/word";
 import { cn } from "@/lib/utils";
+import { findWordPagePath } from "@/lib/word-pages";
 
 type WordDefinitionPopoverProps = {
 	targetAccent: TargetAccent;
@@ -31,6 +33,29 @@ function Attribution({ word }: { word: string }) {
 				Wiktionary
 			</a>
 		</p>
+	);
+}
+
+/** The word, linked to its page when an en-us word has one. */
+function WordTitle({ targetAccent, word }: { targetAccent: TargetAccent; word: string }) {
+	const href = targetAccent === "en-us" ? findWordPagePath(word) : undefined;
+	const className = "text-base font-semibold font-display leading-none";
+	if (!href) return <p className={className}>{word}</p>;
+	return (
+		<Link
+			href={href}
+			className={cn(
+				className,
+				"group/word-page inline-flex items-center gap-1 rounded-sm underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
+			)}
+		>
+			{word}
+			<span className="sr-only"> in IPA</span>
+			<ArrowRight
+				aria-hidden="true"
+				className="size-3.5 text-muted-foreground transition-transform group-hover/word-page:translate-x-0.5 motion-reduce:transition-none"
+			/>
+		</Link>
 	);
 }
 
@@ -57,7 +82,7 @@ export function DefinitionBody({
 		<div className="flex w-80 max-h-[min(24rem,70vh)] flex-col overflow-hidden">
 			<div className="flex shrink-0 flex-col gap-2 pb-3">
 				<div className="flex items-baseline justify-between gap-2">
-					<p className="text-base font-semibold font-display leading-none">{word}</p>
+					<WordTitle targetAccent={targetAccent} word={word} />
 					{ipa ? <p className="text-sm text-muted-foreground whitespace-nowrap">/{ipa}/</p> : null}
 				</div>
 				<WordAudioForms targetAccent={targetAccent} word={word} pronunciation={pronunciation} />
