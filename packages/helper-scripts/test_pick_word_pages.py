@@ -18,7 +18,7 @@ sys.modules["pick_word_pages"] = pick_word_pages  # dataclasses look their modul
 spec.loader.exec_module(pick_word_pages)
 
 from spelling_alignment import align_words  # noqa: E402
-from spelling_shares import Inputs, first_pronunciations, tally  # noqa: E402
+from spelling_shares import Inputs, first_pronunciations, make_is_example, tally  # noqa: E402
 
 CURATED = {
     "if": ["IX1 F"],
@@ -37,11 +37,12 @@ CURATED = {
     "cut": ["K AH1 T"],
     "tom": ["T A1 M"],
     "ago": ["AX0 G OU1"],
+    "womb": ["W IX0 M"],
 }
 FREQUENCIES = {
     "if": 0.5, "off": 0.3, "fit": 0.1, "enough": 0.005, "tough": 0.003, "tougher": 0.0005,
     "women": 0.005, "in": 0.6, "it": 0.6, "inn": 0.0001, "about": 0.2, "out": 0.2,
-    "under": 0.1, "cut": 0.1, "tom": 0.001, "ago": 0.05,
+    "under": 0.1, "cut": 0.1, "tom": 0.001, "ago": 0.05, "womb": 0.001,
 }
 
 
@@ -97,15 +98,35 @@ class PickWordPagesTests(unittest.TestCase):
         self.assertNotIn("tougher", [c.word for c in picked])
         self.assertEqual(len(picked), 2)
 
+    def test_gives_each_sound_example_words_whose_vowel_stress_matches(self):
+        is_example = make_is_example(self.inputs.words, self.inputs.recorded, set())
+
+        def examples(word, place, label, token):
+            return pick_word_pages.segment_examples(
+                word, place, label, token, self.result, frequency, is_example
+            )
+
+        self.assertEqual(examples("enough", "end", "gh", "F"), ["tou[gh]", "tou[gh]er"])
+        self.assertEqual(examples("women", "inside", "o", "IX1"), [], "womb's o is unstressed")
+        self.assertEqual(examples("women", "inside", "o", "IX0"), ["w[o]mb"])
+
     def test_writes_each_word_with_its_letters_and_sounds(self):
         enough = next(c for c in self.candidates if c.word == "enough")
-        entry = pick_word_pages.word_entry(enough, self.inputs.words["enough"])
+        is_example = make_is_example(self.inputs.words, self.inputs.recorded, set())
+        entry = pick_word_pages.word_entry(
+            enough,
+            self.inputs.words["enough"],
+            lambda place, label, token: pick_word_pages.segment_examples(
+                "enough", place, label, token, self.result, frequency, is_example
+            ),
+        )
         self.assertEqual(entry["pronunciation"], "IX0 N AH1 F")
         self.assertEqual(
             [(s["letters"], s["sounds"]) for s in entry["segments"]],
             [("e", ["IX0"]), ("n", ["N"]), ("ou", ["AH1"]), ("gh", ["F"])],
         )
         self.assertEqual(entry["rareSpellings"][0]["spelling"], "gh")
+        self.assertEqual(entry["segments"][3]["others"], ["tou[gh]", "tou[gh]er"])
 
 
 if __name__ == "__main__":

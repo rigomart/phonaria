@@ -1,6 +1,7 @@
 import { EnglishPhonemeContrasts, getLanguagePhonemeIds } from "@phonaria/phonetics-data";
 import { afterEach, describe, expect, it } from "vitest";
 import { formatRobotsTxt, getIndexablePaths, getRobotsPolicy, getSitemapUrls } from "./indexing";
+import { listWordPagePaths } from "./word-pages";
 
 afterEach(() => {
 	delete process.env.SITE_URL;
@@ -56,6 +57,14 @@ describe("indexing helpers", () => {
 		const soundPaths = paths.filter((path) => path.startsWith("/sounds/"));
 		expect(soundPaths).toHaveLength(getLanguagePhonemeIds("en-us").length);
 		expect(soundPaths).toContain("/sounds/th-thin");
+	});
+
+	it("lists every word page", () => {
+		const paths = getIndexablePaths({ about: false, languageHistory: false });
+		const wordPaths = paths.filter((path) => path.startsWith("/words/"));
+		expect(wordPaths).toEqual(listWordPagePaths());
+		expect(wordPaths).toContain("/words/enough");
+		expect(wordPaths.length).toBeGreaterThanOrEqual(100);
 	});
 
 	it("adds History only when its flag is on", () => {

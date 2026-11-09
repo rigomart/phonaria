@@ -29,6 +29,7 @@ import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
 import { Route as PracticeMinimalPairsRouteImport } from './routes/practice_.minimal-pairs'
 import { Route as SoundsIndexRouteImport } from './routes/sounds.index'
 import { Route as SoundsSlugRouteImport } from './routes/sounds.$slug'
+import { Route as WordsWordRouteImport } from './routes/words.$word'
 import { Route as ApiSpeechEvidenceLogRouteImport } from './routes/api.speech.evidence-log'
 import { Route as ApiSpeechScoreRouteImport } from './routes/api.speech.score'
 
@@ -132,6 +133,11 @@ const SoundsSlugRoute = SoundsSlugRouteImport.update({
   path: '/sounds/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WordsWordRoute = WordsWordRouteImport.update({
+  id: '/words/$word',
+  path: '/words/$word',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSpeechEvidenceLogRoute = ApiSpeechEvidenceLogRouteImport.update({
   id: '/api/speech/evidence-log',
   path: '/api/speech/evidence-log',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/sounds/$slug': typeof SoundsSlugRoute
+  '/words/$word': typeof WordsWordRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/minimal-pairs/': typeof MinimalPairsIndexRoute
   '/practice/': typeof PracticeIndexRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/sounds/$slug': typeof SoundsSlugRoute
+  '/words/$word': typeof WordsWordRoute
   '/ipa-chart': typeof IpaChartIndexRoute
   '/minimal-pairs': typeof MinimalPairsIndexRoute
   '/practice': typeof PracticeIndexRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice_/minimal-pairs': typeof PracticeMinimalPairsRoute
   '/sounds/$slug': typeof SoundsSlugRoute
+  '/words/$word': typeof WordsWordRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
   '/minimal-pairs/': typeof MinimalPairsIndexRoute
   '/practice/': typeof PracticeIndexRoute
@@ -234,6 +243,7 @@ export interface FileRouteTypes {
     | '/practice/$topic'
     | '/practice/minimal-pairs'
     | '/sounds/$slug'
+    | '/words/$word'
     | '/ipa-chart/'
     | '/minimal-pairs/'
     | '/practice/'
@@ -257,6 +267,7 @@ export interface FileRouteTypes {
     | '/practice/$topic'
     | '/practice/minimal-pairs'
     | '/sounds/$slug'
+    | '/words/$word'
     | '/ipa-chart'
     | '/minimal-pairs'
     | '/practice'
@@ -281,6 +292,7 @@ export interface FileRouteTypes {
     | '/practice/$topic'
     | '/practice_/minimal-pairs'
     | '/sounds/$slug'
+    | '/words/$word'
     | '/ipa-chart/'
     | '/minimal-pairs/'
     | '/practice/'
@@ -305,6 +317,7 @@ export interface RootRouteChildren {
   MinimalPairsContrastRoute: typeof MinimalPairsContrastRoute
   PracticeMinimalPairsRoute: typeof PracticeMinimalPairsRoute
   SoundsSlugRoute: typeof SoundsSlugRoute
+  WordsWordRoute: typeof WordsWordRoute
   IpaChartIndexRoute: typeof IpaChartIndexRoute
   MinimalPairsIndexRoute: typeof MinimalPairsIndexRoute
   SoundsIndexRoute: typeof SoundsIndexRoute
@@ -454,6 +467,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SoundsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/words/$word': {
+      id: '/words/$word'
+      path: '/words/$word'
+      fullPath: '/words/$word'
+      preLoaderRoute: typeof WordsWordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/speech/evidence-log': {
       id: '/api/speech/evidence-log'
       path: '/api/speech/evidence-log'
@@ -501,6 +521,7 @@ const rootRouteChildren: RootRouteChildren = {
   MinimalPairsContrastRoute: MinimalPairsContrastRoute,
   PracticeMinimalPairsRoute: PracticeMinimalPairsRoute,
   SoundsSlugRoute: SoundsSlugRoute,
+  WordsWordRoute: WordsWordRoute,
   IpaChartIndexRoute: IpaChartIndexRoute,
   MinimalPairsIndexRoute: MinimalPairsIndexRoute,
   SoundsIndexRoute: SoundsIndexRoute,

@@ -13,6 +13,7 @@ import { soundsNav } from "./sounds-nav";
 import { transcription } from "./transcription";
 import { transcriptionHistory } from "./transcription-history";
 import { wordAudio } from "./word-audio";
+import { wordPages } from "./word-pages";
 
 export const features: Record<string, Feature> = {
 	about,
@@ -34,6 +35,7 @@ export const features: Record<string, Feature> = {
 	transcription,
 	"transcription-history": transcriptionHistory,
 	"word-audio": wordAudio,
+	"word-pages": wordPages,
 };
 
 export function getFeature(name: string | undefined, available = features): Feature {

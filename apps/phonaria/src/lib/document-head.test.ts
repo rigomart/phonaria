@@ -36,6 +36,7 @@ import {
 	buildRootHead,
 	buildSoundHead,
 	buildSoundsIndexHead,
+	buildWordHead,
 	buildVowelsHead,
 	consonantsDocumentTitle,
 	creditsDocumentTitle,
@@ -46,6 +47,7 @@ import {
 	tryGetDocumentMetadata,
 	vowelsDocumentTitle,
 } from "./document-head";
+import { getWordPageView, wordPageHeadText } from "./word-page-content";
 
 afterEach(() => {
 	delete process.env.SITE_URL;
@@ -490,6 +492,41 @@ describe("buildSoundHead", () => {
 				},
 			],
 		});
+	});
+});
+
+describe("buildWordHead", () => {
+	it("titles the page for 'X in IPA' and 'X phonetic transcription', naming the IPA", () => {
+		process.env.SITE_URL = "https://phonaria-staging.example.test";
+		process.env.SITE_INDEXING_ENABLED = "1";
+		const { meta, links, scripts } = buildWordHead(wordPageHeadText(getWordPageView("enough")));
+		expect(meta).toContainEqual({
+			title: "Enough in IPA: /ɪˈnʌf/, phonetic transcription and audio - Phonaria",
+		});
+		const description = meta.find((tag) => "name" in tag && tag.name === "description");
+		expect(description).toMatchObject({ content: expect.stringContaining("/ɪˈnʌf/") });
+		expect(meta).toContainEqual({ name: "robots", content: "index, follow" });
+		expect(links).toEqual([
+			{ rel: "canonical", href: "https://phonaria-staging.example.test/words/enough" },
+		]);
+		expect(JSON.parse(scripts?.[0]?.children ?? "").itemListElement).toEqual([
+			{
+				"@type": "ListItem",
+				position: 1,
+				name: "Transcription",
+				item: "https://phonaria-staging.example.test/",
+			},
+			{
+				"@type": "ListItem",
+				position: 2,
+				name: "Enough",
+				item: "https://phonaria-staging.example.test/words/enough",
+			},
+		]);
+	});
+
+	it("leaves the head to the root for a word without a page", () => {
+		expect(buildWordHead(wordPageHeadText(getWordPageView("zzzz")))).toEqual({ meta: [] });
 	});
 });
 

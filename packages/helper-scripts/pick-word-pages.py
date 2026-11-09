@@ -52,6 +52,8 @@ from spelling_shares import (  # noqa: E402
     base_sounds,
     is_rare,
     load_inputs,
+    make_is_example,
+    position,
     tally,
 )
 
@@ -64,6 +66,7 @@ except ImportError:
 WORDFREQ_LANGUAGE = "en"
 LIMIT = 150
 MIN_LETTERS = 3
+OTHER_WORDS = 3
 ENDINGS = ("s", "es", "ed", "d", "ing", "ly", "er")
 OUTPUT_PATH = DATA_DIR / "word-pages.json"
 # The words alone, in a file of their own: a bundle that only links to the pages
@@ -165,21 +168,72 @@ def pick(candidates: list[Candidate], limit: int = LIMIT) -> tuple[list[Candidat
     return picked, heads
 
 
-def segment_entry(segment, label: str) -> dict:
+def segment_examples(
+    word: str,
+    place: str,
+    label: str,
+    token: str,
+    result: SpellingTally,
+    frequency: Callable[[str], float],
+    is_example: Callable[[str], bool],
+) -> list[str]:
+    """Up to OTHER_WORDS other words that spell the sound with `label`, as spelled forms, the
+    same place in the word first. A vowel's examples match its stress: stressed with stressed,
+    unstressed with unstressed."""
+    sound = base_sounds([token])[0]
+    vowel = sound in VOWEL_SOUNDS
+    stressed = not token.endswith("0")
+    bucket = result.sounds.get(sound)
+    occurrences = sorted(
+        (
+            o
+            for o in (bucket.occurrences.get(label, []) if bucket else [])
+            if o.word != word and (not vowel or o.stressed == stressed) and is_example(o.word)
+        ),
+        key=lambda o: (o.position != place, -frequency(o.word), o.word),
+    )
+    others: dict[str, str] = {}
+    for occurrence in occurrences:
+        if len(others) < OTHER_WORDS:
+            others.setdefault(occurrence.word, occurrence.spelled)
+    return list(others.values())
+
+
+def segment_entry(
+    segment, label: str, examples: Callable[[str, str], list[str]] | None = None
+) -> dict:
     entry = {"letters": segment.letters, "sounds": list(segment.sounds)}
     if label != segment.letters:
         entry["spelling"] = label
+    if examples is not None and len(segment.sounds) == 1:
+        entry["others"] = examples(label, segment.sounds[0])
     return entry
 
 
-def word_entry(candidate: Candidate, pronunciation: tuple[str, ...]) -> dict:
+def word_entry(
+    candidate: Candidate,
+    pronunciation: tuple[str, ...],
+    examples: Callable[[str, str, str], list[str]] | None = None,
+) -> dict:
     alignment = candidate.alignment
+    count = sum(len(segment.sounds) for segment in alignment.segments)
+    starts = []
+    index = 0
+    for segment in alignment.segments:
+        starts.append(index)
+        index += len(segment.sounds)
     return {
         "word": candidate.word,
         "pronunciation": " ".join(pronunciation),
         "segments": [
-            segment_entry(segment, label)
-            for segment, label in zip(alignment.segments, alignment.labels)
+            segment_entry(
+                segment,
+                label,
+                None
+                if examples is None
+                else (lambda lab, tok, i=i: examples(position(starts[i], count), lab, tok)),
+            )
+            for i, (segment, label) in enumerate(zip(alignment.segments, alignment.labels))
         ],
         "rareSpellings": [
             {
@@ -268,6 +322,7 @@ def main():
     result = tally(alignments, frequency)
     candidates = find_candidates(inputs, alignments, result, frequency)
     picked, heads = pick(candidates)
+    is_example = make_is_example(inputs.words, inputs.recorded, inputs.unlisted)
     curated_meta = inputs.curated["meta"]
     payload = {
         "meta": {
@@ -284,7 +339,16 @@ def main():
                 "Pronunciations from CMUDict (Public Domain)."
             ),
         },
-        "words": [word_entry(c, inputs.words[c.word]) for c in picked],
+        "words": [
+            word_entry(
+                c,
+                inputs.words[c.word],
+                lambda place, label, token, c=c: segment_examples(
+                    c.word, place, label, token, result, frequency, is_example
+                ),
+            )
+            for c in picked
+        ],
     }
     OUTPUT_PATH.write_text(dump(payload), encoding="utf-8")
     LIST_PATH.write_text(

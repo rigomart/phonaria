@@ -8,6 +8,12 @@ export interface WordPageSegment {
 	sounds: readonly string[];
 	/** Set when the spelling counted for the sound differs from the letters: "a-e" for the a of make. */
 	spelling?: string;
+	/**
+	 * For letters that spell one sound: up to three other recorded words spelled that way, as
+	 * spelled forms ("tou[gh]"), the same place in the word first. A vowel's examples match its
+	 * stress.
+	 */
+	others?: readonly string[];
 }
 
 /** A spelling of the word that is rare for its sound, with that spelling's share of the sound. */
