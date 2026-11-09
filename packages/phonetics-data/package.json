@@ -12,7 +12,9 @@
 		"./data/en/curated-10k": "./src/data/en/curated-10k.ts",
 		"./data/en/common-words": "./src/data/en/common-words.ts",
 		"./data/en/spelling-shares": "./src/data/en/spelling-shares.ts",
-		"./data/en/word-audio": "./src/data/en/word-audio.ts"
+		"./data/en/word-audio": "./src/data/en/word-audio.ts",
+		"./data/en/word-page-list": "./src/data/en/word-page-list.ts",
+		"./data/en/word-pages": "./src/data/en/word-pages.ts"
 	},
 	"packageManager": "bun@1.3.2",
 	"scripts": {
