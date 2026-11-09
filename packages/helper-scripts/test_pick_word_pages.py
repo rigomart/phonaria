@@ -38,11 +38,13 @@ CURATED = {
     "tom": ["T A1 M"],
     "ago": ["AX0 G OU1"],
     "womb": ["W IX0 M"],
+    "hit": ["H IX1 T"],
+    "hitched": ["H IX1 CH T"],
 }
 FREQUENCIES = {
     "if": 0.5, "off": 0.3, "fit": 0.1, "enough": 0.005, "tough": 0.003, "tougher": 0.0005,
     "women": 0.005, "in": 0.6, "it": 0.6, "inn": 0.0001, "about": 0.2, "out": 0.2,
-    "under": 0.1, "cut": 0.1, "tom": 0.001, "ago": 0.05, "womb": 0.001,
+    "under": 0.1, "cut": 0.1, "tom": 0.001, "ago": 0.05, "womb": 0.001, "hit": 0.4, "hitched": 0.001,
 }
 
 
@@ -72,6 +74,15 @@ class PickWordPagesTests(unittest.TestCase):
         self.assertIn("women", self.words)
         self.assertNotIn("if", self.words)
         self.assertNotIn("out", self.words)
+
+    def test_never_counts_the_past_tense_ed_ending_as_rare(self):
+        hitched = self.alignments["hitched"]
+        self.assertEqual(hitched.labels[-2:], ("e", "d"))
+        self.assertLess(self.result.sounds["T"].percentage("d"), 2.0)
+        self.assertEqual(
+            pick_word_pages.rare_spellings(hitched, self.result), (), "d is rare for /t/ only via -ed"
+        )
+        self.assertNotIn("hitched", self.words)
 
     def test_ignores_vowels_without_stress(self):
         self.assertNotIn("about", self.words)

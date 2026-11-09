@@ -530,6 +530,14 @@ describe("word pages", () => {
 		expect(women?.segments[1].others).toEqual([]);
 	});
 
+	it("never picks a word for its past-tense -ed ending alone", () => {
+		const onlyEd = EnglishWordPages.filter(
+			({ word, rareSpellings }) =>
+				word.endsWith("ed") && rareSpellings.every(({ spelling }) => spelling === "d"),
+		).map(({ word }) => word);
+		expect(onlyEd).toEqual([]);
+	});
+
 	it("names at least one rare spelling per word, each a spelling of one of its sounds", () => {
 		for (const { word, segments, rareSpellings } of EnglishWordPages) {
 			expect(rareSpellings.length, word).toBeGreaterThan(0);
