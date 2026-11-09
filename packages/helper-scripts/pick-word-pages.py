@@ -52,6 +52,8 @@ from spelling_shares import (  # noqa: E402
     base_sounds,
     is_rare,
     load_inputs,
+    make_is_example,
+    position,
     tally,
 )
 
@@ -64,6 +66,7 @@ except ImportError:
 WORDFREQ_LANGUAGE = "en"
 LIMIT = 150
 MIN_LETTERS = 3
+OTHER_WORDS = 3
 ENDINGS = ("s", "es", "ed", "d", "ing", "ly", "er")
 OUTPUT_PATH = DATA_DIR / "word-pages.json"
 # The words alone, in a file of their own: a bundle that only links to the pages
@@ -165,6 +168,46 @@ def pick(candidates: list[Candidate], limit: int = LIMIT) -> tuple[list[Candidat
     return picked, heads
 
 
+def rare_place(alignment: Alignment, rare: RareSpelling) -> str:
+    """Where in the word the rare spelling's sound falls: start, inside or end."""
+    count = sum(len(segment.sounds) for segment in alignment.segments)
+    index = 0
+    for segment, label in zip(alignment.segments, alignment.labels):
+        if label == rare.spelling and segment.base_sounds == (rare.phoneme_id,):
+            return position(index, count)
+        index += len(segment.sounds)
+    return "inside"
+
+
+def other_words(
+    candidate: Candidate,
+    rare: RareSpelling,
+    result: SpellingTally,
+    frequency: Callable[[str], float],
+    is_example: Callable[[str], bool],
+) -> list[str]:
+    """Up to OTHER_WORDS other words that spell the sound this way, as spelled forms
+    ("tou[gh]"): those with it in the same place first, then by frequency. For a vowel only
+    stressed matches count, as when picking, so women gets no pers[o]nal."""
+    place = rare_place(candidate.alignment, rare)
+    vowel = rare.phoneme_id in VOWEL_SOUNDS
+    occurrences = sorted(
+        (
+            occurrence
+            for occurrence in result.sounds[rare.phoneme_id].occurrences.get(rare.spelling, [])
+            if occurrence.word != candidate.word
+            and (occurrence.stressed or not vowel)
+            and is_example(occurrence.word)
+        ),
+        key=lambda o: (o.position != place, -frequency(o.word), o.word),
+    )
+    others: dict[str, str] = {}
+    for occurrence in occurrences:
+        if len(others) < OTHER_WORDS:
+            others.setdefault(occurrence.word, occurrence.spelled)
+    return list(others.values())
+
+
 def segment_entry(segment, label: str) -> dict:
     entry = {"letters": segment.letters, "sounds": list(segment.sounds)}
     if label != segment.letters:
@@ -172,7 +215,11 @@ def segment_entry(segment, label: str) -> dict:
     return entry
 
 
-def word_entry(candidate: Candidate, pronunciation: tuple[str, ...]) -> dict:
+def word_entry(
+    candidate: Candidate,
+    pronunciation: tuple[str, ...],
+    others: Callable[[RareSpelling], list[str]] = lambda rare: [],
+) -> dict:
     alignment = candidate.alignment
     return {
         "word": candidate.word,
@@ -186,6 +233,7 @@ def word_entry(candidate: Candidate, pronunciation: tuple[str, ...]) -> dict:
                 "spelling": rare.spelling,
                 "phonemeId": rare.phoneme_id,
                 "percentage": round(rare.percentage, PERCENT_DECIMALS),
+                "others": others(rare),
             }
             for rare in candidate.rare
         ],
@@ -268,6 +316,7 @@ def main():
     result = tally(alignments, frequency)
     candidates = find_candidates(inputs, alignments, result, frequency)
     picked, heads = pick(candidates)
+    is_example = make_is_example(inputs.words, inputs.recorded, inputs.unlisted)
     curated_meta = inputs.curated["meta"]
     payload = {
         "meta": {
@@ -284,7 +333,14 @@ def main():
                 "Pronunciations from CMUDict (Public Domain)."
             ),
         },
-        "words": [word_entry(c, inputs.words[c.word]) for c in picked],
+        "words": [
+            word_entry(
+                c,
+                inputs.words[c.word],
+                lambda rare, c=c: other_words(c, rare, result, frequency, is_example),
+            )
+            for c in picked
+        ],
     }
     OUTPUT_PATH.write_text(dump(payload), encoding="utf-8")
     LIST_PATH.write_text(

@@ -18,7 +18,7 @@ sys.modules["pick_word_pages"] = pick_word_pages  # dataclasses look their modul
 spec.loader.exec_module(pick_word_pages)
 
 from spelling_alignment import align_words  # noqa: E402
-from spelling_shares import Inputs, first_pronunciations, tally  # noqa: E402
+from spelling_shares import Inputs, first_pronunciations, make_is_example, tally  # noqa: E402
 
 CURATED = {
     "if": ["IX1 F"],
@@ -37,11 +37,12 @@ CURATED = {
     "cut": ["K AH1 T"],
     "tom": ["T A1 M"],
     "ago": ["AX0 G OU1"],
+    "womb": ["W IX0 M"],
 }
 FREQUENCIES = {
     "if": 0.5, "off": 0.3, "fit": 0.1, "enough": 0.005, "tough": 0.003, "tougher": 0.0005,
     "women": 0.005, "in": 0.6, "it": 0.6, "inn": 0.0001, "about": 0.2, "out": 0.2,
-    "under": 0.1, "cut": 0.1, "tom": 0.001, "ago": 0.05,
+    "under": 0.1, "cut": 0.1, "tom": 0.001, "ago": 0.05, "womb": 0.001,
 }
 
 
@@ -96,6 +97,16 @@ class PickWordPagesTests(unittest.TestCase):
         self.assertEqual(heads.get("tougher"), "tough")
         self.assertNotIn("tougher", [c.word for c in picked])
         self.assertEqual(len(picked), 2)
+
+    def test_gives_other_words_with_the_spelling_stressed_for_a_vowel(self):
+        enough = next(c for c in self.candidates if c.word == "enough")
+        women = next(c for c in self.candidates if c.word == "women")
+        is_example = make_is_example(self.inputs.words, self.inputs.recorded, set())
+        others = lambda c: pick_word_pages.other_words(  # noqa: E731
+            c, c.rare[0], self.result, frequency, is_example
+        )
+        self.assertEqual(others(enough), ["tou[gh]", "tou[gh]er"])
+        self.assertEqual(others(women), [], "womb's o spells an unstressed /ɪ/")
 
     def test_writes_each_word_with_its_letters_and_sounds(self):
         enough = next(c for c in self.candidates if c.word == "enough")

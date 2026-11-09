@@ -7,10 +7,9 @@ import { type Feature, observation } from "./feature";
 const enough = observation(
 	() => {
 		const main = document.querySelector("main");
-		const breakdown = main?.querySelector('ol[aria-label^="Each group of letters"]');
-		const unusual = Array.from(main?.querySelectorAll("section") ?? []).find((section) =>
-			/unusual spelling/i.test(section.querySelector("h2")?.textContent ?? ""),
-		);
+		const breakdown = main?.querySelector("ol");
+		const bar = main?.querySelector('[role="img"]');
+		const unusual = bar?.parentElement?.parentElement;
 		return {
 			path: location.pathname,
 			status: (
@@ -25,12 +24,13 @@ const enough = observation(
 			),
 			letters: Array.from(breakdown?.querySelectorAll("li") ?? []).map((li) => [
 				li.firstElementChild?.textContent?.trim(),
+				li.hasAttribute("data-rare"),
 				Array.from(li.querySelectorAll("a")).map((a) => [
 					a.textContent?.trim(),
 					a.getAttribute("href"),
 				]),
 			]),
-			unusualStartsWith: unusual?.querySelector("p")?.textContent?.trim().slice(0, 17) ?? null,
+			bar: bar?.getAttribute("aria-label") ?? null,
 			alsoIn: Array.from(unusual?.querySelectorAll("li") ?? []).map((li) => li.textContent?.trim()),
 			wiktionary:
 				Array.from(main?.querySelectorAll("a") ?? [])
@@ -45,16 +45,16 @@ const enough = observation(
 		title: "Enough in IPA: /ɪˈnʌf/, phonetic transcription and audio - Phonaria",
 		canonical: "http://localhost:3000/words/enough",
 		h1: ["Enough in IPA: /ɪˈnʌf/"],
-		h2: ["Letters and sounds", "An unusual spelling"],
+		h2: [],
 		recordings: ["Hear enough"],
 		letters: [
-			["e", [["/ɪ/", "/sounds/ih-sit"]]],
-			["n", [["/n/", "/sounds/n-sun"]]],
-			["ou", [["/ʌ/", "/sounds/uh-cup"]]],
-			["gh", [["/f/", "/sounds/f-fan"]]],
+			["e", false, [["/ɪ/", "/sounds/ih-sit"]]],
+			["n", false, [["/n/", "/sounds/n-sun"]]],
+			["ou", false, [["/ʌ/", "/sounds/uh-cup"]]],
+			["gh", true, [["/f/", "/sounds/f-fan"]]],
 		],
-		unusualStartsWith: "gh spells /f/ her",
-		alsoIn: ["tough", "laugh", "laughing"],
+		bar: "1.0% of /f/ sounds are spelled gh. The common spellings: f 89.0%, ff 7.0%, ph 2.6%.",
+		alsoIn: ["tough", "laugh", "rough"],
 		wiktionary: "https://en.wiktionary.org/wiki/enough#English",
 		overflow: false,
 	},
@@ -72,8 +72,8 @@ const forms = observation(
 
 const pairs = observation(
 	() => {
-		const section = Array.from(document.querySelectorAll("main section")).find((s) =>
-			(s.querySelector("h2")?.textContent ?? "").startsWith("Minimal pairs"),
+		const section = Array.from(document.querySelectorAll("main section")).find(
+			(s) => (s.querySelector("h2")?.textContent ?? "") === "Minimal pairs",
 		);
 		return {
 			path: location.pathname,
@@ -86,7 +86,7 @@ const pairs = observation(
 	},
 	{
 		path: "/words/know",
-		heading: "Minimal pairs with know",
+		heading: "Minimal pairs",
 		rows: [[["know", "now"], "/minimal-pairs/ou-au"]],
 	},
 );

@@ -9,11 +9,8 @@ import { EnglishSpellingShares } from "@phonaria/phonetics-data/data/en/spelling
 import { getWordPage, type WordPageEntry } from "@phonaria/phonetics-data/data/en/word-pages";
 import { syllabify } from "@/lib/g2p/syllabifier";
 import { contrastPagePath } from "@/lib/minimal-pairs";
-import { formatPercentage } from "@/lib/phoneme-frequency";
 import { soundPagePath } from "@/lib/sound-pages";
 import { hasWordPage, wordPagePath } from "@/lib/word-pages";
-
-const OTHER_WORDS = 3;
 
 export interface WordSound {
 	phonemeId: EnglishPhonemeSymbolId;
@@ -25,6 +22,8 @@ export interface LetterGroup {
 	letters: string;
 	/** Empty for silent letters, two for letters that spell two sounds (x in box). */
 	sounds: WordSound[];
+	/** True when these letters are, or are the silent e of, a rare spelling of their sound. */
+	rare: boolean;
 }
 
 export interface OtherWord {
@@ -33,12 +32,23 @@ export interface OtherWord {
 	spelled: string;
 }
 
+/** One part of a sound's spellings, sized by its share of the sound in everyday speech. */
+export interface ShareSegment {
+	/** The spelling, or null for the rarer spellings taken together. */
+	spelling: string | null;
+	percentage: number;
+	/** True for the spelling this word uses. */
+	own: boolean;
+}
+
 export interface UnusualSpelling {
 	/** As the sound pages name it: "gh", or "o-e" for o and a silent e. */
 	spelling: string;
 	sound: WordSound;
 	percentage: number;
-	/** Other common words that spell the sound this way, most frequent first. */
+	/** The sound's common spellings, then this one, then the rest. */
+	shares: ShareSegment[];
+	/** Other common words that spell the sound this way, the same place in the word first. */
 	others: OtherWord[];
 }
 
@@ -96,39 +106,27 @@ function plainWord(spelled: string): string {
 		.join("");
 }
 
-type Place = "start" | "inside" | "end";
-
-/** Where in the word a segment's sounds fall, as the spelling shares count it. */
-function placeOf(entry: WordPageEntry, index: number): Place {
-	const before = entry.segments.slice(0, index).flatMap(({ sounds }) => sounds).length;
-	const total = entry.segments.flatMap(({ sounds }) => sounds).length;
-	return before === 0 ? "start" : before === total - 1 ? "end" : "inside";
+/** The sound's spellings of 2% or more, then `spelling`, then all the rest as one part. */
+function shareSegments(phonemeId: EnglishPhonemeSymbolId, spelling: string): ShareSegment[] {
+	const { spellings, other } = EnglishSpellingShares[phonemeId];
+	const common = spellings.map((share) => ({
+		spelling: share.spelling,
+		percentage: share.percentage,
+		own: share.spelling === spelling,
+	}));
+	const own = other.find((share) => share.spelling === spelling);
+	const rest = other
+		.filter((share) => share.spelling !== spelling)
+		.reduce((sum, share) => sum + share.percentage, 0);
+	return [
+		...common,
+		...(own ? [{ spelling, percentage: own.percentage, own: true }] : []),
+		...(rest > 0 ? [{ spelling: null, percentage: rest, own: false }] : []),
+	];
 }
 
-/** Other words with the spelling, those with it in the same place first: tough beside enough. */
-function otherWords(
-	word: string,
-	phonemeId: EnglishPhonemeSymbolId,
-	spelling: string,
-	place: Place,
-): OtherWord[] {
-	const entry = EnglishSpellingShares[phonemeId];
-	const share = [...entry.spellings, ...entry.other].find((row) => row.spelling === spelling);
-	if (!share) return [];
-	const places = (["start", "inside", "end"] as const).filter((other) => other !== place);
-	const candidates = [
-		...share.words[place],
-		...(share.topWord ? [share.topWord] : []),
-		...places.flatMap((other) => share.words[other]),
-	];
-	const others = new Map<string, OtherWord>();
-	for (const spelled of candidates) {
-		const other = plainWord(spelled);
-		if (other !== word && !others.has(other) && others.size < OTHER_WORDS) {
-			others.set(other, { word: other, spelled });
-		}
-	}
-	return [...others.values()];
+function otherWord(spelled: string): OtherWord {
+	return { word: plainWord(spelled), spelled };
 }
 
 function pairsWith(word: string): WordPair[] {
@@ -154,36 +152,43 @@ function capitalize(word: string): string {
 	return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
+/** The letter groups that make up a rare spelling: its letters, and the silent e of a split one (o-e). */
+function rareSegmentIndices(entry: WordPageEntry): Set<number> {
+	const indices = new Set<number>();
+	entry.segments.forEach(({ letters, sounds, spelling }, index) => {
+		const label = spelling ?? letters;
+		const rare =
+			sounds.length === 1 &&
+			entry.rareSpellings.some(
+				(r) => r.spelling === label && r.phonemeId === extractBasePhonemeId(sounds[0]),
+			);
+		if (!rare) return;
+		indices.add(index);
+		if (label.endsWith("-e")) indices.add(index + 2);
+	});
+	return indices;
+}
+
 function buildView(entry: WordPageEntry): WordPageView {
+	const rare = rareSegmentIndices(entry);
 	return {
 		word: entry.word,
 		name: capitalize(entry.word),
 		ipa: formatWordIpa(entry.pronunciation),
 		pronunciation: entry.pronunciation,
 		path: wordPagePath(entry.word),
-		letters: entry.segments.map(({ letters, sounds }) => ({
+		letters: entry.segments.map(({ letters, sounds }, index) => ({
 			letters,
 			sounds: sounds.map(wordSound),
+			rare: rare.has(index),
 		})),
-		unusual: entry.rareSpellings.map(({ spelling, phonemeId, percentage }) => {
-			const index = entry.segments.findIndex(
-				(segment) =>
-					(segment.spelling ?? segment.letters) === spelling &&
-					segment.sounds.length === 1 &&
-					extractBasePhonemeId(segment.sounds[0]) === phonemeId,
-			);
-			return {
-				spelling,
-				sound: wordSound(phonemeId),
-				percentage,
-				others: otherWords(
-					entry.word,
-					phonemeId as EnglishPhonemeSymbolId,
-					spelling,
-					placeOf(entry, Math.max(index, 0)),
-				),
-			};
-		}),
+		unusual: entry.rareSpellings.map(({ spelling, phonemeId, percentage, others }) => ({
+			spelling,
+			sound: wordSound(phonemeId),
+			percentage,
+			shares: shareSegments(phonemeId as EnglishPhonemeSymbolId, spelling),
+			others: others.map(otherWord),
+		})),
 		pairs: pairsWith(entry.word),
 	};
 }
@@ -198,13 +203,9 @@ export function wordPageTitle({ name, ipa }: Pick<WordPageView, "name" | "ipa">)
 	return `${name} in IPA: /${ipa}/, phonetic transcription and audio`;
 }
 
-/** "Enough in IPA is /ɪˈnʌf/ in American English, with a recording and the letters behind each sound. The gh spells /f/, as in tough: only 1.0% of /f/ sounds are spelled gh." */
-export function wordPageDescription(view: WordPageView): string {
-	const [first] = view.unusual;
-	const intro = `${view.name} in IPA is /${view.ipa}/ in American English, with a recording and the letters behind each sound.`;
-	if (!first) return intro;
-	const example = first.others[0] ? `, as in ${first.others[0].word}` : "";
-	return `${intro} The ${first.spelling} spells /${first.sound.ipa}/${example}: only ${formatPercentage(first.percentage)} of /${first.sound.ipa}/ sounds are spelled ${first.spelling}.`;
+/** "Enough in IPA is /ɪˈnʌf/ in American English. Hear it and see which letters spell each sound." */
+export function wordPageDescription({ name, ipa }: Pick<WordPageView, "name" | "ipa">): string {
+	return `${name} in IPA is /${ipa}/ in American English. Hear it and see which letters spell each sound.`;
 }
 
 export function wordPageHeadText(view: WordPageView | undefined) {

@@ -1,5 +1,5 @@
-import { ArrowUpRight } from "lucide-react";
-import { type ReactNode, useId } from "react";
+import { ExternalLink } from "lucide-react";
+import { useId } from "react";
 import { Link } from "@/components/link";
 import { PlayableWordCell } from "@/components/phoneme-details/playable-word";
 import { SpelledWord } from "@/components/spelled-word";
@@ -7,96 +7,71 @@ import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { WordAudioForms } from "@/components/word-audio-forms";
 import { buildWiktionaryEntryUrl } from "@/lib/definition/word";
 import { formatPercentage } from "@/lib/phoneme-frequency";
-import {
-	type LetterGroup,
-	type UnusualSpelling,
-	type WordPageView,
-	type WordPair,
-	type WordSound,
+import { cn } from "@/lib/utils";
+import type {
+	LetterGroup,
+	ShareSegment,
+	UnusualSpelling,
+	WordPageView,
+	WordPair,
+	WordSound,
 } from "@/lib/word-page-content";
 
 const ACCENT = "en-us" as const;
 const MARK = "underline decoration-2 underline-offset-4";
 const SOUND_LINK =
 	"rounded-sm font-display text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none";
+/** A share segment labels itself only when it is wide enough to hold its spelling. */
+const LABEL_FROM_PERCENTAGE = 8;
 
 /**
  * A word's own page: its IPA and recordings, the letters that spell each of its
- * sounds, the spellings in it that are rare for their sound, and the minimal
- * pairs it is in. Everything comes from the data; nothing is written per word.
+ * sounds, how rare its rare spellings are among their sound's spellings, and the
+ * minimal pairs it is in. Everything comes from the data; nothing is written per word.
  */
 export function WordPageContent({ view }: { view: WordPageView }) {
 	const titleId = useId();
 	return (
 		<article
 			aria-labelledby={titleId}
-			className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-4 py-6"
+			className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-6"
 		>
 			<header className="flex flex-col items-start gap-3 enter-rise">
 				<h1 id={titleId} className="font-bold font-display text-3xl tracking-tight sm:text-4xl">
 					{view.name} in IPA: <span className="whitespace-nowrap">/{view.ipa}/</span>
 				</h1>
-				<p className="text-sm text-muted-foreground">American English</p>
-				<WordAudioForms targetAccent={ACCENT} word={view.word} pronunciation={view.pronunciation} />
+				<div className="flex flex-wrap items-center gap-3">
+					<WordAudioForms
+						targetAccent={ACCENT}
+						word={view.word}
+						pronunciation={view.pronunciation}
+					/>
+					<a
+						href={buildWiktionaryEntryUrl(view.word)}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="inline-flex items-center gap-1 rounded-sm text-sm text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+					>
+						Wiktionary
+						<ExternalLink aria-hidden="true" className="size-3.5" />
+						<span className="sr-only"> (opens in a new tab)</span>
+					</a>
+				</div>
 				<SyntheticVoiceNote targetAccent={ACCENT} words={[view.word]} />
 			</header>
 
-			<Section title="Letters and sounds" delay="enter-delay-40">
+			<div className="flex flex-col gap-4 enter-rise enter-delay-40">
 				<LetterBreakdown letters={view.letters} />
-			</Section>
+				{view.unusual.map((spelling) => (
+					<UnusualSpellingRow
+						key={`${spelling.spelling}-${spelling.sound.phonemeId}`}
+						spelling={spelling}
+					/>
+				))}
+			</div>
 
-			<Section
-				title={view.unusual.length > 1 ? "Unusual spellings" : "An unusual spelling"}
-				delay="enter-delay-80"
-			>
-				<div className="flex flex-col gap-4">
-					{view.unusual.map((spelling) => (
-						<UnusualSpellingCard
-							key={`${spelling.spelling}-${spelling.sound.phonemeId}`}
-							spelling={spelling}
-						/>
-					))}
-				</div>
-			</Section>
-
-			{view.pairs.length > 0 ? (
-				<Section title={`Minimal pairs with ${view.word}`} delay="enter-delay-80">
-					<Pairs word={view.word} pairs={view.pairs} />
-				</Section>
-			) : null}
-
-			<p className="text-sm text-muted-foreground enter-rise enter-delay-80">
-				<a
-					href={buildWiktionaryEntryUrl(view.word)}
-					target="_blank"
-					rel="noopener noreferrer"
-					className="inline-flex items-center gap-1 underline underline-offset-4 hover:text-foreground"
-				>
-					What {view.word} means, on Wiktionary
-					<ArrowUpRight aria-hidden="true" className="size-3.5" />
-				</a>
-			</p>
+			{view.pairs.length > 0 ? <Pairs word={view.word} pairs={view.pairs} /> : null}
 		</article>
-	);
-}
-
-function Section({
-	title,
-	delay,
-	children,
-}: {
-	title: string;
-	delay: string;
-	children: ReactNode;
-}) {
-	const headingId = useId();
-	return (
-		<section aria-labelledby={headingId} className={`flex flex-col gap-3 enter-rise ${delay}`}>
-			<h2 id={headingId} className="font-display text-xl font-semibold tracking-tight">
-				{title}
-			</h2>
-			{children}
-		</section>
 	);
 }
 
@@ -108,17 +83,18 @@ function SoundLink({ sound }: { sound: WordSound }) {
 	);
 }
 
-/** Each group of letters over the sound it spells, in word order. */
+/** Each group of letters over the sound it spells, in word order; rare spellings stand out. */
 function LetterBreakdown({ letters }: { letters: readonly LetterGroup[] }) {
 	return (
-		<ol
-			aria-label="Each group of letters and the sound it spells"
-			className="flex flex-wrap gap-1.5"
-		>
-			{letters.map(({ letters: text, sounds }, index) => (
+		<ol aria-label="Letters and their sounds" className="flex flex-wrap gap-1.5">
+			{letters.map(({ letters: text, sounds, rare }, index) => (
 				<li
 					key={`${index}-${text}`}
-					className="flex min-w-14 flex-col items-center gap-1 rounded-xl bg-background-strong px-3 py-2 shadow-xs"
+					data-rare={rare ? "" : undefined}
+					className={cn(
+						"flex min-w-14 flex-col items-center gap-1 rounded-xl bg-background-strong px-3 py-2 shadow-xs",
+						rare && "ring-2 ring-foreground",
+					)}
 				>
 					<span className="font-display text-xl font-semibold text-foreground">{text}</span>
 					{sounds.length === 0 ? (
@@ -136,61 +112,111 @@ function LetterBreakdown({ letters }: { letters: readonly LetterGroup[] }) {
 	);
 }
 
-function UnusualSpellingCard({ spelling }: { spelling: UnusualSpelling }) {
-	const { sound, percentage, others } = spelling;
+/** The rare spelling's sliver of its sound's spellings, then other words spelled the same way. */
+function UnusualSpellingRow({ spelling }: { spelling: UnusualSpelling }) {
+	const { sound, percentage, shares, others } = spelling;
+	const share = formatPercentage(percentage);
 	return (
 		<div className="flex flex-col gap-2">
-			<p className="text-pretty text-sm text-foreground">
-				<span className="font-display font-semibold">{spelling.spelling}</span> spells{" "}
-				<SoundLink sound={sound} /> here. Only {formatPercentage(percentage)} of /{sound.ipa}/
-				sounds in everyday speech are spelled {spelling.spelling}.
-			</p>
+			<div className="flex items-center gap-3 text-sm">
+				<span className="w-10 shrink-0 font-display text-base font-semibold text-foreground">
+					{spelling.spelling}
+				</span>
+				<ShareBar segments={shares} label={shareBarLabel(spelling)} />
+				<span className="shrink-0 whitespace-nowrap tabular-nums text-muted-foreground">
+					{share} of <SoundLink sound={sound} />
+				</span>
+			</div>
 			{others.length > 0 ? (
-				<div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-					<span className="text-xs text-muted-foreground">Also in</span>
-					<ul className="flex flex-wrap overflow-hidden rounded-xl bg-background-strong shadow-xs">
-						{others.map(({ word, spelled }) => (
-							<li key={word}>
-								<PlayableWordCell
-									targetAccent={ACCENT}
-									word={word}
-									className="h-full px-3 py-1.5 text-foreground"
-								>
-									<SpelledWord spelled={spelled} markClassName={MARK} />
-								</PlayableWordCell>
-							</li>
-						))}
-					</ul>
-				</div>
+				<ul className="ml-13 flex flex-wrap self-start overflow-hidden rounded-xl bg-background-strong shadow-xs">
+					{others.map(({ word, spelled }) => (
+						<li key={word}>
+							<PlayableWordCell
+								targetAccent={ACCENT}
+								word={word}
+								className="h-full px-3 py-1.5 text-foreground"
+							>
+								<SpelledWord spelled={spelled} markClassName={MARK} />
+							</PlayableWordCell>
+						</li>
+					))}
+				</ul>
 			) : null}
 		</div>
 	);
 }
 
-function Pairs({ word, pairs }: { word: string; pairs: readonly WordPair[] }) {
+/** "1.0% of /f/ sounds are spelled gh. The common spellings: f 89.0%, ff 7.0%, ph 2.6%." */
+function shareBarLabel({ spelling, sound, percentage, shares }: UnusualSpelling): string {
+	const common = shares
+		.filter((segment) => segment.spelling && !segment.own)
+		.map((segment) => `${segment.spelling} ${formatPercentage(segment.percentage)}`)
+		.join(", ");
+	const own = `${formatPercentage(percentage)} of /${sound.ipa}/ sounds are spelled ${spelling}.`;
+	return common ? `${own} The common spellings: ${common}.` : own;
+}
+
+/**
+ * A sound's spellings side by side, each as wide as its share, this word's one filled in.
+ * A rare spelling's sliver can be too thin to see, so a thin marker shows where it is.
+ */
+function ShareBar({ segments, label }: { segments: readonly ShareSegment[]; label: string }) {
 	return (
-		<ul className="flex flex-col divide-y divide-border overflow-hidden rounded-xl bg-background-strong shadow-xs">
-			{pairs.map(({ contrastId, path, other, sounds: [own, theirs] }) => (
-				<li key={`${contrastId}-${other}`} className="flex flex-wrap items-center gap-x-3">
-					<PlayableWordCell
-						targetAccent={ACCENT}
-						word={word}
-						className="px-3 py-1.5 text-foreground"
-					/>
-					<span className="text-xs text-muted-foreground">vs</span>
-					<PlayableWordCell
-						targetAccent={ACCENT}
-						word={other}
-						className="px-3 py-1.5 text-foreground"
-					/>
-					<Link
-						href={path}
-						className="ml-auto px-3 py-1.5 text-sm text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground"
-					>
-						/{own.ipa}/ and /{theirs.ipa}/
-					</Link>
-				</li>
+		<div
+			role="img"
+			aria-label={label}
+			className="flex h-6 min-w-0 flex-1 gap-px overflow-hidden rounded-md"
+		>
+			{segments.map(({ spelling, percentage, own }) => (
+				<span
+					key={spelling ?? "rest"}
+					style={{ flexGrow: percentage }}
+					className={cn(
+						"relative flex basis-0 items-center justify-center text-xs",
+						own ? "bg-foreground" : spelling ? "bg-secondary text-muted-foreground" : "bg-muted",
+					)}
+				>
+					{own ? (
+						<span className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 bg-foreground" />
+					) : null}
+					{spelling && !own && percentage >= LABEL_FROM_PERCENTAGE ? (
+						<span className="overflow-hidden">{spelling}</span>
+					) : null}
+				</span>
 			))}
-		</ul>
+		</div>
+	);
+}
+
+function Pairs({ word, pairs }: { word: string; pairs: readonly WordPair[] }) {
+	const headingId = useId();
+	return (
+		<section aria-labelledby={headingId} className="flex flex-col gap-3 enter-rise enter-delay-80">
+			<h2 id={headingId} className="font-display text-xl font-semibold tracking-tight">
+				Minimal pairs
+			</h2>
+			<ul className="flex flex-col divide-y divide-border overflow-hidden rounded-xl bg-background-strong shadow-xs">
+				{pairs.map(({ contrastId, path, other, sounds: [own, theirs] }) => (
+					<li key={`${contrastId}-${other}`} className="flex flex-wrap items-center gap-x-3">
+						<PlayableWordCell
+							targetAccent={ACCENT}
+							word={word}
+							className="px-3 py-1.5 text-foreground"
+						/>
+						<PlayableWordCell
+							targetAccent={ACCENT}
+							word={other}
+							className="px-3 py-1.5 text-foreground"
+						/>
+						<Link
+							href={path}
+							className="ml-auto px-3 py-1.5 text-sm text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground"
+						>
+							/{own.ipa}/ and /{theirs.ipa}/
+						</Link>
+					</li>
+				))}
+			</ul>
+		</section>
 	);
 }

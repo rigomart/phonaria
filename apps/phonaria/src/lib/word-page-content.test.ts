@@ -32,12 +32,38 @@ describe("word pages", () => {
 		expect(view?.letters[3].sounds[0].path).toBe("/sounds/f-fan");
 	});
 
-	it("names gh as rare for /f/, with other words that end in it first", () => {
+	it("names gh as rare for /f/, sized against /f/'s other spellings, with words that end in it", () => {
 		const [gh] = getWordPageView("enough")?.unusual ?? [];
 		expect(gh).toMatchObject({ spelling: "gh", sound: { ipa: "f" } });
 		expect(gh.percentage).toBeLessThan(2);
 		expect(gh.others.map(({ word }) => word).slice(0, 2)).toEqual(["tough", "laugh"]);
 		expect(gh.others.some(({ word }) => word === "enough")).toBe(false);
+		expect(gh.shares.filter(({ own }) => own)).toEqual([
+			{ spelling: "gh", percentage: gh.percentage, own: true },
+		]);
+		expect(gh.shares[0]).toMatchObject({ spelling: "f", own: false });
+		expect(gh.shares.reduce((sum, { percentage }) => sum + percentage, 0)).toBeCloseTo(100, 1);
+		expect(getWordPageView("enough")?.letters.map(({ rare }) => rare)).toEqual([
+			false,
+			false,
+			false,
+			true,
+		]);
+	});
+
+	it("marks both letter groups of a split rare spelling", () => {
+		const move = getWordPageView("move");
+		expect(move?.unusual[0].spelling).toBe("o-e");
+		expect(move?.letters.map(({ letters, rare }) => [letters, rare])).toEqual([
+			["m", false],
+			["o", true],
+			["v", false],
+			["e", true],
+		]);
+	});
+
+	it("gives no example word whose matching vowel is unstressed", () => {
+		expect(getWordPageView("women")?.unusual[0].others).toEqual([]);
 	});
 
 	it("lists a word's minimal pairs with their contrast page, and none where it has none", () => {
@@ -51,7 +77,7 @@ describe("word pages", () => {
 		const view = getWordPageView("enough");
 		if (!view) throw new Error("enough has a page");
 		expect(wordPageDescription(view)).toBe(
-			"Enough in IPA is /ɪˈnʌf/ in American English, with a recording and the letters behind each sound. The gh spells /f/, as in tough: only 1.0% of /f/ sounds are spelled gh.",
+			"Enough in IPA is /ɪˈnʌf/ in American English. Hear it and see which letters spell each sound.",
 		);
 	});
 });

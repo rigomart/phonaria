@@ -16,6 +16,11 @@ export interface WordPageRareSpelling {
 	phonemeId: string;
 	/** Share of the sound in everyday speech spelled this way, 0–100, under 2. */
 	percentage: number;
+	/**
+	 * Up to three other recorded words that spell the sound this way, as spelled forms
+	 * ("tou[gh]"): those with it in the same place first. For a vowel, only stressed ones.
+	 */
+	others: readonly string[];
 }
 
 export interface WordPageEntry {

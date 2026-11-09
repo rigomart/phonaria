@@ -494,6 +494,30 @@ describe("word pages", () => {
 		}
 	});
 
+	it("gives other recorded words with each rare spelling, its letters marked", () => {
+		const recorded = new Set(EnglishWordAudio.words);
+		for (const { word, rareSpellings } of EnglishWordPages) {
+			for (const { spelling, phonemeId, others } of rareSpellings) {
+				expect(others.length, word).toBeLessThanOrEqual(3);
+				for (const spelled of others) {
+					const segments = splitSpelledWord(spelled);
+					const other = segments.map(({ text }) => text).join("");
+					const marked = segments.filter(({ highlighted }) => highlighted).map(({ text }) => text);
+					const variants = top10k[other];
+					expect(other, `${word}: ${spelled}`).not.toBe(word);
+					expect(recorded.has(other), `${word}: ${spelled}`).toBe(true);
+					expect(marked.join("-"), `${word}: ${spelled}`).toBe(spelling);
+					expect(
+						variants && toBasePhonemeIds(preferOForms(other, variants)[0]),
+						`${word}: ${spelled}`,
+					).toContain(phonemeId);
+				}
+			}
+		}
+		const women = EnglishWordPages.find(({ word }) => word === "women");
+		expect(women?.rareSpellings[0].others).toEqual([]);
+	});
+
 	it("names at least one rare spelling per word, each a spelling of one of its sounds", () => {
 		for (const { word, segments, rareSpellings } of EnglishWordPages) {
 			expect(rareSpellings.length, word).toBeGreaterThan(0);
