@@ -6,7 +6,8 @@ Candidates are curated top-10k words (first pronunciation, an /ɔ/ form first as
 the app shows it) that have a word recording made from that pronunciation, aren't names or non-words
 (src/utils/unlisted-words.ts), and spell at least one sound in a way that is
 rare for it: under the 2% share below which the sound pages list a spelling
-under "other spellings". A doubled consonant counts with its single letter
+under "other spellings". The past-tense -ed ending (asked, based) never counts
+as rare. A doubled consonant counts with its single letter
 (nn with n), and vowels without stress never count, since every vowel letter
 spells them.
 
@@ -111,11 +112,27 @@ def rarity_share(result: SpellingTally, spelling: str, sound: str) -> float:
     return share
 
 
+def is_past_tense_ending(alignment: Alignment, index: int) -> bool:
+    """True for the d of a final -ed spelling /t/ or /d/ after a silent e (asked, based)."""
+    segments = alignment.segments
+    segment = segments[index]
+    return (
+        index == len(segments) - 1
+        and index > 0
+        and alignment.word.endswith("ed")
+        and segment.letters == "d"
+        and segment.base_sounds in (("T",), ("D",))
+        and segments[index - 1].silent
+        and segments[index - 1].letters == "e"
+    )
+
+
 def rare_spellings(alignment: Alignment, result: SpellingTally) -> tuple[RareSpelling, ...]:
-    """The word's spellings that are rare for their sound; vowels without stress never are."""
+    """The word's spellings that are rare for their sound. Vowels without stress never are,
+    and nor is the past-tense -ed ending, which follows a rule rather than hiding a sound."""
     rare = []
-    for segment, label in zip(alignment.segments, alignment.labels):
-        if len(segment.sounds) != 1:
+    for index, (segment, label) in enumerate(zip(alignment.segments, alignment.labels)):
+        if len(segment.sounds) != 1 or is_past_tense_ending(alignment, index):
             continue
         sound = segment.base_sounds[0]
         if sound in VOWEL_SOUNDS and segment.sounds[0].endswith("0"):

@@ -111,6 +111,7 @@ export const ProperNames: ReadonlySet<string> = new Set([
 	"seoul",
 	"singh",
 	"stephen",
+	"sydney",
 	"taiwan",
 	"thailand",
 	"thomas",
