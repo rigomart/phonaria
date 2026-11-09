@@ -72,6 +72,15 @@ describe("the sound page", () => {
 		expect(html).toMatch(/>gh<\/span>.*enou<mark [^>]*>gh<\/mark>/);
 	});
 
+	it("links a common word that has its own page, and leaves the rest plain", () => {
+		const html = page("F");
+		const common = html.slice(html.indexOf(">Common words with f<"));
+		expect(common).toMatch(/<a href="\/words\/enough"[^>]*>enough<\/a>/);
+		expect(common).toContain('aria-label="Hear enough"');
+		expect(common).not.toContain('href="/words/if"');
+		expect(common).toContain('aria-label="Hear if"');
+	});
+
 	it("says which other sounds the same letters spell, and links the sounds near it", () => {
 		const html = page("TH");
 		expect(html).toContain(">The same letters also spell<");

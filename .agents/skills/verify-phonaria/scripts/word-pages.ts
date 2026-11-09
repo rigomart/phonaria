@@ -127,9 +127,64 @@ const phone = observation(
 	{ path: "/words/colonel", h1: "Colonel in IPA: /ˈkɝnəl/", overflow: false },
 );
 
+const soundPageLinks = observation(
+	() => {
+		const section = Array.from(document.querySelectorAll("main section")).find((s) =>
+			(s.querySelector("h2")?.textContent ?? "").startsWith("Common words"),
+		);
+		const cells = Array.from(section?.querySelectorAll("li") ?? []);
+		const cell = (word: string) => cells.find((li) => li.textContent?.trim() === word);
+		return {
+			path: location.pathname,
+			enough: cell("enough")?.querySelector("a")?.getAttribute("href") ?? null,
+			enoughPlays: !!cell("enough")?.querySelector('button[aria-label="Hear enough"]'),
+			ifLink: cell("if")?.querySelector("a")?.getAttribute("href") ?? null,
+			ifPlays: !!cell("if")?.querySelector('button[aria-label="Hear if"]'),
+			linked: cells.flatMap((li) => {
+				const href = li.querySelector("a")?.getAttribute("href");
+				return href ? [href] : [];
+			}),
+		};
+	},
+	{
+		path: "/sounds/f-fan",
+		enough: "/words/enough",
+		enoughPlays: true,
+		ifLink: null,
+		ifPlays: true,
+		linked: ["/words/often", "/words/enough", "/words/half"],
+	},
+);
+
+const popoverLink = (word: string, href: string | null) =>
+	observation(
+		() => {
+			const popup = document.querySelector('[data-slot="popover-content"], [role="dialog"]');
+			return {
+				open: !!popup,
+				href:
+					Array.from(popup?.querySelectorAll("a") ?? [])
+						.map((a) => a.getAttribute("href"))
+						.find((h) => h?.startsWith("/words/")) ?? null,
+			};
+		},
+		{ open: true, href },
+	);
+
 export const wordPages = {
 	title: "Word pages",
-	checkpoints: { enough, forms, pairs, sitemap, "not-found": notFound, capitalized, phone },
+	checkpoints: {
+		enough,
+		forms,
+		pairs,
+		sitemap,
+		"not-found": notFound,
+		capitalized,
+		phone,
+		"sound-page-links": soundPageLinks,
+		"popover-enough": popoverLink("enough", "/words/enough"),
+		"popover-and": popoverLink("and", null),
+	},
 	coverageLimits: [
 		"canonical and robots come from the dev server; production values depend on SITE_URL and indexing",
 		"audio playback is not checked beyond the recordings rendering as buttons",

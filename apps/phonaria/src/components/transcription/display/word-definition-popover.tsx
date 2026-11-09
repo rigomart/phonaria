@@ -2,13 +2,15 @@ import type { TargetAccent } from "@phonaria/phonetics-data";
 import { Button } from "@phonaria/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@phonaria/ui/components/popover";
 import { Spinner } from "@phonaria/ui/components/spinner";
-import { RotateCcw } from "lucide-react";
+import { ArrowRight, RotateCcw } from "lucide-react";
 import { useState } from "react";
+import { Link } from "@/components/link";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { WordAudioForms } from "@/components/word-audio-forms";
 import { useDefinition } from "@/hooks/use-definition";
 import { buildWiktionaryEntryUrl } from "@/lib/definition/word";
 import { cn } from "@/lib/utils";
+import { findWordPagePath } from "@/lib/word-pages";
 
 type WordDefinitionPopoverProps = {
 	targetAccent: TargetAccent;
@@ -31,6 +33,24 @@ function Attribution({ word }: { word: string }) {
 				Wiktionary
 			</a>
 		</p>
+	);
+}
+
+/** Links an en-us word with its own page there: its IPA, letters and sounds. */
+function WordPageLink({ targetAccent, word }: { targetAccent: TargetAccent; word: string }) {
+	const href = targetAccent === "en-us" ? findWordPagePath(word) : undefined;
+	if (!href) return null;
+	return (
+		<Link
+			href={href}
+			className="group/word-page inline-flex w-fit items-center gap-1 rounded-sm text-xs font-medium text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+		>
+			Letters and sounds of {word.toLowerCase()}
+			<ArrowRight
+				aria-hidden="true"
+				className="size-3 transition-transform group-hover/word-page:translate-x-0.5 motion-reduce:transition-none"
+			/>
+		</Link>
 	);
 }
 
@@ -62,6 +82,7 @@ export function DefinitionBody({
 				</div>
 				<WordAudioForms targetAccent={targetAccent} word={word} pronunciation={pronunciation} />
 				<SyntheticVoiceNote targetAccent={targetAccent} words={[word]} />
+				<WordPageLink targetAccent={targetAccent} word={word} />
 			</div>
 
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain">

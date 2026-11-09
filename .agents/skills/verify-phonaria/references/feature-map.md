@@ -795,7 +795,7 @@ bun run verify observe "$VERIFY_RUN" rank-line
 
 ## Word pages
 
-Target accent: American English (`en-us`). Each word in the first batch (#458) has a page at `/words/<word>`, server-rendered on request: an h1 and title aimed at "X in IPA" and "X phonetic transcription", a play button per recorded form and a short Wiktionary link, then one card per sound in the word. Each card shows the letters that spell the sound, the sound's symbol as a chip linking to its sound page, its name and a play button for its own recording (none for diphthongs), a bar of how usual the spelling is for the sound with the share beside it ("1.0% of /f/"), up to three other words spelled the same way (a vowel's at its stress; words with a page link to it), and the minimal pairs where that sound changes, linking their contrast page. A spelling that is rare for its sound is outlined. Pages are indexable and in the sitemap; `/words/<other>` is the app's 404. The [checkpoints](../scripts/word-pages.ts) read /words/enough's status, title, canonical, headings, recordings, each card's letters, sound link, play button and rare outline, the rare card's bar label, number and words, and the Wiktionary link; /words/either's two recorded forms; /words/know's contrast link; the sitemap; the 404; the capitalized redirect; and /words/colonel at phone width.
+Target accent: American English (`en-us`). Each word in the first batch (#458) has a page at `/words/<word>`, server-rendered on request: an h1 and title aimed at "X in IPA" and "X phonetic transcription", a play button per recorded form and a short Wiktionary link, then one card per sound in the word. Each card shows the letters that spell the sound, the sound's symbol as a chip linking to its sound page, its name and a play button for its own recording (none for diphthongs), a bar of how usual the spelling is for the sound with the share beside it ("1.0% of /f/"), up to three other words spelled the same way (a vowel's at its stress; words with a page link to it), and the minimal pairs where that sound changes, linking their contrast page. A spelling that is rare for its sound is outlined. Pages are indexable and in the sitemap; `/words/<other>` is the app's 404. A sound page's common word that has a page links to it, and so does the Transcription popover of such a word. The [checkpoints](../scripts/word-pages.ts) read /words/enough's status, title, canonical, headings, recordings, each card's letters, sound link, play button and rare outline, the rare card's bar label, number and words, and the Wiktionary link; /words/either's two recorded forms; /words/know's contrast link; the sitemap; the 404; the capitalized redirect; /words/colonel at phone width; and, from #460, the links in /f/'s common words and in the Transcription popover.
 
 ### Executable journey
 
@@ -824,9 +824,23 @@ bun run verify browser "$VERIFY_RUN" set viewport 390 844
 bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/words/colonel
 bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
 bun run verify observe "$VERIFY_RUN" phone
+bun run verify browser "$VERIFY_RUN" set viewport 1280 900
+bun run verify browser "$VERIFY_RUN" open http://127.0.0.1:3000/sounds/f-fan
+bun run verify browser "$VERIFY_RUN" wait --fn "$HYD"
+bun run verify observe "$VERIFY_RUN" sound-page-links
+bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/search?q=enough"
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[aria-label=\"Definition of enough\"]') && $HYD"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Definition of enough" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-slot=\"popover-content\"]')"
+bun run verify observe "$VERIFY_RUN" popover-enough
+bun run verify browser "$VERIFY_RUN" open "http://127.0.0.1:3000/search?q=and"
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[aria-label=\"Definition of and\"]') && $HYD"
+bun run verify browser "$VERIFY_RUN" find role button click --name "Definition of and" --exact
+bun run verify browser "$VERIFY_RUN" wait --fn "!!document.querySelector('[data-slot=\"popover-content\"]')"
+bun run verify observe "$VERIFY_RUN" popover-and
 ```
 
-`enough` requires a 200, the h1 "Enough in IPA: /ɪˈnʌf/", the title "Enough in IPA: /ɪˈnʌf/, phonetic transcription and audio - Phonaria", its canonical, no section headings, one recording, four cards (e /ɪ/ Short I, n /n/ N, ou /ʌ/ Short U, gh /f/ F) each linking its sound page and playing its sound, only gh outlined, gh's bar labelled "Rare spelling. 1.0% of /f/ sounds in everyday speech are spelled gh. Other common spellings: f 89.0%, ff 7.0%, ph 2.6%." with "1.0% of /f/" beside it and tough, laugh and rough below, the Wiktionary entry and no horizontal overflow. `forms` requires either's main recording and its "also said" form. `pairs` requires know's Long O card to link "vs /aʊ/ now" to `/minimal-pairs/ou-au`. `sitemap` requires enough and colonel, and neither will nor `/search`. `not-found` requires the 404 page; its 404 response is expected. `capitalized` requires `/words/Enough` to land on `/words/enough`. `phone` requires colonel's h1 and no overflow at 390 px. Review screenshots in both themes.
+`enough` requires a 200, the h1 "Enough in IPA: /ɪˈnʌf/", the title "Enough in IPA: /ɪˈnʌf/, phonetic transcription and audio - Phonaria", its canonical, no section headings, one recording, four cards (e /ɪ/ Short I, n /n/ N, ou /ʌ/ Short U, gh /f/ F) each linking its sound page and playing its sound, only gh outlined, gh's bar labelled "Rare spelling. 1.0% of /f/ sounds in everyday speech are spelled gh. Other common spellings: f 89.0%, ff 7.0%, ph 2.6%." with "1.0% of /f/" beside it and tough, laugh and rough below, the Wiktionary entry and no horizontal overflow. `forms` requires either's main recording and its "also said" form. `pairs` requires know's Long O card to link "vs /aʊ/ now" to `/minimal-pairs/ou-au`. `sitemap` requires enough and colonel, and neither will nor `/search`. `not-found` requires the 404 page; its 404 response is expected. `capitalized` requires `/words/Enough` to land on `/words/enough`. `phone` requires colonel's h1 and no overflow at 390 px. `sound-page-links` requires /f/'s common words to link often, enough and half to their pages, each still with its play button, and if to stay a plain play button. `popover-enough` requires Transcription's popover for enough to link `/words/enough`; `popover-and` requires no word-page link for and. Review screenshots in both themes.
 
 ## Chart tiles and Open full page
 

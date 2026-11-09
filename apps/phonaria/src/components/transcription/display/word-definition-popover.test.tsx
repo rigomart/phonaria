@@ -1,4 +1,5 @@
 import type { WordAudioManifest } from "@phonaria/phonetics-data";
+import type { ReactNode } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AudioManagerProvider } from "@/hooks/use-audio-manager";
@@ -11,6 +12,13 @@ vi.mock("@/hooks/use-word-audio-manifest", () => ({
 	useWordAudioManifest: () => manifest.current,
 }));
 vi.mock("@/hooks/use-definition", () => ({ useDefinition: vi.fn() }));
+vi.mock("@tanstack/react-router", () => ({
+	Link: ({ to, children, ...props }: { to: string; children: ReactNode }) => (
+		<a href={to} {...props}>
+			{children}
+		</a>
+	),
+}));
 
 /** The dictionary lists past-tense /ɹɛd/ first; the main recording is present tense. */
 const recorded: WordAudioManifest = {
@@ -88,5 +96,16 @@ describe("word popover (#378)", () => {
 		const html = popover("seat", "ˈsit", "S I1 T");
 		expect(html).toContain("/ˈsit/");
 		expect(buttons(html)).toEqual(["Hear seat"]);
+	});
+});
+
+describe("word popover's word page link", () => {
+	it("links a word that has its own page", () => {
+		const html = popover("Enough", "ɪˈnʌf", "IX0 N AH1 F");
+		expect(html).toMatch(/<a href="\/words\/enough"[^>]*>Letters and sounds of enough/);
+	});
+
+	it("gives a word without a page no link", () => {
+		expect(popover("and", "ənd", "AX0 N D")).not.toContain('href="/words/');
 	});
 });
