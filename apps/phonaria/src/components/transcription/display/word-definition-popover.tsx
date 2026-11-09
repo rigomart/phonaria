@@ -36,19 +36,24 @@ function Attribution({ word }: { word: string }) {
 	);
 }
 
-/** Links an en-us word with its own page there: its IPA, letters and sounds. */
-function WordPageLink({ targetAccent, word }: { targetAccent: TargetAccent; word: string }) {
+/** The word, linked to its page when an en-us word has one. */
+function WordTitle({ targetAccent, word }: { targetAccent: TargetAccent; word: string }) {
 	const href = targetAccent === "en-us" ? findWordPagePath(word) : undefined;
-	if (!href) return null;
+	const className = "text-base font-semibold font-display leading-none";
+	if (!href) return <p className={className}>{word}</p>;
 	return (
 		<Link
 			href={href}
-			className="group/word-page inline-flex w-fit items-center gap-1 rounded-sm text-xs font-medium text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+			className={cn(
+				className,
+				"group/word-page inline-flex items-center gap-1 rounded-sm underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
+			)}
 		>
-			Letters and sounds of {word.toLowerCase()}
+			{word}
+			<span className="sr-only"> in IPA</span>
 			<ArrowRight
 				aria-hidden="true"
-				className="size-3 transition-transform group-hover/word-page:translate-x-0.5 motion-reduce:transition-none"
+				className="size-3.5 text-muted-foreground transition-transform group-hover/word-page:translate-x-0.5 motion-reduce:transition-none"
 			/>
 		</Link>
 	);
@@ -77,12 +82,11 @@ export function DefinitionBody({
 		<div className="flex w-80 max-h-[min(24rem,70vh)] flex-col overflow-hidden">
 			<div className="flex shrink-0 flex-col gap-2 pb-3">
 				<div className="flex items-baseline justify-between gap-2">
-					<p className="text-base font-semibold font-display leading-none">{word}</p>
+					<WordTitle targetAccent={targetAccent} word={word} />
 					{ipa ? <p className="text-sm text-muted-foreground whitespace-nowrap">/{ipa}/</p> : null}
 				</div>
 				<WordAudioForms targetAccent={targetAccent} word={word} pronunciation={pronunciation} />
 				<SyntheticVoiceNote targetAccent={targetAccent} words={[word]} />
-				<WordPageLink targetAccent={targetAccent} word={word} />
 			</div>
 
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain">

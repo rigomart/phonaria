@@ -102,7 +102,9 @@ describe("word popover (#378)", () => {
 describe("word popover's word page link", () => {
 	it("links a word that has its own page", () => {
 		const html = popover("Enough", "ɪˈnʌf", "IX0 N AH1 F");
-		expect(html).toMatch(/<a href="\/words\/enough"[^>]*>Letters and sounds of enough/);
+		expect(html).toMatch(
+			/<a href="\/words\/enough"[^>]*>Enough<span class="sr-only"> in IPA<\/span>/,
+		);
 	});
 
 	it("gives a word without a page no link", () => {
