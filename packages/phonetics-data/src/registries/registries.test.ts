@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { getSpellingSharesForLanguage } from "../data/en/spelling-shares";
 import {
 	formatPhonemeLabel,
 	getAllophoneRegistryForLanguage,
@@ -106,6 +107,7 @@ describe.each(TARGET_ACCENTS)("%s feature availability", (accent) => {
 			allophones: getAllophoneRegistryForLanguage(accent) !== null,
 			contrasts: getContrastRegistryForLanguage(accent) !== null,
 			spellingPatterns: getSpellingPatternRegistryForLanguage(accent) !== null,
+			spellingShares: getSpellingSharesForLanguage(accent) !== null,
 			phonemeFrequency: getPhonemeFrequencyRegistryForLanguage(accent) !== null,
 			mergerNotes: getMergerNoteRegistryForLanguage(accent) !== null,
 			wordAudio: (await loadWordAudioManifest(accent)) !== null,
@@ -127,6 +129,7 @@ describe("English-only features", () => {
 		["allophones", getAllophoneRegistryForLanguage],
 		["contrasts", getContrastRegistryForLanguage],
 		["spellingPatterns", getSpellingPatternRegistryForLanguage],
+		["spellingShares", getSpellingSharesForLanguage],
 		["phonemeFrequency", getPhonemeFrequencyRegistryForLanguage],
 		["mergerNotes", getMergerNoteRegistryForLanguage],
 	] as const)("makes %s usable for English and unavailable for Spanish", (feature, getData) => {

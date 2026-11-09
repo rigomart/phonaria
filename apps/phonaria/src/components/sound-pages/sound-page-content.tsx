@@ -5,14 +5,14 @@ import { type ReactNode, useId } from "react";
 import { Link } from "@/components/link";
 import { Articulation } from "@/components/phoneme-details/articulation";
 import { RecordingCredit } from "@/components/phoneme-details/recording-credit";
-import { describeSound, getSpellingPattern } from "@/components/phoneme-details/sound";
+import { describeSound } from "@/components/phoneme-details/sound";
 import { SoundHeading } from "@/components/phoneme-details/sound-header";
 import { SoundTile } from "@/components/phoneme-details/sound-tile";
 import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { enterDelay, stagger } from "@/lib/motion";
 import { getAllComparisons, getSoundFamilies, getSoundVariants } from "@/lib/sound-page-content";
 import { getSoundExamples, SOUNDS_PATH } from "@/lib/sound-pages";
-import { pairSpellings } from "@/lib/spelling-pairs";
+import { getRankedSpellings } from "@/lib/spelling-shares";
 import { cn } from "@/lib/utils";
 import { SoundComparisons } from "./sound-comparisons";
 import {
@@ -45,9 +45,7 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 	if (getAllComparisons(phonemeId).length > 0) {
 		sections.push({ title: "Compare with", content: <SoundComparisons phonemeId={phonemeId} /> });
 	}
-	if (getSpellingPattern(ACCENT, phonemeId)) {
-		sections.push({ title: "Spelling", content: <Spelling phonemeId={phonemeId} /> });
-	}
+	sections.push({ title: "Spelling", content: <Spelling phonemeId={phonemeId} /> });
 	if (groups.length > 0) {
 		sections.push({
 			title: `Common words with ${getIpaForPhonemeId(phonemeId)}`,
@@ -118,13 +116,11 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 
 /** Every word the page can play, for the synthetic-voice note. */
 function pageWords(phonemeId: EnglishPhonemeSymbolId): string[] {
-	const spelling = getSpellingPattern(ACCENT, phonemeId);
+	const { ranked, other } = getRankedSpellings(phonemeId);
 	return [
 		...getSoundExamples(phonemeId).map(({ word }) => word),
 		...getAllComparisons(phonemeId).flatMap(({ pairs }) => pairs.flatMap(({ words }) => words)),
-		...(spelling
-			? pairSpellings(spelling).rows.flatMap(({ examples }) => examples.map(({ word }) => word))
-			: []),
+		...[...ranked, ...other].flatMap(({ examples }) => examples.map(({ word }) => word)),
 		...commonWordGroups(phonemeId).flatMap(({ words }) => words),
 		...getSoundVariants(phonemeId).flatMap(({ words }) => words),
 	];

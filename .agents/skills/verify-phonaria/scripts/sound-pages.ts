@@ -98,7 +98,7 @@ const soundPage = observation(
 			"Sounds near it",
 		],
 		rank: "38th most common of 40 sounds",
-		spellingWords: ["thin", "think"],
+		spellingWords: ["think", "something", "both"],
 		back: "All sounds",
 		howTo: false,
 		// Term first for screen readers, each value named by its sound.

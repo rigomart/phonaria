@@ -7,6 +7,7 @@ import {
 	getLanguagePhonemeIds,
 	getLanguagePhonemeInventory,
 	parsePhonemePronunciation,
+	preferOForms,
 	toBasePhonemeIds,
 	splitSpelledWord,
 } from "../../index";
@@ -16,6 +17,7 @@ import { EnglishCommonWords } from "./common-words";
 import { EnglishCuratedTop1k } from "./curated-1k";
 import { EnglishCuratedTop10k } from "./curated-10k";
 import { EnglishPhonemeFrequencyData } from "./phoneme-frequency";
+import { EnglishSpellingShares, OTHER_SPELLINGS_BELOW_PERCENTAGE } from "./spelling-shares";
 import { EnglishWordAudio } from "./word-audio";
 
 const dictionary: CmudictPayload = dictionaryJson;
@@ -383,5 +385,70 @@ describe("common words", () => {
 			return same ? [] : [word];
 		});
 		expect(mismatches).toEqual([]);
+	});
+});
+
+describe("spelling shares", () => {
+	const top10k = EnglishCuratedTop10k.words as Record<string, readonly string[]>;
+	const recorded = new Set(EnglishWordAudio.words);
+
+	it("covers every English sound, each spelling once", () => {
+		expect(Object.keys(EnglishSpellingShares).sort()).toEqual(
+			[...getLanguagePhonemeIds("en-us")].sort(),
+		);
+		for (const [phonemeId, { spellings, other }] of Object.entries(EnglishSpellingShares)) {
+			const names = [...spellings, ...other].map(({ spelling }) => spelling);
+			expect(new Set(names).size, phonemeId).toBe(names.length);
+		}
+	});
+
+	it("ranks spellings from most to least common, the rare ones under other, adding up to 100%", () => {
+		for (const [phonemeId, { spellings, other }] of Object.entries(EnglishSpellingShares)) {
+			const all = [...spellings, ...other].map(({ percentage }) => percentage);
+			expect(all, phonemeId).toEqual([...all].sort((a, b) => b - a));
+			expect(spellings.every((row) => row.percentage >= OTHER_SPELLINGS_BELOW_PERCENTAGE)).toBe(
+				true,
+			);
+			expect(other.every((row) => row.percentage < OTHER_SPELLINGS_BELOW_PERCENTAGE)).toBe(true);
+			expect(all.reduce((sum, value) => sum + value, 0)).toBeCloseTo(100, 1);
+		}
+	});
+
+	it("names the most frequent example word, which leads its place's list", () => {
+		for (const { topWord, words } of Object.values(EnglishSpellingShares).flatMap((entry) => [
+			...entry.spellings,
+			...entry.other,
+		])) {
+			const firsts = [words.start[0], words.inside[0], words.end[0]].filter(Boolean);
+			if (topWord === null) expect(firsts).toEqual([]);
+			else expect(firsts).toContain(topWord);
+		}
+	});
+
+	it("gives recorded top-10k example words whose marked letters are the spelling", () => {
+		const errors: string[] = [];
+		for (const [phonemeId, entry] of Object.entries(EnglishSpellingShares)) {
+			for (const { spelling, words } of [...entry.spellings, ...entry.other]) {
+				for (const position of ["start", "inside", "end"] as const) {
+					for (const spelled of words[position]) {
+						const segments = splitSpelledWord(spelled);
+						const word = segments.map(({ text }) => text).join("");
+						const marked = segments
+							.filter(({ highlighted }) => highlighted)
+							.map(({ text }) => text);
+						const expected = spelling.includes("-") ? spelling.split("-") : [spelling];
+						const variants = top10k[word];
+						const first = variants ? preferOForms(word, variants)[0] : undefined;
+						if (!first) errors.push(`${phonemeId} ${spelled}: not in the top-10k list`);
+						else if (!toBasePhonemeIds(first).includes(phonemeId as never))
+							errors.push(`${phonemeId} ${spelled}: the sound isn't in ${first}`);
+						if (!recorded.has(word)) errors.push(`${phonemeId} ${spelled}: no recording`);
+						if (marked.join("|") !== expected.join("|"))
+							errors.push(`${phonemeId} ${spelled}: marks ${marked.join("|")}, not ${spelling}`);
+					}
+				}
+			}
+		}
+		expect(errors).toEqual([]);
 	});
 });

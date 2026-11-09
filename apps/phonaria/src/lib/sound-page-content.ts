@@ -2,7 +2,6 @@ import {
 	EnglishAllophoneContextLabels,
 	EnglishPhonemeAllophones,
 	type EnglishPhonemeSymbolId,
-	EnglishPhonemeSpellingPatterns,
 	getIpaForPhonemeId,
 	getLanguagePhonemeIds,
 	getPhonemeArticulationRegistryForLanguage,
@@ -14,6 +13,7 @@ import {
 } from "@phonaria/phonetics-data/data/en/common-words";
 import { getPhonemeComparisons, type PhonemeComparison } from "@/lib/phoneme-comparisons";
 import { getSoundKeyExample, getSoundName, soundPagePath } from "@/lib/sound-pages";
+import { getRankedSpellings, soundsSpelledBy } from "@/lib/spelling-shares";
 
 const PHONEME_IDS = getLanguagePhonemeIds("en-us") as readonly EnglishPhonemeSymbolId[];
 
@@ -192,25 +192,16 @@ export function compareSounds(
 	return { differences, shared };
 }
 
-function patternsOf(id: EnglishPhonemeSymbolId): readonly string[] {
-	return (
-		EnglishPhonemeSpellingPatterns as Record<
-			EnglishPhonemeSymbolId,
-			{ patterns: readonly string[] }
-		>
-	)[id].patterns;
-}
-
-/** For each of this sound's spellings, the other sounds that list the same letters: th, /ð/. */
+/** For each of this sound's spellings, the other sounds the same letters often spell: th, /ð/. */
 export function getSharedSpellings(
 	phonemeId: EnglishPhonemeSymbolId,
 ): { pattern: string; others: SoundRef[] }[] {
-	return patternsOf(phonemeId)
-		.map((pattern) => ({
-			pattern,
-			others: PHONEME_IDS.filter((id) => id !== phonemeId && patternsOf(id).includes(pattern)).map(
-				soundRef,
-			),
+	return getRankedSpellings(phonemeId)
+		.ranked.map(({ spelling }) => ({
+			pattern: spelling,
+			others: soundsSpelledBy(spelling)
+				.filter((id) => id !== phonemeId)
+				.map(soundRef),
 		}))
 		.filter(({ others }) => others.length > 0);
 }
