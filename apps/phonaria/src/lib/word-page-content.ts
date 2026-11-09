@@ -2,28 +2,28 @@ import {
 	EnglishPhonemeContrasts,
 	type EnglishPhonemeSymbolId,
 	extractBasePhonemeId,
+	findSubstitution,
 	getIpaForPhonemeId,
 	splitSpelledWord,
+	toBasePhonemeIds,
 } from "@phonaria/phonetics-data";
-import { EnglishSpellingShares } from "@phonaria/phonetics-data/data/en/spelling-shares";
+import {
+	EnglishSpellingShares,
+	OTHER_SPELLINGS_BELOW_PERCENTAGE,
+} from "@phonaria/phonetics-data/data/en/spelling-shares";
 import { getWordPage, type WordPageEntry } from "@phonaria/phonetics-data/data/en/word-pages";
+import { phonemeAudioPath } from "@/components/phoneme-details/sound";
 import { syllabify } from "@/lib/g2p/syllabifier";
 import { contrastPagePath } from "@/lib/minimal-pairs";
 import { soundPagePath } from "@/lib/sound-pages";
-import { hasWordPage, wordPagePath } from "@/lib/word-pages";
+import { soundHeading } from "@/lib/sound-pages";
+import { CatalogWordPronunciations } from "@/lib/speech/catalog-pronunciations";
+import { findWordPagePath, hasWordPage, wordPagePath } from "@/lib/word-pages";
 
 export interface WordSound {
 	phonemeId: EnglishPhonemeSymbolId;
 	ipa: string;
 	path: string;
-}
-
-export interface LetterGroup {
-	letters: string;
-	/** Empty for silent letters, two for letters that spell two sounds (x in box). */
-	sounds: WordSound[];
-	/** True when these letters are, or are the silent e of, a rare spelling of their sound. */
-	rare: boolean;
 }
 
 export interface OtherWord {
@@ -41,23 +41,37 @@ export interface ShareSegment {
 	own: boolean;
 }
 
-export interface UnusualSpelling {
-	/** As the sound pages name it: "gh", or "o-e" for o and a silent e. */
-	spelling: string;
-	sound: WordSound;
-	percentage: number;
-	/** The sound's common spellings, then this one, then the rest. */
-	shares: ShareSegment[];
-	/** Other common words that spell the sound this way, the same place in the word first. */
-	others: OtherWord[];
-}
-
 export interface WordPair {
 	contrastId: string;
 	path: string;
 	other: string;
 	/** This word's sound, then the other word's. */
 	sounds: [WordSound, WordSound];
+	/** Which of this word's sounds changes, counting from 0. */
+	index: number;
+}
+
+/** One of the word's sounds with everything the sound-by-sound breakdown shows about it. */
+export interface SoundPart {
+	/** The letters that spell it; "o…e" for a split spelling. */
+	letters: string;
+	sound: WordSound;
+	/** The sound's name as its page heads it: "Short U". */
+	name: string;
+	/** The sound's own recording, or null where it has none (diphthongs). */
+	audioPath: string | null;
+	stressed: boolean;
+	/**
+	 * This spelling's share of the sound in everyday speech, with the sound's other spellings;
+	 * null for letters that spell two sounds (x in box), which the shares don't rank.
+	 */
+	percentage: number | null;
+	shares: ShareSegment[];
+	/** Under 2%: rare for the sound. */
+	rare: boolean;
+	examples: (OtherWord & { path?: string })[];
+	/** The minimal pairs this word is in where this sound is the one that changes. */
+	contrasts: { path: string; other: string; theirs: WordSound }[];
 }
 
 export interface WordPageView {
@@ -68,9 +82,8 @@ export interface WordPageView {
 	ipa: string;
 	pronunciation: string;
 	path: string;
-	letters: LetterGroup[];
-	unusual: UnusualSpelling[];
-	pairs: WordPair[];
+	/** Every sound in the word, in order; letters that spell two sounds give two. Silent letters are left out. */
+	sounds: SoundPart[];
 }
 
 function wordSound(token: string): WordSound {
@@ -129,19 +142,38 @@ function otherWord(spelled: string): OtherWord {
 	return { word: plainWord(spelled), spelled };
 }
 
-function pairsWith(word: string): WordPair[] {
+/** Where `pronunciation` turns into one of `other`'s accepted pronunciations, swapping `own` for `theirs`. */
+function changedIndex(
+	pronunciation: string,
+	other: string,
+	own: EnglishPhonemeSymbolId,
+	theirs: EnglishPhonemeSymbolId,
+): number | undefined {
+	const from = toBasePhonemeIds(pronunciation);
+	for (const to of CatalogWordPronunciations.get(other) ?? []) {
+		const change = findSubstitution(from, to);
+		if (change && change.from === own && change.to === theirs) return change.index;
+	}
+	return undefined;
+}
+
+function pairsWith(word: string, pronunciation: string): WordPair[] {
 	return EnglishPhonemeContrasts.flatMap((contrast) =>
 		contrast.minimalPairs.flatMap(({ words }) => {
-			const index = words.indexOf(word);
-			if (index < 0) return [];
-			const own = contrast.phonemeIds[index];
-			const theirs = contrast.phonemeIds[1 - index];
+			const side = words.indexOf(word);
+			if (side < 0) return [];
+			const own = contrast.phonemeIds[side];
+			const theirs = contrast.phonemeIds[1 - side];
+			const other = words[1 - side];
+			const index = changedIndex(pronunciation, other, own, theirs);
+			if (index === undefined) return [];
 			return [
 				{
 					contrastId: contrast.id,
 					path: contrastPagePath(contrast.id),
-					other: words[1 - index],
+					other,
 					sounds: [wordSound(own), wordSound(theirs)] as [WordSound, WordSound],
+					index,
 				},
 			];
 		}),
@@ -153,43 +185,67 @@ function capitalize(word: string): string {
 }
 
 /** The letter groups that make up a rare spelling: its letters, and the silent e of a split one (o-e). */
-function rareSegmentIndices(entry: WordPageEntry): Set<number> {
-	const indices = new Set<number>();
-	entry.segments.forEach(({ letters, sounds, spelling }, index) => {
+function shareOf(phonemeId: EnglishPhonemeSymbolId, spelling: string): number {
+	const { spellings, other } = EnglishSpellingShares[phonemeId];
+	return [...spellings, ...other].find((share) => share.spelling === spelling)?.percentage ?? 0;
+}
+
+function soundParts(entry: WordPageEntry, pairs: WordPair[]): SoundPart[] {
+	let soundIndex = 0;
+	return entry.segments.flatMap(({ letters, sounds, spelling, others }): SoundPart[] => {
+		const first = soundIndex;
+		soundIndex += sounds.length;
+		if (sounds.length > 1) {
+			return sounds.map((token): SoundPart => {
+				const sound = wordSound(token);
+				return {
+					letters,
+					sound,
+					name: soundHeading(sound.phonemeId),
+					audioPath: phonemeAudioPath(sound.phonemeId),
+					stressed: !token.endsWith("0"),
+					percentage: null,
+					shares: [],
+					rare: false,
+					examples: [],
+					contrasts: [],
+				};
+			});
+		}
+		if (sounds.length === 0) return [];
 		const label = spelling ?? letters;
-		const rare =
-			sounds.length === 1 &&
-			entry.rareSpellings.some(
-				(r) => r.spelling === label && r.phonemeId === extractBasePhonemeId(sounds[0]),
-			);
-		if (!rare) return;
-		indices.add(index);
-		if (label.endsWith("-e")) indices.add(index + 2);
+		const sound = wordSound(sounds[0]);
+		const percentage = shareOf(sound.phonemeId, label);
+		return [
+			{
+				letters: label.endsWith("-e") ? `${label[0]}…e` : letters,
+				sound,
+				name: soundHeading(sound.phonemeId),
+				audioPath: phonemeAudioPath(sound.phonemeId),
+				stressed: !sounds[0].endsWith("0"),
+				percentage,
+				shares: shareSegments(sound.phonemeId, label),
+				rare: percentage < OTHER_SPELLINGS_BELOW_PERCENTAGE,
+				examples: (others ?? []).map((spelled) => {
+					const other = otherWord(spelled);
+					return { ...other, path: findWordPagePath(other.word) };
+				}),
+				contrasts: pairs
+					.filter((pair) => pair.index === first)
+					.map((pair) => ({ path: pair.path, other: pair.other, theirs: pair.sounds[1] })),
+			},
+		];
 	});
-	return indices;
 }
 
 function buildView(entry: WordPageEntry): WordPageView {
-	const rare = rareSegmentIndices(entry);
 	return {
 		word: entry.word,
 		name: capitalize(entry.word),
 		ipa: formatWordIpa(entry.pronunciation),
 		pronunciation: entry.pronunciation,
 		path: wordPagePath(entry.word),
-		letters: entry.segments.map(({ letters, sounds }, index) => ({
-			letters,
-			sounds: sounds.map(wordSound),
-			rare: rare.has(index),
-		})),
-		unusual: entry.rareSpellings.map(({ spelling, phonemeId, percentage, others }) => ({
-			spelling,
-			sound: wordSound(phonemeId),
-			percentage,
-			shares: shareSegments(phonemeId as EnglishPhonemeSymbolId, spelling),
-			others: others.map(otherWord),
-		})),
-		pairs: pairsWith(entry.word),
+		sounds: soundParts(entry, pairsWith(entry.word, entry.pronunciation)),
 	};
 }
 

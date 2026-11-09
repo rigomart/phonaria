@@ -98,25 +98,35 @@ class PickWordPagesTests(unittest.TestCase):
         self.assertNotIn("tougher", [c.word for c in picked])
         self.assertEqual(len(picked), 2)
 
-    def test_gives_other_words_with_the_spelling_stressed_for_a_vowel(self):
-        enough = next(c for c in self.candidates if c.word == "enough")
-        women = next(c for c in self.candidates if c.word == "women")
+    def test_gives_each_sound_example_words_whose_vowel_stress_matches(self):
         is_example = make_is_example(self.inputs.words, self.inputs.recorded, set())
-        others = lambda c: pick_word_pages.other_words(  # noqa: E731
-            c, c.rare[0], self.result, frequency, is_example
-        )
-        self.assertEqual(others(enough), ["tou[gh]", "tou[gh]er"])
-        self.assertEqual(others(women), [], "womb's o spells an unstressed /ɪ/")
+
+        def examples(word, place, label, token):
+            return pick_word_pages.segment_examples(
+                word, place, label, token, self.result, frequency, is_example
+            )
+
+        self.assertEqual(examples("enough", "end", "gh", "F"), ["tou[gh]", "tou[gh]er"])
+        self.assertEqual(examples("women", "inside", "o", "IX1"), [], "womb's o is unstressed")
+        self.assertEqual(examples("women", "inside", "o", "IX0"), ["w[o]mb"])
 
     def test_writes_each_word_with_its_letters_and_sounds(self):
         enough = next(c for c in self.candidates if c.word == "enough")
-        entry = pick_word_pages.word_entry(enough, self.inputs.words["enough"])
+        is_example = make_is_example(self.inputs.words, self.inputs.recorded, set())
+        entry = pick_word_pages.word_entry(
+            enough,
+            self.inputs.words["enough"],
+            lambda place, label, token: pick_word_pages.segment_examples(
+                "enough", place, label, token, self.result, frequency, is_example
+            ),
+        )
         self.assertEqual(entry["pronunciation"], "IX0 N AH1 F")
         self.assertEqual(
             [(s["letters"], s["sounds"]) for s in entry["segments"]],
             [("e", ["IX0"]), ("n", ["N"]), ("ou", ["AH1"]), ("gh", ["F"])],
         )
         self.assertEqual(entry["rareSpellings"][0]["spelling"], "gh")
+        self.assertEqual(entry["segments"][3]["others"], ["tou[gh]", "tou[gh]er"])
 
 
 if __name__ == "__main__":

@@ -7,9 +7,8 @@ import { type Feature, observation } from "./feature";
 const enough = observation(
 	() => {
 		const main = document.querySelector("main");
-		const breakdown = main?.querySelector("ol");
-		const bar = main?.querySelector('[role="img"]');
-		const unusual = bar?.parentElement?.parentElement;
+		const cards = Array.from(main?.querySelectorAll('ol[aria-label="Sounds"] > li') ?? []);
+		const rare = cards.find((li) => li.hasAttribute("data-rare"));
 		return {
 			path: location.pathname,
 			status: (
@@ -22,16 +21,21 @@ const enough = observation(
 			recordings: Array.from(main?.querySelectorAll("header button") ?? []).map((b) =>
 				b.getAttribute("aria-label"),
 			),
-			letters: Array.from(breakdown?.querySelectorAll("li") ?? []).map((li) => [
-				li.firstElementChild?.textContent?.trim(),
-				li.hasAttribute("data-rare"),
-				Array.from(li.querySelectorAll("a")).map((a) => [
-					a.textContent?.trim(),
-					a.getAttribute("href"),
-				]),
-			]),
-			bar: bar?.getAttribute("aria-label") ?? null,
-			alsoIn: Array.from(unusual?.querySelectorAll("li") ?? []).map((li) => li.textContent?.trim()),
+			sounds: cards.map((li) => {
+				const link = li.querySelector('a[href^="/sounds/"]');
+				return [
+					li.firstElementChild?.firstElementChild?.textContent?.trim(),
+					link?.textContent?.trim(),
+					link?.getAttribute("href"),
+					li.querySelector('button[aria-label^="Play "]')?.getAttribute("aria-label") ?? null,
+					li.hasAttribute("data-rare"),
+				];
+			}),
+			rareBar: rare?.querySelector('[role="img"]')?.getAttribute("aria-label") ?? null,
+			rareNumber: rare?.querySelector('[role="img"] + span')?.textContent?.trim() ?? null,
+			rareWords: Array.from(rare?.querySelectorAll("ul li") ?? []).map((li) =>
+				li.textContent?.trim(),
+			),
 			wiktionary:
 				Array.from(main?.querySelectorAll("a") ?? [])
 					.map((a) => a.getAttribute("href"))
@@ -47,14 +51,16 @@ const enough = observation(
 		h1: ["Enough in IPA: /ɪˈnʌf/"],
 		h2: [],
 		recordings: ["Hear enough"],
-		letters: [
-			["e", false, [["/ɪ/", "/sounds/ih-sit"]]],
-			["n", false, [["/n/", "/sounds/n-sun"]]],
-			["ou", false, [["/ʌ/", "/sounds/uh-cup"]]],
-			["gh", true, [["/f/", "/sounds/f-fan"]]],
+		sounds: [
+			["e", "/ɪ/", "/sounds/ih-sit", "Play Short I", false],
+			["n", "/n/", "/sounds/n-sun", "Play N", false],
+			["ou", "/ʌ/", "/sounds/uh-cup", "Play Short U", false],
+			["gh", "/f/", "/sounds/f-fan", "Play F", true],
 		],
-		bar: "1.0% of /f/ sounds are spelled gh. The common spellings: f 89.0%, ff 7.0%, ph 2.6%.",
-		alsoIn: ["tough", "laugh", "rough"],
+		rareBar:
+			"Rare spelling. 1.0% of /f/ sounds in everyday speech are spelled gh. Other common spellings: f 89.0%, ff 7.0%, ph 2.6%.",
+		rareNumber: "1.0% of /f/",
+		rareWords: ["tough", "laugh", "rough"],
 		wiktionary: "https://en.wiktionary.org/wiki/enough#English",
 		overflow: false,
 	},
@@ -71,23 +77,16 @@ const forms = observation(
 );
 
 const pairs = observation(
-	() => {
-		const section = Array.from(document.querySelectorAll("main section")).find(
-			(s) => (s.querySelector("h2")?.textContent ?? "") === "Minimal pairs",
-		);
-		return {
-			path: location.pathname,
-			heading: section?.querySelector("h2")?.textContent?.trim() ?? null,
-			rows: Array.from(section?.querySelectorAll("li") ?? []).map((li) => [
-				Array.from(li.querySelectorAll("button")).map((b) => b.textContent?.trim()),
-				li.querySelector("a")?.getAttribute("href"),
-			]),
-		};
-	},
+	() => ({
+		path: location.pathname,
+		contrasts: Array.from(document.querySelectorAll('main a[href^="/minimal-pairs/"]')).map((a) => [
+			a.textContent?.replace(/\s+/g, " ").trim(),
+			a.getAttribute("href"),
+		]),
+	}),
 	{
 		path: "/words/know",
-		heading: "Minimal pairs",
-		rows: [[["know", "now"], "/minimal-pairs/ou-au"]],
+		contrasts: [["vs /aʊ/ now", "/minimal-pairs/ou-au"]],
 	},
 );
 

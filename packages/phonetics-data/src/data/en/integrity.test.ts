@@ -494,28 +494,40 @@ describe("word pages", () => {
 		}
 	});
 
-	it("gives other recorded words with each rare spelling, its letters marked", () => {
+	it("gives each sound other recorded words spelled the same way, each with the sound (a vowel's at its stress somewhere)", () => {
 		const recorded = new Set(EnglishWordAudio.words);
-		for (const { word, rareSpellings } of EnglishWordPages) {
-			for (const { spelling, phonemeId, others } of rareSpellings) {
-				expect(others.length, word).toBeLessThanOrEqual(3);
-				for (const spelled of others) {
-					const segments = splitSpelledWord(spelled);
-					const other = segments.map(({ text }) => text).join("");
-					const marked = segments.filter(({ highlighted }) => highlighted).map(({ text }) => text);
+		for (const { word, segments } of EnglishWordPages) {
+			for (const { letters, sounds, spelling, others } of segments) {
+				if (sounds.length !== 1) {
+					expect(others, `${word}: ${letters}`).toBeUndefined();
+					continue;
+				}
+				expect(others?.length ?? 0, `${word}: ${letters}`).toBeLessThanOrEqual(3);
+				const [token] = sounds;
+				for (const spelled of others ?? []) {
+					const parts = splitSpelledWord(spelled);
+					const other = parts.map(({ text }) => text).join("");
+					const marked = parts.filter(({ highlighted }) => highlighted).map(({ text }) => text);
 					const variants = top10k[other];
+					const tokens = variants ? preferOForms(other, variants)[0].split(" ") : [];
+					const sound = toBasePhonemeIds(token)[0];
 					expect(other, `${word}: ${spelled}`).not.toBe(word);
 					expect(recorded.has(other), `${word}: ${spelled}`).toBe(true);
-					expect(marked.join("-"), `${word}: ${spelled}`).toBe(spelling);
-					expect(
-						variants && toBasePhonemeIds(preferOForms(other, variants)[0]),
-						`${word}: ${spelled}`,
-					).toContain(phonemeId);
+					expect(marked.join("-"), `${word}: ${spelled}`).toBe(spelling ?? letters);
+					const matches = tokens.filter((t) => toBasePhonemeIds(t)[0] === sound);
+					expect(matches.length, `${word}: ${spelled} has ${sound}`).toBeGreaterThan(0);
+					if (/[012]$/.test(token)) {
+						const stressed = !token.endsWith("0");
+						expect(
+							matches.some((t) => !t.endsWith("0") === stressed),
+							`${word}: ${spelled} at the same stress`,
+						).toBe(true);
+					}
 				}
 			}
 		}
 		const women = EnglishWordPages.find(({ word }) => word === "women");
-		expect(women?.rareSpellings[0].others).toEqual([]);
+		expect(women?.segments[1].others).toEqual([]);
 	});
 
 	it("names at least one rare spelling per word, each a spelling of one of its sounds", () => {

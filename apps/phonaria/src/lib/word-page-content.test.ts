@@ -17,63 +17,84 @@ describe("word pages", () => {
 		expect(formatWordIpa("E1 N J AX0 N IX1 R IX0 NG")).toBe("ˌɛndʒəˈnɪɹɪŋ");
 	});
 
-	it("splits enough over its sounds, each linking to its sound page", () => {
+	it("gives every sound of enough its letters, name, page and recording", () => {
 		const view = getWordPageView("enough");
 		expect(view?.name).toBe("Enough");
 		expect(view?.ipa).toBe("ɪˈnʌf");
 		expect(
-			view?.letters.map(({ letters, sounds }) => [letters, sounds.map(({ ipa }) => ipa)]),
+			view?.sounds.map(({ letters, sound, name, stressed }) => [
+				letters,
+				sound.ipa,
+				name,
+				stressed,
+			]),
 		).toEqual([
-			["e", ["ɪ"]],
-			["n", ["n"]],
-			["ou", ["ʌ"]],
-			["gh", ["f"]],
+			["e", "ɪ", "Short I", false],
+			["n", "n", "N", true],
+			["ou", "ʌ", "Short U", true],
+			["gh", "f", "F", true],
 		]);
-		expect(view?.letters[3].sounds[0].path).toBe("/sounds/f-fan");
+		expect(view?.sounds[3].sound.path).toBe("/sounds/f-fan");
+		expect(view?.sounds[3].audioPath).toBe("/audio/phonemes/F.ogg");
 	});
 
-	it("names gh as rare for /f/, sized against /f/'s other spellings, with words that end in it", () => {
-		const [gh] = getWordPageView("enough")?.unusual ?? [];
-		expect(gh).toMatchObject({ spelling: "gh", sound: { ipa: "f" } });
+	it("leaves out the recording of a sound that has none", () => {
+		const [, ow] = getWordPageView("know")?.sounds ?? [];
+		expect(ow.name).toBe("Long O");
+		expect(ow.audioPath).toBeNull();
+	});
+
+	it("sizes each spelling against its sound's spellings, rare ones under 2%", () => {
+		const sounds = getWordPageView("enough")?.sounds ?? [];
+		const [, n, , gh] = sounds;
+		expect(n.rare).toBe(false);
+		expect(n.percentage).toBeGreaterThan(90);
+		expect(gh.rare).toBe(true);
 		expect(gh.percentage).toBeLessThan(2);
-		expect(gh.others.map(({ word }) => word).slice(0, 2)).toEqual(["tough", "laugh"]);
-		expect(gh.others.some(({ word }) => word === "enough")).toBe(false);
 		expect(gh.shares.filter(({ own }) => own)).toEqual([
 			{ spelling: "gh", percentage: gh.percentage, own: true },
 		]);
-		expect(gh.shares[0]).toMatchObject({ spelling: "f", own: false });
 		expect(gh.shares.reduce((sum, { percentage }) => sum + percentage, 0)).toBeCloseTo(100, 1);
-		expect(getWordPageView("enough")?.letters.map(({ rare }) => rare)).toEqual([
-			false,
-			false,
-			false,
-			true,
+	});
+
+	it("gives other words spelled the same way, linking those with a page", () => {
+		const gh = getWordPageView("enough")?.sounds[3];
+		expect(gh?.examples.map(({ word }) => word)).toEqual(["tough", "laugh", "rough"]);
+		const kn = getWordPageView("know")?.sounds[0];
+		expect(kn?.examples.find(({ word }) => word === "known")?.path).toBe("/words/known");
+	});
+
+	it("gives a stressed vowel no example whose matching vowel is unstressed", () => {
+		expect(getWordPageView("women")?.sounds[1].examples).toEqual([]);
+	});
+
+	it("shows a split spelling's letters together", () => {
+		expect(getWordPageView("move")?.sounds.map(({ letters }) => letters)).toEqual([
+			"m",
+			"o…e",
+			"v",
 		]);
 	});
 
-	it("marks both letter groups of a split rare spelling", () => {
-		const move = getWordPageView("move");
-		expect(move?.unusual[0].spelling).toBe("o-e");
-		expect(move?.letters.map(({ letters, rare }) => [letters, rare])).toEqual([
-			["m", false],
-			["o", true],
-			["v", false],
-			["e", true],
-		]);
-	});
-
-	it("gives no example word whose matching vowel is unstressed", () => {
-		expect(getWordPageView("women")?.unusual[0].others).toEqual([]);
-	});
-
-	it("lists a word's minimal pairs with their contrast page, and none where it has none", () => {
-		expect(getWordPageView("know")?.pairs).toEqual([
+	it("links a sound to the contrast page of the minimal pair it changes in", () => {
+		const [kn, ow] = getWordPageView("know")?.sounds ?? [];
+		expect(kn.contrasts).toEqual([]);
+		expect(ow.contrasts).toEqual([
 			expect.objectContaining({ other: "now", path: "/minimal-pairs/ou-au" }),
 		]);
-		expect(getWordPageView("enough")?.pairs).toEqual([]);
 	});
 
-	it("describes the page with the word's IPA and its unusual spelling", () => {
+	it("links a pair only from the sound that changes, not every card with that sound", () => {
+		const taught = getWordPageView("taught")?.sounds ?? [];
+		expect(taught.map(({ sound }) => sound.ipa)).toEqual(["t", "ɔ", "t"]);
+		expect(taught.map(({ contrasts }) => contrasts.map(({ other }) => other))).toEqual([
+			["thought"],
+			[],
+			[],
+		]);
+	});
+
+	it("describes the page with the word's IPA", () => {
 		const view = getWordPageView("enough");
 		if (!view) throw new Error("enough has a page");
 		expect(wordPageDescription(view)).toBe(

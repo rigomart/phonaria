@@ -168,36 +168,27 @@ def pick(candidates: list[Candidate], limit: int = LIMIT) -> tuple[list[Candidat
     return picked, heads
 
 
-def rare_place(alignment: Alignment, rare: RareSpelling) -> str:
-    """Where in the word the rare spelling's sound falls: start, inside or end."""
-    count = sum(len(segment.sounds) for segment in alignment.segments)
-    index = 0
-    for segment, label in zip(alignment.segments, alignment.labels):
-        if label == rare.spelling and segment.base_sounds == (rare.phoneme_id,):
-            return position(index, count)
-        index += len(segment.sounds)
-    return "inside"
-
-
-def other_words(
-    candidate: Candidate,
-    rare: RareSpelling,
+def segment_examples(
+    word: str,
+    place: str,
+    label: str,
+    token: str,
     result: SpellingTally,
     frequency: Callable[[str], float],
     is_example: Callable[[str], bool],
 ) -> list[str]:
-    """Up to OTHER_WORDS other words that spell the sound this way, as spelled forms
-    ("tou[gh]"): those with it in the same place first, then by frequency. For a vowel only
-    stressed matches count, as when picking, so women gets no pers[o]nal."""
-    place = rare_place(candidate.alignment, rare)
-    vowel = rare.phoneme_id in VOWEL_SOUNDS
+    """Up to OTHER_WORDS other words that spell the sound with `label`, as spelled forms, the
+    same place in the word first. A vowel's examples match its stress: stressed with stressed,
+    unstressed with unstressed."""
+    sound = base_sounds([token])[0]
+    vowel = sound in VOWEL_SOUNDS
+    stressed = not token.endswith("0")
+    bucket = result.sounds.get(sound)
     occurrences = sorted(
         (
-            occurrence
-            for occurrence in result.sounds[rare.phoneme_id].occurrences.get(rare.spelling, [])
-            if occurrence.word != candidate.word
-            and (occurrence.stressed or not vowel)
-            and is_example(occurrence.word)
+            o
+            for o in (bucket.occurrences.get(label, []) if bucket else [])
+            if o.word != word and (not vowel or o.stressed == stressed) and is_example(o.word)
         ),
         key=lambda o: (o.position != place, -frequency(o.word), o.word),
     )
@@ -208,32 +199,47 @@ def other_words(
     return list(others.values())
 
 
-def segment_entry(segment, label: str) -> dict:
+def segment_entry(
+    segment, label: str, examples: Callable[[str, str], list[str]] | None = None
+) -> dict:
     entry = {"letters": segment.letters, "sounds": list(segment.sounds)}
     if label != segment.letters:
         entry["spelling"] = label
+    if examples is not None and len(segment.sounds) == 1:
+        entry["others"] = examples(label, segment.sounds[0])
     return entry
 
 
 def word_entry(
     candidate: Candidate,
     pronunciation: tuple[str, ...],
-    others: Callable[[RareSpelling], list[str]] = lambda rare: [],
+    examples: Callable[[str, str, str], list[str]] | None = None,
 ) -> dict:
     alignment = candidate.alignment
+    count = sum(len(segment.sounds) for segment in alignment.segments)
+    starts = []
+    index = 0
+    for segment in alignment.segments:
+        starts.append(index)
+        index += len(segment.sounds)
     return {
         "word": candidate.word,
         "pronunciation": " ".join(pronunciation),
         "segments": [
-            segment_entry(segment, label)
-            for segment, label in zip(alignment.segments, alignment.labels)
+            segment_entry(
+                segment,
+                label,
+                None
+                if examples is None
+                else (lambda lab, tok, i=i: examples(position(starts[i], count), lab, tok)),
+            )
+            for i, (segment, label) in enumerate(zip(alignment.segments, alignment.labels))
         ],
         "rareSpellings": [
             {
                 "spelling": rare.spelling,
                 "phonemeId": rare.phoneme_id,
                 "percentage": round(rare.percentage, PERCENT_DECIMALS),
-                "others": others(rare),
             }
             for rare in candidate.rare
         ],
@@ -337,7 +343,9 @@ def main():
             word_entry(
                 c,
                 inputs.words[c.word],
-                lambda rare, c=c: other_words(c, rare, result, frequency, is_example),
+                lambda place, label, token, c=c: segment_examples(
+                    c.word, place, label, token, result, frequency, is_example
+                ),
             )
             for c in picked
         ],
