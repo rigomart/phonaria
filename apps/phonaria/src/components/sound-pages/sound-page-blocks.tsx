@@ -5,8 +5,7 @@ import { Link } from "@/components/link";
 import { DetailsCard } from "@/components/phoneme-details/details-section";
 import { MergerNote } from "@/components/phoneme-details/merger-note";
 import { PlayableWord, PlayableWordCell } from "@/components/phoneme-details/playable-word";
-import { getMergerNotes, getSpellingPattern } from "@/components/phoneme-details/sound";
-import { SpellingPatterns } from "@/components/phoneme-details/spelling";
+import { getMergerNotes } from "@/components/phoneme-details/sound";
 import { SpelledWord } from "@/components/spelled-word";
 import { IPA_CHART_FREQUENCY_PATH } from "@/lib/ipa-chart-metadata";
 import { formatPercentage, summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
@@ -22,6 +21,7 @@ import {
 } from "@/lib/sound-page-content";
 import { getSoundExamples, soundHeading } from "@/lib/sound-pages";
 import { cn } from "@/lib/utils";
+import { SpellingShares } from "./spelling-shares";
 
 const ACCENT = "en-us" as const;
 
@@ -110,14 +110,12 @@ export function FeatureList({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }
 	);
 }
 
-/** The spellings, then the other sounds the same letters spell. */
+/** The spellings, most common first, then the other sounds the same letters spell. */
 export function Spelling({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
-	const spelling = getSpellingPattern(ACCENT, phonemeId);
 	const shared = getSharedSpellings(phonemeId);
-	if (!spelling) return null;
 	return (
 		<div className="flex flex-col gap-2">
-			<SpellingPatterns targetAccent={ACCENT} spelling={spelling} />
+			<SpellingShares phonemeId={phonemeId} />
 			{shared.length > 0 ? (
 				<DetailsCard className="flex flex-col gap-1.5 p-3">
 					<h3 className="px-1 text-xs font-medium text-muted-foreground">

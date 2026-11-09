@@ -1,0 +1,5079 @@
+{
+	"meta": {
+		"source": "Curated top-10k list 2.0.0, first pronunciation of each word as the app orders them",
+		"wordCount": 9851,
+		"matchedWordCount": 9733,
+		"wordfreq": {
+			"version": "3.1.1",
+			"language": "en"
+		},
+		"otherBelowPercentage": 2.0,
+		"wordsPerPosition": 3,
+		"license": "CC-BY-SA-4.0",
+		"attribution": "Derived from wordfreq (Robyn Speer, CC-BY-SA 4.0). Pronunciations from CMUDict (Public Domain)."
+	},
+	"phonemes": {
+		"AX": {
+			"spellings": [
+				{
+					"spelling": "a",
+					"percentage": 39.2786,
+					"topWord": "[a]bout",
+					"words": {
+						"start": [
+							"[a]bout",
+							"[a]nother",
+							"[a]gain"
+						],
+						"inside": [
+							"comp[a]ny",
+							"nation[a]l",
+							"actu[a]lly"
+						],
+						"end": [
+							"are[a]",
+							"ide[a]",
+							"dat[a]"
+						]
+					}
+				},
+				{
+					"spelling": "e",
+					"percentage": 35.3309,
+					"topWord": "differ[e]nt",
+					"words": {
+						"start": [
+							"[e]specially",
+							"[e]dition",
+							"[e]steem"
+						],
+						"inside": [
+							"differ[e]nt",
+							"governm[e]nt",
+							"wom[e]n"
+						],
+						"end": [
+							"genr[e]"
+						]
+					}
+				},
+				{
+					"spelling": "o",
+					"percentage": 13.2522,
+					"topWord": "sec[o]nd",
+					"words": {
+						"start": [
+							"[o]fficial",
+							"[o]pinion",
+							"[o]fficials"
+						],
+						"inside": [
+							"sec[o]nd",
+							"pers[o]n",
+							"t[o]day"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "i",
+					"percentage": 8.1906,
+					"topWord": "fam[i]ly",
+					"words": {
+						"start": [],
+						"inside": [
+							"fam[i]ly",
+							"serv[i]ce",
+							"pres[i]dent"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "u",
+					"percentage": 2.8003,
+					"topWord": "[u]ntil",
+					"words": {
+						"start": [
+							"[u]ntil",
+							"[u]pon",
+							"[u]nless"
+						],
+						"inside": [
+							"s[u]pport",
+							"min[u]tes",
+							"ed[u]cation"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ou",
+					"percentage": 0.5439,
+					"topWord": "vari[ou]s",
+					"words": {
+						"start": [],
+						"inside": [
+							"vari[ou]s",
+							"seri[ou]s",
+							"previ[ou]s"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ai",
+					"percentage": 0.2322,
+					"topWord": "cert[ai]n",
+					"words": {
+						"start": [],
+						"inside": [
+							"cert[ai]n",
+							"cert[ai]nly",
+							"capt[ai]n"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "y",
+					"percentage": 0.0974,
+					"topWord": "anal[y]sis",
+					"words": {
+						"start": [],
+						"inside": [
+							"anal[y]sis",
+							"ox[y]gen",
+							"ph[y]sician"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ei",
+					"percentage": 0.0605,
+					"topWord": "for[ei]gn",
+					"words": {
+						"start": [],
+						"inside": [
+							"for[ei]gn",
+							"sover[ei]gn",
+							"for[ei]gners"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "au",
+					"percentage": 0.0499,
+					"topWord": "[au]thority",
+					"words": {
+						"start": [
+							"[au]thority",
+							"[au]thorities",
+							"[au]thentic"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ia",
+					"percentage": 0.0296,
+					"topWord": "parl[ia]ment",
+					"words": {
+						"start": [],
+						"inside": [
+							"parl[ia]ment",
+							"parl[ia]mentary"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ea",
+					"percentage": 0.0293,
+					"topWord": "oc[ea]n",
+					"words": {
+						"start": [],
+						"inside": [
+							"oc[ea]n",
+							"serg[ea]nt"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ah",
+					"percentage": 0.0243,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "os",
+					"percentage": 0.0158,
+					"topWord": "p[os]session",
+					"words": {
+						"start": [],
+						"inside": [
+							"p[os]session",
+							"p[os]sessed",
+							"p[os]sessions"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ol",
+					"percentage": 0.0158,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ui",
+					"percentage": 0.0149,
+					"topWord": "circ[ui]t",
+					"words": {
+						"start": [],
+						"inside": [
+							"circ[ui]t",
+							"circ[ui]ts"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eou",
+					"percentage": 0.0146,
+					"topWord": "gorg[eou]s",
+					"words": {
+						"start": [],
+						"inside": [
+							"gorg[eou]s",
+							"right[eou]s",
+							"outrag[eou]s"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "is",
+					"percentage": 0.0077,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "iou",
+					"percentage": 0.0052,
+					"topWord": "anx[iou]s",
+					"words": {
+						"start": [],
+						"inside": [
+							"anx[iou]s"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "aa",
+					"percentage": 0.0036,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eo",
+					"percentage": 0.0027,
+					"topWord": "surg[eo]ns",
+					"words": {
+						"start": [],
+						"inside": [
+							"surg[eo]ns"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"T": {
+			"spellings": [
+				{
+					"spelling": "t",
+					"percentage": 95.0302,
+					"topWord": "[t]o",
+					"words": {
+						"start": [
+							"[t]o",
+							"[t]ime",
+							"[t]oo"
+						],
+						"inside": [
+							"i[t]s",
+							"af[t]er",
+							"in[t]o"
+						],
+						"end": [
+							"tha[t]",
+							"i[t]",
+							"a[t]"
+						]
+					}
+				},
+				{
+					"spelling": "tt",
+					"percentage": 2.2861,
+					"topWord": "be[tt]er",
+					"words": {
+						"start": [],
+						"inside": [
+							"be[tt]er",
+							"li[tt]le",
+							"ge[tt]ing"
+						],
+						"end": [
+							"bu[tt]",
+							"cigare[tt]e",
+							"bre[tt]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "d",
+					"percentage": 1.9911,
+					"topWord": "base[d]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"base[d]",
+							"aske[d]",
+							"worke[d]"
+						]
+					}
+				},
+				{
+					"spelling": "tw",
+					"percentage": 0.5635,
+					"topWord": "[tw]o",
+					"words": {
+						"start": [
+							"[tw]o"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "bt",
+					"percentage": 0.0745,
+					"topWord": "dou[bt]",
+					"words": {
+						"start": [],
+						"inside": [
+							"su[bt]le",
+							"de[bt]s",
+							"dou[bt]s"
+						],
+						"end": [
+							"dou[bt]",
+							"de[bt]"
+						]
+					}
+				},
+				{
+					"spelling": "th",
+					"percentage": 0.0422,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ct",
+					"percentage": 0.0058,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "pt",
+					"percentage": 0.0037,
+					"topWord": "recei[pt]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"recei[pt]"
+						]
+					}
+				},
+				{
+					"spelling": "cht",
+					"percentage": 0.003,
+					"topWord": "ya[cht]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"ya[cht]"
+						]
+					}
+				}
+			]
+		},
+		"N": {
+			"spellings": [
+				{
+					"spelling": "n",
+					"percentage": 97.4458,
+					"topWord": "i[n]",
+					"words": {
+						"start": [
+							"[n]ot",
+							"[n]o",
+							"[n]ew"
+						],
+						"inside": [
+							"o[n]ly",
+							"i[n]to",
+							"a[n]y"
+						],
+						"end": [
+							"i[n]",
+							"o[n]",
+							"a[n]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "nn",
+					"percentage": 1.1543,
+					"topWord": "ru[nn]ing",
+					"words": {
+						"start": [],
+						"inside": [
+							"ru[nn]ing",
+							"ca[nn]ot",
+							"fu[nn]y"
+						],
+						"end": [
+							"i[nn]"
+						]
+					}
+				},
+				{
+					"spelling": "kn",
+					"percentage": 0.9508,
+					"topWord": "[kn]ow",
+					"words": {
+						"start": [
+							"[kn]ow",
+							"[kn]own",
+							"[kn]ew"
+						],
+						"inside": [
+							"un[kn]own"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "gn",
+					"percentage": 0.4214,
+					"topWord": "desi[gn]",
+					"words": {
+						"start": [],
+						"inside": [
+							"desi[gn]ed",
+							"si[gn]ed",
+							"si[gn]s"
+						],
+						"end": [
+							"desi[gn]",
+							"forei[gn]",
+							"si[gn]"
+						]
+					}
+				},
+				{
+					"spelling": "dn",
+					"percentage": 0.0175,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "nd",
+					"percentage": 0.0103,
+					"topWord": "ha[nd]some",
+					"words": {
+						"start": [],
+						"inside": [
+							"ha[nd]some",
+							"gra[nd]children"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"IX": {
+			"spellings": [
+				{
+					"spelling": "i",
+					"percentage": 80.8775,
+					"topWord": "[i]n",
+					"words": {
+						"start": [
+							"[i]n",
+							"[i]s",
+							"[i]t"
+						],
+						"inside": [
+							"w[i]th",
+							"th[i]s",
+							"h[i]s"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "e",
+					"percentage": 15.0158,
+					"topWord": "be[e]n",
+					"words": {
+						"start": [
+							"[e]nough",
+							"[e]xample",
+							"[e]xperience"
+						],
+						"inside": [
+							"be[e]n",
+							"b[e]cause",
+							"ev[e]n"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ea",
+					"percentage": 2.0834,
+					"topWord": "r[ea]lly",
+					"words": {
+						"start": [
+							"[ea]rs"
+						],
+						"inside": [
+							"r[ea]lly",
+							"y[ea]r",
+							"y[ea]rs"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "y",
+					"percentage": 0.6309,
+					"topWord": "s[y]stem",
+					"words": {
+						"start": [],
+						"inside": [
+							"s[y]stem",
+							"s[y]stems",
+							"ph[y]sical"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "a",
+					"percentage": 0.2985,
+					"topWord": "aver[a]ge",
+					"words": {
+						"start": [],
+						"inside": [
+							"aver[a]ge",
+							"char[a]cter",
+							"advant[a]ge"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "o",
+					"percentage": 0.2768,
+					"topWord": "w[o]men",
+					"words": {
+						"start": [],
+						"inside": [
+							"w[o]men",
+							"pers[o]nal"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ui",
+					"percentage": 0.2618,
+					"topWord": "b[ui]lding",
+					"words": {
+						"start": [],
+						"inside": [
+							"b[ui]lding",
+							"b[ui]lt",
+							"b[ui]ld"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "u",
+					"percentage": 0.2475,
+					"topWord": "b[u]siness",
+					"words": {
+						"start": [],
+						"inside": [
+							"b[u]siness",
+							"b[u]sy",
+							"b[u]sinesses"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ee",
+					"percentage": 0.1149,
+					"topWord": "engin[ee]ring",
+					"words": {
+						"start": [],
+						"inside": [
+							"engin[ee]ring",
+							"engin[ee]rs",
+							"volunt[ee]rs"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ia",
+					"percentage": 0.0503,
+					"topWord": "marr[ia]ge",
+					"words": {
+						"start": [],
+						"inside": [
+							"marr[ia]ge",
+							"marr[ia]ges",
+							"carr[ia]ge"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ey",
+					"percentage": 0.0499,
+					"topWord": "b[ey]ond",
+					"words": {
+						"start": [],
+						"inside": [
+							"b[ey]ond"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eo",
+					"percentage": 0.0483,
+					"topWord": "th[eo]ry",
+					"words": {
+						"start": [],
+						"inside": [
+							"th[eo]ry",
+							"th[eo]ries"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ei",
+					"percentage": 0.037,
+					"topWord": "w[ei]rd",
+					"words": {
+						"start": [],
+						"inside": [
+							"w[ei]rd"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "is",
+					"percentage": 0.0039,
+					"topWord": "d[is]solved",
+					"words": {
+						"start": [],
+						"inside": [
+							"d[is]solved"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "es",
+					"percentage": 0.0035,
+					"topWord": "d[es]sert",
+					"words": {
+						"start": [],
+						"inside": [
+							"d[es]sert"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"S": {
+			"spellings": [
+				{
+					"spelling": "s",
+					"percentage": 80.3549,
+					"topWord": "thi[s]",
+					"words": {
+						"start": [
+							"[s]o",
+							"[s]ome",
+							"[s]ee"
+						],
+						"inside": [
+							"ju[s]t",
+							"al[s]o",
+							"fir[s]t"
+						],
+						"end": [
+							"thi[s]",
+							"it[s]",
+							"u[s]"
+						]
+					}
+				},
+				{
+					"spelling": "c",
+					"percentage": 13.439,
+					"topWord": "sin[c]e",
+					"words": {
+						"start": [
+							"[c]ity",
+							"[c]enter",
+							"[c]ertain"
+						],
+						"inside": [
+							"servi[c]es",
+							"pro[c]ess",
+							"poli[c]y"
+						],
+						"end": [
+							"sin[c]e",
+							"pla[c]e",
+							"on[c]e"
+						]
+					}
+				},
+				{
+					"spelling": "ss",
+					"percentage": 5.4157,
+					"topWord": "busine[ss]",
+					"words": {
+						"start": [],
+						"inside": [
+							"po[ss]ible",
+							"mi[ss]ing",
+							"a[ss]ociation"
+						],
+						"end": [
+							"busine[ss]",
+							"le[ss]",
+							"cla[ss]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "sc",
+					"percentage": 0.3526,
+					"topWord": "[sc]ience",
+					"words": {
+						"start": [
+							"[sc]ience",
+							"[sc]ene",
+							"[sc]ientific"
+						],
+						"inside": [
+							"mu[sc]le",
+							"di[sc]ipline",
+							"mu[sc]les"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "st",
+					"percentage": 0.2248,
+					"topWord": "li[st]en",
+					"words": {
+						"start": [],
+						"inside": [
+							"li[st]en",
+							"li[st]ening",
+							"ca[st]le"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "sw",
+					"percentage": 0.1715,
+					"topWord": "an[sw]er",
+					"words": {
+						"start": [
+							"[sw]ord"
+						],
+						"inside": [
+							"an[sw]er",
+							"an[sw]ers",
+							"an[sw]ered"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ps",
+					"percentage": 0.0415,
+					"topWord": "[ps]ychology",
+					"words": {
+						"start": [
+							"[ps]ychology",
+							"[ps]ychological",
+							"[ps]ychiatric"
+						],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"R": {
+			"spellings": [
+				{
+					"spelling": "r",
+					"percentage": 98.1256,
+					"topWord": "fo[r]",
+					"words": {
+						"start": [
+							"[r]eally",
+							"[r]ight",
+							"[r]eal"
+						],
+						"inside": [
+							"f[r]om",
+							"ve[r]y",
+							"yea[r]s"
+						],
+						"end": [
+							"fo[r]",
+							"a[r]e",
+							"o[r]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "rr",
+					"percentage": 1.1906,
+					"topWord": "so[rr]y",
+					"words": {
+						"start": [],
+						"inside": [
+							"so[rr]y",
+							"ma[rr]ied",
+							"tomo[rr]ow"
+						],
+						"end": [
+							"biza[rr]e"
+						]
+					}
+				},
+				{
+					"spelling": "wr",
+					"percentage": 0.6347,
+					"topWord": "[wr]ong",
+					"words": {
+						"start": [
+							"[wr]ong",
+							"[wr]itten",
+							"[wr]iting"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "rh",
+					"percentage": 0.0186,
+					"topWord": "[rh]ythm",
+					"words": {
+						"start": [
+							"[rh]ythm",
+							"[rh]etoric"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "rt",
+					"percentage": 0.0173,
+					"topWord": "mo[rt]gage",
+					"words": {
+						"start": [],
+						"inside": [
+							"mo[rt]gage"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "rps",
+					"percentage": 0.0131,
+					"topWord": "co[rps]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"co[rps]"
+						]
+					}
+				}
+			]
+		},
+		"D": {
+			"spellings": [
+				{
+					"spelling": "d",
+					"percentage": 98.9937,
+					"topWord": "[d]o",
+					"words": {
+						"start": [
+							"[d]o",
+							"[d]id",
+							"[d]ay"
+						],
+						"inside": [
+							"un[d]er",
+							"alrea[d]y",
+							"to[d]ay"
+						],
+						"end": [
+							"ha[d]",
+							"woul[d]",
+							"goo[d]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "dd",
+					"percentage": 0.9716,
+					"topWord": "mi[dd]le",
+					"words": {
+						"start": [],
+						"inside": [
+							"mi[dd]le",
+							"a[dd]ed",
+							"a[dd]ition"
+						],
+						"end": [
+							"a[dd]",
+							"o[dd]"
+						]
+					}
+				},
+				{
+					"spelling": "t",
+					"percentage": 0.019,
+					"topWord": "thir[t]y",
+					"words": {
+						"start": [],
+						"inside": [
+							"thir[t]y"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ddh",
+					"percentage": 0.0105,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "dh",
+					"percentage": 0.0053,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"L": {
+			"spellings": [
+				{
+					"spelling": "l",
+					"percentage": 82.0477,
+					"topWord": "[l]ike",
+					"words": {
+						"start": [
+							"[l]ike",
+							"[l]ife",
+							"[l]ast"
+						],
+						"inside": [
+							"a[l]so",
+							"on[l]y",
+							"wor[l]d"
+						],
+						"end": [
+							"whi[l]e",
+							"schoo[l]",
+							"fee[l]"
+						]
+					}
+				},
+				{
+					"spelling": "ll",
+					"percentage": 17.9354,
+					"topWord": "a[ll]",
+					"words": {
+						"start": [],
+						"inside": [
+							"rea[ll]y",
+							"ca[ll]ed",
+							"actua[ll]y"
+						],
+						"end": [
+							"a[ll]",
+							"wi[ll]",
+							"we[ll]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "lh",
+					"percentage": 0.0169,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"I": {
+			"spellings": [
+				{
+					"spelling": "y",
+					"percentage": 30.5533,
+					"topWord": "onl[y]",
+					"words": {
+						"start": [],
+						"inside": [
+							"an[y]thing",
+							"ever[y]thing",
+							"ever[y]one"
+						],
+						"end": [
+							"onl[y]",
+							"an[y]",
+							"ver[y]"
+						]
+					}
+				},
+				{
+					"spelling": "e",
+					"percentage": 30.1552,
+					"topWord": "b[e]",
+					"words": {
+						"start": [
+							"[e]ven",
+							"[e]vil",
+							"[e]mail"
+						],
+						"inside": [
+							"b[e]ing",
+							"ar[e]a",
+							"vid[e]o"
+						],
+						"end": [
+							"b[e]",
+							"h[e]",
+							"w[e]"
+						]
+					}
+				},
+				{
+					"spelling": "ee",
+					"percentage": 11.0923,
+					"topWord": "s[ee]",
+					"words": {
+						"start": [],
+						"inside": [
+							"n[ee]d",
+							"betw[ee]n",
+							"f[ee]l"
+						],
+						"end": [
+							"s[ee]",
+							"thr[ee]",
+							"fr[ee]"
+						]
+					}
+				},
+				{
+					"spelling": "ea",
+					"percentage": 10.649,
+					"topWord": "[ea]ch",
+					"words": {
+						"start": [
+							"[ea]ch",
+							"[ea]sy",
+							"[ea]st"
+						],
+						"inside": [
+							"t[ea]m",
+							"pl[ea]se",
+							"r[ea]l"
+						],
+						"end": [
+							"s[ea]",
+							"t[ea]",
+							"guin[ea]"
+						]
+					}
+				},
+				{
+					"spelling": "i",
+					"percentage": 5.5095,
+					"topWord": "med[i]a",
+					"words": {
+						"start": [],
+						"inside": [
+							"med[i]a",
+							"exper[i]ence",
+							"per[i]od"
+						],
+						"end": [
+							"ant[i]",
+							"sem[i]",
+							"min[i]"
+						]
+					}
+				},
+				{
+					"spelling": "ie",
+					"percentage": 4.3147,
+					"topWord": "bel[ie]ve",
+					"words": {
+						"start": [],
+						"inside": [
+							"bel[ie]ve",
+							"ser[ie]s",
+							"f[ie]ld"
+						],
+						"end": [
+							"mov[ie]",
+							"rook[ie]",
+							"cook[ie]"
+						]
+					}
+				},
+				{
+					"spelling": "e-e",
+					"percentage": 3.1541,
+					"topWord": "th[e]s[e]",
+					"words": {
+						"start": [
+							"[e]v[e]ning",
+							"[e]v[e]"
+						],
+						"inside": [
+							"th[e]s[e]",
+							"h[e]r[e]",
+							"compl[e]t[e]"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "eo",
+					"percentage": 1.7852,
+					"topWord": "p[eo]ple",
+					"words": {
+						"start": [],
+						"inside": [
+							"p[eo]ple",
+							"p[eo]ples"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ey",
+					"percentage": 1.1043,
+					"topWord": "mon[ey]",
+					"words": {
+						"start": [],
+						"inside": [
+							"k[ey]s",
+							"k[ey]board",
+							"attorn[ey]s"
+						],
+						"end": [
+							"mon[ey]",
+							"k[ey]",
+							"vall[ey]"
+						]
+					}
+				},
+				{
+					"spelling": "ei",
+					"percentage": 0.6741,
+					"topWord": "[ei]ther",
+					"words": {
+						"start": [
+							"[ei]ther"
+						],
+						"inside": [
+							"rec[ei]ved",
+							"rec[ei]ve",
+							"n[ei]ther"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "i-e",
+					"percentage": 0.5982,
+					"topWord": "pol[i]c[e]",
+					"words": {
+						"start": [],
+						"inside": [
+							"pol[i]c[e]",
+							"mach[i]n[e]",
+							"magaz[i]n[e]"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ay",
+					"percentage": 0.3142,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ae",
+					"percentage": 0.0647,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "oe",
+					"percentage": 0.0161,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "is",
+					"percentage": 0.0151,
+					"topWord": "debr[is]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"debr[is]"
+						]
+					}
+				}
+			]
+		},
+		"K": {
+			"spellings": [
+				{
+					"spelling": "c",
+					"percentage": 62.1076,
+					"topWord": "[c]an",
+					"words": {
+						"start": [
+							"[c]an",
+							"[c]ould",
+							"[c]ome"
+						],
+						"inside": [
+							"be[c]ause",
+							"se[c]ond",
+							"in[c]luding"
+						],
+						"end": [
+							"publi[c]",
+							"musi[c]",
+							"economi[c]"
+						]
+					}
+				},
+				{
+					"spelling": "k",
+					"percentage": 25.1111,
+					"topWord": "li[k]e",
+					"words": {
+						"start": [
+							"[k]eep",
+							"[k]ind",
+							"[k]ids"
+						],
+						"inside": [
+							"loo[k]ing",
+							"ma[k]ing",
+							"ma[k]es"
+						],
+						"end": [
+							"li[k]e",
+							"ma[k]e",
+							"thin[k]"
+						]
+					}
+				},
+				{
+					"spelling": "ck",
+					"percentage": 6.3403,
+					"topWord": "ba[ck]",
+					"words": {
+						"start": [],
+						"inside": [
+							"qui[ck]ly",
+							"ba[ck]ground",
+							"lu[ck]y"
+						],
+						"end": [
+							"ba[ck]",
+							"bla[ck]",
+							"che[ck]"
+						]
+					}
+				},
+				{
+					"spelling": "q",
+					"percentage": 2.8875,
+					"topWord": "[q]uestion",
+					"words": {
+						"start": [
+							"[q]uestion",
+							"[q]uite",
+							"[q]uestions"
+						],
+						"inside": [
+							"re[q]uired",
+							"e[q]uipment",
+							"s[q]uare"
+						],
+						"end": [
+							"uni[q]ue",
+							"techni[q]ue",
+							"mos[q]ue"
+						]
+					}
+				},
+				{
+					"spelling": "ch",
+					"percentage": 2.4368,
+					"topWord": "s[ch]ool",
+					"words": {
+						"start": [
+							"[ch]aracter",
+							"[ch]aracters",
+							"[ch]emical"
+						],
+						"inside": [
+							"s[ch]ool",
+							"te[ch]nology",
+							"s[ch]ools"
+						],
+						"end": [
+							"te[ch]",
+							"stoma[ch]",
+							"heada[ch]e"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "cc",
+					"percentage": 1.0137,
+					"topWord": "a[cc]ording",
+					"words": {
+						"start": [],
+						"inside": [
+							"a[cc]ording",
+							"a[cc]ount",
+							"a[cc]ounts"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "cq",
+					"percentage": 0.0671,
+					"topWord": "a[cq]uired",
+					"words": {
+						"start": [],
+						"inside": [
+							"a[cq]uired",
+							"a[cq]uisition",
+							"a[cq]uire"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "kh",
+					"percentage": 0.0189,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "qu",
+					"percentage": 0.0171,
+					"topWord": "li[qu]or",
+					"words": {
+						"start": [],
+						"inside": [
+							"li[qu]or",
+							"con[qu]er"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"DH": {
+			"spellings": [
+				{
+					"spelling": "th",
+					"percentage": 100.0,
+					"topWord": "[th]at",
+					"words": {
+						"start": [
+							"[th]at",
+							"[th]is",
+							"[th]ey"
+						],
+						"inside": [
+							"o[th]er",
+							"ano[th]er",
+							"toge[th]er"
+						],
+						"end": [
+							"wi[th]",
+							"smoo[th]",
+							"brea[th]e"
+						]
+					}
+				}
+			],
+			"other": []
+		},
+		"M": {
+			"spellings": [
+				{
+					"spelling": "m",
+					"percentage": 96.634,
+					"topWord": "fro[m]",
+					"words": {
+						"start": [
+							"[m]y",
+							"[m]e",
+							"[m]ore"
+						],
+						"inside": [
+							"so[m]ething",
+							"fa[m]ily",
+							"so[m]eone"
+						],
+						"end": [
+							"fro[m]",
+							"ti[m]e",
+							"so[m]e"
+						]
+					}
+				},
+				{
+					"spelling": "mm",
+					"percentage": 2.4912,
+					"topWord": "co[mm]unity",
+					"words": {
+						"start": [],
+						"inside": [
+							"co[mm]unity",
+							"su[mm]er",
+							"co[mm]on"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "nm",
+					"percentage": 0.4575,
+					"topWord": "gover[nm]ent",
+					"words": {
+						"start": [],
+						"inside": [
+							"gover[nm]ent",
+							"gover[nm]ents",
+							"gover[nm]ental"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "mn",
+					"percentage": 0.2041,
+					"topWord": "colu[mn]",
+					"words": {
+						"start": [],
+						"inside": [
+							"colu[mn]s"
+						],
+						"end": [
+							"colu[mn]",
+							"autu[mn]"
+						]
+					}
+				},
+				{
+					"spelling": "mb",
+					"percentage": 0.1942,
+					"topWord": "bo[mb]",
+					"words": {
+						"start": [],
+						"inside": [
+							"bo[mb]s",
+							"cli[mb]ing",
+							"bo[mb]ing"
+						],
+						"end": [
+							"bo[mb]",
+							"du[mb]",
+							"cli[mb]"
+						]
+					}
+				},
+				{
+					"spelling": "mp",
+					"percentage": 0.0191,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"E": {
+			"spellings": [
+				{
+					"spelling": "e",
+					"percentage": 78.174,
+					"topWord": "wh[e]n",
+					"words": {
+						"start": [
+							"[e]very",
+							"[e]nd",
+							"[e]ver"
+						],
+						"inside": [
+							"wh[e]n",
+							"th[e]re",
+							"g[e]t"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "a",
+					"percentage": 9.2404,
+					"topWord": "[a]ny",
+					"words": {
+						"start": [
+							"[a]ny",
+							"[a]nything",
+							"[a]rea"
+						],
+						"inside": [
+							"m[a]ny",
+							"c[a]re",
+							"p[a]rents"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ea",
+					"percentage": 5.0747,
+					"topWord": "alr[ea]dy",
+					"words": {
+						"start": [],
+						"inside": [
+							"alr[ea]dy",
+							"h[ea]d",
+							"h[ea]lth"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ai",
+					"percentage": 3.622,
+					"topWord": "s[ai]d",
+					"words": {
+						"start": [
+							"[ai]r",
+							"[ai]rport",
+							"[ai]rcraft"
+						],
+						"inside": [
+							"s[ai]d",
+							"ag[ai]n",
+							"ag[ai]nst"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ei",
+					"percentage": 2.5465,
+					"topWord": "th[ei]r",
+					"words": {
+						"start": [],
+						"inside": [
+							"th[ei]r",
+							"th[ei]rs",
+							"l[ei]sure"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ie",
+					"percentage": 0.7767,
+					"topWord": "fr[ie]nds",
+					"words": {
+						"start": [],
+						"inside": [
+							"fr[ie]nds",
+							"fr[ie]nd",
+							"girlfr[ie]nd"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ay",
+					"percentage": 0.4113,
+					"topWord": "s[ay]s",
+					"words": {
+						"start": [],
+						"inside": [
+							"s[ay]s",
+							"pr[ay]er",
+							"pr[ay]ers"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "u",
+					"percentage": 0.0482,
+					"topWord": "b[u]ried",
+					"words": {
+						"start": [],
+						"inside": [
+							"b[u]ried",
+							"b[u]rial",
+							"b[u]ry"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ae",
+					"percentage": 0.022,
+					"topWord": "[ae]sthetic",
+					"words": {
+						"start": [
+							"[ae]sthetic",
+							"[ae]rial"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eh",
+					"percentage": 0.0215,
+					"topWord": "[eh]",
+					"words": {
+						"start": [
+							"[eh]"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "aa",
+					"percentage": 0.0201,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eo",
+					"percentage": 0.012,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ey",
+					"percentage": 0.0115,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eice",
+					"percentage": 0.01,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "hei",
+					"percentage": 0.0092,
+					"topWord": "[hei]r",
+					"words": {
+						"start": [
+							"[hei]r"
+						],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"Z": {
+			"spellings": [
+				{
+					"spelling": "s",
+					"percentage": 97.8552,
+					"topWord": "i[s]",
+					"words": {
+						"start": [],
+						"inside": [
+							"u[s]ed",
+							"bu[s]iness",
+							"mu[s]ic"
+						],
+						"end": [
+							"i[s]",
+							"wa[s]",
+							"a[s]"
+						]
+					}
+				},
+				{
+					"spelling": "z",
+					"percentage": 2.0491,
+					"topWord": "si[z]e",
+					"words": {
+						"start": [
+							"[z]one",
+							"[z]ero",
+							"[z]oo"
+						],
+						"inside": [
+							"ama[z]ing",
+							"cra[z]y",
+							"organi[z]ation"
+						],
+						"end": [
+							"si[z]e",
+							"reali[z]e",
+							"pri[z]e"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "zz",
+					"percentage": 0.0491,
+					"topWord": "ja[zz]",
+					"words": {
+						"start": [],
+						"inside": [
+							"pu[zz]le"
+						],
+						"end": [
+							"ja[zz]",
+							"bu[zz]"
+						]
+					}
+				},
+				{
+					"spelling": "x",
+					"percentage": 0.034,
+					"topWord": "an[x]iety",
+					"words": {
+						"start": [],
+						"inside": [
+							"an[x]iety"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ss",
+					"percentage": 0.0127,
+					"topWord": "po[ss]ess",
+					"words": {
+						"start": [],
+						"inside": [
+							"po[ss]ess"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"AE": {
+			"spellings": [
+				{
+					"spelling": "a",
+					"percentage": 99.15,
+					"topWord": "th[a]t",
+					"words": {
+						"start": [
+							"[a]s",
+							"[a]t",
+							"[a]n"
+						],
+						"inside": [
+							"th[a]t",
+							"h[a]ve",
+							"c[a]n"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "al",
+					"percentage": 0.3802,
+					"topWord": "h[al]f",
+					"words": {
+						"start": [],
+						"inside": [
+							"h[al]f",
+							"beh[al]f",
+							"h[al]fway"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ah",
+					"percentage": 0.2917,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "au",
+					"percentage": 0.1781,
+					"topWord": "l[au]gh",
+					"words": {
+						"start": [
+							"[au]nt"
+						],
+						"inside": [
+							"l[au]gh",
+							"l[au]ghing",
+							"l[au]ghed"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"AH": {
+			"spellings": [
+				{
+					"spelling": "o",
+					"percentage": 58.9201,
+					"topWord": "[o]f",
+					"words": {
+						"start": [
+							"[o]f",
+							"[o]ther",
+							"[o]thers"
+						],
+						"inside": [
+							"fr[o]m",
+							"s[o]me",
+							"l[o]ve"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "u",
+					"percentage": 34.5817,
+					"topWord": "b[u]t",
+					"words": {
+						"start": [
+							"[u]p",
+							"[u]s",
+							"[u]nder"
+						],
+						"inside": [
+							"b[u]t",
+							"j[u]st",
+							"m[u]ch"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "a",
+					"percentage": 3.6187,
+					"topWord": "wh[a]t",
+					"words": {
+						"start": [],
+						"inside": [
+							"wh[a]t",
+							"wh[a]tever",
+							"somewh[a]t"
+						],
+						"end": [
+							"pap[a]"
+						]
+					}
+				},
+				{
+					"spelling": "ou",
+					"percentage": 2.5639,
+					"topWord": "en[ou]gh",
+					"words": {
+						"start": [],
+						"inside": [
+							"en[ou]gh",
+							"c[ou]ntry",
+							"y[ou]ng"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "oo",
+					"percentage": 0.2565,
+					"topWord": "bl[oo]d",
+					"words": {
+						"start": [],
+						"inside": [
+							"bl[oo]d",
+							"fl[oo]d",
+							"bl[oo]dy"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "uh",
+					"percentage": 0.0501,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "e",
+					"percentage": 0.009,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"ER": {
+			"spellings": [
+				{
+					"spelling": "er",
+					"percentage": 58.2368,
+					"topWord": "h[er]",
+					"words": {
+						"start": [
+							"[er]"
+						],
+						"inside": [
+							"ev[er]y",
+							"diff[er]ent",
+							"gov[er]nment"
+						],
+						"end": [
+							"h[er]",
+							"oth[er]",
+							"aft[er]"
+						]
+					}
+				},
+				{
+					"spelling": "or",
+					"percentage": 12.3859,
+					"topWord": "w[or]k",
+					"words": {
+						"start": [
+							"[or]iginal",
+							"[or]iginally",
+							"[or]iginated"
+						],
+						"inside": [
+							"w[or]k",
+							"w[or]ld",
+							"w[or]king"
+						],
+						"end": [
+							"maj[or]",
+							"direct[or]",
+							"auth[or]"
+						]
+					}
+				},
+				{
+					"spelling": "ur",
+					"percentage": 5.7911,
+					"topWord": "t[ur]n",
+					"words": {
+						"start": [
+							"[ur]ban",
+							"[ur]gent",
+							"[ur]ge"
+						],
+						"inside": [
+							"t[ur]n",
+							"f[ur]ther",
+							"ret[ur]n"
+						],
+						"end": [
+							"occ[ur]",
+							"f[ur]"
+						]
+					}
+				},
+				{
+					"spelling": "ir",
+					"percentage": 4.8387,
+					"topWord": "f[ir]st",
+					"words": {
+						"start": [],
+						"inside": [
+							"f[ir]st",
+							"g[ir]l",
+							"th[ir]d"
+						],
+						"end": [
+							"s[ir]",
+							"st[ir]"
+						]
+					}
+				},
+				{
+					"spelling": "ar",
+					"percentage": 4.6779,
+					"topWord": "[ar]ound",
+					"words": {
+						"start": [
+							"[ar]ound",
+							"[ar]ena",
+							"[ar]ise"
+						],
+						"inside": [
+							"forw[ar]d",
+							"c[ar]eer",
+							"stand[ar]d"
+						],
+						"end": [
+							"simil[ar]",
+							"popul[ar]",
+							"particul[ar]"
+						]
+					}
+				},
+				{
+					"spelling": "ere",
+					"percentage": 3.0821,
+					"topWord": "w[ere]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"w[ere]"
+						]
+					}
+				},
+				{
+					"spelling": "r",
+					"percentage": 2.651,
+					"topWord": "ou[r]",
+					"words": {
+						"start": [],
+						"inside": [
+							"hou[r]s",
+							"ou[r]selves",
+							"ou[r]s"
+						],
+						"end": [
+							"ou[r]",
+							"hou[r]",
+							"flou[r]"
+						]
+					}
+				},
+				{
+					"spelling": "ear",
+					"percentage": 2.039,
+					"topWord": "[ear]ly",
+					"words": {
+						"start": [
+							"[ear]ly",
+							"[ear]th",
+							"[ear]lier"
+						],
+						"inside": [
+							"res[ear]ch",
+							"h[ear]d",
+							"l[ear]n"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ure",
+					"percentage": 1.9463,
+					"topWord": "fut[ure]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"fut[ure]",
+							"pict[ure]",
+							"cult[ure]"
+						]
+					}
+				},
+				{
+					"spelling": "re",
+					"percentage": 1.5611,
+					"topWord": "fi[re]",
+					"words": {
+						"start": [],
+						"inside": [
+							"requi[re]d",
+							"enti[re]ly",
+							"ti[re]d"
+						],
+						"end": [
+							"fi[re]",
+							"enti[re]",
+							"requi[re]"
+						]
+					}
+				},
+				{
+					"spelling": "our",
+					"percentage": 0.7217,
+					"topWord": "y[our]self",
+					"words": {
+						"start": [],
+						"inside": [
+							"y[our]self",
+							"j[our]nal",
+							"j[our]ney"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "urr",
+					"percentage": 0.7118,
+					"topWord": "c[urr]ent",
+					"words": {
+						"start": [],
+						"inside": [
+							"c[urr]ent",
+							"c[urr]ently",
+							"occ[urr]ed"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "arr",
+					"percentage": 0.4188,
+					"topWord": "[arr]ived",
+					"words": {
+						"start": [
+							"[arr]ived",
+							"[arr]ested",
+							"[arr]est"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "orr",
+					"percentage": 0.3944,
+					"topWord": "w[orr]y",
+					"words": {
+						"start": [],
+						"inside": [
+							"w[orr]y",
+							"c[orr]ect",
+							"w[orr]ied"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "erre",
+					"percentage": 0.121,
+					"topWord": "ref[erre]d",
+					"words": {
+						"start": [],
+						"inside": [
+							"ref[erre]d",
+							"transf[erre]d",
+							"pref[erre]d"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "aur",
+					"percentage": 0.0982,
+					"topWord": "rest[aur]ant",
+					"words": {
+						"start": [],
+						"inside": [
+							"rest[aur]ant",
+							"rest[aur]ants"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "err",
+					"percentage": 0.0894,
+					"topWord": "ref[err]ing",
+					"words": {
+						"start": [],
+						"inside": [
+							"ref[err]ing",
+							"medit[err]anean",
+							"t[err]ain"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ro",
+					"percentage": 0.0774,
+					"topWord": "i[ro]n",
+					"words": {
+						"start": [],
+						"inside": [
+							"i[ro]n"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eur",
+					"percentage": 0.0483,
+					"topWord": "amat[eur]",
+					"words": {
+						"start": [],
+						"inside": [
+							"entrepren[eur]s"
+						],
+						"end": [
+							"amat[eur]",
+							"entrepren[eur]"
+						]
+					}
+				},
+				{
+					"spelling": "olo",
+					"percentage": 0.0362,
+					"topWord": "c[olo]nel",
+					"words": {
+						"start": [],
+						"inside": [
+							"c[olo]nel"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ire",
+					"percentage": 0.0298,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "urra",
+					"percentage": 0.0262,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "urh",
+					"percentage": 0.0085,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "her",
+					"percentage": 0.0083,
+					"topWord": "[her]b",
+					"words": {
+						"start": [
+							"[her]b"
+						],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"U": {
+			"spellings": [
+				{
+					"spelling": "o",
+					"percentage": 56.5133,
+					"topWord": "t[o]",
+					"words": {
+						"start": [],
+						"inside": [
+							"d[o]ing",
+							"m[o]vie",
+							"m[o]ving"
+						],
+						"end": [
+							"t[o]",
+							"d[o]",
+							"wh[o]"
+						]
+					}
+				},
+				{
+					"spelling": "ou",
+					"percentage": 16.8479,
+					"topWord": "y[ou]",
+					"words": {
+						"start": [],
+						"inside": [
+							"gr[ou]p",
+							"gr[ou]ps",
+							"y[ou]th"
+						],
+						"end": [
+							"y[ou]"
+						]
+					}
+				},
+				{
+					"spelling": "u",
+					"percentage": 7.0602,
+					"topWord": "incl[u]ding",
+					"words": {
+						"start": [],
+						"inside": [
+							"incl[u]ding",
+							"act[u]ally",
+							"st[u]dents"
+						],
+						"end": [
+							"ab[u]",
+							"fl[u]",
+							"gur[u]"
+						]
+					}
+				},
+				{
+					"spelling": "oo",
+					"percentage": 6.2042,
+					"topWord": "t[oo]",
+					"words": {
+						"start": [],
+						"inside": [
+							"sch[oo]l",
+							"f[oo]d",
+							"r[oo]m"
+						],
+						"end": [
+							"t[oo]",
+							"tatt[oo]",
+							"z[oo]"
+						]
+					}
+				},
+				{
+					"spelling": "ew",
+					"percentage": 5.4847,
+					"topWord": "n[ew]",
+					"words": {
+						"start": [],
+						"inside": [
+							"n[ew]s",
+							"vi[ew]s",
+							"n[ew]spaper"
+						],
+						"end": [
+							"n[ew]",
+							"kn[ew]",
+							"vi[ew]"
+						]
+					}
+				},
+				{
+					"spelling": "u-e",
+					"percentage": 2.6592,
+					"topWord": "incl[u]d[e]",
+					"words": {
+						"start": [],
+						"inside": [
+							"incl[u]d[e]",
+							"r[u]l[e]s",
+							"absol[u]t[e]ly"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "o-e",
+					"percentage": 1.8368,
+					"topWord": "m[o]v[e]",
+					"words": {
+						"start": [],
+						"inside": [
+							"m[o]v[e]",
+							"l[o]s[e]",
+							"wh[o]s[e]"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ue",
+					"percentage": 1.4965,
+					"topWord": "tr[ue]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"tr[ue]",
+							"d[ue]",
+							"iss[ue]"
+						]
+					}
+				},
+				{
+					"spelling": "ough",
+					"percentage": 1.3637,
+					"topWord": "thr[ough]",
+					"words": {
+						"start": [],
+						"inside": [
+							"thr[ough]out"
+						],
+						"end": [
+							"thr[ough]",
+							"breakthr[ough]"
+						]
+					}
+				},
+				{
+					"spelling": "ui",
+					"percentage": 0.404,
+					"topWord": "s[ui]t",
+					"words": {
+						"start": [],
+						"inside": [
+							"s[ui]t",
+							"fr[ui]t",
+							"s[ui]table"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ieu",
+					"percentage": 0.0444,
+					"topWord": "l[ieu]tenant",
+					"words": {
+						"start": [],
+						"inside": [
+							"l[ieu]tenant"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eu",
+					"percentage": 0.0409,
+					"topWord": "n[eu]tral",
+					"words": {
+						"start": [],
+						"inside": [
+							"n[eu]tral",
+							"pharmac[eu]tical"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "oe",
+					"percentage": 0.0281,
+					"topWord": "sh[oe]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"sh[oe]"
+						]
+					}
+				},
+				{
+					"spelling": "oup",
+					"percentage": 0.0161,
+					"topWord": "c[oup]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"c[oup]"
+						]
+					}
+				}
+			]
+		},
+		"P": {
+			"spellings": [
+				{
+					"spelling": "p",
+					"percentage": 94.0455,
+					"topWord": "u[p]",
+					"words": {
+						"start": [
+							"[p]eople",
+							"[p]art",
+							"[p]lace"
+						],
+						"inside": [
+							"peo[p]le",
+							"com[p]any",
+							"o[p]en"
+						],
+						"end": [
+							"u[p]",
+							"hel[p]",
+							"kee[p]"
+						]
+					}
+				},
+				{
+					"spelling": "pp",
+					"percentage": 5.9226,
+					"topWord": "su[pp]ort",
+					"words": {
+						"start": [],
+						"inside": [
+							"su[pp]ort",
+							"ha[pp]y",
+							"ha[pp]ened"
+						],
+						"end": [
+							"a[pp]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "pt",
+					"percentage": 0.0197,
+					"topWord": "bankru[pt]cy",
+					"words": {
+						"start": [],
+						"inside": [
+							"bankru[pt]cy"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ph",
+					"percentage": 0.0121,
+					"topWord": "she[ph]erd",
+					"words": {
+						"start": [],
+						"inside": [
+							"she[ph]erd"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"W": {
+			"spellings": [
+				{
+					"spelling": "w",
+					"percentage": 76.9132,
+					"topWord": "[w]ith",
+					"words": {
+						"start": [
+							"[w]ith",
+							"[w]as",
+							"[w]e"
+						],
+						"inside": [
+							"bet[w]een",
+							"al[w]ays",
+							"a[w]ay"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "wh",
+					"percentage": 18.1374,
+					"topWord": "[wh]at",
+					"words": {
+						"start": [
+							"[wh]at",
+							"[wh]en",
+							"[wh]ich"
+						],
+						"inside": [
+							"some[wh]ere",
+							"any[wh]ere",
+							"every[wh]ere"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "u",
+					"percentage": 4.8627,
+					"topWord": "q[u]estion",
+					"words": {
+						"start": [],
+						"inside": [
+							"q[u]estion",
+							"q[u]ite",
+							"q[u]estions"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ju",
+					"percentage": 0.0499,
+					"topWord": "mari[ju]ana",
+					"words": {
+						"start": [],
+						"inside": [
+							"mari[ju]ana"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "o",
+					"percentage": 0.0368,
+					"topWord": "reserv[o]ir",
+					"words": {
+						"start": [],
+						"inside": [
+							"reserv[o]ir",
+							"ch[o]ir",
+							"mem[o]ir"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"V": {
+			"spellings": [
+				{
+					"spelling": "v",
+					"percentage": 60.1664,
+					"topWord": "ha[v]e",
+					"words": {
+						"start": [
+							"[v]ery",
+							"[v]ideo",
+							"[v]iew"
+						],
+						"inside": [
+							"o[v]er",
+							"e[v]en",
+							"ne[v]er"
+						],
+						"end": [
+							"ha[v]e",
+							"lo[v]e",
+							"gi[v]e"
+						]
+					}
+				},
+				{
+					"spelling": "f",
+					"percentage": 39.7709,
+					"topWord": "o[f]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"o[f]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ph",
+					"percentage": 0.0501,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "rv",
+					"percentage": 0.0126,
+					"topWord": "rese[rv]oir",
+					"words": {
+						"start": [],
+						"inside": [
+							"rese[rv]oir"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"A": {
+			"spellings": [
+				{
+					"spelling": "o",
+					"percentage": 55.9235,
+					"topWord": "[o]n",
+					"words": {
+						"start": [
+							"[o]n",
+							"[o]pportunity",
+							"[o]peration"
+						],
+						"inside": [
+							"n[o]t",
+							"g[o]t",
+							"l[o]t"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "a",
+					"percentage": 42.4634,
+					"topWord": "w[a]s",
+					"words": {
+						"start": [
+							"[a]re",
+							"[a]rt",
+							"[a]rticle"
+						],
+						"inside": [
+							"w[a]s",
+							"w[a]nt",
+							"p[a]rt"
+						],
+						"end": [
+							"m[a]",
+							"h[a]",
+							"p[a]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "oh",
+					"percentage": 0.5397,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ho",
+					"percentage": 0.309,
+					"topWord": "[ho]nest",
+					"words": {
+						"start": [
+							"[ho]nest",
+							"[ho]nestly",
+							"[ho]nor"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ow",
+					"percentage": 0.1946,
+					"topWord": "kn[ow]ledge",
+					"words": {
+						"start": [],
+						"inside": [
+							"kn[ow]ledge",
+							"ackn[ow]ledge",
+							"ackn[ow]ledged"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ah",
+					"percentage": 0.1458,
+					"topWord": "[ah]",
+					"words": {
+						"start": [
+							"[ah]"
+						],
+						"inside": [],
+						"end": [
+							"bl[ah]",
+							"sh[ah]"
+						]
+					}
+				},
+				{
+					"spelling": "au",
+					"percentage": 0.1285,
+					"topWord": "c[au]ses",
+					"words": {
+						"start": [
+							"[au]dio",
+							"[au]dition"
+						],
+						"inside": [
+							"c[au]ses"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "al",
+					"percentage": 0.1023,
+					"topWord": "c[al]m",
+					"words": {
+						"start": [],
+						"inside": [
+							"c[al]m",
+							"p[al]m",
+							"p[al]mer"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "e",
+					"percentage": 0.0747,
+					"topWord": "g[e]nre",
+					"words": {
+						"start": [
+							"[e]ntrepreneur",
+							"[e]ntrepreneurs"
+						],
+						"inside": [
+							"g[e]nre",
+							"s[e]rgeant"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "aw",
+					"percentage": 0.0558,
+					"topWord": "r[aw]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"r[aw]"
+						]
+					}
+				},
+				{
+					"spelling": "i",
+					"percentage": 0.0228,
+					"topWord": "reservo[i]r",
+					"words": {
+						"start": [],
+						"inside": [
+							"reservo[i]r",
+							"memo[i]r"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "as",
+					"percentage": 0.0184,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ahh",
+					"percentage": 0.0119,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ea",
+					"percentage": 0.0097,
+					"topWord": "h[ea]rted",
+					"words": {
+						"start": [],
+						"inside": [
+							"h[ea]rted"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"AI": {
+			"spellings": [
+				{
+					"spelling": "i",
+					"percentage": 42.0392,
+					"topWord": "f[i]nd",
+					"words": {
+						"start": [
+							"[i]dea",
+							"[i]deas",
+							"[i]tems"
+						],
+						"inside": [
+							"f[i]nd",
+							"un[i]ted",
+							"k[i]nd"
+						],
+						"end": [
+							"h[i]",
+							"ch[i]",
+							"wif[i]"
+						]
+					}
+				},
+				{
+					"spelling": "i-e",
+					"percentage": 27.4451,
+					"topWord": "l[i]k[e]",
+					"words": {
+						"start": [
+							"[i]c[e]"
+						],
+						"inside": [
+							"l[i]k[e]",
+							"t[i]m[e]",
+							"l[i]f[e]"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "y",
+					"percentage": 19.4602,
+					"topWord": "b[y]",
+					"words": {
+						"start": [],
+						"inside": [
+							"tr[y]ing",
+							"m[y]self",
+							"fl[y]ing"
+						],
+						"end": [
+							"b[y]",
+							"m[y]",
+							"wh[y]"
+						]
+					}
+				},
+				{
+					"spelling": "igh",
+					"percentage": 7.2581,
+					"topWord": "r[igh]t",
+					"words": {
+						"start": [],
+						"inside": [
+							"r[igh]t",
+							"m[igh]t",
+							"n[igh]t"
+						],
+						"end": [
+							"h[igh]",
+							"s[igh]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "uy",
+					"percentage": 1.3821,
+					"topWord": "g[uy]s",
+					"words": {
+						"start": [],
+						"inside": [
+							"g[uy]s",
+							"b[uy]ing",
+							"b[uy]ers"
+						],
+						"end": [
+							"g[uy]",
+							"b[uy]"
+						]
+					}
+				},
+				{
+					"spelling": "y-e",
+					"percentage": 0.8364,
+					"topWord": "t[y]p[e]",
+					"words": {
+						"start": [],
+						"inside": [
+							"t[y]p[e]",
+							"st[y]l[e]",
+							"t[y]p[e]s"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ie",
+					"percentage": 0.401,
+					"topWord": "d[ie]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"d[ie]",
+							"l[ie]",
+							"t[ie]"
+						]
+					}
+				},
+				{
+					"spelling": "ey",
+					"percentage": 0.2931,
+					"topWord": "[ey]es",
+					"words": {
+						"start": [
+							"[ey]es",
+							"[ey]ed"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "is",
+					"percentage": 0.2404,
+					"topWord": "[is]land",
+					"words": {
+						"start": [
+							"[is]land",
+							"[is]lands",
+							"[is]le"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eye",
+					"percentage": 0.1798,
+					"topWord": "[eye]",
+					"words": {
+						"start": [
+							"[eye]"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ai",
+					"percentage": 0.1527,
+					"topWord": "shangh[ai]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"shangh[ai]",
+							"k[ai]"
+						]
+					}
+				},
+				{
+					"spelling": "ye",
+					"percentage": 0.0875,
+					"topWord": "b[ye]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"b[ye]",
+							"goodb[ye]",
+							"d[ye]"
+						]
+					}
+				},
+				{
+					"spelling": "eigh",
+					"percentage": 0.0817,
+					"topWord": "h[eigh]t",
+					"words": {
+						"start": [],
+						"inside": [
+							"h[eigh]t",
+							"h[eigh]ts"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ia",
+					"percentage": 0.063,
+					"topWord": "d[ia]mond",
+					"words": {
+						"start": [],
+						"inside": [
+							"d[ia]mond",
+							"d[ia]monds"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "hai",
+					"percentage": 0.0538,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "aye",
+					"percentage": 0.0133,
+					"topWord": "[aye]",
+					"words": {
+						"start": [
+							"[aye]"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ay",
+					"percentage": 0.0127,
+					"topWord": "m[ay]a",
+					"words": {
+						"start": [],
+						"inside": [
+							"m[ay]a"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"F": {
+			"spellings": [
+				{
+					"spelling": "f",
+					"percentage": 88.962,
+					"topWord": "[f]or",
+					"words": {
+						"start": [
+							"[f]or",
+							"[f]rom",
+							"[f]irst"
+						],
+						"inside": [
+							"a[f]ter",
+							"be[f]ore",
+							"le[f]t"
+						],
+						"end": [
+							"i[f]",
+							"li[f]e",
+							"hal[f]"
+						]
+					}
+				},
+				{
+					"spelling": "ff",
+					"percentage": 6.9812,
+					"topWord": "o[ff]",
+					"words": {
+						"start": [],
+						"inside": [
+							"di[ff]erent",
+							"o[ff]ice",
+							"o[ff]icial"
+						],
+						"end": [
+							"o[ff]",
+							"stu[ff]",
+							"sta[ff]"
+						]
+					}
+				},
+				{
+					"spelling": "ph",
+					"percentage": 2.6011,
+					"topWord": "[ph]one",
+					"words": {
+						"start": [
+							"[ph]one",
+							"[ph]oto",
+							"[ph]ysical"
+						],
+						"inside": [
+							"philoso[ph]y",
+							"atmos[ph]ere",
+							"photogra[ph]y"
+						],
+						"end": [
+							"photogra[ph]",
+							"ral[ph]",
+							"gra[ph]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "gh",
+					"percentage": 1.0176,
+					"topWord": "enou[gh]",
+					"words": {
+						"start": [],
+						"inside": [
+							"lau[gh]ing",
+							"rou[gh]ly",
+							"lau[gh]ed"
+						],
+						"end": [
+							"enou[gh]",
+							"tou[gh]",
+							"lau[gh]"
+						]
+					}
+				},
+				{
+					"spelling": "ft",
+					"percentage": 0.4381,
+					"topWord": "o[ft]en",
+					"words": {
+						"start": [],
+						"inside": [
+							"o[ft]en"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"B": {
+			"spellings": [
+				{
+					"spelling": "b",
+					"percentage": 99.6696,
+					"topWord": "[b]e",
+					"words": {
+						"start": [
+							"[b]e",
+							"[b]y",
+							"[b]ut"
+						],
+						"inside": [
+							"a[b]out",
+							"num[b]er",
+							"pu[b]lic"
+						],
+						"end": [
+							"jo[b]",
+							"clu[b]",
+							"we[b]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "bb",
+					"percentage": 0.3304,
+					"topWord": "ru[bb]er",
+					"words": {
+						"start": [],
+						"inside": [
+							"ru[bb]er",
+							"bo[bb]y",
+							"bu[bb]le"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"O": {
+			"spellings": [
+				{
+					"spelling": "o",
+					"percentage": 60.7608,
+					"topWord": "f[o]r",
+					"words": {
+						"start": [
+							"[o]r",
+							"[o]ff",
+							"[o]rder"
+						],
+						"inside": [
+							"f[o]r",
+							"m[o]re",
+							"bef[o]re"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "a",
+					"percentage": 18.9946,
+					"topWord": "[a]ll",
+					"words": {
+						"start": [
+							"[a]ll",
+							"[a]lso",
+							"[a]lways"
+						],
+						"inside": [
+							"c[a]lled",
+							"w[a]ter",
+							"c[a]ll"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ou",
+					"percentage": 8.5491,
+					"topWord": "y[ou]r",
+					"words": {
+						"start": [],
+						"inside": [
+							"y[ou]r",
+							"f[ou]r",
+							"c[ou]rse"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "au",
+					"percentage": 4.858,
+					"topWord": "bec[au]se",
+					"words": {
+						"start": [
+							"[au]thor",
+							"[au]dience",
+							"[au]tomatically"
+						],
+						"inside": [
+							"bec[au]se",
+							"c[au]se",
+							"c[au]sed"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "aw",
+					"percentage": 2.0332,
+					"topWord": "l[aw]",
+					"words": {
+						"start": [
+							"[aw]esome",
+							"[aw]ful",
+							"[aw]kward"
+						],
+						"inside": [
+							"l[aw]s",
+							"l[aw]yer",
+							"dr[aw]ing"
+						],
+						"end": [
+							"l[aw]",
+							"s[aw]",
+							"dr[aw]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "al",
+					"percentage": 1.4875,
+					"topWord": "t[al]k",
+					"words": {
+						"start": [],
+						"inside": [
+							"t[al]k",
+							"t[al]king",
+							"w[al]k"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ough",
+					"percentage": 1.3717,
+					"topWord": "th[ough]t",
+					"words": {
+						"start": [
+							"[ough]t"
+						],
+						"inside": [
+							"th[ough]t",
+							"br[ough]t",
+							"b[ough]t"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "oa",
+					"percentage": 0.6474,
+					"topWord": "b[oa]rd",
+					"words": {
+						"start": [],
+						"inside": [
+							"b[oa]rd",
+							"br[oa]d",
+							"abr[oa]d"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "oo",
+					"percentage": 0.5075,
+					"topWord": "d[oo]r",
+					"words": {
+						"start": [],
+						"inside": [
+							"d[oo]r",
+							"fl[oo]r",
+							"d[oo]rs"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "augh",
+					"percentage": 0.4985,
+					"topWord": "d[augh]ter",
+					"words": {
+						"start": [],
+						"inside": [
+							"d[augh]ter",
+							"c[augh]t",
+							"t[augh]t"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eo",
+					"percentage": 0.2497,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ah",
+					"percentage": 0.0306,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "awe",
+					"percentage": 0.0114,
+					"topWord": "[awe]",
+					"words": {
+						"start": [
+							"[awe]"
+						],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"EI": {
+			"spellings": [
+				{
+					"spelling": "a-e",
+					"percentage": 30.4807,
+					"topWord": "m[a]k[e]",
+					"words": {
+						"start": [
+							"[a]g[e]",
+							"[a]g[e]d",
+							"[a]t[e]"
+						],
+						"inside": [
+							"m[a]k[e]",
+							"m[a]d[e]",
+							"t[a]k[e]"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "a",
+					"percentage": 29.5036,
+					"topWord": "ch[a]nge",
+					"words": {
+						"start": [
+							"[a]ble",
+							"[a]gency",
+							"[a]gent"
+						],
+						"inside": [
+							"ch[a]nge",
+							"m[a]king",
+							"l[a]ter"
+						],
+						"end": [
+							"ye[a]"
+						]
+					}
+				},
+				{
+					"spelling": "ay",
+					"percentage": 18.9871,
+					"topWord": "w[ay]",
+					"words": {
+						"start": [],
+						"inside": [
+							"alw[ay]s",
+							"d[ay]s",
+							"m[ay]be"
+						],
+						"end": [
+							"w[ay]",
+							"m[ay]",
+							"d[ay]"
+						]
+					}
+				},
+				{
+					"spelling": "ai",
+					"percentage": 10.0903,
+					"topWord": "w[ai]t",
+					"words": {
+						"start": [
+							"[ai]d",
+							"[ai]m",
+							"[ai]ds"
+						],
+						"inside": [
+							"w[ai]t",
+							"av[ai]lable",
+							"m[ai]n"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ey",
+					"percentage": 6.6944,
+					"topWord": "th[ey]",
+					"words": {
+						"start": [],
+						"inside": [
+							"surv[ey]s"
+						],
+						"end": [
+							"th[ey]",
+							"surv[ey]",
+							"pr[ey]"
+						]
+					}
+				},
+				{
+					"spelling": "ea",
+					"percentage": 2.3838,
+					"topWord": "gr[ea]t",
+					"words": {
+						"start": [],
+						"inside": [
+							"gr[ea]t",
+							"br[ea]k",
+							"gr[ea]ter"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "e",
+					"percentage": 0.8123,
+					"topWord": "d[e]but",
+					"words": {
+						"start": [],
+						"inside": [
+							"d[e]but",
+							"b[e]ta"
+						],
+						"end": [
+							"anim[e]",
+							"caf[e]"
+						]
+					}
+				},
+				{
+					"spelling": "eigh",
+					"percentage": 0.6743,
+					"topWord": "[eigh]t",
+					"words": {
+						"start": [
+							"[eigh]t",
+							"[eigh]teen"
+						],
+						"inside": [
+							"w[eigh]t",
+							"n[eigh]borhood",
+							"n[eigh]bors"
+						],
+						"end": [
+							"w[eigh]"
+						]
+					}
+				},
+				{
+					"spelling": "aigh",
+					"percentage": 0.2312,
+					"topWord": "str[aigh]t",
+					"words": {
+						"start": [],
+						"inside": [
+							"str[aigh]t",
+							"str[aigh]tforward"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ei",
+					"percentage": 0.0641,
+					"topWord": "surv[ei]llance",
+					"words": {
+						"start": [],
+						"inside": [
+							"surv[ei]llance",
+							"r[ei]gn",
+							"v[ei]n"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ah",
+					"percentage": 0.0396,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "au",
+					"percentage": 0.0208,
+					"topWord": "g[au]ge",
+					"words": {
+						"start": [],
+						"inside": [
+							"g[au]ge"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "et",
+					"percentage": 0.0176,
+					"topWord": "ball[et]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"ball[et]"
+						]
+					}
+				}
+			]
+		},
+		"OU": {
+			"spellings": [
+				{
+					"spelling": "o",
+					"percentage": 65.4426,
+					"topWord": "s[o]",
+					"words": {
+						"start": [
+							"[o]nly",
+							"[o]ver",
+							"[o]ld"
+						],
+						"inside": [
+							"m[o]st",
+							"g[o]ing",
+							"b[o]th"
+						],
+						"end": [
+							"s[o]",
+							"n[o]",
+							"als[o]"
+						]
+					}
+				},
+				{
+					"spelling": "ow",
+					"percentage": 14.518,
+					"topWord": "kn[ow]",
+					"words": {
+						"start": [
+							"[ow]n",
+							"[ow]ner",
+							"[ow]ned"
+						],
+						"inside": [
+							"foll[ow]ing",
+							"kn[ow]n",
+							"sh[ow]s"
+						],
+						"end": [
+							"kn[ow]",
+							"sh[ow]",
+							"l[ow]"
+						]
+					}
+				},
+				{
+					"spelling": "o-e",
+					"percentage": 13.971,
+					"topWord": "th[o]s[e]",
+					"words": {
+						"start": [],
+						"inside": [
+							"th[o]s[e]",
+							"h[o]m[e]",
+							"wh[o]l[e]"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "oa",
+					"percentage": 3.1581,
+					"topWord": "r[oa]d",
+					"words": {
+						"start": [
+							"[oa]k",
+							"[oa]th"
+						],
+						"inside": [
+							"r[oa]d",
+							"g[oa]l",
+							"c[oa]ch"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ough",
+					"percentage": 1.3467,
+					"topWord": "th[ough]",
+					"words": {
+						"start": [],
+						"inside": [
+							"thor[ough]ly"
+						],
+						"end": [
+							"th[ough]",
+							"alth[ough]",
+							"thor[ough]"
+						]
+					}
+				},
+				{
+					"spelling": "oh",
+					"percentage": 0.6944,
+					"topWord": "[oh]",
+					"words": {
+						"start": [
+							"[oh]"
+						],
+						"inside": [
+							"pr[oh]ibition"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ou",
+					"percentage": 0.3113,
+					"topWord": "s[ou]l",
+					"words": {
+						"start": [],
+						"inside": [
+							"s[ou]l",
+							"sh[ou]lder",
+							"s[ou]ls"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "oe",
+					"percentage": 0.2116,
+					"topWord": "t[oe]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"t[oe]",
+							"d[oe]"
+						]
+					}
+				},
+				{
+					"spelling": "ol",
+					"percentage": 0.1636,
+					"topWord": "f[ol]ks",
+					"words": {
+						"start": [],
+						"inside": [
+							"f[ol]ks",
+							"f[ol]k"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eau",
+					"percentage": 0.0627,
+					"topWord": "bur[eau]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"bur[eau]"
+						]
+					}
+				},
+				{
+					"spelling": "owe",
+					"percentage": 0.033,
+					"topWord": "[owe]",
+					"words": {
+						"start": [
+							"[owe]"
+						],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "au",
+					"percentage": 0.0256,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ot",
+					"percentage": 0.0218,
+					"topWord": "dep[ot]",
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": [
+							"dep[ot]"
+						]
+					}
+				},
+				{
+					"spelling": "eou",
+					"percentage": 0.0208,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "oo",
+					"percentage": 0.0189,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"H": {
+			"spellings": [
+				{
+					"spelling": "h",
+					"percentage": 93.4792,
+					"topWord": "[h]ave",
+					"words": {
+						"start": [
+							"[h]ave",
+							"[h]e",
+							"[h]is"
+						],
+						"inside": [
+							"be[h]ind",
+							"per[h]aps",
+							"a[h]ead"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "wh",
+					"percentage": 6.4822,
+					"topWord": "[wh]o",
+					"words": {
+						"start": [
+							"[wh]o",
+							"[wh]ole",
+							"[wh]ose"
+						],
+						"inside": [],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "j",
+					"percentage": 0.0387,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"NG": {
+			"spellings": [
+				{
+					"spelling": "ng",
+					"percentage": 85.8367,
+					"topWord": "bei[ng]",
+					"words": {
+						"start": [],
+						"inside": [
+							"thi[ng]s",
+							"so[ng]s",
+							"bri[ng]ing"
+						],
+						"end": [
+							"bei[ng]",
+							"goi[ng]",
+							"lo[ng]"
+						]
+					}
+				},
+				{
+					"spelling": "n",
+					"percentage": 14.1311,
+					"topWord": "thi[n]k",
+					"words": {
+						"start": [],
+						"inside": [
+							"thi[n]k",
+							"tha[n]k",
+							"tha[n]ks"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ngh",
+					"percentage": 0.0322,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"Y": {
+			"spellings": [
+				{
+					"spelling": "y",
+					"percentage": 94.9019,
+					"topWord": "[y]ou",
+					"words": {
+						"start": [
+							"[y]ou",
+							"[y]our",
+							"[y]ear"
+						],
+						"inside": [
+							"law[y]er",
+							"law[y]ers",
+							"can[y]on"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "i",
+					"percentage": 5.0647,
+					"topWord": "v[i]ew",
+					"words": {
+						"start": [],
+						"inside": [
+							"v[i]ew",
+							"rev[i]ew",
+							"sen[i]or"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "j",
+					"percentage": 0.0334,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"G": {
+			"spellings": [
+				{
+					"spelling": "g",
+					"percentage": 95.8911,
+					"topWord": "[g]et",
+					"words": {
+						"start": [
+							"[g]et",
+							"[g]ood",
+							"[g]o"
+						],
+						"inside": [
+							"a[g]ain",
+							"a[g]ainst",
+							"to[g]ether"
+						],
+						"end": [
+							"bi[g]",
+							"lea[g]ue",
+							"do[g]"
+						]
+					}
+				},
+				{
+					"spelling": "gu",
+					"percentage": 2.2331,
+					"topWord": "[gu]ess",
+					"words": {
+						"start": [
+							"[gu]ess",
+							"[gu]ide",
+							"[gu]ard"
+						],
+						"inside": [
+							"mi[gu]el"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "gg",
+					"percentage": 1.5262,
+					"topWord": "bi[gg]est",
+					"words": {
+						"start": [],
+						"inside": [
+							"bi[gg]est",
+							"bi[gg]er",
+							"stru[gg]le"
+						],
+						"end": [
+							"e[gg]"
+						]
+					}
+				},
+				{
+					"spelling": "gh",
+					"percentage": 0.3495,
+					"topWord": "[gh]ost",
+					"words": {
+						"start": [
+							"[gh]ost",
+							"[gh]osts"
+						],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"SH": {
+			"spellings": [
+				{
+					"spelling": "ti",
+					"percentage": 42.2947,
+					"topWord": "na[ti]onal",
+					"words": {
+						"start": [],
+						"inside": [
+							"na[ti]onal",
+							"informa[ti]on",
+							"interna[ti]onal"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "sh",
+					"percentage": 38.5561,
+					"topWord": "[sh]e",
+					"words": {
+						"start": [
+							"[sh]e",
+							"[sh]ould",
+							"[sh]ow"
+						],
+						"inside": [
+							"relation[sh]ip",
+							"publi[sh]ed",
+							"fini[sh]ed"
+						],
+						"end": [
+							"wi[sh]",
+							"ca[sh]",
+							"fini[sh]"
+						]
+					}
+				},
+				{
+					"spelling": "ci",
+					"percentage": 6.4939,
+					"topWord": "so[ci]al",
+					"words": {
+						"start": [],
+						"inside": [
+							"so[ci]al",
+							"spe[ci]al",
+							"espe[ci]ally"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ssi",
+					"percentage": 4.3487,
+					"topWord": "profe[ssi]onal",
+					"words": {
+						"start": [],
+						"inside": [
+							"profe[ssi]onal",
+							"commi[ssi]on",
+							"mi[ssi]on"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "s",
+					"percentage": 2.9534,
+					"topWord": "[s]ure",
+					"words": {
+						"start": [
+							"[s]ure",
+							"[s]ugar",
+							"[s]urely"
+						],
+						"inside": [
+							"in[s]urance",
+							"en[s]ure",
+							"en[s]uring"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "ss",
+					"percentage": 2.0914,
+					"topWord": "i[ss]ue",
+					"words": {
+						"start": [],
+						"inside": [
+							"i[ss]ue",
+							"i[ss]ues",
+							"pre[ss]ure"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ch",
+					"percentage": 1.1175,
+					"topWord": "ma[ch]ine",
+					"words": {
+						"start": [
+							"[ch]ef",
+							"[ch]ampagne"
+						],
+						"inside": [
+							"ma[ch]ine",
+							"ma[ch]ines",
+							"ma[ch]inery"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "si",
+					"percentage": 0.754,
+					"topWord": "expan[si]on",
+					"words": {
+						"start": [],
+						"inside": [
+							"expan[si]on",
+							"exten[si]on",
+							"suspen[si]on"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "c",
+					"percentage": 0.5649,
+					"topWord": "appre[c]iate",
+					"words": {
+						"start": [],
+						"inside": [
+							"appre[c]iate",
+							"o[c]ean",
+							"appre[c]iated"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "t",
+					"percentage": 0.3115,
+					"topWord": "ra[t]io",
+					"words": {
+						"start": [],
+						"inside": [
+							"ra[t]io",
+							"nego[t]iations",
+							"ini[t]iated"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "shi",
+					"percentage": 0.3018,
+					"topWord": "fa[shi]on",
+					"words": {
+						"start": [],
+						"inside": [
+							"fa[shi]on",
+							"fa[shi]oned"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "sci",
+					"percentage": 0.1873,
+					"topWord": "con[sci]ous",
+					"words": {
+						"start": [],
+						"inside": [
+							"con[sci]ous",
+							"con[sci]ousness",
+							"con[sci]ence"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "sc",
+					"percentage": 0.0249,
+					"topWord": "fa[sc]ist",
+					"words": {
+						"start": [],
+						"inside": [
+							"fa[sc]ist"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"J": {
+			"spellings": [
+				{
+					"spelling": "g",
+					"percentage": 48.7459,
+					"topWord": "chan[g]e",
+					"words": {
+						"start": [
+							"[g]eneral",
+							"[g]enerally",
+							"[g]eneration"
+						],
+						"inside": [
+							"ener[g]y",
+							"ori[g]inal",
+							"mana[g]ement"
+						],
+						"end": [
+							"chan[g]e",
+							"lar[g]e",
+							"a[g]e"
+						]
+					}
+				},
+				{
+					"spelling": "j",
+					"percentage": 40.9237,
+					"topWord": "[j]ust",
+					"words": {
+						"start": [
+							"[j]ust",
+							"[j]ob",
+							"[j]oin"
+						],
+						"inside": [
+							"ma[j]or",
+							"pro[j]ect",
+							"en[j]oy"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "d",
+					"percentage": 3.5083,
+					"topWord": "e[d]ucation",
+					"words": {
+						"start": [],
+						"inside": [
+							"e[d]ucation",
+							"indivi[d]ual",
+							"indivi[d]uals"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "dg",
+					"percentage": 3.0878,
+					"topWord": "knowle[dg]e",
+					"words": {
+						"start": [],
+						"inside": [
+							"bu[dg]et",
+							"ju[dg]es",
+							"ju[dg]ment"
+						],
+						"end": [
+							"knowle[dg]e",
+							"ju[dg]e",
+							"bri[dg]e"
+						]
+					}
+				},
+				{
+					"spelling": "gi",
+					"percentage": 2.0644,
+					"topWord": "re[gi]on",
+					"words": {
+						"start": [],
+						"inside": [
+							"re[gi]on",
+							"reli[gi]ous",
+							"reli[gi]on"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "gg",
+					"percentage": 0.9828,
+					"topWord": "su[gg]est",
+					"words": {
+						"start": [],
+						"inside": [
+							"su[gg]est",
+							"su[gg]ested",
+							"su[gg]ests"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "di",
+					"percentage": 0.4142,
+					"topWord": "sol[di]ers",
+					"words": {
+						"start": [],
+						"inside": [
+							"sol[di]ers",
+							"sol[di]er"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "dj",
+					"percentage": 0.273,
+					"topWord": "a[dj]acent",
+					"words": {
+						"start": [],
+						"inside": [
+							"a[dj]acent",
+							"a[dj]usted",
+							"a[dj]ust"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"AU": {
+			"spellings": [
+				{
+					"spelling": "ou",
+					"percentage": 65.2257,
+					"topWord": "ab[ou]t",
+					"words": {
+						"start": [
+							"[ou]t",
+							"[ou]r",
+							"[ou]tside"
+						],
+						"inside": [
+							"ab[ou]t",
+							"ar[ou]nd",
+							"h[ou]se"
+						],
+						"end": [
+							"th[ou]"
+						]
+					}
+				},
+				{
+					"spelling": "ow",
+					"percentage": 32.611,
+					"topWord": "h[ow]",
+					"words": {
+						"start": [
+							"[ow]l"
+						],
+						"inside": [
+							"d[ow]n",
+							"h[ow]ever",
+							"p[ow]er"
+						],
+						"end": [
+							"h[ow]",
+							"n[ow]",
+							"all[ow]"
+						]
+					}
+				},
+				{
+					"spelling": "hou",
+					"percentage": 2.1213,
+					"topWord": "[hou]rs",
+					"words": {
+						"start": [
+							"[hou]rs",
+							"[hou]r"
+						],
+						"inside": [],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ough",
+					"percentage": 0.0419,
+					"topWord": "dr[ough]t",
+					"words": {
+						"start": [],
+						"inside": [
+							"dr[ough]t"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"CH": {
+			"spellings": [
+				{
+					"spelling": "ch",
+					"percentage": 71.0815,
+					"topWord": "whi[ch]",
+					"words": {
+						"start": [
+							"[ch]ange",
+							"[ch]ildren",
+							"[ch]eck"
+						],
+						"inside": [
+							"tea[ch]er",
+							"ex[ch]ange",
+							"rea[ch]ed"
+						],
+						"end": [
+							"whi[ch]",
+							"mu[ch]",
+							"su[ch]"
+						]
+					}
+				},
+				{
+					"spelling": "t",
+					"percentage": 18.2263,
+					"topWord": "ac[t]ually",
+					"words": {
+						"start": [],
+						"inside": [
+							"ac[t]ually",
+							"fu[t]ure",
+							"pic[t]ure"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "tch",
+					"percentage": 6.812,
+					"topWord": "wa[tch]",
+					"words": {
+						"start": [],
+						"inside": [
+							"wa[tch]ing",
+							"wa[tch]ed",
+							"ki[tch]en"
+						],
+						"end": [
+							"wa[tch]",
+							"ma[tch]",
+							"ca[tch]"
+						]
+					}
+				},
+				{
+					"spelling": "ti",
+					"percentage": 3.5278,
+					"topWord": "ques[ti]on",
+					"words": {
+						"start": [],
+						"inside": [
+							"ques[ti]on",
+							"ques[ti]ons",
+							"inten[ti]on"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ci",
+					"percentage": 0.2973,
+					"topWord": "an[ci]ent",
+					"words": {
+						"start": [],
+						"inside": [
+							"an[ci]ent"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "cz",
+					"percentage": 0.0553,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"UX": {
+			"spellings": [
+				{
+					"spelling": "oo",
+					"percentage": 37.4379,
+					"topWord": "g[oo]d",
+					"words": {
+						"start": [],
+						"inside": [
+							"g[oo]d",
+							"l[oo]k",
+							"l[oo]king"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "oul",
+					"percentage": 33.8185,
+					"topWord": "w[oul]d",
+					"words": {
+						"start": [],
+						"inside": [
+							"w[oul]d",
+							"c[oul]d",
+							"sh[oul]d"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "u",
+					"percentage": 24.6997,
+					"topWord": "d[u]ring",
+					"words": {
+						"start": [],
+						"inside": [
+							"d[u]ring",
+							"s[u]re",
+							"p[u]t"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "o",
+					"percentage": 2.1765,
+					"topWord": "w[o]man",
+					"words": {
+						"start": [],
+						"inside": [
+							"w[o]man",
+							"w[o]lf",
+							"w[o]lves"
+						],
+						"end": []
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ou",
+					"percentage": 1.8674,
+					"topWord": "t[ou]r",
+					"words": {
+						"start": [],
+						"inside": [
+							"t[ou]r",
+							"t[ou]rnament",
+							"t[ou]rism"
+						],
+						"end": []
+					}
+				}
+			]
+		},
+		"TH": {
+			"spellings": [
+				{
+					"spelling": "th",
+					"percentage": 99.7797,
+					"topWord": "[th]ink",
+					"words": {
+						"start": [
+							"[th]ink",
+							"[th]rough",
+							"[th]ree"
+						],
+						"inside": [
+							"some[th]ing",
+							"wi[th]out",
+							"any[th]ing"
+						],
+						"end": [
+							"bo[th]",
+							"heal[th]",
+							"dea[th]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "tth",
+					"percentage": 0.2203,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"OI": {
+			"spellings": [
+				{
+					"spelling": "oi",
+					"percentage": 59.5557,
+					"topWord": "p[oi]nt",
+					"words": {
+						"start": [
+							"[oi]l",
+							"[oi]ls"
+						],
+						"inside": [
+							"p[oi]nt",
+							"p[oi]nts",
+							"ch[oi]ce"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "oy",
+					"percentage": 39.2448,
+					"topWord": "b[oy]",
+					"words": {
+						"start": [],
+						"inside": [
+							"b[oy]s",
+							"r[oy]al",
+							"empl[oy]ees"
+						],
+						"end": [
+							"b[oy]",
+							"enj[oy]",
+							"j[oy]"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ois",
+					"percentage": 0.9449,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				},
+				{
+					"spelling": "eu",
+					"percentage": 0.2546,
+					"topWord": null,
+					"words": {
+						"start": [],
+						"inside": [],
+						"end": []
+					}
+				}
+			]
+		},
+		"ZH": {
+			"spellings": [
+				{
+					"spelling": "si",
+					"percentage": 59.7028,
+					"topWord": "deci[si]on",
+					"words": {
+						"start": [],
+						"inside": [
+							"deci[si]on",
+							"ver[si]on",
+							"divi[si]on"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "s",
+					"percentage": 35.2095,
+					"topWord": "u[s]ually",
+					"words": {
+						"start": [],
+						"inside": [
+							"u[s]ually",
+							"mea[s]ures",
+							"mea[s]ure"
+						],
+						"end": []
+					}
+				},
+				{
+					"spelling": "g",
+					"percentage": 4.0347,
+					"topWord": "re[g]ime",
+					"words": {
+						"start": [
+							"[g]enre"
+						],
+						"inside": [
+							"re[g]ime"
+						],
+						"end": [
+							"gara[g]e",
+							"massa[g]e"
+						]
+					}
+				}
+			],
+			"other": [
+				{
+					"spelling": "ti",
+					"percentage": 1.053,
+					"topWord": "equa[ti]on",
+					"words": {
+						"start": [],
+						"inside": [
+							"equa[ti]on",
+							"equa[ti]ons"
+						],
+						"end": []
+					}
+				}
+			]
+		}
+	}
+}

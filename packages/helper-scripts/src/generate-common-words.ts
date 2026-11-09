@@ -19,67 +19,13 @@ import {
 } from "@phonaria/phonetics-data";
 import { EnglishCuratedTop1k } from "@phonaria/phonetics-data/data/en/curated-1k";
 import { EnglishWordAudio } from "@phonaria/phonetics-data/data/en/word-audio";
-import { EditorialFlags } from "./utils/editorial-flags";
 import { ensureDirectoryForFile } from "./utils/fs";
+import { UnlistedWords } from "./utils/unlisted-words";
 
 const LIMIT = 6;
 const outputPath = path.resolve(__dirname, "../../phonetics-data/data/en/common-words.json");
 
 type Position = "start" | "inside" | "end";
-
-/** The top-1k list is lowercase, so it can't show words always written with a capital. */
-const CAPITALIZED = [
-	"america",
-	"american",
-	"april",
-	"august",
-	"australia",
-	"british",
-	"china",
-	"december",
-	"england",
-	"english",
-	"europe",
-	"european",
-	"february",
-	"french",
-	"god",
-	"india",
-	"january",
-	"july",
-	"june",
-	"london",
-	"november",
-	"october",
-	"september",
-	"washington",
-	"york",
-];
-
-const ABBREVIATIONS_AND_INFORMAL = [
-	"al",
-	"co",
-	"de",
-	"dr",
-	"etc",
-	"gonna",
-	"la",
-	"lol",
-	"mr",
-	"non",
-	"ok",
-	"re",
-	"st",
-	"tv",
-	"uk",
-	"wanna",
-];
-
-const UNLISTED = new Set([
-	...Object.values(EditorialFlags).flatMap((words) => [...words]),
-	...CAPITALIZED,
-	...ABBREVIATIONS_AND_INFORMAL,
-]);
 
 /** Only for words recorded more than once: "use" plays the verb, Y U1 Z. */
 function playedPronunciation(word: string): string | undefined {
@@ -104,7 +50,7 @@ function isListedWord(word: string, sounds: readonly string[]): boolean {
 	return (
 		isPlainWord(word) &&
 		hasStartAndEnd(sounds) &&
-		!UNLISTED.has(word) &&
+		!UnlistedWords.has(word) &&
 		playsListedPronunciation(word, sounds)
 	);
 }

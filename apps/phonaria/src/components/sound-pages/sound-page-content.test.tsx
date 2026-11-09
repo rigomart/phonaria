@@ -60,6 +60,18 @@ describe("the sound page", () => {
 		expect(html).toContain(">Can you hear it?<");
 	});
 
+	it("ranks the spellings by how much of the sound they spell, rarer ones apart", () => {
+		const html = page("F");
+		const list = html.slice(html.indexOf('aria-label="Spellings, most common first"'));
+		const order = ["f", "ff", "ph"].map((spelling) =>
+			list.indexOf(`font-semibold text-foreground">${spelling}</span>`),
+		);
+		expect(order.every((at, i) => at > 0 && (i === 0 || at > order[i - 1]))).toBe(true);
+		expect(list).toMatch(/>f<\/span><span [^>]*>\d\d\.\d%<\/span>/);
+		expect(html).toContain(">Rarer spellings, under 2% each<");
+		expect(html).toMatch(/>gh<\/span>.*enou<mark [^>]*>gh<\/mark>/);
+	});
+
 	it("says which other sounds the same letters spell, and links the sounds near it", () => {
 		const html = page("TH");
 		expect(html).toContain(">The same letters also spell<");

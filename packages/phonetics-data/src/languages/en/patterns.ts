@@ -5,7 +5,8 @@ import { deepFreeze } from "../../shared/readonly";
 import type { EnglishPhonemeSymbolId } from "../inventories";
 import type { SpellingPattern } from "../types";
 
-//? Future:examples should be per pattern, also add fields for position (coda, onset, etc.)
+// The sound details panel shows these. The sound pages rank every spelling by how much
+// of the sound it spells, with examples per spelling and position: see data/en/spelling-shares.
 
 export const EnglishPhonemeSpellingPatterns = deepFreeze({
 	// Plosives
