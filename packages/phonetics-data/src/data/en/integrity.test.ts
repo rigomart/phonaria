@@ -19,6 +19,8 @@ import { EnglishCuratedTop10k } from "./curated-10k";
 import { EnglishPhonemeFrequencyData } from "./phoneme-frequency";
 import { EnglishSpellingShares, OTHER_SPELLINGS_BELOW_PERCENTAGE } from "./spelling-shares";
 import { EnglishWordAudio } from "./word-audio";
+import { EnglishWordPageList } from "./word-page-list";
+import { EnglishWordPages, getWordPage } from "./word-pages";
 
 const dictionary: CmudictPayload = dictionaryJson;
 const entries = Object.entries(dictionary.data);
@@ -450,5 +452,61 @@ describe("spelling shares", () => {
 			}
 		}
 		expect(errors).toEqual([]);
+	});
+});
+
+describe("word pages", () => {
+	const top10k = EnglishCuratedTop10k.words as Record<string, readonly string[]>;
+
+	it("lists 100 to 150 distinct lowercase words", () => {
+		const words = EnglishWordPages.map(({ word }) => word);
+		expect(words.length).toBeGreaterThanOrEqual(100);
+		expect(words.length).toBeLessThanOrEqual(150);
+		expect(new Set(words).size).toBe(words.length);
+		for (const word of words) expect(word).toMatch(/^[a-z]{3,}$/);
+		expect(getWordPage("enough")?.word).toBe("enough");
+		expect(getWordPage("will")).toBeUndefined();
+		expect(EnglishWordPageList).toEqual(words);
+	});
+
+	it("gives each word its first top-10k pronunciation (an /ɔ/ form first), split over its letters", () => {
+		const errors: string[] = [];
+		for (const { word, pronunciation, segments } of EnglishWordPages) {
+			const variants = top10k[word];
+			if (!variants || preferOForms(word, variants)[0] !== pronunciation)
+				errors.push(`${word}: not its first pronunciation as the app orders them`);
+			if (segments.map(({ letters }) => letters).join("") !== word)
+				errors.push(`${word}: letters don't spell the word`);
+			if (segments.flatMap(({ sounds }) => sounds).join(" ") !== pronunciation)
+				errors.push(`${word}: sounds don't make the pronunciation`);
+		}
+		expect(errors).toEqual([]);
+	});
+
+	it("has a recording of that pronunciation for every word", () => {
+		const recorded = new Set(EnglishWordAudio.words);
+		for (const { word, pronunciation } of EnglishWordPages) {
+			expect(recorded.has(word), word).toBe(true);
+			const main = EnglishWordAudio.forms?.[word]?.find(({ n }) => n === undefined);
+			if (main) {
+				expect(toBasePhonemeIds(main.pronunciation), word).toEqual(toBasePhonemeIds(pronunciation));
+			}
+		}
+	});
+
+	it("names at least one rare spelling per word, each a spelling of one of its sounds", () => {
+		for (const { word, segments, rareSpellings } of EnglishWordPages) {
+			expect(rareSpellings.length, word).toBeGreaterThan(0);
+			for (const { spelling, phonemeId, percentage } of rareSpellings) {
+				expect(percentage, word).toBeLessThan(OTHER_SPELLINGS_BELOW_PERCENTAGE);
+				const segment = segments.find(
+					(s) =>
+						(s.spelling ?? s.letters) === spelling &&
+						s.sounds.length === 1 &&
+						toBasePhonemeIds(s.sounds[0])[0] === phonemeId,
+				);
+				expect(segment, `${word}: ${spelling} for ${phonemeId}`).toBeDefined();
+			}
+		}
 	});
 });
