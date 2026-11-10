@@ -27,6 +27,7 @@ import { Route as MinimalPairsContrastRouteImport } from './routes/minimal-pairs
 import { Route as PracticeIndexRouteImport } from './routes/practice.index'
 import { Route as PracticeTopicRouteImport } from './routes/practice.$topic'
 import { Route as PracticeMinimalPairsRouteImport } from './routes/practice_.minimal-pairs'
+import { Route as PrototypeMouthRouteImport } from './routes/prototype.mouth'
 import { Route as SoundsIndexRouteImport } from './routes/sounds.index'
 import { Route as SoundsSlugRouteImport } from './routes/sounds.$slug'
 import { Route as WordsWordRouteImport } from './routes/words.$word'
@@ -123,6 +124,11 @@ const PracticeMinimalPairsRoute = PracticeMinimalPairsRouteImport.update({
   path: '/practice/minimal-pairs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrototypeMouthRoute = PrototypeMouthRouteImport.update({
+  id: '/prototype/mouth',
+  path: '/prototype/mouth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SoundsIndexRoute = SoundsIndexRouteImport.update({
   id: '/sounds/',
   path: '/sounds/',
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
+  '/prototype/mouth': typeof PrototypeMouthRoute
   '/sounds/$slug': typeof SoundsSlugRoute
   '/words/$word': typeof WordsWordRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice/minimal-pairs': typeof PracticeMinimalPairsRoute
+  '/prototype/mouth': typeof PrototypeMouthRoute
   '/sounds/$slug': typeof SoundsSlugRoute
   '/words/$word': typeof WordsWordRoute
   '/ipa-chart': typeof IpaChartIndexRoute
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/minimal-pairs/$contrast': typeof MinimalPairsContrastRoute
   '/practice/$topic': typeof PracticeTopicRoute
   '/practice_/minimal-pairs': typeof PracticeMinimalPairsRoute
+  '/prototype/mouth': typeof PrototypeMouthRoute
   '/sounds/$slug': typeof SoundsSlugRoute
   '/words/$word': typeof WordsWordRoute
   '/ipa-chart/': typeof IpaChartIndexRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice/minimal-pairs'
+    | '/prototype/mouth'
     | '/sounds/$slug'
     | '/words/$word'
     | '/ipa-chart/'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice/minimal-pairs'
+    | '/prototype/mouth'
     | '/sounds/$slug'
     | '/words/$word'
     | '/ipa-chart'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/minimal-pairs/$contrast'
     | '/practice/$topic'
     | '/practice_/minimal-pairs'
+    | '/prototype/mouth'
     | '/sounds/$slug'
     | '/words/$word'
     | '/ipa-chart/'
@@ -316,6 +328,7 @@ export interface RootRouteChildren {
   IpaChartVowelsRoute: typeof IpaChartVowelsRoute
   MinimalPairsContrastRoute: typeof MinimalPairsContrastRoute
   PracticeMinimalPairsRoute: typeof PracticeMinimalPairsRoute
+  PrototypeMouthRoute: typeof PrototypeMouthRoute
   SoundsSlugRoute: typeof SoundsSlugRoute
   WordsWordRoute: typeof WordsWordRoute
   IpaChartIndexRoute: typeof IpaChartIndexRoute
@@ -453,6 +466,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticeMinimalPairsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/prototype/mouth': {
+      id: '/prototype/mouth'
+      path: '/prototype/mouth'
+      fullPath: '/prototype/mouth'
+      preLoaderRoute: typeof PrototypeMouthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sounds/': {
       id: '/sounds/'
       path: '/sounds'
@@ -520,6 +540,7 @@ const rootRouteChildren: RootRouteChildren = {
   IpaChartVowelsRoute: IpaChartVowelsRoute,
   MinimalPairsContrastRoute: MinimalPairsContrastRoute,
   PracticeMinimalPairsRoute: PracticeMinimalPairsRoute,
+  PrototypeMouthRoute: PrototypeMouthRoute,
   SoundsSlugRoute: SoundsSlugRoute,
   WordsWordRoute: WordsWordRoute,
   IpaChartIndexRoute: IpaChartIndexRoute,

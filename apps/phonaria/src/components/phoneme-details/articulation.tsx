@@ -9,9 +9,12 @@ import {
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
 import { ToggleGroup, ToggleGroupItem } from "@phonaria/ui/components/toggle-group";
+import { useSearch } from "@tanstack/react-router";
 import { ChevronDown, MoveRight } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { Image } from "@/components/image";
+import { MouthDiagram } from "@/components/mouth-diagram/mouth-diagram";
+import { getMouthSound } from "@/components/mouth-diagram/sounds";
 import { getPublicAssetBaseUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { type VowelPosition, VowelPositionChart } from "./vowel-position-chart";
@@ -33,6 +36,11 @@ export function Articulation({
 		>
 	)[phonemeId];
 	const label = formatPhonemeLabel(targetAccent, phonemeId);
+
+	// Prototype: `?diagram=animated` swaps in the animated mouth for the sounds that have one.
+	const { diagram } = useSearch({ strict: false }) as { diagram?: string };
+	const animated = diagram === "animated" ? getMouthSound(phonemeId) : undefined;
+	if (animated) return <MouthDiagram sound={animated} />;
 
 	if (articulation.category === "consonant") {
 		if (articulation.features.manner === "affricate") {
