@@ -91,7 +91,6 @@ export function buildTrack(points: Point[]): Track {
 	return { points, lengths, total: lengths[lengths.length - 1] as number };
 }
 
-/** Position and unit normal at `distance` along the track. */
 export function trackAt(track: Track, distance: number): { point: Point; normal: Point } {
 	const { points, lengths } = track;
 	const d = Math.min(track.total, Math.max(0, distance));
@@ -108,7 +107,6 @@ export function trackAt(track: Track, distance: number): { point: Point; normal:
 	};
 }
 
-/** Distance along the track of the sampled point nearest to `target`. */
 export function nearestDistance(track: Track, target: Point): number {
 	let best = 0;
 	let bestGap = Number.POSITIVE_INFINITY;
@@ -121,8 +119,6 @@ export function nearestDistance(track: Track, target: Point): number {
 	});
 	return track.lengths[best] as number;
 }
-
-// --- Hand-drawn outlines: a start point followed by cubic Béziers ---
 
 /** A closed outline as its start point, then two handles and an end point per curve. */
 export type Outline = readonly Point[];

@@ -57,7 +57,6 @@
 	--frequency-high: oklch(0.32 0.035 257);
 	/* Backdrop for the light-line articulation diagrams. */
 	--diagram: oklch(0.45 0.02 257);
-	/* The animated mouth diagram: flesh, tongue, teeth, moving air and the buzz of the voice. */
 	--diagram-tissue: oklch(0.77 0.018 257);
 	--diagram-tongue: oklch(0.74 0.1 15);
 	--diagram-tooth: oklch(0.97 0.012 90);

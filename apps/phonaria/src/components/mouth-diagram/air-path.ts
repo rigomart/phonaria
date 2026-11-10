@@ -35,7 +35,6 @@ export function sealDistance(state: AirState): number | null {
 	return null;
 }
 
-/** How long the whole path is, from the lungs to open air. */
 export const pathLength = (state: AirState) =>
 	FORK + (state.nasal ? NASAL.total : state.route.track.total);
 
@@ -58,7 +57,6 @@ export function airAt(
 	}
 	const local = distance - FORK;
 	if (nasal) {
-		// The nose is roomy: the stream spreads out inside it and again as it leaves.
 		const inside = 8 + 8 * Math.sin(Math.min(1, local / (NASAL.total - 110)) * Math.PI);
 		return {
 			...trackAt(NASAL, local),

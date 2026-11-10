@@ -54,8 +54,6 @@ export type Pose = {
 	lipTuck: number;
 };
 
-// --- Fixed anatomy ---
-
 /** Skull, nose and the back wall of the throat. The space under its arch is the inside of the nose. */
 export const HEAD_PATH =
 	"M7.26672 114.988C47.6144 71.1718 72.419 51.5391 98.5439 1H499.544V499H474.544L464.935 321.617C453.813 248.34 442.458 154.098 399.923 84.1289C375.458 74.1953 368.411 69.1836 358.38 47.3203C333.704 15.039 310.689 11.7695 249.681 20.0156C135.083 6.15231 93.9425 51.2031 75.169 75.8438L32.3917 133.598C-3.89343 138.699 8.0714 124.258 7.26672 114.988Z";
@@ -89,8 +87,6 @@ export const FOLDS_MIDDLE: Point = [
 	(FOLDS.front[1] + FOLDS.back[1]) / 2,
 ];
 
-// --- The jaw: drawn open by JAW_DRAWN degrees, turned about the hinge ---
-
 /** Lower lip, chin, floor of the mouth and the gum the bottom teeth sit in. Points 14 to 19 are the lip. */
 const JAW: Outline = parseOutline(
 	"M335.5 411.206C365 438.104 408 370.932 372.5 361.5C269 334 164.5 361.5 164.5 361.5C138.5 354.5 170 287.5 139 248.5C139 248.5 141 280 132 280C123 280 132.5 271.5 121.5 248.5C110.5 225.5 89.59 248.008 104.5 268.5C110.501 280 108.043 302.418 104.5 321.5C100.957 340.582 69.9997 375.5 121.5 410C190.519 418.35 306 384.309 335.5 411.206Z",
@@ -110,8 +106,6 @@ export const jawTransform = (jaw: number) =>
 
 /** Moves a point drawn in the illustration to where the jaw carries it. */
 const withJaw = (point: Point, jaw: number) => rotateAround(point, JAW_PIVOT, jaw - JAW_DRAWN);
-
-// --- Lips ---
 
 type Offsets = Record<number, Point>;
 
@@ -184,8 +178,6 @@ const jawPoints = (pose: Pose) =>
 		pose.lipTuck,
 	);
 
-// --- Soft palate ---
-
 /** As drawn: hanging, with the way into the nose open. */
 const VELUM_LOWERED: Outline = parseOutline(
 	"M377.5 151.5C407.5 186 412.5 228.5 377.5 175.5C369.906 162.016 359.102 153.612 336 145.5C308.079 135.696 302 134.242 289 135.5C278.666 136.5 274.003 119.827 290 119.5C314.5 119 331.894 119.418 377.5 151.5Z",
@@ -196,8 +188,6 @@ const VELUM_RAISED: Outline = parseOutline(
 );
 
 const velumPoints = (pose: Pose) => lerpPoints(VELUM_RAISED, VELUM_LOWERED, pose.velum);
-
-// --- Tongue: a smooth curve through the pose's points and five anchors ---
 
 const TONGUE_ROOT_LOW: Point = [373.2, 362.5];
 const TONGUE_BASE_BACK: Point = [267.3, 385.8];
@@ -220,8 +210,6 @@ function tongueOutline(pose: Pose): Point[] {
 		TONGUE_BASE_BACK,
 	];
 }
-
-// --- Shapes for a pose ---
 
 export type Shapes = {
 	/** Transform that turns the jaw group about its hinge. */
@@ -254,8 +242,6 @@ export function lerpPose(a: Pose, b: Pose, t: number): Pose {
 	};
 }
 
-// --- Where the air goes ---
-
 /** From the lungs up through the voice box to the back of the mouth. */
 export const TRUNK: Track = buildTrack(
 	sampleSpline([
@@ -273,7 +259,6 @@ export const TRUNK: Track = buildTrack(
 	]),
 );
 
-/** How far up the trunk the vocal folds sit. */
 export const TRUNK_FOLDS_DISTANCE = 50;
 
 /** Up behind the soft palate, through the nose and out of the nostril. */
@@ -307,6 +292,8 @@ const ROOF_ANCHORS: Point[] = [
 	[140, 182],
 	[130.6, 203.7],
 ];
+
+const SAMPLES_PER_CONTROL = 5;
 
 /** How far onto the tongue the air's line dips when it goes round the sides. */
 const SIDE_DEPTH = 16;
@@ -350,11 +337,9 @@ export function oralRouteFor(pose: Pose, sides = false): OralRoute {
 				: best,
 		);
 
-	// Under the soft palate, then along the roof of the mouth.
 	for (const anchor of [velum[3] as Point, velum[6] as Point, ...ROOF_ANCHORS]) {
 		between(anchor, nearest(anchor, surface));
 	}
-	// The lowest point of the top lip and the highest of the bottom one.
 	const lipTop = cubicAt(
 		[upperLip[18], upperLip[19], upperLip[20], upperLip[21]] as [Point, Point, Point, Point],
 		0.6,
@@ -377,8 +362,7 @@ export function oralRouteFor(pose: Pose, sides = false): OralRoute {
 		[lips.point[0] - 40, lips.point[1] + 4],
 		[-8, lips.point[1] + 12],
 	];
-	const track = buildTrack(sampleSpline(controls, 5));
-	// Each control point after the start sits 5 samples further along.
+	const track = buildTrack(sampleSpline(controls, SAMPLES_PER_CONTROL));
 	let narrowestIndex = 0;
 	stations.forEach((station, index) => {
 		if (station.gap < (stations[narrowestIndex] as { gap: number }).gap) narrowestIndex = index;
@@ -387,11 +371,11 @@ export function oralRouteFor(pose: Pose, sides = false): OralRoute {
 	return {
 		track,
 		narrowest: {
-			distance: track.lengths[(narrowestIndex + 1) * 5] as number,
+			distance: track.lengths[(narrowestIndex + 1) * SAMPLES_PER_CONTROL] as number,
 			gap: narrowest.gap,
 			point: narrowest.point,
 		},
 		squeeze: sides ? SIDE_DEPTH : narrowest.gap,
-		lipsDistance: track.lengths[stations.length * 5] as number,
+		lipsDistance: track.lengths[stations.length * SAMPLES_PER_CONTROL] as number,
 	};
 }

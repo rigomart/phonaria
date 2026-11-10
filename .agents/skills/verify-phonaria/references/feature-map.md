@@ -109,7 +109,7 @@ Each observation saves `<checkpoint>-<unique-id>.png`, `<checkpoint>-<unique-id>
 This journey covers desktop Chromium, client common-word lookup, shared-query reload, details content (including the sound tile's label), and clearing. It does not test clipboard contents, alternate pronunciation selection, audio playback, media fidelity, server dictionary lookup, spelling, definitions, mobile layout, or performance. Existing CI browser checks remain in `packages/browser-contract`.
 
 - An occupied local port: stop only your own earlier server or initialize with another origin such as `http://127.0.0.1:3001`. Do not reuse an unknown checkout's server.
-- A missing /h/ diagram or failed asset request: inspect browser diagnostics and public asset settings. Do not copy placeholder `.env.example` values into local settings.
+- A missing /h/ diagram: the diagram is drawn by the app (`src/components/mouth-diagram`), so inspect browser diagnostics for a script error. A failed asset request: inspect public asset settings. Do not copy placeholder `.env.example` values into local settings.
 - A changed primary IPA: inspect curated word data and `src/core/ipa-map.ts` before changing expected literals. Do not derive the expected value using the same function that produced the UI.
 - A failed assertion: inspect its actual values and screenshot, preserve this run, and start a new run after a fix. Do not overwrite a failure with a later success claim.
 

@@ -1,4 +1,3 @@
-import { skipUnlessBucketAssets } from "../src/capabilities";
 import {
 	CONSONANT_BUTTON_NAME,
 	CONSONANT_COUNT_COPY,
@@ -32,16 +31,7 @@ test.describe("IPA charts", () => {
 		}).toPass({ timeout: 10_000 });
 	});
 
-	test("loads articulation media from the asset bucket", { tag: "@smoke" }, async ({ page }) => {
-		skipUnlessBucketAssets();
-
-		const diagramUrls: string[] = [];
-		page.on("response", (response) => {
-			if (response.url().includes("/diagrams/") && response.ok()) {
-				diagramUrls.push(response.url());
-			}
-		});
-
+	test("shows a consonant's mouth diagram", { tag: "@smoke" }, async ({ page }) => {
 		await page.goto("/ipa-chart/consonants");
 		const tile = page.getByRole("button", { name: CONSONANT_BUTTON_NAME });
 		await waitForHydration(tile);
@@ -51,7 +41,6 @@ test.describe("IPA charts", () => {
 		await expect(
 			page.getByRole("img", { name: "Voiceless bilabial plosive articulation" }),
 		).toBeVisible();
-		await expect.poll(() => diagramUrls.length).toBeGreaterThan(0);
 	});
 
 	test("returns not-found for unknown chart and articulation routes", async ({ page }) => {

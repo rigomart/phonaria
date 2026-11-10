@@ -35,7 +35,6 @@ export function timelineLength(steps: readonly Step[]): number {
 	return steps.reduce((sum, step) => sum + duration(step), 0);
 }
 
-/** The time at which `index` has finished moving and starts to hold. */
 export function holdStart(steps: readonly Step[], index: number): number {
 	let time = 0;
 	for (let i = 0; i < index; i++) time += duration(steps[i] as Step);

@@ -10,7 +10,6 @@ import {
 } from "./air-path";
 import { TRUNK_FOLDS_DISTANCE } from "./model";
 
-/** A puff of air: how far it has travelled from the lungs, and which way it went. */
 type Particle = {
 	distance: number;
 	/** -1 to 1: where across the air stream it rides. */
@@ -20,14 +19,11 @@ type Particle = {
 	pastFolds: boolean;
 	/** Buzzing folds let the air through in bursts; the air between bursts is drawn faint. */
 	faint: boolean;
-	/** Pressed against a seal this frame. */
 	held: boolean;
 };
 
-/** How far apart moving puffs are, and how tightly they pack behind a seal. */
 const FLOW_SPACING = 5;
 const QUEUE_SPACING = 2.6;
-/** Bursts of air a second while the folds buzz. */
 const BUZZ_HZ = 8;
 const BUZZ_SPACING = AIR_SPEED / BUZZ_HZ;
 
@@ -86,7 +82,6 @@ export class AirDots {
 			particle.held = false;
 		}
 
-		// Air that meets a seal queues up behind it, oldest first.
 		const seal = sealDistance(state);
 		if (seal !== null) {
 			const atFolds = state.voice === "shut";
@@ -121,8 +116,6 @@ export class AirDots {
 		let bright = "";
 		let faint = "";
 		for (const particle of this.particles) {
-			// Air under pressure is never still: held puffs jostle, and a ripple runs
-			// through the crowd toward the seal.
 			const seedPhase = particle.lane * 40;
 			const push = particle.held
 				? -2.5 +
@@ -135,8 +128,7 @@ export class AirDots {
 				Boolean(particle.nasal),
 				state,
 			);
-			// Rough air: each puff shakes to its own fast rhythm. No random numbers, so a
-			// still frame comes out the same on the server and in the browser.
+			// No random numbers: a still frame must match on the server and in the browser.
 			const shake = rough * 5 * Math.sin(particle.lane * 127.1 + state.clock * 311.7);
 			const offset = (particle.lane + sway) * (width + shake);
 			const d = `M${at([point[0] + normal[0] * offset, point[1] + normal[1] * offset])}h0`;
@@ -169,7 +161,6 @@ function seed(state: AirState, packed: boolean): Particle[] {
 			held: false,
 			faint: state.voice === "on" && pastFolds && distance % BUZZ_SPACING > BUZZ_SPACING * 0.45,
 		});
-		// Held air is packed tight near the seal and thins out further back.
 		distance -= packed && seal !== null && end - distance < 60 ? QUEUE_SPACING : FLOW_SPACING;
 		index++;
 	}

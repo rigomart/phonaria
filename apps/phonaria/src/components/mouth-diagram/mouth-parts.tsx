@@ -180,7 +180,6 @@ function Part({ title, note, children }: { title: string; note: string; children
 				aria-label={title}
 				className="aspect-square w-full rounded-2xl bg-diagram"
 			>
-				{/* The whole mouth as drawn, faint, for position. */}
 				<g opacity={0.16} className="fill-diagram-tissue">
 					{[
 						HEAD_PATH,

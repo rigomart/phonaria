@@ -1,9 +1,11 @@
+import type { TargetAccent } from "@phonaria/phonetics-data";
 import type { Pose, TonguePoints } from "./model";
 
 /** What the vocal folds are doing: apart, buzzing, or pressed shut. */
 export type Voice = "off" | "on" | "shut";
 
 export type Step = {
+	/** What happens in this step, in plain words. */
 	caption: string;
 	pose: Pose;
 	/** Milliseconds to move into the pose, then to stay in it. */
@@ -190,15 +192,6 @@ const pose = (tongue: TonguePoints, rest: Partial<Omit<Pose, "tongue">> = {}): P
 /** The relaxed, slightly open mouth every sound starts from. */
 export const REST = pose(TONGUE.rest);
 
-const relaxed = (caption = "The mouth starts relaxed and slightly open."): Step => ({
-	caption,
-	pose: REST,
-	move: 450,
-	hold: 600,
-	voice: "off",
-	flow: false,
-});
-
 /**
  * A sound that can be held: the mouth stays in one position, and only the air
  * and the vocal folds move.
@@ -217,7 +210,7 @@ const held = (
 	steps: [{ ...step, move: 0, hold: 1000, key: true }],
 });
 
-/** A sound that stops the air and lets it go: seal, pressure, burst. */
+/** A sound that stops the air and lets it go: the seal with pressure building behind it, then the burst. */
 const stop = (
 	id: string,
 	ipa: string,
@@ -236,15 +229,13 @@ const stop = (
 	example,
 	focus,
 	steps: [
-		relaxed(),
-		{ caption: sealed, pose: seal, move: 320, hold: 500, voice: "off", flow: false, stop: true },
 		{
 			caption: voiced
-				? `Air builds up behind the ${behind} while the vocal folds buzz.`
-				: `Air builds up behind the ${behind}. The voice is off.`,
+				? `${sealed} Air builds up behind the ${behind} while the vocal folds buzz.`
+				: `${sealed} Air builds up behind the ${behind}, and the voice is off.`,
 			pose: seal,
-			move: 0,
-			hold: 1500,
+			move: 320,
+			hold: 1700,
 			voice: voiced ? "on" : "off",
 			flow: true,
 			stop: true,
@@ -268,7 +259,6 @@ const affricate = (id: string, ipa: string, example: string, voiced: boolean): M
 	example,
 	focus: ["ridge"],
 	steps: [
-		relaxed(),
 		{
 			caption: voiced
 				? "The tongue seals just behind the gum ridge. Air builds up while the vocal folds buzz."
@@ -498,10 +488,10 @@ export const MOUTH_SOUNDS: MouthSound[] = [
 				voice: "on",
 				flow: true,
 			},
-			relaxed("The mouth relaxes again."),
 		],
 	},
 ];
 
-export const getMouthSound = (id: string): MouthSound | undefined =>
-	MOUTH_SOUNDS.find((sound) => sound.id === id);
+/** The diagram for a sound of an accent, or undefined when it has none: only American English consonants do. */
+export const getMouthSound = (accent: TargetAccent, phonemeId: string): MouthSound | undefined =>
+	accent === "en-us" ? MOUTH_SOUNDS.find((sound) => sound.id === phonemeId) : undefined;

@@ -24,7 +24,7 @@ import {
 	UPPER_TOOTH_PATH,
 	VIEW_BOX,
 } from "./model";
-import type { LabelId, MouthSound, Step } from "./sounds";
+import type { LabelId, MouthSound } from "./sounds";
 
 /**
  * How long a diagram plays by itself before it comes to rest. It sits beside
@@ -43,10 +43,13 @@ const AUTOPLAY_MS = 8000;
  */
 export function MouthDiagram({
 	sound,
+	title,
 	large = false,
 	className,
 }: {
 	sound: MouthSound;
+	/** What the drawing is called for people who can't see it. */
+	title?: string;
 	/** The lightbox's copy: it keeps playing, names every part, and can't be enlarged again. */
 	large?: boolean;
 	className?: string;
@@ -76,7 +79,6 @@ export function MouthDiagram({
 		setStepIndex(frame.stepIndex);
 	};
 
-	// Start on the main position, then play for a while unless motion is unwelcome.
 	useEffect(() => {
 		scene.current?.paint(still);
 		setStepIndex(still.stepIndex);
@@ -107,7 +109,6 @@ export function MouthDiagram({
 			scene.current?.paint(frame);
 			setStepIndex(frame.stepIndex);
 			playLeft.current -= elapsed;
-			// Time is up: stop the next time the main position is being held.
 			if (playLeft.current <= 0 && frame.stepIndex === keyIndex && frame.holding) {
 				setPlaying(false);
 				return;
@@ -118,10 +119,8 @@ export function MouthDiagram({
 		return () => cancelAnimationFrame(request);
 	}, [playing, visible, enlarged, engine, keyIndex]);
 
-	const step = steps[stepIndex] as Step;
 	const labels = allLabels ? ALL_LABELS : sound.focus;
 	const togglePlaying = () => {
-		// Pressing play is asking to watch: keep going until paused.
 		playLeft.current = Number.POSITIVE_INFINITY;
 		setPlaying(!playing);
 	};
@@ -131,14 +130,14 @@ export function MouthDiagram({
 	};
 
 	return (
-		<figure className={cn("flex flex-col gap-3", className)}>
+		<div className={className}>
 			<div
 				ref={frameRef}
 				className="relative aspect-square w-full overflow-hidden rounded-2xl bg-diagram"
 			>
 				<Scene
 					ref={scene}
-					title={`Side view of the mouth making /${sound.ipa}/`}
+					title={title ?? `Side view of the mouth making /${sound.ipa}/`}
 					initial={still}
 					labels={labels}
 				/>
@@ -152,7 +151,6 @@ export function MouthDiagram({
 					</span>
 				))}
 
-				{/* Below the chin, where the drawing is empty. */}
 				<div className="absolute bottom-2 left-2 flex items-center gap-0.5">
 					<OverlayButton label={playing ? "Pause" : "Play"} onClick={togglePlaying}>
 						{playing ? <Pause /> : <Play />}
@@ -160,20 +158,17 @@ export function MouthDiagram({
 					{steps.length > 1 ? (
 						<div role="group" aria-label="Steps" className="flex items-center">
 							{steps.map((_, index) => (
-								<OverlayButton
+								<StepBar
 									key={index}
 									label={`Step ${index + 1} of ${steps.length}`}
 									current={index === stepIndex}
 									onClick={() => goTo(index)}
-								>
-									{index + 1}
-								</OverlayButton>
+								/>
 							))}
 						</div>
 					) : null}
 				</div>
 
-				{/* Over the skull, likewise empty. */}
 				<div className="absolute top-2 right-2 flex items-center gap-1">
 					<OverlayButton
 						label={allLabels ? "Hide part names" : "Name every part"}
@@ -194,9 +189,6 @@ export function MouthDiagram({
 					)}
 				</div>
 			</div>
-			<figcaption className={cn("text-foreground", large ? "text-base" : "min-h-10 text-sm")}>
-				{step.caption}
-			</figcaption>
 
 			{large ? null : (
 				<Dialog open={enlarged} onOpenChange={setEnlarged}>
@@ -207,11 +199,11 @@ export function MouthDiagram({
 								as in {sound.example}
 							</span>
 						</DialogTitle>
-						<MouthDiagram sound={sound} large />
+						<MouthDiagram sound={sound} title={title} large />
 					</DialogContent>
 				</Dialog>
 			)}
-		</figure>
+		</div>
 	);
 }
 
@@ -236,24 +228,47 @@ export function MouthStill({ sound, className }: { sound: MouthSound; className?
 
 const NO_LABELS: readonly LabelId[] = [];
 
-/** A small round control laid over the drawing. It inverts when hovered, pressed or current. */
+/** One step of a moving sound, as a short bar: bright for the step being shown. */
+function StepBar({
+	label,
+	current,
+	...props
+}: ComponentProps<"button"> & { label: string; current: boolean }) {
+	return (
+		<button
+			type="button"
+			aria-label={label}
+			title={label}
+			aria-current={current ? "step" : undefined}
+			className="group flex h-7 w-4 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-diagram-air"
+			{...props}
+		>
+			<span
+				className={cn(
+					"h-1 w-3 rounded-full transition-colors group-hover:bg-diagram-tooth motion-reduce:transition-none",
+					current ? "bg-diagram-tooth" : "bg-diagram-tissue",
+				)}
+			/>
+		</button>
+	);
+}
+
+/** A small round control laid over the drawing. It inverts when hovered or pressed. */
 function OverlayButton({
 	label,
 	pressed,
-	current,
 	className,
 	...props
-}: ComponentProps<"button"> & { label: string; pressed?: boolean; current?: boolean }) {
+}: ComponentProps<"button"> & { label: string; pressed?: boolean }) {
 	return (
 		<button
 			type="button"
 			aria-label={label}
 			title={label}
 			aria-pressed={pressed}
-			aria-current={current ? "step" : undefined}
 			className={cn(
 				"flex size-7 cursor-pointer items-center justify-center rounded-full text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-diagram-air motion-reduce:transition-none [&_svg]:size-3.5",
-				pressed || current
+				pressed
 					? "bg-diagram-tooth text-diagram"
 					: "bg-diagram text-diagram-tooth hover:bg-diagram-tooth hover:text-diagram",
 				className,
@@ -262,8 +277,6 @@ function OverlayButton({
 		/>
 	);
 }
-
-// --- The drawing ---
 
 type SceneHandle = { paint: (frame: Frame) => void };
 
@@ -338,7 +351,6 @@ const Scene = memo(function Scene({
 	return (
 		<svg viewBox={VIEW_BOX} role="img" aria-label={title} className="size-full">
 			<defs>
-				{/* The tongue fades into the flesh under it instead of ending in a hard edge. */}
 				<linearGradient
 					id={gradientId}
 					gradientUnits="userSpaceOnUse"
@@ -389,7 +401,6 @@ const Scene = memo(function Scene({
 				<path d={LOWER_TOOTH_PATH} className="fill-diagram-tooth" />
 			</g>
 
-			{/* Voice: a glow around the voice box and ripples on the neck while the folds buzz. */}
 			<circle
 				ref={buzz}
 				cx={FOLDS_MIDDLE[0]}
@@ -418,7 +429,6 @@ const Scene = memo(function Scene({
 				fill="none"
 			/>
 
-			{/* Air fades away as it leaves the head, toward the left edge. */}
 			<g
 				ref={air}
 				mask={`url(#${fadeId})`}
@@ -457,8 +467,6 @@ const Scene = memo(function Scene({
 const voiceColor = (frame: Frame, quiet: string) =>
 	frame.voice === "off" ? quiet : "var(--diagram-voice)";
 
-// --- Labels ---
-
 type LabelSpec = {
 	text: string;
 	/** Centre of the tag. */
@@ -468,13 +476,13 @@ type LabelSpec = {
 };
 
 const LABELS: Record<LabelId, LabelSpec> = {
-	ridge: { text: "gum ridge", at: [112, 62], target: [153, 173] },
-	roof: { text: "roof of the mouth", at: [240, 94], target: [250, 137] },
+	ridge: { text: "alveolar ridge", at: [112, 62], target: [153, 173] },
+	roof: { text: "hard palate", at: [240, 94], target: [250, 137] },
 	softPalate: { text: "soft palate", at: [388, 104], target: [345, 142] },
 	nose: { text: "nose", at: [222, 48] },
 	tongue: { text: "tongue", at: [285, 300] },
 	lips: { text: "lips", at: [40, 294], target: [102, 262] },
-	folds: { text: "vocal folds", at: [292, 434], target: [372, 474] },
+	folds: { text: "vocal cords", at: [292, 434], target: [372, 474] },
 };
 
 const ALL_LABELS = Object.keys(LABELS) as LabelId[];

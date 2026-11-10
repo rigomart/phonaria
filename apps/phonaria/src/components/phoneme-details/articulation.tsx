@@ -9,7 +9,6 @@ import {
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
 import { ToggleGroup, ToggleGroupItem } from "@phonaria/ui/components/toggle-group";
-import { useSearch } from "@tanstack/react-router";
 import { ChevronDown, MoveRight } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { Image } from "@/components/image";
@@ -21,7 +20,7 @@ import { type VowelPosition, VowelPositionChart } from "./vowel-position-chart";
 
 const BUCKET_URL = getPublicAssetBaseUrl();
 
-/** How the sound is made: a mouth diagram for consonants, a chart position for vowels. */
+/** How the sound is made: an animated mouth diagram for consonants, a chart position for vowels. */
 export function Articulation({
 	targetAccent,
 	phonemeId,
@@ -37,12 +36,9 @@ export function Articulation({
 	)[phonemeId];
 	const label = formatPhonemeLabel(targetAccent, phonemeId);
 
-	// Prototype: `?diagram=animated` swaps in the animated mouth for the sounds that have one.
-	const { diagram } = useSearch({ strict: false }) as { diagram?: string };
-	const animated = diagram === "animated" ? getMouthSound(phonemeId) : undefined;
-	if (animated) return <MouthDiagram sound={animated} />;
-
 	if (articulation.category === "consonant") {
+		const mouth = getMouthSound(targetAccent, phonemeId);
+		if (mouth) return <MouthDiagram sound={mouth} title={`${label} articulation`} />;
 		if (articulation.features.manner === "affricate") {
 			return <AffricateDiagram targetAccent={targetAccent} phonemeId={phonemeId} label={label} />;
 		}

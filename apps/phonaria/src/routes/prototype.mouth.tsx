@@ -1,13 +1,12 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { Image } from "@/components/image";
-import { MouthDiagram, MouthStill } from "@/components/mouth-diagram/mouth-diagram";
+import { MouthDiagram } from "@/components/mouth-diagram/mouth-diagram";
 import { MouthParts } from "@/components/mouth-diagram/mouth-parts";
-import { getMouthSound, MOUTH_SOUNDS } from "@/components/mouth-diagram/sounds";
-import { ArticulationThumbnail } from "@/components/phoneme-details/articulation-thumbnail";
+import { MOUTH_SOUNDS } from "@/components/mouth-diagram/sounds";
 import { notFound } from "@/lib/navigation";
 import { getPublicAssetBaseUrl } from "@/lib/site";
 
-/** Prototype: every animated mouth diagram next to the drawing it would replace. Development only. */
+/** Every animated mouth diagram next to the drawing it replaced, and the parts they are built from. */
 export const Route = createFileRoute("/prototype/mouth")({
 	beforeLoad: () => {
 		if (!import.meta.env.DEV) notFound();
@@ -35,8 +34,6 @@ function MouthPrototype() {
 			<h1 className="font-display text-2xl font-semibold tracking-tight">
 				Animated mouth diagrams
 			</h1>
-			<InPlace />
-			<h2 className="font-display text-xl font-semibold tracking-tight">Every sound</h2>
 			<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
 				{MOUTH_SOUNDS.map((sound) => (
 					<section key={sound.id} className="flex flex-col gap-3 rounded-3xl bg-popover p-5">
@@ -70,47 +67,5 @@ function MouthPrototype() {
 				<MouthParts />
 			</section>
 		</div>
-	);
-}
-
-/** The diagram at the sizes and in the surroundings it would ship in. */
-function InPlace() {
-	const moving = getMouthSound("T");
-	const held = getMouthSound("Z");
-	if (!moving || !held) return null;
-	return (
-		<section className="flex flex-col gap-4">
-			<h2 className="font-display text-xl font-semibold tracking-tight">Where it would go</h2>
-			<div className="flex flex-wrap items-start gap-8">
-				{[moving, held].map((sound) => (
-					<div key={sound.id} className="flex w-96 max-w-full flex-col gap-2">
-						<p className="text-sm text-muted-foreground">
-							Sound page and details panel, /{sound.ipa}/:{" "}
-							{sound.steps.length > 1 ? "a sound that moves" : "a sound that is held"}
-						</p>
-						{/* The same card and heading the sound page puts round its drawing. */}
-						<div className="flex flex-col gap-3 rounded-3xl bg-popover p-5">
-							<h3 className="text-sm font-semibold text-foreground">How it's made</h3>
-							<MouthDiagram sound={sound} />
-						</div>
-					</div>
-				))}
-				<div className="flex flex-col gap-2">
-					<p className="text-sm text-muted-foreground">
-						Sound card on the chart: a still, no controls
-					</p>
-					<div className="flex items-start gap-4 rounded-3xl bg-popover p-5">
-						<div className="flex w-36 flex-col gap-2">
-							<MouthStill sound={moving} />
-							<span className="text-xs text-muted-foreground">New</span>
-						</div>
-						<div className="flex w-36 flex-col gap-2">
-							<ArticulationThumbnail targetAccent="en-us" phonemeId="T" />
-							<span className="text-xs text-muted-foreground">Current</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
 	);
 }
