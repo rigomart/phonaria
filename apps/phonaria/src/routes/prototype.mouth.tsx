@@ -5,6 +5,7 @@ import { MouthParts } from "@/components/mouth-diagram/mouth-parts";
 import { MOUTH_SOUNDS } from "@/components/mouth-diagram/sounds";
 import { notFound } from "@/lib/navigation";
 import { getPublicAssetBaseUrl } from "@/lib/site";
+import { cn } from "@/lib/utils";
 
 /** Prototype: every animated mouth diagram next to the drawing it would replace. Development only. */
 export const Route = createFileRoute("/prototype/mouth")({
@@ -20,20 +21,42 @@ const CURRENT_FILE: Record<string, string> = { CH: "CH_stop", J: "J_stop" };
 
 function MouthPrototype() {
 	// `?only=T` shows one sound large, for a close look.
-	const { only } = useSearch({ strict: false }) as { only?: string };
+	// `?air=lines` draws the air as streaks instead of dots.
+	const { only, air: airParam } = useSearch({ strict: false }) as { only?: string; air?: string };
+	const air = airParam === "lines" ? "lines" : "dots";
 	const single = MOUTH_SOUNDS.find((sound) => sound.id === only);
 	if (single) {
 		return (
 			<div className="mx-auto w-full max-w-xl p-4">
-				<MouthDiagram sound={single} />
+				<MouthDiagram sound={single} air={air} />
 			</div>
 		);
 	}
 	return (
 		<div className="mx-auto flex w-full max-w-6xl flex-col gap-8 p-4 sm:p-6">
-			<h1 className="font-display text-2xl font-semibold tracking-tight">
-				Animated mouth diagrams
-			</h1>
+			<div className="flex flex-wrap items-center justify-between gap-4">
+				<h1 className="font-display text-2xl font-semibold tracking-tight">
+					Animated mouth diagrams
+				</h1>
+				<nav aria-label="Air style" className="flex items-center gap-1 text-sm">
+					<span className="mr-1 text-muted-foreground">Air as</span>
+					{(["dots", "lines"] as const).map((style) => (
+						<a
+							key={style}
+							href={style === "dots" ? "?" : "?air=lines"}
+							aria-current={air === style ? "page" : undefined}
+							className={cn(
+								"rounded-full px-3 py-1.5 font-medium",
+								air === style
+									? "bg-primary text-primary-foreground"
+									: "text-muted-foreground hover:bg-muted hover:text-foreground",
+							)}
+						>
+							{style}
+						</a>
+					))}
+				</nav>
+			</div>
 			<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
 				{MOUTH_SOUNDS.map((sound) => (
 					<section key={sound.id} className="flex flex-col gap-3 rounded-3xl bg-popover p-5">
@@ -53,7 +76,7 @@ function MouthPrototype() {
 								</div>
 							) : null}
 						</div>
-						<MouthDiagram sound={sound} />
+						<MouthDiagram sound={sound} air={air} />
 					</section>
 				))}
 			</div>

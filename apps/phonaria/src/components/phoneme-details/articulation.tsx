@@ -38,9 +38,9 @@ export function Articulation({
 	const label = formatPhonemeLabel(targetAccent, phonemeId);
 
 	// Prototype: `?diagram=animated` swaps in the animated mouth for the sounds that have one.
-	const { diagram } = useSearch({ strict: false }) as { diagram?: string };
+	const { diagram, air } = useSearch({ strict: false }) as { diagram?: string; air?: string };
 	const animated = diagram === "animated" ? getMouthSound(phonemeId) : undefined;
-	if (animated) return <MouthDiagram sound={animated} />;
+	if (animated) return <MouthDiagram sound={animated} air={air === "lines" ? "lines" : "dots"} />;
 
 	if (articulation.category === "consonant") {
 		if (articulation.features.manner === "affricate") {

@@ -12,7 +12,7 @@ import {
 	useState,
 } from "react";
 import { cn } from "@/lib/utils";
-import { type Frame, MouthEngine } from "./engine";
+import { type AirStyle, type Frame, MouthEngine } from "./engine";
 import type { Point } from "./geometry";
 import {
 	FOLDS_MIDDLE,
@@ -32,7 +32,16 @@ import type { LabelId, MouthSound, Step } from "./sounds";
  * keeps the mouth still; one that has to move plays its steps in a loop. With
  * reduced motion on, nothing moves until played.
  */
-export function MouthDiagram({ sound, className }: { sound: MouthSound; className?: string }) {
+export function MouthDiagram({
+	sound,
+	air = "dots",
+	className,
+}: {
+	sound: MouthSound;
+	/** Prototype: how the air is drawn. */
+	air?: AirStyle;
+	className?: string;
+}) {
 	const { steps } = sound;
 	const keyIndex = Math.max(
 		0,
@@ -43,9 +52,9 @@ export function MouthDiagram({ sound, className }: { sound: MouthSound; classNam
 	const [allLabels, setAllLabels] = useState(false);
 	// `still` is the main position: drawn before anything runs, and all there is without scripts.
 	const { engine, still } = useMemo(() => {
-		const engine = new MouthEngine(steps);
+		const engine = new MouthEngine(steps, air);
 		return { engine, still: engine.seek(keyIndex) };
-	}, [steps, keyIndex]);
+	}, [steps, keyIndex, air]);
 	const scene = useRef<SceneHandle>(null);
 	const frameRef = useRef<HTMLDivElement>(null);
 	const [visible, setVisible] = useState(true);
@@ -103,6 +112,7 @@ export function MouthDiagram({ sound, className }: { sound: MouthSound; classNam
 					ref={scene}
 					title={`Side view of the mouth making /${sound.ipa}/`}
 					initial={still}
+					airStyle={air}
 					labels={allLabels ? ALL_LABELS : sound.focus}
 				/>
 				{(allLabels ? ALL_LABELS : sound.focus).map((id) => (
@@ -114,7 +124,6 @@ export function MouthDiagram({ sound, className }: { sound: MouthSound; classNam
 						{LABELS[id].text}
 					</span>
 				))}
-				<StatusChips step={step} />
 			</div>
 			<figcaption className="min-h-10 text-sm text-foreground">{step.caption}</figcaption>
 			<div className="flex items-center gap-2">
@@ -162,38 +171,6 @@ export function MouthDiagram({ sound, className }: { sound: MouthSound; classNam
 	);
 }
 
-/** What the voice and the air are doing in this step, in words. */
-function StatusChips({ step }: { step: Step }) {
-	const voice = { on: "Voice on", off: "Voice off", shut: "Vocal folds shut" }[step.voice];
-	let air = "No air yet";
-	if (step.voice === "shut") air = "Air held back";
-	else if (step.flow && step.pose.velum > 0.5) air = "Air through the nose";
-	else if (step.flow && step.stop) air = "Air held back";
-	else if (step.sides) air = "Air round the tongue";
-	else if (step.flow) air = "Air through the mouth";
-	return (
-		<div className="pointer-events-none absolute top-2 right-2 flex flex-col items-end gap-1 text-xs font-medium text-diagram-tooth">
-			<span className="flex items-center gap-1.5 rounded-full bg-diagram px-2 py-0.5">
-				<span
-					aria-hidden="true"
-					className={cn(
-						"size-2 rounded-full",
-						step.voice === "on" ? "bg-diagram-voice" : "bg-diagram-tissue",
-					)}
-				/>
-				{voice}
-			</span>
-			<span className="flex items-center gap-1.5 rounded-full bg-diagram px-2 py-0.5">
-				<span
-					aria-hidden="true"
-					className={cn("size-2 rounded-full", step.flow ? "bg-diagram-air" : "bg-diagram-tissue")}
-				/>
-				{air}
-			</span>
-		</div>
-	);
-}
-
 // --- The drawing ---
 
 type SceneHandle = { paint: (frame: Frame) => void };
@@ -206,11 +183,13 @@ const Scene = memo(function Scene({
 	ref,
 	title,
 	initial,
+	airStyle,
 	labels,
 }: {
 	ref: Ref<SceneHandle>;
 	title: string;
 	initial: Frame;
+	airStyle: AirStyle;
 	labels: readonly LabelId[];
 }) {
 	const gradientId = useId();
@@ -338,7 +317,8 @@ const Scene = memo(function Scene({
 			<g
 				ref={air}
 				fill="none"
-				strokeWidth={4.4}
+				strokeWidth={airStyle === "lines" ? 2.6 : 4.4}
+				strokeLinejoin="round"
 				strokeLinecap="round"
 				className="stroke-diagram-air"
 			>
