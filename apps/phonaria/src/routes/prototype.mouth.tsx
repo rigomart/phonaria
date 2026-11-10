@@ -16,7 +16,7 @@ export const Route = createFileRoute("/prototype/mouth")({
 
 const BUCKET_URL = getPublicAssetBaseUrl();
 /** The file each sound's current drawing is stored under; the glottal stop has none. */
-const CURRENT_FILE: Record<string, string> = { CH: "CH_stop" };
+const CURRENT_FILE: Record<string, string> = { CH: "CH_stop", J: "J_stop" };
 
 function MouthPrototype() {
 	// `?only=T` shows one sound large, for a close look.

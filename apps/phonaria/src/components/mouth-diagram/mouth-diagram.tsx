@@ -77,8 +77,9 @@ export function MouthDiagram({ sound, className }: { sound: MouthSound; classNam
 		let request = 0;
 		let last = performance.now();
 		const loop = (now: number) => {
-			// A long gap (a background tab) must not fling the air across the mouth.
-			show(engine.advance(Math.min(48, now - last)));
+			// A long gap (a background tab) must not fling the air across the mouth, and the
+			// first frame's clock can read earlier than the moment the loop was set up.
+			show(engine.advance(Math.max(0, Math.min(48, now - last))));
 			last = now;
 			request = requestAnimationFrame(loop);
 		};
@@ -168,6 +169,7 @@ function StatusChips({ step }: { step: Step }) {
 	if (step.voice === "shut") air = "Air held back";
 	else if (step.flow && step.pose.velum > 0.5) air = "Air through the nose";
 	else if (step.flow && step.stop) air = "Air held back";
+	else if (step.sides) air = "Air round the tongue";
 	else if (step.flow) air = "Air through the mouth";
 	return (
 		<div className="pointer-events-none absolute top-2 right-2 flex flex-col items-end gap-1 text-xs font-medium text-diagram-tooth">
@@ -381,7 +383,7 @@ const LABELS: Record<LabelId, LabelSpec> = {
 	ridge: { text: "gum ridge", at: [112, 62], target: [153, 173] },
 	roof: { text: "roof of the mouth", at: [240, 94], target: [250, 137] },
 	softPalate: { text: "soft palate", at: [388, 104], target: [345, 142] },
-	nose: { text: "nose", at: [188, 50] },
+	nose: { text: "nose", at: [222, 48] },
 	tongue: { text: "tongue", at: [285, 300] },
 	lips: { text: "lips", at: [40, 294], target: [102, 262] },
 	folds: { text: "vocal folds", at: [258, 440], target: [372, 474] },

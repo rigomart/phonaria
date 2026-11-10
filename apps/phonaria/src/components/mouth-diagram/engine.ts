@@ -24,6 +24,8 @@ type Particle = {
 	pastFolds: boolean;
 	/** Buzzing folds let the air through in bursts; the air between bursts is drawn faint. */
 	faint: boolean;
+	/** Pressed against a seal this frame. */
+	held: boolean;
 };
 
 /** Everything the drawing needs for one instant. */
@@ -43,14 +45,14 @@ export type Frame = {
 	contact: { point: Point; radius: number } | null;
 };
 
-/** Units a second. Fast enough that air let go at the lungs is out of the mouth in about a second and a half. */
-const AIR_SPEED = 420;
+/** Units a second: air let go at the lungs is out of the mouth in a little over two seconds. */
+const AIR_SPEED = 270;
 /** How far apart moving puffs are, and how tightly they pack behind a seal. */
 const FLOW_SPACING = 5;
 const QUEUE_SPACING = 2.6;
 const SPAWN_PER_MS = AIR_SPEED / FLOW_SPACING / 1000;
 /** Bursts of air a second while the folds buzz. */
-const BUZZ_HZ = 10;
+const BUZZ_HZ = 8;
 const BUZZ_SPACING = AIR_SPEED / BUZZ_HZ;
 
 const duration = (step: Step) => step.move + step.hold;
@@ -77,7 +79,7 @@ type Instant = {
 };
 
 function instantAt(steps: readonly Step[], time: number): Instant {
-	let local = time % timelineLength(steps);
+	let local = Math.max(0, time) % timelineLength(steps);
 	let index = 0;
 	while (local >= duration(steps[index] as Step)) {
 		local -= duration(steps[index] as Step);
@@ -125,8 +127,8 @@ export class MouthEngine {
 	seek(index: number): Frame {
 		this.time = holdStart(this.steps, index);
 		const instant = instantAt(this.steps, this.time);
-		const route = oralRouteFor(instant.pose);
-		this.foldGap = foldGapFor(instant.step.voice);
+		const route = oralRouteFor(instant.pose, Boolean(instant.step.sides));
+		this.foldGap = foldGapFor(instant.step);
 		this.burst = 0;
 		this.wasStopped = instant.stopped;
 		this.wasFlowing = instant.step.flow;
@@ -140,7 +142,7 @@ export class MouthEngine {
 		this.time += ms;
 		this.clock += ms / 1000;
 		const instant = instantAt(this.steps, this.time);
-		const route = oralRouteFor(instant.pose);
+		const route = oralRouteFor(instant.pose, Boolean(instant.step.sides));
 		const { step, pose, stopped, hissing } = instant;
 		const nasalOpen = pose.velum > 0.5;
 		const forkDistance = TRUNK.total;
@@ -149,7 +151,7 @@ export class MouthEngine {
 		this.wasStopped = stopped;
 		this.burst = Math.max(0, this.burst - ms / 320);
 
-		const target = foldGapFor(step.voice);
+		const target = foldGapFor(step);
 		const rate = step.voice === "shut" ? 0.03 : 0.012;
 		this.foldGap += (target - this.foldGap) * Math.min(1, ms * rate);
 
@@ -178,6 +180,7 @@ export class MouthEngine {
 					nasal: null,
 					pastFolds: false,
 					faint: false,
+					held: false,
 				});
 			}
 		} else {
@@ -190,6 +193,7 @@ export class MouthEngine {
 			const beyond = particle.distance - narrowestDistance;
 			if (hissing && particle.nasal === false && beyond > 0 && beyond < 110) speed *= 1.4;
 			particle.distance += (speed * ms) / 1000;
+			particle.held = false;
 		}
 
 		// Air that meets a seal queues up behind it, oldest first.
@@ -198,6 +202,7 @@ export class MouthEngine {
 			let limit = TRUNK_FOLDS_DISTANCE - 6;
 			for (const particle of this.particles) {
 				if (particle.pastFolds) continue;
+				particle.held = particle.distance >= limit;
 				particle.distance = Math.min(particle.distance, limit);
 				limit = particle.distance - QUEUE_SPACING;
 			}
@@ -207,6 +212,7 @@ export class MouthEngine {
 			let limit = seal;
 			for (const particle of this.particles) {
 				if (particle.nasal === true || particle.distance > seal + 14) continue;
+				particle.held ||= particle.distance >= limit;
 				particle.distance = Math.min(particle.distance, limit);
 				limit = particle.distance - QUEUE_SPACING;
 			}
@@ -238,20 +244,35 @@ export class MouthEngine {
 		for (const particle of this.particles) {
 			let width: number;
 			let place: { point: Point; normal: Point };
-			if (particle.distance < forkDistance) {
-				place = trackAt(TRUNK, particle.distance);
+			// Air under pressure is never still: held puffs jostle, and a ripple runs
+			// through the crowd toward the seal.
+			const seed = particle.lane * 40;
+			const push = particle.held
+				? -2.5 +
+					1.6 * Math.sin(this.clock * 9 + seed) +
+					1.8 * Math.sin(this.clock * 5.5 + particle.distance * 0.07)
+				: 0;
+			const sway = particle.held ? 0.3 * Math.sin(this.clock * 6.3 + seed * 1.7) : 0;
+			const distance = particle.distance + push;
+			if (distance < forkDistance) {
+				place = trackAt(TRUNK, distance);
 				width = 11;
+				const pastFolds = distance - TRUNK_FOLDS_DISTANCE;
+				if (step.breath && pastFolds > 0) {
+					const shake = Math.sin(particle.lane * 127.1 + this.clock * 311.7);
+					width += shake * 5 * Math.max(0, 1 - pastFolds / 130);
+				}
 			} else if (particle.nasal) {
-				const local = particle.distance - forkDistance;
+				const local = distance - forkDistance;
 				place = trackAt(NASAL, local);
 				// The nose is roomy: the stream spreads out inside it and again as it leaves.
 				width = 8 + 8 * Math.sin(Math.min(1, local / (NASAL.total - 110)) * Math.PI);
 				width += Math.max(0, local - (NASAL.total - 80)) * 0.14;
 			} else {
-				const local = particle.distance - forkDistance;
+				const local = distance - forkDistance;
 				place = trackAt(route.track, local);
 				const fromNarrowest = Math.abs(local - route.narrowest.distance);
-				width = Math.min(9, Math.max(0.6, route.narrowest.gap / 2 - 3) + fromNarrowest * 0.12);
+				width = Math.min(9, Math.max(0.6, route.squeeze / 2 - 3) + fromNarrowest * 0.12);
 				width += Math.max(0, local - route.lipsDistance) * 0.16;
 				const beyond = local - route.narrowest.distance;
 				if (hissing && beyond > 0) {
@@ -261,7 +282,7 @@ export class MouthEngine {
 					width += shake * 5 * Math.max(0, 1 - beyond / 130);
 				}
 			}
-			const offset = particle.lane * width;
+			const offset = (particle.lane + sway) * width;
 			const d = dot(
 				place.point[0] + place.normal[0] * offset,
 				place.point[1] + place.normal[1] * offset,
@@ -275,8 +296,11 @@ export class MouthEngine {
 
 		let contact: Frame["contact"] = null;
 		const radius = 11 + 1.5 * Math.sin(this.clock * 5);
-		if (step.voice === "shut") contact = { point: FOLDS_MIDDLE, radius: radius + 22 };
-		else if ((step.stop || step.hiss) && arrived && (stopped || hissing)) {
+		if (step.voice === "shut" || step.breath) {
+			contact = { point: FOLDS_MIDDLE, radius: radius + 22 };
+		} else if (step.sides && arrived) {
+			contact = { point: route.narrowest.point, radius };
+		} else if ((step.stop || step.hiss) && arrived && (stopped || hissing)) {
 			contact = { point: route.narrowest.point, radius };
 		}
 
@@ -295,7 +319,11 @@ export class MouthEngine {
 	}
 }
 
-const foldGapFor = (voice: Voice) => (voice === "off" ? 1 : 0);
+/** How far apart the folds are: wide for plain breath, narrowed for a breathy hiss, together otherwise. */
+const foldGapFor = (step: Step) => {
+	if (step.voice !== "off") return 0;
+	return step.breath ? 0.4 : 1;
+};
 
 const FOLDS_LENGTH = Math.hypot(FOLDS.back[0] - FOLDS.front[0], FOLDS.back[1] - FOLDS.front[1]);
 
@@ -348,6 +376,7 @@ function seedParticles(instant: Instant, route: OralRoute, packed: boolean): Par
 			lane: ((Math.abs(Math.sin(index * 12.9898) * 43758.5453) % 1) * 2 - 1) * 0.95,
 			nasal: distance >= forkDistance ? nasal : null,
 			pastFolds,
+			held: false,
 			faint: step.voice === "on" && pastFolds && distance % BUZZ_SPACING > BUZZ_SPACING * 0.45,
 		});
 		// Held air is packed tight near the seal and thins out further back.

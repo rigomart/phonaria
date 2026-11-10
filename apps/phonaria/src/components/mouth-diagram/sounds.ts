@@ -16,6 +16,10 @@ export type Step = {
 	stop?: boolean;
 	/** Air is forced through the narrowest point and turns rough. */
 	hiss?: boolean;
+	/** The tongue touches the roof, and the air goes round its sides. */
+	sides?: boolean;
+	/** Air turns rough at the vocal folds, which are apart but close. */
+	breath?: boolean;
 	/** The step that stands for the sound when nothing moves. */
 	key?: boolean;
 };
@@ -147,6 +151,30 @@ const TONGUE = {
 		[170, 268],
 		[162, 294],
 	],
+	/** The middle of the tongue close to the roof of the mouth, as for "y". */
+	palatalNear: [
+		[402, 305],
+		[392, 240],
+		[350, 190],
+		[290, 151],
+		[232, 160],
+		[188, 196],
+		[158, 236],
+		[169, 258],
+		[162, 288],
+	],
+	/** Bunched and pulled back with the tip lifted, as for an American "r". */
+	bunched: [
+		[416, 300],
+		[400, 238],
+		[354, 198],
+		[292, 176],
+		[238, 168],
+		[204, 166],
+		[182, 170],
+		[186, 196],
+		[172, 266],
+	],
 } satisfies Record<string, TonguePoints>;
 
 const pose = (tongue: TonguePoints, rest: Partial<Omit<Pose, "tongue">> = {}): Pose => ({
@@ -154,6 +182,7 @@ const pose = (tongue: TonguePoints, rest: Partial<Omit<Pose, "tongue">> = {}): P
 	velum: 0,
 	lipRound: 0,
 	lipClose: 0,
+	lipTuck: 0,
 	...rest,
 	tongue,
 });
@@ -188,73 +217,235 @@ const held = (
 	steps: [{ ...step, move: 0, hold: 1000, key: true }],
 });
 
-const ALVEOLAR_GAP = pose(TONGUE.alveolarGap, { jaw: 2 });
+/** A sound that stops the air and lets it go: seal, pressure, burst. */
+const stop = (
+	id: string,
+	ipa: string,
+	example: string,
+	focus: LabelId[],
+	{
+		voiced,
+		seal,
+		sealed,
+		behind,
+		released,
+	}: { voiced: boolean; seal: Pose; sealed: string; behind: string; released: string },
+): MouthSound => ({
+	id,
+	ipa,
+	example,
+	focus,
+	steps: [
+		relaxed(),
+		{ caption: sealed, pose: seal, move: 320, hold: 500, voice: "off", flow: false, stop: true },
+		{
+			caption: voiced
+				? `Air builds up behind the ${behind} while the vocal folds buzz.`
+				: `Air builds up behind the ${behind}. The voice is off.`,
+			pose: seal,
+			move: 0,
+			hold: 1500,
+			voice: voiced ? "on" : "off",
+			flow: true,
+			stop: true,
+			key: true,
+		},
+		{
+			caption: released,
+			pose: OPEN,
+			move: 130,
+			hold: 1100,
+			voice: voiced ? "on" : "off",
+			flow: true,
+		},
+	],
+});
+
+/** A stop let go slowly, so it ends in a hiss. */
+const affricate = (id: string, ipa: string, example: string, voiced: boolean): MouthSound => ({
+	id,
+	ipa,
+	example,
+	focus: ["ridge"],
+	steps: [
+		relaxed(),
+		{
+			caption: voiced
+				? "The tongue seals just behind the gum ridge. Air builds up while the vocal folds buzz."
+				: "The tongue seals just behind the gum ridge, and air builds up.",
+			pose: pose(TONGUE.postalveolarStop, { jaw: 3, lipRound: 0.45 }),
+			move: 340,
+			hold: 1500,
+			voice: voiced ? "on" : "off",
+			flow: true,
+			stop: true,
+			key: true,
+		},
+		{
+			caption: "The tongue lets go slowly, so the air escapes as a hiss.",
+			pose: POSTALVEOLAR_GAP,
+			move: 160,
+			hold: 1500,
+			voice: voiced ? "on" : "off",
+			flow: true,
+			hiss: true,
+		},
+	],
+});
+
+/** A sound that slides into the vowel after it. */
+const glide = (
+	id: string,
+	ipa: string,
+	example: string,
+	focus: LabelId[],
+	start: Pose,
+	[shaped, released]: [string, string],
+): MouthSound => ({
+	id,
+	ipa,
+	example,
+	focus,
+	steps: [
+		relaxed(),
+		{ caption: shaped, pose: start, move: 420, hold: 1300, voice: "on", flow: true, key: true },
+		{ caption: released, pose: OPEN, move: 260, hold: 1100, voice: "on", flow: true },
+	],
+});
+
+const OPEN = pose(TONGUE.open, { jaw: 6 });
+const LIPS_SHUT = pose(TONGUE.rest, { jaw: 2, lipClose: 1 });
+const ALVEOLAR_SEAL = pose(TONGUE.alveolarStop, { jaw: 3 });
+const ALVEOLAR_GAP = pose(TONGUE.alveolarGap, { jaw: 2.6 });
+const VELAR_SEAL = pose(TONGUE.velarStop);
+const DENTAL = pose(TONGUE.dental, { jaw: 3.5 });
+const LIP_ON_TEETH = pose(TONGUE.rest, { jaw: 3, lipTuck: 1 });
+const POSTALVEOLAR_GAP = pose(TONGUE.postalveolarGap, { jaw: 3, lipRound: 0.45 });
+
+const HISS_OFF = "Air hisses through the gap, and the voice is off.";
+const HISS_ON = "Air hisses through the gap while the vocal folds buzz.";
 
 export const MOUTH_SOUNDS: MouthSound[] = [
-	{
-		id: "T",
-		ipa: "t",
-		example: "top",
-		focus: ["ridge"],
-		steps: [
-			relaxed(),
-			{
-				caption: "The tongue tip seals against the gum ridge behind the top teeth.",
-				pose: pose(TONGUE.alveolarStop, { jaw: 3 }),
-				move: 320,
-				hold: 500,
-				voice: "off",
-				flow: false,
-				stop: true,
-			},
-			{
-				caption: "Air builds up behind the tongue. The voice is off.",
-				pose: pose(TONGUE.alveolarStop, { jaw: 3 }),
-				move: 0,
-				hold: 1300,
-				voice: "off",
-				flow: true,
-				stop: true,
-				key: true,
-			},
-			{
-				caption: "The tongue drops and the air bursts out.",
-				pose: pose(TONGUE.open, { jaw: 6 }),
-				move: 130,
-				hold: 1100,
-				voice: "off",
-				flow: true,
-			},
-		],
-	},
+	stop("P", "p", "pat", ["lips"], {
+		voiced: false,
+		seal: LIPS_SHUT,
+		sealed: "The lips press together.",
+		behind: "lips",
+		released: "The lips part and the air bursts out.",
+	}),
+	stop("B", "b", "bat", ["lips", "folds"], {
+		voiced: true,
+		seal: LIPS_SHUT,
+		sealed: "The lips press together.",
+		behind: "lips",
+		released: "The lips part and the air bursts out.",
+	}),
+	stop("T", "t", "top", ["ridge"], {
+		voiced: false,
+		seal: ALVEOLAR_SEAL,
+		sealed: "The tongue tip seals against the gum ridge behind the top teeth.",
+		behind: "tongue",
+		released: "The tongue drops and the air bursts out.",
+	}),
+	stop("D", "d", "day", ["ridge", "folds"], {
+		voiced: true,
+		seal: ALVEOLAR_SEAL,
+		sealed: "The tongue tip seals against the gum ridge behind the top teeth.",
+		behind: "tongue",
+		released: "The tongue drops and the air bursts out.",
+	}),
+	stop("K", "k", "kid", ["softPalate"], {
+		voiced: false,
+		seal: VELAR_SEAL,
+		sealed: "The back of the tongue seals against the soft palate.",
+		behind: "tongue",
+		released: "The tongue drops and the air bursts out.",
+	}),
+	stop("G", "g", "gum", ["softPalate", "folds"], {
+		voiced: true,
+		seal: VELAR_SEAL,
+		sealed: "The back of the tongue seals against the soft palate.",
+		behind: "tongue",
+		released: "The tongue drops and the air bursts out.",
+	}),
+	affricate("CH", "tʃ", "cheap", false),
+	affricate("J", "dʒ", "jeep", true),
+	held("F", "f", "fan", ["lips"], {
+		caption: `The bottom lip rests against the top teeth. ${HISS_OFF}`,
+		pose: LIP_ON_TEETH,
+		voice: "off",
+		flow: true,
+		hiss: true,
+	}),
+	held("V", "v", "van", ["lips", "folds"], {
+		caption: `The bottom lip rests against the top teeth. ${HISS_ON}`,
+		pose: LIP_ON_TEETH,
+		voice: "on",
+		flow: true,
+		hiss: true,
+	}),
+	held("TH", "θ", "thin", ["tongue"], {
+		caption: `The tongue tip rests between the teeth. ${HISS_OFF}`,
+		pose: DENTAL,
+		voice: "off",
+		flow: true,
+		hiss: true,
+	}),
+	held("DH", "ð", "this", ["tongue", "folds"], {
+		caption: `The tongue tip rests between the teeth. ${HISS_ON}`,
+		pose: DENTAL,
+		voice: "on",
+		flow: true,
+		hiss: true,
+	}),
 	held("S", "s", "sun", ["ridge"], {
-		caption:
-			"The tongue tip sits close to the gum ridge. Air hisses through the narrow gap, and the voice is off.",
+		caption: `The tongue tip sits close to the gum ridge. ${HISS_OFF}`,
 		pose: ALVEOLAR_GAP,
 		voice: "off",
 		flow: true,
 		hiss: true,
 	}),
 	held("Z", "z", "zoo", ["ridge", "folds"], {
-		caption:
-			"The tongue tip sits close to the gum ridge. Air hisses through the narrow gap while the vocal folds buzz.",
+		caption: `The tongue tip sits close to the gum ridge. ${HISS_ON}`,
 		pose: ALVEOLAR_GAP,
 		voice: "on",
 		flow: true,
 		hiss: true,
 	}),
-	held("TH", "θ", "thin", ["tongue"], {
-		caption:
-			"The tongue tip rests between the teeth. Air hisses out over it, and the voice is off.",
-		pose: pose(TONGUE.dental, { jaw: 3.5 }),
+	held("SH", "ʃ", "shop", ["ridge"], {
+		caption: `The tongue rises close to the roof just behind the gum ridge, and the lips push forward a little. ${HISS_OFF}`,
+		pose: POSTALVEOLAR_GAP,
 		voice: "off",
 		flow: true,
 		hiss: true,
+	}),
+	held("ZH", "ʒ", "vision", ["ridge", "folds"], {
+		caption: `The tongue rises close to the roof just behind the gum ridge, and the lips push forward a little. ${HISS_ON}`,
+		pose: POSTALVEOLAR_GAP,
+		voice: "on",
+		flow: true,
+		hiss: true,
+	}),
+	held("H", "h", "house", ["folds"], {
+		caption:
+			"The mouth is open, ready for the vowel that follows. Air rushes between the vocal folds, which are apart, and makes a soft hiss.",
+		pose: pose(TONGUE.open, { jaw: 5.5 }),
+		voice: "off",
+		flow: true,
+		breath: true,
 	}),
 	held("M", "m", "ram", ["lips", "softPalate", "nose"], {
 		caption:
 			"The lips are closed and the soft palate hangs low, so the buzzing air leaves through the nose.",
 		pose: pose(TONGUE.rest, { jaw: 2, lipClose: 1, velum: 1 }),
+		voice: "on",
+		flow: true,
+		stop: true,
+	}),
+	held("N", "n", "sun", ["ridge", "softPalate", "nose"], {
+		caption:
+			"The tongue tip seals against the gum ridge and the soft palate hangs low, so the buzzing air leaves through the nose.",
+		pose: pose(TONGUE.alveolarStop, { jaw: 3, velum: 1 }),
 		voice: "on",
 		flow: true,
 		stop: true,
@@ -267,60 +458,36 @@ export const MOUTH_SOUNDS: MouthSound[] = [
 		flow: true,
 		stop: true,
 	}),
-	{
-		id: "W",
-		ipa: "w",
-		example: "west",
-		focus: ["lips"],
-		steps: [
-			relaxed(),
-			{
-				caption: "The lips push forward into a small circle, and the back of the tongue rises.",
-				pose: pose(TONGUE.velarNear, { jaw: 3, lipRound: 1, lipClose: 0.4 }),
-				move: 420,
-				hold: 1300,
-				voice: "on",
-				flow: true,
-				key: true,
-			},
-			{
-				caption: "The lips open quickly and the tongue glides into the next vowel.",
-				pose: pose(TONGUE.open, { jaw: 6 }),
-				move: 260,
-				hold: 1100,
-				voice: "on",
-				flow: true,
-			},
+	held("L", "l", "let", ["ridge"], {
+		caption:
+			"The tongue tip rests on the gum ridge. The buzzing air flows out past the sides of the tongue.",
+		pose: pose(TONGUE.alveolarStop, { jaw: 3.5 }),
+		voice: "on",
+		flow: true,
+		sides: true,
+	}),
+	held("R", "ɹ", "red", ["tongue"], {
+		caption:
+			"The tongue bunches up and pulls back without touching the roof of the mouth, and the lips round a little. The buzzing air flows out smoothly.",
+		pose: pose(TONGUE.bunched, { jaw: 3.5, lipRound: 0.4 }),
+		voice: "on",
+		flow: true,
+	}),
+	glide(
+		"W",
+		"w",
+		"west",
+		["lips"],
+		pose(TONGUE.velarNear, { jaw: 3, lipRound: 1, lipClose: 0.2 }),
+		[
+			"The lips push forward into a small circle, and the back of the tongue rises.",
+			"The lips open quickly and the tongue glides into the next vowel.",
 		],
-	},
-	{
-		id: "CH",
-		ipa: "tʃ",
-		example: "cheap",
-		focus: ["ridge"],
-		steps: [
-			relaxed(),
-			{
-				caption: "The tongue seals just behind the gum ridge, and air builds up.",
-				pose: pose(TONGUE.postalveolarStop, { jaw: 3, lipRound: 0.45 }),
-				move: 340,
-				hold: 1300,
-				voice: "off",
-				flow: true,
-				stop: true,
-				key: true,
-			},
-			{
-				caption: "The tongue lets go slowly, so the air escapes as a hiss.",
-				pose: pose(TONGUE.postalveolarGap, { jaw: 3, lipRound: 0.45 }),
-				move: 160,
-				hold: 1500,
-				voice: "off",
-				flow: true,
-				hiss: true,
-			},
-		],
-	},
+	),
+	glide("Y", "j", "you", ["roof"], pose(TONGUE.palatalNear, { jaw: 3 }), [
+		"The middle of the tongue rises close to the roof of the mouth.",
+		"The tongue drops quickly into the next vowel.",
+	]),
 	{
 		id: "GLOTTAL",
 		ipa: "ʔ",
@@ -329,7 +496,7 @@ export const MOUTH_SOUNDS: MouthSound[] = [
 		steps: [
 			{
 				caption: "For “uh”, the vocal folds buzz and air flows out.",
-				pose: pose(TONGUE.open, { jaw: 6 }),
+				pose: OPEN,
 				move: 450,
 				hold: 1100,
 				voice: "on",
@@ -339,7 +506,7 @@ export const MOUTH_SOUNDS: MouthSound[] = [
 				caption: "The vocal folds snap shut, and the air stops in the throat.",
 				pose: pose(TONGUE.open, { jaw: 5.5 }),
 				move: 120,
-				hold: 1300,
+				hold: 1500,
 				voice: "shut",
 				flow: true,
 				key: true,

@@ -50,6 +50,8 @@ export type Pose = {
 	lipRound: number;
 	/** 0 to 1: lips pressed together. */
 	lipClose: number;
+	/** 0 to 1: bottom lip drawn back and up against the top teeth. */
+	lipTuck: number;
 };
 
 // --- Fixed anatomy ---
@@ -164,11 +166,23 @@ const LOWER_LIP_CLOSE: Offsets = {
 	18: [0, -4],
 };
 
+const LOWER_LIP_TUCK: Offsets = {
+	14: [3, -2],
+	15: [6, -5],
+	16: [12, -10],
+	17: [12, -10],
+	18: [7, -3],
+};
+
 const upperLipPoints = (pose: Pose) =>
 	shift(shift(UPPER_LIP, UPPER_LIP_ROUND, pose.lipRound), UPPER_LIP_CLOSE, pose.lipClose);
 /** As drawn: turn with the jaw to place them. */
 const jawPoints = (pose: Pose) =>
-	shift(shift(JAW, LOWER_LIP_ROUND, pose.lipRound), LOWER_LIP_CLOSE, pose.lipClose);
+	shift(
+		shift(shift(JAW, LOWER_LIP_ROUND, pose.lipRound), LOWER_LIP_CLOSE, pose.lipClose),
+		LOWER_LIP_TUCK,
+		pose.lipTuck,
+	);
 
 // --- Soft palate ---
 
@@ -236,6 +250,7 @@ export function lerpPose(a: Pose, b: Pose, t: number): Pose {
 		velum: mix(a.velum, b.velum),
 		lipRound: mix(a.lipRound, b.lipRound),
 		lipClose: mix(a.lipClose, b.lipClose),
+		lipTuck: mix(a.lipTuck, b.lipTuck),
 	};
 }
 
@@ -293,31 +308,39 @@ const ROOF_ANCHORS: Point[] = [
 	[130.6, 203.7],
 ];
 
+/** How far onto the tongue the air's line dips when it goes round the sides. */
+const SIDE_DEPTH = 16;
+
 export type OralRoute = {
 	track: Track;
 	/** Distance along the track of the narrowest point, and how wide the gap is there. */
 	narrowest: { distance: number; gap: number; point: Point };
+	/** How wide the air stream is at the narrowest point. */
+	squeeze: number;
 	/** Distance along the track at which the air leaves the lips. */
 	lipsDistance: number;
 };
 
 /**
  * The line air follows through the mouth for a pose: halfway between the roof
- * and the tongue, between the teeth, between the lips and out.
+ * and the tongue, between the teeth, between the lips and out. With `sides`,
+ * the air goes round a tongue that touches the roof: the line dips onto the
+ * tongue there, since the sides of the tongue can't be seen from here.
  */
-export function oralRouteFor(pose: Pose): OralRoute {
+export function oralRouteFor(pose: Pose, sides = false): OralRoute {
 	const surface = sampleSpline(pose.tongue.slice(0, 7), 5);
 	const velum = velumPoints(pose);
 	const lowerToothTip = withJaw(LOWER_TOOTH_TIP, pose.jaw);
 	const upperLip = upperLipPoints(pose);
 	const jaw = jawPoints(pose);
 
-	const stations: { point: Point; gap: number }[] = [];
+	const stations: { point: Point; gap: number; path: Point }[] = [];
 	const between = (roof: Point, floor: Point) => {
-		stations.push({
-			point: [(roof[0] + floor[0]) / 2, (roof[1] + floor[1]) / 2],
-			gap: Math.hypot(roof[0] - floor[0], roof[1] - floor[1]),
-		});
+		const gap = Math.hypot(roof[0] - floor[0], roof[1] - floor[1]);
+		const point: Point = [(roof[0] + floor[0]) / 2, (roof[1] + floor[1]) / 2];
+		// Round the sides: step down past the tongue's surface where it is close to the roof.
+		const dip = sides ? Math.max(0, SIDE_DEPTH - gap / 2) : 0;
+		stations.push({ point, gap, path: [point[0] + dip * 0.35, point[1] + dip] });
 	};
 	const nearest = (target: Point, candidates: readonly Point[]) =>
 		candidates.reduce((best, candidate) =>
@@ -331,7 +354,6 @@ export function oralRouteFor(pose: Pose): OralRoute {
 	for (const anchor of [velum[3] as Point, velum[6] as Point, ...ROOF_ANCHORS]) {
 		between(anchor, nearest(anchor, surface));
 	}
-	between(UPPER_TOOTH_TIP, nearest(UPPER_TOOTH_TIP, [...surface, lowerToothTip]));
 	// The lowest point of the top lip and the highest of the bottom one.
 	const lipTop = cubicAt(
 		[upperLip[18], upperLip[19], upperLip[20], upperLip[21]] as [Point, Point, Point, Point],
@@ -341,13 +363,17 @@ export function oralRouteFor(pose: Pose): OralRoute {
 		cubicAt([jaw[15], jaw[16], jaw[17], jaw[18]] as [Point, Point, Point, Point], 0.3),
 		pose.jaw,
 	);
+	between(UPPER_TOOTH_TIP, nearest(UPPER_TOOTH_TIP, [...surface, lowerToothTip, lipBottom]));
 	between(lipTop, lipBottom);
+	// Lips that overlap are shut, however far apart their middles are.
+	const lipStation = stations[stations.length - 1] as { gap: number };
+	if (lipBottom[1] <= lipTop[1]) lipStation.gap = 0;
 
-	const lips = stations[stations.length - 1] as { point: Point; gap: number };
+	const lips = stations[stations.length - 1] as { point: Point };
 	const start = TRUNK.points[TRUNK.points.length - 1] as Point;
 	const controls: Point[] = [
 		start,
-		...stations.map((station) => station.point),
+		...stations.map((station) => station.path),
 		[lips.point[0] - 40, lips.point[1] + 4],
 		[-8, lips.point[1] + 12],
 	];
@@ -365,6 +391,7 @@ export function oralRouteFor(pose: Pose): OralRoute {
 			gap: narrowest.gap,
 			point: narrowest.point,
 		},
+		squeeze: sides ? SIDE_DEPTH : narrowest.gap,
 		lipsDistance: track.lengths[stations.length * 5] as number,
 	};
 }
