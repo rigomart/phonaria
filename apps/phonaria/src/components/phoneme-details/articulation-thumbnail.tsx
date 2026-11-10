@@ -6,6 +6,8 @@ import {
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
 import { Image } from "@/components/image";
+import { MouthStill } from "@/components/mouth-diagram/mouth-diagram";
+import { getMouthSound } from "@/components/mouth-diagram/sounds";
 import { getPublicAssetBaseUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
@@ -28,9 +30,9 @@ const GRID_BACKNESS: VowelArticulatoryFeatures["backness"][] = ["central"];
 const GRID_HEIGHTS: VowelArticulatoryFeatures["height"][] = ["close-mid", "open-mid"];
 
 /**
- * A small preview of how the sound is made, for the compact level: the mouth
- * diagram for consonants (an affricate's stop), and for vowels the chart's
- * outline with a dot or a glide arrow. Decorative, with no text: the full
+ * A small preview of how the sound is made, for the compact level: a still of
+ * the mouth diagram for consonants, and for vowels the chart's outline with a
+ * dot or a glide arrow. Decorative, with no text: the full
  * view's "How it's made" carries the labels.
  */
 export function ArticulationThumbnail({
@@ -48,6 +50,8 @@ export function ArticulationThumbnail({
 	)[phonemeId];
 
 	if (articulation.category === "consonant") {
+		const mouth = getMouthSound(targetAccent, phonemeId);
+		if (mouth) return <MouthStill sound={mouth} />;
 		const affricate = articulation.features.manner === "affricate";
 		const file = affricate ? `${phonemeId}_stop` : phonemeId;
 		return (

@@ -236,11 +236,11 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					url: "https://commons.wikimedia.org/wiki/File:Voiceless_dental_fricative_articulation.svg",
 				},
 			],
-			uses: "Sound cards and sound pages show these diagrams for consonants, with two each for /tʃ/ and /dʒ/, one for each part of the sound. Vowels use Phonaria's own charts instead.",
+			uses: "Sound cards and sound pages show these diagrams for consonants, with moving air and vocal cords. Vowels use Phonaria's own charts instead.",
 			notes: {
 				heading: "Differences",
 				items: [
-					"The original drawing was changed, and there's a version for each consonant.",
+					"The original drawing was redrawn and split into parts that move, with a version for each consonant.",
 					"Phonaria's versions are shared under the same license, CC BY-SA 4.0.",
 				],
 			},

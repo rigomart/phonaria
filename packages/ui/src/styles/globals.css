@@ -57,6 +57,11 @@
 	--frequency-high: oklch(0.32 0.035 257);
 	/* Backdrop for the light-line articulation diagrams. */
 	--diagram: oklch(0.45 0.02 257);
+	--diagram-tissue: oklch(0.77 0.018 257);
+	--diagram-tongue: oklch(0.74 0.1 15);
+	--diagram-tooth: oklch(0.97 0.012 90);
+	--diagram-air: oklch(0.95 0.055 215);
+	--diagram-voice: oklch(0.87 0.14 85);
 	/* Voiced consonants on the chart: a light primary tint. */
 	--voiced: color-mix(in oklch, var(--primary) 15%, var(--background-strong));
 	--voiced-border: color-mix(in oklch, var(--primary) 20%, var(--background-strong));
@@ -139,6 +144,9 @@
 	--frequency-low: oklch(0.42 0.02 257);
 	--frequency-high: oklch(0.88 0.03 257);
 	--diagram: oklch(0.25 0.015 257);
+	--diagram-tissue: oklch(0.6 0.02 257);
+	--diagram-tongue: oklch(0.66 0.1 15);
+	--diagram-tooth: oklch(0.93 0.012 90);
 	--map-space: oklch(0.115 0.01 257);
 	--map-water: oklch(0.19 0.024 255);
 	--map-land: oklch(0.29 0.018 255);
@@ -209,6 +217,11 @@
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-ring: var(--sidebar-ring);
 	--color-diagram: var(--diagram);
+	--color-diagram-tissue: var(--diagram-tissue);
+	--color-diagram-tongue: var(--diagram-tongue);
+	--color-diagram-tooth: var(--diagram-tooth);
+	--color-diagram-air: var(--diagram-air);
+	--color-diagram-voice: var(--diagram-voice);
 	--color-voiced: var(--voiced);
 	--color-voiced-border: var(--voiced-border);
 	--color-map-space: var(--map-space);

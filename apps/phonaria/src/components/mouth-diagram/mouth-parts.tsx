@@ -1,0 +1,246 @@
+import type { ReactNode } from "react";
+import type { Point } from "./geometry";
+import {
+	FOLDS,
+	FOLDS_MIDDLE,
+	HEAD_PATH,
+	JAW_PIVOT,
+	LARYNX_BACK_PATH,
+	LOWER_TOOTH_PATH,
+	NASAL,
+	NECK_PATH,
+	oralRouteFor,
+	PALATE_PATH,
+	type Pose,
+	shapesFor,
+	TRUNK,
+	UPPER_TOOTH_PATH,
+	VIEW_BOX,
+} from "./model";
+import { MOUTH_SOUNDS, REST } from "./sounds";
+
+/** Cuts the jaw outline down to its lip. */
+const LIP_ONLY = "inset(0 82% 28% 0)";
+
+/**
+ * Prototype: each piece the mouth diagram is built from, drawn on its own over
+ * a faint copy of the whole. A solid shape is the piece as drawn; thin lines are
+ * the other positions it takes. The cards are in the order the pieces are painted.
+ */
+export function MouthParts() {
+	const rest = shapesFor(REST);
+	const variant = (change: Partial<Pose>) => shapesFor({ ...REST, ...change });
+	const jawShut = variant({ jaw: 1 });
+	const jawOpen = variant({ jaw: 7 });
+	const rounded = variant({ lipRound: 1 });
+	const closed = variant({ lipClose: 1, jaw: 2 });
+	const lowered = variant({ velum: 1 });
+	const tonguePoses = uniqueTonguePoses();
+	const oral = oralRouteFor(REST).track.points;
+
+	return (
+		<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+			<Part
+				title="Jaw, lower lip and chin"
+				note="One outline that turns about a hinge behind the throat (the dot). Solid: as drawn. Lines: nearly shut, and wide open."
+			>
+				<g transform={rest.jaw}>
+					<path d={rest.jawBody} className="fill-diagram-tissue" />
+				</g>
+				<Outline transform={jawShut.jaw} d={jawShut.jawBody} />
+				<Outline transform={jawOpen.jaw} d={jawOpen.jawBody} />
+				<circle cx={JAW_PIVOT[0]} cy={JAW_PIVOT[1]} r={6} className="fill-diagram-voice" />
+			</Part>
+
+			<Part
+				title="Tongue"
+				note={`Nine points joined by a smooth curve, fading into the flesh below. Solid: as drawn. Lines: the ${tonguePoses.length} other shapes the test sounds use.`}
+			>
+				<path d={rest.tongue} className="fill-diagram-tongue" />
+				{tonguePoses.map((pose) => (
+					<Outline key={pose.tongue.join()} d={shapesFor(pose).tongue} />
+				))}
+			</Part>
+
+			<Part
+				title="Neck and epiglottis"
+				note="The front of the neck, with the flap that rises behind the root of the tongue. Fixed."
+			>
+				<path d={NECK_PATH} className="fill-diagram-tissue" />
+			</Part>
+
+			<Part
+				title="Head"
+				note="Skull, nose and the back wall of the throat. The space under its arch is the inside of the nose. Fixed."
+			>
+				<path d={HEAD_PATH} className="fill-diagram-tissue" />
+			</Part>
+
+			<Part title="Back of the voice box" note="Where the vocal folds are anchored. Fixed.">
+				<path d={LARYNX_BACK_PATH} className="fill-diagram-tissue" />
+			</Part>
+
+			<Part
+				title="Roof of the mouth"
+				note="The hard palate, the gum ridge and the gum the top teeth sit in. Fixed."
+			>
+				<path d={PALATE_PATH} className="fill-diagram-tissue" />
+			</Part>
+
+			<Part
+				title="Lips"
+				note="The upper lip is its own shape; the lower one is part of the jaw. Solid: as drawn. Lines: rounded, and pressed together (dashed)."
+			>
+				<path d={rest.upperLip} className="fill-diagram-tissue" />
+				<g transform={rest.jaw}>
+					<path d={rest.jawBody} className="fill-diagram-tissue" clipPath={LIP_ONLY} />
+				</g>
+				<Outline d={rounded.upperLip} />
+				<Outline transform={rounded.jaw} d={rounded.jawBody} clipPath={LIP_ONLY} />
+				<Outline d={closed.upperLip} dashed />
+				<Outline transform={closed.jaw} d={closed.jawBody} clipPath={LIP_ONLY} dashed />
+			</Part>
+
+			<Part
+				title="Soft palate"
+				note="Solid: raised, shutting off the nose. Line: lowered, as drawn, letting air into it."
+			>
+				<path d={rest.velum} className="fill-diagram-tissue" />
+				<Outline d={lowered.velum} />
+			</Part>
+
+			<Part
+				title="Teeth"
+				note="Cut from the tips of the gum and jaw outlines so they can be coloured. The bottom one rides on the jaw."
+			>
+				<path d={UPPER_TOOTH_PATH} className="fill-diagram-tooth" />
+				<g transform={rest.jaw}>
+					<path d={LOWER_TOOTH_PATH} className="fill-diagram-tooth" />
+				</g>
+			</Part>
+
+			<Part
+				title="Air paths"
+				note="The lines the air dots travel: up the windpipe, then out through the mouth or the nose (dotted). The mouth path is redrawn for every pose, halfway between tongue and roof."
+			>
+				<Path points={TRUNK.points} />
+				<Path points={oral} />
+				<Path points={NASAL.points} dashed />
+			</Part>
+
+			<Part
+				title="Vocal folds"
+				note="A mark across the voice box: two stubs when the folds are apart, a rippling line when they buzz, a bar when they shut. Shown apart."
+			>
+				<line
+					x1={FOLDS.front[0]}
+					y1={FOLDS.front[1]}
+					x2={FOLDS.back[0]}
+					y2={FOLDS.back[1]}
+					strokeWidth={5}
+					strokeLinecap="round"
+					strokeDasharray="24 22"
+					className="stroke-diagram-tooth"
+				/>
+				<circle
+					cx={FOLDS_MIDDLE[0]}
+					cy={FOLDS_MIDDLE[1]}
+					r={48}
+					fill="none"
+					strokeWidth={2.5}
+					strokeDasharray="5 4"
+					className="stroke-diagram-voice"
+				/>
+			</Part>
+		</div>
+	);
+}
+
+/** Each distinct tongue shape in the test sounds, other than the resting one. */
+function uniqueTonguePoses(): Pose[] {
+	const seen = new Set([REST.tongue]);
+	const poses: Pose[] = [];
+	for (const sound of MOUTH_SOUNDS) {
+		for (const { pose } of sound.steps) {
+			if (seen.has(pose.tongue)) continue;
+			seen.add(pose.tongue);
+			poses.push(pose);
+		}
+	}
+	return poses;
+}
+
+function Part({ title, note, children }: { title: string; note: string; children: ReactNode }) {
+	const rest = shapesFor(REST);
+	return (
+		<figure className="flex flex-col gap-2">
+			<svg
+				viewBox={VIEW_BOX}
+				role="img"
+				aria-label={title}
+				className="aspect-square w-full rounded-2xl bg-diagram"
+			>
+				<g opacity={0.16} className="fill-diagram-tissue">
+					{[
+						HEAD_PATH,
+						NECK_PATH,
+						LARYNX_BACK_PATH,
+						PALATE_PATH,
+						rest.tongue,
+						rest.velum,
+						rest.upperLip,
+					].map((d) => (
+						<path key={d} d={d} />
+					))}
+					<g transform={rest.jaw}>
+						<path d={rest.jawBody} />
+					</g>
+				</g>
+				{children}
+			</svg>
+			<figcaption className="flex flex-col gap-0.5">
+				<span className="text-sm font-semibold text-foreground">{title}</span>
+				<span className="text-xs text-muted-foreground">{note}</span>
+			</figcaption>
+		</figure>
+	);
+}
+
+/** Another position of a part, as a thin line. */
+function Outline({
+	d,
+	transform,
+	clipPath,
+	dashed,
+}: {
+	d: string;
+	transform?: string;
+	clipPath?: string;
+	dashed?: boolean;
+}) {
+	return (
+		<g transform={transform}>
+			<path
+				d={d}
+				clipPath={clipPath}
+				fill="none"
+				strokeWidth={1.8}
+				strokeDasharray={dashed ? "5 4" : undefined}
+				className="stroke-diagram-tooth"
+			/>
+		</g>
+	);
+}
+
+function Path({ points, dashed }: { points: readonly Point[]; dashed?: boolean }) {
+	return (
+		<polyline
+			points={points.map((point) => point.join(",")).join(" ")}
+			fill="none"
+			strokeWidth={3}
+			strokeLinecap="round"
+			strokeDasharray={dashed ? "2 7" : undefined}
+			className="stroke-diagram-air"
+		/>
+	);
+}

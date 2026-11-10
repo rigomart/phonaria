@@ -68,7 +68,7 @@ const details = observation(
 			playControls: Array.from(document.querySelectorAll('button[aria-label^="Play"]'))
 				.filter((button) => button.getClientRects().length > 0)
 				.map((button) => button.getAttribute("aria-label")),
-			diagram: visible('img[alt="Voiceless glottal fricative articulation"]'),
+			diagram: visible('[role="img"][aria-label="Voiceless glottal fricative articulation"]'),
 		};
 	},
 	{ open: true, label: true, playControls: ["Play H"], diagram: true },
