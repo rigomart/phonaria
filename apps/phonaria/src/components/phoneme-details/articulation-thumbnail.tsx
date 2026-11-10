@@ -5,7 +5,10 @@ import {
 	type TargetAccent,
 	type VowelArticulatoryFeatures,
 } from "@phonaria/phonetics-data";
+import { useSearch } from "@tanstack/react-router";
 import { Image } from "@/components/image";
+import { MouthStill } from "@/components/mouth-diagram/mouth-diagram";
+import { getMouthSound } from "@/components/mouth-diagram/sounds";
 import { getPublicAssetBaseUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
@@ -46,6 +49,11 @@ export function ArticulationThumbnail({
 			PhonemeArticulation
 		>
 	)[phonemeId];
+
+	// Prototype: `?diagram=animated` swaps in a still of the animated mouth.
+	const { diagram } = useSearch({ strict: false }) as { diagram?: string };
+	const mouth = diagram === "animated" ? getMouthSound(phonemeId) : undefined;
+	if (mouth) return <MouthStill sound={mouth} />;
 
 	if (articulation.category === "consonant") {
 		const affricate = articulation.features.manner === "affricate";

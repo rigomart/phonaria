@@ -1,7 +1,7 @@
-import { Button } from "@phonaria/ui/components/button";
-import { Toggle } from "@phonaria/ui/components/toggle";
-import { Pause, Play, Tags } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@phonaria/ui/components/dialog";
+import { Maximize2, Pause, Play, Tags } from "lucide-react";
 import {
+	type ComponentProps,
 	memo,
 	type Ref,
 	useEffect,
@@ -12,34 +12,43 @@ import {
 	useState,
 } from "react";
 import { cn } from "@/lib/utils";
-import { type AirStyle, type Frame, MouthEngine } from "./engine";
+import { type Frame, MouthEngine } from "./engine";
 import type { Point } from "./geometry";
 import {
 	FOLDS_MIDDLE,
 	HEAD_PATH,
 	LARYNX_BACK_PATH,
+	LOWER_TOOTH_PATH,
 	NECK_PATH,
 	PALATE_PATH,
-	LOWER_TOOTH_PATH,
 	UPPER_TOOTH_PATH,
 	VIEW_BOX,
 } from "./model";
 import type { LabelId, MouthSound, Step } from "./sounds";
 
 /**
+ * How long a diagram plays by itself before it comes to rest. It sits beside
+ * text people are reading, so it shows the sound and then keeps still.
+ */
+const AUTOPLAY_MS = 8000;
+
+/**
  * A side view of the mouth that shows how a sound is made: air travels up from
  * the lungs, and the vocal folds open, buzz or shut. A sound that can be held
- * keeps the mouth still; one that has to move plays its steps in a loop. With
- * reduced motion on, nothing moves until played.
+ * keeps the mouth still; one that has to move plays its steps in a loop.
+ *
+ * It plays for a few seconds when it comes into view, then rests on the
+ * sound's main position until played again. With reduced motion on, nothing
+ * moves until played. Its controls sit in the empty corners of the drawing.
  */
 export function MouthDiagram({
 	sound,
-	air = "dots",
+	large = false,
 	className,
 }: {
 	sound: MouthSound;
-	/** Prototype: how the air is drawn. */
-	air?: AirStyle;
+	/** The lightbox's copy: it keeps playing, names every part, and can't be enlarged again. */
+	large?: boolean;
 	className?: string;
 }) {
 	const { steps } = sound;
@@ -49,27 +58,31 @@ export function MouthDiagram({
 	);
 	const [stepIndex, setStepIndex] = useState(keyIndex);
 	const [playing, setPlaying] = useState(false);
-	const [allLabels, setAllLabels] = useState(false);
+	const [allLabels, setAllLabels] = useState(large);
+	const [enlarged, setEnlarged] = useState(false);
 	// `still` is the main position: drawn before anything runs, and all there is without scripts.
 	const { engine, still } = useMemo(() => {
-		const engine = new MouthEngine(steps, air);
+		const engine = new MouthEngine(steps);
 		return { engine, still: engine.seek(keyIndex) };
-	}, [steps, keyIndex, air]);
+	}, [steps, keyIndex]);
 	const scene = useRef<SceneHandle>(null);
 	const frameRef = useRef<HTMLDivElement>(null);
 	const [visible, setVisible] = useState(true);
+	/** Milliseconds left before it comes to rest; endless once someone presses play. */
+	const playLeft = useRef(0);
 
 	const show = (frame: Frame) => {
 		scene.current?.paint(frame);
 		setStepIndex(frame.stepIndex);
 	};
 
-	// Start on the main position, then play unless motion is unwelcome.
+	// Start on the main position, then play for a while unless motion is unwelcome.
 	useEffect(() => {
 		scene.current?.paint(still);
 		setStepIndex(still.stepIndex);
+		playLeft.current = large ? Number.POSITIVE_INFINITY : AUTOPLAY_MS;
 		setPlaying(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-	}, [still]);
+	}, [still, large]);
 
 	useEffect(() => {
 		const element = frameRef.current;
@@ -82,21 +95,36 @@ export function MouthDiagram({
 	}, []);
 
 	useEffect(() => {
-		if (!playing || !visible) return;
+		if (!playing || !visible || enlarged) return;
 		let request = 0;
 		let last = performance.now();
 		const loop = (now: number) => {
 			// A long gap (a background tab) must not fling the air across the mouth, and the
 			// first frame's clock can read earlier than the moment the loop was set up.
-			show(engine.advance(Math.max(0, Math.min(48, now - last))));
+			const elapsed = Math.max(0, Math.min(48, now - last));
 			last = now;
+			const frame = engine.advance(elapsed);
+			scene.current?.paint(frame);
+			setStepIndex(frame.stepIndex);
+			playLeft.current -= elapsed;
+			// Time is up: stop the next time the main position is being held.
+			if (playLeft.current <= 0 && frame.stepIndex === keyIndex && frame.holding) {
+				setPlaying(false);
+				return;
+			}
 			request = requestAnimationFrame(loop);
 		};
 		request = requestAnimationFrame(loop);
 		return () => cancelAnimationFrame(request);
-	}, [playing, visible, engine]);
+	}, [playing, visible, enlarged, engine, keyIndex]);
 
 	const step = steps[stepIndex] as Step;
+	const labels = allLabels ? ALL_LABELS : sound.focus;
+	const togglePlaying = () => {
+		// Pressing play is asking to watch: keep going until paused.
+		playLeft.current = Number.POSITIVE_INFINITY;
+		setPlaying(!playing);
+	};
 	const goTo = (index: number) => {
 		setPlaying(false);
 		show(engine.seek(index));
@@ -112,9 +140,9 @@ export function MouthDiagram({
 					ref={scene}
 					title={`Side view of the mouth making /${sound.ipa}/`}
 					initial={still}
-					labels={allLabels ? ALL_LABELS : sound.focus}
+					labels={labels}
 				/>
-				{(allLabels ? ALL_LABELS : sound.focus).map((id) => (
+				{labels.map((id) => (
 					<span
 						key={id}
 						className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-diagram px-2 py-0.5 text-xs font-medium whitespace-nowrap text-diagram-tooth"
@@ -123,59 +151,121 @@ export function MouthDiagram({
 						{LABELS[id].text}
 					</span>
 				))}
+
+				{/* Below the chin, where the drawing is empty. */}
+				<div className="absolute bottom-2 left-2 flex items-center gap-0.5">
+					<OverlayButton label={playing ? "Pause" : "Play"} onClick={togglePlaying}>
+						{playing ? <Pause /> : <Play />}
+					</OverlayButton>
+					{steps.length > 1 ? (
+						<div role="group" aria-label="Steps" className="flex items-center">
+							{steps.map((_, index) => (
+								<OverlayButton
+									key={index}
+									label={`Step ${index + 1} of ${steps.length}`}
+									current={index === stepIndex}
+									onClick={() => goTo(index)}
+								>
+									{index + 1}
+								</OverlayButton>
+							))}
+						</div>
+					) : null}
+				</div>
+
+				{/* Over the skull, likewise empty. */}
+				<div className="absolute top-2 right-2 flex items-center gap-1">
+					<OverlayButton
+						label={allLabels ? "Hide part names" : "Name every part"}
+						pressed={allLabels}
+						onClick={() => setAllLabels(!allLabels)}
+					>
+						<Tags />
+					</OverlayButton>
+					{large ? null : (
+						// A phone has no room to show it any bigger.
+						<OverlayButton
+							label="Enlarge"
+							className="hidden sm:flex"
+							onClick={() => setEnlarged(true)}
+						>
+							<Maximize2 />
+						</OverlayButton>
+					)}
+				</div>
 			</div>
-			<figcaption className="min-h-10 text-sm text-foreground">{step.caption}</figcaption>
-			<div className="flex items-center gap-2">
-				<Button
-					variant="outline"
-					size="icon"
-					aria-label={playing ? "Pause" : "Play"}
-					onClick={() => setPlaying(!playing)}
-				>
-					{playing ? <Pause /> : <Play />}
-				</Button>
-				{steps.length > 1 ? (
-					<div role="group" aria-label="Steps" className="flex items-center gap-1">
-						{steps.map((_, index) => (
-							<button
-								key={index}
-								type="button"
-								aria-label={`Step ${index + 1} of ${steps.length}`}
-								aria-current={index === stepIndex ? "step" : undefined}
-								onClick={() => goTo(index)}
-								className={cn(
-									"flex size-9 cursor-pointer items-center justify-center rounded-full text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
-									index === stepIndex
-										? "bg-primary text-primary-foreground"
-										: "text-muted-foreground hover:bg-muted hover:text-foreground",
-								)}
-							>
-								{index + 1}
-							</button>
-						))}
-					</div>
-				) : null}
-				<Toggle
-					size="sm"
-					variant="outline"
-					className="ml-auto"
-					pressed={allLabels}
-					onPressedChange={setAllLabels}
-				>
-					<Tags aria-hidden="true" />
-					Labels
-				</Toggle>
-			</div>
+			<figcaption className={cn("text-foreground", large ? "text-base" : "min-h-10 text-sm")}>
+				{step.caption}
+			</figcaption>
+
+			{large ? null : (
+				<Dialog open={enlarged} onOpenChange={setEnlarged}>
+					<DialogContent className="max-h-[calc(100svh-2rem)] overflow-y-auto sm:max-w-xl">
+						<DialogTitle className="font-display text-xl">
+							/{sound.ipa}/{" "}
+							<span className="text-sm font-normal text-muted-foreground">
+								as in {sound.example}
+							</span>
+						</DialogTitle>
+						<MouthDiagram sound={sound} large />
+					</DialogContent>
+				</Dialog>
+			)}
 		</figure>
+	);
+}
+
+/**
+ * The sound's main position as a still picture, for places too small to play
+ * it or name its parts. Decorative: whatever sits beside it says what it shows.
+ */
+export function MouthStill({ sound, className }: { sound: MouthSound; className?: string }) {
+	const still = useMemo(() => {
+		const keyIndex = sound.steps.findIndex((step) => step.key);
+		return new MouthEngine(sound.steps).seek(Math.max(0, keyIndex));
+	}, [sound]);
+	return (
+		<div
+			aria-hidden="true"
+			className={cn("aspect-square w-full overflow-hidden rounded-2xl bg-diagram", className)}
+		>
+			<Scene title="" initial={still} labels={NO_LABELS} />
+		</div>
+	);
+}
+
+const NO_LABELS: readonly LabelId[] = [];
+
+/** A small round control laid over the drawing. It inverts when hovered, pressed or current. */
+function OverlayButton({
+	label,
+	pressed,
+	current,
+	className,
+	...props
+}: ComponentProps<"button"> & { label: string; pressed?: boolean; current?: boolean }) {
+	return (
+		<button
+			type="button"
+			aria-label={label}
+			title={label}
+			aria-pressed={pressed}
+			aria-current={current ? "step" : undefined}
+			className={cn(
+				"flex size-7 cursor-pointer items-center justify-center rounded-full text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-diagram-air motion-reduce:transition-none [&_svg]:size-3.5",
+				pressed || current
+					? "bg-diagram-tooth text-diagram"
+					: "bg-diagram text-diagram-tooth hover:bg-diagram-tooth hover:text-diagram",
+				className,
+			)}
+			{...props}
+		/>
 	);
 }
 
 // --- The drawing ---
 
 type SceneHandle = { paint: (frame: Frame) => void };
-
-/** How heavy each line of a stream is, in the order the engine sends them: the middle one first. */
-const STREAM_WIDTHS = [3.2, 2.4, 2.5] as const;
 
 /**
  * The drawing. It renders the sound's main position once, and `paint` then
@@ -187,7 +277,7 @@ const Scene = memo(function Scene({
 	initial,
 	labels,
 }: {
-	ref: Ref<SceneHandle>;
+	ref?: Ref<SceneHandle>;
 	title: string;
 	initial: Frame;
 	labels: readonly LabelId[];
@@ -206,7 +296,6 @@ const Scene = memo(function Scene({
 	const air = useRef<SVGGElement>(null);
 	const airBright = useRef<SVGPathElement>(null);
 	const airFaint = useRef<SVGPathElement>(null);
-	const streams = useRef<SVGGElement>(null);
 	const folds = useRef<SVGPathElement>(null);
 	const buzz = useRef<SVGCircleElement>(null);
 	const ripples = useRef<SVGGElement>(null);
@@ -223,14 +312,6 @@ const Scene = memo(function Scene({
 			airBright.current?.setAttribute("d", frame.air.bright);
 			airFaint.current?.setAttribute("d", frame.air.faint);
 			air.current?.setAttribute("opacity", frame.air.opacity.toFixed(2));
-			streams.current?.childNodes.forEach((pair, index) => {
-				const stream = frame.air.streams[index];
-				const [line, glints] = pair.childNodes as unknown as [SVGPathElement, SVGPathElement];
-				line.setAttribute("d", stream?.d ?? "");
-				glints.setAttribute("d", stream?.d ?? "");
-				glints.setAttribute("stroke-dasharray", stream?.dash ?? "");
-				glints.setAttribute("stroke-dashoffset", (stream?.offset ?? 0).toFixed(1));
-			});
 
 			folds.current?.setAttribute("d", frame.folds);
 			folds.current?.setAttribute("stroke", voiceColor(frame, "var(--diagram-tooth)"));
@@ -346,28 +427,11 @@ const Scene = memo(function Scene({
 				strokeLinejoin="round"
 				strokeLinecap="round"
 				className="stroke-diagram-air"
+				strokeWidth={4.4}
 			>
-				{/* Dots: one per puff, drawn as zero-length round-capped strokes. */}
-				<g strokeWidth={4.4}>
-					<path ref={airFaint} d={initial.air.faint} opacity={0.4} />
-					<path ref={airBright} d={initial.air.bright} />
-				</g>
-				{/* Streams: each a soft unbroken line with bright glints sliding along it. */}
-				<g ref={streams}>
-					{STREAM_WIDTHS.map((width, index) => {
-						const stream = initial.air.streams[index];
-						return (
-							<g key={width} strokeWidth={width}>
-								<path d={stream?.d} opacity={0.34} />
-								<path
-									d={stream?.d}
-									strokeDasharray={stream?.dash}
-									strokeDashoffset={stream?.offset.toFixed(1)}
-								/>
-							</g>
-						);
-					})}
-				</g>
+				{/* One dot per puff, drawn as zero-length round-capped strokes. */}
+				<path ref={airFaint} d={initial.air.faint} opacity={0.4} />
+				<path ref={airBright} d={initial.air.bright} />
 			</g>
 
 			<circle
@@ -410,7 +474,7 @@ const LABELS: Record<LabelId, LabelSpec> = {
 	nose: { text: "nose", at: [222, 48] },
 	tongue: { text: "tongue", at: [285, 300] },
 	lips: { text: "lips", at: [40, 294], target: [102, 262] },
-	folds: { text: "vocal folds", at: [258, 440], target: [372, 474] },
+	folds: { text: "vocal folds", at: [292, 434], target: [372, 474] },
 };
 
 const ALL_LABELS = Object.keys(LABELS) as LabelId[];

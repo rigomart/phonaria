@@ -1,6 +1,5 @@
 import { AirDots } from "./air-dots";
-import type { Air, AirDrawing, AirState } from "./air-path";
-import { AirStreams } from "./air-streams";
+import type { AirDrawing, AirState } from "./air-path";
 import { easeInOut, type Point } from "./geometry";
 import {
 	FOLDS,
@@ -17,6 +16,8 @@ import type { Step, Voice } from "./sounds";
 /** Everything the drawing needs for one instant. */
 export type Frame = {
 	stepIndex: number;
+	/** The step's pose has been reached and is being held. */
+	holding: boolean;
 	shapes: Shapes;
 	air: AirDrawing;
 	folds: string;
@@ -27,9 +28,6 @@ export type Frame = {
 	/** Where the sound is shaped: the seal or the narrow gap, with a breathing radius. */
 	contact: { point: Point; radius: number } | null;
 };
-
-/** How the air is drawn: a cloud of dots, or streams of long flowing lines. */
-export type AirStyle = "dots" | "streams";
 
 const duration = (step: Step) => step.move + step.hold;
 
@@ -52,6 +50,7 @@ type Instant = {
 	stopped: boolean;
 	hissing: boolean;
 	arrived: boolean;
+	holding: boolean;
 };
 
 function instantAt(steps: readonly Step[], time: number): Instant {
@@ -76,6 +75,7 @@ function instantAt(steps: readonly Step[], time: number): Instant {
 			: Boolean(previous.stop) && moving && progress < 0.12,
 		hissing: Boolean(step.hiss) && arrived,
 		arrived,
+		holding: !moving,
 	};
 }
 
@@ -90,14 +90,9 @@ export class MouthEngine {
 	private foldGap = 1;
 	private burst = 0;
 	private wasStopped = false;
-	private readonly air: Air;
+	private readonly air = new AirDots();
 
-	constructor(
-		private readonly steps: readonly Step[],
-		style: AirStyle = "dots",
-	) {
-		this.air = style === "streams" ? new AirStreams() : new AirDots();
-	}
+	constructor(private readonly steps: readonly Step[]) {}
 
 	/** Jumps to the moment `index` starts to hold, with the air already where it would be. */
 	seek(index: number): Frame {
@@ -164,6 +159,7 @@ export class MouthEngine {
 
 		return {
 			stepIndex: instant.index,
+			holding: instant.holding,
 			shapes: shapesFor(pose),
 			air: this.air.draw(state),
 			folds: foldsPath(step.voice, this.foldGap, this.clock),

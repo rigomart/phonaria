@@ -78,20 +78,7 @@ export function airAt(
 	};
 }
 
-/** What to draw for the air: dots as two paths, or streams as lines with glints sliding along them. */
-export type AirDrawing = {
-	opacity: number;
-	bright: string;
-	faint: string;
-	streams: { d: string; dash: string; offset: number }[];
-};
-
-/** One way of drawing the air. It keeps its own state between frames. */
-export type Air = {
-	/** Puts the air where it would be once this instant had lasted a while. */
-	settle(state: AirState): void;
-	advance(ms: number, state: AirState): void;
-	draw(state: AirState): AirDrawing;
-};
+/** The air as two paths of dots: the bright puffs, and the faint ones between bursts of voice. */
+export type AirDrawing = { opacity: number; bright: string; faint: string };
 
 export const at = ([x, y]: Point) => `${x.toFixed(1)} ${y.toFixed(1)}`;

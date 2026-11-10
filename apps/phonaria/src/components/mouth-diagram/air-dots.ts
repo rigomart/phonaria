@@ -1,6 +1,5 @@
 import {
 	AIR_SPEED,
-	type Air,
 	type AirDrawing,
 	type AirState,
 	airAt,
@@ -33,7 +32,7 @@ const BUZZ_HZ = 8;
 const BUZZ_SPACING = AIR_SPEED / BUZZ_HZ;
 
 /** The air as a cloud of dots that crowd behind a seal and scatter where the air is rough. */
-export class AirDots implements Air {
+export class AirDots {
 	private particles: Particle[] = [];
 	private spawnDebt = 0;
 	private opacity = 1;
@@ -144,7 +143,7 @@ export class AirDots implements Air {
 			if (particle.faint) faint += d;
 			else bright += d;
 		}
-		return { opacity: this.opacity, bright, faint, streams: [] };
+		return { opacity: this.opacity, bright, faint };
 	}
 }
 
