@@ -164,7 +164,8 @@ const pose = (tongue: TonguePoints, rest: Partial<Omit<Pose, "tongue">> = {}): P
 	tongue,
 });
 
-const REST = pose(TONGUE.rest);
+/** The relaxed, slightly open mouth every sound starts from. */
+export const REST = pose(TONGUE.rest);
 
 const relaxed = (caption = "The mouth starts relaxed and slightly open."): Step => ({
 	caption,

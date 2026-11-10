@@ -1,6 +1,7 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { Image } from "@/components/image";
 import { MouthDiagram } from "@/components/mouth-diagram/mouth-diagram";
+import { MouthParts } from "@/components/mouth-diagram/mouth-parts";
 import { MOUTH_SOUNDS } from "@/components/mouth-diagram/sounds";
 import { notFound } from "@/lib/navigation";
 import { getPublicAssetBaseUrl } from "@/lib/site";
@@ -56,6 +57,15 @@ function MouthPrototype() {
 					</section>
 				))}
 			</div>
+			<section className="flex flex-col gap-4">
+				<h2 className="font-display text-xl font-semibold tracking-tight">The parts</h2>
+				<p className="max-w-3xl text-sm text-muted-foreground">
+					Every diagram above is the same set of shapes, painted in this order. Nothing is outlined,
+					so shapes that overlap join without a seam. The faint drawing behind each one is the whole
+					mouth at rest, for position.
+				</p>
+				<MouthParts />
+			</section>
 		</div>
 	);
 }
