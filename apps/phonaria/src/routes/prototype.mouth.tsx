@@ -21,9 +21,9 @@ const CURRENT_FILE: Record<string, string> = { CH: "CH_stop", J: "J_stop" };
 
 function MouthPrototype() {
 	// `?only=T` shows one sound large, for a close look.
-	// `?air=lines` draws the air as streaks instead of dots.
+	// `?air=streams` draws the air as flowing lines instead of dots.
 	const { only, air: airParam } = useSearch({ strict: false }) as { only?: string; air?: string };
-	const air = airParam === "lines" ? "lines" : "dots";
+	const air = airParam === "streams" ? "streams" : "dots";
 	const single = MOUTH_SOUNDS.find((sound) => sound.id === only);
 	if (single) {
 		return (
@@ -40,10 +40,10 @@ function MouthPrototype() {
 				</h1>
 				<nav aria-label="Air style" className="flex items-center gap-1 text-sm">
 					<span className="mr-1 text-muted-foreground">Air as</span>
-					{(["dots", "lines"] as const).map((style) => (
+					{(["dots", "streams"] as const).map((style) => (
 						<a
 							key={style}
-							href={style === "dots" ? "?" : "?air=lines"}
+							href={style === "dots" ? "?" : "?air=streams"}
 							aria-current={air === style ? "page" : undefined}
 							className={cn(
 								"rounded-full px-3 py-1.5 font-medium",

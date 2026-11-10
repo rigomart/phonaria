@@ -293,26 +293,6 @@ const affricate = (id: string, ipa: string, example: string, voiced: boolean): M
 	],
 });
 
-/** A sound that slides into the vowel after it. */
-const glide = (
-	id: string,
-	ipa: string,
-	example: string,
-	focus: LabelId[],
-	start: Pose,
-	[shaped, released]: [string, string],
-): MouthSound => ({
-	id,
-	ipa,
-	example,
-	focus,
-	steps: [
-		relaxed(),
-		{ caption: shaped, pose: start, move: 420, hold: 1300, voice: "on", flow: true, key: true },
-		{ caption: released, pose: OPEN, move: 260, hold: 1100, voice: "on", flow: true },
-	],
-});
-
 const OPEN = pose(TONGUE.open, { jaw: 6 });
 const LIPS_SHUT = pose(TONGUE.rest, { jaw: 2, lipClose: 1 });
 const ALVEOLAR_SEAL = pose(TONGUE.alveolarStop, { jaw: 3 });
@@ -473,21 +453,20 @@ export const MOUTH_SOUNDS: MouthSound[] = [
 		voice: "on",
 		flow: true,
 	}),
-	glide(
-		"W",
-		"w",
-		"west",
-		["lips"],
-		pose(TONGUE.velarNear, { jaw: 3, lipRound: 1, lipClose: 0.2 }),
-		[
-			"The lips push forward into a small circle, and the back of the tongue rises.",
-			"The lips open quickly and the tongue glides into the next vowel.",
-		],
-	),
-	glide("Y", "j", "you", ["roof"], pose(TONGUE.palatalNear, { jaw: 3 }), [
-		"The middle of the tongue rises close to the roof of the mouth.",
-		"The tongue drops quickly into the next vowel.",
-	]),
+	held("W", "w", "west", ["lips"], {
+		caption:
+			"The lips push forward into a small circle and the back of the tongue rises. The buzzing air flows out as the mouth glides into the next vowel.",
+		pose: pose(TONGUE.velarNear, { jaw: 3, lipRound: 1, lipClose: 0.2 }),
+		voice: "on",
+		flow: true,
+	}),
+	held("Y", "j", "you", ["roof"], {
+		caption:
+			"The middle of the tongue rises close to the roof of the mouth. The buzzing air flows out as the mouth glides into the next vowel.",
+		pose: pose(TONGUE.palatalNear, { jaw: 3 }),
+		voice: "on",
+		flow: true,
+	}),
 	{
 		id: "GLOTTAL",
 		ipa: "ʔ",

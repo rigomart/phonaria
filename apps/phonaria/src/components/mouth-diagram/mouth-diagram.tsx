@@ -112,7 +112,6 @@ export function MouthDiagram({
 					ref={scene}
 					title={`Side view of the mouth making /${sound.ipa}/`}
 					initial={still}
-					airStyle={air}
 					labels={allLabels ? ALL_LABELS : sound.focus}
 				/>
 				{(allLabels ? ALL_LABELS : sound.focus).map((id) => (
@@ -175,6 +174,9 @@ export function MouthDiagram({
 
 type SceneHandle = { paint: (frame: Frame) => void };
 
+/** How heavy each line of a stream is, in the order the engine sends them: the middle one first. */
+const STREAM_WIDTHS = [3.2, 2.4, 2.5] as const;
+
 /**
  * The drawing. It renders the sound's main position once, and `paint` then
  * writes each frame straight to its elements, so playing never re-renders it.
@@ -183,16 +185,15 @@ const Scene = memo(function Scene({
 	ref,
 	title,
 	initial,
-	airStyle,
 	labels,
 }: {
 	ref: Ref<SceneHandle>;
 	title: string;
 	initial: Frame;
-	airStyle: AirStyle;
 	labels: readonly LabelId[];
 }) {
 	const gradientId = useId();
+	const fadeId = useId();
 	const jawClipId = useId();
 	const { shapes } = initial;
 	const initialVoiceColor = voiceColor(initial, "var(--diagram-tooth)");
@@ -205,6 +206,7 @@ const Scene = memo(function Scene({
 	const air = useRef<SVGGElement>(null);
 	const airBright = useRef<SVGPathElement>(null);
 	const airFaint = useRef<SVGPathElement>(null);
+	const streams = useRef<SVGGElement>(null);
 	const folds = useRef<SVGPathElement>(null);
 	const buzz = useRef<SVGCircleElement>(null);
 	const ripples = useRef<SVGGElement>(null);
@@ -218,9 +220,17 @@ const Scene = memo(function Scene({
 			tongue.current?.setAttribute("d", frame.shapes.tongue);
 			velum.current?.setAttribute("d", frame.shapes.velum);
 			upperLip.current?.setAttribute("d", frame.shapes.upperLip);
-			airBright.current?.setAttribute("d", frame.airBright);
-			airFaint.current?.setAttribute("d", frame.airFaint);
-			air.current?.setAttribute("opacity", frame.airOpacity.toFixed(2));
+			airBright.current?.setAttribute("d", frame.air.bright);
+			airFaint.current?.setAttribute("d", frame.air.faint);
+			air.current?.setAttribute("opacity", frame.air.opacity.toFixed(2));
+			streams.current?.childNodes.forEach((pair, index) => {
+				const stream = frame.air.streams[index];
+				const [line, glints] = pair.childNodes as unknown as [SVGPathElement, SVGPathElement];
+				line.setAttribute("d", stream?.d ?? "");
+				glints.setAttribute("d", stream?.d ?? "");
+				glints.setAttribute("stroke-dasharray", stream?.dash ?? "");
+				glints.setAttribute("stroke-dashoffset", (stream?.offset ?? 0).toFixed(1));
+			});
 
 			folds.current?.setAttribute("d", frame.folds);
 			folds.current?.setAttribute("stroke", voiceColor(frame, "var(--diagram-tooth)"));
@@ -259,6 +269,20 @@ const Scene = memo(function Scene({
 					<stop offset="0" stopColor="var(--diagram-tongue)" />
 					<stop offset="1" stopColor="var(--diagram-tissue)" />
 				</linearGradient>
+				<linearGradient
+					id={`${fadeId}-ramp`}
+					gradientUnits="userSpaceOnUse"
+					x1="0"
+					y1="0"
+					x2="64"
+					y2="0"
+				>
+					<stop offset="0" stopColor="black" />
+					<stop offset="1" stopColor="white" />
+				</linearGradient>
+				<mask id={fadeId} maskUnits="userSpaceOnUse" x={-20} y={-20} width={540} height={540}>
+					<rect x={-20} y={-20} width={540} height={540} fill={`url(#${fadeId}-ramp)`} />
+				</mask>
 				{/* The back of the jaw may slide under the neck, never past it into the throat. */}
 				<clipPath id={jawClipId}>
 					<rect x={-20} y={-20} width={402} height={560} />
@@ -313,17 +337,37 @@ const Scene = memo(function Scene({
 				fill="none"
 			/>
 
-			{/* Air: one dot per puff, drawn as zero-length round-capped strokes. */}
+			{/* Air fades away as it leaves the head, toward the left edge. */}
 			<g
 				ref={air}
+				mask={`url(#${fadeId})`}
+				opacity={initial.air.opacity}
 				fill="none"
-				strokeWidth={airStyle === "lines" ? 2.6 : 4.4}
 				strokeLinejoin="round"
 				strokeLinecap="round"
 				className="stroke-diagram-air"
 			>
-				<path ref={airFaint} d={initial.airFaint} opacity={0.4} />
-				<path ref={airBright} d={initial.airBright} />
+				{/* Dots: one per puff, drawn as zero-length round-capped strokes. */}
+				<g strokeWidth={4.4}>
+					<path ref={airFaint} d={initial.air.faint} opacity={0.4} />
+					<path ref={airBright} d={initial.air.bright} />
+				</g>
+				{/* Streams: each a soft unbroken line with bright glints sliding along it. */}
+				<g ref={streams}>
+					{STREAM_WIDTHS.map((width, index) => {
+						const stream = initial.air.streams[index];
+						return (
+							<g key={width} strokeWidth={width}>
+								<path d={stream?.d} opacity={0.34} />
+								<path
+									d={stream?.d}
+									strokeDasharray={stream?.dash}
+									strokeDashoffset={stream?.offset.toFixed(1)}
+								/>
+							</g>
+						);
+					})}
+				</g>
 			</g>
 
 			<circle
