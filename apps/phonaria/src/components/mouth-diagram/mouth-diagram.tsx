@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 import { type Frame, MouthEngine } from "./engine";
 import type { Point } from "./geometry";
 import {
-	FOLDS,
 	FOLDS_MIDDLE,
 	HEAD_PATH,
 	LARYNX_BACK_PATH,
@@ -27,15 +26,11 @@ import {
 } from "./model";
 import type { LabelId, MouthSound, Step } from "./sounds";
 
-/** The vocal folds seen from above, in a circle below the chin. */
-const INSET = { x: 58, y: 452, radius: 38 } as const;
-const GLOTTIS = { top: INSET.y - 27, bottom: INSET.y + 21 } as const;
-
 /**
- * A side view of the mouth that plays out how a sound is made: the tongue,
- * lips and soft palate move, air travels up from the lungs, and the vocal
- * folds open, buzz or shut. It loops until paused; with reduced motion on it
- * waits on the sound's main position until played.
+ * A side view of the mouth that shows how a sound is made: air travels up from
+ * the lungs, and the vocal folds open, buzz or shut. A sound that can be held
+ * keeps the mouth still; one that has to move plays its steps in a loop. With
+ * reduced motion on, nothing moves until played.
  */
 export function MouthDiagram({ sound, className }: { sound: MouthSound; className?: string }) {
 	const { steps } = sound;
@@ -130,25 +125,27 @@ export function MouthDiagram({ sound, className }: { sound: MouthSound; classNam
 				>
 					{playing ? <Pause /> : <Play />}
 				</Button>
-				<div role="group" aria-label="Steps" className="flex items-center gap-1">
-					{steps.map((_, index) => (
-						<button
-							key={index}
-							type="button"
-							aria-label={`Step ${index + 1} of ${steps.length}`}
-							aria-current={index === stepIndex ? "step" : undefined}
-							onClick={() => goTo(index)}
-							className={cn(
-								"flex size-9 cursor-pointer items-center justify-center rounded-full text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
-								index === stepIndex
-									? "bg-primary text-primary-foreground"
-									: "text-muted-foreground hover:bg-muted hover:text-foreground",
-							)}
-						>
-							{index + 1}
-						</button>
-					))}
-				</div>
+				{steps.length > 1 ? (
+					<div role="group" aria-label="Steps" className="flex items-center gap-1">
+						{steps.map((_, index) => (
+							<button
+								key={index}
+								type="button"
+								aria-label={`Step ${index + 1} of ${steps.length}`}
+								aria-current={index === stepIndex ? "step" : undefined}
+								onClick={() => goTo(index)}
+								className={cn(
+									"flex size-9 cursor-pointer items-center justify-center rounded-full text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
+									index === stepIndex
+										? "bg-primary text-primary-foreground"
+										: "text-muted-foreground hover:bg-muted hover:text-foreground",
+								)}
+							>
+								{index + 1}
+							</button>
+						))}
+					</div>
+				) : null}
 				<Toggle
 					size="sm"
 					variant="outline"
@@ -215,7 +212,6 @@ const Scene = memo(function Scene({
 	labels: readonly LabelId[];
 }) {
 	const gradientId = useId();
-	const clipId = useId();
 	const jawClipId = useId();
 	const { shapes } = initial;
 	const initialVoiceColor = voiceColor(initial, "var(--diagram-tooth)");
@@ -231,10 +227,6 @@ const Scene = memo(function Scene({
 	const folds = useRef<SVGPathElement>(null);
 	const buzz = useRef<SVGCircleElement>(null);
 	const ripples = useRef<SVGGElement>(null);
-	const glottis = useRef<SVGPathElement>(null);
-	const foldLeft = useRef<SVGLineElement>(null);
-	const foldRight = useRef<SVGLineElement>(null);
-	const insetRing = useRef<SVGCircleElement>(null);
 	const contact = useRef<SVGCircleElement>(null);
 
 	useImperativeHandle(ref, () => ({
@@ -258,12 +250,6 @@ const Scene = memo(function Scene({
 					(frame.ripples[index as 0 | 1 | 2] * 0.9).toFixed(2),
 				);
 			});
-
-			const half = frame.glottisHalfWidth;
-			glottis.current?.setAttribute("d", glottisPath(half));
-			foldLeft.current?.setAttribute("x2", String(INSET.x - half - 3));
-			foldRight.current?.setAttribute("x2", String(INSET.x + half + 3));
-			insetRing.current?.setAttribute("stroke", voiceColor(frame, "var(--diagram-tissue)"));
 
 			const ring = contact.current;
 			if (ring) {
@@ -292,9 +278,6 @@ const Scene = memo(function Scene({
 					<stop offset="0" stopColor="var(--diagram-tongue)" />
 					<stop offset="1" stopColor="var(--diagram-tissue)" />
 				</linearGradient>
-				<clipPath id={clipId}>
-					<circle cx={INSET.x} cy={INSET.y} r={INSET.radius} />
-				</clipPath>
 				{/* The back of the jaw may slide under the neck, never past it into the throat. */}
 				<clipPath id={jawClipId}>
 					<rect x={-20} y={-20} width={402} height={560} />
@@ -357,7 +340,7 @@ const Scene = memo(function Scene({
 				strokeLinecap="round"
 				className="stroke-diagram-air"
 			>
-				<path ref={airFaint} d={initial.airFaint} opacity={0.3} />
+				<path ref={airFaint} d={initial.airFaint} opacity={0.4} />
 				<path ref={airBright} d={initial.airBright} />
 			</g>
 
@@ -373,47 +356,6 @@ const Scene = memo(function Scene({
 				className="stroke-diagram-voice"
 			/>
 
-			{/* The vocal folds from above: the front of the throat is at the top. */}
-			<line
-				x1={INSET.x + INSET.radius}
-				y1={INSET.y + 2}
-				x2={FOLDS.front[0] - 2}
-				y2={FOLDS.front[1]}
-				strokeWidth={1.5}
-				strokeDasharray="3 5"
-				className="stroke-diagram-tooth"
-				opacity={0.6}
-			/>
-			<circle cx={INSET.x} cy={INSET.y} r={INSET.radius} className="fill-diagram-tissue" />
-			<g clipPath={`url(#${clipId})`}>
-				<path ref={glottis} d={glottisPath(initial.glottisHalfWidth)} className="fill-diagram" />
-				<g strokeWidth={7} strokeLinecap="round" className="stroke-diagram-tooth">
-					<line
-						ref={foldLeft}
-						x1={INSET.x}
-						y1={GLOTTIS.top}
-						x2={INSET.x - initial.glottisHalfWidth - 3}
-						y2={GLOTTIS.bottom}
-					/>
-					<line
-						ref={foldRight}
-						x1={INSET.x}
-						y1={GLOTTIS.top}
-						x2={INSET.x + initial.glottisHalfWidth + 3}
-						y2={GLOTTIS.bottom}
-					/>
-				</g>
-			</g>
-			<circle
-				ref={insetRing}
-				cx={INSET.x}
-				cy={INSET.y}
-				r={INSET.radius}
-				fill="none"
-				strokeWidth={3}
-				stroke={voiceColor(initial, "var(--diagram-tissue)")}
-			/>
-
 			{labels.map((id) => (
 				<Leader key={id} {...LABELS[id]} />
 			))}
@@ -424,12 +366,6 @@ const Scene = memo(function Scene({
 /** The voice colour while the folds buzz or are pressed shut, `quiet` while they rest apart. */
 const voiceColor = (frame: Frame, quiet: string) =>
 	frame.voice === "off" ? quiet : "var(--diagram-voice)";
-
-/** The opening between the folds: a point at the front, wider toward the back. */
-function glottisPath(half: number): string {
-	const { top, bottom } = GLOTTIS;
-	return `M${INSET.x} ${top}L${INSET.x + half} ${bottom}Q${INSET.x} ${bottom + 8} ${INSET.x - half} ${bottom}Z`;
-}
 
 // --- Labels ---
 
@@ -449,7 +385,6 @@ const LABELS: Record<LabelId, LabelSpec> = {
 	tongue: { text: "tongue", at: [285, 300] },
 	lips: { text: "lips", at: [40, 294], target: [102, 262] },
 	folds: { text: "vocal folds", at: [258, 440], target: [372, 474] },
-	foldsAbove: { text: "seen from above", at: [164, 484] },
 };
 
 const ALL_LABELS = Object.keys(LABELS) as LabelId[];

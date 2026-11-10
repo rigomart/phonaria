@@ -20,21 +20,14 @@ export type Step = {
 	key?: boolean;
 };
 
-export type LabelId =
-	| "nose"
-	| "ridge"
-	| "roof"
-	| "softPalate"
-	| "tongue"
-	| "lips"
-	| "folds"
-	| "foldsAbove";
+export type LabelId = "nose" | "ridge" | "roof" | "softPalate" | "tongue" | "lips" | "folds";
 
 export type MouthSound = {
 	id: string;
 	ipa: string;
 	/** A word or phrase the animation plays out. */
 	example: string;
+	/** One step for a sound that is held still; several for one that has to move. */
 	steps: Step[];
 	/** The parts to name even when the labels are off. */
 	focus: LabelId[];
@@ -177,35 +170,22 @@ const relaxed = (caption = "The mouth starts relaxed and slightly open."): Step 
 	flow: false,
 });
 
-const fricative = (
+/**
+ * A sound that can be held: the mouth stays in one position, and only the air
+ * and the vocal folds move.
+ */
+const held = (
 	id: string,
 	ipa: string,
 	example: string,
-	voiced: boolean,
-	shape: Pose,
-	approach: string,
 	focus: LabelId[],
+	step: Omit<Step, "move" | "hold" | "key">,
 ): MouthSound => ({
 	id,
 	ipa,
 	example,
 	focus,
-	steps: [
-		relaxed(),
-		{ caption: approach, pose: shape, move: 380, hold: 500, voice: "off", flow: false },
-		{
-			caption: voiced
-				? "Air hisses through the gap while the vocal folds buzz."
-				: "Air hisses through the gap. The vocal folds stay apart, so the voice is off.",
-			pose: shape,
-			move: 0,
-			hold: 2200,
-			voice: voiced ? "on" : "off",
-			flow: true,
-			hiss: true,
-			key: true,
-		},
-	],
+	steps: [{ ...step, move: 0, hold: 1000, key: true }],
 });
 
 const ALVEOLAR_GAP = pose(TONGUE.alveolarGap, { jaw: 2 });
@@ -247,89 +227,46 @@ export const MOUTH_SOUNDS: MouthSound[] = [
 			},
 		],
 	},
-	fricative(
-		"S",
-		"s",
-		"sun",
-		false,
-		ALVEOLAR_GAP,
-		"The tongue tip rises close to the gum ridge and leaves a narrow gap.",
-		["ridge"],
-	),
-	fricative(
-		"Z",
-		"z",
-		"zoo",
-		true,
-		ALVEOLAR_GAP,
-		"The tongue tip rises close to the gum ridge and leaves a narrow gap.",
-		["ridge", "folds"],
-	),
-	fricative(
-		"TH",
-		"θ",
-		"thin",
-		false,
-		pose(TONGUE.dental, { jaw: 3.5 }),
-		"The tongue tip comes forward between the teeth.",
-		["tongue"],
-	),
-	{
-		id: "M",
-		ipa: "m",
-		example: "ram",
-		focus: ["lips", "softPalate", "nose"],
-		steps: [
-			relaxed(),
-			{
-				caption: "The lips close, and the soft palate drops to open the way into the nose.",
-				pose: pose(TONGUE.rest, { jaw: 2, lipClose: 1, velum: 1 }),
-				move: 380,
-				hold: 500,
-				voice: "off",
-				flow: false,
-				stop: true,
-			},
-			{
-				caption: "The vocal folds buzz, and the air leaves through the nose.",
-				pose: pose(TONGUE.rest, { jaw: 2, lipClose: 1, velum: 1 }),
-				move: 0,
-				hold: 2200,
-				voice: "on",
-				flow: true,
-				stop: true,
-				key: true,
-			},
-		],
-	},
-	{
-		id: "NG",
-		ipa: "ŋ",
-		example: "sing",
-		focus: ["softPalate", "nose"],
-		steps: [
-			relaxed(),
-			{
-				caption: "The back of the tongue rises to meet the soft palate, which hangs low.",
-				pose: pose(TONGUE.velarStop, { velum: 1 }),
-				move: 400,
-				hold: 500,
-				voice: "off",
-				flow: false,
-				stop: true,
-			},
-			{
-				caption: "The mouth is blocked at the back, so the buzzing air leaves through the nose.",
-				pose: pose(TONGUE.velarStop, { velum: 1 }),
-				move: 0,
-				hold: 2200,
-				voice: "on",
-				flow: true,
-				stop: true,
-				key: true,
-			},
-		],
-	},
+	held("S", "s", "sun", ["ridge"], {
+		caption:
+			"The tongue tip sits close to the gum ridge. Air hisses through the narrow gap, and the voice is off.",
+		pose: ALVEOLAR_GAP,
+		voice: "off",
+		flow: true,
+		hiss: true,
+	}),
+	held("Z", "z", "zoo", ["ridge", "folds"], {
+		caption:
+			"The tongue tip sits close to the gum ridge. Air hisses through the narrow gap while the vocal folds buzz.",
+		pose: ALVEOLAR_GAP,
+		voice: "on",
+		flow: true,
+		hiss: true,
+	}),
+	held("TH", "θ", "thin", ["tongue"], {
+		caption:
+			"The tongue tip rests between the teeth. Air hisses out over it, and the voice is off.",
+		pose: pose(TONGUE.dental, { jaw: 3.5 }),
+		voice: "off",
+		flow: true,
+		hiss: true,
+	}),
+	held("M", "m", "ram", ["lips", "softPalate", "nose"], {
+		caption:
+			"The lips are closed and the soft palate hangs low, so the buzzing air leaves through the nose.",
+		pose: pose(TONGUE.rest, { jaw: 2, lipClose: 1, velum: 1 }),
+		voice: "on",
+		flow: true,
+		stop: true,
+	}),
+	held("NG", "ŋ", "sing", ["softPalate", "nose"], {
+		caption:
+			"The back of the tongue presses on the soft palate, which hangs low. The mouth is blocked, so the buzzing air leaves through the nose.",
+		pose: pose(TONGUE.velarStop, { velum: 1 }),
+		voice: "on",
+		flow: true,
+		stop: true,
+	}),
 	{
 		id: "W",
 		ipa: "w",

@@ -129,7 +129,7 @@ export function MouthParts() {
 			</Part>
 
 			<Part
-				title="Vocal folds, from the side"
+				title="Vocal folds"
 				note="A mark across the voice box: two stubs when the folds are apart, a rippling line when they buzz, a bar when they shut. Shown apart."
 			>
 				<line
@@ -152,16 +152,6 @@ export function MouthParts() {
 					className="stroke-diagram-voice"
 				/>
 			</Part>
-
-			<Part
-				title="Vocal folds, from above"
-				note="The circle below the chin. Left to right: apart (voice off), buzzing (voice on), shut (glottal stop)."
-				ghost={false}
-			>
-				<FoldsFromAbove x={90} half={15.6} />
-				<FoldsFromAbove x={250} half={2.4} voiced />
-				<FoldsFromAbove x={410} half={0.6} voiced />
-			</Part>
 		</div>
 	);
 }
@@ -180,17 +170,7 @@ function uniqueTonguePoses(): Pose[] {
 	return poses;
 }
 
-function Part({
-	title,
-	note,
-	ghost = true,
-	children,
-}: {
-	title: string;
-	note: string;
-	ghost?: boolean;
-	children: ReactNode;
-}) {
+function Part({ title, note, children }: { title: string; note: string; children: ReactNode }) {
 	const rest = shapesFor(REST);
 	return (
 		<figure className="flex flex-col gap-2">
@@ -200,24 +180,23 @@ function Part({
 				aria-label={title}
 				className="aspect-square w-full rounded-2xl bg-diagram"
 			>
-				{ghost ? (
-					<g opacity={0.16} className="fill-diagram-tissue">
-						{[
-							HEAD_PATH,
-							NECK_PATH,
-							LARYNX_BACK_PATH,
-							PALATE_PATH,
-							rest.tongue,
-							rest.velum,
-							rest.upperLip,
-						].map((d) => (
-							<path key={d} d={d} />
-						))}
-						<g transform={rest.jaw}>
-							<path d={rest.jawBody} />
-						</g>
+				{/* The whole mouth as drawn, faint, for position. */}
+				<g opacity={0.16} className="fill-diagram-tissue">
+					{[
+						HEAD_PATH,
+						NECK_PATH,
+						LARYNX_BACK_PATH,
+						PALATE_PATH,
+						rest.tongue,
+						rest.velum,
+						rest.upperLip,
+					].map((d) => (
+						<path key={d} d={d} />
+					))}
+					<g transform={rest.jaw}>
+						<path d={rest.jawBody} />
 					</g>
-				) : null}
+				</g>
 				{children}
 			</svg>
 			<figcaption className="flex flex-col gap-0.5">
@@ -264,34 +243,5 @@ function Path({ points, dashed }: { points: readonly Point[]; dashed?: boolean }
 			strokeDasharray={dashed ? "2 7" : undefined}
 			className="stroke-diagram-air"
 		/>
-	);
-}
-
-/** The folds as the diagram's circle draws them: a point at the front (top), opening toward the back. */
-function FoldsFromAbove({ x, half, voiced }: { x: number; half: number; voiced?: boolean }) {
-	const y = 250;
-	const radius = 66;
-	const top = y - 47;
-	const bottom = y + 38;
-	return (
-		<g>
-			<circle cx={x} cy={y} r={radius} className="fill-diagram-tissue" />
-			<path
-				d={`M${x} ${top}L${x + half} ${bottom}Q${x} ${bottom + 12} ${x - half} ${bottom}Z`}
-				className="fill-diagram"
-			/>
-			<g strokeWidth={11} strokeLinecap="round" className="stroke-diagram-tooth">
-				<line x1={x} y1={top} x2={x - half - 5} y2={bottom} />
-				<line x1={x} y1={top} x2={x + half + 5} y2={bottom} />
-			</g>
-			<circle
-				cx={x}
-				cy={y}
-				r={radius}
-				fill="none"
-				strokeWidth={4}
-				className={voiced ? "stroke-diagram-voice" : "stroke-diagram-tissue"}
-			/>
-		</g>
 	);
 }

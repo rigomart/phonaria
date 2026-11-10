@@ -39,16 +39,19 @@ export type Frame = {
 	/** 0 to 1 strength of the buzz around the voice box, and of each ripple on the neck. */
 	buzz: number;
 	ripples: [number, number, number];
-	/** The vocal folds seen from above: half the width of the opening at its back end. */
-	glottisHalfWidth: number;
 	/** Where the sound is shaped: the seal or the narrow gap, with a breathing radius. */
 	contact: { point: Point; radius: number } | null;
 };
 
-const AIR_SPEED = 190;
-const SPAWN_PER_MS = 0.06;
+/** Units a second. Fast enough that air let go at the lungs is out of the mouth in about a second and a half. */
+const AIR_SPEED = 420;
+/** How far apart moving puffs are, and how tightly they pack behind a seal. */
+const FLOW_SPACING = 5;
 const QUEUE_SPACING = 2.6;
-const BUZZ_HZ = 5;
+const SPAWN_PER_MS = AIR_SPEED / FLOW_SPACING / 1000;
+/** Bursts of air a second while the folds buzz. */
+const BUZZ_HZ = 10;
+const BUZZ_SPACING = AIR_SPEED / BUZZ_HZ;
 
 const duration = (step: Step) => step.move + step.hold;
 
@@ -114,6 +117,7 @@ export class MouthEngine {
 	private airOpacity = 1;
 	private burst = 0;
 	private wasStopped = false;
+	private wasFlowing = false;
 
 	constructor(private readonly steps: readonly Step[]) {}
 
@@ -125,7 +129,8 @@ export class MouthEngine {
 		this.foldGap = foldGapFor(instant.step.voice);
 		this.burst = 0;
 		this.wasStopped = instant.stopped;
-		this.particles = seedParticles(instant, route);
+		this.wasFlowing = instant.step.flow;
+		this.particles = seedParticles(instant, route, true);
 		this.airOpacity = 1;
 		return this.draw(instant, route);
 	}
@@ -148,7 +153,14 @@ export class MouthEngine {
 		const rate = step.voice === "shut" ? 0.03 : 0.012;
 		this.foldGap += (target - this.foldGap) * Math.min(1, ms * rate);
 
-		if (step.flow) this.airOpacity = 1;
+		// The air column is there the moment the lungs push: it fades in along the whole
+		// path instead of creeping up from the bottom, and fades out when they stop.
+		if (step.flow && !this.wasFlowing) {
+			this.particles = seedParticles(instant, route, false);
+			this.airOpacity = 0;
+		}
+		this.wasFlowing = step.flow;
+		if (step.flow) this.airOpacity = Math.min(1, this.airOpacity + ms / 180);
 		else {
 			this.airOpacity = Math.max(0, this.airOpacity - ms / 260);
 			if (this.airOpacity === 0) this.particles = [];
@@ -156,7 +168,8 @@ export class MouthEngine {
 
 		const last = this.particles[this.particles.length - 1];
 		if (step.flow && (!last || last.distance > QUEUE_SPACING)) {
-			this.spawnDebt += ms * SPAWN_PER_MS;
+			// Faster air needs more puffs to stay as dense.
+			this.spawnDebt += ms * SPAWN_PER_MS * (1 + 1.2 * this.burst);
 			while (this.spawnDebt >= 1) {
 				this.spawnDebt -= 1;
 				this.particles.push({
@@ -173,9 +186,9 @@ export class MouthEngine {
 
 		const narrowestDistance = forkDistance + route.narrowest.distance;
 		for (const particle of this.particles) {
-			let speed = AIR_SPEED * (1 + 2.2 * this.burst);
+			let speed = AIR_SPEED * (1 + 1.2 * this.burst);
 			const beyond = particle.distance - narrowestDistance;
-			if (hissing && particle.nasal === false && beyond > 0 && beyond < 110) speed *= 1.5;
+			if (hissing && particle.nasal === false && beyond > 0 && beyond < 110) speed *= 1.4;
 			particle.distance += (speed * ms) / 1000;
 		}
 
@@ -277,9 +290,6 @@ export class MouthEngine {
 			voice: step.voice,
 			buzz: buzzing ? 0.6 + 0.4 * Math.sin(this.clock * 30) : 0,
 			ripples: [pulse(0), pulse(0.9), pulse(1.8)],
-			glottisHalfWidth: buzzing
-				? 0.8 + 2.4 * Math.abs(Math.sin(this.clock * 19))
-				: 0.6 + this.foldGap * 15,
 			contact,
 		};
 	}
@@ -313,8 +323,11 @@ function foldsPath(voice: Voice, gap: number, clock: number): string {
 	return `M${onFolds(0)}L${onFolds(0.5 - half)}M${onFolds(0.5 + half)}L${onFolds(1)}`;
 }
 
-/** Air laid out along its path as it would be once the step has settled. */
-function seedParticles(instant: Instant, route: OralRoute): Particle[] {
+/**
+ * Air laid out along its whole path. `packed` crowds it against a seal, as it
+ * is once a step has settled; without it the crowd has yet to build.
+ */
+function seedParticles(instant: Instant, route: OralRoute, packed: boolean): Particle[] {
 	const { step, pose, stopped } = instant;
 	if (!step.flow) return [];
 	const nasal = pose.velum > 0.5;
@@ -335,10 +348,10 @@ function seedParticles(instant: Instant, route: OralRoute): Particle[] {
 			lane: ((Math.abs(Math.sin(index * 12.9898) * 43758.5453) % 1) * 2 - 1) * 0.95,
 			nasal: distance >= forkDistance ? nasal : null,
 			pastFolds,
-			faint: step.voice === "on" && pastFolds && distance % 38 > 17,
+			faint: step.voice === "on" && pastFolds && distance % BUZZ_SPACING > BUZZ_SPACING * 0.45,
 		});
 		// Held air is packed tight near the seal and thins out further back.
-		distance -= held && end - distance < 60 ? QUEUE_SPACING : AIR_SPEED / (SPAWN_PER_MS * 1000);
+		distance -= packed && held && end - distance < 60 ? QUEUE_SPACING : FLOW_SPACING;
 		index++;
 	}
 	return particles;
