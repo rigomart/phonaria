@@ -62,7 +62,7 @@ function MouthPrototype() {
 				<p className="max-w-3xl text-sm text-muted-foreground">
 					Every diagram above is the same set of shapes, painted in this order. Nothing is outlined,
 					so shapes that overlap join without a seam. The faint drawing behind each one is the whole
-					mouth at rest, for position.
+					mouth as drawn, for position.
 				</p>
 				<MouthParts />
 			</section>

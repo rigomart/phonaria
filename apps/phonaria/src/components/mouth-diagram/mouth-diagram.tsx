@@ -15,10 +15,12 @@ import { cn } from "@/lib/utils";
 import { type Frame, MouthEngine } from "./engine";
 import type { Point } from "./geometry";
 import {
-	CAVITY_PATH,
-	EPIGLOTTIS_PATH,
 	FOLDS,
+	FOLDS_MIDDLE,
 	HEAD_PATH,
+	LARYNX_BACK_PATH,
+	NECK_PATH,
+	PALATE_PATH,
 	LOWER_TOOTH_PATH,
 	UPPER_TOOTH_PATH,
 	VIEW_BOX,
@@ -26,8 +28,8 @@ import {
 import type { LabelId, MouthSound, Step } from "./sounds";
 
 /** The vocal folds seen from above, in a circle below the chin. */
-const INSET = { x: 62, y: 446, radius: 42 } as const;
-const GLOTTIS = { top: INSET.y - 30, bottom: INSET.y + 24 } as const;
+const INSET = { x: 58, y: 452, radius: 38 } as const;
+const GLOTTIS = { top: INSET.y - 27, bottom: INSET.y + 21 } as const;
 
 /**
  * A side view of the mouth that plays out how a sound is made: the tongue,
@@ -214,6 +216,7 @@ const Scene = memo(function Scene({
 }) {
 	const gradientId = useId();
 	const clipId = useId();
+	const jawClipId = useId();
 	const { shapes } = initial;
 	const initialVoiceColor = voiceColor(initial, "var(--diagram-tooth)");
 	const jawBack = useRef<SVGGElement>(null);
@@ -282,9 +285,9 @@ const Scene = memo(function Scene({
 					id={gradientId}
 					gradientUnits="userSpaceOnUse"
 					x1="0"
-					y1="305"
+					y1="335"
 					x2="0"
-					y2="392"
+					y2="382"
 				>
 					<stop offset="0" stopColor="var(--diagram-tongue)" />
 					<stop offset="1" stopColor="var(--diagram-tissue)" />
@@ -292,17 +295,26 @@ const Scene = memo(function Scene({
 				<clipPath id={clipId}>
 					<circle cx={INSET.x} cy={INSET.y} r={INSET.radius} />
 				</clipPath>
+				{/* The back of the jaw may slide under the neck, never past it into the throat. */}
+				<clipPath id={jawClipId}>
+					<rect x={-20} y={-20} width={402} height={560} />
+				</clipPath>
 			</defs>
 
-			<path d={HEAD_PATH} className="fill-diagram-tissue" />
-			<path d={CAVITY_PATH} className="fill-diagram" />
-			<path d={EPIGLOTTIS_PATH} className="fill-diagram-tissue" />
-			<g ref={jawBack} transform={shapes.jaw}>
-				<path ref={jawBody} d={shapes.jawBody} className="fill-diagram-tissue" />
+			<g clipPath={`url(#${jawClipId})`}>
+				<g ref={jawBack} transform={shapes.jaw}>
+					<path ref={jawBody} d={shapes.jawBody} className="fill-diagram-tissue" />
+				</g>
 			</g>
 			<path ref={tongue} d={shapes.tongue} fill={`url(#${gradientId})`} />
-			<path ref={velum} d={shapes.velum} className="fill-diagram-tissue" />
-			<path ref={upperLip} d={shapes.upperLip} className="fill-diagram-tissue" />
+			<g className="fill-diagram-tissue">
+				<path d={NECK_PATH} />
+				<path d={HEAD_PATH} />
+				<path d={LARYNX_BACK_PATH} />
+				<path d={PALATE_PATH} />
+				<path ref={upperLip} d={shapes.upperLip} />
+				<path ref={velum} d={shapes.velum} />
+			</g>
 			<path d={UPPER_TOOTH_PATH} className="fill-diagram-tooth" />
 			<g ref={jawFront} transform={shapes.jaw}>
 				<path d={LOWER_TOOTH_PATH} className="fill-diagram-tooth" />
@@ -311,8 +323,8 @@ const Scene = memo(function Scene({
 			{/* Voice: a glow around the voice box and ripples on the neck while the folds buzz. */}
 			<circle
 				ref={buzz}
-				cx={(FOLDS.front + FOLDS.back) / 2}
-				cy={FOLDS.y}
+				cx={FOLDS_MIDDLE[0]}
+				cy={FOLDS_MIDDLE[1]}
 				r={30}
 				opacity={initial.buzz * 0.3}
 				className="fill-diagram-voice"
@@ -324,9 +336,9 @@ const Scene = memo(function Scene({
 				strokeLinecap="round"
 				className="stroke-diagram-voice"
 			>
-				<path d="M246 426Q239 440 246 454" opacity={0} />
-				<path d="M236 420Q226 440 236 460" opacity={0} />
-				<path d="M226 414Q213 440 226 466" opacity={0} />
+				<path d="M334 449Q327 462 334 475" opacity={0} />
+				<path d="M324 443Q314 462 324 481" opacity={0} />
+				<path d="M314 437Q301 462 314 487" opacity={0} />
 			</g>
 			<path
 				ref={folds}
@@ -364,9 +376,9 @@ const Scene = memo(function Scene({
 			{/* The vocal folds from above: the front of the throat is at the top. */}
 			<line
 				x1={INSET.x + INSET.radius}
-				y1={INSET.y - 4}
-				x2={FOLDS.front - 2}
-				y2={FOLDS.y}
+				y1={INSET.y + 2}
+				x2={FOLDS.front[0] - 2}
+				y2={FOLDS.front[1]}
 				strokeWidth={1.5}
 				strokeDasharray="3 5"
 				className="stroke-diagram-tooth"
@@ -430,14 +442,14 @@ type LabelSpec = {
 };
 
 const LABELS: Record<LabelId, LabelSpec> = {
-	ridge: { text: "gum ridge", at: [112, 62], target: [137, 209] },
-	roof: { text: "roof of the mouth", at: [278, 40], target: [232, 167] },
-	softPalate: { text: "soft palate", at: [418, 96], target: [336, 172] },
-	nose: { text: "nose", at: [212, 128] },
-	tongue: { text: "tongue", at: [248, 306] },
-	lips: { text: "lips", at: [26, 312], target: [70, 262] },
-	folds: { text: "vocal folds", at: [424, 440], target: [361, 440] },
-	foldsAbove: { text: "seen from above", at: [84, 384] },
+	ridge: { text: "gum ridge", at: [112, 62], target: [153, 173] },
+	roof: { text: "roof of the mouth", at: [240, 94], target: [250, 137] },
+	softPalate: { text: "soft palate", at: [388, 104], target: [345, 142] },
+	nose: { text: "nose", at: [188, 50] },
+	tongue: { text: "tongue", at: [285, 300] },
+	lips: { text: "lips", at: [40, 294], target: [102, 262] },
+	folds: { text: "vocal folds", at: [258, 440], target: [372, 474] },
+	foldsAbove: { text: "seen from above", at: [164, 484] },
 };
 
 const ALL_LABELS = Object.keys(LABELS) as LabelId[];

@@ -121,3 +121,45 @@ export function nearestDistance(track: Track, target: Point): number {
 	});
 	return track.lengths[best] as number;
 }
+
+// --- Hand-drawn outlines: a start point followed by cubic Béziers ---
+
+/** A closed outline as its start point, then two handles and an end point per curve. */
+export type Outline = readonly Point[];
+
+/** Reads a closed path made only of an `M` and `C` commands with absolute coordinates. */
+export function parseOutline(d: string): Point[] {
+	const numbers = d.match(/-?\d*\.?\d+/g)?.map(Number) ?? [];
+	const points: Point[] = [];
+	for (let i = 0; i + 1 < numbers.length; i += 2) {
+		points.push([numbers[i] as number, numbers[i + 1] as number]);
+	}
+	return points;
+}
+
+export function outlinePath(points: Outline): string {
+	let d = moveTo(points[0] as Point);
+	for (let i = 1; i + 2 < points.length; i += 3) {
+		const [a, b, c] = [points[i], points[i + 1], points[i + 2]] as [Point, Point, Point];
+		d += `C${n(a[0])} ${n(a[1])} ${n(b[0])} ${n(b[1])} ${n(c[0])} ${n(c[1])}`;
+	}
+	return `${d}Z`;
+}
+
+type Cubic = readonly [Point, Point, Point, Point];
+
+export function cubicAt([a, b, c, d]: Cubic, t: number): Point {
+	const u = 1 - t;
+	const mix = (axis: 0 | 1) =>
+		u * u * u * a[axis] + 3 * u * u * t * b[axis] + 3 * u * t * t * c[axis] + t * t * t * d[axis];
+	return [mix(0), mix(1)];
+}
+
+/** The part of a cubic from `t` to its end, as a cubic of its own. */
+export function cubicTail([a, b, c, d]: Cubic, t: number): Cubic {
+	const bc = lerpPoint(b, c, t);
+	const cd = lerpPoint(c, d, t);
+	const abc = lerpPoint(lerpPoint(a, b, t), bc, t);
+	const bcd = lerpPoint(bc, cd, t);
+	return [lerpPoint(abc, bcd, t), bcd, cd, d];
+}

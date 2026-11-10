@@ -1,6 +1,7 @@
 import { easeInOut, type Point, trackAt } from "./geometry";
 import {
 	FOLDS,
+	FOLDS_MIDDLE,
 	lerpPose,
 	NASAL,
 	type OralRoute,
@@ -48,7 +49,6 @@ const AIR_SPEED = 190;
 const SPAWN_PER_MS = 0.06;
 const QUEUE_SPACING = 2.6;
 const BUZZ_HZ = 5;
-const FOLDS_MIDDLE = (FOLDS.front + FOLDS.back) / 2;
 
 const duration = (step: Step) => step.move + step.hold;
 
@@ -231,7 +231,9 @@ export class MouthEngine {
 			} else if (particle.nasal) {
 				const local = particle.distance - forkDistance;
 				place = trackAt(NASAL, local);
-				width = 8 + Math.max(0, local - (NASAL.total - 80)) * 0.14;
+				// The nose is roomy: the stream spreads out inside it and again as it leaves.
+				width = 8 + 8 * Math.sin(Math.min(1, local / (NASAL.total - 110)) * Math.PI);
+				width += Math.max(0, local - (NASAL.total - 80)) * 0.14;
 			} else {
 				const local = particle.distance - forkDistance;
 				place = trackAt(route.track, local);
@@ -260,7 +262,7 @@ export class MouthEngine {
 
 		let contact: Frame["contact"] = null;
 		const radius = 11 + 1.5 * Math.sin(this.clock * 5);
-		if (step.voice === "shut") contact = { point: [FOLDS_MIDDLE, FOLDS.y], radius: radius + 16 };
+		if (step.voice === "shut") contact = { point: FOLDS_MIDDLE, radius: radius + 22 };
 		else if ((step.stop || step.hiss) && arrived && (stopped || hissing)) {
 			contact = { point: route.narrowest.point, radius };
 		}
@@ -285,19 +287,30 @@ export class MouthEngine {
 
 const foldGapFor = (voice: Voice) => (voice === "off" ? 1 : 0);
 
+const FOLDS_LENGTH = Math.hypot(FOLDS.back[0] - FOLDS.front[0], FOLDS.back[1] - FOLDS.front[1]);
+
+/** A point `along` the folds (0 at the front, 1 at the back), pushed `across` them. */
+function onFolds(along: number, across = 0): string {
+	const dx = (FOLDS.back[0] - FOLDS.front[0]) / FOLDS_LENGTH;
+	const dy = (FOLDS.back[1] - FOLDS.front[1]) / FOLDS_LENGTH;
+	const x = FOLDS.front[0] + dx * along * FOLDS_LENGTH - dy * across;
+	const y = FOLDS.front[1] + dy * along * FOLDS_LENGTH + dx * across;
+	return `${x.toFixed(1)} ${y.toFixed(1)}`;
+}
+
 /** The folds in the side view: two stubs when apart, a rippling line when buzzing, a bar when shut. */
 function foldsPath(voice: Voice, gap: number, clock: number): string {
 	if (voice === "on" && gap < 0.35) {
-		let d = `M${FOLDS.front} ${FOLDS.y}`;
-		for (let x = FOLDS.front + 3.5; x <= FOLDS.back; x += 3.5) {
-			const taper = Math.sin(((x - FOLDS.front) / (FOLDS.back - FOLDS.front)) * Math.PI);
-			d += `L${x.toFixed(1)} ${(FOLDS.y + 3 * taper * Math.sin(x * 0.55 + clock * 38)).toFixed(1)}`;
+		let d = `M${onFolds(0)}`;
+		for (let along = 0.05; along <= 1.001; along += 0.05) {
+			const wave = Math.sin(along * FOLDS_LENGTH * 0.55 + clock * 38);
+			d += `L${onFolds(along, 3 * Math.sin(along * Math.PI) * wave)}`;
 		}
 		return d;
 	}
-	const half = gap * 11;
-	if (half < 0.5) return `M${FOLDS.front} ${FOLDS.y}H${FOLDS.back}`;
-	return `M${FOLDS.front} ${FOLDS.y}H${(FOLDS_MIDDLE - half).toFixed(1)}M${(FOLDS_MIDDLE + half).toFixed(1)} ${FOLDS.y}H${FOLDS.back}`;
+	const half = gap * 0.17;
+	if (half < 0.01) return `M${onFolds(0)}L${onFolds(1)}`;
+	return `M${onFolds(0)}L${onFolds(0.5 - half)}M${onFolds(0.5 + half)}L${onFolds(1)}`;
 }
 
 /** Air laid out along its path as it would be once the step has settled. */
