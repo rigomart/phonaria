@@ -1036,7 +1036,14 @@ const spinState = () => {
 			document.querySelector('[data-step][aria-current="step"]')?.getAttribute("data-step") ?? null,
 		spinning: !!region?.hasAttribute("data-spinning"),
 		camera: region?.dataset.camera ?? null,
-		center: region?.dataset.cameraCenter ?? null,
+		landedAtToday: (() => {
+			const TODAY_LATITUDE = 11;
+			const [TODAY_LONGITUDE, TURN_ALLOWED] = [10, 2];
+			const [lon, lat] = (region?.dataset.cameraCenter ?? "").split(",").map(Number);
+			return (
+				lat === TODAY_LATITUDE && lon <= TODAY_LONGITUDE && lon > TODAY_LONGITUDE - TURN_ALLOWED
+			);
+		})(),
 		// The recipe saves the steppe pin's transform in `window.__pinAt` once the spin starts.
 		pinMoved:
 			!!anchor && anchor.style.transform !== (window as unknown as { __pinAt?: string }).__pinAt,
@@ -1049,7 +1056,7 @@ const spinToday = observation(spinState, {
 	step: "today",
 	spinning: true,
 	camera: "settled",
-	center: "10.0,11.0",
+	landedAtToday: true,
 	pinMoved: true,
 	mapMostlyShown: true,
 });

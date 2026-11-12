@@ -1,5 +1,10 @@
 export const SPIN_TURN_MS = 100_000;
-export const SPIN_EASE_MS = 1000;
+export const SPIN_EASE_MS = 700;
+/**
+ * How far through its flight the camera is when the spin may start easing in,
+ * 0 to 1.
+ */
+export const SPIN_HANDOFF = 0.6;
 /** After the reader stops interacting, the globe waits this long before turning again. */
 export const SPIN_RESUME_MS = 2000;
 

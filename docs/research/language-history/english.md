@@ -50,7 +50,7 @@ Reused from [western-eurasia.md](western-eurasia.md), "Germanic, and English as 
 - id: `germanic`
 - kind: branch
 - date shown: ~500 BCE (`{ bce: 500 }`)
-- place: `[10, 56]`, `areaKm: 400`. Southern Scandinavia and the north German coast.
+- place: `[10, 55.3]`, `areaKm: 400`. Southern Scandinavia and the north German coast (moved from `[10, 56]` to sit nearer the Jastorf core, south of Jutland's middle).
 - location uncertainty: medium. The region is agreed; the sub-area and the route from the Indo-European homeland are not.
 
 Claims:
@@ -142,7 +142,7 @@ Sources on the page: oed-middle-english, nottingham-danelaw.
 - place: `[0.49, 50.91]`, no area. Battle, near Hastings, where the conquest was decided. It stands in for the arrival of a French-speaking ruling class, not for where French was spoken.
 - where (draft): "near Hastings; French then spread with England's new rulers"
 - location uncertainty: low for the battle; the pin is a symbol for a change that affected all of England.
-- spread (routes): from Normandy to the Sussex coast at Pevensey, where William landed. The start point in Normandy is schematic.
+- spread (routes): from Saint-Valery-sur-Somme, where the fleet sailed from, to the Sussex coast at Pevensey, where William landed.
 
 Claims:
 
@@ -251,7 +251,7 @@ Sources on the page: harvard-gvs, oed-early-modern, stenbrenden-2015, prichard-2
 - place: `[-76.78, 37.21]`, no area. Jamestown, Virginia.
 - where (draft): "at Jamestown, Virginia, the first lasting English settlement"
 - location uncertainty: low for Jamestown. American English formed from many settlements over two centuries, so the pin marks the start, not a homeland.
-- spread (routes): London to Jamestown across the Atlantic. Schematic.
+- spread (routes): from the Channel coast by the Canary Islands and the Caribbean, then north to the James River, the southern route the 1606-07 ships took. Schematic; checked against the app's land data so the line stays at sea.
 
 Claims:
 
@@ -286,7 +286,7 @@ Phonaria's target accent (`en-us`) is rhotic, so this stop links straight to wha
 - place: `[151.21, -33.86]`, no area. Sydney Cove.
 - where (draft): "at Sydney Cove, on Eora land"
 - location uncertainty: low.
-- spread (routes): London to Sydney by the Atlantic, the Cape and the Indian Ocean. Schematic; the waypoints follow the existing `empires` route.
+- spread (routes): from Portsmouth by Tenerife and the Cape, then east across the southern Indian Ocean, south of Australia and Tasmania, to Sydney Cove, as the First Fleet sailed (Rio de Janeiro, between Tenerife and the Cape, is left out). Schematic; checked against the app's land data so the line stays at sea until Sydney.
 
 Claims:
 
@@ -399,7 +399,7 @@ The old step had a second arrow east to the Urals. It is left out because this s
   > English almost vanished from writing. When it came back it was full of French words like peace, mercy and rule. This stage, from about 1150 to 1500, is called Middle English.
 - stops: `norman-french`
 - routes (start schematic):
-  - `[[-0.2, 49.3], [0.1, 50.2], [0.33, 50.8]]` (Normandy to Pevensey)
+  - `[[1.6, 50.2], [0.33, 50.8]]` (Saint-Valery-sur-Somme to Pevensey)
 - camera: `{ west: -8, south: 46, east: 8, north: 56 }`
 - card: `top-right`. The pin is at about x 0.53, y 0.51 and Normandy at about x 0.49, y 0.67. The top-right is the North Sea.
 - sources: via its stop (english-heritage-hastings, oed-middle-english).
