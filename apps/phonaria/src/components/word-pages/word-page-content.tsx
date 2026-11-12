@@ -4,13 +4,13 @@ import { useId } from "react";
 import { Link } from "@/components/link";
 import { PlayableWordCell } from "@/components/phoneme-details/playable-word";
 import { SpelledWord } from "@/components/spelled-word";
-import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { WordAudioButton } from "@/components/word-audio-button";
 import { WordAudioForms } from "@/components/word-audio-forms";
 import { useAudioManager } from "@/hooks/use-audio-manager";
 import { buildWiktionaryEntryUrl } from "@/lib/definition/word";
 import { formatPercentage } from "@/lib/phoneme-frequency";
 import { buildPublicAssetUrl } from "@/lib/site";
+import { nameAddsToSymbol } from "@/lib/sound-pages";
 import { cn } from "@/lib/utils";
 import type { ShareSegment, SoundPart, WordPageView } from "@/lib/word-page-content";
 
@@ -56,7 +56,6 @@ export function WordPageContent({ view }: { view: WordPageView }) {
 						<span className="sr-only"> (opens in a new tab)</span>
 					</a>
 				</div>
-				<SyntheticVoiceNote targetAccent={ACCENT} words={[view.word]} />
 			</header>
 
 			<ol aria-label="Sounds" className="flex flex-col gap-2 enter-rise enter-delay-40">
@@ -85,7 +84,9 @@ function SoundCard({ part }: { part: SoundPart }) {
 			<div className="flex min-w-0 flex-1 flex-col gap-2">
 				<div className="flex items-center gap-2">
 					<SoundPlayButton part={part} />
-					<span className="text-sm font-medium text-foreground">{part.name}</span>
+					{nameAddsToSymbol(part.sound.phonemeId) ? (
+						<span className="text-sm font-medium text-foreground">{part.name}</span>
+					) : null}
 					{part.stressed ? null : <span className="text-xs text-muted-foreground">unstressed</span>}
 				</div>
 				<SpellingMeter part={part} />
@@ -137,6 +138,10 @@ function shareSentence(part: SoundPart): string {
 	return `${formatPercentage(part.percentage ?? 0)} of /${part.sound.ipa}/ sounds in everyday speech are spelled ${part.letters}.`;
 }
 
+function roundedShare(percentage: number): string {
+	return percentage >= 1 ? `${Math.round(percentage)}%` : formatPercentage(percentage);
+}
+
 function meterLabel(part: SoundPart): string {
 	const common = part.shares
 		.filter((segment) => segment.spelling && !segment.own)
@@ -173,8 +178,8 @@ function SpellingMeter({ part }: { part: SoundPart }) {
 					part.rare ? "font-semibold text-foreground" : "text-muted-foreground",
 				)}
 			>
-				{formatPercentage(part.percentage)} of{" "}
-				<span className="font-display">/{part.sound.ipa}/</span>
+				spells <span className="font-display">/{part.sound.ipa}/</span>{" "}
+				{roundedShare(part.percentage)} of the time
 			</span>
 		</div>
 	);

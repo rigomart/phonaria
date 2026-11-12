@@ -40,10 +40,10 @@ const BACKNESS_LABELS: { value: VowelArticulatoryFeatures["backness"]; label: st
 	{ value: "back", label: "Back" },
 ];
 
-const HEIGHT_LABELS: { value: VowelArticulatoryFeatures["height"]; label: string }[] = [
+const HEIGHT_LABELS: { value: VowelArticulatoryFeatures["height"]; label?: string }[] = [
 	{ value: "close", label: "Close" },
-	{ value: "close-mid", label: "Cl-mid" },
-	{ value: "open-mid", label: "Op-mid" },
+	{ value: "close-mid" },
+	{ value: "open-mid" },
 	{ value: "open", label: "Open" },
 ];
 
@@ -113,14 +113,16 @@ function VowelGrid() {
 						y2={getHeightPosition(value, layout)}
 						strokeWidth={LINE_WIDTH}
 					/>
-					<text
-						x={getLeftBoundaryX(value, layout) - 4}
-						y={getHeightPosition(value, layout) + 2}
-						stroke="none"
-						textAnchor="end"
-					>
-						{label}
-					</text>
+					{label ? (
+						<text
+							x={getLeftBoundaryX(value, layout) - 4}
+							y={getHeightPosition(value, layout) + 2}
+							stroke="none"
+							textAnchor="end"
+						>
+							{label}
+						</text>
+					) : null}
 				</g>
 			))}
 		</g>

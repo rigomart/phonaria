@@ -31,7 +31,7 @@ export function EvidenceLogSwitch({
 			htmlFor={`${id}-switch`}
 		>
 			<Switch
-				aria-describedby={`${id}-description`}
+				aria-describedby={enabled ? `${id}-description` : undefined}
 				aria-labelledby={`${id}-label`}
 				checked={enabled}
 				className="mt-0.5"
@@ -44,9 +44,11 @@ export function EvidenceLogSwitch({
 				<span className="font-medium text-foreground" id={`${id}-label`}>
 					{EvidenceLogNotice.label}
 				</span>
-				<span className="text-muted-foreground" id={`${id}-description`}>
-					{EvidenceLogNotice.description}
-				</span>
+				{enabled ? (
+					<span className="text-muted-foreground" id={`${id}-description`}>
+						{EvidenceLogNotice.description}
+					</span>
+				) : null}
 			</span>
 		</label>
 	);

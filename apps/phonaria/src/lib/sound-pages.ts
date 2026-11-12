@@ -75,6 +75,13 @@ export function soundHeading(phonemeId: EnglishPhonemeSymbolId): string {
 	return `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
 }
 
+/** Whether the name tells a learner more than the symbol beside it: "schwa", "ER" and "voiceless TH" do, "K" beside /k/ doesn't. */
+export function nameAddsToSymbol(phonemeId: EnglishPhonemeSymbolId): boolean {
+	// The IPA g is a different character from the letter g, so compare them as the same.
+	const symbol = getIpaForPhonemeId(phonemeId).replaceAll("ɡ", "g");
+	return getSoundName(phonemeId).toLowerCase() !== symbol;
+}
+
 /** The sound's name in its breadcrumb, e.g. "Voiceless TH /θ/": plain text with no tile, so it names the symbol as the title does. */
 export function soundBreadcrumbName(phonemeId: EnglishPhonemeSymbolId): string {
 	return `${soundHeading(phonemeId)} /${getIpaForPhonemeId(phonemeId)}/`;

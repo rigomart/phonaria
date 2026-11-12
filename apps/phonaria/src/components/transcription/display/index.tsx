@@ -72,10 +72,6 @@ function TranscriptionResults({
 	result: TranscriptionResult;
 	isStale: boolean;
 }) {
-	const hasVariants = result.words.some(
-		(word) => word.source !== "fallback" && word.variants.length > 1,
-	);
-
 	return (
 		<div className="flex flex-col items-center overflow-x-auto px-4 py-4">
 			{isStale ? (
@@ -101,10 +97,6 @@ function TranscriptionResults({
 				className="mt-6 flex flex-col items-center gap-2 text-center enter-fade"
 				style={enterDelay(result.words.length * 40 + 200)}
 			>
-				<p className="text-xs text-muted-foreground">
-					Click a word for its meaning · click a sound for how to say it
-					{hasVariants ? " · open the stack under a word for other pronunciations" : null}
-				</p>
 				<TranscriptionNote />
 			</div>
 		</div>

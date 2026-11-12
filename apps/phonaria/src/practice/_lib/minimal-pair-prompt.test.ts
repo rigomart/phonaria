@@ -2,6 +2,7 @@ import { EnglishPhonemeContrasts } from "@phonaria/phonetics-data";
 import { describe, expect, it } from "vitest";
 import { contrastPageHeading, getContrastPage } from "@/lib/minimal-pairs";
 import {
+	catalogWordIpa,
 	drawWord,
 	listContrastOptions,
 	promptFor,
@@ -133,5 +134,13 @@ describe("searchWord", () => {
 		expect(searchWord(3)).toBe("3");
 		expect(searchWord(undefined)).toBeUndefined();
 		expect(searchWord({ a: 1 })).toBeUndefined();
+	});
+});
+
+describe("catalogWordIpa", () => {
+	it("writes a catalog word in IPA from its first pronunciation", () => {
+		expect(catalogWordIpa("ship")).toBe("ʃɪp");
+		expect(catalogWordIpa("sheep")).toBe("ʃip");
+		expect(catalogWordIpa("not-a-catalog-word")).toBeUndefined();
 	});
 });

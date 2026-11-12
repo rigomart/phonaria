@@ -7,7 +7,6 @@
 import { Button, buttonVariants } from "@phonaria/ui/components/button";
 import { ArrowRight, Volume2 } from "lucide-react";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { IpaSequence } from "@/components/transcription/display/ipa-sequence";
 import { WordAudioButton } from "@/components/word-audio-button";
 import { useWavRecorder } from "@/hooks/use-wav-recorder";
@@ -114,11 +113,6 @@ function useSpeakingRound(prompt: MinimalPairPrompt) {
 	}, [recording, prompt, cancel, logger]);
 
 	const view = deriveSpeakingView(recording, attempt);
-	// The words this round can play: the prompt, and the word a swap made.
-	const heardWord =
-		view.phase === "outcome" && view.outcome.verdict === "swapped"
-			? view.outcome.heardWord
-			: undefined;
 
 	function record() {
 		logger.next("retried");
@@ -126,7 +120,7 @@ function useSpeakingRound(prompt: MinimalPairPrompt) {
 		void recorder.start();
 	}
 
-	return { view, heardWord, record, stop: recorder.stop, getMeter: recorder.getMeter };
+	return { view, record, stop: recorder.stop, getMeter: recorder.getMeter };
 }
 
 function WordCard({
@@ -212,10 +206,8 @@ export function SpeakingRound({
 	prompt: MinimalPairPrompt;
 	onNextWord: () => void;
 }) {
-	const { view, heardWord, record, stop, getMeter } = useSpeakingRound(prompt);
+	const { view, record, stop, getMeter } = useSpeakingRound(prompt);
 	const heard = heardSide(prompt, view);
-	const playable = [prompt.word, prompt.partnerWord];
-	if (heardWord && !playable.includes(heardWord)) playable.push(heardWord);
 
 	return (
 		<div className="flex w-full flex-col gap-8 enter-fade">
@@ -252,7 +244,6 @@ export function SpeakingRound({
 			</div>
 
 			<div className="mx-auto flex w-full max-w-sm flex-col items-center border-border border-t pt-4">
-				<SyntheticVoiceNote className="text-center" targetAccent="en-us" words={playable} />
 				<EvidenceLogSetting />
 			</div>
 		</div>

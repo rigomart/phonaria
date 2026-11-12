@@ -3,7 +3,7 @@ import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SoundTile } from "@/components/phoneme-details/sound-tile";
 import { AudioManagerProvider } from "@/hooks/use-audio-manager";
-import { PreviousNext, SoundFamilies, Spelling } from "./sound-page-blocks";
+import { PreviousNext, Spelling } from "./sound-page-blocks";
 import { SoundsContent } from "./sounds-content";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -24,13 +24,14 @@ describe("a sound's name beside its symbol", () => {
 		vi.unstubAllEnvs();
 	});
 
-	it("lists each sound with its symbol, its name as a small label and its key word", () => {
+	it("lists each sound with its symbol and key word, and its name only for screen readers", () => {
 		const html = renderToString(<SoundsContent />);
 		expect(linkTag(html, "/sounds/t-top")).toContain('aria-label="T, as in top"');
 		expect(linkTag(html, "/sounds/th-thin")).toContain('aria-label="Voiceless TH, as in thin"');
-		expect(html).toMatch(
-			/<span class="font-display[^"]*">θ<\/span><span class="truncate[^"]*">Voiceless TH<\/span>/,
-		);
+		expect(linkTag(html, "/sounds/g-gum")).toContain('aria-label="G, as in gum"');
+		expect(html).toMatch(/<span class="font-display[^"]*">θ<\/span>/);
+		expect(html).not.toContain(">Voiceless TH<");
+		expect(html).not.toMatch(/<span class="truncate[^"]*">/);
 	});
 
 	it("shows the next and previous sounds' symbols in a box and says their names", () => {
@@ -39,11 +40,6 @@ describe("a sound's name beside its symbol", () => {
 		expect(linkTag(html, "/sounds/d-day")).toContain('aria-label="Next sound: D"');
 		expect(html).toMatch(/<span class="truncate[^"]*">B<\/span>/);
 		expect(html).toMatch(/<span class="truncate[^"]*">D<\/span>/);
-	});
-
-	it("names the sounds near it without reading the letter twice", () => {
-		const html = renderToString(<SoundFamilies phonemeId="T" />);
-		expect(linkTag(html, "/sounds/d-day")).toContain('aria-label="D, as in day"');
 	});
 
 	it("names the other sounds the same letters spell the same way", () => {

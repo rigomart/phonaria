@@ -59,7 +59,7 @@ const enough = observation(
 		],
 		rareBar:
 			"Rare spelling. 1.0% of /f/ sounds in everyday speech are spelled gh. Other common spellings: f 89.0%, ff 7.0%, ph 2.6%.",
-		rareNumber: "1.0% of /f/",
+		rareNumber: "spells /f/ 1% of the time",
 		rareWords: ["tough", "laugh", "rough"],
 		wiktionary: "https://en.wiktionary.org/wiki/enough#English",
 		overflow: false,

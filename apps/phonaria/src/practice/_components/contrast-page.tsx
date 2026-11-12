@@ -9,7 +9,6 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { Link as AppLink } from "@/components/link";
 import { PlayableWordCell } from "@/components/phoneme-details/playable-word";
-import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { flags } from "@/lib/flags";
 import {
 	type ContrastPage,
@@ -38,7 +37,6 @@ function PairTable({ page }: { page: ContrastPage }) {
 							>
 								{sound.ipa}
 							</AppLink>
-							<span className="block truncate text-muted-foreground text-xs">{sound.label}</span>
 						</th>
 					))}
 				</tr>
@@ -97,7 +95,6 @@ function OtherContrasts({ sound }: { sound: ContrastPageSound }) {
 }
 
 export function ContrastPageView({ page, word }: { page: ContrastPage; word?: string }) {
-	const [a, b] = page.sounds;
 	const practice = flags.isEnabled("speech");
 	const others = page.sounds.filter((sound) => sound.otherContrasts.length > 0);
 	return (
@@ -129,14 +126,12 @@ export function ContrastPageView({ page, word }: { page: ContrastPage; word?: st
 						Minimal pairs
 					</h2>
 					<p className="text-muted-foreground text-sm">
-						{page.pairs.length} pairs of words that differ only by /{a.ipa}/ and /{b.ipa}/. Tap a
-						word to hear it.
+						{page.pairs.length} pairs. Tap a word to hear it.
 					</p>
 				</div>
 				<div className="-mx-2">
 					<PairTable page={page} />
 				</div>
-				{practice ? null : <SyntheticVoiceNote targetAccent="en-us" words={page.pairs.flat()} />}
 			</section>
 
 			{others.length > 0 ? (

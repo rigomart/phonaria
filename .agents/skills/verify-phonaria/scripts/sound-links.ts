@@ -1,15 +1,12 @@
 import { type Feature, observation } from "./feature";
 
-// Expected slugs are the ones reviewed in #392 (PR #399); the "Open full page"
-// link is the one #394 asks for.
+// Expected slugs are the ones reviewed in #392 (PR #399).
 
 function readOpenTile() {
 	const tile = document.querySelector("[data-details-open]");
 	const details = document.querySelector("[data-phoneme-details]");
 	const dialog = details?.closest("[aria-labelledby]");
-	const page = Array.from(details?.querySelectorAll("a") ?? []).find(
-		(link) => link.textContent?.trim() === "Open full page",
-	);
+	const page = details?.querySelector("h2 a");
 	return {
 		path: location.pathname,
 		tag: tile?.tagName.toLowerCase() ?? null,

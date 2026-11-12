@@ -140,7 +140,7 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 				"on sound cards and sound pages",
 				"in the minimal-pair lists",
 				"in the word box",
-				...(practice ? ["when you practise"] : []),
+				...(practice ? ["when you practice"] : []),
 			])}.`,
 			notes: {
 				heading: "Keep in mind",
@@ -163,7 +163,7 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 					url: "https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-pronunciation-assessment",
 				},
 			],
-			uses: "When you practise saying a minimal pair, your recording goes to Azure AI Speech, which reports the sounds it heard. Rules in this app, not Azure, then decide, for each sound, whether it matched, was swapped for another sound, or was unclear.",
+			uses: "When you practice saying a minimal pair, your recording goes to Azure AI Speech, which reports the sounds it heard. Rules in this app, not Azure, then decide, for each sound, whether it matched, was swapped for another sound, or was unclear.",
 			notes: {
 				heading: "Keep in mind",
 				items: [
@@ -361,7 +361,7 @@ export function CreditsContent({ flags }: { flags: CreditsFlags }) {
 					</h1>
 					<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
 						Phonaria's pronunciations, recordings, charts and word lists come from the sources
-						below. Phonaria is in beta, so these sources and how they're used can change.
+						below.
 					</p>
 				</div>
 

@@ -48,6 +48,11 @@ export function contrastSound(id: PhonemeSymbolId): ContrastSound {
 	return { id, ipa: getIpaForPhonemeId(id) };
 }
 
+/** A catalog word's IPA, e.g. "ʃɪp" for ship, from its first accepted pronunciation. */
+export function catalogWordIpa(word: string): string | undefined {
+	return CatalogWordPronunciations.get(word)?.[0]?.map(getIpaForPhonemeId).join("");
+}
+
 function findContrast(contrastId: string): PhonemeContrast<"en-us"> | undefined {
 	return EnglishPhonemeContrasts.find((contrast) => contrast.id === contrastId);
 }

@@ -25,7 +25,10 @@ export type CreditKey =
 const textLink =
 	"rounded-sm underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-/** A visible one-line note on output that can be wrong, with a More button that opens the details. */
+/**
+ * A visible one-line note on output that can be wrong, with a More button that
+ * opens the details. Without the note, the link is the title alone.
+ */
 export function Disclaimer({
 	children,
 	title,
@@ -34,7 +37,7 @@ export function Disclaimer({
 	className,
 }: {
 	/** One plain sentence of inline content: the note renders as a `<p>`. */
-	children: ReactNode;
+	children?: ReactNode;
 	/** Heads the details, and names the More button for screen readers. */
 	title: string;
 	points: readonly ReactNode[];
@@ -44,10 +47,13 @@ export function Disclaimer({
 }) {
 	return (
 		<p className={cn("text-xs text-muted-foreground text-pretty", className)}>
-			{children}{" "}
+			{children ? <>{children} </> : null}
 			<Popover>
-				<PopoverTrigger aria-label={`More: ${title}`} className={cn("cursor-pointer", textLink)}>
-					More
+				<PopoverTrigger
+					aria-label={children ? `More: ${title}` : undefined}
+					className={cn("cursor-pointer", textLink)}
+				>
+					{children ? "More" : title}
 				</PopoverTrigger>
 				<PopoverContent className="gap-3 sm:w-96">
 					<PopoverTitle className="font-display text-sm font-semibold">{title}</PopoverTitle>

@@ -1,9 +1,7 @@
-import { getIpaForPhonemeId, getPhonemeType, type TargetAccent } from "@phonaria/phonetics-data";
+import { getIpaForPhonemeId, getPhonemeType } from "@phonaria/phonetics-data";
 import type { ReactNode } from "react";
-import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { IPA_CHART_CONSONANTS_PATH, IPA_CHART_VOWELS_PATH } from "@/lib/ipa-chart-metadata";
 import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
-import { pairSpellings } from "@/lib/spelling-pairs";
 import { Articulation } from "./articulation";
 import { ComparisonList } from "./comparisons";
 import { DetailsLink, DetailsSection } from "./details-section";
@@ -17,8 +15,6 @@ export interface DetailSection {
 	/** Sits opposite the title, e.g. a link to a fuller page. */
 	action?: ReactNode;
 	content: ReactNode;
-	/** The words its content can play. */
-	words?: readonly string[];
 }
 
 /**
@@ -54,7 +50,6 @@ export function getDetailSections({
 		sections.push({
 			id: "comparisons",
 			title: "Compare with",
-			words: comparisons.flatMap(({ pairs }) => pairs.flatMap(({ words }) => words)),
 			content: (
 				<ComparisonList
 					targetAccent={targetAccent}
@@ -70,9 +65,6 @@ export function getDetailSections({
 		sections.push({
 			id: "spelling",
 			title: "Spelling",
-			words: pairSpellings(spelling).rows.flatMap(({ examples }) =>
-				examples.map(({ word }) => word),
-			),
 			content: <SpellingPatterns targetAccent={targetAccent} spelling={spelling} />,
 		});
 	}
@@ -88,20 +80,7 @@ export function getDetailSections({
 	return sections;
 }
 
-/**
- * The sections stacked, separated by space rather than lines. The
- * synthetic-voice note closes them when a section, or one of `extraWords`
- * the surface plays elsewhere (the drawer's example word), has a recording.
- */
-export function DetailSections({
-	targetAccent,
-	sections,
-	extraWords = [],
-}: {
-	targetAccent: TargetAccent;
-	sections: readonly DetailSection[];
-	extraWords?: readonly string[];
-}) {
+export function DetailSections({ sections }: { sections: readonly DetailSection[] }) {
 	return (
 		<div className="flex flex-col gap-6">
 			{sections.map(({ id, title, action, content }) => (
@@ -109,10 +88,6 @@ export function DetailSections({
 					{content}
 				</DetailsSection>
 			))}
-			<SyntheticVoiceNote
-				targetAccent={targetAccent}
-				words={[...extraWords, ...sections.flatMap(({ words = [] }) => words)]}
-			/>
 		</div>
 	);
 }

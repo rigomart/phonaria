@@ -20,9 +20,9 @@ describe("contrast pages", () => {
 	it("holds the contrast's sounds and every one of its pairs", () => {
 		const page = getContrastPage("th-s");
 		expect(page?.category).toBe("consonant");
-		expect(page?.sounds.map(({ id, ipa, label }) => ({ id, ipa, label }))).toEqual([
-			{ id: "TH", ipa: "θ", label: "Voiceless dental fricative" },
-			{ id: "S", ipa: "s", label: "Voiceless alveolar fricative" },
+		expect(page?.sounds.map(({ id, ipa }) => ({ id, ipa }))).toEqual([
+			{ id: "TH", ipa: "θ" },
+			{ id: "S", ipa: "s" },
 		]);
 		expect(page?.pairs).toHaveLength(11);
 		expect(page?.pairs).toContainEqual(["think", "sink"]);

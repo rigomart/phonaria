@@ -38,7 +38,6 @@ describe("the sound page", () => {
 			"Compare with",
 			"Spelling",
 			"Common words with θ",
-			"Sounds near it",
 		]);
 	});
 
@@ -51,11 +50,10 @@ describe("the sound page", () => {
 		expect(html).toMatch(
 			/<dt [^>]*>Manner<\/dt><dd [^>]*>.*fricative<\/dd><dd [^>]*>.*plosive<\/dd>/,
 		);
-		expect(html).toContain(">Both voiceless<");
-		expect(html).toContain(">Both voiceless, fricative<");
+		expect(html).not.toContain(">Both ");
 		expect(html).toContain(">Show all 14<");
 		expect(html).toMatch(
-			/<a href="\/minimal-pairs\/th-t"[^>]*>(All pairs for|Practise saying) \/θ\/ and \/t\//,
+			/<a href="\/minimal-pairs\/th-t"[^>]*>(All pairs for|Practice saying) \/θ\/ and \/t\//,
 		);
 		expect(html).toContain(">Can you hear it?<");
 	});
@@ -81,7 +79,7 @@ describe("the sound page", () => {
 		expect(common).toContain('aria-label="Hear if"');
 	});
 
-	it("says which other sounds the same letters spell, and links the sounds near it", () => {
+	it("says which other sounds the same letters spell, and links the previous and next sounds", () => {
 		const html = page("TH");
 		expect(html).toContain(">The same letters also spell<");
 		expect(html).toMatch(/aria-label="Voiced TH, as in this"/);
@@ -102,10 +100,31 @@ describe("the sound page", () => {
 		expect(headings(page("TH"))).not.toContain("How it changes");
 	});
 
-	it("leaves out the drawer's how-to sentence and the link to the page itself", () => {
+	it("says how a consonant is made once, in plain words, and not again as labelled chips", () => {
 		const html = page("TH");
-		expect(html).not.toContain("is made with the tongue");
+		const pinned = html.slice(0, html.indexOf(">Compare with<"));
+		expect(html).toContain(
+			"/θ/ is made with the tongue between the teeth, pushing air through a narrow gap, with the voice off.",
+		);
+		expect(pinned).not.toMatch(/<dt /);
 		expect(html).not.toContain("Open full page");
+	});
+
+	it("gives a vowel its chart and its name alone, with no chips and no unreadable axis labels", () => {
+		const html = page("AE");
+		expect(html.slice(0, html.indexOf(">Compare with<"))).not.toMatch(/<dt /);
+		expect(html).not.toContain("Cl-mid");
+		expect(html).not.toContain("Op-mid");
+	});
+
+	it("keeps a diphthong's start and end as labelled values", () => {
+		expect(page("AU")).toMatch(/<dt [^>]*>Starts<\/dt>/);
+	});
+
+	it("credits the recording at the bottom, after the previous and next links, and never mentions the voice", () => {
+		const html = page("T");
+		expect(html.indexOf("Recording:")).toBeGreaterThan(html.indexOf('aria-label="Other sounds"'));
+		expect(html).not.toContain("computer-generated");
 	});
 });
 
@@ -113,10 +132,7 @@ describe("the drawer", () => {
 	it("keeps the page-only sections out", () => {
 		const html = renderToString(
 			<AudioManagerProvider>
-				<DetailSections
-					targetAccent="en-us"
-					sections={getDetailSections({ targetAccent: "en-us", phonemeId: "TH" })}
-				/>
+				<DetailSections sections={getDetailSections({ targetAccent: "en-us", phonemeId: "TH" })} />
 			</AudioManagerProvider>,
 		);
 		for (const text of [

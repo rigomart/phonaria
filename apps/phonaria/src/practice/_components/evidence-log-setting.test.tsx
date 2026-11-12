@@ -29,15 +29,15 @@ describe("EvidenceLogSetting", () => {
 		useEvidenceLogConsent.setState({ enabled: false });
 	});
 
-	it("is a real switch, off by default, named and described by its own copy", () => {
+	it("is a real switch, off by default, named by its own copy and saying nothing more until it is on", () => {
 		const html = renderToString(<EvidenceLogSetting />);
 
 		expect(html).toMatch(/role="switch"/);
 		expect(html).toContain('aria-checked="false"');
 		const labelId = html.match(/aria-labelledby="([^"]+)"/)?.[1];
-		const descriptionId = html.match(/aria-describedby="([^"]+)"/)?.[1];
 		expect(html).toContain(`id="${labelId}">${EvidenceLogNotice.label}<`);
-		expect(html).toContain(`id="${descriptionId}">${EvidenceLogNotice.description}<`);
+		expect(html).not.toContain("aria-describedby");
+		expect(html).not.toContain(EvidenceLogNotice.description);
 		const forId = html.match(/<label[^>]* for="([^"]+)"/)?.[1];
 		expect(html).toMatch(new RegExp(`<input id="${forId}"[^>]*type="checkbox"`));
 	});
@@ -47,9 +47,11 @@ describe("EvidenceLogSetting", () => {
 		expect(renderToString(<EvidenceLogSetting />)).toContain('aria-checked="false"');
 	});
 
-	it("shows the switch on once sharing is on", () => {
+	it("shows the switch on once sharing is on, and describes what is kept", () => {
 		const html = renderToString(<EvidenceLogSwitch enabled onChange={() => {}} />);
 		expect(html).toContain('aria-checked="true"');
+		const descriptionId = html.match(/aria-describedby="([^"]+)"/)?.[1];
+		expect(html).toContain(`id="${descriptionId}">${EvidenceLogNotice.description}<`);
 	});
 
 	it("says what is kept and for how long, and that the recording never is", () => {

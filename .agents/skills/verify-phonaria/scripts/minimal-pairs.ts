@@ -84,7 +84,7 @@ const contrastPage = observation(
 		heading: "θ vs s: think vs sink",
 		difference:
 			"/θ/ is made with the tongue between the teeth. /s/ is made with the tongue tip on the gum ridge behind the top teeth. Everything else is the same.",
-		columns: ["θVoiceless dental fricative", "sVoiceless alveolar fricative"],
+		columns: ["θ", "s"],
 		pairs: [
 			["thin", "sin"],
 			["thing", "sing"],
@@ -335,14 +335,14 @@ export const minimalPairs = {
 			() => ({
 				href:
 					Array.from(document.querySelectorAll("[data-phoneme-details] a"))
-						.find((link) => link.textContent?.trim().startsWith("Practise saying"))
+						.find((link) => link.textContent?.trim().startsWith("Practice saying"))
 						?.getAttribute("href") ?? null,
 				label:
 					Array.from(document.querySelectorAll("[data-phoneme-details] a"))
-						.find((link) => link.textContent?.trim().startsWith("Practise saying"))
+						.find((link) => link.textContent?.trim().startsWith("Practice saying"))
 						?.textContent?.trim() ?? null,
 			}),
-			{ href: "/minimal-pairs/i-ix", label: "Practise saying /ɪ/ and /i/" },
+			{ href: "/minimal-pairs/i-ix", label: "Practice saying /ɪ/ and /i/" },
 		),
 		"next-word": observation(
 			() => {
