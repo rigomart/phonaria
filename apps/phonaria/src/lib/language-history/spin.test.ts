@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	nextThrottle,
 	SPIN_EASE_MS,
+	SPIN_HANDOFF,
 	SPIN_RESUME_MS,
 	SPIN_TURN_MS,
 	spinAllowed,
@@ -18,7 +19,7 @@ describe("spinning the globe", () => {
 		expect(spinDegrees(1, SPIN_TURN_MS)).toBeCloseTo(360);
 	});
 
-	it("eases in and out over about a second", () => {
+	it("eases in and out over well under a second", () => {
 		expect(spinDegrees(0, 1000)).toBe(0);
 		expect(spinDegrees(0.5, 1000)).toBeCloseTo(spinDegrees(1, 1000) / 2);
 		expect(spinDegrees(0.1, 1000)).toBeLessThan(spinDegrees(1, 1000) * 0.1);
@@ -26,6 +27,11 @@ describe("spinning the globe", () => {
 		expect(nextThrottle(0.5, true, SPIN_EASE_MS)).toBe(1);
 		expect(nextThrottle(1, false, SPIN_EASE_MS / 4)).toBeCloseTo(0.75);
 		expect(nextThrottle(0.2, false, SPIN_EASE_MS)).toBe(0);
+	});
+
+	it("starts easing in before the flight lands, so there is no stop between the two", () => {
+		expect(SPIN_HANDOFF).toBeGreaterThan(0);
+		expect(SPIN_HANDOFF).toBeLessThan(1);
 	});
 
 	it("only spins at a spinning step, once landed, with motion on and the map in view", () => {

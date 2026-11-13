@@ -40,6 +40,7 @@ import {
 } from "@/lib/language-history/sphere";
 import {
 	nextThrottle,
+	SPIN_HANDOFF,
 	SPIN_RESUME_MS,
 	spinAllowed,
 	spinDegrees,
@@ -161,7 +162,7 @@ function createGlobe({
 	/** The step's own view, which the recenter button returns to. */
 	let home: Camera | null = null;
 	let camera: Camera | null = null;
-	let flight: { plan: Flight; start: number } | null = null;
+	let flight: { plan: Flight; start: number; spunDegrees: number } | null = null;
 	let drag: {
 		id: number;
 		mode: DragMode;
@@ -275,6 +276,8 @@ function createGlobe({
 		if (flight) {
 			const t = (now - flight.start) / flight.plan.duration;
 			camera = flightCamera(flight.plan, t);
+			if (flight.spunDegrees)
+				camera = { ...camera, lon: wrapLongitude(camera.lon - flight.spunDegrees) };
 			pinsStale = true;
 			if (t >= 1) {
 				flight = null;
@@ -327,11 +330,13 @@ function createGlobe({
 		frame ||= requestAnimationFrame(tick);
 	}
 
+	const flightProgress = () =>
+		flight ? (performance.now() - flight.start) / flight.plan.duration : 1;
 	const held = () => holds.hover || holds.focus || holds.details || drag !== null;
 	const spinMayRun = () =>
 		spinAllowed({
 			stepSpins: spinStep,
-			landed: flight === null && pendingReveal === null,
+			landed: flightProgress() >= SPIN_HANDOFF && pendingReveal === null,
 			reducedMotion: motionReduced,
 			hidden: pageHidden,
 			inView,
@@ -371,6 +376,7 @@ function createGlobe({
 		if (turn > 0 && camera) {
 			// Eastward, as the Earth turns: the view drifts toward the west.
 			camera = { ...camera, lon: wrapLongitude(camera.lon - turn) };
+			if (flight) flight.spunDegrees += turn;
 			if (home) home = { ...home, lon: wrapLongitude(home.lon - turn) };
 			pinsStale = true;
 		}
@@ -411,7 +417,7 @@ function createGlobe({
 			setAway(false);
 			settle();
 		} else {
-			flight = { plan: planFlight(from, home, size), start: now };
+			flight = { plan: planFlight(from, home, size), start: now, spunDegrees: 0 };
 			setAway(false);
 			// Lets tests and verification wait for a flight to land instead of sleeping.
 			container.dataset.camera = "moving";
@@ -462,7 +468,11 @@ function createGlobe({
 			renderNow();
 			return;
 		}
-		flight = { plan: planFlight(camera, home, viewport, { near: true }), start: performance.now() };
+		flight = {
+			plan: planFlight(camera, home, viewport, { near: true }),
+			start: performance.now(),
+			spunDegrees: 0,
+		};
 		container.dataset.camera = "moving";
 		scheduleFrame();
 	}
