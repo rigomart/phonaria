@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.8.0](https://github.com/rigomart/phonaria/compare/phonaria-v0.7.0...phonaria-v0.8.0) (2026-11-13)
+
+
+### Features
+
+* **app:** cut repeated copy from the sound, word, contrast and search pages ([#489](https://github.com/rigomart/phonaria/issues/489)) ([49cf793](https://github.com/rigomart/phonaria/commit/49cf79330c5250fc6fdceb068f4b89c7b45e813e))
+* **app:** replace the consonant illustrations with animated mouth diagrams ([#487](https://github.com/rigomart/phonaria/issues/487)) ([cabb6ed](https://github.com/rigomart/phonaria/commit/cabb6ed518ef49351d31e7809222cad41b654f98))
+
+
+### Bug Fixes
+
+* **app:** tighten the History cards, fix two sea routes and start the Today spin sooner ([#490](https://github.com/rigomart/phonaria/issues/490)) ([0b7501c](https://github.com/rigomart/phonaria/commit/0b7501ca4b0c55e173b98318c6ce4c79cc453192))
+
 ## [0.7.0](https://github.com/rigomart/phonaria/compare/phonaria-v0.6.0...phonaria-v0.7.0) (2026-11-09)
 
 
