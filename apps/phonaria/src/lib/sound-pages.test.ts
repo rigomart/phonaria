@@ -11,6 +11,7 @@ import {
 	getSoundName,
 	getSoundSlug,
 	listSoundPagePaths,
+	nameAddsToSymbol,
 	soundHeading,
 	soundPageDescription,
 	soundPagePath,
@@ -134,5 +135,18 @@ describe("soundPageDescription", () => {
 		expect(soundPageDescription("H")).toBe(
 			"How to say the H sound /h/ in 'house' and 'hello': how it's made and how it's spelled.",
 		);
+	});
+});
+
+describe("names that add to the symbol", () => {
+	it("leave out a name that only spells the symbol, including g, whose IPA symbol is not the letter", () => {
+		for (const id of ["K", "N", "L", "G", "P", "D"] as const)
+			expect(nameAddsToSymbol(id), id).toBe(false);
+	});
+
+	it("keep a name that says something the symbol doesn't", () => {
+		for (const id of ["AX", "ER", "TH", "R", "Y", "J", "SH"] as const) {
+			expect(nameAddsToSymbol(id), id).toBe(true);
+		}
 	});
 });

@@ -36,7 +36,8 @@ describe("a contrast page", () => {
 		expect(html).toContain(
 			"/θ/ is made with the tongue between the teeth. /s/ is made with the tongue tip on the gum ridge behind the top teeth. Everything else is the same.",
 		);
-		expect(html).toContain("Voiceless dental fricative");
+		expect(html).not.toContain("Voiceless dental fricative");
+		expect(html.replaceAll("<!-- -->", "")).toContain(">11 pairs. Tap a word to hear it.<");
 		for (const word of ["thin", "sin", "think", "sink", "tenth", "tense"]) {
 			expect(html).toContain(`>${word}<`);
 		}

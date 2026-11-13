@@ -75,10 +75,7 @@ function PanelContent({ payload }: { payload: DetailsPayload }) {
 					</div>
 				) : null}
 				<div className="px-5 pb-6">
-					<DetailSections
-						targetAccent={payload.options.targetAccent}
-						sections={getDetailSections(payload.options)}
-					/>
+					<DetailSections sections={getDetailSections(payload.options)} />
 				</div>
 			</div>
 		</DrawerContent>

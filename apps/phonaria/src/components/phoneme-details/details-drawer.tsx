@@ -185,8 +185,6 @@ function DrawerSheet({
 						<SoundHeader
 							sound={sound}
 							titleId={titleId}
-							// The sections close with one note that covers the example word too.
-							voiceNote={false}
 							onExpand={expanded ? undefined : onExpand}
 							action={
 								<DrawerClose
@@ -204,11 +202,7 @@ function DrawerSheet({
 						</div>
 					) : null}
 					<div ref={sectionsRef} onFocus={expandOnKeyboardFocus} className="px-5 pb-safe-6">
-						<DetailSections
-							targetAccent={payload.options.targetAccent}
-							sections={sections}
-							extraWords={sound.example ? [sound.example.word] : []}
-						/>
+						<DetailSections sections={sections} />
 					</div>
 				</div>
 			</div>

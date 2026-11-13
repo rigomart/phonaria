@@ -35,11 +35,6 @@ export function SoundComparisons({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 	);
 }
 
-/**
- * Two sounds face to face: each with its symbol and key word, the features
- * that set them apart in rows between them, what they share once below, and
- * their minimal pairs, this sound's word on the left.
- */
 function FaceOff({
 	phonemeId,
 	comparison,
@@ -49,10 +44,10 @@ function FaceOff({
 }) {
 	const partner = comparison.partnerId as EnglishPhonemeSymbolId;
 	const ipa = getIpaForPhonemeId(phonemeId);
-	const { differences, shared } = compareSounds(phonemeId, partner);
+	const differences = compareSounds(phonemeId, partner);
 	const [all, setAll] = useState(false);
 	const pairs = all ? comparison.pairs : comparison.pairs.slice(0, PAIR_LIMIT);
-	const practise = flags.isEnabled("speech");
+	const practice = flags.isEnabled("speech");
 
 	return (
 		<DetailsCard className="flex flex-col gap-4">
@@ -61,40 +56,31 @@ function FaceOff({
 				<span className="text-sm text-muted-foreground">vs</span>
 				<Side phonemeId={partner} end />
 			</div>
-			{differences.length > 0 || shared.length > 0 ? (
-				<div className="flex flex-col gap-1">
-					{differences.length > 0 ? (
-						<dl
-							aria-label={`How ${ipa} and ${comparison.partnerIpa} differ`}
-							className="flex flex-col gap-1"
+			{differences.length > 0 ? (
+				<dl
+					aria-label={`How ${ipa} and ${comparison.partnerIpa} differ`}
+					className="flex flex-col gap-1"
+				>
+					{differences.map(({ label, own, other }) => (
+						<div
+							key={label}
+							className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-xl bg-background-strong px-3 py-2"
 						>
-							{differences.map(({ label, own, other }) => (
-								<div
-									key={label}
-									className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-xl bg-background-strong px-3 py-2"
-								>
-									{/* The term comes first for screen readers; the grid puts it in the middle. */}
-									<dt className="col-start-2 row-start-1 rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-										{label}
-									</dt>
-									<dd className="col-start-1 row-start-1 font-display text-lg font-semibold text-foreground">
-										<span className="sr-only">{`${ipa}: `}</span>
-										{own}
-									</dd>
-									<dd className="col-start-3 row-start-1 text-right font-display text-lg font-semibold text-foreground">
-										<span className="sr-only">{`${comparison.partnerIpa}: `}</span>
-										{other}
-									</dd>
-								</div>
-							))}
-						</dl>
-					) : null}
-					{shared.length > 0 ? (
-						<p className="text-center text-xs text-muted-foreground">
-							{`Both ${shared.join(", ")}`}
-						</p>
-					) : null}
-				</div>
+							{/* The term comes first for screen readers; the grid puts it in the middle. */}
+							<dt className="col-start-2 row-start-1 rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
+								{label}
+							</dt>
+							<dd className="col-start-1 row-start-1 font-display text-lg font-semibold text-foreground">
+								<span className="sr-only">{`${ipa}: `}</span>
+								{own}
+							</dd>
+							<dd className="col-start-3 row-start-1 text-right font-display text-lg font-semibold text-foreground">
+								<span className="sr-only">{`${comparison.partnerIpa}: `}</span>
+								{other}
+							</dd>
+						</div>
+					))}
+				</dl>
 			) : null}
 			<ul
 				aria-label={`${ipa} versus ${comparison.partnerIpa}`}
@@ -136,7 +122,7 @@ function FaceOff({
 					href={contrastPagePath(comparison.contrastId)}
 					className="group flex items-center gap-1 rounded-sm text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 				>
-					{`${practise ? "Practise saying" : "All pairs for"} /${ipa}/ and /${comparison.partnerIpa}/`}
+					{`${practice ? "Practice saying" : "All pairs for"} /${ipa}/ and /${comparison.partnerIpa}/`}
 					<ArrowRight
 						aria-hidden="true"
 						className="size-3 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
@@ -224,14 +210,14 @@ function ListenAndPick({
 
 	return (
 		<DetailsCard className="flex flex-col gap-3">
-			<div className="flex items-center justify-between gap-2">
-				<h3 className="text-sm font-semibold text-foreground">Can you hear it?</h3>
-				{score.total > 0 ? (
-					<p className="text-xs text-muted-foreground">{`${score.right} of ${score.total} right`}</p>
-				) : null}
-			</div>
 			{round ? (
 				<>
+					<div className="flex items-center justify-between gap-2">
+						<h3 className="text-sm font-semibold text-foreground">Can you hear it?</h3>
+						{score.total > 0 ? (
+							<p className="text-xs text-muted-foreground">{`${score.right} of ${score.total} right`}</p>
+						) : null}
+					</div>
 					<div className="grid grid-cols-2 gap-2">
 						{round.words.map((word, index) => {
 							const state =
@@ -288,12 +274,20 @@ function ListenAndPick({
 					</div>
 				</>
 			) : (
-				<div className="flex items-center justify-between gap-3">
-					<p className="text-sm text-muted-foreground">
-						One word from a pair plays. Pick the one you heard.
-					</p>
-					<Button size="sm" onClick={next} disabled={playable.length === 0}>
-						<Volume2 aria-hidden="true" />
+				<div className="flex items-center gap-3">
+					<span
+						aria-hidden="true"
+						className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground"
+					>
+						<Volume2 className="size-5" />
+					</span>
+					<div className="flex min-w-0 flex-1 flex-col">
+						<h3 className="text-sm font-semibold text-foreground">Can you hear it?</h3>
+						<p className="text-pretty text-sm text-muted-foreground">
+							Hear one word, then pick which it was.
+						</p>
+					</div>
+					<Button onClick={next} disabled={playable.length === 0}>
 						Start
 					</Button>
 				</div>

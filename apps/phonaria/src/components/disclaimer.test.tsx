@@ -14,4 +14,13 @@ describe("Disclaimer", () => {
 		expect(html).toContain('aria-expanded="false"');
 		expect(html).not.toContain("Hidden detail.");
 	});
+
+	it("is the title alone as a link when there is no note", () => {
+		const html = renderToString(
+			<Disclaimer title="About these pronunciations" points={["Hidden detail."]} />,
+		);
+		expect(html).toContain(">About these pronunciations</button>");
+		expect(html).not.toContain("More");
+		expect(html).not.toContain("Hidden detail.");
+	});
 });

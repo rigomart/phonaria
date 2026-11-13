@@ -85,10 +85,7 @@ function SoundLink({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
 			aria-label={`${name}, as in ${example.word}`}
 			className="flex flex-col gap-1 rounded-xl bg-card px-3 py-2.5 text-card-foreground ring-1 ring-border transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 		>
-			<span className="flex items-baseline justify-between gap-2">
-				<span className="font-display text-2xl leading-none">{ipa}</span>
-				<span className="truncate text-xs font-medium text-muted-foreground">{name}</span>
-			</span>
+			<span className="font-display text-2xl leading-none">{ipa}</span>
 			<span className="text-sm text-muted-foreground">
 				as in <SpelledWord spelled={example.spelled} />
 			</span>

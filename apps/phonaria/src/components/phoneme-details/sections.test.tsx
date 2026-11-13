@@ -32,7 +32,6 @@ function render(phonemeId: LanguagePhonemeId<TargetAccent>) {
 	return renderToString(
 		<AudioManagerProvider>
 			<DetailSections
-				targetAccent="en-us"
 				sections={getDetailSections({ targetAccent: "en-us", phonemeId, showChartLink: false })}
 			/>
 		</AudioManagerProvider>,
@@ -67,14 +66,14 @@ describe("contrast links under Compare with", () => {
 		vi.stubEnv("FLAG_SPEECH", "0");
 		const html = render("I");
 		expect(html).toMatch(/<a [^>]*href="\/minimal-pairs\/i-ix"[^>]*>All pairs for \/i\/ and \/ɪ\//);
-		expect(html).not.toContain("Practise saying");
+		expect(html).not.toContain("Practice saying");
 	});
 
 	it("offers practice there while speaking practice is on", () => {
 		vi.stubEnv("FLAG_SPEECH", "1");
 		const html = render("I");
 		expect(html).toMatch(
-			/<a [^>]*href="\/minimal-pairs\/i-ix"[^>]*>Practise saying \/i\/ and \/ɪ\//,
+			/<a [^>]*href="\/minimal-pairs\/i-ix"[^>]*>Practice saying \/i\/ and \/ɪ\//,
 		);
 	});
 });
@@ -99,17 +98,22 @@ describe("the link to the sound's own page", () => {
 		);
 	}
 
-	it("links the details to the sound's page", () => {
-		expect(header({ targetAccent: "en-us", phonemeId: "TH" })).toMatch(
-			/<a [^>]*href="\/sounds\/th-thin"[^>]*>Open full page/,
-		);
+	it("links the details' title to the sound's page, with an arrow", () => {
+		const html = header({ targetAccent: "en-us", phonemeId: "TH" });
+		expect(html).toMatch(/<h2 [^>]*><a [^>]*href="\/sounds\/th-thin"[^>]*>Voiceless TH<svg /);
+		expect(html).toContain("lucide-arrow-right");
+		expect(html).not.toContain("Open full page");
 	});
 
 	it("leaves it out in Practice and for an accent without pages", () => {
-		expect(header({ targetAccent: "en-us", phonemeId: "TH", showPageLink: false })).not.toContain(
-			"Open full page",
-		);
-		expect(header({ targetAccent: "es-419", phonemeId: "S" })).not.toContain("Open full page");
+		for (const options of [
+			{ targetAccent: "en-us", phonemeId: "TH", showPageLink: false },
+			{ targetAccent: "es-419", phonemeId: "S" },
+		] as const) {
+			const html = header(options);
+			expect(html).not.toContain("/sounds/");
+			expect(html).not.toContain("lucide-arrow-right");
+		}
 	});
 });
 

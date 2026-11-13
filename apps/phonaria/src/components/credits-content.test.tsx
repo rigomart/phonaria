@@ -79,7 +79,7 @@ describe("CreditsContent", () => {
 		const body = text(html);
 		expect(body).toContain("the Practice words");
 		expect(body).toContain("the words you can find by their sounds");
-		expect(body).toContain("when you practise");
+		expect(body).toContain("when you practice");
 		expect(body).toContain("your recording goes to Azure AI Speech");
 		expect(body).toContain("isn't kept after");
 		expect(body).toContain("Natural Earth");
@@ -105,7 +105,7 @@ describe("CreditsContent", () => {
 			expect(keys.includes("history"), label).toBe(enabled.languageHistory);
 			expect(body.includes("the Practice words"), label).toBe(enabled.practice);
 			expect(body.includes("by their sounds"), label).toBe(enabled.soundSearch);
-			expect(body.includes("when you practise"), label).toBe(enabled.practice || enabled.speech);
+			expect(body.includes("when you practice"), label).toBe(enabled.practice || enabled.speech);
 		}
 	});
 

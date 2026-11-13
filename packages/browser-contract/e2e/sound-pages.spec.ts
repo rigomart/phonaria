@@ -70,10 +70,9 @@ test.describe("Chart tiles link to sound pages", () => {
 		await openDetails(page, tile);
 
 		await page.getByRole("button", { name: "Full details for θ" }).click();
-		await expect(page.getByRole("link", { name: "Open full page" })).toHaveAttribute(
-			"href",
-			TH_PAGE,
-		);
+		await expect(
+			page.getByRole("dialog", { name: "Voiceless TH", exact: true }).getByRole("link"),
+		).toHaveAttribute("href", TH_PAGE);
 	});
 
 	test("with the side panel open, a plain click swaps its sound without leaving the chart", async ({
@@ -85,10 +84,9 @@ test.describe("Chart tiles link to sound pages", () => {
 
 		await page.getByRole("button", { name: "Voiced dental fricative (ð)" }).click();
 		await expect(page.getByRole("dialog", { name: "Voiced TH", exact: true })).toBeVisible();
-		await expect(page.getByRole("link", { name: "Open full page" })).toHaveAttribute(
-			"href",
-			"/sounds/th-this",
-		);
+		await expect(
+			page.getByRole("dialog", { name: "Voiced TH", exact: true }).getByRole("link"),
+		).toHaveAttribute("href", "/sounds/th-this");
 		await expect(page).toHaveURL(new RegExp(`${CHART_PATH}$`));
 	});
 
@@ -148,7 +146,7 @@ test.describe("Chart tiles link to sound pages", () => {
 	test.describe("on a phone", () => {
 		test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 
-		test("a tap opens the drawer, which links to the sound's page", async ({ page }) => {
+		test("a tap opens the drawer, whose full view links to the sound's page", async ({ page }) => {
 			await page.goto(CHART_PATH);
 			const tile = page.getByRole("button", { name: TH_TILE });
 			await waitForHydration(tile);
@@ -156,7 +154,11 @@ test.describe("Chart tiles link to sound pages", () => {
 			await expect(page.getByRole("dialog", { name: "Voiceless TH", exact: true })).toBeVisible();
 			await expect(page).toHaveURL(new RegExp(`${CHART_PATH}$`));
 
-			await page.getByRole("link", { name: "Open full page" }).tap();
+			await page.getByRole("button", { name: "More about Voiceless TH" }).tap();
+			await page
+				.getByRole("dialog", { name: "Voiceless TH", exact: true })
+				.getByRole("link", { name: "Voiceless TH", exact: true })
+				.tap();
 			await expect(page).toHaveURL(new RegExp(`${TH_PAGE}$`));
 			await expect(
 				page.getByRole("heading", { level: 1, name: TH_HEADING, exact: true }),

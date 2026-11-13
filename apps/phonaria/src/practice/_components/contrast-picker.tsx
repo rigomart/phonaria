@@ -1,10 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { PlayableWord } from "@/components/phoneme-details/playable-word";
-import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { flags } from "@/lib/flags";
+import { getHeadlinePair } from "@/lib/headline-pairs";
 import { MinimalPairActivity } from "@/lib/practice/minimal-pair-activity";
-import { type ContrastOption, listContrastOptions } from "../_lib/minimal-pair-prompt";
+import {
+	catalogWordIpa,
+	type ContrastOption,
+	listContrastOptions,
+} from "../_lib/minimal-pair-prompt";
 
 const GROUPS = [
 	{ category: "consonant", heading: "Consonants" },
@@ -41,8 +45,14 @@ function ContrastRow({ option }: { option: ContrastOption }) {
 	);
 }
 
+function withIpa(word: string): string {
+	const ipa = catalogWordIpa(word);
+	return ipa ? `${word} /${ipa}/` : word;
+}
+
 export function ContrastPicker() {
 	const options = listContrastOptions();
+	const [first, second] = getHeadlinePair("i-ix").map(withIpa);
 
 	return (
 		<div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-8">
@@ -52,9 +62,8 @@ export function ContrastPicker() {
 				</h1>
 				<p className="max-w-xl text-pretty text-muted-foreground text-sm enter-rise enter-delay-40">
 					{flags.isEnabled("speech")
-						? MinimalPairActivity.description
-						: MinimalPairActivity.listDescription}{" "}
-					Tap a word to hear it first.
+						? MinimalPairActivity.description(first, second)
+						: MinimalPairActivity.listDescription(first, second)}
 				</p>
 			</div>
 
@@ -72,11 +81,6 @@ export function ContrastPicker() {
 					</section>
 				))}
 			</div>
-
-			<SyntheticVoiceNote
-				targetAccent="en-us"
-				words={options.flatMap((option) => option.example)}
-			/>
 		</div>
 	);
 }

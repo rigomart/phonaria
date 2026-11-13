@@ -1,9 +1,8 @@
-import { ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
+import { Link } from "@/components/link";
 import { SpelledWord } from "@/components/spelled-word";
-import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { cn } from "@/lib/utils";
-import { DetailsLink } from "./details-section";
 import { PlayableWord } from "./playable-word";
 import type { SoundSummary } from "./sound";
 import { SoundTile } from "./sound-tile";
@@ -14,15 +13,18 @@ const TITLE_CLASS = "font-display text-lg leading-snug font-semibold tracking-ti
  * The sound's name as the heading of the container that shows it: an h2 in a
  * drawer or panel, the h1 of a page of its own. A technical label alone gets
  * its symbol read first; an everyday name stands alone, its symbol in the tile.
+ * With `href` the name links to the sound's own page.
  */
 export function SoundHeading({
 	sound,
 	titleId,
 	as: Heading = "h2",
+	href,
 }: {
 	sound: SoundSummary;
 	titleId: string;
 	as?: "h1" | "h2";
+	href?: string;
 }) {
 	return (
 		<Heading
@@ -31,7 +33,18 @@ export function SoundHeading({
 			className={cn(TITLE_CLASS, "outline-none", Heading === "h1" && "text-2xl sm:text-3xl")}
 		>
 			{sound.label ? null : <span className="sr-only">{sound.ipa}, </span>}
-			{sound.name}
+			{href ? (
+				<Link
+					href={href}
+					title="Open the sound's page"
+					className="inline-flex items-center gap-1.5 rounded-sm underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+				>
+					{sound.name}
+					<ArrowRight aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
+				</Link>
+			) : (
+				sound.name
+			)}
 		</Heading>
 	);
 }
@@ -43,9 +56,6 @@ export function SoundHeading({
  * sound keeps its shape when the details expand. Hosts show how common the
  * sound is below it.
  *
- * Where it shows the example word, the synthetic-voice note closes it, unless
- * `voiceNote` is off because the host closes its sections with one note for all.
- *
  * On the drawer's compact level `onExpand` turns the name into a button that
  * opens the full view; it keeps the heading's size, so nothing moves when the
  * drawer expands. `action` is the corner control (close); `titleId` labels the
@@ -56,7 +66,6 @@ export function SoundHeader({
 	titleId,
 	action,
 	showExample = true,
-	voiceNote = showExample,
 	onExpand,
 }: {
 	sound: SoundSummary;
@@ -64,8 +73,6 @@ export function SoundHeader({
 	action?: ReactNode;
 	/** Off in the full view: its Spelling section pairs every example word with its spelling. */
 	showExample?: boolean;
-	/** The synthetic-voice note for the example word; on wherever the example shows by default. */
-	voiceNote?: boolean;
 	onExpand?: () => void;
 }) {
 	const subtitle = (
@@ -106,19 +113,13 @@ export function SoundHeader({
 								/>
 							</button>
 						) : (
-							<SoundHeading sound={sound} titleId={titleId} />
+							<SoundHeading sound={sound} titleId={titleId} href={sound.pagePath} />
 						)}
 						<p>{subtitle}</p>
-						{sound.pagePath ? (
-							<DetailsLink href={sound.pagePath}>Open full page</DetailsLink>
-						) : null}
 					</div>
 				</div>
 				{action}
 			</div>
-			{voiceNote && showExample && sound.example ? (
-				<SyntheticVoiceNote targetAccent={sound.targetAccent} words={[sound.example.word]} />
-			) : null}
 		</div>
 	);
 }

@@ -1,7 +1,6 @@
 import type { SpellingPattern, TargetAccent } from "@phonaria/phonetics-data";
 import type { ReactNode } from "react";
 import { SpelledWord } from "@/components/spelled-word";
-import { SyntheticVoiceInfo } from "@/components/synthetic-voice-note";
 import { getPhonemeComparisons } from "@/lib/phoneme-comparisons";
 import { cn } from "@/lib/utils";
 import { PlayableWordCell } from "./playable-word";
@@ -37,7 +36,7 @@ export function getCardWords({
 
 /**
  * The card's words as play buttons under a label ("Compare with t" or "Hear
- * it in"), with the synthetic-voice note folded into an info mark beside it.
+ * it in").
  */
 export function CardWordList({
 	targetAccent,
@@ -49,13 +48,10 @@ export function CardWordList({
 	ipa: string;
 	cardWords: CardWords;
 }) {
-	const words =
-		cardWords.kind === "pair" ? cardWords.words : cardWords.examples.map(({ word }) => word);
-
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex min-h-6 items-center justify-between gap-2">
-				<p className="text-xs font-medium text-muted-foreground">
+			<p className="flex min-h-6 items-center text-xs font-medium text-muted-foreground">
+				<span>
 					{cardWords.kind === "pair" ? (
 						<>
 							Compare with{" "}
@@ -66,9 +62,8 @@ export function CardWordList({
 					) : (
 						"Hear it in"
 					)}
-				</p>
-				<SyntheticVoiceInfo targetAccent={targetAccent} words={words} />
-			</div>
+				</span>
+			</p>
 			<ul
 				aria-label={cardWords.kind === "pair" ? `${ipa} versus ${cardWords.partnerIpa}` : undefined}
 				className="flex flex-col gap-1.5"

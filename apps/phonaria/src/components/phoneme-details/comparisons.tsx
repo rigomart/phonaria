@@ -33,7 +33,7 @@ export function ComparisonList({
 	comparisons: readonly PhonemeComparison[];
 }) {
 	const hasPages = targetAccent === MinimalPairActivity.targetAccent;
-	const practise = flags.isEnabled("speech");
+	const practice = flags.isEnabled("speech");
 	return (
 		<div className="flex flex-col gap-2">
 			{comparisons.map(({ contrastId, partnerId, partnerIpa, pairs }) => {
@@ -72,7 +72,7 @@ export function ComparisonList({
 								className="flex items-center gap-1 self-start rounded-sm px-1 text-muted-foreground text-xs transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 								href={contrastPagePath(contrastId)}
 							>
-								{`${practise ? "Practise saying" : "All pairs for"} /${ipa}/ and /${partnerIpa}/`}
+								{`${practice ? "Practice saying" : "All pairs for"} /${ipa}/ and /${partnerIpa}/`}
 								<ArrowRight aria-hidden="true" className="size-3" />
 							</Link>
 						) : null}

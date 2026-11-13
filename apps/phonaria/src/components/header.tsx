@@ -29,7 +29,6 @@ import { Link } from "@/components/link";
 import { useNavIndicator } from "@/hooks/use-nav-indicator";
 import { useScrolled } from "@/hooks/use-scrolled";
 import type { AppFlags } from "@/lib/flags";
-import { ISSUES_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { getTools, navCurrent, soundsSections, type Tool, usePathname } from "./site-nav";
@@ -78,8 +77,7 @@ export function betaNotice(flags: Pick<AppFlags, "speech">): string {
 		: "The app is still changing. Pronunciations and notes can be wrong.";
 }
 
-const popoverLink =
-	"rounded-sm text-foreground underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+const VOICE_NOTICE = "Word recordings use a computer-generated US English voice.";
 
 function BetaBadge({ flags }: { flags: AppFlags }) {
 	return (
@@ -98,17 +96,9 @@ function BetaBadge({ flags }: { flags: AppFlags }) {
 						Phonaria is in beta
 					</PopoverTitle>
 					<PopoverDescription className="text-xs sm:text-sm">
-						{betaNotice(flags)}
+						{betaNotice(flags)} {VOICE_NOTICE}
 					</PopoverDescription>
 				</div>
-				<a
-					href={ISSUES_URL}
-					target="_blank"
-					rel="noopener noreferrer"
-					className={cn("w-fit text-xs sm:text-sm", popoverLink)}
-				>
-					Report a problem<span className="sr-only"> (opens in a new tab)</span>
-				</a>
 			</PopoverContent>
 		</Popover>
 	);

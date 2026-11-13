@@ -1,4 +1,4 @@
-import type { EnglishPhonemeSymbolId } from "@phonaria/phonetics-data";
+import { type EnglishPhonemeSymbolId, getPhonemeType } from "@phonaria/phonetics-data";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { type CSSProperties, type ReactNode, useId } from "react";
 import { Link } from "@/components/link";
@@ -11,10 +11,10 @@ import { WordAudioButton } from "@/components/word-audio-button";
 import { IPA_CHART_FREQUENCY_PATH } from "@/lib/ipa-chart-metadata";
 import { formatPercentage, summarizePhonemeFrequency } from "@/lib/phoneme-frequency";
 import {
+	describeHowItsMade,
 	getCommonWords,
 	getNeighbourPages,
 	getSharedSpellings,
-	getSoundFamilies,
 	getSoundFeatures,
 	getSoundVariants,
 	type SoundRef,
@@ -71,32 +71,40 @@ function ordinal(n: number): string {
 	return `${n}${{ 1: "st", 2: "nd", 3: "rd" }[n % 10] ?? "th"}`;
 }
 
-/** How common the sound is, as one line that links to the ranking. */
+/** How common the sound is, as one row that links to the ranking. */
 export function FrequencyFact({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
 	const frequency = summarizePhonemeFrequency(ACCENT, phonemeId);
 	if (!frequency) return null;
 	return (
 		<Link
 			href={IPA_CHART_FREQUENCY_PATH}
-			className="group inline-flex w-fit flex-wrap items-baseline gap-x-1.5 rounded-sm text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+			className="group flex items-center gap-3 rounded-2xl bg-background px-2 py-2 pr-3 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
 		>
-			<span>
+			<span className="rounded-xl bg-secondary px-2.5 py-1 font-display text-lg leading-tight font-semibold text-foreground tabular-nums transition-colors group-hover:bg-background motion-reduce:transition-none">
+				{formatPercentage(frequency.percentage)}
+				<span className="sr-only"> of everyday speech</span>
+			</span>
+			<span className="min-w-0 flex-1">
 				<span className="font-semibold text-foreground">{ordinal(frequency.rank)}</span>
 				{` most common of ${frequency.count} sounds`}
 			</span>
-			<span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-				{`· about ${formatPercentage(frequency.percentage)} of speech`}
-				<ArrowRight
-					aria-hidden="true"
-					className="size-3 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
-				/>
-			</span>
+			<ArrowRight
+				aria-hidden="true"
+				className="size-3.5 shrink-0 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
+			/>
 		</Link>
 	);
 }
 
-/** The articulation features as labelled values: data, not instructions. */
-export function FeatureList({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
+/**
+ * How the sound is made, in words: a consonant's one plain sentence, a
+ * diphthong's start and end as labelled values. A plain vowel has only the
+ * chart above it.
+ */
+export function HowItsMade({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
+	const sentence = describeHowItsMade(phonemeId);
+	if (sentence) return <p className="text-sm text-pretty text-muted-foreground">{sentence}</p>;
+	if (getPhonemeType(phonemeId) !== "diphthong") return null;
 	return (
 		<dl className="flex flex-wrap gap-2">
 			{getSoundFeatures(phonemeId).map(({ label, value }) => (
@@ -285,43 +293,6 @@ function SoundVariants({ variants }: { variants: readonly SoundVariant[] }) {
 				))}
 			</ul>
 		</DetailsCard>
-	);
-}
-
-/** The sounds sharing a row or column with this one on the chart, each a link to its page. */
-export function SoundFamilies({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
-	const families = getSoundFamilies(phonemeId);
-	return (
-		<DetailsCard className="flex flex-col gap-3 p-3">
-			{families.map(({ label, sounds }) => (
-				<FamilyGroup key={label} label={label} sounds={sounds} />
-			))}
-		</DetailsCard>
-	);
-}
-
-function FamilyGroup({ label, sounds }: { label: string; sounds: readonly SoundRef[] }) {
-	const labelId = useId();
-	return (
-		<div className="flex flex-col gap-1.5">
-			<h3 id={labelId} className="px-1 text-xs font-medium text-muted-foreground">
-				{label}
-			</h3>
-			<ul aria-labelledby={labelId} className="flex flex-wrap gap-1.5">
-				{sounds.map((sound) => (
-					<li key={sound.id}>
-						<Link
-							href={sound.path}
-							aria-label={`${soundHeading(sound.id)}, as in ${sound.word}`}
-							className="flex items-baseline gap-1.5 rounded-xl bg-background-strong px-3 py-1.5 text-sm text-muted-foreground shadow-xs transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
-						>
-							<span className="font-display text-base text-foreground">{sound.ipa}</span>
-							{sound.word}
-						</Link>
-					</li>
-				))}
-			</ul>
-		</div>
 	);
 }
 

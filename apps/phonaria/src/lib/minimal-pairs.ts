@@ -24,8 +24,6 @@ import { getSoundName, soundPagePath } from "@/lib/sound-pages";
 export interface ContrastPageSound {
 	id: EnglishPhonemeSymbolId;
 	ipa: string;
-	/** Its articulation label, e.g. "Voiceless dental fricative". */
-	label: string;
 	/** Its sound page, e.g. `/sounds/th-thin`. */
 	path: string;
 	/** The catalog's other contrasts with this sound, in catalog order. */
@@ -158,7 +156,6 @@ function pageSound(id: EnglishPhonemeSymbolId, contrastId: string): ContrastPage
 	return {
 		id,
 		ipa: getIpaForPhonemeId(id),
-		label: formatPhonemeLabel("en-us", id),
 		path: soundPagePath(id),
 		otherContrasts: EnglishPhonemeContrasts.filter(
 			(other) => other.id !== contrastId && other.phonemeIds.includes(id),

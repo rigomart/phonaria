@@ -7,7 +7,6 @@
 import { Button } from "@phonaria/ui/components/button";
 import { Check, X } from "lucide-react";
 import type { Ref } from "react";
-import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { enterDelay, stagger } from "@/lib/motion";
 import { normalizeAcceptedVariants } from "@/lib/practice/scoring";
 import type { TopicDefinition } from "@/lib/practice/topics/types";
@@ -120,13 +119,6 @@ export function Scoreboard({
 					);
 				})}
 			</ul>
-
-			<SyntheticVoiceNote
-				className="text-center enter-fade"
-				style={enterDelay(stagger(rows.length, rowStagger))}
-				targetAccent="en-us"
-				words={rows.map(({ round }) => round.word.word)}
-			/>
 
 			<div
 				className="flex justify-center enter-fade"

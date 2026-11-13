@@ -5,7 +5,6 @@ import { Spinner } from "@phonaria/ui/components/spinner";
 import { ArrowRight, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { Link } from "@/components/link";
-import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { WordAudioForms } from "@/components/word-audio-forms";
 import { useDefinition } from "@/hooks/use-definition";
 import { buildWiktionaryEntryUrl } from "@/lib/definition/word";
@@ -86,7 +85,6 @@ export function DefinitionBody({
 					{ipa ? <p className="text-sm text-muted-foreground whitespace-nowrap">/{ipa}/</p> : null}
 				</div>
 				<WordAudioForms targetAccent={targetAccent} word={word} pronunciation={pronunciation} />
-				<SyntheticVoiceNote targetAccent={targetAccent} words={[word]} />
 			</div>
 
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain">

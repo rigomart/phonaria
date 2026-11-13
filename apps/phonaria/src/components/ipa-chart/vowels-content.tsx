@@ -8,7 +8,6 @@ const phonemeCounts = getLanguagePhonemeCount(targetAccent);
 const monophthongEntries = getMonophthongEntries(targetAccent);
 const diphthongEntries = phonemeCounts.diphthongs > 0 ? getDiphthongEntries(targetAccent) : [];
 const vowelEntries = [...monophthongEntries, ...diphthongEntries];
-const vowelCount = phonemeCounts.monophthongs + phonemeCounts.diphthongs;
 
 export function VowelsContent() {
 	return (
@@ -19,10 +18,7 @@ export function VowelsContent() {
 						{VOWELS_PAGE_HEADING}
 					</h1>
 					<p className="text-sm text-muted-foreground enter-rise enter-delay-40">
-						{phonemeCounts.diphthongs > 0
-							? `${vowelCount} American English vowel sounds: ${phonemeCounts.monophthongs} monophthongs and ${phonemeCounts.diphthongs} diphthongs.`
-							: `${phonemeCounts.monophthongs} American English monophthong vowel sounds.`}{" "}
-						Click any sound for details and available audio.
+						Click a sound for details.
 					</p>
 				</div>
 

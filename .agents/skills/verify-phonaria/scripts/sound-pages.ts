@@ -67,16 +67,13 @@ const soundPage = observation(
 				word.textContent?.trim(),
 			),
 			back: document.querySelector('main a[href="/sounds"]')?.textContent?.trim() ?? null,
-			howTo: (details?.textContent ?? "").includes("is made with the tongue"),
+			howItsMade:
+				Array.from(details?.querySelectorAll("p") ?? [])
+					.find((p) => /is made with/.test(p.textContent ?? ""))
+					?.textContent?.trim() ?? null,
 			differences: Array.from(
 				details?.querySelectorAll('dl[aria-label="How θ and t differ"] > div') ?? [],
 			).map((row) => Array.from(row.children).map((cell) => cell.textContent?.trim())),
-			near: Array.from(section("Sounds near it")?.querySelectorAll("h3") ?? []).map((h) => ({
-				label: h.textContent?.trim(),
-				links: Array.from(h.nextElementSibling?.querySelectorAll("a") ?? []).map((a) =>
-					a.getAttribute("href"),
-				),
-			})),
 			commonWords: Array.from(common?.querySelectorAll("h3") ?? []).map((h) => ({
 				label: h.textContent?.trim(),
 				words: Array.from(h.nextElementSibling?.querySelectorAll("li") ?? []).map((li) =>
@@ -90,36 +87,16 @@ const soundPage = observation(
 		title: "How to pronounce the voiceless TH sound /θ/ (as in 'thin') - Phonaria",
 		canonical: "http://localhost:3000/sounds/th-thin",
 		h1: ["Voiceless TH"],
-		sections: [
-			"How it's made",
-			"Compare with",
-			"Spelling",
-			"Common words with θ",
-			"Sounds near it",
-		],
+		sections: ["How it's made", "Compare with", "Spelling", "Common words with θ"],
 		rank: "38th most common of 40 sounds",
 		spellingWords: ["think", "something", "both"],
 		back: "All sounds",
-		howTo: false,
+		howItsMade:
+			"/θ/ is made with the tongue between the teeth, pushing air through a narrow gap, with the voice off.",
 		// Term first for screen readers, each value named by its sound.
 		differences: [
 			["Place", "θ: dental", "t: alveolar"],
 			["Manner", "θ: fricative", "t: plosive"],
-		],
-		near: [
-			{ label: "Voicing partner", links: ["/sounds/th-this"] },
-			{
-				label: "Other fricatives",
-				links: [
-					"/sounds/f-fan",
-					"/sounds/v-van",
-					"/sounds/s-sun",
-					"/sounds/z-zoo",
-					"/sounds/sh-shop",
-					"/sounds/zh-vision",
-					"/sounds/h-house",
-				],
-			},
 		],
 		commonWords: [
 			{
@@ -132,24 +109,6 @@ const soundPage = observation(
 			},
 			{ label: "At the end", words: ["both", "health", "death", "south", "north", "month"] },
 		],
-	},
-);
-
-const schwaNear = observation(
-	() => {
-		const details = document.querySelector("[data-phoneme-details]");
-		const near = Array.from(details?.querySelectorAll("section") ?? []).find(
-			(section) => section.querySelector("h2")?.textContent?.trim() === "Sounds near it",
-		);
-		return {
-			path: location.pathname,
-			near: Array.from(near?.querySelectorAll("a") ?? []).map((a) => a.getAttribute("href")),
-		};
-	},
-	{
-		path: "/sounds/schwa",
-		// Plain vowels one step away on the simple vowel chart, nearest on the IPA chart first.
-		near: ["/sounds/er-her", "/sounds/eh-red", "/sounds/uh-cup", "/sounds/aw-saw"],
 	},
 );
 
@@ -227,39 +186,31 @@ const rankLine = observation(
 			/^\S+ most common of \d+ sounds$/.test(span.textContent?.trim() ?? ""),
 		);
 		const share = Array.from(details?.querySelectorAll("span") ?? []).find((span) =>
-			/^· about \S+ of speech$/.test(span.textContent?.trim() ?? ""),
+			/^\S+% of everyday speech$/.test(span.textContent?.trim() ?? ""),
 		);
-		const lines = (node: Element | undefined) => {
-			if (!node) return null;
-			const range = document.createRange();
-			range.selectNodeContents(node);
-			// The rank number is larger than the words after it, so rects on one line
-			// differ in height; a rect starting below the previous line's bottom starts a new line.
-			const rects = Array.from(range.getClientRects()).sort((a, b) => a.top - b.top);
-			let count = 0;
-			let bottom = -Infinity;
-			for (const rect of rects) {
-				if (rect.top >= bottom) count += 1;
-				bottom = Math.max(bottom, rect.bottom);
-			}
-			return count;
+		const centre = (node: Element | undefined) => {
+			const rect = node?.getBoundingClientRect();
+			return rect ? rect.top + rect.height / 2 : null;
 		};
+		const shareCentre = centre(share);
+		const rankCentre = centre(rank);
+		const tileHeight = share?.getBoundingClientRect().height ?? 0;
 		return {
 			width: window.innerWidth,
 			rank: rank?.textContent?.trim() ?? null,
-			rankLines: lines(rank),
 			share: share?.textContent?.trim() ?? null,
-			// The share keeps its arrow on its own line, never an arrow alone.
-			shareLines: lines(share),
+			sameRow:
+				shareCentre !== null &&
+				rankCentre !== null &&
+				Math.abs(shareCentre - rankCentre) < tileHeight,
 			overflow: document.documentElement.scrollWidth > window.innerWidth,
 		};
 	},
 	{
 		width: 390,
 		rank: "26th most common of 40 sounds",
-		rankLines: 1,
-		share: "· about 1.7% of speech",
-		shareLines: 1,
+		share: "1.7% of everyday speech",
+		sameRow: true,
 		overflow: false,
 	},
 );
@@ -269,7 +220,6 @@ export const soundPages = {
 	checkpoints: {
 		index,
 		"sound-page": soundPage,
-		"schwa-near": schwaNear,
 		"t-variants": tVariants,
 		"not-found": notFound,
 		"rank-line": rankLine,

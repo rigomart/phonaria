@@ -8,24 +8,21 @@ import { RecordingCredit } from "@/components/phoneme-details/recording-credit";
 import { describeSound } from "@/components/phoneme-details/sound";
 import { SoundHeading } from "@/components/phoneme-details/sound-header";
 import { SoundTile } from "@/components/phoneme-details/sound-tile";
-import { SyntheticVoiceNote } from "@/components/synthetic-voice-note";
 import { enterDelay, stagger } from "@/lib/motion";
-import { getAllComparisons, getSoundFamilies, getSoundVariants } from "@/lib/sound-page-content";
-import { getSoundExamples, SOUNDS_PATH } from "@/lib/sound-pages";
-import { getRankedSpellings } from "@/lib/spelling-shares";
+import { getAllComparisons } from "@/lib/sound-page-content";
+import { SOUNDS_PATH } from "@/lib/sound-pages";
 import { cn } from "@/lib/utils";
 import { SoundComparisons } from "./sound-comparisons";
 import {
 	Changes,
 	CommonWords,
 	commonWordGroups,
-	FeatureList,
 	FrequencyFact,
 	hasChanges,
+	HowItsMade,
 	KeyWords,
 	PageSection,
 	PreviousNext,
-	SoundFamilies,
 	Spelling,
 } from "./sound-page-blocks";
 
@@ -34,7 +31,7 @@ const ACCENT = "en-us" as const;
 /**
  * A sound's own page. On wide screens the sound stays pinned on the left, its
  * symbol, key words and how it's made, while what to tell it apart from, how
- * it's spelled, common words, how it changes and the sounds near it scroll on
+ * it's spelled, common words and how it changes scroll on
  * the right. On a phone the two stack.
  */
 export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbolId }) {
@@ -54,9 +51,6 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 	}
 	if (hasChanges(phonemeId)) {
 		sections.push({ title: "How it changes", content: <Changes phonemeId={phonemeId} /> });
-	}
-	if (getSoundFamilies(phonemeId).length > 0) {
-		sections.push({ title: "Sounds near it", content: <SoundFamilies phonemeId={phonemeId} /> });
 	}
 
 	return (
@@ -82,7 +76,6 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 								<p className="text-sm text-muted-foreground">{sound.label ?? sound.typeLabel}</p>
 							</div>
 						</div>
-						<RecordingCredit phonemeId={phonemeId} />
 					</header>
 					<KeyWords phonemeId={phonemeId} />
 					<section aria-labelledby={`${titleId}-made`} className="flex flex-col gap-3">
@@ -90,7 +83,7 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 							How it's made
 						</h2>
 						<Articulation targetAccent={ACCENT} phonemeId={phonemeId} />
-						<FeatureList phonemeId={phonemeId} />
+						<HowItsMade phonemeId={phonemeId} />
 					</section>
 					<FrequencyFact phonemeId={phonemeId} />
 				</div>
@@ -105,23 +98,11 @@ export function SoundPageContent({ phonemeId }: { phonemeId: EnglishPhonemeSymbo
 						</PageSection>
 					))}
 					<div className="flex flex-col gap-12 enter-rise enter-delay-200">
-						<SyntheticVoiceNote targetAccent={ACCENT} words={pageWords(phonemeId)} />
 						<PreviousNext phonemeId={phonemeId} />
+						<RecordingCredit phonemeId={phonemeId} />
 					</div>
 				</div>
 			</article>
 		</div>
 	);
-}
-
-/** Every word the page can play, for the synthetic-voice note. */
-function pageWords(phonemeId: EnglishPhonemeSymbolId): string[] {
-	const { ranked, other } = getRankedSpellings(phonemeId);
-	return [
-		...getSoundExamples(phonemeId).map(({ word }) => word),
-		...getAllComparisons(phonemeId).flatMap(({ pairs }) => pairs.flatMap(({ words }) => words)),
-		...[...ranked, ...other].flatMap(({ examples }) => examples.map(({ word }) => word)),
-		...commonWordGroups(phonemeId).flatMap(({ words }) => words),
-		...getSoundVariants(phonemeId).flatMap(({ words }) => words),
-	];
 }

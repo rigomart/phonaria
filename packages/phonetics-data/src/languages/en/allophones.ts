@@ -155,9 +155,8 @@ export const EnglishAllophoneContextLabels = deepFreeze({
 		when: "at the end of a word after a consonant, often spelled -le.",
 	},
 	"longer-before-voice-on": {
-		sound:
-			"The vowel is longer in the first word than in the second. Listeners use this to tell the two words apart.",
-		when: "longer before a consonant with the voice on (d, z, v), shorter before one with the voice off (t, s, f).",
+		sound: "The vowel is longer in the first word than in the second.",
+		when: "longer before d, z, v; shorter before t, s, f.",
 	},
 	"raised-before-m-n": {
 		sound: "Starts closer to the e in bed, then moves toward ə, the a in sofa.",
