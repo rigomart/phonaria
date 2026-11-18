@@ -15,6 +15,6 @@ The **target accent** is the pronunciation being taught (`en-us` or `es-419`). I
 
 ## How the app is built
 
-There is one TanStack Start app in `apps/phonaria`, deployed to Cloudflare Workers. Shared React components live in `packages/ui`; phoneme metadata and dictionary assets live in `packages/phonetics-data`. The app loads its small pronunciation list immediately and its larger list when needed. Turso stores the full CMU dictionary for server lookups. The Worker also handles definition requests, optional context-aware spelling suggestions, pronunciation scoring, and the opt-in evidence log, a separate Turso database.
+There is one TanStack Start app in `apps/phonaria`, deployed to Cloudflare Workers. Shared React components live in `packages/ui`; phoneme metadata and dictionary assets live in `packages/phonetics-data`. The app loads its small pronunciation list immediately and its larger list when needed. Turso stores the full CMU dictionary for server lookups. The Worker also handles definition requests, pronunciation scoring, and the opt-in evidence log, a separate Turso database.
 
 See the [root README](../README.md) for local setup, the [app README](../apps/phonaria/README.md) for Worker configuration, and [ADR 0002](adr/0002-single-application-on-cloudflare-workers.md) for the hosting decision.

@@ -3,7 +3,6 @@ import { SearchJourney } from "@/components/transcription/transcription-journey"
 import { buildSearchHead } from "@/lib/document-head";
 import { redirect } from "@/lib/navigation";
 import { validateTranscriptionSearch } from "@/lib/transcription/search";
-import { chooseSpellingInContextFromStart } from "@/server/choose-spelling";
 import { transcribeWordsFromStart } from "@/server/transcribe";
 
 export const Route = createFileRoute("/search")({
@@ -16,10 +15,5 @@ export const Route = createFileRoute("/search")({
 });
 
 function SearchRoute() {
-	return (
-		<SearchJourney
-			transcribeWords={transcribeWordsFromStart}
-			chooseSpellingInContext={chooseSpellingInContextFromStart}
-		/>
-	);
+	return <SearchJourney transcribeWords={transcribeWordsFromStart} />;
 }

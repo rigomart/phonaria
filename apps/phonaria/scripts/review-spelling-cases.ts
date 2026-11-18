@@ -12,17 +12,12 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { spellingEditDistanceWithinTwo } from "../src/lib/transcription/spelling-edit-distance";
 import { loadSpellingFrequency } from "../src/lib/transcription/spelling-frequency";
 import {
 	generateOneSlipVariants,
 	type SpellingFrequency,
 	suggestSpelling,
 } from "../src/lib/transcription/spelling-suggestion";
-import {
-	findTwoEditCandidates,
-	loadTwoEditCandidateIndex,
-} from "../src/lib/transcription/two-edit-candidates";
 
 /**
  * The server searches CMUDict through Turso, which is seeded from this file. It has no
@@ -292,41 +287,6 @@ async function runSweeps(data: ReviewData): Promise<void> {
 	for (const [policy, count] of Object.entries(offered)) {
 		console.log(`  ${policy.padEnd(6)} offered=${((100 * count) / nonWords).toFixed(1)}%`);
 	}
-
-	const candidateIndex = await loadTwoEditCandidateIndex();
-	let twoSlipMisses = 0;
-	let noOneEdit = 0;
-	let newContextCalls = 0;
-	let intendedInOptions = 0;
-	for (let run = 0; run < 4000; run += 1) {
-		const word = pick(curated);
-		const first = corrupt(word);
-		const typo = first === null ? null : corrupt(first);
-		if (
-			typo === null ||
-			!/^[a-z]{5,}$/.test(typo) ||
-			data.pronunciationWords.has(typo) ||
-			spellingEditDistanceWithinTwo(typo, word) !== 2
-		)
-			continue;
-		twoSlipMisses += 1;
-		const oneEdit = candidatesFor(typo, data);
-		if (oneEdit.length > 0) continue;
-		noOneEdit += 1;
-		const twoEdit = findTwoEditCandidates(typo, candidateIndex);
-		if (twoEdit.length === 0) continue;
-		newContextCalls += 1;
-		if (twoEdit.includes(word)) intendedInOptions += 1;
-	}
-	const percentage = (count: number) => ((100 * count) / twoSlipMisses).toFixed(1);
-	console.log(`\ntwo-slip curated corruptions: ${twoSlipMisses} reachable misses of 5+ letters`);
-	console.log(`  zero one-edit candidates: ${noOneEdit} (${percentage(noOneEdit)}%)`);
-	console.log(
-		`  new Jev calls from two-edit candidates: ${newContextCalls} (${percentage(newContextCalls)}%)`,
-	);
-	console.log(
-		`  intended word among new options: ${intendedInOptions} (${percentage(intendedInOptions)}%)`,
-	);
 }
 
 if (import.meta.main) {

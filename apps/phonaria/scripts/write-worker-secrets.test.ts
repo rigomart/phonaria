@@ -7,7 +7,7 @@ describe("write-worker-secrets", () => {
 		const { secrets, skipped } = buildWorkerSecrets({
 			TURSO_DATABASE_URL: "libsql://db.example",
 			TURSO_AUTH_TOKEN: "token",
-			OPENROUTER_API_KEY: "  ",
+			EVIDENCE_LOG_AUTH_TOKEN: "  ",
 			AZURE_SPEECH_KEY: "speech-key",
 			AZURE_SPEECH_REGION: "eastus",
 			EVIDENCE_LOG_DATABASE_URL: "libsql://evidence.example",
@@ -22,7 +22,7 @@ describe("write-worker-secrets", () => {
 			AZURE_SPEECH_REGION: "eastus",
 			EVIDENCE_LOG_DATABASE_URL: "libsql://evidence.example",
 		});
-		expect(skipped).toEqual(["OPENROUTER_API_KEY", "EVIDENCE_LOG_AUTH_TOKEN"]);
+		expect(skipped).toEqual(["EVIDENCE_LOG_AUTH_TOKEN"]);
 	});
 
 	it("produces an empty set when nothing is configured, so the deploy still runs", () => {

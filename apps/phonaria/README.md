@@ -16,8 +16,6 @@ Create `apps/phonaria/.dev.vars` for the local Worker:
 ```ini
 TURSO_DATABASE_URL="libsql://your-database.turso.io"
 TURSO_AUTH_TOKEN="your-auth-token"
-# Optional: enables context-aware spelling suggestions
-OPENROUTER_API_KEY="your-key"
 # Optional: enables pronunciation scoring
 AZURE_SPEECH_KEY="your-key"
 AZURE_SPEECH_REGION="eastus"
@@ -43,7 +41,7 @@ Run `bun run --cwd apps/phonaria deploy:staging` only when deploying staging. Pr
 
 Each deploy is recorded as a GitHub Deployment by `scripts/github-deployment.ts`: PR previews in the transient `preview` environment (marked inactive when the PR closes), `staging` from `main`, and `production`. These bookkeeping steps never block a deploy.
 
-Deploy workflows pass Worker secrets from GitHub Actions secrets through `scripts/write-worker-secrets.ts`, which writes the ones that are set to `wrangler deploy --secrets-file`. Staging and preview get `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `OPENROUTER_API_KEY`, `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION`; production gets all but the Azure pair. Only staging gets `EVIDENCE_LOG_DATABASE_URL` and `EVIDENCE_LOG_AUTH_TOKEN`, so pull request previews never write to the evidence log. A secret that isn't set is left unchanged on the Worker.
+Deploy workflows pass Worker secrets from GitHub Actions secrets through `scripts/write-worker-secrets.ts`, which writes the ones that are set to `wrangler deploy --secrets-file`. Staging and preview get `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION`; production gets all but the Azure pair. Only staging gets `EVIDENCE_LOG_DATABASE_URL` and `EVIDENCE_LOG_AUTH_TOKEN`, so pull request previews never write to the evidence log. A secret that isn't set is left unchanged on the Worker.
 
 Staging CI uses the GitHub variables `STAGING_URL` and `WORKERS_DEV_SUBDOMAIN`. `STAGING_URL` must point to `https://phonaria-staging.<subdomain>.workers.dev`; the staging origin check rejects a URL for another Worker before deployment.
 
@@ -71,7 +69,6 @@ bun apps/phonaria/scripts/generate-world-map.ts [path/to/ne_50m_land.geojson]
 
 - **Transcription:** Words outside the two bundled lists go through a server function to Turso. Requests are limited to 200 words and 64 characters per word. `TRANSCRIPTION_RATE_LIMIT` caps server lookups at 60 per minute per IP and Cloudflare location.
 - **Definitions:** The Worker requests definitions from Wiktionary; the browser does not call Wiktionary directly. `DEFINITION_RATE_LIMIT` applies the same limit.
-- **Spelling suggestions:** With `OPENROUTER_API_KEY`, the Worker can choose among nearby spellings using sentence context. When that service is unavailable, the browser uses its frequency rule. `SPELLING_CONTEXT_RATE_LIMIT` caps calls at 60 per minute per IP.
 - **Pronunciation scoring:** `POST /api/speech/score?word=ship&targetAccent=en-us` with a WAV body sent as `audio/wav` returns the `RecordingEvidence` from `@phonaria/pronunciation` as JSON, scored by Azure Pronunciation Assessment with a plain-recognition transcript of the same audio. The two Azure calls count as one attempt against `SPEECH_RATE_LIMIT`; if only the transcript fails, the evidence comes back without it. The browser runs the word gate and the judge. It returns 404 when `FLAG_SPEECH` is off.
   - Minimal-pair practice (code in `src/practice`) is its only caller. Each contrast in the catalog has its own page at `/minimal-pairs/<contrast id>` (`/minimal-pairs/th-s`), listed at `/minimal-pairs`, with its two sounds, a line on how they differ built from the articulation data, and every pair with its recordings. Those pages render in every build, are indexable, prerendered and in the sitemap. `FLAG_SPEECH` adds the speaking practice to each contrast page, independent of `FLAG_PRACTICE`; each pair under a sound's "Compare with" links to it too. Old `/minimal-pairs?contrast=th-s` links and `/practice/minimal-pairs` redirect (308) to the contrast's page, keeping `?word=`. A word is shown beside the other word of its pair, and the page judges every sound of the word and leads with the contrast sound.
   - It accepts only en-us words from the minimal-pair catalog. Their pronunciations are in `src/lib/speech/catalog-pronunciations.ts` so the Worker never bundles the 10k list; regenerate it with `bun apps/phonaria/scripts/generate-speech-words.ts`.

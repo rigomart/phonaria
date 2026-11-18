@@ -20,14 +20,12 @@ export type WorkerEnv = {
 	PUBLIC_BUCKET_URL?: string;
 	TURSO_DATABASE_URL?: string;
 	TURSO_AUTH_TOKEN?: string;
-	OPENROUTER_API_KEY?: string;
 	AZURE_SPEECH_KEY?: string;
 	AZURE_SPEECH_REGION?: string;
 	EVIDENCE_LOG_DATABASE_URL?: string;
 	EVIDENCE_LOG_AUTH_TOKEN?: string;
 	TRANSCRIPTION_RATE_LIMIT: WorkerRateLimit;
 	DEFINITION_RATE_LIMIT: WorkerRateLimit;
-	SPELLING_CONTEXT_RATE_LIMIT: WorkerRateLimit;
 	SPEECH_RATE_LIMIT: WorkerRateLimit;
 	EVIDENCE_LOG_RATE_LIMIT: WorkerRateLimit;
 };

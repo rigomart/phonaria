@@ -5,7 +5,6 @@ import { homeIntroFontPreloads } from "@/lib/fonts";
 import { SEARCH_PATH } from "@/lib/home-metadata";
 import { redirect } from "@/lib/navigation";
 import { normalizeTranscriptionQuery } from "@/lib/transcription/search";
-import { chooseSpellingInContextFromStart } from "@/server/choose-spelling";
 import { transcribeWordsFromStart } from "@/server/transcribe";
 
 export const Route = createFileRoute("/")({
@@ -25,10 +24,5 @@ export const Route = createFileRoute("/")({
 });
 
 function HomeRoute() {
-	return (
-		<HomeJourney
-			transcribeWords={transcribeWordsFromStart}
-			chooseSpellingInContext={chooseSpellingInContextFromStart}
-		/>
-	);
+	return <HomeJourney transcribeWords={transcribeWordsFromStart} />;
 }

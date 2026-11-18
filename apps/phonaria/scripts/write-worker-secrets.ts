@@ -8,7 +8,7 @@
  *
  * Unset or empty secrets are left out. `--secrets-file` is additive, so the
  * Worker keeps any value it already has, and a missing optional secret (such
- * as the OpenRouter key) never fails a deploy.
+ * as the evidence log token) never fails a deploy.
  *
  * The file lands in the gitignored `.wrangler/` of the ephemeral CI runner and
  * holds nothing but these values.
@@ -20,7 +20,6 @@ import { dirname, resolve } from "node:path";
 export const WORKER_SECRET_KEYS = [
 	"TURSO_DATABASE_URL",
 	"TURSO_AUTH_TOKEN",
-	"OPENROUTER_API_KEY",
 	"AZURE_SPEECH_KEY",
 	"AZURE_SPEECH_REGION",
 	"EVIDENCE_LOG_DATABASE_URL",

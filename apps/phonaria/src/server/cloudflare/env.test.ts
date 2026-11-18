@@ -8,7 +8,6 @@ import { readWorkerString, type WorkerEnv } from "./env";
 
 const TRANSCRIPTION_RATE_LIMIT = { limit: async () => ({ success: true }) };
 const DEFINITION_RATE_LIMIT = { limit: async () => ({ success: true }) };
-const SPELLING_CONTEXT_RATE_LIMIT = { limit: async () => ({ success: true }) };
 const SPEECH_RATE_LIMIT = { limit: async () => ({ success: true }) };
 const EVIDENCE_LOG_RATE_LIMIT = { limit: async () => ({ success: true }) };
 
@@ -17,7 +16,6 @@ describe("readWorkerString", () => {
 		const env: WorkerEnv = {
 			TRANSCRIPTION_RATE_LIMIT,
 			DEFINITION_RATE_LIMIT,
-			SPELLING_CONTEXT_RATE_LIMIT,
 			SPEECH_RATE_LIMIT,
 			EVIDENCE_LOG_RATE_LIMIT,
 			TURSO_DATABASE_URL: "libsql://lab.example",
@@ -31,7 +29,6 @@ describe("readWorkerString", () => {
 		const env: WorkerEnv = {
 			TRANSCRIPTION_RATE_LIMIT,
 			DEFINITION_RATE_LIMIT,
-			SPELLING_CONTEXT_RATE_LIMIT,
 			SPEECH_RATE_LIMIT,
 			EVIDENCE_LOG_RATE_LIMIT,
 			TURSO_DATABASE_URL: "  ",

@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 export type CreditKey =
 	| "cmu"
 	| "wiktionary"
-	| "jev"
 	| "phoneme-audio"
 	| "word-recordings"
 	| "speech-scoring"
