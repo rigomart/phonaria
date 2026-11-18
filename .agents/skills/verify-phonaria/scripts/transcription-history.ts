@@ -136,7 +136,7 @@ export const transcriptionHistory = {
 		emptied,
 	},
 	coverageLimits: [
-		"common-word client lookup only; no Turso or spelling service",
+		"common-word client lookup only; no Turso",
 		"pointer removal (row ×) and the touch-screen always-visible × unverified; keyboard Shift+Delete checked",
 		"Tab into the footer checked; the rest of the footer focus order (Shift+Tab back, Tab out to submit, Escape) unverified",
 		"cross-tab sync unverified",

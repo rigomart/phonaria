@@ -20,7 +20,7 @@ bun run dev # http://localhost:3000
 
 Common words transcribe in the browser from bundled word lists. Other words go to a rate-limited lookup in a Turso copy of the CMU dictionary, so full transcription needs `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in `apps/phonaria/.dev.vars`. The app runs as a Cloudflare Worker, which reads that file at request time; values in `.env.local` alone don't reach it. Restart the dev server after changing `.dev.vars`.
 
-`OPENROUTER_API_KEY` in the same file turns on context-aware spelling suggestions; transcription works without it. The [app README](apps/phonaria/README.md) has a full `.dev.vars` example and describes each service.
+The [app README](apps/phonaria/README.md) has a full `.dev.vars` example and describes each service.
 
 ## Check the workspace
 
@@ -58,7 +58,6 @@ All sound data comes from `packages/phonetics-data`. It also holds a Spanish sou
 - [wordfreq](https://github.com/rspeer/wordfreq) by Robyn Speer for the curated word lists and sound frequencies (CC BY-SA 4.0).
 - [Wikimedia Commons](https://commons.wikimedia.org/wiki/General_phonetics) contributors for the sound recordings (CC BY-SA 3.0 and compatible licenses).
 - [Azure AI Speech](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/text-to-speech) for word recordings in Jenny, a synthetic US English voice.
-- [Jev](https://docs.typesafe.ai/api), TypeSafe's decision model, through OpenRouter, for spelling suggestions.
 - The [International Phonetic Association](https://www.internationalphoneticassociation.org/content/full-ipa-chart) for the IPA chart's symbols and layout (CC BY-SA 3.0).
 
 The [credits page](https://phonaria.rigos.dev/credits) has the full list.

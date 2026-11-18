@@ -18,7 +18,6 @@ const allOn: CreditsFlags = {
 const SHIPPED_KEYS = [
 	"cmu",
 	"wiktionary",
-	"jev",
 	"phoneme-audio",
 	"word-recordings",
 	"wordfreq",
@@ -66,7 +65,6 @@ describe("CreditsContent", () => {
 		expect(buildCredits(allOn).map((credit) => credit.key)).toEqual([
 			"cmu",
 			"wiktionary",
-			"jev",
 			"phoneme-audio",
 			"word-recordings",
 			"speech-scoring",

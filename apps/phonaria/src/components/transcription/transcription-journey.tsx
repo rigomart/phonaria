@@ -4,7 +4,6 @@ import { TranscriptionProvider } from "@/hooks/use-transcribe";
 import { useRecordTranscriptionHistory } from "@/hooks/use-transcription-history";
 import { parseSoundsParam } from "@/lib/sound-search/search";
 import type { TranscribeWordsFn } from "@/lib/transcription/g2p-store";
-import type { ChooseSpellingInContextFn } from "@/lib/transcription/spelling-context";
 import { Composer } from "./composer";
 import { TranscriptionDisplay } from "./display";
 import { EmptyState } from "./display/empty-state";
@@ -15,12 +14,10 @@ import { TranscriptionSearchSync } from "./transcription-search-sync";
 
 type JourneyProps = {
 	transcribeWords: TranscribeWordsFn;
-	chooseSpellingInContext?: ChooseSpellingInContextFn;
 };
 
 function Journey({
 	transcribeWords,
-	chooseSpellingInContext,
 	live,
 	children,
 }: JourneyProps & {
@@ -29,10 +26,7 @@ function Journey({
 }) {
 	useRecordTranscriptionHistory();
 	return (
-		<TranscriptionProvider
-			transcribeWords={transcribeWords}
-			chooseSpellingInContext={chooseSpellingInContext}
-		>
+		<TranscriptionProvider transcribeWords={transcribeWords}>
 			<SoundSearchProvider live={live}>{children}</SoundSearchProvider>
 		</TranscriptionProvider>
 	);

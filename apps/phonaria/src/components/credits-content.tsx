@@ -84,21 +84,6 @@ export function buildCredits(enabled: CreditsFlags): Credit[] {
 			},
 		},
 		{
-			key: "jev",
-			title: "Jev",
-			by: "TypeSafe, through OpenRouter",
-			links: [{ text: "Jev documentation", url: "https://docs.typesafe.ai/api" }],
-			uses: "Jev is an AI model. When a word you type isn't in the dictionary, it picks the real word you most likely meant from similar spellings, if one fits your sentence.",
-			notes: {
-				heading: "Keep in mind",
-				items: [
-					"Jev gets the text around the unknown word (up to 300 characters), the word itself and the similar real words it could be.",
-					"If Jev is unsure, you get no suggestion.",
-					"If Jev is unavailable, a built-in rule takes over. It favors common words and may also suggest nothing.",
-				],
-			},
-		},
-		{
 			key: "phoneme-audio",
 			title: "Sound recordings",
 			by: "Wikimedia Commons contributors, including Peter Isotalo, Denelson83, Dvortygirl, Erutuon and Octane",

@@ -127,7 +127,7 @@ export const transcription = {
 		escape: cleared,
 	},
 	coverageLimits: [
-		"common-word client lookup only; no Turso or spelling service",
+		"common-word client lookup only; no Turso",
 		"sound tile label and diagram presence checked; playback and media fidelity unverified",
 		"copy control enabled; clipboard contents unverified",
 		"desktop Chromium; no mobile or other browser coverage",

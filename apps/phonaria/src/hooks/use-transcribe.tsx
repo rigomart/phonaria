@@ -7,24 +7,18 @@ import {
 	useTransition,
 } from "react";
 import { type TranscribeWordsFn, useG2PStore } from "@/lib/transcription/g2p-store";
-import type { ChooseSpellingInContextFn } from "@/lib/transcription/spelling-context";
 
 interface TranscriptionServices {
 	transcribeWords: TranscribeWordsFn;
-	chooseSpellingInContext?: ChooseSpellingInContextFn;
 }
 
 const TranscriptionServicesContext = createContext<TranscriptionServices | null>(null);
 
 export function TranscriptionProvider({
 	transcribeWords,
-	chooseSpellingInContext,
 	children,
 }: TranscriptionServices & { children: ReactNode }) {
-	const services = useMemo(
-		() => ({ transcribeWords, chooseSpellingInContext }),
-		[transcribeWords, chooseSpellingInContext],
-	);
+	const services = useMemo(() => ({ transcribeWords }), [transcribeWords]);
 	return (
 		<TranscriptionServicesContext.Provider value={services}>
 			{children}
@@ -49,19 +43,15 @@ export function useTranscribe() {
 	const [isPending, startTransition] = useTransition();
 	const transcribe = useG2PStore((s) => s.transcribe);
 	const lastText = useG2PStore((s) => s.lastText);
-	const { transcribeWords, chooseSpellingInContext } = useTranscriptionServices();
-	const spelling = useMemo(
-		() => ({ chooseInContext: chooseSpellingInContext }),
-		[chooseSpellingInContext],
-	);
+	const { transcribeWords } = useTranscriptionServices();
 
 	const mutate = useCallback(
 		(input: { text: string }) => {
 			startTransition(async () => {
-				await transcribe(input.text, transcribeWords, undefined, spelling);
+				await transcribe(input.text, transcribeWords);
 			});
 		},
-		[transcribe, transcribeWords, spelling],
+		[transcribe, transcribeWords],
 	);
 
 	const retry = useCallback(() => {

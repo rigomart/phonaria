@@ -39,13 +39,6 @@ export interface SuggestSpellingInput {
 	tokens: string[];
 	misses: SpellingMiss[];
 	frequency: SpellingFrequency;
-	/**
-	 * Picks made with the sentence in view, by token index. A word replaces the rule's pick
-	 * for that token and `null` keeps it silent. Tokens without an entry use the rule.
-	 */
-	contextPicks?: ReadonlyMap<number, string | null>;
-	/** The exact candidates sent to the context chooser, including two-edit words. */
-	contextCandidates?: ReadonlyMap<number, string[]>;
 }
 
 export function generateOneSlipVariants(word: string): string[] {
@@ -105,7 +98,7 @@ export function createSpellingFrequency(ranksByWord: Record<string, number>): Sp
 }
 
 export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion | null {
-	const { originalText, tokens, misses, frequency, contextPicks, contextCandidates } = input;
+	const { originalText, tokens, misses, frequency } = input;
 	if (misses.length === 0) return null;
 
 	const replacements = new Map<number, string>();
@@ -114,12 +107,7 @@ export function suggestSpelling(input: SuggestSpellingInput): SpellingSuggestion
 		const token = tokens[tokenIndex];
 		if (token === undefined) continue;
 
-		const offered = contextPicks?.has(tokenIndex)
-			? pickFromContext(
-					contextPicks.get(tokenIndex) ?? null,
-					contextCandidates ? (contextCandidates.get(tokenIndex) ?? []) : candidates,
-				)
-			: pickPlausibleNeighbour(token, candidates, frequency);
+		const offered = pickPlausibleNeighbour(token, candidates, frequency);
 		if (offered === null) continue;
 		replacements.set(tokenIndex, applyCapitalization(token, offered));
 	}
@@ -155,13 +143,6 @@ type OneSlipEdit =
 /** Whether one slip (insert, delete, substitute, or adjacent swap) turns `token` into `candidate`. */
 export function isOneSlipNeighbour(token: string, candidate: string): boolean {
 	return classifyOneSlipEdit(token, candidate).kind !== "other";
-}
-
-/** A context pick only counts when it is one of the words the dictionary search found. */
-function pickFromContext(pick: string | null, candidates: string[]): string | null {
-	if (pick === null) return null;
-	const normalized = pick.toLowerCase();
-	return candidates.some((candidate) => candidate.toLowerCase() === normalized) ? normalized : null;
 }
 
 /** Which single slip turns `token` into `candidate`; `other` if no single slip does. */
