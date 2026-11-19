@@ -130,11 +130,12 @@ jobs:
           bun --cwd packages/browser-contract e2e:smoke
           bun --cwd packages/browser-contract e2e:definitions
 
-      # Report only (#463): continue-on-error keeps a slow page, or a Lighthouse
-      # failure, from failing the check. Reports go to an artifact, never public storage.
+      # Fails the check when a page's median crosses a limit in
+      # packages/browser-contract/src/page-speed-limits.ts (#464). The summary
+      # table is written first, and the next step uploads the reports either way.
+      # Reports go to an artifact, never public storage.
       - name: Measure page speed
         id: page-speed
-        continue-on-error: true
         timeout-minutes: 15
         env:
           CONTRACT_TARGET: cloudflare-staging

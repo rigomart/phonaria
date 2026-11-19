@@ -105,10 +105,19 @@ installed. SEO leaves out Lighthouse's crawlability check: previews are
 `noindex` on purpose, and that one check would hold every SEO score at
 about 66.
 
-The preview workflow runs it after the smoke checks and uploads the reports
-as the `page-speed-reports` artifact, kept for 90 days, the longest GitHub
-allows. It is report only: it exits 0 whatever the numbers are, and the step
-is `continue-on-error`.
+Each page has limits in `src/page-speed-limits.ts`, applied to its medians,
+never to a single run: largest contentful paint, layout shift and total
+blocking time each have a ceiling, and the SEO and Accessibility scores each
+have a floor. Performance has none. A page also fails when fewer than 2 of
+its 3 runs count. The file notes the runs the limits came from. After writing
+the table, the medians and the reports, the script exits 1 if any page failed.
+The table then marks each number past its limit, and a list under it names
+the page and the metric.
+
+The preview workflow runs it after the smoke checks, so a page past its limits
+fails the PR's Preview check. The next step uploads the reports as the
+`page-speed-reports` artifact either way, kept for 90 days, the longest GitHub
+allows.
 
 `medians.json` holds the pull request's number and head commit
 (`PAGE_SPEED_PR` and `PAGE_SPEED_COMMIT`, which the workflow sets; both are
