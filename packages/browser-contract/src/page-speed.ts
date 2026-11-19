@@ -1,4 +1,5 @@
 import type { Result as LighthouseResult } from "lighthouse";
+import type { PageSpeedLimits } from "./page-speed-limits";
 
 /**
  * The contrast page picks a pair word at random unless the URL names one, so
@@ -101,19 +102,167 @@ export function median(values: Array<number | null>): number | null {
 	return sorted.length % 2 === 1 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
 }
 
-export function renderSummary(rows: PageSpeedRow[], origin: string, runsPerPage: number): string {
+/** The metrics that have a limit. Performance has none: it's a weighted mix of these. */
+export type LimitedMetric = "seo" | "accessibility" | "lcpMs" | "cls" | "tbtMs";
+
+export interface LimitBreach {
+	path: string;
+	/** The metric past its limit, or null when the page had too few good runs to judge. */
+	metric: LimitedMetric | null;
+	message: string;
+}
+
+const LIMIT_CHECKS: Array<{
+	metric: LimitedMetric;
+	label: string;
+	bound: "max" | "min";
+	limit: (limits: PageSpeedLimits) => number;
+	/** Formats with `digits` decimals; `digits` is the precision the limit is written in. */
+	format: (value: number, digits: number) => string;
+	digits: number;
+}> = [
+	{
+		metric: "lcpMs",
+		label: "LCP",
+		bound: "max",
+		limit: (l) => l.maxLcpMs,
+		format: (v, d) => `${(v / 1000).toFixed(d)} s`,
+		digits: 2,
+	},
+	{
+		metric: "cls",
+		label: "CLS",
+		bound: "max",
+		limit: (l) => l.maxCls,
+		format: (v, d) => v.toFixed(d),
+		digits: 3,
+	},
+	{
+		metric: "tbtMs",
+		label: "TBT",
+		bound: "max",
+		limit: (l) => l.maxTbtMs,
+		format: (v, d) => `${v.toFixed(d)} ms`,
+		digits: 0,
+	},
+	{
+		metric: "seo",
+		label: "SEO",
+		bound: "min",
+		limit: (l) => l.minSeo,
+		format: (v, d) => v.toFixed(d),
+		digits: 0,
+	},
+	{
+		metric: "accessibility",
+		label: "Accessibility",
+		bound: "min",
+		limit: (l) => l.minAccessibility,
+		format: (v, d) => v.toFixed(d),
+		digits: 0,
+	},
+];
+
+/**
+ * Compares each page's medians with its limits. A page with fewer than
+ * `minRuns` good runs fails on that alone, since its medians can't be trusted.
+ */
+export function checkLimits(
+	rows: PageSpeedRow[],
+	limitsByPath: Record<string, PageSpeedLimits | undefined>,
+	runsPerPage: number,
+	minRuns: number,
+): LimitBreach[] {
+	return rows.flatMap((row): LimitBreach[] => {
+		const page = `\`${row.path}\``;
+		const limits = limitsByPath[row.path];
+		if (!limits) {
+			return [{ path: row.path, metric: null, message: `${page} has no limits set.` }];
+		}
+		if (row.validRuns < minRuns) {
+			return [
+				{
+					path: row.path,
+					metric: null,
+					message: `${page}: only ${row.validRuns} of ${runsPerPage} runs counted, and it needs at least ${minRuns}.`,
+				},
+			];
+		}
+		return LIMIT_CHECKS.flatMap(
+			({ metric, label, bound, limit, format, digits }): LimitBreach[] => {
+				const value = row.median[metric];
+				const allowed = limit(limits);
+				const shown = () => formatPast(value ?? 0, allowed, format, digits);
+				if (value === null) {
+					return [
+						{
+							path: row.path,
+							metric,
+							message: `${page}: ${label} has no value from the runs that counted.`,
+						},
+					];
+				}
+				if (bound === "max" && value > allowed) {
+					return [
+						{
+							path: row.path,
+							metric,
+							message: `${page}: ${label} ${shown()} is over its limit of ${format(allowed, digits)}.`,
+						},
+					];
+				}
+				if (bound === "min" && value < allowed) {
+					return [
+						{
+							path: row.path,
+							metric,
+							message: `${page}: ${label} ${shown()} is under its floor of ${format(allowed, digits)}.`,
+						},
+					];
+				}
+				return [];
+			},
+		);
+	});
+}
+
+/**
+ * Adds decimals until the value no longer reads the same as its limit, so a
+ * median just past it (1500.1 ms against 1500 ms) never shows as equal.
+ */
+function formatPast(
+	value: number,
+	limit: number,
+	format: (value: number, digits: number) => string,
+	digits: number,
+): string {
+	for (let d = digits; d < digits + 4; d++) {
+		if (format(value, d) !== format(limit, d)) return format(value, d);
+	}
+	return format(value, digits + 4);
+}
+
+export function renderSummary(
+	rows: PageSpeedRow[],
+	origin: string,
+	runsPerPage: number,
+	breaches: LimitBreach[],
+): string {
 	const lines = [
 		`### Page speed (median of ${runsPerPage} runs, mobile)`,
 		"",
-		`Lighthouse against ${origin}. Report only: these numbers never fail the check. SEO leaves out the crawlability check, since previews aren't meant to be indexed.`,
+		`Lighthouse against ${origin}. The check fails when a page's median crosses one of its limits, set in \`packages/browser-contract/src/page-speed-limits.ts\`. Performance has no limit. SEO leaves out the crawlability check, since previews aren't meant to be indexed.`,
 		"",
 		"| Page | Performance | SEO | Accessibility | LCP | CLS | TBT |",
 		"| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
 	];
 	for (const row of rows) {
 		const { median: m } = row;
+		const over = new Set(breaches.filter((b) => b.path === row.path).map((b) => b.metric));
+		const cell = (metric: LimitedMetric, text: string) =>
+			over.has(metric) ? `**${text}** ❌` : text;
 		lines.push(
-			`| \`${row.path}\` | ${score(m.performance)} | ${score(m.seo)} | ${score(m.accessibility)} | ${seconds(m.lcpMs)} | ${shift(m.cls)} | ${milliseconds(m.tbtMs)} |`,
+			`| \`${row.path}\` | ${score(m.performance)} | ${cell("seo", score(m.seo))} | ${cell("accessibility", score(m.accessibility))} | ${cell("lcpMs", seconds(m.lcpMs))} | ${cell("cls", shift(m.cls))} | ${cell("tbtMs", milliseconds(m.tbtMs))} |`,
 		);
 	}
 	const notes = rows.flatMap((row) =>
@@ -124,6 +273,11 @@ export function renderSummary(rows: PageSpeedRow[], origin: string, runsPerPage:
 				],
 	);
 	if (notes.length > 0) lines.push("", ...notes);
+	if (breaches.length > 0) {
+		lines.push("", "**Over the limits:**", "", ...breaches.map((b) => `- ${b.message}`));
+	} else {
+		lines.push("", "Every page is within its limits.");
+	}
 	lines.push("", "The full reports are in this run's `page-speed-reports` artifact.");
 	return `${lines.join("\n")}\n`;
 }

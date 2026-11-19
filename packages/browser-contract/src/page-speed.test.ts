@@ -4,6 +4,7 @@ import type { Result as LighthouseResult } from "lighthouse";
 import { describe, expect, it } from "vitest";
 import {
 	buildMedians,
+	checkLimits,
 	containsAny,
 	median,
 	PAGE_SPEED_PAGES,
@@ -14,6 +15,7 @@ import {
 	summarizePage,
 	withoutRequestHeaders,
 } from "./page-speed";
+import { PAGE_SPEED_LIMITS, PAGE_SPEED_MIN_RUNS, type PageSpeedLimits } from "./page-speed-limits";
 
 const ORIGIN = "https://phonaria-pr-1.example.workers.dev";
 
@@ -114,11 +116,182 @@ describe("renderSummary", () => {
 	it("writes one row per page and notes runs that didn't count", () => {
 		const good = summarizePage("/sounds/th-thin", [readRun(lhr(), ORIGIN)]);
 		const empty = summarizePage("/ipa-chart/vowels", [{ ok: false, problem: "run failed: boom" }]);
-		const summary = renderSummary([good, empty], ORIGIN, 1);
+		const summary = renderSummary([good, empty], ORIGIN, 1, []);
 		expect(summary).toContain("| `/sounds/th-thin` | 91 | 100 | 96 | 2.1 s | 0.01 | 120 ms |");
 		expect(summary).toContain("| `/ipa-chart/vowels` | – | – | – | – | – | – |");
 		expect(summary).toContain("- `/ipa-chart/vowels`: 0 of 1 runs counted (run failed: boom).");
 		expect(summary).not.toContain("/sounds/th-thin`: ");
+	});
+});
+
+describe("checkLimits", () => {
+	const limits: PageSpeedLimits = {
+		maxLcpMs: 1500,
+		maxCls: 0.05,
+		maxTbtMs: 300,
+		minSeo: 100,
+		minAccessibility: 96,
+	};
+	const fast = lhr({
+		audits: {
+			"largest-contentful-paint": { numericValue: 950 },
+			"cumulative-layout-shift": { numericValue: 0.002 },
+			"total-blocking-time": { numericValue: 20 },
+		},
+	});
+	const blocked = (tbt: number) =>
+		lhr({
+			audits: {
+				"largest-contentful-paint": { numericValue: 950 },
+				"cumulative-layout-shift": { numericValue: 0.002 },
+				"total-blocking-time": { numericValue: tbt },
+			},
+		});
+	const check = (outcomes: Parameters<typeof summarizePage>[1]) =>
+		checkLimits([summarizePage("/", outcomes)], { "/": limits }, 3, 2);
+
+	it("passes a page whose medians are within its limits", () => {
+		expect(check([readRun(fast, ORIGIN), readRun(fast, ORIGIN), readRun(fast, ORIGIN)])).toEqual(
+			[],
+		);
+	});
+
+	it("judges the median, so one slow run doesn't fail the page", () => {
+		const outcomes = [readRun(blocked(2000), ORIGIN), readRun(fast, ORIGIN), readRun(fast, ORIGIN)];
+		expect(check(outcomes)).toEqual([]);
+	});
+
+	it("names the page and the metric whose median is over its limit", () => {
+		const outcomes = [
+			readRun(blocked(1980), ORIGIN),
+			readRun(blocked(2100), ORIGIN),
+			readRun(fast, ORIGIN),
+		];
+		expect(check(outcomes)).toEqual([
+			{ path: "/", metric: "tbtMs", message: "`/`: TBT 1980 ms is over its limit of 300 ms." },
+		]);
+	});
+
+	it("names a score under its floor", () => {
+		const lower = lhr({
+			categories: {
+				performance: { score: 0.9 },
+				seo: { score: 0.92 },
+				accessibility: { score: 0.9 },
+			},
+			audits: fast.audits,
+		});
+		const breaches = check([readRun(lower, ORIGIN), readRun(lower, ORIGIN), readRun(fast, ORIGIN)]);
+		expect(breaches.map((b) => b.message)).toEqual([
+			"`/`: SEO 92 is under its floor of 100.",
+			"`/`: Accessibility 90 is under its floor of 96.",
+		]);
+	});
+
+	it("counts a value exactly at the limit as within it", () => {
+		const atLimit = blocked(300);
+		expect(check([readRun(atLimit, ORIGIN), readRun(atLimit, ORIGIN)])).toEqual([]);
+	});
+
+	it("never shows a median just past its limit as equal to it", () => {
+		const justOver = lhr({
+			categories: {
+				performance: { score: 0.9 },
+				seo: { score: 1 },
+				accessibility: { score: 0.955 },
+			},
+			audits: {
+				"largest-contentful-paint": { numericValue: 1500.1 },
+				"cumulative-layout-shift": { numericValue: 0.0501 },
+				"total-blocking-time": { numericValue: 300.4 },
+			},
+		});
+		const breaches = check([readRun(justOver, ORIGIN), readRun(justOver, ORIGIN)]);
+		expect(breaches.map((b) => b.message)).toEqual([
+			"`/`: LCP 1.5001 s is over its limit of 1.50 s.",
+			"`/`: CLS 0.0501 is over its limit of 0.050.",
+			"`/`: TBT 300.4 ms is over its limit of 300 ms.",
+		]);
+	});
+
+	it("shows a score median between two runs with its decimal", () => {
+		const row = summarizePage("/", [
+			readRun(
+				lhr({ ...fast, categories: { seo: { score: 1 }, accessibility: { score: 0.95 } } }),
+				ORIGIN,
+			),
+			readRun(
+				lhr({ ...fast, categories: { seo: { score: 1 }, accessibility: { score: 0.96 } } }),
+				ORIGIN,
+			),
+		]);
+		expect(checkLimits([row], { "/": limits }, 3, 2).map((b) => b.message)).toEqual([
+			"`/`: Accessibility 95.5 is under its floor of 96.",
+		]);
+	});
+
+	it("fails a page with fewer good runs than it needs, and judges nothing else", () => {
+		const outcomes = [
+			readRun(blocked(5000), ORIGIN),
+			{ ok: false as const, problem: "run failed: boom" },
+			{ ok: false as const, problem: "Lighthouse error NO_FCP" },
+		];
+		expect(check(outcomes)).toEqual([
+			{
+				path: "/",
+				metric: null,
+				message: "`/`: only 1 of 3 runs counted, and it needs at least 2.",
+			},
+		]);
+	});
+
+	it("fails a metric the counted runs gave no value for", () => {
+		const noLcp = lhr({
+			audits: {
+				"cumulative-layout-shift": { numericValue: 0 },
+				"total-blocking-time": { numericValue: 0 },
+			},
+		});
+		expect(check([readRun(noLcp, ORIGIN), readRun(noLcp, ORIGIN)])).toEqual([
+			{ path: "/", metric: "lcpMs", message: "`/`: LCP has no value from the runs that counted." },
+		]);
+	});
+
+	it("fails a page that has no limits", () => {
+		const row = summarizePage("/new", [readRun(fast, ORIGIN), readRun(fast, ORIGIN)]);
+		expect(checkLimits([row], {}, 3, 2)).toEqual([
+			{ path: "/new", metric: null, message: "`/new` has no limits set." },
+		]);
+	});
+
+	it("marks each cell over its limit in the summary and lists why", () => {
+		const rows = [
+			summarizePage("/", [readRun(blocked(1980), ORIGIN), readRun(blocked(2100), ORIGIN)]),
+			summarizePage("/ipa-chart/vowels", [readRun(fast, ORIGIN), readRun(fast, ORIGIN)]),
+		];
+		const breaches = checkLimits(rows, { "/": limits, "/ipa-chart/vowels": limits }, 2, 2);
+		const summary = renderSummary(rows, ORIGIN, 2, breaches);
+		expect(summary).toContain("| `/` | 91 | 100 | 96 | 0.9 s | 0.00 | **2040 ms** ❌ |");
+		expect(summary).toContain("| `/ipa-chart/vowels` | 91 | 100 | 96 | 0.9 s | 0.00 | 20 ms |");
+		expect(summary).toContain(
+			"**Over the limits:**\n\n- `/`: TBT 2040 ms is over its limit of 300 ms.",
+		);
+		expect(summary).not.toContain("Every page is within its limits.");
+	});
+
+	it("says so when every page is within its limits", () => {
+		const rows = [summarizePage("/", [readRun(fast, ORIGIN)])];
+		expect(renderSummary(rows, ORIGIN, 1, [])).toContain("Every page is within its limits.");
+	});
+});
+
+describe("PAGE_SPEED_LIMITS", () => {
+	it("sets limits for every measured page and nothing else", () => {
+		expect(Object.keys(PAGE_SPEED_LIMITS).sort()).toEqual([...PAGE_SPEED_PAGES].sort());
+	});
+
+	it("needs at least two of the three runs on each page", () => {
+		expect(PAGE_SPEED_MIN_RUNS).toBe(2);
 	});
 });
 
@@ -193,7 +366,7 @@ describe("buildMedians", () => {
 			4,
 			source,
 		).pages[0].metrics;
-		expect(renderSummary(rows, ORIGIN, 4)).toContain(
+		expect(renderSummary(rows, ORIGIN, 4, [])).toContain(
 			`| \`/\` | ${performance.median} | ${seo.median} | ${accessibility.median} | ${(lcpMs.median! / 1000).toFixed(1)} s | ${cls.median!.toFixed(2)} | ${tbtMs.median} ms |`,
 		);
 	});
@@ -249,11 +422,21 @@ describe("preview workflow", () => {
 		"utf8",
 	);
 
-	it("never lets page speed or its upload fail the job", () => {
+	it("fails the job on page speed, but never on uploading its reports", () => {
 		const measure = workflow.slice(workflow.indexOf("- name: Measure page speed"));
 		const upload = workflow.slice(workflow.indexOf("- name: Upload page-speed reports"));
-		expect(measure.split("- name:")[1]).toContain("continue-on-error: true");
+		expect(measure.split("- name:")[1]).not.toContain("continue-on-error");
 		expect(upload.split("- name:")[1]).toContain("continue-on-error: true");
+	});
+
+	it("uploads the reports after the page-speed step, even when it fails", () => {
+		const upload = workflow.slice(workflow.indexOf("- name: Upload page-speed reports"));
+		expect(upload.split("- name:")[1]).toContain(
+			"if: always() && steps.page-speed.outcome != 'skipped'",
+		);
+		expect(workflow.indexOf("- name: Upload page-speed reports")).toBeGreaterThan(
+			workflow.indexOf("- name: Measure page speed"),
+		);
 	});
 
 	it("keeps the page-speed reports as long as GitHub allows", () => {

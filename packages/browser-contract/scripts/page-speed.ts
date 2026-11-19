@@ -3,7 +3,8 @@
  * Runs Lighthouse with its default mobile settings against a few pages of a
  * deployed target and writes a summary table, a medians file with the numbers
  * behind it, and every run's report.
- * Report only: it exits 0 whatever the numbers are, so it never fails a check.
+ * It exits 1 when a page's median crosses one of its limits in
+ * src/page-speed-limits.ts, after writing the table and reports either way.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -11,6 +12,7 @@ import * as chromeLauncher from "chrome-launcher";
 import lighthouse, { generateReport } from "lighthouse";
 import {
 	buildMedians,
+	checkLimits,
 	containsAny,
 	PAGE_SPEED_CATEGORIES,
 	PAGE_SPEED_PAGES,
@@ -25,6 +27,7 @@ import {
 	summarizePage,
 	withoutRequestHeaders,
 } from "../src/page-speed";
+import { PAGE_SPEED_LIMITS, PAGE_SPEED_MIN_RUNS } from "../src/page-speed-limits";
 import { extraHttpHeaders, loadTargetFromEnv } from "../src/target";
 
 const outDir = resolve(process.env.PAGE_SPEED_OUT_DIR || "page-speed-reports");
@@ -45,13 +48,19 @@ for (const path of PAGE_SPEED_PAGES) {
 	rows.push(summarizePage(path, outcomes));
 }
 
-const summary = renderSummary(rows, origin, PAGE_SPEED_RUNS);
+const breaches = checkLimits(rows, PAGE_SPEED_LIMITS, PAGE_SPEED_RUNS, PAGE_SPEED_MIN_RUNS);
+const summary = renderSummary(rows, origin, PAGE_SPEED_RUNS, breaches);
 writeFileSync(join(outDir, "summary.md"), summary);
 if (process.env.GITHUB_STEP_SUMMARY) {
 	writeFileSync(process.env.GITHUB_STEP_SUMMARY, summary, { flag: "a" });
 }
 console.log(summary);
 saveMedians(rows);
+
+for (const breach of breaches) {
+	console.log(`::error title=Page speed::${breach.message}`);
+}
+if (breaches.length > 0) process.exitCode = 1;
 
 async function measure(path: string, run: number): Promise<RunOutcome> {
 	let chrome: chromeLauncher.LaunchedChrome | undefined;
